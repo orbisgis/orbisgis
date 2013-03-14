@@ -171,7 +171,7 @@ public class PnlProportionalLine extends PnlUniqueSymbolSE {
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 0;
-                JPanel p1 = getLineBlock((ProportionalStrokeLegend)legend.getStrokeLegend(), "Line configuration");
+                JPanel p1 = getLineBlock("Line configuration");
                 glob.add(p1, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;
@@ -182,11 +182,10 @@ public class PnlProportionalLine extends PnlUniqueSymbolSE {
 
         /**
          * Gets a panel containing all the fields to edit a unique line.
-         * @param legend
          * @param title
          * @return
          */
-        public JPanel getLineBlock(ProportionalStrokeLegend leg, String title){
+        public JPanel getLineBlock(String title){
                 if(getPreview() == null && getLegend() != null){
                         initPreview();
                 }
@@ -230,19 +229,19 @@ public class PnlProportionalLine extends PnlUniqueSymbolSE {
         private JPanel getSecondConf(ProportionalLine prop){
                 CanvasSE prev = getPreview();
                 JPanel ret = new JPanel();
-                JFormattedTextField jftf = new JFormattedTextField(new DecimalFormat());
-                jftf.setColumns(8);
+                JFormattedTextField formatted = new JFormattedTextField(new DecimalFormat());
+                formatted.setColumns(8);
                 try {
-                        jftf.setValue(prop.getSecondValue());
+                        formatted.setValue(prop.getSecondValue());
                 } catch (ParameterException ex) {
                         LOGGER.error(I18N.tr("Can't retrieve the maximum value of"
                                 + " the symbol"), ex);
                 }
                 PropertyChangeListener al = EventHandler.create(PropertyChangeListener.class, prop, "secondValue", "source.value");
-                jftf.addPropertyChangeListener("value", al);
-                PropertyChangeListener al2 = EventHandler.create(PropertyChangeListener.class, prev, "repaint");
-                jftf.addPropertyChangeListener("value", al2);
-                ret.add(jftf);
+                formatted.addPropertyChangeListener("value", al);
+                PropertyChangeListener al2 = EventHandler.create(PropertyChangeListener.class, prev, "imageChanged");
+                formatted.addPropertyChangeListener("value", al2);
+                ret.add(formatted);
                 return ret;
         }
 
@@ -265,7 +264,7 @@ public class PnlProportionalLine extends PnlUniqueSymbolSE {
         /**
          * Creates and fill the combo box that will be used to compute the
          * analysis.
-         * @return
+         * @return The combo box we can use to choose the text.
          */
         private JComboBox getFieldComboBox(){
                 if(ds != null){
@@ -286,7 +285,7 @@ public class PnlProportionalLine extends PnlUniqueSymbolSE {
 
         /**
          * Used when the field against which the analysis is made changes.
-         * @param obj
+         * @param obj The new field name.
          */
         public void updateField(String obj){
                 try {
@@ -298,7 +297,7 @@ public class PnlProportionalLine extends PnlUniqueSymbolSE {
                         sample.put(obj, mnm[1]);
                         getPreview().setSampleDatasource(sample);
                         getPreview().setDisplayed(true);
-                        getPreview().repaint();
+                        getPreview().imageChanged();
                 } catch (DriverException ex) {
                         LOGGER.error("", ex);
                 } catch (ParameterException ex) {

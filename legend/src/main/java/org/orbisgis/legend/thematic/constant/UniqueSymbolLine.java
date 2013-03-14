@@ -35,6 +35,7 @@ import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
+import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -69,10 +70,10 @@ public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUni
 
     /**
      * Build a new {@code UniqueSymbolLine} from the given symbolizer. Note that
-     * {@code symbolizer} must really be a unique symbole. Otherwise, you'll face {@code ClassCastException}.
-     * @param symbolizer
+     * {@code symbolizer} must really be a unique symbol. Otherwise, you'll face {@code ClassCastException}.
+     * @param symbolizer The input symbolizer.
      * @throws ClassCastException
-     * If the {@code Stroke} contaiend in {@code symbolizer} can't be recognized
+     * If the {@code Stroke} contained in {@code symbolizer} can't be recognized
      * as a {@code ConstantPenStrokeLegend}.
      */
     public UniqueSymbolLine(LineSymbolizer symbolizer) {
@@ -84,11 +85,26 @@ public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUni
     }
 
     /**
+     * Builds a new {@code UniqueSymbolLine} using the needed parameters gathered in the given {@code LineParameters}
+     * instance.
+     * @param lp The {@code LineParameters} instance we'll use to configure our symbol.
+     */
+    public UniqueSymbolLine(LineParameters lp){
+        super(new LineSymbolizer());
+        Stroke gr = ((LineSymbolizer)getSymbolizer()).getStroke();
+        strokeLegend = new ConstantPenStrokeLegend((PenStroke) gr);
+        strokeLegend.setLineColor(lp.getLineColor());
+        strokeLegend.setDashArray(lp.getLineDash());
+        strokeLegend.setLineOpacity(lp.getLineOpacity());
+        strokeLegend.setLineWidth(lp.getLineWidth());
+    }
+
+    /**
      * Build a new {@code UniqueSymbolLine} instance from the given symbolizer
      * and legend. As the inner analysis is given directly with the symbolizer,
      * we won't check they match. It is up to the caller to check they do.
-     * @param symbolizer
-     * @param legend
+     * @param symbolizer  The input symbolizer
+     * @param legend The associated legend
      */
     public UniqueSymbolLine(LineSymbolizer symbolizer, ConstantPenStrokeLegend legend) {
         super(symbolizer);
@@ -97,7 +113,7 @@ public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUni
 
     /**
      * Gets the {@code LegendStructure} associated to this {@code UniqueSymbolLine}.
-     * @return
+     * @return The {@code LegendStructure} describing the inner stroke.
      */
     @Override
     public LegendStructure getStrokeLegend() {
@@ -110,8 +126,8 @@ public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUni
     }
 
     @Override
-    public void setPenStroke(ConstantPenStroke cpsl){
-            strokeLegend = cpsl;
+    public void setPenStroke(ConstantPenStroke penStroke){
+            strokeLegend = penStroke;
             ((LineSymbolizer)getSymbolizer()).setStroke(strokeLegend.getStroke());
     }
 
@@ -123,6 +139,15 @@ public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUni
     @Override
     public String getLegendTypeId(){
         return "org.orbisgis.legend.thematic.constant.UniqueSymbolLine";
+    }
+
+    /**
+     * Gets the representation of this {@code UniqueSymbolLine} with the equivalent {@link LineParameters} instance.
+     * @return A {@link LineParameters} instance equivalent to this {@code UniqueSymbolLine}.
+     */
+    public LineParameters getLineParameters(){
+        return new LineParameters(getLineColor(), getPenStroke().getLineOpacity(),
+                    getPenStroke().getLineWidth(),getPenStroke().getDashArray());
     }
 
 }

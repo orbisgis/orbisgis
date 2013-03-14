@@ -26,27 +26,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.legend.structure.recode;
+package org.orbisgis.legend.structure.parameter;
 
 /**
- * Sets the field name of the visited RecodedLegend to the name given at instanciation time.
+ * Marker interface that will be useful to make distinction between recodes and categorize
  * @author alexis
  */
-public class SetFieldVisitor implements RecodedParameterVisitor {
-
-    private String name;
-
-    /**
-     * Builds a new {@code SetFieldVisitor} with the given string.
-     * @param n The name that will be applied to {@link RecodedLegend} instances.
-     * @throws IllegalArgumentException if {@code n== null || n.isEmpty()}
-     */
-    public SetFieldVisitor(String n){
-        name = n == null ? "" : n;
-    }
-
-    @Override
-    public void visit(RecodedLegend legend) {
-        legend.setField(name);
-    }
+public interface ParameterVisitor<T> {
 }

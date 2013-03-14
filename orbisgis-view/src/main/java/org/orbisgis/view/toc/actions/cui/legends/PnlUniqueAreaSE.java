@@ -231,13 +231,12 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 if(areaCheckBox.isSelected()){
                         ((IUniqueSymbolArea)getLegend()).setFillLegend(solidFillMemory);
                         setAreaFieldsState(true);
-                        getPreview().repaint();
                 } else {
                         NullSolidFillLegend nsf = new NullSolidFillLegend();
                         ((IUniqueSymbolArea)getLegend()).setFillLegend(nsf);
                         setAreaFieldsState(false);
-                        getPreview().repaint();
                 }
+                getPreview().imageChanged();
         }
 
         @Override

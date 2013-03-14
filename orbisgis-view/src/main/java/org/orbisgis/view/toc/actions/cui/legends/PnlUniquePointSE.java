@@ -258,7 +258,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 jns.setValue(point.getViewBoxWidth() == null? point.getViewBoxHeight() : point.getViewBoxWidth());
                 jns.setMaximumSize(new Dimension(60,30));
                 jns.setPreferredSize(new Dimension(60,30));
-                ChangeListener cl2 = EventHandler.create(ChangeListener.class, prev, "repaint");
+                ChangeListener cl2 = EventHandler.create(ChangeListener.class, prev, "imageChanged");
                 jns.addChangeListener(cl2);
                 return jns;
         }
@@ -276,7 +276,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 jns.setValue(point.getViewBoxHeight() == null? point.getViewBoxWidth() : point.getViewBoxHeight());
                 jns.setMaximumSize(new Dimension(60,30));
                 jns.setPreferredSize(new Dimension(60,30));
-                ChangeListener cl2 = EventHandler.create(ChangeListener.class, prev, "repaint");
+                ChangeListener cl2 = EventHandler.create(ChangeListener.class, prev, "imageChanged");
                 jns.addChangeListener(cl2);
                 return jns;
         }
@@ -294,7 +294,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                         values[i] = wkns[i].getLabel();
                 }
                 final JComboBox jcc = new JComboBox(values);
-                ActionListener acl = EventHandler.create(ActionListener.class, prev, "repaint");
+                ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateWKNComboBox", "source.selectedIndex");
                 jcc.addActionListener(acl2);
                 jcc.addActionListener(acl);
@@ -329,7 +329,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 bg.add(bCentroid);
                 ActionListener actionV = EventHandler.create(ActionListener.class, point, "setOnVertex");
                 ActionListener actionC = EventHandler.create(ActionListener.class, point, "setOnCentroid");
-                ActionListener actionRef = EventHandler.create(ActionListener.class, prev, "repaint");
+                ActionListener actionRef = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 bVertex.addActionListener(actionV);
                 bVertex.addActionListener(actionRef);
                 bCentroid.addActionListener(actionC);
@@ -362,7 +362,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                         values[i] = I18N.tr(uoms[i].toString());
                 }
                 final JComboBox jcc = new JComboBox(values);
-                ActionListener acl = EventHandler.create(ActionListener.class, prev, "repaint");
+                ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex");
                 jcc.addActionListener(acl2);
                 jcc.addActionListener(acl);

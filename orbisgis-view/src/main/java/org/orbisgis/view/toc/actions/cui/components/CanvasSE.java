@@ -38,6 +38,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
@@ -76,53 +77,74 @@ public class CanvasSE extends JPanel {
         private MapTransform mt;
         private DataSet sample;
         private boolean displayed;
+        BufferedImage bi = null;
+        public final static int WIDTH = 126;
+        public final static int HEIGHT = 70;
 
         /**
-         * Build this as a JPanel of size 126*70.
+         * Build this as a JPanel of size WIDTH*HEIGHT.
          */
 	public CanvasSE(Symbolizer sym) {
-		super();
-		this.setSize(126, 70);
-		this.setPreferredSize(new Dimension(126, 70));
-		this.setMaximumSize(new Dimension(126, 70));
-                s = sym;
-                gf = new GeometryFactory();
-                geom = getSampleGeometry();
-                mt = new MapTransform();
-                mt.setExtent(new Envelope(0, 126, 0, 70));
-                displayed = true;
+        super();
+        this.setSize(WIDTH, HEIGHT);
+        this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        this.setMaximumSize(new Dimension(WIDTH, HEIGHT));
+        this.setOpaque(true);
+        s = sym;
+        gf = new GeometryFactory();
+        geom = getSampleGeometry();
+        mt = new MapTransform();
+        mt.setExtent(new Envelope(0, WIDTH, 0, HEIGHT));
+        displayed = true;
 	}
+
+    /**
+     * Force the image and the panel to be refreshed.
+     */
+    public void imageChanged(){
+        bi = null;
+        repaint();
+    }
+
+    /**
+     * Gets the image used to fill the JPanel.
+     * @return The image that is displayed in the JPanel.
+     */
+    public BufferedImage getImage(){
+        if(bi == null){
+            BufferedImage bi = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);
+            Graphics2D g2 = (Graphics2D) bi.getGraphics();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            if(sample == null){
+                setBasicDataSource();
+            }
+            try {
+                g2.setBackground(Color.WHITE);
+                g2.fillRect(0,0,WIDTH,HEIGHT);
+                if(sample instanceof DataSource){
+                    DataSource ds = (DataSource) sample;
+                    if(!ds.isOpen()){
+                        ds.open();
+                    }
+                }
+                s.draw(g2, sample, 0, false, mt, geom, null);
+                if(sample instanceof DataSource){
+                    ((DataSource) sample).close();
+                }
+            } catch (DriverException de){
+            } catch (ParameterException de){
+            } catch (IOException de){
+            } catch (IllegalArgumentException ie){
+                    LOGGER.error(ie.getMessage());
+            }
+            this.bi = bi;
+        }
+        return bi;
+    }
 
 	@Override
 	public void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g;
-                Object old = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
-                g2.setColor(Color.white);
-                g2.fillRect(0, 0, getWidth(), getHeight());
-                if(displayed){
-                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                        if(sample == null){
-                                setBasicDataSource();
-                        }
-                        try {
-                                if(sample instanceof DataSource){
-                                        DataSource ds = (DataSource) sample;
-                                        if(!ds.isOpen()){
-                                                ds.open();
-                                        }
-                                }
-                                s.draw(g2, sample, 0, false, mt, geom, null);
-                                if(sample instanceof DataSource){
-                                        ((DataSource) sample).close();
-                                }
-                        } catch (DriverException de){
-                        } catch (ParameterException de){
-                        } catch (IOException de){
-                        } catch (IllegalArgumentException ie){
-                                LOGGER.error(ie.getMessage());
-                        }
-                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, old);
-                }
+        g.drawImage(getImage(), 0, 0, null);
 	}
 
         /**
@@ -179,9 +201,9 @@ public class CanvasSE extends JPanel {
                 sb.append("\') as the_geom");
                 Set<Map.Entry<String,Object>> es =input.entrySet();
                 for(Map.Entry<String, Object> ent : es){
-                        sb.append(",");
+                        sb.append(",\'");
                         sb.append(ent.getValue().toString());
-                        sb.append(" as ");
+                        sb.append("\' as ");
                         sb.append(ent.getKey());
                 }
                 sb.append(";");
@@ -205,7 +227,7 @@ public class CanvasSE extends JPanel {
          */
 	public void setSymbol(Symbolizer sym) {
 		this.s = sym;
-                geom = getSampleGeometry();
+        geom = getSampleGeometry();
 		this.repaint();
 	}
 
