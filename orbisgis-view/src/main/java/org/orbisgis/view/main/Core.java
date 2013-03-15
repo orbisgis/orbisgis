@@ -195,7 +195,7 @@ public class Core {
                 @Override
                 public void run() {
                         // Ask the user to select a workspace folder
-                        File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(coreWorkspace,false);
+                        File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(coreWorkspace,true);
                         if(newWorkspace==null) {
                                 throw new RuntimeException(I18N.tr("Invalid workspace"));
                         }
