@@ -547,16 +547,7 @@ public class SQLConsolePanel extends JPanel {
          */
         public void onUserSelectionChange(){
                 String text = scriptPanel.getText().trim();
-                if (!text.isEmpty()) {
-                        executeAction.setEnabled(true);
-                        clearAction.setEnabled(true);
-                        saveAction.setEnabled(true);
-                        findAction.setEnabled(true);
-                        quoteAction.setEnabled(true);
-                        unQuoteAction.setEnabled(true);
-                        formatSQLAction.setEnabled(true);
-                }
-                else{
+                if (text.isEmpty()) {
                         executeAction.setEnabled(false);
                         clearAction.setEnabled(false);
                         saveAction.setEnabled(false);
@@ -564,6 +555,15 @@ public class SQLConsolePanel extends JPanel {
                         quoteAction.setEnabled(false);
                         unQuoteAction.setEnabled(false);
                         formatSQLAction.setEnabled(false);
+                }
+                else{
+                        executeAction.setEnabled(true);
+                        clearAction.setEnabled(true);
+                        saveAction.setEnabled(true);
+                        findAction.setEnabled(true);
+                        quoteAction.setEnabled(true);
+                        unQuoteAction.setEnabled(true);
+                        formatSQLAction.setEnabled(true);
                 }
         }
 }
