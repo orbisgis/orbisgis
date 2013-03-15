@@ -32,37 +32,40 @@ package org.orbisgis.view.table;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.TypeDefinition;
+import org.gdms.data.values.Value;
 import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.actions.ActionTools;
 import org.orbisgis.view.components.gdms.FieldEditor;
+import org.orbisgis.view.components.sif.AskValidRow;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.table.ext.TableEditorActions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-import javax.swing.AbstractAction;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 
 /**
- * Add a column in the DataSource.
+ * Add a row in the DataSource.
  * @author Nicolas Fortin
  */
-public class ActionAddColumn extends AbstractAction {
+public class ActionAddRow extends AbstractAction {
     private final TableEditableElement editable;
-    private static final I18n I18N = I18nFactory.getI18n(ActionAddColumn.class);
-    private final Logger logger = Logger.getLogger(ActionAddColumn.class);
+    private static final I18n I18N = I18nFactory.getI18n(ActionAddRow.class);
+    private final Logger logger = Logger.getLogger(ActionAddRow.class);
 
     /**
      * Constructor
      * @param editable Table editable instance
      */
-    public ActionAddColumn(TableEditableElement editable) {
-        super(I18N.tr("Add a column"), OrbisGISIcon.getIcon("add_field"));
+    public ActionAddRow(TableEditableElement editable) {
+        super(I18N.tr("Add a row"), OrbisGISIcon.getIcon("add_row"));
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
-        putValue(ActionTools.MENU_ID,TableEditorActions.A_ADD_FIELD);
+        putValue(ActionTools.MENU_ID,TableEditorActions.A_ADD_ROW);
         this.editable = editable;
         updateEnabledState();
         editable.addPropertyChangeListener(TableEditableElement.PROP_EDITING,
@@ -79,16 +82,16 @@ public class ActionAddColumn extends AbstractAction {
     public void actionPerformed(ActionEvent actionEvent) {
         if(editable.isEditing()) {
             DataSource source = editable.getDataSource();
-            Driver driver = source.getDriver();
-            TypeDefinition[] typeDefinitions = driver.getTypesDefinitions();
-            FieldEditor fieldEditor = new FieldEditor(typeDefinitions);
-            if(UIFactory.showDialog(fieldEditor)) {
-                try {
-                    source.addField(fieldEditor.getFieldName(),fieldEditor.getType());
-                } catch (DriverException ex) {
-                    logger.error(ex.getLocalizedMessage(),ex);
+            try {
+                AskValidRow rowInput = new AskValidRow(I18N.tr("New row"),source);
+                if(UIFactory.showDialog(rowInput)) {
+                    Value[] newRow = rowInput.getRow();
+                    source.insertFilledRow(newRow);
                 }
+            } catch (Exception ex) {
+                logger.error(ex.getLocalizedMessage(),ex);
             }
+
         }
     }
 }
