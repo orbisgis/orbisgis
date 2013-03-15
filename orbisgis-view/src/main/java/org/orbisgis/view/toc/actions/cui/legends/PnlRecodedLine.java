@@ -116,6 +116,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     public void initialize(LegendContext lc) {
         if (legend == null) {
             setLegend(new RecodedLine());
+            initPreview();
         }
         setGeometryType(lc.getGeometryType());
         ILayer layer = lc.getLayer();
@@ -329,20 +330,34 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getFallback(), gbc);
-        //Classification generator
+        //UOM
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        glob.add(getUOMCombo(),gbc);
+        //Classification generator
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 3;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getCreateClassificationPanel(), gbc);
         //Table for the recoded configurations
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getTablePanel(), gbc);
         this.add(glob);
         this.revalidate();
+    }
+
+    private JPanel getUOMCombo(){
+        JPanel pan = new JPanel();
+        JComboBox jcb = getLineUomCombo(legend);
+        pan.add(new JLabel(I18N.tr("Unit of measure :")));
+        pan.add(jcb);
+        return pan;
     }
 
     /**
@@ -585,6 +600,11 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         rl.setFallbackParameters(legend.getFallbackParameters());
         rl.setLookupFieldName(legend.getLookupFieldName());
         return rl;
+    }
+
+    @Override
+    public CanvasSE getPreview() {
+        return fallbackPreview;
     }
 
     /**

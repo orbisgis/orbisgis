@@ -33,22 +33,32 @@ import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.ColorPicker;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactory;
+import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import java.util.Arrays;
 
 /**
  * Some useful methods that will be available for all thematic panels.
  * @author alexis
  */
-public class AbstractFieldPanel extends JPanel {
+public abstract class AbstractFieldPanel extends JPanel {
     private static final Logger LOGGER = Logger.getLogger("gui."+AbstractFieldPanel.class);
+    private static final I18n I18N = I18nFactory.getI18n(AbstractFieldPanel.class);
     /**
      * Width used for the rectangles that displays the color parameters of the symbols.
      */
@@ -58,6 +68,7 @@ public class AbstractFieldPanel extends JPanel {
      */
     public final static int FILLED_LABEL_HEIGHT = 20;
 
+    private ContainerItemProperties[] strokeUoms;
     /**
      * Initialize a {@code JComboBo} whose values are set according to the
      * not spatial fields of {@code ds}.
@@ -154,5 +165,64 @@ public class AbstractFieldPanel extends JPanel {
                 source.setBackground(color);
             }
         }
+    }
+
+    /**
+     * ComboBox to configure the unit of measure used to draw th stroke.
+     * @param input
+     * @return
+     */
+    public JComboBox getLineUomCombo(StrokeUom input){
+        CanvasSE prev = getPreview();
+        strokeUoms= getUomProperties();
+        String[] values = new String[strokeUoms.length];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = I18N.tr(strokeUoms[i].getLabel());
+        }
+        final JComboBox jcc = new JComboBox(values);
+        ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
+        ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateLUComboBox", "source.selectedIndex");
+        jcc.addActionListener(acl2);
+        jcc.addActionListener(acl);
+        jcc.setSelectedItem(input.getStrokeUom().toString().toUpperCase());
+        return jcc;
+    }
+
+    /**
+     * Gets a preview for the fallback value of the symbol.
+     * @return The Preview in a CanvasSE.
+     */
+    public abstract CanvasSE getPreview();
+
+    /**
+     * Gets the legend we want to edit.
+     * @return
+     */
+    public abstract Legend getLegend();
+
+    /**
+     * Gets the value contained in the {@code Uom} enum with their
+     * internationalized representation in a {@code
+     * ContainerItemProperties} array.
+     * @return
+     */
+    public ContainerItemProperties[] getUomProperties(){
+        Uom[] us = Uom.values();
+        ContainerItemProperties[] cips = new ContainerItemProperties[us.length];
+        for(int i = 0; i<us.length; i++){
+            Uom u = us[i];
+            ContainerItemProperties cip = new ContainerItemProperties(u.name(), u.toLocalizedString());
+            cips[i] = cip;
+        }
+        return cips;
+    }
+
+    /**
+     * Sets the underlying graphic to use the ith element of the combobox
+     * as its well-known name. Used when changing the combobox selection.
+     * @param index
+     */
+    public void updateLUComboBox(int index){
+        ((StrokeUom)getLegend()).setStrokeUom(Uom.fromString(strokeUoms[index].getKey()));
     }
 }
