@@ -103,6 +103,7 @@ public class LegendTree extends JPanel {
                 //We refresh the CardLayout of the associated LegendsPanel
                 TreeSelectionListener tslb = EventHandler.create(TreeSelectionListener.class, legendsPanel, "legendSelected");
                 tree.addTreeSelectionListener(tslb);
+                expandAll(tree);
                 initButtons();
                 setPreferredSize(new Dimension(200,200));
                 this.setLayout(new BorderLayout());
@@ -495,6 +496,17 @@ public class LegendTree extends JPanel {
                         }
                         lab.setText(s);
                         return lab;
+                }
+        }        
+        
+        /**
+         * Expand configuration tree
+         *
+         * @param tree
+         */
+        private void expandAll(JTree tree) {
+                for (int row = 0; row < tree.getRowCount(); row++) {
+                        tree.expandRow(row);
                 }
         }
 }
