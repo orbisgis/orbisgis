@@ -43,6 +43,7 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import javax.swing.event.CaretListener;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -97,6 +98,13 @@ public class SQLConsolePanel extends JPanel {
         private MapContext mapContext;
         private ActionCommands actions = new ActionCommands();
         private SQLFunctionsPanel sqlFunctionsPanel;
+        private DefaultAction executeAction;
+        private DefaultAction clearAction;
+        private DefaultAction findAction;
+        private DefaultAction quoteAction;
+        private DefaultAction unQuoteAction;
+        private DefaultAction formatSQLAction;
+        private DefaultAction saveAction;
         
         
         /**
@@ -122,65 +130,72 @@ public class SQLConsolePanel extends JPanel {
          */
         private void initActions() {
                 //Execute Action
-                actions.addAction(new DefaultAction(SQLAction.A_EXECUTE,
+                executeAction = new DefaultAction(SQLAction.A_EXECUTE,
                         I18N.tr("Execute"),
                         I18N.tr("Run SQL statements"),
                         OrbisGISIcon.getIcon("execute"),
                         EventHandler.create(ActionListener.class,this,"onExecute"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK)
-                        ).setLogicalGroup("custom"));
+                        ).setLogicalGroup("custom");
+                actions.addAction(executeAction);
                 //Clear action
-                actions.addAction(new DefaultAction(SQLAction.A_CLEAR,
+                clearAction = new DefaultAction(SQLAction.A_CLEAR,
                         I18N.tr("Clear"),
                         I18N.tr("Erase the content of the editor"),
                         OrbisGISIcon.getIcon("erase"),
                         EventHandler.create(ActionListener.class,this,"onClear"),
                         null
-                       ).setLogicalGroup("custom").setAfter(SQLAction.A_EXECUTE));
-                //Find action                
-                actions.addAction(new DefaultAction(SQLAction.A_SEARCH,
+                       ).setLogicalGroup("custom").setAfter(SQLAction.A_EXECUTE);
+                actions.addAction(clearAction);
+                //Find action
+                findAction=new DefaultAction(SQLAction.A_SEARCH,
                         I18N.tr("Search.."),
                         I18N.tr("Search text in the document"),
                         OrbisGISIcon.getIcon("find"),
                         EventHandler.create(ActionListener.class,this,"openFindReplaceDialog"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK)
                        ).addStroke(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK))
-                        .setLogicalGroup("custom"));
+                        .setLogicalGroup("custom");
+                actions.addAction(findAction);
                 
                 //Quote
-                actions.addAction(new DefaultAction(SQLAction.A_QUOTE,
+                quoteAction = new DefaultAction(SQLAction.A_QUOTE,
                         I18N.tr("Quote"),
                         I18N.tr("Quote selected text"),
                         null,
                         EventHandler.create(ActionListener.class,this,"onQuote"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_SLASH, InputEvent.SHIFT_DOWN_MASK)
-                       ).setLogicalGroup("format"));
+                       ).setLogicalGroup("format");
+                actions.addAction(quoteAction);
                 //unQuote
-                actions.addAction(new DefaultAction(SQLAction.A_UNQUOTE,
+                unQuoteAction =new DefaultAction(SQLAction.A_UNQUOTE,
                         I18N.tr("Un Quote"),
                         I18N.tr("Un Quote selected text"),
                         null,
                         EventHandler.create(ActionListener.class,this,"onUnQuote"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SLASH, InputEvent.SHIFT_DOWN_MASK)
-                       ).setLogicalGroup("format"));
+                       ).setLogicalGroup("format");
+                actions.addAction(unQuoteAction);
                 
                 //Format SQL
-                actions.addAction(new DefaultAction(SQLAction.A_FORMAT,
+                formatSQLAction = new DefaultAction(SQLAction.A_FORMAT,
                         I18N.tr("Format"),
                         I18N.tr("Format editor content"),
                         null,
                         EventHandler.create(ActionListener.class,this,"onFormatCode"),
                         KeyStroke.getKeyStroke("alt shift F")
-                       ).setLogicalGroup("format"));
+                       ).setLogicalGroup("format");
+                actions.addAction(formatSQLAction);
                 
                 //Save
-                actions.addAction(new DefaultAction(SQLAction.A_SAVE,
+                saveAction = new DefaultAction(SQLAction.A_SAVE,
                         I18N.tr("Save"),
                         I18N.tr("Save the editor content into a file"),
                         OrbisGISIcon.getIcon("save"),
                         EventHandler.create(ActionListener.class,this,"onSaveFile"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)
-                       ).setLogicalGroup("custom"));
+                       ).setLogicalGroup("custom");
+                actions.addAction(saveAction);
                 //Open action
                 actions.addAction(new DefaultAction(SQLAction.A_OPEN,
                         I18N.tr("Open"),
@@ -218,7 +233,6 @@ public class SQLConsolePanel extends JPanel {
                 if (centerPanel == null) {
                         scriptPanel = new RSyntaxTextArea();
                         scriptPanel.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_SQL);
-                        //scriptPanel.getDocument().addDocumentListener(actionAndKeyListener);
                         scriptPanel.setLineWrap(true);
                         scriptPanel.setClearWhitespaceLinesEnabled(true);
                         scriptPanel.setMarkOccurrences(false);
@@ -229,10 +243,13 @@ public class SQLConsolePanel extends JPanel {
                         codeReformator = new CodeReformator(";",
                                 COMMENT_SPECS);
                         scriptPanel.addCaretListener(EventHandler.create(CaretListener.class,this,"onScriptPanelCaretUpdate"));
+                        scriptPanel.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this, "onUserSelectionChange"));
+                       
                         //Add custom actions
                         scriptPanel.getPopupMenu().addSeparator();
                         actions.registerContainer(scriptPanel.getPopupMenu());
                         centerPanel = new RTextScrollPane(scriptPanel);
+                        onUserSelectionChange();
                 }
                 return centerPanel;
         }
@@ -523,5 +540,30 @@ public class SQLConsolePanel extends JPanel {
                 }
                 findReplaceDialog.setAlwaysOnTop(true);
                 findReplaceDialog.setVisible(true);
+        }
+        
+         /**
+         * Change the status of the button when the console is empty or not.
+         */
+        public void onUserSelectionChange(){
+                String text = scriptPanel.getText().trim();
+                if (!text.isEmpty()) {
+                        executeAction.setEnabled(true);
+                        clearAction.setEnabled(true);
+                        saveAction.setEnabled(true);
+                        findAction.setEnabled(true);
+                        quoteAction.setEnabled(true);
+                        unQuoteAction.setEnabled(true);
+                        formatSQLAction.setEnabled(true);
+                }
+                else{
+                        executeAction.setEnabled(false);
+                        clearAction.setEnabled(false);
+                        saveAction.setEnabled(false);
+                        findAction.setEnabled(false);
+                        quoteAction.setEnabled(false);
+                        unQuoteAction.setEnabled(false);
+                        formatSQLAction.setEnabled(false);
+                }
         }
 }
