@@ -1,4 +1,4 @@
-/**
+/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
@@ -26,23 +26,30 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.sif.common;
+
+package org.orbisgis.view.components.gdms;
+
+import org.gdms.data.types.TypeDefinition;
+
+import javax.swing.*;
 
 /**
- * Generic list item that store a key with the value shown
- * 
- * This class is created thanks to the NetBeans user interface.
- * Use the "Add property" NetBeans function to add properties easily.
- * See documentation related to java.beans management systems
- * 
+ * @author Nicolas Fortin
+ * Field edition interface.
  */
-public class ContainerItemProperties extends ContainerItem<String>  {
+public interface ConstraintHolder {
     /**
-     * Constructor
-     * @param key Key value
-     * @param label Localised item label
+     * @return The selected type
      */
-    public ContainerItemProperties(String key, String label) {
-        super(key, label);
-    }
+    TypeDefinition getCurrentTypeDefinition();
+
+    /**
+     * @return The JTable model
+     */
+    ConstraintTableModel getConstraintModel();
+
+    /**
+     * @return The constraint table
+     */
+    JTable getConstraintTable();
 }

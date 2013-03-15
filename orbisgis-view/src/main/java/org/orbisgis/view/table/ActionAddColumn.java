@@ -29,8 +29,53 @@
 
 package org.orbisgis.view.table;
 
+import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
+import org.gdms.data.types.TypeDefinition;
+import org.gdms.driver.Driver;
+import org.gdms.driver.DriverException;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.view.components.actions.ActionTools;
+import org.orbisgis.view.components.gdms.FieldEditor;
+import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.table.ext.TableEditorActions;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
+import javax.swing.AbstractAction;
+import java.awt.event.ActionEvent;
+
 /**
+ * Add a column in the DataSource.
  * @author Nicolas Fortin
  */
-public class ActionAddColumn {
+public class ActionAddColumn extends AbstractAction {
+    private final TableEditableElement editable;
+    private static final I18n I18N = I18nFactory.getI18n(ActionAddColumn.class);
+    private final Logger logger = Logger.getLogger(ActionAddColumn.class);
+
+    /**
+     * Constructor
+     * @param editable Table editable instance
+     */
+    public ActionAddColumn(TableEditableElement editable) {
+        super(I18N.tr("Add a column"), OrbisGISIcon.getIcon("add_field"));
+        putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
+        putValue(ActionTools.MENU_ID,TableEditorActions.A_ADD_FIELD);
+        this.editable = editable;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent actionEvent) {
+        DataSource source = editable.getDataSource();
+        Driver driver = source.getDriver();
+        TypeDefinition[] typeDefinitions = driver.getTypesDefinitions();
+        FieldEditor fieldEditor = new FieldEditor(typeDefinitions);
+        if(UIFactory.showDialog(fieldEditor)) {
+            try {
+                source.addField(fieldEditor.getFieldName(),fieldEditor.getType());
+            } catch (DriverException ex) {
+                logger.error(ex.getLocalizedMessage(),ex);
+            }
+        }
+    }
 }

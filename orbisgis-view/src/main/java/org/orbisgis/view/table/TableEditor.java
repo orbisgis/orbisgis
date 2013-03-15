@@ -148,6 +148,7 @@ public class TableEditor extends JPanel implements EditorDockable {
             List<Action> actions = new LinkedList<Action>();
             if(tableEditableElement.getDataSource().isEditable()) {
                 try {
+                    actions.add(new ActionAddColumn(tableEditableElement));
                     actions.add(new ActionCancel(tableEditableElement));
                     actions.add(new ActionUndo(tableEditableElement));
                     actions.add(new ActionRedo(tableEditableElement));

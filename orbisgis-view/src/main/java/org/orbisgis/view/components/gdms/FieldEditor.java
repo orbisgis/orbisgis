@@ -29,65 +29,108 @@
 package org.orbisgis.view.components.gdms;
 
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.types.TypeFactory;
-import org.orbisgis.sif.multiInputPanel.ComboBoxChoice;
-import org.orbisgis.sif.multiInputPanel.Input;
-import org.orbisgis.sif.multiInputPanel.InputPanel;
 import org.orbisgis.sif.CRFlowLayout;
 import org.orbisgis.sif.CarriageReturn;
-import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.sif.multiInputPanel.InputType;
-import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
-import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelListener;
+import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 
 /**
  * A dialog to add or edit a DataSource field.
  */
-public class FieldEditor extends JPanel implements UIPanel {
-
-	private JTextField txtName;
-	private ConstraintTableModel constraintModel;
+public class FieldEditor extends JPanel implements UIPanel, ConstraintHolder {
+    private static final int DEFAULT_TABLE_WIDTH = 400;
+    private static final int DEFAULT_TABLE_HEIGHT = 100;
+    private static final int EMPTY_TABLE_BORDER = 3;
+    private static final int DEFAULT_FIELD_NAME_CHARS = 8;
+    private JTextField txtName;
 	private TypeDefinition[] types;
 	private JComboBox cmbTypes;
 	private int lastSelectedType;
+    private JTable constraintTable;
     private static final I18n I18N = I18nFactory.getI18n(FieldEditor.class);
-    private static final String CONSTRAINT_INPUT_NAME = "constraint";
-
+    private ConstraintTableModel constraintTableModel = new ConstraintTableModel();
+    private ConstraintTableAction[] actions;
+    /**
+     * Constructor
+     * @param types Selectable field types
+     */
 	public FieldEditor(TypeDefinition[] types) {
 		this("", null, types);
 	}
+    private JPanel getConstraintPanel() {
+        JPanel constraintPanel = new JPanel(new BorderLayout());
+        constraintPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder(I18N.tr("Constraints")),
+                BorderFactory.createEmptyBorder(EMPTY_TABLE_BORDER, EMPTY_TABLE_BORDER, EMPTY_TABLE_BORDER,
+                        EMPTY_TABLE_BORDER)));
 
+        constraintTable = new JTable(constraintTableModel);
+        constraintPanel.add(getConstraintsButtonsPanel(),BorderLayout.NORTH);
+        constraintPanel.add(new JScrollPane(constraintTable),BorderLayout.CENTER);
+        constraintTable.getSelectionModel().setSelectionMode(
+                ListSelectionModel.SINGLE_SELECTION);
+        constraintTable.setFillsViewportHeight(true);
+        constraintTable.getTableHeader().setReorderingAllowed(false);
+        constraintTable.setPreferredScrollableViewportSize(new Dimension(DEFAULT_TABLE_WIDTH, DEFAULT_TABLE_HEIGHT));
+        // Listener for button enabled buttons state
+        constraintTable.getModel().addTableModelListener(EventHandler.create(TableModelListener.class,this,"checkActions"));
+        constraintTable.getSelectionModel().addListSelectionListener(EventHandler.create(ListSelectionListener.class,this,"checkActions"));
+        return constraintPanel;
+    }
+    private JPanel getConstraintsButtonsPanel() {
+        JPanel buttonsConstraintPanel = new JPanel(new FlowLayout());
+        actions = ConstraintTableAction.getActions();
+        for(ConstraintTableAction action : actions) {
+            action.setConstraintHolder(this);
+            buttonsConstraintPanel.add(new JButton(action));
+            action.checkState();
+        }
+        return buttonsConstraintPanel;
+    }
+
+    /**
+     * Update Buttons enable status
+     */
+    public void checkActions() {
+        for(ConstraintTableAction action : actions) {
+            action.checkState();
+        }
+    }
+    /**
+     * Constructor
+     * @param name Default field name
+     * @param type Default field type
+     * @param types Selectable types
+     */
 	public FieldEditor(String name, Type type, TypeDefinition[] types) {
-		constraintModel = new ConstraintTableModel(type);
-		CRFlowLayout flowLayout = new CRFlowLayout();
-		flowLayout.setAlignment(CRFlowLayout.LEFT);
-		setLayout(flowLayout);
+        super(new BorderLayout());
+        JPanel topInputs = new JPanel();
+		FlowLayout flowLayout = new FlowLayout(FlowLayout.CENTER);
+        topInputs.setLayout(flowLayout);
 		add(new JLabel("Name:"));
-		txtName = new JTextField(8);
+		txtName = new JTextField(DEFAULT_FIELD_NAME_CHARS);
 		txtName.setText(name);
-		add(txtName);
-		add(new JLabel("Type:"));
-		this.types = types;
+        topInputs.add(txtName);
+        topInputs.add(new JLabel("Type:"));
+		this.types = types.clone();
 		String[] typeDesc = new String[types.length];
 		for (int i = 0; i < typeDesc.length; i++) {
 			typeDesc[i] = types[i].getTypeName();
@@ -98,87 +141,9 @@ public class FieldEditor extends JPanel implements UIPanel {
 		lastSelectedType = index;
 		updateNameIfEmpty();
 		cmbTypes.addActionListener(EventHandler.create(ActionListener.class,this,"onTypeSelected"));
-		add(cmbTypes);
-		add(new CarriageReturn());
-        /*
-		ListManager constraintList = new ListManager(new ListManagerListener() {
-
-			public void removeElement(int selectedRow) {
-				constraintModel.removeElement(selectedRow);
-			}
-
-			public void modifyElement(int selectedRow) {
-				Constraint selectedConstraint = constraintModel
-						.getConstraint(selectedRow);
-				UIConstraintPanel constraintPanel = getUIPanel(
-						selectedConstraint.getConstraintCode(),
-						selectedConstraint.getConstraintHumanValue());
-				if (constraintPanel == null) {
-					JOptionPane.showMessageDialog(panel,
-							"This constraint cannot be modified.");
-				} else {
-					if (UIFactory.showDialog(constraintPanel)) {
-						constraintModel.modify(selectedRow, constraintPanel
-								.getConstraint());
-					}
-				}
-			}
-
-			public void addNewElement() {
-				int[] codes = getAvailableConstraints();
-				if (codes.length == 0) {
-					JOptionPane.showMessageDialog(panel, "All available "
-							+ "constraints are already added.");
-				} else {
-					String[] constraints = new String[codes.length];
-					String[] ids = new String[codes.length];
-					for (int i = 0; i < constraints.length; i++) {
-						constraints[i] = ConstraintFactory
-								.getConstraintName(codes[i]);
-						ids[i] = codes[i] + "";
-					}
-					ChoosePanel cp = new ChoosePanel("Select the constraint",
-							constraints, ids);
-					if (UIFactory.showDialog(cp)) {
-						int constraintCode = codes[cp.getSelectedIndex()];
-						UIConstraintPanel constraintPanel = getUIPanel(
-								constraintCode, "");
-						if (constraintPanel == null) {
-							constraintModel.add(ConstraintFactory
-									.createConstraint(constraintCode,
-                                            new byte[0]));
-						} else {
-							if (UIFactory.showDialog(constraintPanel)) {
-								constraintModel.add(constraintPanel
-										.getConstraint());
-							}
-						}
-					}
-				}
-			}
-
-			private int[] getAvailableConstraints() {
-				int[] typeConstraints = getCurrentTypeDefinition()
-						.getValidConstraints();
-				int[] filter = new int[typeConstraints.length];
-				int filterIndex = 0;
-				for (int i = 0; i < typeConstraints.length; i++) {
-					if (!constraintModel.contains(typeConstraints[i])) {
-						filter[filterIndex] = typeConstraints[i];
-						filterIndex++;
-					}
-				}
-
-				int[] ret = new int[filterIndex];
-				System.arraycopy(filter, 0, ret, 0, filterIndex);
-				return ret;
-			}
-
-		}, constraintModel);
-
-		constraintList.setPreferredSize(new Dimension(250, 100));
-		panel.add(constraintList);
-		*/
+        topInputs.add(cmbTypes);
+        add(topInputs,BorderLayout.NORTH);
+        add(getConstraintPanel(),BorderLayout.CENTER);
 	}
 
     /**
@@ -186,7 +151,7 @@ public class FieldEditor extends JPanel implements UIPanel {
      */
     public void onTypeSelected() {
         if (cmbTypes.getSelectedIndex() != lastSelectedType) {
-            if (constraintModel.getRowCount() > 0) {
+            if (constraintTableModel.getRowCount() > 0) {
                 int option = JOptionPane.showConfirmDialog(FieldEditor.this,
                         "Changing the "
                                 + "type will remove all constraints"
@@ -196,7 +161,7 @@ public class FieldEditor extends JPanel implements UIPanel {
                     cmbTypes.setSelectedIndex(lastSelectedType);
                     return;
                 } else {
-                    constraintModel.clear();
+                    constraintTableModel.clear();
                 }
             }
         }
@@ -245,7 +210,7 @@ public class FieldEditor extends JPanel implements UIPanel {
 	}
 
 	public String validateInput() {
-		if (txtName.getText().trim().length() == 0) {
+		if (txtName.getText().trim().isEmpty()) {
 			return "A field name must be specified";
 		}
 
@@ -256,14 +221,23 @@ public class FieldEditor extends JPanel implements UIPanel {
      * @return The type of the edited field
      */
 	public Type getType() {
-		Constraint[] constraints = constraintModel.list
-				.toArray(new Constraint[0]);
-		return getCurrentTypeDefinition().createType(constraints);
+        List<Constraint> constraints = constraintTableModel.getConstraints();
+        return getCurrentTypeDefinition().createType(constraints.toArray(new Constraint[constraints.size()]));
 	}
 
-	private TypeDefinition getCurrentTypeDefinition() {
+	public TypeDefinition getCurrentTypeDefinition() {
 		return types[cmbTypes.getSelectedIndex()];
 	}
+
+    @Override
+    public ConstraintTableModel getConstraintModel() {
+        return constraintTableModel;
+    }
+
+    @Override
+    public JTable getConstraintTable() {
+        return constraintTable;
+    }
 
     /**
      * @return Field name
@@ -272,118 +246,4 @@ public class FieldEditor extends JPanel implements UIPanel {
 		return txtName.getText().trim();
 	}
 
-    /**
-     * Show the input panel in order to choose the constraint parameter.
-     * @param defaultConstraint {@link Constraint} instance
-     * @return The new Constraint value, or defaultConstraint if this constraint has no parameters, null if the user cancel.
-     */
-	private static Constraint showConstraintInputPanel(Constraint defaultConstraint) {
-        int constraintCode = defaultConstraint.getConstraintCode();
-        String inputTitle = I18N.tr("Enter the {0} constraint parameter",
-                ConstraintFactory.getConstraintName(constraintCode));
-        MultiInputPanel inputPanel =new MultiInputPanel(inputTitle);
-		if (ConstraintFactory.getType(constraintCode) == Constraint.CONSTRAINT_TYPE_FIELD) {
-			return defaultConstraint;
-		} else if (ConstraintFactory.getType(constraintCode) == Constraint.CONSTRAINT_TYPE_CHOICE) {
-			String[] options = ConstraintFactory
-					.getChoiceStrings(constraintCode);
-            List<String> ids = new LinkedList<String>();
-			for(int codeId : ConstraintFactory.getChoiceCodes(constraintCode)) {
-                ids.add(Integer.toString(codeId));
-            }
-            ComboBoxChoice choice = new ComboBoxChoice(ids.toArray(new String[ids.size()]),options);
-            inputPanel.addInput(CONSTRAINT_INPUT_NAME,ConstraintFactory.getConstraintName(constraintCode),defaultConstraint.getConstraintValue(),
-                    choice);
-		} else if (ConstraintFactory.getType(constraintCode) == Constraint.CONSTRAINT_TYPE_STRING_LITERAL ||
-                ConstraintFactory.getType(constraintCode) == Constraint.CONSTRAINT_TYPE_INTEGER_LITERAL) {
-            inputPanel.addInput(CONSTRAINT_INPUT_NAME,ConstraintFactory.getConstraintName(constraintCode),
-                    defaultConstraint.getConstraintValue(),new TextBoxType());
-		} else if (constraintCode == Constraint.RASTER_TYPE) {
-			throw new UnsupportedOperationException(I18N.tr("Raster not supported"));
-		} else {
-			throw new RuntimeException("bug. Unsupported constraint type");
-		}
-        if(UIFactory.showDialog(inputPanel,true,true)) {
-            // Update the constraint value
-            return ConstraintFactory.createConstraint(defaultConstraint.getType(),inputPanel.getInput(CONSTRAINT_INPUT_NAME));
-        } else {
-            return null;
-        }
-	}
-
-	private class ConstraintTableModel extends AbstractTableModel implements
-			TableModel {
-
-		private ArrayList<Constraint> list = new ArrayList<Constraint>();
-
-		public ConstraintTableModel(Type type) {
-			if (type != null) {
-				for (Constraint constraint : type.getConstraints()) {
-					list.add(constraint);
-				}
-			}
-		}
-
-		public void clear() {
-			int top = list.size() - 1;
-			list.clear();
-			fireTableRowsDeleted(0, top);
-		}
-
-		public boolean contains(int constraintCode) {
-			for (Constraint constraint : list) {
-				if (constraint.getConstraintCode() == constraintCode) {
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		public void add(Constraint constraint) {
-			list.add(constraint);
-			fireTableRowsInserted(list.size() - 1, list.size() - 1);
-		}
-
-		public void modify(int selectedRow, Constraint constraint) {
-			list.set(selectedRow, constraint);
-			fireTableRowsUpdated(selectedRow, selectedRow);
-		}
-
-		public Constraint getConstraint(int selectedRow) {
-			return list.get(selectedRow);
-		}
-
-		public int getColumnCount() {
-			return 2;
-		}
-
-		public void removeElement(int selectedRow) {
-			list.remove(selectedRow);
-			fireTableRowsDeleted(selectedRow, selectedRow);
-		}
-
-		public int getRowCount() {
-			return list.size();
-		}
-
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			if (columnIndex == 0) {
-				return ConstraintFactory.getConstraintName(list.get(rowIndex)
-                        .getConstraintCode());
-			} else {
-				return list.get(rowIndex).getConstraintHumanValue();
-			}
-		}
-
-		@Override
-		public String getColumnName(int column) {
-			if (column == 0) {
-				return "Constraint";
-			} else {
-				return "Value";
-			}
-		}
-
-	}
 }

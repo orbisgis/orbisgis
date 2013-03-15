@@ -36,11 +36,15 @@ import org.orbisgis.view.table.TableEditor;
  * @author Nicolas Fortin
  */
 public interface TableEditorActions extends ActionFactoryService<TableEditor> {
+    //LGROUP_EDITION
     public static final String A_EDITION = "A_EDITION";
     public static final String A_SAVE = "A_SAVE";
     public static final String A_UNDO = "A_UNDO";
     public static final String A_REDO = "A_REDO";
     public static final String A_CANCEL = "A_CANCEL";
+    //LGROUP_MODIFICATION_GROUP
+    public static final String A_ADD_FIELD = "A_ADD_FIELD";
 
-    public static final String LGROUP_EDITION = "EDITION_GROUP";
+    public static final String LGROUP_EDITION = "LGROUP_EDITION";
+    public static final String LGROUP_MODIFICATION_GROUP = "LGROUP_MODIFICATION_GROUP";
 }

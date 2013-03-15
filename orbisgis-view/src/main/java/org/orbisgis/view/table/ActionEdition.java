@@ -50,6 +50,10 @@ public class ActionEdition extends AbstractAction {
     private final TableEditableElement editable;
     private final I18n i18N = I18nFactory.getI18n(ActionEdition.class);
 
+    /**
+     * Constructor
+     * @param editable Editable instance
+     */
     public ActionEdition(TableEditableElement editable) {
         putValue(ActionTools.MENU_ID, TableEditorActions.A_EDITION);
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_EDITION);
@@ -64,10 +68,10 @@ public class ActionEdition extends AbstractAction {
      */
     public final void updateLabelAndIcon() {
         if(editable.isEditing()) {
-            putValue(NAME, i18N.tr("Read only"));
+            putValue(NAME, i18N.tr("Lock edition"));
             putValue(SMALL_ICON, OrbisGISIcon.getIcon("edition/unlock"));
         } else {
-            putValue(NAME, i18N.tr("Read/Write"));
+            putValue(NAME, i18N.tr("Unlock edition"));
             putValue(SMALL_ICON, OrbisGISIcon.getIcon("edition/lock"));
         }
     }
