@@ -66,6 +66,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -606,7 +607,6 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         @Override
         public void run(ProgressMonitor pm) {
             result = getValues(pm);
-            result = result == null ? new HashSet<String>() : result;
             if(result != null){
                 RecodedLine rl;
                 if(colorConfig.isEnabled() && result.size() > 0){
@@ -629,7 +629,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
          * @param pm Used to be able to cancel the job.
          * @return The distinct values as String instances in a {@link HashSet} or null if the job has been cancelled.
          */
-        public HashSet<String> getValues(ProgressMonitor pm){
+        public HashSet<String> getValues(final ProgressMonitor pm){
             HashSet<String> ret = new HashSet<String>();
             try {
                 long rowCount=ds.getRowCount();
@@ -638,9 +638,26 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
                 double m = rowCount>0 ?(double)10/rowCount : 0;
                 int n =0;
                 int fieldIndex = ds.getFieldIndexByName(fieldName);
+                boolean moveOn = false;
+                final int warn = 100;
                 for(long i=0; i<rowCount; i++){
                     Value val = ds.getFieldValue(i, fieldIndex);
                     ret.add(val.toString());
+                    if(ret.size() == warn && !moveOn){
+                        final UIPanel cancel = new CancelPanel(warn);
+                        try{
+                            SwingUtilities.invokeAndWait(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(!UIFactory.showDialog(cancel,true, true)){
+                                        pm.setCancelled(true);
+                                    }
+                                }
+                            });
+                        } catch (Exception ie){
+                            LOGGER.warn(I18N.tr("The application has ended unexpectedly"));
+                        }
+                    }
                     if(i*m>n*10){
                         n++;
                         pm.progressTo(n);
@@ -757,6 +774,51 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
 
         @Override
         public void jobReplaced(Job job) {
+        }
+    }
+
+    /**
+     * This panel is used to let the user cancel classifications on more values than a given threshold.
+     */
+    private static class CancelPanel implements UIPanel {
+
+        private int threshold;
+
+        /**
+         * Builds a new CancelPanel
+         * @param thres The expected limit, displayed in the inner JLable.
+         */
+        public CancelPanel(int thres){
+            super();
+            threshold = thres;
+        }
+
+        @Override
+        public URL getIconURL() {
+            return UIFactory.getDefaultIcon();
+        }
+
+        @Override
+        public String getTitle() {
+            return I18N.tr("Continue ?");
+        }
+
+        @Override
+        public String validateInput() {
+            return null;
+        }
+
+        @Override
+        public Component getComponent() {
+            JPanel pan = new JPanel();
+            JLabel lab = new JLabel();
+            StringBuilder sb = new StringBuilder();
+            sb.append(I18N.tr("<html><p>The analysis seems to generate more than "));
+            sb.append(threshold);
+            sb.append(I18N.tr(" different values...</p><p>Are you sure you want to continue ?</p></html>"));
+            lab.setText(sb.toString());
+            pan.add(lab);
+            return pan;
         }
     }
 }
