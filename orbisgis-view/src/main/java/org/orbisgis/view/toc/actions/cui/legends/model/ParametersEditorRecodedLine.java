@@ -80,7 +80,7 @@ public class ParametersEditorRecodedLine extends AbstractCellEditor implements T
         if(e.getActionCommand().equals(EDIT)){
             LineParameters lp = rl.get(val);
             UniqueSymbolLine usl = new UniqueSymbolLine(lp);
-            PnlUniqueLineSE pls = new PnlUniqueLineSE();
+            PnlUniqueLineSE pls = new PnlUniqueLineSE(false);
             pls.setLegend(usl);
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 LineParameters edited = usl.getLineParameters();

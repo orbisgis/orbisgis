@@ -161,7 +161,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
      */
     private LineParameters editCanvas(CanvasSE cse, LineParameters lps){
         UniqueSymbolLine usl = new UniqueSymbolLine(lps);
-        PnlUniqueLineSE pls = new PnlUniqueLineSE();
+        PnlUniqueLineSE pls = new PnlUniqueLineSE(false);
         pls.setLegend(usl);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
             usl = (UniqueSymbolLine) pls.getLegend();

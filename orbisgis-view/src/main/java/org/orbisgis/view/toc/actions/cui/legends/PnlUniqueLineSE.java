@@ -72,6 +72,24 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          * be unique symbol (ie constant) Legends.
          */
         private UniqueSymbolLine uniqueLine;
+        private final boolean displayUom;
+
+        /**
+         * Default constructor. The UOM combo box is displayed.
+         */
+        public PnlUniqueLineSE(){
+            this(true);
+        }
+
+        /**
+         * Builds a new PnlUniqueLineSE choosing if we want to display the uom combo box.
+         * @param uom if true, the uom combo box will be displayed.
+         */
+        public PnlUniqueLineSE(boolean uom){
+            super();
+            this.displayUom = uom;
+
+        }
 
         @Override
         public Component getComponent() {
@@ -202,8 +220,10 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                         lineCheckBox.setSelected(leg instanceof ConstantPenStrokeLegend);
                 }
                 //Uom
-                jp.add(buildText(I18N.tr("Unit of measure :")));
-                jp.add(lineUom);
+                if(displayUom){
+                    jp.add(buildText(I18N.tr("Unit of measure :")));
+                    jp.add(lineUom);
+                }
                 //Width
                 jp.add(buildText(I18N.tr("Line width :")));
                 jp.add(lineWidth);
