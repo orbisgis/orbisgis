@@ -38,6 +38,7 @@ import java.beans.EventHandler;
 import java.io.*;
 import javax.swing.*;
 import javax.swing.event.CaretListener;
+import javax.swing.event.DocumentListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -90,6 +91,10 @@ public final class BshConsolePanel extends JPanel {
         private int character = 0;
         private String currentStatusMessage = "";
         private static final String BSHINITFILE = "init.bsh";
+        private DefaultAction executeAction;
+        private DefaultAction clearAction;
+        private DefaultAction saveAction;
+        private DefaultAction findAction;
         
         /**
          * Creates a console for beanshell.
@@ -205,43 +210,45 @@ public final class BshConsolePanel extends JPanel {
          */
         private void initActions() {
                 //Execute action
-                actions.addAction(new DefaultAction(BeanShellAction.A_EXECUTE,I18N.tr("Execute"),
+                executeAction = new DefaultAction(BeanShellAction.A_EXECUTE, I18N.tr("Execute"),
                         I18N.tr("Execute the java script"),
                         OrbisGISIcon.getIcon("execute"),
                         EventHandler.create(ActionListener.class, this, "onExecute"),
-                        KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK)));
+                        KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK));
+                actions.addAction(executeAction);
+
                 //Clear action
-                actions.addAction(new DefaultAction(BeanShellAction.A_CLEAR,
+                clearAction = new DefaultAction(BeanShellAction.A_CLEAR,
                         I18N.tr("Clear"),
                         I18N.tr("Erase the content of the editor"),
                         OrbisGISIcon.getIcon("erase"),
-                        EventHandler.create(ActionListener.class,this,"onClear"),
-                        null
-                       ));
+                        EventHandler.create(ActionListener.class, this, "onClear"),
+                        null);
+                actions.addAction(clearAction);
+
                 //Open action
                 actions.addAction(new DefaultAction(BeanShellAction.A_OPEN,
                         I18N.tr("Open"),
                         I18N.tr("Load a file in this editor"),
                         OrbisGISIcon.getIcon("open"),
-                        EventHandler.create(ActionListener.class,this,"onOpenFile"),
-                        KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)
-                       ));
+                        EventHandler.create(ActionListener.class, this, "onOpenFile"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)));
                 //Save
-                actions.addAction(new DefaultAction(BeanShellAction.A_SAVE,
+                saveAction = new DefaultAction(BeanShellAction.A_SAVE,
                         I18N.tr("Save"),
                         I18N.tr("Save the editor content into a file"),
                         OrbisGISIcon.getIcon("save"),
-                        EventHandler.create(ActionListener.class,this,"onSaveFile"),
-                        KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)
-                       ));
-                //Find action                
-                actions.addAction(new DefaultAction(BeanShellAction.A_SEARCH,
+                        EventHandler.create(ActionListener.class, this, "onSaveFile"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
+                actions.addAction(saveAction);
+                //Find action
+                findAction = new DefaultAction(BeanShellAction.A_SEARCH,
                         I18N.tr("Search.."),
                         I18N.tr("Search text in the document"),
                         OrbisGISIcon.getIcon("find"),
-                        EventHandler.create(ActionListener.class,this,"openFindReplaceDialog"),
-                        KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK)
-                       ).addStroke(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK)));
+                        EventHandler.create(ActionListener.class, this, "openFindReplaceDialog"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK)).addStroke(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK));
+                actions.addAction(findAction);
                                 
         }
 
@@ -308,6 +315,7 @@ public final class BshConsolePanel extends JPanel {
                 character = scriptPanel.getCaretOffsetFromLineStart();
                 setStatusMessage(currentStatusMessage);
         }
+        
         private RTextScrollPane getCenterPanel() {
                 if (centerPanel == null) {
                         initActions();
@@ -324,12 +332,14 @@ public final class BshConsolePanel extends JPanel {
                         lsf.register(scriptPanel);
                         scriptPanel.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_JAVA);
                         scriptPanel.addCaretListener(EventHandler.create(CaretListener.class,this,"onScriptPanelCaretUpdate"));
+                        scriptPanel.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this, "onUserSelectionChange"));
                         scriptPanel.clearParsers();
                         actions.setAccelerators(scriptPanel);
                         // Actions will be set on the scriptPanel PopupMenu
                         scriptPanel.getPopupMenu().addSeparator();
                         actions.registerContainer(scriptPanel.getPopupMenu());
-                        centerPanel = new RTextScrollPane(scriptPanel);
+                        centerPanel = new RTextScrollPane(scriptPanel);                        
+                        onUserSelectionChange();
                 }
                 return centerPanel;
         }
@@ -395,11 +405,10 @@ public final class BshConsolePanel extends JPanel {
         public void onExecute() {
                 try {
                         String text = scriptPanel.getText().trim();
-                        if(!text.isEmpty()) {
-                                interpreter.eval(text);
-                                infoLogger.flush();
-                                errorLogger.flush();
-                        }
+                        interpreter.eval(text);
+                        infoLogger.flush();
+                        errorLogger.flush();
+                        
                 } catch (IOException e) {
                         setStatusMessage(e.getLocalizedMessage());
                         LOGGER.error(
@@ -436,6 +445,25 @@ public final class BshConsolePanel extends JPanel {
                 }
                 findReplaceDialog.setAlwaysOnTop(true);
                 findReplaceDialog.setVisible(true);
+        }
+        
+        /**
+         * Change the status of the button when the console is empty or not.
+         */
+        public void onUserSelectionChange(){
+                String text = scriptPanel.getText().trim();
+                if (text.isEmpty()) {
+                        executeAction.setEnabled(false);
+                        clearAction.setEnabled(false);
+                        saveAction.setEnabled(false);
+                        findAction.setEnabled(false);
+                }
+                else{
+                        executeAction.setEnabled(true);
+                        clearAction.setEnabled(true);
+                        saveAction.setEnabled(true);
+                        findAction.setEnabled(true);
+                }
         }
         
         
