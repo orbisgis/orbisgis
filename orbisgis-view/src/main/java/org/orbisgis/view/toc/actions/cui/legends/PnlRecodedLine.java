@@ -102,6 +102,8 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     public final static String CREATE_CLASSIF = "Create classification";
     private SelectDistinctJob selectDistinct;
     private BackgroundListener background;
+    public final static int CELL_PREVIEW_WIDTH = CanvasSE.WIDTH/2;
+    public final static int CELL_PREVIEW_HEIGHT = CanvasSE.HEIGHT/2;
 
     @Override
     public Component getComponent() {
@@ -164,7 +166,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
             usl = (UniqueSymbolLine) pls.getLegend();
             LineParameters nlp = usl.getLineParameters();
             cse.setSymbol(usl.getSymbolizer());
-            cse.invalidate();
+            cse.imageChanged();
             return nlp;
         } else {
             return lps;
@@ -243,8 +245,8 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         TableModelRecodedLine model = new TableModelRecodedLine(legend);
         table = new JTable(model);
         table.setDefaultEditor(Object.class, null);
-        table.setRowHeight(CanvasSE.HEIGHT);
-        final int previewWidth = CanvasSE.WIDTH;
+        table.setRowHeight(CELL_PREVIEW_HEIGHT);
+        final int previewWidth = CELL_PREVIEW_WIDTH;
         TableColumn previews = table.getColumnModel().getColumn(TableModelRecodedLine.PREVIEW_COLUMN);
         previews.setWidth(previewWidth);
         previews.setMinWidth(previewWidth);

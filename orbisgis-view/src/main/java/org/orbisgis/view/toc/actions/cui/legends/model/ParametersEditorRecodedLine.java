@@ -42,7 +42,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * This editor is sued to change the values stored in a Map of type RecodedLine. It will let the user handle a
+ * This editor is used to change the values stored in a Map of type RecodedLine. It will let the user handle a
  * LineParameters instance in a dedicated UI, similar to the one used for unique symbols.
  * @author alexis
  */

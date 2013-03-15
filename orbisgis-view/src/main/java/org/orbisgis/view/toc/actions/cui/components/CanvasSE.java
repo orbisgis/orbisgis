@@ -77,26 +77,41 @@ public class CanvasSE extends JPanel {
         private MapTransform mt;
         private DataSet sample;
         private boolean displayed;
+        private int width;
+        private int height;
         BufferedImage bi = null;
         public final static int WIDTH = 126;
         public final static int HEIGHT = 70;
 
-        /**
-         * Build this as a JPanel of size WIDTH*HEIGHT.
-         */
+    /**
+     * Build this as a JPanel of size WIDTH*HEIGHT.
+     */
 	public CanvasSE(Symbolizer sym) {
+        this(sym, WIDTH, HEIGHT);
+	}
+
+    /**
+     * Builds a CanvasSE with the given width and height.
+     * @param sym the symbolizer used to draw in the panel
+     * @param w the width of the panel
+     * @param h the height of the panel
+     */
+    public CanvasSE(Symbolizer sym, int w, int h){
         super();
-        this.setSize(WIDTH, HEIGHT);
-        this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        this.setMaximumSize(new Dimension(WIDTH, HEIGHT));
+        width = w;
+        height = h;
+        this.setSize(width, height);
+        this.setPreferredSize(new Dimension(width, height));
+        this.setMaximumSize(new Dimension(width, height));
         this.setOpaque(true);
         s = sym;
         gf = new GeometryFactory();
         geom = getSampleGeometry();
         mt = new MapTransform();
-        mt.setExtent(new Envelope(0, WIDTH, 0, HEIGHT));
+        mt.setExtent(new Envelope(0, width, 0, height));
         displayed = true;
-	}
+
+    }
 
     /**
      * Force the image and the panel to be refreshed.
@@ -112,7 +127,7 @@ public class CanvasSE extends JPanel {
      */
     public BufferedImage getImage(){
         if(bi == null){
-            BufferedImage bi = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);
+            BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
             Graphics2D g2 = (Graphics2D) bi.getGraphics();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             if(sample == null){
@@ -120,7 +135,7 @@ public class CanvasSE extends JPanel {
             }
             try {
                 g2.setBackground(Color.WHITE);
-                g2.fillRect(0,0,WIDTH,HEIGHT);
+                g2.fillRect(0,0,width, height);
                 if(sample instanceof DataSource){
                     DataSource ds = (DataSource) sample;
                     if(!ds.isOpen()){
@@ -240,21 +255,21 @@ public class CanvasSE extends JPanel {
 	}
 
 	private LineString getComplexLine() {
-		int widthUnit = getWidth() / 4;
-		int heightUnit = getHeight() / 4;
+		int widthUnit = getWidth() / 8;
+		int heightUnit = getHeight() / 8;
 		return gf.createLineString(new Coordinate[] {
-				new Coordinate(widthUnit, 3 * heightUnit),
-				new Coordinate(1.5 * widthUnit, 2 * heightUnit),
-				new Coordinate(2 * widthUnit, 3 * heightUnit),
-				new Coordinate(3 * widthUnit, heightUnit) });
+				new Coordinate(widthUnit, 7 * heightUnit),
+				new Coordinate(3 * widthUnit, 4 * heightUnit),
+				new Coordinate(4 * widthUnit, 6 * heightUnit),
+				new Coordinate(7 * widthUnit, heightUnit) });
 	}
 
 	private Geometry getComplexPolygon() {
-		int widthUnit = getWidth() / 4;
-		int heightUnit = getHeight() / 4;
+		int widthUnit = getWidth() / 8;
+		int heightUnit = getHeight() / 8;
 		Coordinate[] coordsP = { new Coordinate(widthUnit, heightUnit),
-				new Coordinate(3 * widthUnit, heightUnit),
-				new Coordinate(widthUnit, 3 * heightUnit),
+				new Coordinate(7 * widthUnit, heightUnit),
+				new Coordinate(widthUnit, 7 * heightUnit),
 				new Coordinate(widthUnit, heightUnit) };
 		return gf.createPolygon(gf.createLinearRing(coordsP), null);
 	}
