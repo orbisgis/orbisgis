@@ -165,6 +165,8 @@ public final class Rule extends AbstractSymbolizerNode {
                                 symb = new AreaSymbolizer();
                                 break;
                             case Type.RASTER:
+                                symb = new RasterSymbolizer();
+                                break;
                             default:
                                 throw new UnsupportedOperationException("Can't get the dimension of this type : " + TypeFactory.getTypeName(typeCode));
                         }

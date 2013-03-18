@@ -33,8 +33,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 import ij.process.ColorProcessor;
-import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
@@ -43,12 +42,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.indexes.FullIterator;
 import org.gdms.data.stream.GeoStream;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.grap.model.GeoRaster;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.map.MapTransform;
@@ -58,6 +59,7 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.VectorSymbolizer;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
@@ -401,7 +403,7 @@ public abstract class Renderer {
                                                                 if (sds.isVectorial()) {
                                                                         this.drawVector(g2, mt, layer, pm, perm);
                                                                 } else if (sds.isRaster()) {
-                                                                        LOGGER.warn("Raster Not Yet supported => Not drawn: {0}"+layer.getName());
+                                                                        this.drawRaster(g2, mt, layer,width,height, pm, perm);
                                                                 } else {
                                                                         LOGGER.warn(I18N.tr("Layer {0} not drawn",layer.getName()));
                                                                 }
@@ -459,6 +461,103 @@ public abstract class Renderer {
                 draw(img, extent, layer, new NullProgressMonitor());
         }
 
+     /**
+     * A workarround to draw a rasterlayer This method wil be updated with the
+     * RasterSymbolizer
+     *
+     * @param g2
+     * @param mt
+     * @param layer
+     * @param width
+     * @param height
+     * @param pm
+     * @param perm
+     */
+    private void drawRaster(Graphics2D g2, MapTransform mt, ILayer layer, int width, int height, ProgressMonitor pm, DefaultRendererPermission perm) throws DriverException {
+        GraphicsConfiguration configuration = null;
+        boolean isHeadLess = GraphicsEnvironment.isHeadless();
+        if (!isHeadLess) {
+            configuration = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+        }
+        DataSource ds = layer.getDataSource();
+        long rowCount = ds.getRowCount();
+        for (int i = 0; i < rowCount; i++) {
+            GeoRaster geoRaster = ds.getRaster(i);
+            Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
+            BufferedImage layerImage;
+            if (isHeadLess) {
+                layerImage = new BufferedImage(width, height,
+                        BufferedImage.TYPE_INT_ARGB);
+            } else {
+                layerImage = configuration.createCompatibleImage(width,
+                        height, BufferedImage.TYPE_INT_ARGB);
+            }
+
+            // part or all of the GeoRaster is visible
+            Rectangle2DDouble layerPixelEnvelope = mt.toPixel(layerEnvelope);
+            Graphics2D gLayer = layerImage.createGraphics();
+
+            
+            try {
+                ColorModel cm = geoRaster.getDefaultColorModel();
+                Image dataImage = geoRaster.getImage(cm);
+                gLayer.drawImage(dataImage, (int) layerPixelEnvelope.getMinX(),
+                        (int) layerPixelEnvelope.getMinY(),
+                        (int) layerPixelEnvelope.getWidth() + 1,
+                        (int) layerPixelEnvelope.getHeight() + 1, null);
+
+            } catch (IOException ex) {
+                layerImage = createEmptyImage(width, height);
+            }
+
+            g2.drawImage(layerImage, 0, 0, null);
+        }
+    }
+    
+    /**
+     * A simple method to display an empty image
+     *
+     * @param width
+     * @param height
+     * @return
+     */
+    private BufferedImage createEmptyImage(int width, int height) {
+        final String noImage = "Image Unavailable";
+
+        if (width == 0 || height == 0) {
+            return null;
+        }
+        BufferedImage bufferedImage =
+                new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics = bufferedImage.createGraphics();
+        graphics.setBackground(Color.WHITE);
+
+        graphics.setColor(Color.WHITE);
+        graphics.fillRect(0, 0, width, height);
+        graphics.setColor(Color.BLACK);
+
+        // Create our font
+        Font font = new Font("SansSerif", Font.PLAIN, 18);
+        graphics.setFont(font);
+        FontMetrics metrics = graphics.getFontMetrics();
+
+        int length = metrics.stringWidth(noImage);
+        while (length + 6 >= width) {
+            font = font.deriveFont((float) (font.getSize2D() * 0.9)); // Scale our font
+            graphics.setFont(font);
+            metrics = graphics.getFontMetrics();
+            length = metrics.stringWidth(noImage);
+        }
+
+        int lineHeight = metrics.getHeight();
+
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics.drawString(noImage, (width - length) / 2, (height + lineHeight) / 2);
+
+        return bufferedImage;
+    }
+
         private static class DefaultRendererPermission implements RenderContext {
 
                 private Quadtree quadtree;
@@ -507,59 +606,7 @@ public abstract class Renderer {
                 }
         }
 
-        /**
-         * Method to change bands order only on the BufferedImage.
-         *
-         * @param bufferedImage
-         * @return new bufferedImage
-         */
-        public Image invertRGB(BufferedImage bufferedImage, String bands) {
+        
 
-                ColorModel colorModel = bufferedImage.getColorModel();
-
-                if (colorModel instanceof DirectColorModel) {
-                        DirectColorModel directColorModel = (DirectColorModel) colorModel;
-                        int red = directColorModel.getRedMask();
-                        int blue = directColorModel.getBlueMask();
-                        int green = directColorModel.getGreenMask();
-                        int alpha = directColorModel.getAlphaMask();
-
-                        int[] components = new int[3];
-                        String bds = bands.toLowerCase();
-                        components[0] = getComponent(bds.charAt(0), red, green, blue);
-                        components[1] = getComponent(bds.charAt(1), red, green, blue);
-                        components[2] = getComponent(bds.charAt(2), red, green, blue);
-
-                        directColorModel = new DirectColorModel(32, components[0],
-                                components[1], components[2], alpha);
-                        ColorProcessor colorProcessor = new ColorProcessor(bufferedImage);
-                        colorProcessor.setColorModel(directColorModel);
-
-                        return colorProcessor.createImage();
-                }
-                return bufferedImage;
-        }
-
-        /**
-         * Gets the component specified by the char between the int components
-         * passed as parameters in red, green blue
-         *
-         * @param rgbChar
-         * @param red
-         * @param green
-         * @param blue
-         * @return
-         */
-        private int getComponent(char rgbChar, int red, int green, int blue) {
-                if (rgbChar == 'r') {
-                        return red;
-                } else if (rgbChar == 'g') {
-                        return green;
-                } else if (rgbChar == 'b') {
-                        return blue;
-                } else {
-                        throw new IllegalArgumentException(
-                                I18N.tr("The RGB code doesn't contain RGB codes"));
-                }
-        }
+       
 }
