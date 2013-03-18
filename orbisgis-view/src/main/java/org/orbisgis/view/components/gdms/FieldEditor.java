@@ -32,14 +32,20 @@ import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.types.TypeFactory;
-import org.orbisgis.sif.CRFlowLayout;
-import org.orbisgis.sif.CarriageReturn;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
 import java.awt.BorderLayout;
@@ -201,14 +207,17 @@ public class FieldEditor extends JPanel implements UIPanel, ConstraintHolder {
 		}
 	}
 
+    @Override
 	public Component getComponent() {
 		return this;
 	}
 
+    @Override
 	public String getTitle() {
 		return "Configure type";
 	}
 
+    @Override
 	public String validateInput() {
 		if (txtName.getText().trim().isEmpty()) {
 			return "A field name must be specified";
@@ -225,6 +234,7 @@ public class FieldEditor extends JPanel implements UIPanel, ConstraintHolder {
         return getCurrentTypeDefinition().createType(constraints.toArray(new Constraint[constraints.size()]));
 	}
 
+    @Override
 	public TypeDefinition getCurrentTypeDefinition() {
 		return types[cmbTypes.getSelectedIndex()];
 	}
