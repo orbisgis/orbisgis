@@ -77,7 +77,6 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueSymbolSE.class);
         private String id;
         private CanvasSE preview;
-        private ContainerItemProperties[] strokeUoms;
 
         /**
          * Rebuild the {@code CanvasSe} instance used to display a preview of
@@ -211,52 +210,5 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
         @Override
         public void setId(String id){
                 this.id = id;
-        }
-
-        /**
-         * Gets the value contained in the {@code Uom} enum with their
-         * internationalized representation in a {@code
-         * ContainerItemProperties} array.
-         * @return
-         */
-        public ContainerItemProperties[] getUomProperties(){
-                Uom[] us = Uom.values();
-                ContainerItemProperties[] cips = new ContainerItemProperties[us.length];
-                for(int i = 0; i<us.length; i++){
-                        Uom u = us[i];
-                        ContainerItemProperties cip = new ContainerItemProperties(u.name(), u.toLocalizedString());
-                        cips[i] = cip;
-                }
-                return cips;
-        }
-
-        /**
-         * ComboBox to configure the unit of measure used to draw th stroke.
-         * @param input
-         * @return
-         */
-        public JComboBox getLineUomCombo(StrokeUom input){
-                CanvasSE prev = getPreview();
-                strokeUoms= getUomProperties();
-                String[] values = new String[strokeUoms.length];
-                for (int i = 0; i < values.length; i++) {
-                        values[i] = I18N.tr(strokeUoms[i].getLabel());
-                }
-                final JComboBox jcc = new JComboBox(values);
-                ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
-                ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateLUComboBox", "source.selectedIndex");
-                jcc.addActionListener(acl2);
-                jcc.addActionListener(acl);
-                jcc.setSelectedItem(input.getStrokeUom().toString().toUpperCase());
-                return jcc;
-        }
-
-        /**
-         * Sets the underlying graphic to use the ith element of the combobox
-         * as its well-known name. Used when changing the combobox selection.
-         * @param index
-         */
-        public void updateLUComboBox(int index){
-                ((StrokeUom)getLegend()).setStrokeUom(Uom.fromString(strokeUoms[index].getKey()));
         }
 }

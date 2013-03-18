@@ -42,7 +42,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * This editor is sued to change the values stored in a Map of type RecodedLine. It will let the user handle a
+ * This editor is used to change the values stored in a Map of type RecodedLine. It will let the user handle a
  * LineParameters instance in a dedicated UI, similar to the one used for unique symbols.
  * @author alexis
  */
@@ -80,7 +80,7 @@ public class ParametersEditorRecodedLine extends AbstractCellEditor implements T
         if(e.getActionCommand().equals(EDIT)){
             LineParameters lp = rl.get(val);
             UniqueSymbolLine usl = new UniqueSymbolLine(lp);
-            PnlUniqueLineSE pls = new PnlUniqueLineSE();
+            PnlUniqueLineSE pls = new PnlUniqueLineSE(false);
             pls.setLegend(usl);
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 LineParameters edited = usl.getLineParameters();

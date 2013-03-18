@@ -48,6 +48,10 @@ public class TableModelRecodedLine extends AbstractTableModel{
     public final static int KEY_COLUMN = 1;
     public final static int PREVIEW_COLUMN = 0;
 
+    /**
+     * Builds a new {@code TableModelRecodedLine} linker to {@code rl}.
+     * @param rl
+     */
     public TableModelRecodedLine(RecodedLine rl){
         recodedLine = rl;
     }
@@ -55,9 +59,9 @@ public class TableModelRecodedLine extends AbstractTableModel{
     @Override
     public String getColumnName(int col){
         if(col == KEY_COLUMN){
-            return I18N.tr("Key");
+            return I18N.tr("Value");
         } else if(col == PREVIEW_COLUMN){
-            return I18N.tr("preview");
+            return I18N.tr("Preview");
         }
         throw new IndexOutOfBoundsException("We did not found a column at index "+col+" !");
     }
