@@ -62,6 +62,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -113,7 +114,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         private PropertyChangeListener mapContextListener;
         private double[] values = new double[0];
         private int uiTolerance = 6;
-        private boolean floatselectionImageDirty = true;
+        private boolean selectionImageDirty = true;
         private Image selectionImage;
         private Point adjustedPoint = null;
         private Point2D worldAdjustedPoint = null;
@@ -157,7 +158,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 setTool(defaultTool);
                 this.defaultTool = defaultTool;
                 updateCursor();
-
+                mapContextListener = EventHandler.create(PropertyChangeListener.class,this,"activeLayerChanged","");
                 this.mapContext.addPropertyChangeListener(MapContext.PROP_ACTIVELAYER,mapContextListener);
 
                 mapTransform.addTransformListener(new TransformListener() {
