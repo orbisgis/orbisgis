@@ -47,6 +47,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.factory.LegendFactory;
 import org.orbisgis.sif.UIFactory;
@@ -383,12 +384,42 @@ public class LegendTree extends JPanel {
                                 }
                                 currentrw = sw.getRuleWrapper(sw.getSize() - 1);
                         }
+                        Symbolizer sym = leg.getSymbolizer();
+                        sym.setName(getUniqueName(ilp.getLegend().getLegendTypeName(),currentrw.getRule(), 0));
                         //We retrieve the index where to put it.
                         ILegendPanel sl = getSelectedLegend();
                         LegendTreeModel tm = (LegendTreeModel) tree.getModel();
                         tm.addElement(currentrw, copy, sl);
                         legendsPanel.legendAdded(copy);
                 }
+        }
+
+        /**
+         * Get a name for a Symbolizer that is not already contained in the rule.
+         * @param n The base name
+         * @param r the rule where we search
+         * @param i An int we'll try to had to reach unicity
+         * @return The unique name.
+         */
+        private String getUniqueName(String n, Rule r, int i){
+            int a = i<0 ? 0 : i;
+            String ret = n;
+            if(a > 0){
+                ret = n+" "+a;
+            }
+            boolean contained = false;
+            List<Symbolizer> symbolizerList = r.getCompositeSymbolizer().getSymbolizerList();
+            for(int p = 0; p<symbolizerList.size() && !contained; p++){
+                Symbolizer s = symbolizerList.get(p);
+                if(s.getName().equals(ret)){
+                    contained=true;
+                }
+            }
+            if(!contained){
+                return ret;
+            } else {
+                return getUniqueName(n,r,a+1);
+            }
         }
 
         private void addRule() {
