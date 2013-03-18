@@ -140,6 +140,26 @@ public class StringAnalyzerTest extends AnalyzerTest {
         }
 
         @Test
+        public void testSetFallbackRecoded() throws Exception {
+            Recode2String r2 = getRecode2String();
+            RecodedString r2d2 = new RecodedString(r2);
+            assertTrue(r2d2.getFallbackValue().equals("Road"));
+            r2d2.setFallbackValue("Route");
+            assertTrue(r2d2.getFallbackValue().equals("Route"));
+            assertTrue(r2.getFallbackValue().getValue(null).equals("Route"));
+        }
+
+        @Test
+        public void testSetFallbackRecodedLiteral() throws Exception {
+            StringLiteral sl = new StringLiteral("bonjour");
+            RecodedString rs = new RecodedString(sl);
+            assertTrue(rs.getFallbackValue().equals("bonjour"));
+            rs.setFallbackValue("Route");
+            assertTrue(rs.getFallbackValue().equals("Route"));
+            assertTrue(sl.getValue(null).equals("Route"));
+        }
+
+        @Test
         public void testStringLiteralFromRecode() throws Exception{
                 Recode2String r2 = getRecode2String();
                 RecodedString r2d2 = new RecodedString(r2);

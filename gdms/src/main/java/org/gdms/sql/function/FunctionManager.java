@@ -107,8 +107,8 @@ import org.gdms.sql.function.spatial.geometry.create.ST_MinimumRectangle;
 import org.gdms.sql.function.spatial.geometry.create.ST_OctogonalEnvelope;
 import org.gdms.sql.function.spatial.geometry.create.ST_RandomGeometry;
 import org.gdms.sql.function.spatial.geometry.create.ST_RemoveDuplicateCoordinate;
-import org.gdms.sql.function.spatial.geometry.crs.ST_CRS;
-import org.gdms.sql.function.spatial.geometry.crs.ST_SetCRS;
+import org.gdms.sql.function.spatial.geometry.crs.ST_SRID;
+import org.gdms.sql.function.spatial.geometry.crs.ST_SetSRID;
 import org.gdms.sql.function.spatial.geometry.crs.ST_Transform;
 import org.gdms.sql.function.spatial.geometry.distance.ST_FurthestPoint;
 import org.gdms.sql.function.spatial.geometry.distance.ST_LocateAlong;
@@ -164,8 +164,14 @@ import org.gdms.sql.function.spatial.geometry.properties.ST_NumGeometries;
 import org.gdms.sql.function.spatial.geometry.properties.ST_NumInteriorRings;
 import org.gdms.sql.function.spatial.geometry.properties.ST_NumPoints;
 import org.gdms.sql.function.spatial.geometry.properties.ST_X;
+import org.gdms.sql.function.spatial.geometry.properties.ST_XMax;
+import org.gdms.sql.function.spatial.geometry.properties.ST_XMin;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Y;
+import org.gdms.sql.function.spatial.geometry.properties.ST_YMax;
+import org.gdms.sql.function.spatial.geometry.properties.ST_YMin;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Z;
+import org.gdms.sql.function.spatial.geometry.properties.ST_ZMax;
+import org.gdms.sql.function.spatial.geometry.properties.ST_ZMin;
 import org.gdms.sql.function.spatial.geometry.qa.ST_InternalGapFinder;
 import org.gdms.sql.function.spatial.geometry.simplify.ST_Simplify;
 import org.gdms.sql.function.spatial.geometry.simplify.ST_SimplifyPreserveTopology;
@@ -270,6 +276,12 @@ public final class FunctionManager {
                 addFunction(ST_X.class);
                 addFunction(ST_Y.class);
                 addFunction(ST_Z.class);
+                addFunction(ST_XMin.class);
+                addFunction(ST_XMax.class);
+                addFunction(ST_YMin.class);
+                addFunction(ST_YMax.class);
+                addFunction(ST_ZMin.class);
+                addFunction(ST_ZMax.class);
                 addFunction(ST_Distance.class);
                 addFunction(ST_RingBuffer.class);
                 addFunction(ST_AddZ.class);
@@ -368,8 +380,8 @@ public final class FunctionManager {
                 addFunction(ST_PixelValue.class);
                 addFunction(ST_TIN.class);
                 addFunction(ST_PLYExporter.class);
-                addFunction(ST_SetCRS.class);
-                addFunction(ST_CRS.class);
+                addFunction(ST_SetSRID.class);
+                addFunction(ST_SRID.class);
         }
 
         /**

@@ -101,10 +101,13 @@ class RecodedReal extends AbstractAttributeLegend with RecodedLegend with Numeri
    * @param i
    * @return
    */
-  def getItemValue(i : String) : Double = parameter match {
+  def getItemValue(i : String) : java.lang.Double = parameter match {
     case c : RealLiteral => c.getValue(null)
     case a :Recode2Real =>
-      Option(a.getMapItemValue(i)).map(_.getValue(null) : Double).getOrElse(Double.NaN)
+      a.getMapItemValue(i) match {
+        case d : RealLiteral => d.getValue(null)
+        case _ => java.lang.Double.NaN
+      }
   }
 
   /**
@@ -114,6 +117,15 @@ class RecodedReal extends AbstractAttributeLegend with RecodedLegend with Numeri
   def getFallbackValue() : Double = parameter match {
     case c : RealLiteral => c.getValue(null)
     case a : Recode2Real=> a.getFallbackValue().getValue(null)
+  }
+
+  /**
+   * Sets the value that is used when no match is found for a given parameter.
+   * @param d
+   */
+  def setFallbackValue(d : Double) = parameter match {
+    case cl : RealLiteral => cl.setValue(d)
+    case rc : Recode2Real => rc.setFallbackValue(new RealLiteral(d))
   }
   
   /**
@@ -154,14 +166,13 @@ class RecodedReal extends AbstractAttributeLegend with RecodedLegend with Numeri
    * @param i The index of the item to be removed.
    */
   def  removeItem(i : Int) = parameter match {
-    case c : RealLiteral => throw new UnsupportedOperationException(
-        "You can't remove an item from a literal.")
     case a : Recode2Real =>
       a.removeMapItem(i)
       if(a.getNumMapItem == 0){
         val cl : RealLiteral = new RealLiteral(a.getFallbackValue.getValue(null))
         setParameter(cl)
       }
+    case _ =>
   }
 
   /**
@@ -169,13 +180,12 @@ class RecodedReal extends AbstractAttributeLegend with RecodedLegend with Numeri
    * @param key The key of the item to be removed.
    */
   def  removeItem(key : String) = parameter match {
-    case c : RealLiteral => throw new UnsupportedOperationException(
-        "You can't remove an item from a literal.")
     case a : Recode2Real =>
       a.removeMapItem(key)
       if(a.getNumMapItem == 0){
         val cl : RealLiteral = new RealLiteral(a.getFallbackValue.getValue(null))
         setParameter(cl)
       }
+    case _ =>
   }
 }

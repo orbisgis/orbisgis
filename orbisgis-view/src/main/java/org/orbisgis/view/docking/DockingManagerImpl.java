@@ -594,7 +594,7 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
             // Create Map of newly generated CActions in order to optimize updates checks.
             // Key: Action Menu ID
             Map<String,CAction> actionMap = new HashMap<String, CAction>(rootActions.size());
-            List<String> generatedId = new LinkedList();
+            Set<String> generatedId = new LinkedHashSet<String>();
             for(CAction action : rootActions) {
                 if(action instanceof CActionHolder) {
                     String key = ActionTools.getMenuId(((CActionHolder) action).getAction());

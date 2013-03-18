@@ -65,4 +65,15 @@ class RecodedDash(s : StringParameter) extends RecodedString(s) {
       }
     } else throw new UnsupportedOperationException("The given key is not valid.")
 
+  /**
+   * Sets the value that is used when no match is found for a given parameter.
+   * @param s
+   */
+  override def setFallbackValue(s : String) = if(ParameterUtil.validateDashArray(s)){
+    parameter match {
+      case cl : StringLiteral => cl.setValue(s)
+      case rc : Recode2String => rc.setFallbackValue(new StringLiteral(s))
+    }
+  } else throw new UnsupportedOperationException("The given key is not valid.")
+
 }

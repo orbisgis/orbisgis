@@ -130,6 +130,15 @@ class RecodedColor extends AbstractAttributeLegend with RecodedLegend {
   }
 
   /**
+   * Sets the value that is used when no match is found for a given parameter.
+   * @param c
+   */
+  def setFallbackValue(c : Color) = parameter match {
+    case cl : ColorLiteral => cl.setColor(c)
+    case rc : Recode2Color => rc.setFallbackValue(new ColorLiteral(c))
+  }
+
+  /**
    * Gets the ith key of the inner {@code Recode}.
    * @param i
    * @return
@@ -167,14 +176,13 @@ class RecodedColor extends AbstractAttributeLegend with RecodedLegend {
    * @param i
    */
   def  removeItem(i : Int) = parameter match {
-    case c : ColorLiteral => throw new UnsupportedOperationException(
-        "You can't remove an item from a literal.")
     case a : Recode2Color =>
       a.removeMapItem(i)
       if(a.getNumMapItem == 0){
         val cl : ColorLiteral = new ColorLiteral(a.getFallbackValue.getColor(null))
         setParameter(cl)
       }
+    case _ =>
   }
 
   /**
@@ -182,14 +190,13 @@ class RecodedColor extends AbstractAttributeLegend with RecodedLegend {
    * @param key
    */
   def  removeItem(key : String) = parameter match {
-    case c : ColorLiteral => throw new UnsupportedOperationException(
-        "You can't remove an item from a literal.")
     case a : Recode2Color =>
       a.removeMapItem(key)
       if(a.getNumMapItem == 0){
         val cl : ColorLiteral = new ColorLiteral(a.getFallbackValue.getColor(null))
         setParameter(cl)
       }
+    case _ =>
   }
 
 

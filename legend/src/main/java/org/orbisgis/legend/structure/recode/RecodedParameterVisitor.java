@@ -28,11 +28,13 @@
  */
 package org.orbisgis.legend.structure.recode;
 
+import org.orbisgis.legend.structure.parameter.ParameterVisitor;
+
 /**
  * This visitor is dedicated to the processing of {@link RecodedLegend} instances.
  * @author alexis
  */
-public interface RecodedParameterVisitor {
+public interface RecodedParameterVisitor extends ParameterVisitor<String>{
 
     /**
      * Visit the given {@link RecodedLegend}. It's the intelligent part of the visitor implementation.

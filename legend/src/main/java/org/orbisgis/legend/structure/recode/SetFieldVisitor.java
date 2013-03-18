@@ -42,10 +42,7 @@ public class SetFieldVisitor implements RecodedParameterVisitor {
      * @throws IllegalArgumentException if {@code n== null || n.isEmpty()}
      */
     public SetFieldVisitor(String n){
-        if(n== null || n.isEmpty()){
-            throw new IllegalArgumentException("The field name must not be empty or null !");
-        }
-        name = n;
+        name = n == null ? "" : n;
     }
 
     @Override

@@ -71,7 +71,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * for unique symbols.
  * @author Alexis Guéganno
  */
-public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel, UIPanel {
+public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements ILegendPanel, UIPanel {
 
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlUniqueSymbolSE.class);
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueSymbolSE.class);
@@ -87,7 +87,7 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                 Legend leg = getLegend();
                 if(leg != null){
                         preview= new CanvasSE(leg.getSymbolizer());
-                        preview.repaint();
+                        preview.imageChanged();
                 }
         }
 
@@ -114,13 +114,7 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
 
         /**
          * Retrieve a spinner with the wanted listener.
-         * @param min
-         *      The minimum value authorized in this spinner.
-         * @param max
-         *      The maximum value authorized in this spinner.
-         * @param inc
-         *      The value that will be added (or substracted) when using a
-         *      button of the spinner.
+         * @param cps The stroke that will be configured with the spinner.
          * @return
          *      The wanted {@code JNumericSpinner}.
          */
@@ -131,7 +125,7 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                 jns.setValue(cps.getLineWidth());
                 jns.setMaximumSize(new Dimension(60,30));
                 jns.setPreferredSize(new Dimension(60,30));
-                ChangeListener cl2 = EventHandler.create(ChangeListener.class, preview, "repaint");
+                ChangeListener cl2 = EventHandler.create(ChangeListener.class, preview, "imageChanged");
                 jns.addChangeListener(cl2);
                 return jns;
         }
@@ -149,14 +143,14 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                 jns.setValue(cps.getOpacity());
                 jns.setMaximumSize(new Dimension(60,30));
                 jns.setPreferredSize(new Dimension(60,30));
-                ChangeListener cl2 = EventHandler.create(ChangeListener.class, preview, "repaint");
+                ChangeListener cl2 = EventHandler.create(ChangeListener.class, preview, "imageChanged");
                 jns.addChangeListener(cl2);
                 return jns;
         }
 
         /**
          * Get a {@code TextField} instance linked to the given parameter.
-         * @param s
+         * @param cps
          *      The parameter we want to configure with our panel
          * @return
          *      A {@code JTextField} embedded in a {@code JPanel}.
@@ -184,7 +178,7 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                         }
                 };
                 jrf.addFocusListener(fl);
-                FocusListener prev = EventHandler.create(FocusListener.class, preview, "repaint");
+                FocusListener prev = EventHandler.create(FocusListener.class, preview, "imageChanged");
                 jrf.addFocusListener(prev);
                 jrf.setText(cps.getDashArray());
                 cont.add(jrf);
@@ -199,38 +193,15 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
          * @return
          */
         public JPanel getColorField(final ConstantSolidFill c){
-                JLabel lblFill = new JLabel();
-                MouseListener ma = EventHandler.create(MouseListener.class,this,"chooseFillColor","","mouseClicked");
-                lblFill.addMouseListener(ma);
+                JLabel lblFill = getFilledLabel(c.getColor());
                 PropertyChangeListener pcl = EventHandler.create(PropertyChangeListener.class,c,"color","newValue");
-                PropertyChangeListener pcl2 = EventHandler.create(PropertyChangeListener.class, preview, "repaint");
+                PropertyChangeListener pcl2 = EventHandler.create(PropertyChangeListener.class, preview, "imageChanged");
                 lblFill.addPropertyChangeListener("background", pcl);
                 lblFill.addPropertyChangeListener("background", pcl2);
-                lblFill.setBackground(c.getColor());
-                lblFill.setBorder(BorderFactory.createLineBorder(Color.black));
-                lblFill.setPreferredSize(new Dimension(40, 20));
-                lblFill.setMaximumSize(new Dimension(40, 20));
-                lblFill.setOpaque(true);
                 JPanel jp = new JPanel();
                 jp.add(lblFill);
                 return jp;
         }
-
-        /**
-         * This method will let the user choose a color that will be set as the
-         * background of the source of the event.
-         * @param e
-         */
-	public void chooseFillColor(MouseEvent e) {
-                Component source = (Component)e.getSource();
-                if(source.isEnabled()){
-                        ColorPicker picker = new ColorPicker();
-                        if (UIFactory.showDialog(picker)) {
-                                Color color = picker.getColor();
-                                source.setBackground(color);
-                        }
-                }
-	}
 
         @Override
         public String getId(){
@@ -261,7 +232,7 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
 
         /**
          * ComboBox to configure the unit of measure used to draw th stroke.
-         * @param line
+         * @param input
          * @return
          */
         public JComboBox getLineUomCombo(StrokeUom input){
@@ -272,7 +243,7 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                         values[i] = I18N.tr(strokeUoms[i].getLabel());
                 }
                 final JComboBox jcc = new JComboBox(values);
-                ActionListener acl = EventHandler.create(ActionListener.class, prev, "repaint");
+                ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateLUComboBox", "source.selectedIndex");
                 jcc.addActionListener(acl2);
                 jcc.addActionListener(acl);
@@ -287,29 +258,5 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
          */
         public void updateLUComboBox(int index){
                 ((StrokeUom)getLegend()).setStrokeUom(Uom.fromString(strokeUoms[index].getKey()));
-        }
-
-        /**
-         * Initialiaze a {@code JComboBo} whose values are set according to the
-         * numeric fields of {@code ds}.
-         * @param ds
-         * @return
-         */
-        public JComboBox getNumericFieldCombo(DataSource ds){
-                JComboBox combo = new JComboBox();
-                if(ds != null){
-                        try {
-                                Metadata md = ds.getMetadata();
-                                int fc = md.getFieldCount();
-                                for (int i = 0; i < fc; i++) {
-                                        if(TypeFactory.isNumerical(md.getFieldType(i).getTypeCode())){
-                                                combo.addItem(md.getFieldName(i));
-                                        }
-                                }
-                        } catch (DriverException ex) {
-                                LOGGER.error(ex);
-                        }
-                }
-                return combo;
         }
 }

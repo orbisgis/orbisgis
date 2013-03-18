@@ -34,13 +34,11 @@
 package org.gdms.sql.function.spatial.geometry.crs;
 
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.crs.SpatialReferenceSystem;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.GeometryValue;
 import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.BasicFunctionSignature;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
@@ -54,31 +52,51 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 
 /**
- * Re-project a geometry from a CRS to new CRS. Only authority codes are allowed, like "EPSG:4326"
+ * Re-project a geometry from a CRS to new CRS. 
+ * Only authority codes are allowed, like "EPSG:4326"
  * or "IGNF:WGS84".
  */
 public final class ST_Transform extends AbstractScalarSpatialFunction {
 
         private SpatialReferenceSystem spatialReferenceSystem;
-
+        private boolean doNotTransform = false;
+        private boolean isVisited = false;
+        
         @Override
         public Value evaluate(DataSourceFactory dsf, Value... values) throws FunctionException {
                 GeometryValue geomVal = (GeometryValue) values[0];
                 try {
-                if (spatialReferenceSystem == null) {
-                        CoordinateReferenceSystem inputCRS;
-                        CoordinateReferenceSystem targetCRS;                       
-                        if (values.length == 3) {
-                                inputCRS = CRS.decode(values[1].getAsString());
-                                targetCRS = CRS.decode(values[2].getAsString());
-                        } else {
-                                inputCRS = geomVal.getCRS();
-                                targetCRS = CRS.decode(values[1].getAsString());
+                        if (spatialReferenceSystem == null || isVisited !=true) {
+                                CoordinateReferenceSystem inputCRS = geomVal.getCRS();
+                                CoordinateReferenceSystem targetCRS;
+                                if (inputCRS == null) {
+                                        throw new FunctionException("The input crs cannot be null");
+                                } else {
+                                        if (values[1].getType() == Type.INT) {
+                                                int outPutEPSG = values[1].getAsInt();
+                                                if (outPutEPSG == -1) {
+                                                        throw new FunctionException(" -1 is an invalid target SRID");
+                                                } else {
+                                                        targetCRS = CRS.decode("epsg:" + outPutEPSG);
+                                                }
+                                        } else {
+                                                targetCRS = CRS.decode(values[1].getAsString());
+                                        }
+
+                                        if (inputCRS.equals(targetCRS)) {
+                                                doNotTransform = true;                                                
+                                        } else {
+                                                spatialReferenceSystem = new SpatialReferenceSystem(inputCRS, targetCRS);
+                                        }
+                                }
+                                isVisited=true;
+                        }
+                        if (doNotTransform == false) {
+                                return spatialReferenceSystem.transform(geomVal);
                         }
                         
-                        spatialReferenceSystem = new SpatialReferenceSystem(inputCRS, targetCRS);
-                }                
-                        return spatialReferenceSystem.transform(geomVal);
+                        return geomVal;
+               
                 } catch (NoSuchAuthorityCodeException ex) {
                         throw  new FunctionException("No such authority code", ex);
                 } catch (FactoryException ex) {
@@ -103,16 +121,16 @@ public final class ST_Transform extends AbstractScalarSpatialFunction {
 
         @Override
         public String getSqlOrder() {
-                return "SELECT ST_TRANSFORM(the_geom, [sourceCRSCode, ] targetCRSCode) from myTable";
+                return "SELECT ST_TRANSFORM(the_geom,  targetCRSCode [or 'EPSG:4326']) from myTable";
         }
-
+ 
         @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
                                 new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY,
                                 ScalarArgument.STRING),
                                 new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY,
-                                ScalarArgument.STRING, ScalarArgument.STRING)
+                                ScalarArgument.INT)
                         };
         }
 }

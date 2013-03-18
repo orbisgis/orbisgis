@@ -28,11 +28,12 @@
  */
 package org.orbisgis.legend.thematic.recode;
 
-import org.orbisgis.legend.structure.recode.*;
-import org.orbisgis.legend.thematic.SymbolizerLegend;
-
-import java.util.Set;
-import java.util.SortedSet;
+import org.orbisgis.legend.structure.parameter.ParameterVisitor;
+import org.orbisgis.legend.structure.recode.RecodedLegend;
+import org.orbisgis.legend.structure.recode.RecodedLegendStructure;
+import org.orbisgis.legend.structure.recode.RecodedParameterVisitor;
+import org.orbisgis.legend.thematic.SymbolParameters;
+import org.orbisgis.legend.thematic.map.MappedLegend;
 
 /**
  * Common base for all the legends describing unique value analysis. It provides useful method to globally manage
@@ -42,7 +43,12 @@ import java.util.SortedSet;
  * </p>
  * @author alexis
  */
-public abstract class AbstractRecodedLegend extends SymbolizerLegend implements RecodedLegendStructure {
+public abstract class AbstractRecodedLegend<U extends SymbolParameters> extends MappedLegend<String,U> implements RecodedLegendStructure {
+
+    @Override
+    public void applyGlobalVisitor(ParameterVisitor pv){
+        applyGlobalVisitor((RecodedParameterVisitor)pv);
+    }
 
     /**
      * Apply the given visitor to all the RecodedLegend that are used in this {@code AbstractRecodedLegend}.
@@ -55,21 +61,19 @@ public abstract class AbstractRecodedLegend extends SymbolizerLegend implements 
     }
 
     /**
-     * Use {@code field} as the field name on which the analysis will be made.
-     * @param field The new field name.
+     * Search in this recoded legend for a key that is not already used, based on the {@code String} given in argument
+     * @param orig The original {@code String}
+     * @return base+n if base is empty or already in use, where n is the smaller positive integer so that base+n is not
+     *         an already used key. base if it is not already a key of this map.
      */
-    public void setAnalysisField(String field) {
-        SetFieldVisitor sfv = new SetFieldVisitor(field);
-        applyGlobalVisitor(sfv);
-    }
-
-    /**
-     * Gets the keys currently used in the analysis.
-     * @return The keys used in a Set of String.
-     */
-    public SortedSet<String> getKeys() {
-        KeysRetriever kr = new KeysRetriever();
-        applyGlobalVisitor(kr);
-        return kr.getKeys();
+    public String getNotUsedKey(String orig){
+        String base = orig == null ? "" : orig;
+        String s = base;
+        int n = 0;
+        while(s.isEmpty() || containsKey(s)){
+            s = base + n;
+            n++;
+        }
+        return s;
     }
 }

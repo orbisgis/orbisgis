@@ -121,6 +121,15 @@ class RecodedString extends AbstractAttributeLegend with RecodedLegend {
   }
 
   /**
+   * Sets the value that is used when no match is found for a given parameter.
+   * @param s
+   */
+  def setFallbackValue(s : String) = parameter match {
+    case cl : StringLiteral => cl.setValue(s)
+    case rc : Recode2String => rc.setFallbackValue(new StringLiteral(s))
+  }
+
+  /**
    * Gets the Double value, if any, associated to {@code key} in the inner {@code
    * Recode}.
    * @param i
@@ -129,7 +138,8 @@ class RecodedString extends AbstractAttributeLegend with RecodedLegend {
   def getItemValue(i : String) : String = parameter match {
     case c : StringLiteral => c.getValue(null)
     case a :Recode2String =>
-      a.getMapItemValue(i).getValue(null)
+      val sp : StringParameter = a.getMapItemValue(i)
+      if(sp == null) null else sp.getValue(null);
   }
   /**
    * Gets the ith key of the inner {@code Recode}.
@@ -169,13 +179,12 @@ class RecodedString extends AbstractAttributeLegend with RecodedLegend {
    * @param i
    */
   def  removeItem(i : Int) = parameter match {
-    case c : StringLiteral => throw new UnsupportedOperationException(
-        "You can't remove an item from a literal.")
     case a : Recode2String =>
       a.removeMapItem(i)
       if(a.getNumMapItem == 0){
         setParameter(new StringLiteral(a.getFallbackValue.getValue(null)))
       }
+    case _ =>
   }
 
   /**
@@ -183,12 +192,11 @@ class RecodedString extends AbstractAttributeLegend with RecodedLegend {
    * @param key
    */
   def  removeItem(key : String) = parameter match {
-    case c : StringLiteral => throw new UnsupportedOperationException(
-        "You can't remove an item from a literal.")
     case a : Recode2String =>
       a.removeMapItem(key)
       if(a.getNumMapItem == 0){
         setParameter(new StringLiteral(a.getFallbackValue.getValue(null)))
       }
+    case _ =>
   }
 }
