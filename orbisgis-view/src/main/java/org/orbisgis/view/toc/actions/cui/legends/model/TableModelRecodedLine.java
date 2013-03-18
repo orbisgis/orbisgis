@@ -55,9 +55,9 @@ public class TableModelRecodedLine extends AbstractTableModel{
     @Override
     public String getColumnName(int col){
         if(col == KEY_COLUMN){
-            return I18N.tr("Key");
+            return I18N.tr("Value");
         } else if(col == PREVIEW_COLUMN){
-            return I18N.tr("preview");
+            return I18N.tr("Preview");
         }
         throw new IndexOutOfBoundsException("We did not found a column at index "+col+" !");
     }
