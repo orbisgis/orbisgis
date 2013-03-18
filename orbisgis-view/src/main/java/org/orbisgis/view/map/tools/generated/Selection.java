@@ -29,64 +29,40 @@
 package org.orbisgis.view.map.tools.generated;
 
 import java.awt.Graphics;
-import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.*;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
 
-public abstract class Selection implements Automaton {
-        protected static final I18n I18N = I18nFactory.getI18n(Selection.class);
-	private static Logger logger = Logger.getLogger(Selection.class);
+public abstract class Selection extends AbstractAutomaton {
 
-	private Status status = Status.STANDBY;
-
-	private MapContext ec;
-
-	private ToolManager tm;
-
-        @Override
+    @Override
 	public String[] getTransitionLabels() {
 		return new String[]{};
 	}
 
-        @Override
+    @Override
 	public Code[] getTransitionCodes() {
 		return new Code[]{};
 	}
 
         @Override
-	public void init(MapContext ec, ToolManager tm) throws TransitionException,
-			FinishedAutomatonException {
-		logger.info("status: " + status);
-		this.ec = ec;
-		this.tm = tm;
-		status = Status.STANDBY;
-		transitionTo_Standby(ec, tm);
-		if (isFinished(status)) {
-			throw new FinishedAutomatonException();
-		}
-	}
-
-        @Override
 	public void transition(Code code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
-		logger.info("transition code: " + code);
+                if (Code.ESC == code) {
+                    status = Status.STANDBY;
+                    transitionTo_Standby(mc, tm);
+                    if (isFinished(status)) {
+                        throw new FinishedAutomatonException();
+                    }
+                }
                 Status preStatus;
                 switch(status){
                         case STANDBY :
-                                if (Code.POINT.equals(code)) {
+                                if (Code.POINT == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.ONE_POINT;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_OnePoint(ec, tm);
+                                                transitionTo_OnePoint(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -102,12 +78,7 @@ public abstract class Selection implements Automaton {
                                                 preStatus = status;
                                                 try {
                                                         status = Status.SELECTION;
-                                                        logger.info("status: " + status);
-                                                        double[] v = tm.getValues();
-                                                        for (int i = 0; i < v.length; i++) {
-                                                                logger.info("value: " + v[i]);
-                                                        }
-                                                        transitionTo_Selection(ec, tm);
+                                                        transitionTo_Selection(mc, tm);
                                                         if (isFinished(status)) {
                                                                 throw new FinishedAutomatonException();
                                                         }
@@ -120,12 +91,7 @@ public abstract class Selection implements Automaton {
                                                 preStatus = status;
                                                 try {
                                                         status = Status.ONE_POINT_LEFT;
-                                                        logger.info("status: " + status);
-                                                        double[] v = tm.getValues();
-                                                        for (int i = 0; i < v.length; i++) {
-                                                                logger.info("value: " + v[i]);
-                                                        }
-                                                        transitionTo_OnePointLeft(ec, tm);
+                                                        transitionTo_OnePointLeft(mc, tm);
                                                         if (isFinished(status)) {
                                                                 throw new FinishedAutomatonException();
                                                         }
@@ -138,12 +104,7 @@ public abstract class Selection implements Automaton {
                                                 preStatus = status;
                                                 try {
                                                         status = Status.STANDBY;
-                                                        logger.info("status: " + status);
-                                                        double[] v = tm.getValues();
-                                                        for (int i = 0; i < v.length; i++) {
-                                                                logger.info("value: " + v[i]);
-                                                        }
-                                                        transitionTo_Standby(ec, tm);
+                                                        transitionTo_Standby(mc, tm);
                                                         if (isFinished(status)) {
                                                                 throw new FinishedAutomatonException();
                                                         }
@@ -155,16 +116,11 @@ public abstract class Selection implements Automaton {
                                 }
                                 break;
                         case ONE_POINT_LEFT :
-                                if (Code.POINT.equals(code)) {
+                                if (Code.POINT == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.TWO_POINTS;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_TwoPoints(ec, tm);
+                                                transitionTo_TwoPoints(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -175,16 +131,11 @@ public abstract class Selection implements Automaton {
                                 }
                                 break;
                         case TWO_POINTS :
-                                if (Code.SELECTION.equals(code)) {
+                                if (Code.SELECTION == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.SELECTION;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_Selection(ec, tm);
+                                                transitionTo_Selection(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -192,16 +143,11 @@ public abstract class Selection implements Automaton {
                                                 status = preStatus;
                                                 throw e;
                                         }
-                                } else if (Code.NO_SELECTION.equals(code)) {
+                                } else if (Code.NO_SELECTION == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.STANDBY;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_Standby(ec, tm);
+                                                transitionTo_Standby(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -212,16 +158,11 @@ public abstract class Selection implements Automaton {
                                 }
                                 break;
                         case SELECTION :
-                                if (Code.POINT.equals(code)) {
+                                if (Code.POINT == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.POINT_WITH_SELECTION;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_PointWithSelection(ec, tm);
+                                                transitionTo_PointWithSelection(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -233,16 +174,11 @@ public abstract class Selection implements Automaton {
                                 break;
                         case POINT_WITH_SELECTION :
 
-                                if (Code.IN_HANDLER.equals(code)) {
+                                if (Code.IN_HANDLER == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.MOVEMENT;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_Movement(ec, tm);
+                                                transitionTo_Movement(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -250,16 +186,11 @@ public abstract class Selection implements Automaton {
                                                 status = preStatus;
                                                 throw e;
                                         }
-                                } else if (Code.OUT_HANDLER.equals(code)) {
+                                } else if (Code.OUT_HANDLER == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.ONE_POINT;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_OnePoint(ec, tm);
+                                                transitionTo_OnePoint(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -270,16 +201,11 @@ public abstract class Selection implements Automaton {
                                 }
                                 break;
                         case MOVEMENT :
-                                if (Code.POINT.equals(code)) {
+                                if (Code.POINT == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.MAKE_MOVE;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_MakeMove(ec, tm);
+                                                transitionTo_MakeMove(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -290,16 +216,11 @@ public abstract class Selection implements Automaton {
                                 }
                                 break;
                         case MAKE_MOVE :
-                                if (Code.EMPTY.equals(code)) {
+                                if (Code.EMPTY == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.SELECTION;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_Selection(ec, tm);
+                                                transitionTo_Selection(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -310,16 +231,7 @@ public abstract class Selection implements Automaton {
                                 }
                                 break;
                         default :
-                                if (Code.ESC.equals(code)) {
-                                        status = Status.STANDBY;
-                                        transitionTo_Standby(ec, tm);
-                                        if (isFinished(status)) {
-                                                throw new FinishedAutomatonException();
-                                        }
-                                } else {
-                                        throw new NoSuchTransitionException(code.toString());
-                                }
-
+                                throw new NoSuchTransitionException(code.toString());
                 }
 
 	}
@@ -344,28 +256,28 @@ public abstract class Selection implements Automaton {
 	public void draw(Graphics g) throws DrawingException {
                 switch(status){
                         case STANDBY :
-                                drawIn_Standby(g, ec, tm);
+                                drawIn_Standby(g, mc, tm);
                                 break;
                         case ONE_POINT:
-                                drawIn_OnePoint(g, ec, tm);
+                                drawIn_OnePoint(g, mc, tm);
                                 break;
                         case ONE_POINT_LEFT :
-                                drawIn_OnePointLeft(g, ec, tm);
+                                drawIn_OnePointLeft(g, mc, tm);
                                 break;
                         case TWO_POINTS :
-                                drawIn_TwoPoints(g, ec, tm);
+                                drawIn_TwoPoints(g, mc, tm);
                                 break;
                         case SELECTION :
-                                drawIn_Selection(g, ec, tm);
+                                drawIn_Selection(g, mc, tm);
                                 break;
                         case POINT_WITH_SELECTION :
-                                drawIn_PointWithSelection(g, ec, tm);
+                                drawIn_PointWithSelection(g, mc, tm);
                                 break;
                         case MOVEMENT :
-                                drawIn_Movement(g, ec, tm);
+                                drawIn_Movement(g, mc, tm);
                                 break;
                         case MAKE_MOVE :
-                                drawIn_MakeMove(g, ec, tm);
+                                drawIn_MakeMove(g, mc, tm);
                                 break;
 		}
 	}
@@ -419,63 +331,37 @@ public abstract class Selection implements Automaton {
 	public abstract void drawIn_MakeMove(Graphics g, MapContext vc,
 			ToolManager tm) throws DrawingException;
 
-	protected void setStatus(Status status) throws NoSuchTransitionException {
-		this.status = status;
-	}
-
-	public String getStatus() {
-		return status.toString();
-	}
-
-        @Override
-	public String getName() {
-		return Status.SELECTION.toString();
-	}
 
 	public String getMessage() {
                 switch(status){
                         case STANDBY :
-                                return I18N.tr("Select a geometry or draw a selection rectangle");
+                                return i18n.tr("Select a geometry or draw a selection rectangle");
                         case ONE_POINT_LEFT:
-                                return I18N.tr("Select the second point");
+                                return i18n.tr("Select the second point");
                         case SELECTION :
-                                return I18N.tr("Click a handler to move it or select another geometry");
+                                return i18n.tr("Click a handler to move it or select another geometry");
                         case MOVEMENT:
-                                return I18N.tr("Place the handler in its new position");
+                                return i18n.tr("Place the handler in its new position");
                         case MAKE_MOVE :
                         case TWO_POINTS :
                         case POINT_WITH_SELECTION :
                         case ONE_POINT :
                                 return "";
                         default :
-                                throw new RuntimeException(I18N.tr("Can't find the status of this tool."));
+                                throw new RuntimeException(i18n.tr("Can't find the status of this tool."));
                 }
 	}
 
-	public String getConsoleCommand() {
-		return "select";
-	}
-
-        @Override
+    @Override
 	public String getTooltip() {
-		return I18N.tr("Select a feature");
+		return i18n.tr("Select a feature");
 	}
 
-        @Override
-	public ImageIcon getCursor() {
-        	return null;
-	}
 
         @Override
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
-	}
-
-        @Override
-	public java.awt.Point getHotSpotOffset() {
-		return new java.awt.Point(8, 8);
-
 	}
 
 }

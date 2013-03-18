@@ -54,6 +54,7 @@ import org.orbisgis.core.renderer.se.common.Description;
 public class LayerModelTest extends AbstractTest {
 
 	private DataSourceFactory dsf = new DataSourceFactory();
+    private MapContext mc = new OwsMapContext();
 	private DataSource dummy;
 	private DataSource dummy2;
 	private DataSource dummy3;
@@ -79,10 +80,10 @@ public class LayerModelTest extends AbstractTest {
 
         @Test
 	public void testTreeExploring() throws Exception {
-		ILayer vl = getDataManager().createLayer((DataSource) dummy);
-		ILayer rl = getDataManager().createLayer("my tiff",
-				new File("src/test/resources/data/ace.tiff"));
-		ILayer lc = getDataManager().createLayerCollection("my data");
+		ILayer vl = mc.createLayer((DataSource) dummy);
+		ILayer rl = mc.createLayer("my tiff",
+                getDataManager().getDataSource(new File("src/test/resources/data/ace.tiff").toURI()));
+		ILayer lc = mc.createLayerCollection("my data");
 		lc.addLayer(vl);
 		lc.addLayer(rl);
 
@@ -104,11 +105,11 @@ public class LayerModelTest extends AbstractTest {
         @Test
 	public void testLayerEvents() throws Exception {
 		TestLayerListener listener = new TestLayerListener();
-		ILayer vl = getDataManager().createLayer((DataSource) dummy);
-		ILayer lc = getDataManager().createLayerCollection("root");
+		ILayer vl = mc.createLayer((DataSource) dummy);
+		ILayer lc = mc.createLayerCollection("root");
 		vl.addLayerListener(listener);
 		lc.addLayerListener(listener);
-		ILayer vl1 = getDataManager().createLayer((DataSource) dummy);
+		ILayer vl1 = mc.createLayer((DataSource) dummy);
 		lc.addLayer(vl1);
 		assertTrue(listener.la == 1);
 		lc.setName("new name");
@@ -141,8 +142,8 @@ public class LayerModelTest extends AbstractTest {
 				return false;
 			}
 		};
-		ILayer vl = getDataManager().createLayer((DataSource) dummy);
-		ILayer lc = getDataManager().createLayerCollection("root");
+		ILayer vl = mc.createLayer((DataSource) dummy);
+		ILayer lc = mc.createLayerCollection("root");
 		lc.addLayer(vl);
 		lc.addLayerListener(listener);
 		assertTrue(lc.remove(vl) == null);
@@ -158,12 +159,12 @@ public class LayerModelTest extends AbstractTest {
 		sourceManager.register("vector1", new File("/tmp/1.shp"));
 		sourceManager.register("vector2", new File("/tmp/2.shp"));
 		sourceManager.register("vector3", new File("/tmp/3.shp"));
-		ILayer lc1 = getDataManager().createLayerCollection("firstLevel");
-		ILayer lc2 = getDataManager().createLayerCollection("secondLevel");
-		ILayer lc3 = getDataManager().createLayerCollection("thirdLevel");
-		ILayer vl1 = getDataManager().createLayer(dummy);
-		ILayer vl2 = getDataManager().createLayer(dummy2);
-		ILayer vl3 = getDataManager().createLayer(dummy3);
+		ILayer lc1 = mc.createLayerCollection("firstLevel");
+		ILayer lc2 = mc.createLayerCollection("secondLevel");
+		ILayer lc3 = mc.createLayerCollection("thirdLevel");
+		ILayer vl1 = mc.createLayer(dummy);
+		ILayer vl2 = mc.createLayer(dummy2);
+		ILayer vl3 = mc.createLayer(dummy3);
 		lc1.addLayer(vl1);
 		lc2.addLayer(vl2);
 		lc1.addLayer(lc2);
@@ -183,9 +184,9 @@ public class LayerModelTest extends AbstractTest {
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager.register("mySource", new File(
 				"src/test/resources/data/bv_sap.shp"));
-		ILayer lc = getDataManager().createLayerCollection("firstLevel");
-		ILayer vl1 = getDataManager().createLayer("mySource");
-		ILayer vl2 = getDataManager().createLayer("mySource");
+		ILayer lc = mc.createLayerCollection("firstLevel");
+		ILayer vl1 = mc.createLayer(getDataManager().getDataSource("mySource"));
+		ILayer vl2 = mc.createLayer(getDataManager().getDataSource("mySource"));
 		lc.addLayer(vl1);
 		lc.addLayer(vl2);
 		assertTrue(!vl1.getName().equals(vl2.getName()));
@@ -194,10 +195,10 @@ public class LayerModelTest extends AbstractTest {
 
         @Test
 	public void testAddToChild() throws Exception {
-		ILayer lc1 = getDataManager().createLayerCollection("firstLevel");
-		ILayer lc2 = getDataManager().createLayerCollection("secondLevel");
-		ILayer lc3 = getDataManager().createLayerCollection("thirdLevel");
-		ILayer lc4 = getDataManager().createLayerCollection("fourthLevel");
+		ILayer lc1 = mc.createLayerCollection("firstLevel");
+		ILayer lc2 = mc.createLayerCollection("secondLevel");
+		ILayer lc3 = mc.createLayerCollection("thirdLevel");
+		ILayer lc4 = mc.createLayerCollection("fourthLevel");
 		lc1.addLayer(lc2);
 		lc2.addLayer(lc3);
 		lc3.addLayer(lc4);
@@ -220,9 +221,9 @@ public class LayerModelTest extends AbstractTest {
 
         @Test
 	public void testContainsLayer() throws Exception {
-		ILayer lc = getDataManager().createLayerCollection("root");
-		ILayer l2 = getDataManager().createLayerCollection("secondlevel");
-		ILayer vl1 = getDataManager().createLayer(dummy);
+		ILayer lc = mc.createLayerCollection("root");
+		ILayer l2 = mc.createLayerCollection("secondlevel");
+		ILayer vl1 = mc.createLayer(dummy);
 		lc.addLayer(l2);
 		l2.addLayer(vl1);
 		assertTrue(lc.getAllLayersNames().contains(vl1.getName()));
@@ -230,10 +231,10 @@ public class LayerModelTest extends AbstractTest {
 
         @Test
 	public void testGetLayerByName() throws Exception {
-		ILayer lc = getDataManager().createLayerCollection("root");
-		ILayer l2 = getDataManager().createLayerCollection("secondlevel");
-		ILayer l3 = getDataManager().createLayerCollection("secondlevelbis");
-		ILayer vl1 = getDataManager().createLayer(dummy);
+		ILayer lc = mc.createLayerCollection("root");
+		ILayer l2 = mc.createLayerCollection("secondlevel");
+		ILayer l3 = mc.createLayerCollection("secondlevelbis");
+		ILayer vl1 = mc.createLayer(dummy);
 		l2.addLayer(vl1);
 		lc.addLayer(l2);
 		lc.addLayer(l3);

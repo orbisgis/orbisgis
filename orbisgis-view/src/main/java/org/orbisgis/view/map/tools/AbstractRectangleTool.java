@@ -43,13 +43,14 @@ import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.tools.generated.ZoomIn;
 
+/**
+ * Common methods of rectangle based tools
+ */
 public abstract class AbstractRectangleTool extends ZoomIn {
-
+    private static final Color FILL_COLOR = new Color(255, 204, 51, 50);
+    private static final Color BORDER_COLOR = new Color(255, 204, 51);
 	protected double[] firstPoint;
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.ZoomIn#transitionTo_RectangleDone()
-	 */
 	@Override
 	public void transitionTo_RectangleDone(MapContext vc, ToolManager tm)
 			throws TransitionException, FinishedAutomatonException {
@@ -94,41 +95,26 @@ public abstract class AbstractRectangleTool extends ZoomIn {
 			boolean smallerThanTolerance, MapContext vc, ToolManager tm)
 			throws TransitionException;
 
-	/**
-	 * @see org.estouro.tools.generated.Rectangle#transitionTo_Standby()
-	 */
 	@Override
 	public void transitionTo_Standby(MapContext vc, ToolManager tm)
 			throws TransitionException {
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.ZoomIn#transitionTo_OnePointLeft()
-	 */
 	@Override
 	public void transitionTo_OnePointLeft(MapContext vc, ToolManager tm)
 			throws TransitionException {
 		firstPoint = tm.getValues();
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.ZoomIn#transitionTo_Cancel()
-	 */
 	@Override
 	public void transitionTo_Cancel(MapContext vc, ToolManager tm)
 			throws TransitionException {
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.ZoomIn#drawIn_Standby(java.awt.Graphics)
-	 */
 	@Override
 	public void drawIn_Standby(Graphics g, MapContext vc, ToolManager tm) {
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.ZoomIn#drawIn_OnePointLeft(java.awt.Graphics)
-	 */
 	@Override
 	public void drawIn_OnePointLeft(Graphics g, MapContext vc, ToolManager tm) {
 		Point p = tm.getMapTransform().fromMapPoint(
@@ -140,24 +126,18 @@ public abstract class AbstractRectangleTool extends ZoomIn {
 		Rectangle2DDouble shape = new Rectangle2DDouble(minx, miny, width,
 				height);
 		Graphics2D g2 = (Graphics2D) g;
-		g2.setPaint(new Color(255, 204, 51, 50));
+		g2.setPaint(FILL_COLOR);
 		g2.fill(shape);
 		g2.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND,
 				BasicStroke.JOIN_ROUND));
-		g2.setColor(new Color(255, 204, 51));
+		g2.setColor(BORDER_COLOR);
 		g2.draw(shape);
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.ZoomIn#drawIn_RectangleDone(java.awt.Graphics)
-	 */
 	@Override
 	public void drawIn_RectangleDone(Graphics g, MapContext vc, ToolManager tm) {
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.ZoomIn#drawIn_Cancel(java.awt.Graphics)
-	 */
 	@Override
 	public void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm) {
 	}

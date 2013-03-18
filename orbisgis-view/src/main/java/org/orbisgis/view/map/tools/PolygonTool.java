@@ -47,6 +47,9 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
+/**
+ * Draw a polygon
+ */
 public class PolygonTool extends AbstractPolygonTool {
 
 	@Override
@@ -75,7 +78,8 @@ public class PolygonTool extends AbstractPolygonTool {
 
 	@Override
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.POLYGON))
+		return ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.POLYGON),
+                TypeFactory.createType(Type.MULTIPOLYGON))
 				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 
@@ -89,14 +93,19 @@ public class PolygonTool extends AbstractPolygonTool {
 		return ToolUtilities.getActiveLayerInitialZ(mapContext);
 	}
 
-	@Override
+    @Override
+    public String getTooltip() {
+        return i18n.tr("Draw a polygon");
+    }
+
+    @Override
 	public String getName() {
-		return I18N.tr("Draw a polygon");
+		return i18n.tr("Draw a polygon");
 	}
 
-        @Override
-        public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("polygon");
-        }
+    @Override
+    public ImageIcon getImageIcon() {
+        return OrbisGISIcon.getIcon("edition/drawpolygon");
+    }
 
 }

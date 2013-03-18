@@ -33,7 +33,6 @@ import com.vividsolutions.jts.geom.LineString;
 import java.awt.Graphics;
 import java.text.DecimalFormat;
 import java.util.Observable;
-import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
@@ -42,19 +41,13 @@ import org.orbisgis.view.map.tool.DrawingException;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 
+/**
+ * Get the distance of a drawn line.
+ */
 public class MesureLineTool extends AbstractLineTool {
-        protected static Logger GUI_LOGGER = Logger.getLogger("gui."+MesureLineTool.class);
-	AbstractButton button;
+    protected static Logger GUI_LOGGER = Logger.getLogger("gui."+MesureLineTool.class);
 
-	public AbstractButton getButton() {
-		return button;
-	}
-
-	public void setButton(AbstractButton button) {
-		this.button = button;
-	}
-
-        @Override
+    @Override
 	public void update(Observable o, Object arg) {
 		//PlugInContext.checkTool(this);
 	}
@@ -72,7 +65,7 @@ public class MesureLineTool extends AbstractLineTool {
         @Override
 	protected void lineDone(LineString ls, MapContext vc, ToolManager tm)
 			throws TransitionException {
-                GUI_LOGGER.info(I18N.tr("Distance : {0}",getLength(ls)));
+                GUI_LOGGER.info(i18n.tr("Distance : {0}",getLength(ls)));
 	}
 
 	private String getLength(Geometry ls) {
@@ -94,10 +87,10 @@ public class MesureLineTool extends AbstractLineTool {
 
         @Override
         public String getTooltip() {
-            return I18N.tr("This tool mesure the length on the map");
+            return i18n.tr("This tool mesure the length on the map");
         }
 
 	public String getName() {
-		return I18N.tr("Mesure length");
+		return i18n.tr("Mesure length");
 	}
 }

@@ -471,15 +471,15 @@ public class MapControl extends JComponent implements ContainerListener {
 			return true;
 		}
 
-                @Override
+        @Override
 		public void layerRemoved(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
 				removeLayerListenerRecursively(layer, this);
-                                if(!mapContext.isLayerModelSpatial()){
-                                        mapTransform.setExtent(new Envelope());
-                                }
-				invalidateImage();
 			}
+            if(!mapContext.isLayerModelSpatial()){
+                mapTransform.setExtent(new Envelope());
+            }
+            invalidateImage();
 		}
 
                 @Override
@@ -611,6 +611,7 @@ public class MapControl extends JComponent implements ContainerListener {
                         //The error has to be shown to the user,
                         //without the stack trace
                         LOGGER.error(I18N.tr("Tool error {0}",e.getMessage())); //$NON-NLS-1$
+                        toolManager.checkToolStatus();
                 }
 
                 @Override

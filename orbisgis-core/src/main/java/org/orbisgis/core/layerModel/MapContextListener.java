@@ -37,15 +37,4 @@ public interface MapContextListener {
 	 * @param mapContext
 	 */
 	void layerSelectionChanged(MapContext mapContext);
-
-	/**
-	 * The layer where all the edition actions are done has changed.
-	 * 
-	 * @param previousActiveLayer
-	 *            The last active layer. Null if it's the first time an active
-	 *            layer is setted
-	 * @param mapContext
-	 */
-	void activeLayerChanged(ILayer previousActiveLayer, MapContext mapContext);
-
 }

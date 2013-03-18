@@ -29,75 +29,48 @@
 package org.orbisgis.view.map.tools.generated;
 
 import java.awt.Graphics;
-import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.*;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
 
-public abstract class Multipoint implements Automaton {
-        protected static final I18n I18N = I18nFactory.getI18n(Multipoint.class);
-	private static Logger logger = Logger.getLogger(Multipoint.class);
+public abstract class Multipoint extends AbstractAutomaton {
 
-	private Status status = Status.STANDBY;
-
-	private MapContext ec;
-
-	private ToolManager tm;
-
-        @Override
-        public ImageIcon getCursor() {
-            return null;
-        }
-
-        @Override
+    @Override
 	public String[] getTransitionLabels() {
-		if (Status.POINT.equals(status)) {
-                        return new String[]{I18N.tr("Cancel"),I18N.tr("Terminate multipoint")};
+		if (Status.POINT == status) {
+                        return new String[]{i18n.tr("Cancel"),i18n.tr("Terminate multipoint")};
 		}
 		return new String[0];
 	}
 
         @Override
 	public Code[] getTransitionCodes() {
-		if (Status.POINT.equals(status)) {
+		if (Status.POINT == status) {
                         return new Code[]{Code.ESC, Code.TERMINATE};
 		}
 		return new Code[0];
 	}
 
-        @Override
-	public void init(MapContext ec, ToolManager tm) throws TransitionException,
-			FinishedAutomatonException {
-		logger.info("status: " + status);
-		this.ec = ec;
-		this.tm = tm;
-		status = Status.STANDBY;
-		transitionTo_Standby(ec, tm);
-		if (isFinished(status)) {
-			throw new FinishedAutomatonException();
-		}
-	}
-
-        @Override
+    @Override
 	public void transition(Code code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
-		logger.info("transition code: " + code);
+
+                if (Code.ESC == code) {
+                    status = Status.CANCEL;
+                    transitionTo_Cancel(mc, tm);
+                    if (isFinished(status)) {
+                        throw new FinishedAutomatonException();
+                    }
+                    return;
+                }
                 Status preStatus;
                 switch(status){
                         case STANDBY:
-                                if (Code.PRESS.equals(code)) {
+                                if (Code.PRESS == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.POINT;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_Point(ec, tm);
+                                                transitionTo_Point(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -108,16 +81,11 @@ public abstract class Multipoint implements Automaton {
                                 }
                                 break;
                         case POINT :
-                                if (Code.PRESS.equals(code)) {
+                                if (Code.PRESS == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.POINT;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_Point(ec, tm);
+                                                transitionTo_Point(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -125,16 +93,11 @@ public abstract class Multipoint implements Automaton {
                                                 status = preStatus;
                                                 throw e;
                                         }
-                                } else if (Code.TERMINATE.equals(code)) {
+                                } else if (Code.TERMINATE == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.DONE;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_Done(ec, tm);
+                                                transitionTo_Done(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -145,16 +108,11 @@ public abstract class Multipoint implements Automaton {
                                 }
                                 break;
                         case DONE :
-                                if (Code.INIT.equals(code)) {
+                                if (Code.INIT == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.STANDBY;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_Standby(ec, tm);
+                                                transitionTo_Standby(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -165,15 +123,8 @@ public abstract class Multipoint implements Automaton {
                                 }
                                 break;
                         default :
-                                if (Code.ESC.equals(code)) {
-                                        status = Status.CANCEL;
-                                        transitionTo_Cancel(ec, tm);
-                                        if (isFinished(status)) {
-                                                throw new FinishedAutomatonException();
-                                        }
-                                } else {
-                                        throw new NoSuchTransitionException(code.toString());
-                                }
+                                throw new NoSuchTransitionException(code.toString());
+
 
                 }
 
@@ -196,16 +147,16 @@ public abstract class Multipoint implements Automaton {
 	public void draw(Graphics g) throws DrawingException {
                 switch(status){
                         case STANDBY:
-                                drawIn_Standby(g, ec, tm);
+                                drawIn_Standby(g, mc, tm);
                                 break;
                         case POINT:
-                                drawIn_Point(g, ec, tm);
+                                drawIn_Point(g, mc, tm);
                                 break;
                         case DONE:
-                                drawIn_Done(g, ec, tm);
+                                drawIn_Done(g, mc, tm);
                                 break;
                         case CANCEL:
-                                drawIn_Cancel(g, ec, tm);
+                                drawIn_Cancel(g, mc, tm);
                                 break;
                 }
 
@@ -235,25 +186,12 @@ public abstract class Multipoint implements Automaton {
 	public abstract void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException;
 
-	protected void setStatus(Status status) throws NoSuchTransitionException {
-		this.status = status;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
-        @Override
-	public String getName() {
-		return "Multipoint";
-	}
-
 	public String getMessage() {
                 switch(status){
                         case STANDBY:
-                                return I18N.tr("Select the point location");
+                                return i18n.tr("Select the point location");
                         case POINT:
-                                return I18N.tr("Select the next point location or terminate multipoint");
+                                return i18n.tr("Select the next point location or terminate multipoint");
                         case DONE:
                         case CANCEL:
                                 return "";
@@ -262,42 +200,19 @@ public abstract class Multipoint implements Automaton {
                 }
 	}
 
-	public String getConsoleCommand() {
-		return "multipoint";
-	}
 
-        @Override
+
+    @Override
 	public String getTooltip() {
-		return I18N.tr("Draw a multipoint");
+		return i18n.tr("Draw a multipoint");
 	}
 
-	private ImageIcon mouseCursor;
-
-        @Override
-	public ImageIcon getImageIcon() {
-		if (mouseCursor != null) {
-			return mouseCursor;
-		} else {
-			return null;
-		}
-	}
-
-	public void setMouseCursor(ImageIcon mouseCursor) {
-		this.mouseCursor = mouseCursor;
-	}
-
-        @Override
-	public void toolFinished(MapContext vc, ToolManager tm)
+    @Override
+    public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
-		if (Status.POINT.equals(status)) {
+		if (Status.POINT == status) {
 			transition(Code.TERMINATE);
 		}
 	}
-
-        @Override
-	public java.awt.Point getHotSpotOffset() {
-		return new java.awt.Point(8, 8);
-	}
-
 }

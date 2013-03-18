@@ -30,8 +30,11 @@ package org.orbisgis.view.table;
 
 import java.util.Set;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.geocatalog.EditableSource;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Interface to be implemented by those EditableElements that need to be edited
@@ -45,18 +48,34 @@ public class TableEditableElement extends EditableSource {
         private static final Logger LOGGER = Logger.getLogger(TableEditableElement.class);
         // Properties
         protected IntegerUnion selectedGeometries;
+        private final I18n i18n = I18nFactory.getI18n(TableEditableElement.class);
 
         public TableEditableElement(Set<Integer> selection, String sourceName) {
                 super(sourceName);
                 this.selectedGeometries = new IntegerUnion(selection);
         }
 
+        /**
+         * {@link EditableSource#EditableSource(String)}
+         */
         public TableEditableElement(String sourceName) {
                 super(sourceName);
                 this.selectedGeometries = new IntegerUnion();
         }
-        
-	/**
+
+        @Override
+        public String toString() {
+            return i18n.tr("Table \"{0}\"",getSourceName());
+        }
+        /**
+         * {@link EditableSource#EditableSource(org.gdms.data.DataSource)}
+         */
+        public TableEditableElement(DataSource ds) {
+            super(ds);
+            this.selectedGeometries = new IntegerUnion();
+        }
+
+    /**
 	 * Get the selected geometries in the table
 	 * @return
 	 */

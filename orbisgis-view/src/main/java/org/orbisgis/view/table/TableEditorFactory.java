@@ -50,7 +50,7 @@ public class TableEditorFactory implements MultipleEditorFactory {
         public static final String FACTORY_ID = "TableEditorFactory";
         private static final Logger LOGGER = Logger.getLogger("gui."+TableEditorFactory.class);
         protected final static I18n I18N = I18nFactory.getI18n(TableEditorFactory.class);
-        
+
         @Override
         public DockingPanelLayout makeEditableLayout(EditableElement editable) {
                 if(editable instanceof TableEditableElement) {

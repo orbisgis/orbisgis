@@ -30,8 +30,8 @@ package org.orbisgis.view.toc;
 
 import ij.ImagePlus;
 import java.io.IOException;
-import javax.swing.Icon;
-import javax.swing.JTree;
+import javax.swing.*;
+
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
@@ -51,7 +51,7 @@ public abstract class TocAbstractRenderer extends TreeLaFRenderer {
                 super(tree);
         }
 
-        public static Icon getLayerIcon(ILayer layer) throws DriverException,
+        public static ImageIcon getLayerIcon(ILayer layer) throws DriverException,
 			IOException {
 		if (layer.acceptsChilds()) {
 			return OrbisGISIcon.getIcon("layers");

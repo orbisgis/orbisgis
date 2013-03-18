@@ -90,10 +90,11 @@ public class PanTool extends AbstractDragTool {
 
                 // move the envelope
 		Envelope extent = tm.getMapTransform().getExtent();
-		tm.getMapTransform().setExtent(
-				new Envelope(extent.getMinX() + dx, extent.getMaxX() + dx,
-						extent.getMinY() + dy, extent.getMaxY() + dy));
-
+        if(extent!=null) {
+            tm.getMapTransform().setExtent(
+                    new Envelope(extent.getMinX() + dx, extent.getMaxX() + dx,
+                            extent.getMinY() + dy, extent.getMaxY() + dy));
+        }
                 // we're done, this will get us back to StandBy
 		transition(Code.FINISHED);
 	}
@@ -124,17 +125,17 @@ public class PanTool extends AbstractDragTool {
 
         @Override
 	public String getName() {
-		return I18N.tr("Pan");
+		return i18n.tr("Pan");
 	}
 
-        @Override
-        public String getTooltip() {
-            return I18N.tr("The Pan Tool");
-        }
+    @Override
+    public String getTooltip() {
+        return i18n.tr("The Pan Tool");
+    }
 
-        @Override
-        public ImageIcon getCursor() {
-            return OrbisGISIcon.getIcon("pan");
-        }
+    @Override
+    public ImageIcon getCursor() {
+        return OrbisGISIcon.getIcon("pan");
+    }
         
 }

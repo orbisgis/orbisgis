@@ -87,6 +87,12 @@ public class ActionBundle extends AbstractAction {
             return null;
         }
 
+
+        @Override
+        public String toString() {
+            return "ActionBundle#BackgroundProcess";
+        }
+
         @Override
         protected void done() {
             setEnabled(true);

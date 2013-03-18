@@ -51,6 +51,9 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 
+/**
+ * Show selected geometry information.
+ */
 public class InfoTool extends AbstractRectangleTool {
         private static Logger UILOGGER = Logger.getLogger("gui."+InfoTool.class);
 
@@ -145,9 +148,14 @@ public class InfoTool extends AbstractRectangleTool {
 		}
 	}
 
-        @Override
+    @Override
+    public String getTooltip() {
+        return i18n.tr("Get feature attributes");
+    }
+
+    @Override
 	public String getName() {
-		return I18N.tr("Get feature attributes");
+		return i18n.tr("Get feature attributes");
 	}
 
         @Override

@@ -614,6 +614,11 @@ public class MainPanel extends JPanel {
         }
 
         @Override
+        public String toString() {
+            return "MainPanel#CheckBundleFilteringTextInput";
+        }
+
+        @Override
         protected void done() {
             try {
                 Boolean executeFilters = get();
@@ -638,6 +643,11 @@ public class MainPanel extends JPanel {
         protected Object doInBackground() throws Exception {
             repositoryAdminTrackerCustomizer.refresh();
             return null;
+        }
+
+        @Override
+        public String toString() {
+            return "MainPanel#DownloadOBRProcess";
         }
 
         @Override

@@ -34,6 +34,8 @@ import com.vividsolutions.jts.geom.LineString;
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.DrawingException;
 import org.orbisgis.view.map.tool.FinishedAutomatonException;
@@ -42,7 +44,7 @@ import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.tools.generated.Line;
 
 public abstract class AbstractLineTool extends Line implements InsertionTool {
-	protected ArrayList<Coordinate> points = new ArrayList<Coordinate>();
+	protected List<Coordinate> points = new ArrayList<Coordinate>();
 
 	@Override
 	public void transitionTo_Standby(MapContext vc, ToolManager tm)
@@ -73,13 +75,12 @@ public abstract class AbstractLineTool extends Line implements InsertionTool {
 			throws FinishedAutomatonException, TransitionException {
 		points = ToolUtilities.removeDuplicated(points);
 		if (points.size() < 2) {
-                        throw new TransitionException(I18N.tr("Lines must have at least two points"));
+                        throw new TransitionException(i18n.tr("Lines must have at least two points"));
                 }
 		LineString ls = new GeometryFactory().createLineString(points
-				.toArray(new Coordinate[0]));
-		com.vividsolutions.jts.geom.Geometry g = ls;
-		if (!g.isValid()) {
-			throw new TransitionException(I18N.tr("Invalid line"));
+                .toArray(new Coordinate[points.size()]));
+        if (!ls.isValid()) {
+			throw new TransitionException(i18n.tr("Invalid line"));
 		}
 		lineDone(ls, vc, tm);
 
@@ -97,20 +98,17 @@ public abstract class AbstractLineTool extends Line implements InsertionTool {
 		tm.addGeomToDraw(ls);
 
 		if (!ls.isValid()) {
-			throw new DrawingException(I18N.tr("Invalid line"));
+			throw new DrawingException(i18n.tr("Invalid line"));
 		}
 	}
 
-	@SuppressWarnings("unchecked")//$NON-NLS-1$
 	protected LineString getCurrentLineString(MapContext mc, ToolManager tm) {
 		Point2D current = tm.getLastRealMousePosition();
 
-		ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
-				.clone();
+		List<Coordinate> tempPoints = new ArrayList<Coordinate>(points);
 		tempPoints.add(newCoordinate(current.getX(), current.getY(), mc));
-		LineString ls = new GeometryFactory().createLineString(tempPoints
-				.toArray(new Coordinate[0]));
-		return ls;
+        return new GeometryFactory().createLineString(tempPoints
+                .toArray(new Coordinate[tempPoints.size()]));
 	}
 
 	private Coordinate newCoordinate(double x, double y, MapContext mapContext) {

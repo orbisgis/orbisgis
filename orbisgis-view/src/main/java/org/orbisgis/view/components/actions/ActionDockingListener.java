@@ -57,7 +57,7 @@ public class ActionDockingListener implements PropertyChangeListener {
 
         @Override
         public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-            if(propertyChangeEvent.getPropertyName().equals(ActionCommands.PROP_ACTIONS)) {
+            if(propertyChangeEvent.getPropertyName()!=null && propertyChangeEvent.getPropertyName().equals(ActionCommands.PROP_ACTIONS)) {
                 if(propertyChangeEvent instanceof IndexedPropertyChangeEvent) {
                     // Update a single Action
                     if(!awaitingRunnable.getAndSet(true)) {

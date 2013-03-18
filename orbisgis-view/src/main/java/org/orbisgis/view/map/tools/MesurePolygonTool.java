@@ -51,7 +51,7 @@ public class MesurePolygonTool extends AbstractPolygonTool {
 
 	protected void polygonDone(Polygon g, MapContext vc, ToolManager tm)
 			throws TransitionException {
-                GUI_LOGGER.info(I18N.tr("Area : {0} Perimeter : {1}",getArea(g),getPerimeter(g)));
+                GUI_LOGGER.info(i18n.tr("Area : {0} Perimeter : {1}",getArea(g),getPerimeter(g)));
 	}
 
 	private String getPerimeter(Geometry g) {
@@ -84,11 +84,11 @@ public class MesurePolygonTool extends AbstractPolygonTool {
         }
 
 	public String getName() {
-		return I18N.tr("Mesure area");
+		return i18n.tr("Mesure area");
 	}
         
         @Override
         public String getTooltip() {
-            return I18N.tr("This tool mesure the area");
+            return i18n.tr("This tool mesure the area");
         }
 }

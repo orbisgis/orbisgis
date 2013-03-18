@@ -31,9 +31,12 @@ package org.orbisgis.view.map;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.SingleEditorFactory;
+import org.orbisgis.view.main.frames.ext.ToolBarAction;
 import org.orbisgis.view.map.ext.MapEditorAction;
 import org.orbisgis.view.map.ext.MapEditorExtension;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * MapEditor cannot be opened twice, the the factory is a SingleEditorFactory.
@@ -41,6 +44,8 @@ import org.osgi.framework.BundleContext;
 public class MapEditorFactory implements SingleEditorFactory {
         public static final String FACTORY_ID = "MapFactory";
         private MapEditor mapPanel = null;
+        private DrawingToolBar drawingToolBar;
+        private ServiceRegistration<ToolBarAction> drawingToolbarService;
         private MenuItemServiceTracker<MapEditorExtension,MapEditorAction> mapEditorExt;
         private BundleContext hostBundle;
 
@@ -50,7 +55,12 @@ public class MapEditorFactory implements SingleEditorFactory {
 
         @Override
         public void dispose() {
-            mapEditorExt.close(); //Unregister MapEditor actions.
+            if(drawingToolbarService!=null) {
+                drawingToolbarService.unregister();
+            }
+            if(mapEditorExt!=null) {
+                mapEditorExt.close(); //Unregister MapEditor actions
+            }
         }
 
         @Override
@@ -60,6 +70,9 @@ public class MapEditorFactory implements SingleEditorFactory {
                         //Plugins Action will be added to ActionCommands of MapEditor
                         mapEditorExt = new MenuItemServiceTracker<MapEditorExtension,MapEditorAction>(hostBundle,MapEditorAction.class,mapPanel.getActionCommands(),mapPanel);
                         mapEditorExt.open(); // Start loading actions
+                        // Create Drawing ToolBar
+                        drawingToolBar = new DrawingToolBar(mapPanel);
+                        drawingToolbarService = hostBundle.registerService(ToolBarAction.class,drawingToolBar,null);
                 }
                 return new EditorDockable[] {mapPanel};
         }

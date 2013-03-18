@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.Observable;
 import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -70,7 +71,9 @@ public class WatershedTool extends AbstractPointTool {
                     return (type == ImagePlus.GRAY16) || (type == ImagePlus.GRAY32);
             }
 		} catch (DriverException e) {
+            UILOGGER.error(e.getLocalizedMessage(),e);
 		} catch (IOException e) {
+            UILOGGER.error(e.getLocalizedMessage(),e);
 		}
             return false;
 	}
@@ -119,23 +122,22 @@ public class WatershedTool extends AbstractPointTool {
 				grWatershedFromOutletIndex.save(tempFile);
 
 				// populate the GeoView TOC with a new RasterLayer
-				final ILayer newLayer = dataManager.createLayer(new File(
-						tempFile));
-				vc.getLayerModel().insertLayer(newLayer, 0);
+                DataSource newSource = dataManager.getDataSource(dataManager.getSourceManager().nameAndRegister(new File(tempFile)));
+				vc.getLayerModel().insertLayer(vc.createLayer(newSource), 0);
 			}
 		} catch (IOException e) {
-			UILOGGER.error(I18N.tr("Problem to access the GeoRaster"), //$NON-NLS-1$
+			UILOGGER.error(i18n.tr("Problem to access the GeoRaster"), //$NON-NLS-1$
 					e);
 		} catch (LayerException e) {
-			UILOGGER.error(I18N.tr("Problem adding the new layer"), e); //$NON-NLS-1$
+			UILOGGER.error(i18n.tr("Problem adding the new layer"), e); //$NON-NLS-1$
 		} catch (OperationException e) {
 			UILOGGER.error(
-					I18N.tr("Operation error with the GeoRaster"), e); //$NON-NLS-1$
+					i18n.tr("Operation error with the GeoRaster"), e); //$NON-NLS-1$
 		} catch (DriverLoadException e) {
 			UILOGGER.error(
-					I18N.tr("Cannot create the resulting layer of raster type"), e); //$NON-NLS-1$
-		} catch (DriverException e) {
-			UILOGGER.error(I18N.tr("Problem to access the GeoRaster"), //$NON-NLS-1$
+					i18n.tr("Cannot create the resulting layer of raster type"), e); //$NON-NLS-1$
+		} catch (Exception e) {
+			UILOGGER.error(i18n.tr("Problem to access the GeoRaster"), //$NON-NLS-1$
 					e);
 		}
 	}
@@ -146,10 +148,15 @@ public class WatershedTool extends AbstractPointTool {
 
         @Override
 	public String getName() {
-		return I18N.tr("Compute a watershed"); //$NON-NLS-1$
+		return i18n.tr("Compute a watershed");
 	}
 
-        @Override
+    @Override
+    public String getTooltip() {
+        return i18n.tr("Compute a watershed");
+    }
+
+    @Override
         public ImageIcon getImageIcon() {
             return OrbisGISIcon.getIcon("wizard");
         }

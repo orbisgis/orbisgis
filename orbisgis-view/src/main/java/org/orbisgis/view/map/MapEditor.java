@@ -39,21 +39,19 @@ import java.awt.geom.Point2D;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.JLayeredPane;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
+import javax.swing.*;
 import javax.swing.event.TreeExpansionListener;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.DataManager;
@@ -70,6 +68,7 @@ import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
+import org.orbisgis.view.components.actions.ActionsHolder;
 import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
@@ -119,8 +118,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     //This timer will fetch the cursor component coordinates
     //Then translate to the map coordinates and send it to
     //the MapStatusBar
-    private Timer CursorCoordinateLookupTimer;
-    private static final int CURSOR_COORDINATE_LOOKUP_INTERVAL = 100; //Ms
+    private AtomicBoolean processingCursor = new AtomicBoolean(false);
     private Point lastCursorPosition = new Point();
     private Point lastTranslatedCursorPosition = new Point();
     private AtomicBoolean initialised = new AtomicBoolean(false);
@@ -128,7 +126,9 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     private JLayeredPane layeredPane = new JLayeredPane();
     private ComponentListener sizeListener = EventHandler.create(ComponentListener.class,this,"updateMapControlSize",null,"componentResized");
     private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified");
+    private PropertyChangeListener activeLayerListener = EventHandler.create(PropertyChangeListener.class,this,"onActiveLayerChange","");
     private ActionCommands actions = new ActionCommands();
+
     /**
      * Constructor
      */
@@ -154,9 +154,38 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         // Tools that will be created later will also be set in the docking panel
         // thanks to this listener
         actions.addPropertyChangeListener(new ActionDockingListener(dockingPanelParameters));
+        // Auto-release Automaton Actions
+        actions.addPropertyChangeListener(ActionsHolder.PROP_ACTIONS,EventHandler.create(PropertyChangeListener.class,this,"onResetActions",""));
         //Set the Drop target
         dragDropHandler = new MapTransferHandler();
         this.setTransferHandler(dragDropHandler);
+    }
+
+    /**
+     * Action list on Map Editor has been updated. Release no longer used AutomatonActions.
+     * @param evt
+     */
+    public void onResetActions(PropertyChangeEvent evt) {
+        // Populate old actions
+        List<AutomatonAction> oldValues = new ArrayList<AutomatonAction>();
+        Object oldAct = evt.getOldValue();
+        if(oldAct instanceof AutomatonAction) {
+            oldValues.add((AutomatonAction)oldAct);
+        } if(oldAct instanceof List) {
+            for(Object action : (List)oldAct) {
+                if(action instanceof AutomatonAction) {
+                    oldValues.add((AutomatonAction) action);
+                }
+            }
+        }
+        // Do not dispose kept actions
+        Object newValue = evt.getNewValue();
+        if(newValue instanceof List) {
+            oldValues.removeAll((List)oldAct);
+        }
+        for(AutomatonAction action : oldValues) {
+            action.disposeAutomaton();
+        }
     }
     private void updateMapLabel() {
                 if (mapElement == null) {
@@ -293,10 +322,13 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
      * @param element
      */
     private void loadMap(MapElement element) {
+        MapElement oldMapElement = mapElement;
+        ToolManager oldToolManager = getToolManager();
         try {
             removeListeners();
             mapElement = element;
             mapContext = (MapContext) element.getObject();
+            mapContext.addPropertyChangeListener(MapContext.PROP_ACTIVELAYER, activeLayerListener);
             //We (unfortunately) need a cross reference here : this way, we'll
             //be able to retrieve the MapTransform from the Toc..
             element.setMapEditor(this);
@@ -304,10 +336,6 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             mapControl.getMapTransform().setExtent(mapContext.getBoundingBox());
             mapControl.setElement(this);
             mapControl.initMapControl(new PanTool());
-            CursorCoordinateLookupTimer = new Timer(CURSOR_COORDINATE_LOOKUP_INTERVAL,
-                    EventHandler.create(ActionListener.class,this,"onReadCursorMapCoordinate"));
-            CursorCoordinateLookupTimer.setRepeats(false);
-            CursorCoordinateLookupTimer.start();
             // Update the default map context path with the relative path
             ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
             URI rootDir =(new File(viewWorkspace.getMapContextPath()+File.separator)).toURI();
@@ -324,6 +352,8 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         } catch (TransitionException ex) {
             GUILOGGER.error(ex);
         }
+        firePropertyChange(PROP_TOOL_MANAGER,oldToolManager,getToolManager());
+        firePropertyChange(PROP_MAP_ELEMENT,oldMapElement, mapElement);
     }
     private MapEditorPersistence getMapEditorPersistence() {
             return ((MapEditorPersistence)dockingPanelParameters.getLayout());
@@ -333,46 +363,26 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
      * @param mousePosition x,y position of the event relative to the MapControl component.
      */
     public void onMouseMove(Point mousePosition) {
-            lastCursorPosition = mousePosition;
+            lastCursorPosition.setLocation(mousePosition);
+            if(mapElement!=null) {
+                if(!processingCursor.getAndSet(true)) {
+                    CursorCoordinateProcessing run = new CursorCoordinateProcessing(mapStatusBar,processingCursor,mapControl.getMapTransform(),lastCursorPosition);
+                    run.execute();
+                }
+            }
     }
 
         @Override
         public void removeNotify() {
                 super.removeNotify();
-                if(CursorCoordinateLookupTimer!=null) {
-                        CursorCoordinateLookupTimer.stop();
-                        CursorCoordinateLookupTimer=null;
-                }
                 removeListeners();
         }
 
 
         @Override
-        public MapContext getMapContext() {
-                return mapContext;
+        public MapElement getMapElement() {
+                return mapElement;
         }
-
-
-
-    /**
-     * This method is called by the timer called CursorCoordinateLookupTimer
-     * This function fetch the cursor coordinates (pixel)
-     * then translate to the map coordinates and send it to
-     * the MapStatusBar
-     */
-    public void onReadCursorMapCoordinate() {
-            try {
-                if(!lastTranslatedCursorPosition.equals(lastCursorPosition)) {
-                        lastTranslatedCursorPosition=lastCursorPosition;
-                        Point2D mapCoordinate = mapControl.getMapTransform().toMapPoint(lastCursorPosition.x, lastCursorPosition.y);
-                        mapStatusBar.setCursorCoordinates(mapCoordinate);
-                }
-            } finally {
-                if(CursorCoordinateLookupTimer!=null) {
-                        CursorCoordinateLookupTimer.start();
-                }
-            }
-    }
 
     /**
      * MapEditor tools declaration
@@ -387,7 +397,8 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 .setToolTipText(I18N.tr("Zoom to show all geometries")).setLogicalGroup("navigation"));
 
         // Selection tools
-        actions.addAction(new AutomatonAction(MapEditorAction.A_SELECTION,new SelectionTool(),this).setLogicalGroup("selection"));
+        actions.addAction(new AutomatonAction(MapEditorAction.A_SELECTION,new SelectionTool(),this)
+                .addTrackedMapContextProperty(MapContext.PROP_SELECTEDLAYERS).setLogicalGroup("selection"));
         actions.addAction(new DefaultAction(MapEditorAction.A_CLEAR_SELECTION, I18N.tr("Clear selection"),
                 OrbisGISIcon.getIcon("edit-clear"),EventHandler.create(ActionListener.class,this,"onClearSelection"))
                 .setToolTipText(I18N.tr("Clear all selected geometries of all layers")).setLogicalGroup("selection"));
@@ -455,6 +466,16 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     }
 
     /**
+     * The edited layer of the loaded Map Context has been set.
+     * @param evt Event raised by the MapContext
+     */
+    public void onActiveLayerChange(PropertyChangeEvent evt) {
+        if(getToolManager()!=null) {
+            getToolManager().activeLayerChanged(evt);
+            getToolManager().checkToolStatus();
+        }
+    }
+    /**
      * The user click on the button clear selection
      */
     public void onClearSelection() {
@@ -479,13 +500,14 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
      */
     public void onCreateDataSourceFromSelection() {
             ILayer[] layers = mapContext.getSelectedLayers();
-            if(layers!=null|| layers.length>0){
-            for (ILayer layer : layers) {
+            if(layers!=null && layers.length>0){
+                for (ILayer layer : layers) {
                     Set<Integer> selection = layer.getSelection();
                     if(!selection.isEmpty()){
-                    BackgroundManager bm = Services.getService(BackgroundManager.class);
-                    bm.backgroundOperation(new CreateSourceFromSelection(layer.getDataSource(), selection));
-            }       }
+                        BackgroundManager bm = Services.getService(BackgroundManager.class);
+                        bm.backgroundOperation(new CreateSourceFromSelection(layer.getDataSource(), selection));
+                    }
+                }
             }
     }
 
@@ -546,6 +568,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     private void removeListeners() {
             if(mapElement!=null) {
                     mapElement.removePropertyChangeListener(modificationListener);
+                    mapElement.getMapContext().removePropertyChangeListener(activeLayerListener);
             }
             if(mapControl!=null && mapControl.getToolManager()!=null) {
                 mapControl.getToolManager().removeToolListener(null);
@@ -616,28 +639,42 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         }
 
     }
-    private class ToolChangeListener implements ToolListener {
 
-        @Override
-        public void stateChanged(ToolManager toolManager) {
+    /**
+     * Compute the cursor projection Coordinate
+     */
+    private static class CursorCoordinateProcessing extends SwingWorker<Point2D,Point2D> {
+        MapStatusBar mapStatusBar;
+        AtomicBoolean processingCursorPosition;
+        MapTransform mapTransform;
+        Point mousePosition;
+
+        private CursorCoordinateProcessing(MapStatusBar mapStatusBar, AtomicBoolean processingCursorPosition, MapTransform mapTransform, Point mousePosition) {
+            this.mapStatusBar = mapStatusBar;
+            this.processingCursorPosition = processingCursorPosition;
+            this.mapTransform = mapTransform;
+            this.mousePosition = mousePosition;
         }
 
         @Override
-        public void transitionException(ToolManager toolManager, TransitionException e) {
+        public String toString() {
+            return "MapEditor#CursorCoordinateProcessing";
         }
 
         @Override
-        public void currentToolChanged(Automaton previous, ToolManager toolManager) {
-            //Find the Action of the new tool
-            for(Action action : actions.getActions()) {
-                if(action instanceof AutomatonHolder) {
-                    if(((AutomatonHolder)action).getAutomaton().equals(toolManager.getTool())) {
-                        // Enable the state of this radio button
-                        action.putValue(Action.SELECTED_KEY, true);
-                    }
-                }
+        protected Point2D doInBackground() throws Exception {
+            return mapTransform.toMapPoint(mousePosition.x, mousePosition.y);
+        }
+        @Override
+        protected void done() {
+            super.done();
+            try {
+                mapStatusBar.setCursorCoordinates(get());
+            } catch (Exception ex) {
+                GUILOGGER.error(ex.getLocalizedMessage(),ex);
+            } finally {
+                processingCursorPosition.set(false);
             }
         }
-
     }
 }

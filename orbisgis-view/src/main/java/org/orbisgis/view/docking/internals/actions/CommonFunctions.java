@@ -85,10 +85,7 @@ public class CommonFunctions {
             }
         }
         if(prop==null || prop.equals("enabled")) {
-            Object val = action.getValue("enabled");
-            if(val!=null) {
-                cAction.setEnabled((Boolean)val);
-            }
+            cAction.setEnabled(action.isEnabled());
         }
 
     }

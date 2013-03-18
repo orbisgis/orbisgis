@@ -110,33 +110,37 @@ public final class OwsMapContext extends BeanMapContext {
         }
 
         @Override
+        public ILayer createLayer(String layerName, DataSource sds) throws LayerException {
+            int type = sds.getSource().getType();
+
+            boolean hasSpatialData = true;
+            if ((type & SourceManager.VECTORIAL) == 0 && (type & SourceManager.STREAM) == 0
+                    && (type & SourceManager.SQL) == SourceManager.SQL) {
+                int sfi;
+                try {
+                    sds.open();
+                    sfi = sds.getSpatialFieldIndex();
+                    try {
+                        sds.close();
+                    } catch (AlreadyClosedException e) {
+                        // ignore
+                        LOGGER.debug(I18N.tr("Cannot close the data source"), e);
+                    }
+                    hasSpatialData = (sfi != -1);
+                } catch (DriverException e) {
+                    throw new LayerException(I18N.tr("Cannot check source contents"), e);
+                }
+            }
+            if (hasSpatialData) {
+                return new Layer(layerName, sds);
+            } else {
+                throw new LayerException(I18N.tr("The source contains no spatial info"));
+            }
+        }
+
+        @Override
         public ILayer createLayer(DataSource sds) throws LayerException {
-                int type = sds.getSource().getType();
-                
-                boolean hasSpatialData = true;
-                if ((type & SourceManager.VECTORIAL) == 0 && (type & SourceManager.STREAM) == 0
-                        && (type & SourceManager.SQL) == SourceManager.SQL) {
-                        int sfi;
-                        try {
-                                sds.open();
-                                sfi = sds.getSpatialFieldIndex();
-                                try {
-                                        sds.close();
-                                } catch (AlreadyClosedException e) {
-                                        // ignore
-                                        LOGGER.debug(I18N.tr("Cannot close the data source"), e);
-                                }
-                                hasSpatialData = (sfi != -1);
-                        } catch (DriverException e) {
-                                throw new LayerException(I18N.tr("Cannot check source contents"), e);
-                        }
-                }
-                if (hasSpatialData) {
-                        return new Layer(sds.getName(), sds);
-                } else {
-                        throw new LayerException(I18N.tr("The source contains no spatial info"));
-                }
-                
+                return createLayer(sds.getName(), sds);
         }
 
         @Override
@@ -347,10 +351,6 @@ public final class OwsMapContext extends BeanMapContext {
                 this.activeLayer = activeLayer;
 
                 propertyChangeSupport.firePropertyChange(PROP_ACTIVELAYER, lastActive, activeLayer);
-                //Deprecated listeners
-                for (MapContextListener listener : listeners) {
-                        listener.activeLayerChanged(lastActive, this);
-                }
         }
 
         private OWSContextType createJaxbMapContext() {
@@ -497,18 +497,7 @@ public final class OwsMapContext extends BeanMapContext {
          */
         private DataSource registerLayerResource(URI resourceUri) throws NoSuchTableException, DataSourceCreationException {
                 DataManager dm = Services.getService(DataManager.class);
-                SourceManager sm = dm.getSourceManager();
-                try {
-                        if (sm.exists(resourceUri)) {
-                                return dm.getDataSourceFactory().getDataSource(sm.getNameFor(resourceUri));
-                        } else {
-                                String sourceName = sm.getUniqueName(FileUtils.getNameFromURI(resourceUri));
-                                sm.register(sourceName, resourceUri);
-                                return dm.getDataSourceFactory().getDataSource(sourceName);
-                        }
-                } catch (SourceAlreadyExistsException ex) {
-                        throw new DataSourceCreationException(ex);
-                }
+                return dm.getDataSource(resourceUri);
         }
 
         /**

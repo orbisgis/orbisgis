@@ -39,12 +39,7 @@ import java.awt.event.MouseEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionListener;
@@ -56,6 +51,7 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.StyleType;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.DataManager;
@@ -128,7 +124,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         private Map<String, TableEditableElement> linkedEditableElements = new HashMap<String, TableEditableElement>();
         private PropertyChangeListener tableSelectionChangeListener = EventHandler.create(PropertyChangeListener.class,this,"onTableSelectionChange","source");
         private PropertyChangeListener tableEditableClose = EventHandler.create(PropertyChangeListener.class,this,"onTableEditableClose","source");
-        private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified");
+        private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified","");
         private Action saveAction;
         // Selection state cache, reset values before showing popup.
         private Map<String,Boolean> selectionState = new HashMap<String, Boolean>();
@@ -136,7 +132,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         private static final String HAS_LAYER_GROUP = "HAS_LAYER_GROUP"; //One of the selected item is a layer group
         // Actions containers
         private ActionCommands popupActions = new ActionCommands();
-
+        private PropertyChangeListener mapContextPropertyChange = EventHandler.create(PropertyChangeListener.class,this,"onMapContextPropertyChange","");
         /**
          * Constructor
          */
@@ -169,12 +165,12 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     I18N.tr("Remove the layer from the map context"),OrbisGISIcon.getIcon("remove"),
                     EventHandler.create(ActionListener.class, this, "onDeleteLayer"),null));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_ZOOM_TO, I18N.tr("Zoom to"),
-                    I18N.tr("Zoom to the layer bounding box"),OrbisGISIcon.getIcon("magnifier"),
-                    EventHandler.create(ActionListener.class, this, "zoomToLayer"),null));
+                    I18N.tr("Zoom to the layer bounding box"), OrbisGISIcon.getIcon("magnifier"),
+                    EventHandler.create(ActionListener.class, this, "zoomToLayer"), null));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_ZOOM_TO_SELECTION,
-                    I18N.tr("Zoom to selection"),I18N.tr("Zoom to selected geometries"),
+                    I18N.tr("Zoom to selection"), I18N.tr("Zoom to selected geometries"),
                     OrbisGISIcon.getIcon("zoom_selected"),
-                    EventHandler.create(ActionListener.class, this, "zoomToLayerSelection"),null)
+                    EventHandler.create(ActionListener.class, this, "zoomToLayerSelection"), null)
                     .setOnLayerWithRowSelection(true));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_CLEAR_SELECTION,
                     I18N.tr("Clear selection"), I18N.tr("Clear the selected geometries"),
@@ -196,6 +192,20 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     OrbisGISIcon.getIcon("openattributes"),
                     EventHandler.create(ActionListener.class,this, "onMenuShowTable"),null)
                     .setOnRealLayerOnly(true));
+            // DataSource Drawing Actions
+            popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_EDIT_GEOMETRY,
+                    I18N.tr("Switch to edition mode"), I18N.tr("The geometry edition toolbar will update this layer data source."),
+                    OrbisGISIcon.getIcon("pencil"),
+                    EventHandler.create(ActionListener.class,this, "onMenuSetActiveLayer"),null).setEnabledOnNotActiveLayer(true).setSingleSelection(true));
+            popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_STOP_EDIT_GEOMETRY,
+                    I18N.tr("Stop edition mode"), I18N.tr("Close the geometry edition toolbar."),
+                    OrbisGISIcon.getIcon("stop"),
+                    EventHandler.create(ActionListener.class,this, "onMenuUnsetActiveLayer"),null).setEnabledOnActiveLayer(true).setSingleSelection(true));
+            popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_SAVE_EDIT_GEOMETRY,
+                    I18N.tr("Save modifications"), I18N.tr("Apply the data source modifications"),
+                    OrbisGISIcon.getIcon("save"),
+                    EventHandler.create(ActionListener.class,this, "onMenuCommitDataSource"),null).setEnabledOnModifiedLayer(true));
+
             popupActions.addAction(new AddLayerGroupAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
                     I18N.tr("Add layer group"),I18N.tr("Add a the layer group to the map context"),
                     OrbisGISIcon.getIcon("add"),
@@ -213,10 +223,10 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     I18N.tr("Remove style"), I18N.tr("Remove this style from the associated layer."),
                     OrbisGISIcon.getIcon("remove"),
                     EventHandler.create(ActionListener.class, this, "onDeleteStyle"),null));
-            popupActions.addAction(new StyleAction(this,TocActionFactory.A_EXPORT_STYLE,
+            popupActions.addAction(new StyleAction(this, TocActionFactory.A_EXPORT_STYLE,
                     I18N.tr("Export style"), I18N.tr("Export this style from the associated layer."),
                     OrbisGISIcon.getIcon("add"),
-                    EventHandler.create(ActionListener.class, this, "onExportStyle"),null));
+                    EventHandler.create(ActionListener.class, this, "onExportStyle"), null));
         }
         /**
          * User click on the save button
@@ -226,13 +236,61 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         mapElement.save();
                 }
         }
-        
+
+        /**
+         * User select the Start/Stop edition of a layer geometries
+         */
+        public void onMenuSetActiveLayer() {
+            if(mapContext!=null) {
+                List<ILayer> selectedLayers = getSelectedLayers();
+                if(!selectedLayers.isEmpty()) {
+                    ILayer selectedLayer = selectedLayers.get(0);
+                    if(mapContext.getActiveLayer()==null || !mapContext.getActiveLayer().equals(selectedLayer)) {
+                        mapContext.setActiveLayer(selectedLayer);
+                    }
+                }
+            }
+        }
+        public void onMenuCommitDataSource() {
+            if(mapContext!=null) {
+                List<ILayer> selectedLayers = getSelectedLayers();
+                if(!selectedLayers.isEmpty()) {
+                    for(ILayer layer : selectedLayers) {
+                        DataSource source = layer.getDataSource();
+                        if(source!=null) {
+                            if(source.isModified()) {
+                                try {
+                                    source.commit();
+                                } catch (Exception ex) {
+                                    LOGGER.error(ex.getLocalizedMessage(),ex);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        /**
+         * User select the Start/Stop edition of a layer geometries
+         */
+        public void onMenuUnsetActiveLayer() {
+            if(mapContext!=null) {
+                List<ILayer> selectedLayers = getSelectedLayers();
+                if(!selectedLayers.isEmpty()) {
+                    ILayer selectedLayer = selectedLayers.get(0);
+                    if(mapContext.getActiveLayer()!=null && mapContext.getActiveLayer().equals(selectedLayer)) {
+                        mapContext.setActiveLayer(null);
+                    }
+                }
+            }
+        }
         /**
          * The Map Element has been updated
          */
-        public void onMapModified() {
-                if(mapElement!=null) {
+        public void onMapModified(PropertyChangeEvent evt) {
+                if(mapElement!=null && MapElement.PROP_MODIFIED.equals(evt.getPropertyName())) {
                         saveAction.setEnabled(mapElement.isModified());
+                        treeModel.reload();
                 }
         }
         /**
@@ -586,6 +644,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         removePropertyListeners(new TocTreeNodeLayer(this.mapContext.getLayerModel()));
                         this.mapContext.getLayerModel().removeLayerListenerRecursively(tocLayerListener);
                         this.mapContext.removeMapContextListener(tocMapContextListener);
+                        this.mapContext.removePropertyChangeListener(mapContextPropertyChange);
                         mapElement.removePropertyChangeListener(modificationListener);
                         for(TableEditableElement editable : linkedEditableElements.values()) {
                                 unlinkTableSelectionListening(editable);
@@ -596,14 +655,14 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
 
                 if (newMapElement != null) {
                         this.mapContext = ((MapContext) newMapElement.getObject());
-                        
+                        mapContext.addPropertyChangeListener(mapContextPropertyChange);
+                        treeRenderer.setMapContext(mapContext);
                         this.mapElement = newMapElement;
                         // Add the listeners to the new MapContext
                         this.mapContext.addMapContextListener(tocMapContextListener);
                         final ILayer root = this.mapContext.getLayerModel();
                         addPropertyListeners(new TocTreeNodeLayer(root));
-                        mapElement.addPropertyChangeListener(MapElement.PROP_MODIFIED,modificationListener);
-                        onMapModified();
+                        mapElement.addPropertyChangeListener(MapElement.PROP_MODIFIED, modificationListener);
                         root.addLayerListenerRecursively(tocLayerListener);
                         // Apply treeModel and clear the selection        
                         fireSelectionEvent.set(false);
@@ -621,10 +680,20 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 }
         }
 
-        boolean isActive(ILayer layer) {
-            return mapContext != null && layer == mapContext.getActiveLayer();
+        /**
+         * A property of the MapContext has been updated
+         * @param evt Event information
+         */
+        public void onMapContextPropertyChange(PropertyChangeEvent evt) {
+            if(MapContext.PROP_ACTIVELAYER.equals(evt.getPropertyName())) {
+                if(evt.getOldValue() instanceof ILayer) {
+                    treeModel.nodeChanged(new TocTreeNodeLayer((ILayer)evt.getOldValue()));
+                }
+                if(evt.getNewValue() instanceof ILayer) {
+                    treeModel.nodeChanged(new TocTreeNodeLayer((ILayer)evt.getNewValue()));
+                }
+            }
         }
-
         @Override
         public JComponent getComponent() {
                 return this;
@@ -734,6 +803,43 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
          */
         public void onDeleteLayer() {
                 ILayer[] selectedResources = mapContext.getSelectedLayers();
+                boolean saveDataSources = false;
+                // Check for modified sources
+                for (ILayer resource : selectedResources) {
+                    DataSource dataSource = resource.getDataSource();
+                    if(dataSource!=null && dataSource.isModified()) {
+                        int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                                I18N.tr("Some layers use modified data source, do you want to save these modifications before removing them ?"),
+                                I18N.tr("Save geometry edits"),
+                                JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+                        if(response==JOptionPane.YES_OPTION) {
+                            saveDataSources = true;
+                        } else if(response==JOptionPane.CANCEL_OPTION) {
+                            return;
+                        }
+                        break;
+                    }
+                }
+                // Commit
+                if(saveDataSources) {
+                    for (ILayer resource : selectedResources) {
+                            DataSource dataSource = resource.getDataSource();
+                            if(dataSource!=null && dataSource.isModified()) {
+                                try {
+                                    dataSource.commit();
+                                } catch (Exception ex) {
+                                    int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                                            I18N.tr("The layer data source {0} can not be saved, are you sure you want to continue ?",resource.getName()),
+                                            I18N.tr("Errors on data source save process"),
+                                            JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+                                    if(response==JOptionPane.NO_OPTION) {
+                                        return;
+                                    }
+                                }
+                            }
+                    }
+                }
+                // Remove layers
                 for (ILayer resource : selectedResources) {
                         try {
                                 resource.getParent().remove(resource);
@@ -801,7 +907,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 for (ILayer layer : layers) {
                         DataSource source = layer.getDataSource();
                         if(source!=null) {
-                                TableEditableElement tableDocument = new TableEditableElement(source.getName());
+                                TableEditableElement tableDocument = new TableEditableElement(source);
                                 editorManager.openEditable(tableDocument);
                         }
                 }
@@ -1136,13 +1242,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 public void layerSelectionChanged(MapContext mapContext) {
                         setTocSelection(mapContext);
                 }
-
-                @Override
-                public void activeLayerChanged(ILayer previousActiveLayer,
-                        MapContext mapContext) {
-                        treeModel.nodeChanged(new TocTreeNodeLayer(previousActiveLayer));
-                        treeModel.nodeChanged(new TocTreeNodeLayer(mapContext.getActiveLayer()));
-                }
         }
 
         /**
@@ -1171,9 +1270,9 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                 } else {
                                         pm.progressTo(100 * i / draggedResources.size());
                                         try {
-                                                ILayer nl = dataManager.createLayer(sourceName);
-                                                dropNode.insertLayer(nl, dropIndex);
-                                        } catch (LayerException e) {
+                                                    ILayer nl = mapContext.createLayer(dataManager.getDataSource(sourceName));
+                                                    dropNode.insertLayer(nl, dropIndex);
+                                        } catch (Exception e) {
                                                 throw new RuntimeException(I18N.tr("Cannot add the layer to the destination"), e);
                                         }
                                 }

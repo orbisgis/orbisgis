@@ -29,64 +29,40 @@
 package org.orbisgis.view.map.tools.generated;
 
 import java.awt.Graphics;
-import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.view.map.tool.*;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
+import org.orbisgis.view.map.tool.DrawingException;
+import org.orbisgis.view.map.tool.FinishedAutomatonException;
+import org.orbisgis.view.map.tool.NoSuchTransitionException;
+import org.orbisgis.view.map.tool.ToolManager;
+import org.orbisgis.view.map.tool.TransitionException;
 
+/**
+ * Common states of Drag operations.
+ */
+public abstract class Drag extends AbstractAutomaton {
 
-public abstract class Drag implements Automaton {
-        protected static final I18n I18N = I18nFactory.getI18n(Drag.class);
-	private static Logger logger = Logger.getLogger(Drag.class);
-
-	private Status status = Status.STANDBY;
-
-	private MapContext ec;
-
-	private ToolManager tm;
-
-        @Override
+    @Override
 	public String[] getTransitionLabels() {
 		return new String[0];
 	}
 
-        @Override
+    @Override
 	public Code[] getTransitionCodes() {
 		return new Code[0];
 	}
 
-        @Override
-	public void init(MapContext ec, ToolManager tm) throws TransitionException,
-			FinishedAutomatonException {
-		logger.info("status: " + status);
-		this.ec = ec;
-		this.tm = tm;
-		status = Status.STANDBY;
-		transitionTo_Standby(ec, tm);
-		if (isFinished(status)) {
-			throw new FinishedAutomatonException();
-		}
-	}
-
-        @Override
+    @Override
 	public void transition(Code code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
 		logger.info("transition code: " + code);
                 Status preStatus;
                 switch(status){
                         case STANDBY:
-                                if (Code.PRESS.equals(code)) {
+                                if (Code.PRESS == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.MOUSE_DOWN;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_MouseDown(ec, tm);
+                                                transitionTo_MouseDown(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -97,16 +73,11 @@ public abstract class Drag implements Automaton {
                                 }
                                 break;
                         case MOUSE_DOWN:
-                                if (Code.RELEASE.equals(code)) {
+                                if (Code.RELEASE == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.MOUSE_RELEASED;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_MouseReleased(ec, tm);
+                                                transitionTo_MouseReleased(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -117,16 +88,11 @@ public abstract class Drag implements Automaton {
                                 }
                                 break;
                         case MOUSE_RELEASED:
-                                if (Code.FINISHED.equals(code)) {
+                                if (Code.FINISHED == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.STANDBY;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_Standby(ec, tm);
+                                                transitionTo_Standby(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -141,6 +107,7 @@ public abstract class Drag implements Automaton {
                 }
 	}
 
+    @Override
 	public boolean isFinished(Status status) {
                 switch(status){
                         case STANDBY:
@@ -152,24 +119,26 @@ public abstract class Drag implements Automaton {
                 }
 	}
 
-        @Override
+    @Override
 	public void draw(Graphics g) throws DrawingException {
                 switch(status){
                         case STANDBY:
-                                drawIn_Standby(g, ec, tm);
+                                drawIn_Standby(g, mc, tm);
                                 break;
                         case MOUSE_DOWN:
-                                drawIn_MouseDown(g, ec, tm);
+                                drawIn_MouseDown(g, mc, tm);
                                 break;
                         case MOUSE_RELEASED:
-                                drawIn_MouseReleased(g, ec, tm);
+                                drawIn_MouseReleased(g, mc, tm);
                                 break;
                 }
 
 	}
 
+    @Override
 	public abstract void transitionTo_Standby(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException;
+
 
 	public abstract void drawIn_Standby(Graphics g, MapContext vc,
 			ToolManager tm) throws DrawingException;
@@ -187,56 +156,28 @@ public abstract class Drag implements Automaton {
 	public abstract void drawIn_MouseReleased(Graphics g, MapContext vc,
 			ToolManager tm) throws DrawingException;
 
-	protected void setStatus(Status status) throws NoSuchTransitionException {
-		this.status = status;
+    @Override
+    public String getMessage() {
+            switch(status){
+                    case STANDBY:
+                            return i18n.tr("Select start point");
+                    case MOUSE_DOWN:
+                            return i18n.tr("Drag to destination point");
+                    case MOUSE_RELEASED:
+                            return "";
+                    default:
+                            throw new RuntimeException("Invalid status: " + status);
+            }
 	}
 
-	public Status getStatus() {
-		return status;
-	}
-
-        public String getMessage() {
-                switch(status){
-                        case STANDBY:
-                                return I18N.tr("Select start point");
-                        case MOUSE_DOWN:
-                                return I18N.tr("Drag to destination point");
-                        case MOUSE_RELEASED:
-                                return "";
-                        default:
-                                throw new RuntimeException("Invalid status: " + status);
-                }
-	}
-
-	public String getConsoleCommand() {
-		return "drag";
-	}
-
-        @Override
-	public String getTooltip() {
-		return I18N.tr("Move the map");
-	}
-
-	protected ImageIcon mouseCursor;
-
-        @Override
-	public ImageIcon getImageIcon() {
-		if (mouseCursor != null) {
-			return mouseCursor;
-		} else {
-			return null;
-		}
-	}
-
-        @Override
+    @Override
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
 	}
 
-        @Override
+    @Override
 	public java.awt.Point getHotSpotOffset() {
 		return new java.awt.Point(8, 8);
 	}
-
 }

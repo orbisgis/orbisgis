@@ -37,36 +37,22 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 
-public abstract class VertexAddition implements Automaton {
-        protected static final I18n I18N = I18nFactory.getI18n(VertexAddition.class);
-	private static Logger logger = Logger.getLogger(VertexAddition.class);
+public abstract class VertexAddition extends AbstractAutomaton {
 
-	private Status status = Status.STANDBY;
-
-	private MapContext ec;
-
-	private ToolManager tm;
-
-        @Override
-        public ImageIcon getCursor() {
-            return null;
-        }
-        
-        @Override
+    @Override
 	public String[] getTransitionLabels() {
 		return new String[] {};
 	}
 
-        @Override
+    @Override
 	public Code[] getTransitionCodes() {
 		return new Code[] {};
 	}
 
-        @Override
+    @Override
 	public void init(MapContext ec, ToolManager tm) throws TransitionException,
 			FinishedAutomatonException {
-		logger.info("status: " + status);
-		this.ec = ec;
+		this.mc = ec;
 		this.tm = tm;
 		status = Status.STANDBY;
 		transitionTo_Standby(ec, tm);
@@ -75,10 +61,17 @@ public abstract class VertexAddition implements Automaton {
 		}
 	}
 
-        @Override
+    @Override
 	public void transition(Code code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
-		logger.info("transition code: " + code);
+                if (Code.ESC.equals(code)) {
+                    status = Status.CANCEL;
+                    transitionTo_Cancel(mc, tm);
+                    if (isFinished(status)) {
+                        throw new FinishedAutomatonException();
+                    }
+                    return;
+                }
                 Status preStatus;
                 switch(status){
                         case STANDBY:
@@ -91,7 +84,7 @@ public abstract class VertexAddition implements Automaton {
                                                 for (int i = 0; i < v.length; i++) {
                                                         logger.info("value: " + v[i]);
                                                 }
-                                                transitionTo_Done(ec, tm);
+                                                transitionTo_Done(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -111,7 +104,7 @@ public abstract class VertexAddition implements Automaton {
                                                 for (int i = 0; i < v.length; i++) {
                                                         logger.info("value: " + v[i]);
                                                 }
-                                                transitionTo_Standby(ec, tm);
+                                                transitionTo_Standby(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -122,15 +115,7 @@ public abstract class VertexAddition implements Automaton {
                                 }
                                 break;
                         default:
-                                if (Code.ESC.equals(code)) {
-                                        status = Status.CANCEL;
-                                        transitionTo_Cancel(ec, tm);
-                                        if (isFinished(status)) {
-                                                throw new FinishedAutomatonException();
-                                        }
-                                } else {
-                                        throw new NoSuchTransitionException(code.toString());
-                                }
+                                throw new NoSuchTransitionException(code.toString());
                 }
 	}
 
@@ -150,13 +135,13 @@ public abstract class VertexAddition implements Automaton {
 	public void draw(Graphics g) throws DrawingException {
                 switch(status){
                         case STANDBY:
-                                drawIn_Standby(g, ec, tm);
+                                drawIn_Standby(g, mc, tm);
                                 break;
                         case DONE:
-                                drawIn_Done(g, ec, tm);
+                                drawIn_Done(g, mc, tm);
                                 break;
                         case CANCEL:
-                                drawIn_Cancel(g, ec, tm);
+                                drawIn_Cancel(g, mc, tm);
                                 break;
                 }
 
@@ -180,23 +165,10 @@ public abstract class VertexAddition implements Automaton {
 	public abstract void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException;
 
-	protected void setStatus(Status status) throws NoSuchTransitionException {
-		this.status = status;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
-        @Override
-	public String getName() {
-		return "VertexAdition";
-	}
-
 	public String getMessage() {
                 switch(status){
                         case STANDBY:
-                                return I18N.tr("Click on an edge to insert a vertex");
+                                return i18n.tr("Click on an edge to insert a vertex");
                         case DONE:
                         case CANCEL:
                                 return "";
@@ -205,39 +177,14 @@ public abstract class VertexAddition implements Automaton {
                 }
 	}
 
-	public String getConsoleCommand() {
-		return "vertexAdition";
-	}
-
-        @Override
+    @Override
 	public String getTooltip() {
-		return I18N.tr("Add a new vertex");
+		return i18n.tr("Add a new vertex");
 	}
 
-	private ImageIcon mouseCursor;
-
-        @Override
-	public ImageIcon getImageIcon() {
-		if (mouseCursor != null) {
-			return mouseCursor;
-		} else {
-			return null;
-		}
-	}
-
-	public void setMouseCursor(ImageIcon mouseCursor) {
-		this.mouseCursor = mouseCursor;
-	}
-
-        @Override
+    @Override
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
 	}
-
-        @Override
-	public java.awt.Point getHotSpotOffset() {
-		return new java.awt.Point(8, 8);
-	}
-
 }

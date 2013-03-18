@@ -39,10 +39,16 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.geometryUtils.GeometryEdit;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.Handler;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 
+import javax.swing.*;
+
+/**
+ * Draw a line to convert a polygon into a multi polygon.
+ */
 public class SplitPolygonTool extends AbstractLineTool {
 
         GeometryFactory gf = new GeometryFactory();
@@ -72,7 +78,17 @@ public class SplitPolygonTool extends AbstractLineTool {
 
         @Override
         public String getName() {
-                return I18N.tr("Split polygon");
+                return i18n.tr("Split polygon");
+        }
+
+        @Override
+        public String getTooltip() {
+                return i18n.tr("Split a polygon by drawing a line");
+        }
+
+        @Override
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("edition/splitpolygon");
         }
 
         @Override
@@ -88,10 +104,13 @@ public class SplitPolygonTool extends AbstractLineTool {
                                                         GeometryDimensionConstraint.DIMENSION_SURFACE)))) {
                                 List<Polygon> pols = new ArrayList<Polygon>();
                                 for (int i = 0; i < geom.getNumGeometries(); i++) {
-                                        pols.addAll(GeometryEdit.splitPolygon((Polygon) geom.getGeometryN(i), ls));
+                                        List<Polygon> polygons = GeometryEdit.splitPolygon((Polygon) geom.getGeometryN(i), ls);
+                                        if(polygons!=null) {
+                                            pols.addAll(polygons);
+                                        }
                                 }
                                 MultiPolygon result = gf.createMultiPolygon(pols.toArray(new Polygon[pols.size()]));
-                                if (result != null) {
+                                if (result != null && !pols.isEmpty()) {
                                         sds.setGeometry(handler.getGeometryIndex(), result);
                                 }
                         } else if (ToolUtilities.geometryTypeIs(vc, 
@@ -112,7 +131,7 @@ public class SplitPolygonTool extends AbstractLineTool {
                         }
 
                 } catch (DriverException e) {
-                        throw new TransitionException(I18N.tr("Cannot split the polygon"), e);
+                        throw new TransitionException(i18n.tr("Cannot split the polygon"), e);
                 }
         }
 }

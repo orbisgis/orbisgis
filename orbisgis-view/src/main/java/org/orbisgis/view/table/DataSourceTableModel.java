@@ -232,9 +232,14 @@ public class DataSourceTableModel extends AbstractTableModel {
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
                 try {
-                        Type type = getMetadata().getFieldType(columnIndex);
-                        String strValue = aValue.toString().trim();
-                        Value v = ValueFactory.createValueByType(strValue, type.getTypeCode());
+                        Value v;
+                        if(aValue!=null) {
+                            Type type = getMetadata().getFieldType(columnIndex);
+                            String strValue = aValue.toString().trim();
+                            v = ValueFactory.createValueByType(strValue, type.getTypeCode());
+                        } else {
+                            v = ValueFactory.createNullValue();
+                        }
                         dataSource.setFieldValue(rowIndex, columnIndex, v);
                 } catch (DriverException e1) {
                         LOGGER.error(e1.getLocalizedMessage(), e1);

@@ -79,17 +79,11 @@ public class ZoomOutTool extends ZoomOut {
 		//PlugInContext.checkTool(this);
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.ZoomOut#transitionTo_Standby()
-	 */
 	@Override
 	public void transitionTo_Standby(MapContext vc, ToolManager tm)
 			throws TransitionException {
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.ZoomOut#transitionTo_Done()
-	 */
 	@Override
 	public void transitionTo_Done(MapContext vc, ToolManager tm)
 			throws TransitionException, FinishedAutomatonException {
@@ -111,23 +105,14 @@ public class ZoomOutTool extends ZoomOut {
 			throws TransitionException {
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.ZoomOut#drawIn_Standby(java.awt.Graphics)
-	 */
 	@Override
 	public void drawIn_Standby(Graphics g, MapContext vc, ToolManager tm) {
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.ZoomOut#drawIn_Done(java.awt.Graphics)
-	 */
 	@Override
 	public void drawIn_Done(Graphics g, MapContext vc, ToolManager tm) {
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.ZoomOut#drawIn_Cancel(java.awt.Graphics)
-	 */
 	@Override
 	public void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm) {
 	}
@@ -147,12 +132,12 @@ public class ZoomOutTool extends ZoomOut {
 
         @Override
 	public String getName() {
-		return I18N.tr("Zoom out");
+		return i18n.tr("Zoom out");
 	}
 
         @Override
         public String getTooltip() {
-            return I18N.tr("This tool zoom out on click");
+            return i18n.tr("This tool zoom out on click");
         }
 
         @Override

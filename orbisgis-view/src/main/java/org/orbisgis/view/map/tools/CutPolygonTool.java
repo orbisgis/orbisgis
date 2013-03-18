@@ -46,7 +46,9 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.*;
 
-
+/**
+ * This tool subtract polygons in Handler by the drawing one, using {@link GeometryEdit#cutMultiPolygon}.
+ */
 public class CutPolygonTool extends AbstractPolygonTool {
 
         @Override
@@ -59,7 +61,7 @@ public class CutPolygonTool extends AbstractPolygonTool {
                 MapContext mc, ToolManager tm) throws TransitionException {
                 DataSource sds = mc.getActiveLayer().getDataSource();
                 try {
-                        ArrayList<Handler> handlers = tm.getCurrentHandlers();
+                        ArrayList<Handler> handlers = new ArrayList<Handler>(tm.getCurrentHandlers());
                         for (Handler handler : handlers) {
                                 if (handler instanceof MultiPolygonHandler) {
                                         MultiPolygonHandler mp = (MultiPolygonHandler) handler;
@@ -84,7 +86,7 @@ public class CutPolygonTool extends AbstractPolygonTool {
                         }
 
                 } catch (DriverException e) {
-                        throw new TransitionException(I18N.tr("Cannot cut the polygon"), e);
+                        throw new TransitionException(i18n.tr("Cannot cut the polygon"), e);
                 }
         }
 
@@ -112,11 +114,16 @@ public class CutPolygonTool extends AbstractPolygonTool {
 
         @Override
         public String getName() {
-                return I18N.tr("Cut a polygon");
+                return i18n.tr("Cut a polygon");
+        }
+
+        @Override
+        public String getTooltip() {
+                return i18n.tr("Select a polygon then draw another polygon to subtract the first one");
         }
 
         @Override
         public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("cutpolygon");
+            return OrbisGISIcon.getIcon("edition/cutpolygon");
         }
 }

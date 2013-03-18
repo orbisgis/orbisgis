@@ -31,6 +31,8 @@ package org.orbisgis.view.docking.internals;
 import bibliothek.gui.dock.common.DefaultSingleCDockable;
 import bibliothek.gui.dock.common.action.CAction;
 import java.awt.Component;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.orbisgis.view.docking.DockingPanel;
 
 /**
@@ -39,7 +41,7 @@ import org.orbisgis.view.docking.DockingPanel;
  */
 public class CustomSingleCDockable extends DefaultSingleCDockable implements CustomPanelHolder {
         private DockingPanel dockingPanel;
-
+        private AtomicBoolean changeParameter = new AtomicBoolean(false);
         public CustomSingleCDockable(DockingPanel dockingPanel, String id, Component content, CAction... actions) {
                 super(id, content, actions);
                 this.dockingPanel = dockingPanel;
@@ -48,8 +50,21 @@ public class CustomSingleCDockable extends DefaultSingleCDockable implements Cus
         public DockingPanel getDockingPanel() {
                 return dockingPanel;
         }
-        
 
-
-        
+        /**
+         * In order to veto the visiblity change, this method has to be overridden.
+         * @param visible New state
+         */
+        @Override
+        public void setVisible(boolean visible) {
+            if(!changeParameter.getAndSet(true)) {
+                try {
+                    dockingPanel.getDockingParameters().setVisible(visible);
+                    super.setVisible(visible);
+                    dockingPanel.getDockingParameters().setVisible(isVisible());
+                } finally {
+                    changeParameter.set(false);
+                }
+            }
+        }
 }
