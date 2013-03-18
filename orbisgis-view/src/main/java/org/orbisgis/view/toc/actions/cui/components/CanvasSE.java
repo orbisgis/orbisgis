@@ -219,11 +219,11 @@ public class CanvasSE extends JPanel {
                 for(Map.Entry<String, Object> ent : es){
                         Object val = ent.getValue();
                         sb.append(", ");
-                        if(val instanceof StringParameter){
+                        if(val instanceof StringParameter || val instanceof String){
                             sb.append("\'");
                         }
                         sb.append(val.toString());
-                        if(val instanceof StringParameter){
+                        if(val instanceof StringParameter || val instanceof String){
                             sb.append("\'");
                         }
                         sb.append(" as ");

@@ -197,6 +197,9 @@ public class PnlProportionalLine extends PnlUniqueSymbolSE {
                 grid.setVgap(5);
                 jp.setLayout(grid);
                 lineUom = getLineUomCombo(legend);
+                CanvasSE prev = getPreview();
+                ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
+                lineUom.addActionListener(acl);
                 lineColor = getColorField((ConstantSolidFill)strokeLeg.getFillAnalysis());
                 lineOpacity = getLineOpacitySpinner((ConstantSolidFill)strokeLeg.getFillAnalysis());
                 lineDash = getDashArrayField(strokeLeg);

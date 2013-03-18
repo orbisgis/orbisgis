@@ -36,6 +36,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
@@ -151,17 +152,18 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
      * @param me The MouseEvent that caused the call to this method.
      */
     public void onEditFallback(MouseEvent me){
-        legend.setFallbackParameters(editCanvas(fallbackPreview, legend.getFallbackParameters()));
+        legend.setFallbackParameters(editCanvas(fallbackPreview));
     }
 
     /**
      * Builds a SIF dialog used to edit the given LineParameters.
      * @param cse The canvas we want to edit
-     * @param lps The LineParameters to feed the canvas
      * @return The LineParameters that must be used at the end of the edition.
      */
-    private LineParameters editCanvas(CanvasSE cse, LineParameters lps){
+    private LineParameters editCanvas(CanvasSE cse){
+        LineParameters lps = legend.getFallbackParameters();
         UniqueSymbolLine usl = new UniqueSymbolLine(lps);
+        usl.setStrokeUom(legend.getStrokeUom());
         PnlUniqueLineSE pls = new PnlUniqueLineSE(false);
         pls.setLegend(usl);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
@@ -212,11 +214,21 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     }
 
     /**
+     * Gets the Symbolizer that is associated to the unique symbol matching the fallback configuration of this
+     * unique value classification.
+     * @return A Symbolizer.
+     */
+    private Symbolizer getFallbackSymbolizer(){
+        UniqueSymbolLine usl = new UniqueSymbolLine(legend.getFallbackParameters());
+        usl.setStrokeUom(legend.getStrokeUom());
+        return usl.getSymbolizer();
+    }
+
+    /**
      * Initializes the preview for the fallback configuration
      */
     private void initPreview() {
-        UniqueSymbolLine usl = new UniqueSymbolLine(legend.getFallbackParameters());
-        fallbackPreview = new CanvasSE(usl.getSymbolizer());
+        fallbackPreview = new CanvasSE(getFallbackSymbolizer());
         MouseListener l = EventHandler.create(MouseListener.class, this, "onEditFallback", "", "mouseClicked");
         fallbackPreview.addMouseListener(l);
     }
@@ -355,9 +367,24 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     private JPanel getUOMCombo(){
         JPanel pan = new JPanel();
         JComboBox jcb = getLineUomCombo(legend);
+        ActionListener aclUom = EventHandler.create(ActionListener.class, this, "updatePreview", "source");
+        jcb.addActionListener(aclUom);
         pan.add(new JLabel(I18N.tr("Unit of measure :")));
         pan.add(jcb);
         return pan;
+    }
+
+    /**
+     * Update the inner CanvasSE. It updates its symbolizer and forced the image to be redrawn.
+     */
+    public void updatePreview(Object source){
+        JComboBox jcb = (JComboBox) source;
+        updateLUComboBox(jcb.getSelectedIndex());
+        CanvasSE prev = getPreview();
+        prev.setSymbol(getFallbackSymbolizer());
+        prev.imageChanged();
+        TableModelRecodedLine model = (TableModelRecodedLine) table.getModel();
+        model.fireTableDataChanged();
     }
 
     /**

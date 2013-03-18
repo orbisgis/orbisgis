@@ -41,6 +41,7 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
+import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -204,6 +205,9 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 grid.setVgap(5);
                 jp.setLayout(grid);
                 lineUom = getLineUomCombo((StrokeUom)getLegend());
+                CanvasSE prev = getPreview();
+                ActionListener aclUom = EventHandler.create(ActionListener.class, prev, "imageChanged");
+                lineUom.addActionListener(aclUom);
                 lineWidth = getLineWidthSpinner(legend);
                 lineColor = getColorField(legend.getFillLegend());
                 lineOpacity = getLineOpacitySpinner(legend.getFillLegend());

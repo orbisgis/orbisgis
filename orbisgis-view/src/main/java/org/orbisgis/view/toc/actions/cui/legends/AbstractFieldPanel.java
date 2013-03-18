@@ -168,22 +168,20 @@ public abstract class AbstractFieldPanel extends JPanel {
     }
 
     /**
-     * ComboBox to configure the unit of measure used to draw th stroke.
-     * @param input
-     * @return
+     * ComboBox to configure the unit of measure used to draw th stroke. The generated {@link JComboBox} only updates
+     * the UOM of the given {@code StrokeUom}.
+     * @param input The StrokeUom instance we get the unit from.
+     * @return The JComboBox that can be used to change the UOM of {@code input}.
      */
     public JComboBox getLineUomCombo(StrokeUom input){
-        CanvasSE prev = getPreview();
         strokeUoms= getUomProperties();
         String[] values = new String[strokeUoms.length];
         for (int i = 0; i < values.length; i++) {
             values[i] = I18N.tr(strokeUoms[i].getLabel());
         }
         final JComboBox jcc = new JComboBox(values);
-        ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
         ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateLUComboBox", "source.selectedIndex");
         jcc.addActionListener(acl2);
-        jcc.addActionListener(acl);
         jcc.setSelectedItem(input.getStrokeUom().toString().toUpperCase());
         return jcc;
     }
