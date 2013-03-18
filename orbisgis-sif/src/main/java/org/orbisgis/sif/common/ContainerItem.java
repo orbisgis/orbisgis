@@ -49,9 +49,13 @@ public class ContainerItem<Key>  implements Serializable, Comparable<ContainerIt
      * Constructor
      * @param label The I18N label of the Item, shown in the GUI
      * @param key The internal name of this item, retrieved by listeners for processing
+     * @throws IllegalArgumentException if one of the arguments are missing
      */
     public ContainerItem(Key key, String label) {
         propertySupport = new PropertyChangeSupport(this);
+        if(label==null) {
+                throw new IllegalArgumentException("Label argument must be provided");
+        }
         this.label = label;
         this.key = key;
     }
@@ -80,6 +84,9 @@ public class ContainerItem<Key>  implements Serializable, Comparable<ContainerIt
      * @param label the I18N GUI label
      */
     public void setLabel(String label) {
+        if(label==null) {
+                throw new IllegalArgumentException("Label argument must be provided");
+        }
         String oldLabel = this.label;
         this.label = label;
         propertySupport.firePropertyChange(PROP_LABEL, oldLabel, label);

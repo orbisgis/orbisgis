@@ -31,7 +31,6 @@ package org.orbisgis.view.components.gdms;
 
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintFactory;
-import org.gdms.data.types.TypeFactory;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.sif.multiInputPanel.ComboBoxChoice;
@@ -41,8 +40,8 @@ import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.ListSelectionModel;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -77,11 +76,7 @@ public abstract class ConstraintTableAction extends AbstractAction {
      * Check the Action enabled state
      */
     public abstract void checkState();
-    /**
-     * Show the input panel in order to choose the constraint parameter.
-     * @param defaultConstraint {@link org.gdms.data.types.Constraint} instance
-     * @return The new Constraint value, or defaultConstraint if this constraint has no parameters, null if the user cancel.
-     */
+
     /**
      * Show the input panel in order to choose the constraint parameter.
      * @param constraintCode {@see ConstraintFactory}
@@ -158,11 +153,11 @@ public abstract class ConstraintTableAction extends AbstractAction {
     }
     protected Constraint showConstraintSelectionPanel(List<Integer> availableConstraints,int defaultConstraint) {
         if(!availableConstraints.isEmpty()) {
-            ContainerItem<Integer>[] listItems = new ContainerItem[availableConstraints.size()];
+            ConstraintItem[] listItems = new ConstraintItem[availableConstraints.size()];
             int index=0;
             int defaultRow=-1;
             for(int constraint: availableConstraints) {
-                listItems[index] = new ContainerItem<Integer>(constraint, ConstraintFactory.getConstraintName(constraint));
+                listItems[index] = new ConstraintItem(constraint, ConstraintFactory.getConstraintName(constraint));
                 if(constraint==defaultConstraint) {
                     defaultRow = index;
                 }
@@ -180,14 +175,14 @@ public abstract class ConstraintTableAction extends AbstractAction {
             panel.addInput("list","",null,choice);
             if(UIFactory.showDialog(panel, true, true) && choice.getSelectedValue() instanceof ContainerItem) {
                 // define constraint parameter
-                return showConstraintInputPanel(((ContainerItem<Integer>) choice.getSelectedValue()).getKey(),"");
+                return showConstraintInputPanel(((ConstraintItem) choice.getSelectedValue()).getKey(),"");
             }
         }
         return null;
     }
     /**
      * Link this action with the constraint environment
-     * @param constraintHolder
+     * @param constraintHolder Set the main component
      */
     public void setConstraintHolder(ConstraintHolder constraintHolder) {
         this.constraintHolder = constraintHolder;
