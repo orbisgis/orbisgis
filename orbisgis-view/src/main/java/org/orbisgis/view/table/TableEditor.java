@@ -34,22 +34,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.RowSorter.SortKey;
-import javax.swing.SortOrder;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.PopupMenuListener;
@@ -76,8 +71,10 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.docking.DockingLocation;
@@ -89,6 +86,7 @@ import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.map.jobs.CreateSourceFromSelection;
+import org.orbisgis.view.table.ext.SourceTable;
 import org.orbisgis.view.table.filters.FieldsContainsFilterFactory;
 import org.orbisgis.view.table.filters.TableSelectionFilter;
 import org.orbisgis.view.table.filters.WhereSQLFilterFactory;
@@ -103,7 +101,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Edit a data source through a grid GUI.
  * @author Nicolas Fortin
  */
-public class TableEditor extends JPanel implements EditorDockable {
+public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         protected final static I18n I18N = I18nFactory.getI18n(TableEditor.class);
         private static final Logger LOGGER = Logger.getLogger("gui."+TableEditor.class);
         
@@ -130,7 +128,8 @@ public class TableEditor extends JPanel implements EditorDockable {
         private SourceListener sourceListener = 
                 EventHandler.create(SourceListener.class, this,"onSourceRemoved",
                 "","sourceRemoved");
-                
+        private ActionCommands popupActions = new ActionCommands();
+
         public TableEditor(TableEditableElement element) {
                 super(new BorderLayout());
                 //Add a listener to the source manager to close the table when
@@ -142,11 +141,59 @@ public class TableEditor extends JPanel implements EditorDockable {
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("openattributes"));
                 dockingPanelParameters.setDefaultDockingLocation(
                         new DockingLocation(DockingLocation.Location.STACKED_ON, "map_editor"));
+                dockingPanelParameters.addVetoableChangeListener(DockingPanelParameters.PROP_VISIBLE,EventHandler.create(VetoableChangeListener.class,this,"onVisibleChanging",""));
                 tableScrollPane = new JScrollPane(makeTable());
                 add(tableScrollPane,BorderLayout.CENTER);
                 updateTitle();
-        }    
+        }
 
+        List<Action> getDockActions() {
+            List<Action> actions = new LinkedList<Action>();
+            if(tableEditableElement.getDataSource().isEditable()) {
+                try {
+                    actions.add(new ActionAddColumn(tableEditableElement));
+                    actions.add(new ActionAddRow(tableEditableElement));
+                    actions.add(new ActionCancel(tableEditableElement));
+                    actions.add(new ActionUndo(tableEditableElement));
+                    actions.add(new ActionRedo(tableEditableElement));
+                    actions.add(new ActionSave(tableEditableElement));
+                    actions.add(new ActionEdition(tableEditableElement));
+                } catch (UnsupportedOperationException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(),ex);
+                }
+            }
+            return actions;
+        }
+        /**
+         * The window is going to be closed, check for unsaved modifications
+         * @param evt
+         * @throws PropertyVetoException
+         */
+        public void onVisibleChanging(PropertyChangeEvent evt) throws PropertyVetoException {
+            if(Boolean.FALSE.equals(evt.getNewValue())) {
+                if(tableEditableElement.isModified()) {
+                    int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                            I18N.tr("This table use modified data source, do you want to save these modifications before closing it ?"),
+                            I18N.tr("Unsaved modifications"),
+                            JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+                    if(response==JOptionPane.YES_OPTION) {
+                        try {
+                            tableEditableElement.save();
+                        } catch (EditableElementException ex) {
+                            int errorResponse = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                                    I18N.tr("The data source {0} can not be saved, are you sure you want to continue ?", tableEditableElement.getSourceName()),
+                                    I18N.tr("Errors on data source save process"),
+                                    JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+                            if(errorResponse==JOptionPane.NO_OPTION) {
+                                throw new PropertyVetoException(I18N.tr("Canceled by user"),evt);
+                            }
+                        }
+                    } else if(response==JOptionPane.CANCEL_OPTION) {
+                        throw new PropertyVetoException(I18N.tr("Canceled by user"),evt);
+                    }
+                }
+            }
+        }
         /**
          * A source has been removed, check that it is not the table source, if
          * it is close the editor
@@ -373,7 +420,8 @@ public class TableEditor extends JPanel implements EditorDockable {
                 findSameCells.addActionListener(
                         EventHandler.create(ActionListener.class,
                         this,"onMenuSelectSameCellValue"));
-                pop.add(findSameCells);                
+                pop.add(findSameCells);
+                popupActions.copyEnabledActions(pop);
                 return pop;
         }
         
@@ -586,6 +634,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                         pop.add(showStats);                                
                         
                 }
+                popupActions.copyEnabledActions(pop);
                 return pop;
 
         }
@@ -694,7 +743,8 @@ public class TableEditor extends JPanel implements EditorDockable {
         
         /**
          * When the editable element is open, 
-         * the data model of the table can be set
+         * the data model of the table can be set.
+         * Called only once.
          */
         private void readDataSource() {     
                 tableModel = new DataSourceTableModel(tableEditableElement);
@@ -724,8 +774,12 @@ public class TableEditor extends JPanel implements EditorDockable {
                 // Add a selection listener on the editable element
                 tableEditableElement.addPropertyChangeListener(TableEditableElement.PROP_SELECTION,
                         editableSelectionListener);
+                dockingPanelParameters.setDockActions(getDockActions());
+                initPopupActions();
         }
-        
+        private void initPopupActions() {
+                popupActions.addAction(new ActionRemoveColumn(this));
+        }
         /**
          * Frame visibility state change
          * @param visible 
@@ -733,6 +787,15 @@ public class TableEditor extends JPanel implements EditorDockable {
         public void onChangeVisibility(boolean visible) {
                 if(!visible) {                        
                         tableModel.dispose();
+                        for(Action action : dockingPanelParameters.getDockActions()) {
+                            if(action instanceof ActionDispose){
+                                try {
+                                    ((ActionDispose) action).dispose();
+                                }catch (Exception ex) {
+                                    LOGGER.error(ex.getLocalizedMessage(),ex);
+                                }
+                            }
+                        }
                         try {
                                 LOGGER.debug("Close table "+dockingPanelParameters.getTitle());
                                 tableEditableElement.close(new NullProgressMonitor());                                
@@ -747,7 +810,7 @@ public class TableEditor extends JPanel implements EditorDockable {
         }
         /**
          * Convert index from model to view then update the table selection
-         * @param selection ModelIndex selection
+         * @param modelSelection ModelIndex selection
          */
         private void setRowSelection(IntegerUnion modelSelection) {
                 IntegerUnion newSelection;
@@ -767,17 +830,23 @@ public class TableEditor extends JPanel implements EditorDockable {
         
         /**
          * Update the table selection
-         * @param selection View index selection
+         * @param viewSelection View index selection
          */
         private void setViewRowSelection(IntegerUnion viewSelection) {             
                 Iterator<Integer> intervals = viewSelection.getValueRanges().iterator();
+                final int maxRow = table.getRowCount();
                 try {
                         table.getSelectionModel().setValueIsAdjusting(true);
                         table.clearSelection();
                         while(intervals.hasNext()) {
+                                // If the DataSource here and in other editors is not the same (uncommitted changes)
+                                // Then the selected row index may not be the same and can be out of range.
+                                // The check is done here.
                                 int begin = intervals.next();
-                                int end = intervals.next();
-                                table.addRowSelectionInterval(begin, end);
+                                int end = Math.min(intervals.next(),maxRow - 1);
+                                if(begin < maxRow) {
+                                    table.addRowSelectionInterval(begin, end);
+                                }
                         }
                 }finally {
                         table.getSelectionModel().setValueIsAdjusting(false);
@@ -824,10 +893,9 @@ public class TableEditor extends JPanel implements EditorDockable {
                         onUpdateEditableSelection.set(false);
                 }
         }
-        
+
         /**
-         * 
-         * @param filtered If the shown rows do not reflect the model
+         *  Update the title label.
          */
         private void updateTitle() {
                 String sourceName = tableEditableElement.getSourceName();
@@ -928,5 +996,15 @@ public class TableEditor extends JPanel implements EditorDockable {
                 public String getTaskName() {
                         return I18N.tr("Open the data source {0}", tableEditableElement.getSourceName());
                 }
+        }
+
+        @Override
+        public JTable getTable() {
+                return table;
+        }
+
+        @Override
+        public Point getPopupCellAdress() {
+                return new Point(popupCellAdress);
         }
 }

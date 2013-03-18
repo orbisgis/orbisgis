@@ -33,11 +33,14 @@ import bibliothek.gui.dock.common.DefaultMultipleCDockable;
 import bibliothek.gui.dock.common.MultipleCDockableFactory;
 import org.orbisgis.view.docking.DockingPanel;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * A custom cdockable that contains a reference to the dockingPanel instance.
  */
 public class CustomMultipleCDockable extends DefaultMultipleCDockable implements CustomPanelHolder {
     private DockingPanel dockingPanel;
+    private AtomicBoolean changeParameter = new AtomicBoolean(false);
 
     public CustomMultipleCDockable(DockingPanel dockingPanel, MultipleCDockableFactory<?, ?> factory) {
         super(factory,dockingPanel.getComponent());
@@ -51,5 +54,22 @@ public class CustomMultipleCDockable extends DefaultMultipleCDockable implements
     public DockingPanel getDockingPanel() {
         return dockingPanel;
     }
-    
+
+    /**
+     * In order to veto the visiblity change, this method has to be overridden.
+     * @param visible New state
+     */
+    @Override
+    public void setVisible(boolean visible) {
+        if(!changeParameter.getAndSet(true)) {
+            try {
+                if(dockingPanel.getDockingParameters().setVisible(visible)) {
+                    // If not vetoed, propagate visible change.
+                    super.setVisible(visible);
+                }
+            } finally {
+                changeParameter.set(false);
+            }
+        }
+    }
 }

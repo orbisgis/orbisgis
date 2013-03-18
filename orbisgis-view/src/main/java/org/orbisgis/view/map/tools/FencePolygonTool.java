@@ -98,7 +98,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
                         
                         vc.getLayerModel().insertLayer(layer, 0);
                 } catch (LayerException e) {
-                        UILOGGER.error(I18N.tr("Cannot use fence tool"), e);
+                        UILOGGER.error(i18n.tr("Cannot use fence tool"), e);
                 }
         }
 
@@ -149,25 +149,30 @@ public class FencePolygonTool extends AbstractPolygonTool {
 
 
                 } catch (DriverLoadException e) {
-                        UILOGGER.error(I18N.tr("Error while recovering fence vectorial layer"), e);
+                        UILOGGER.error(i18n.tr("Error while recovering fence vectorial layer"), e);
                 } catch (DriverException e) {
-                        UILOGGER.error(I18N.tr("Cannot create fence layer"), e);
+                        UILOGGER.error(i18n.tr("Cannot create fence layer"), e);
 
                 } catch (LayerException e) {
-                        UILOGGER.error(I18N.tr("Cannot create fence layer"), e);
+                        UILOGGER.error(i18n.tr("Cannot create fence layer"), e);
 
                 } catch (IOException e) {
-                        UILOGGER.error(I18N.tr("Cannot create fence layer"), e);
+                        UILOGGER.error(i18n.tr("Cannot create fence layer"), e);
                 }
                 return null;
         }
 
         @Override
         public String getName() {
-                return I18N.tr("Draw a fence");
+                return i18n.tr("Draw a fence");
         }
 
-        @Override
+    @Override
+    public String getTooltip() {
+        return i18n.tr("Draw a fence");
+    }
+
+    @Override
         public ImageIcon getImageIcon() {
             return OrbisGISIcon.getIcon("shape_polygon_edit");
         }

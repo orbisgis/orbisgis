@@ -35,6 +35,8 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.DrawingException;
 import org.orbisgis.view.map.tool.FinishedAutomatonException;
@@ -45,25 +47,25 @@ import org.orbisgis.view.map.tools.generated.Multiline;
 public abstract class AbstractMultilineTool extends Multiline implements
 		InsertionTool {
 	protected GeometryFactory gf = new GeometryFactory();
-	protected ArrayList<Coordinate> points = new ArrayList<Coordinate>();
-	protected ArrayList<LineString> lines = new ArrayList<LineString>();
+	protected List<Coordinate> points = new ArrayList<Coordinate>();
+	protected List<LineString> lines = new ArrayList<LineString>();
 
 	@Override
 	public void transitionTo_Done(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
 		points = ToolUtilities.removeDuplicated(points);
-		if (((points.size() < 2) && (points.size() > 0))
+		if (((points.size() < 2) && (!points.isEmpty()))
 				|| ((points.isEmpty()) && (lines.isEmpty()))) {
-                        throw new TransitionException(I18N.tr("Lines must have at least two points"));
+                        throw new TransitionException(i18n.tr("Lines must have at least two points"));
                 }
-		if (points.size() > 0) {
+		if (!points.isEmpty()) {
 			addLine();
 		}
 
 		MultiLineString mls = gf.createMultiLineString(lines
-				.toArray(new LineString[0]));
+                .toArray(new LineString[lines.size()]));
 		if (!mls.isValid()) {
-			throw new TransitionException(I18N.tr("Invalid multiline"));
+			throw new TransitionException(i18n.tr("Invalid multiline"));
 		}
 
 		multilineDone(mls, vc, tm);
@@ -96,7 +98,7 @@ public abstract class AbstractMultilineTool extends Multiline implements
 			throws FinishedAutomatonException, TransitionException {
 		points = ToolUtilities.removeDuplicated(points);
 		if (points.size() < 2) {
-                        throw new TransitionException(I18N.tr("Lines must have at least two points"));
+                        throw new TransitionException(i18n.tr("Lines must have at least two points"));
                 }
 
 		addLine();
@@ -105,9 +107,9 @@ public abstract class AbstractMultilineTool extends Multiline implements
 	}
 
 	protected void addLine() throws TransitionException {
-		LineString ls = gf.createLineString(points.toArray(new Coordinate[0]));
+		LineString ls = gf.createLineString(points.toArray(new Coordinate[points.size()]));
 		if (!ls.isValid()) {
-			throw new TransitionException(I18N.tr("Invalid multiline"));
+			throw new TransitionException(i18n.tr("Invalid multiline"));
 		}
 		lines.add(ls);
 	}
@@ -133,13 +135,12 @@ public abstract class AbstractMultilineTool extends Multiline implements
 	public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException {
 		Point2D current = tm.getLastRealMousePosition();
-		ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
-				.clone();
+		List<Coordinate> tempPoints = new ArrayList<Coordinate>(points);
 		tempPoints.add(newCoordinate(current.getX(), current.getY(), vc));
-		ArrayList<LineString> tempLines = (ArrayList<LineString>) lines.clone();
+		List<LineString> tempLines = new ArrayList<LineString>(lines);
 		if (tempPoints.size() >= 2) {
 			tempLines.add(gf.createLineString(tempPoints
-					.toArray(new Coordinate[0])));
+                    .toArray(new Coordinate[tempPoints.size()])));
 		}
 
 		if (tempLines.isEmpty()) {
@@ -147,12 +148,12 @@ public abstract class AbstractMultilineTool extends Multiline implements
                 }
 
 		MultiLineString mls = gf.createMultiLineString(tempLines
-				.toArray(new LineString[0]));
+                .toArray(new LineString[tempLines.size()]));
 
 		tm.addGeomToDraw(mls);
 
 		if (!mls.isValid()) {
-			throw new DrawingException(I18N.tr("Invalid multiline"));
+			throw new DrawingException(i18n.tr("Invalid multiline"));
 		}
 	}
 

@@ -233,4 +233,15 @@ public class DefaultAction extends AbstractAction {
             putValue(ActionTools.INSERT_FIRST, insertFirst);
             return this;
         }
+
+        /**
+         * {@link ActionTools#isVisible(javax.swing.Action)}
+         * Default is True.
+         * @param visible
+         * @return this
+         */
+        public DefaultAction setVisible(boolean visible) {
+            putValue(ActionTools.VISIBLE, visible);
+            return this;
+        }
 }

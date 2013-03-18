@@ -71,7 +71,9 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 
         @Override
         public void addDataSourceListener(DataSourceListener listener) {
-                listeners.add(listener);
+                if(!listeners.contains(listener)) {
+                        listeners.add(listener);
+                }
         }
 
         @Override
@@ -79,20 +81,26 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
                 listeners.remove(listener);
         }
 
+        /**
+         * @return A copy of listeners in order to avoid {@link java.util.ConcurrentModificationException}
+         */
+        private List<DataSourceListener> getListeners() {
+                return new ArrayList<DataSourceListener>(listeners);
+        }
         protected void fireOpen(DataSource ds) {
-                for (DataSourceListener listener : listeners) {
+                for (DataSourceListener listener : getListeners()) {
                         listener.open(ds);
                 }
         }
 
         protected void fireCancel(DataSource ds) {
-                for (DataSourceListener listener : listeners) {
+                for (DataSourceListener listener : getListeners()) {
                         listener.cancel(ds);
                 }
         }
 
         protected void fireCommit(DataSource ds) {
-                for (DataSourceListener listener : listeners) {
+                for (DataSourceListener listener : getListeners()) {
                         listener.commit(ds);
                 }
         }

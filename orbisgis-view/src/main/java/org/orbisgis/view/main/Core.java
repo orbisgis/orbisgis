@@ -513,6 +513,13 @@ public class Core {
                 }
                 if (!modifiedElements.isEmpty()) {
                         SaveDocuments.CHOICE userChoice = SaveDocuments.showModal(mainFrame, modifiedElements);
+                        // If the user do not want to save the editable elements
+                        // Then cancel the modifications
+                        if(userChoice==SaveDocuments.CHOICE.SAVE_NONE) {
+                            for(EditableElement element : modifiedElements) {
+                                element.setModified(false);
+                            }
+                        }
                         return userChoice==SaveDocuments.CHOICE.CANCEL;
                 } else {
                         return false;

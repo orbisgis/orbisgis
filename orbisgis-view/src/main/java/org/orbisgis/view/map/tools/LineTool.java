@@ -58,6 +58,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 
@@ -71,6 +72,8 @@ import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 
+import javax.swing.*;
+
 public class LineTool extends AbstractLineTool {
 
         @Override
@@ -80,7 +83,7 @@ public class LineTool extends AbstractLineTool {
 
         @Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
-                return ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.LINESTRING))
+                return ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.LINESTRING), TypeFactory.createType(Type.MULTILINESTRING))
                         && ToolUtilities.isActiveLayerEditable(vc);
         }
 
@@ -110,8 +113,13 @@ public class LineTool extends AbstractLineTool {
                         row = ToolUtilities.populateNotNullFields(sds, row);
                         sds.insertFilledRow(row);
                 } catch (DriverException e) {
-                        throw new TransitionException(I18N.tr("Cannot insert linestring"), e);
+                        throw new TransitionException(i18n.tr("Cannot insert linestring"), e);
                 }
+        }
+
+        @Override
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("edition/drawline");
         }
 
         @Override
@@ -120,7 +128,12 @@ public class LineTool extends AbstractLineTool {
         }
 
         @Override
+        public String getTooltip() {
+            return i18n.tr("Draw a line");
+        }
+
+        @Override
         public String getName() {
-                return I18N.tr("Draw a line");
+                return i18n.tr("Draw a line");
         }
 }

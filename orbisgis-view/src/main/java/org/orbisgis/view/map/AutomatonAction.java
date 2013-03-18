@@ -29,21 +29,49 @@
 
 package org.orbisgis.view.map;
 
+import com.sun.media.jai.rmi.HashSetState;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.components.actions.ActionTools;
 import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.map.ext.AutomatonHolder;
+import org.orbisgis.view.map.ext.MapEditorAction;
 import org.orbisgis.view.map.ext.MapEditorExtension;
 import org.orbisgis.view.map.tool.Automaton;
-import javax.swing.Action;
+import org.orbisgis.view.map.tool.ToolListener;
+import org.orbisgis.view.map.tool.ToolManager;
+import org.orbisgis.view.map.tool.TransitionException;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Link an Automaton with the MapEditor
+ * Link an Automaton with the MapEditor.
+ * This action is quite complex because some listeners have to be installed
+ * in order to update the state of this action, it depends on :
+ * - Active layer
+ * - Active automaton
+ * This action must be released by calling the {@link AutomatonAction#disposeAutomaton()}
  * @author Nicolas Fortin
  */
 public class AutomatonAction extends DefaultAction implements AutomatonHolder {
     private Automaton automaton;
     private MapEditorExtension extension;
+    // Update this tool Selected state
+    private SynchroniseTool toolListener = new SynchroniseTool();
+    // To install, uninstall listener on MapContext
+    private PropertyChangeListener mapEditorListener = EventHandler.create(PropertyChangeListener.class, this, "onMapEditorUpdate","");
+    // To update this Action Enabled state
+    private PropertyChangeListener mapContextListener = EventHandler.create(PropertyChangeListener.class, this, "onMapContextUpdate","");
+    private AtomicBoolean isInitialised = new AtomicBoolean(false);
+    private Set<String> trackedMapContextProperties = new HashSet<String>();
+
     public AutomatonAction(String actionId, Automaton automaton, MapEditorExtension extension) {
         super(actionId, automaton.getName());
         this.extension = extension;
@@ -51,15 +79,141 @@ public class AutomatonAction extends DefaultAction implements AutomatonHolder {
         putValue(Action.SMALL_ICON,automaton.getImageIcon());
         putValue(Action.LARGE_ICON_KEY,automaton.getImageIcon());
         putValue(Action.SHORT_DESCRIPTION,automaton.getTooltip());
-        putValue(ActionTools.TOGGLE_GROUP,"automatons"); //radio group
+        putValue(ActionTools.TOGGLE_GROUP, MapEditorAction.TOGGLE_GROUP_AUTOMATONS); //radio group
         if(extension.getToolManager()!=null) {
-            putValue(Action.SELECTED_KEY,this.automaton.getName().equals(extension.getToolManager().getTool().getName()));
+            putValue(Action.SELECTED_KEY,isEqual(extension.getToolManager().getTool()));
         }
     }
 
+    /**
+     * @param otherAutomaton Automaton instance to compare with the Action's Automaton
+     * @return True if it is the same
+     */
+    private boolean isEqual(Automaton otherAutomaton) {
+        if(otherAutomaton!=null) {
+            return this.automaton.getClass().getName().equals(otherAutomaton.getClass().getName());
+        } else {
+            return false;
+        }
+    }
+    /**
+     * @return The Map extension linked with this Automaton Action
+     */
+    public MapEditorExtension getExtension() {
+        return extension;
+    }
+
+    /**
+     * The automaton activation state (enabled/disabled) will be checked
+     * when one of trackedMapContextProperties is updated.
+     * @param trackedMapContextProperties One of MapContext#PROP_*
+     * @return this
+     */
+    public AutomatonAction setTrackedMapContextProperties(Collection<String> trackedMapContextProperties) {
+        this.trackedMapContextProperties = new HashSet<String>(trackedMapContextProperties);
+        return this;
+    }
+
+    /**
+     * The automaton activation state (enabled/disabled) will be checked
+     * when propertyName is updated.
+     * @param propertyName One of MapContext#PROP_*
+     * @return this
+     */
+    public AutomatonAction addTrackedMapContextProperty(String propertyName) {
+        trackedMapContextProperties.add(propertyName);
+        return this;
+    }
+    private void init() {
+        if(!isInitialised.getAndSet(true)) {
+            if(extension.getToolManager()!=null) {
+                extension.getToolManager().addToolListener(toolListener);
+            }
+            extension.addPropertyChangeListener(mapEditorListener);
+            if(!trackedMapContextProperties.isEmpty()) {
+                if(extension.getMapElement()!=null) {
+                    installMapContextListener(extension.getMapElement().getMapContext());
+                }
+            }
+        }
+    }
+    private void removeMapContextListener(MapContext mapContext) {
+        mapContext.removePropertyChangeListener(mapContextListener);
+    }
+    private void installMapContextListener(MapContext mapContext) {
+        if(trackedMapContextProperties.size()==1) {
+            mapContext.addPropertyChangeListener(trackedMapContextProperties.iterator().next(),mapContextListener);
+        } else if(!trackedMapContextProperties.isEmpty()) {
+            mapContext.addPropertyChangeListener(mapContextListener);
+        }
+        checkAutomatonState();
+    }
+    /**
+     * The linked MapEditor accept a new Map
+     * @param evt
+     */
+    public void onMapEditorUpdate(PropertyChangeEvent evt) {
+        if(MapEditorExtension.PROP_MAP_ELEMENT.equals(evt.getPropertyName())) {
+            MapElement oldMap = (MapElement)evt.getOldValue();
+            MapElement newMap = (MapElement)evt.getNewValue();
+            if(oldMap!=null) {
+                removeMapContextListener(oldMap.getMapContext());
+            }
+            if(newMap!=null) {
+                installMapContextListener(newMap.getMapContext());
+
+            }
+        } else if(MapEditorExtension.PROP_TOOL_MANAGER.equals(evt.getPropertyName())) {
+            ToolManager oldTool = (ToolManager)evt.getOldValue();
+            ToolManager newTool = (ToolManager)evt.getNewValue();
+            if(oldTool!=null) {
+                oldTool.removeToolListener(toolListener);
+            }
+            if(newTool!=null) {
+                newTool.addToolListener(toolListener);
+            }
+        }
+    }
+
+    /**
+     * The Map active Layer (the edited one) has been updated
+     * @param evt
+     */
+    public void onMapContextUpdate(PropertyChangeEvent evt) {
+        if(trackedMapContextProperties.contains(evt.getPropertyName())) {
+            checkAutomatonState();
+        }
+    }
+    /**
+     * Remove listeners added by this action.
+     */
+    public void disposeAutomaton() {
+        if(extension!=null && extension.getToolManager()!=null) {
+            extension.getToolManager().removeToolListener(toolListener);
+            extension.removePropertyChangeListener(mapEditorListener);
+            if(extension.getMapElement()!=null) {
+                removeMapContextListener(extension.getMapElement().getMapContext());
+            }
+        }
+        extension = null;
+    }
+
+    /**
+     * When the tracked properties change this method is called in order to enable/disable automaton
+     */
+    protected void checkAutomatonState() {
+        init();
+        if(extension.getMapElement()!=null && extension.getToolManager()!=null) {
+            boolean automatonState = automaton.isEnabled(extension.getMapElement().getMapContext(),extension.getToolManager());
+            if(automatonState!=enabled) {
+                setEnabled(automatonState);
+            }
+        }
+    }
     @Override
     public boolean isEnabled() {
-        return automaton.isEnabled(extension.getMapContext(),extension.getToolManager());
+        checkAutomatonState();
+        return super.isEnabled();
     }
 
     /**
@@ -73,6 +227,30 @@ public class AutomatonAction extends DefaultAction implements AutomatonHolder {
     public void actionPerformed(ActionEvent ae) {
         if(getValue(Action.SELECTED_KEY).equals(Boolean.TRUE) && extension.getToolManager()!=null) {
             extension.getToolManager().setTool(automaton);
+        }
+    }
+
+    /**
+     * In order to deactivate tools that are not in the same button group (different controls)
+     * this toolListener disable unused Automaton.
+     */
+    private class SynchroniseTool implements ToolListener {
+
+        @Override
+        public void stateChanged(ToolManager toolManager) {
+            checkAutomatonState();
+        }
+
+        @Override
+        public void transitionException(ToolManager toolManager, TransitionException e) {
+            checkAutomatonState();
+        }
+
+        @Override
+        public void currentToolChanged(Automaton previous, ToolManager toolManager) {
+            if(toolManager.getTool()!=null) {
+                putValue(Action.SELECTED_KEY,isEqual(toolManager.getTool()));
+            }
         }
     }
 }

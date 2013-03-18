@@ -30,6 +30,7 @@
 package org.orbisgis.view.components.actions;
 
 import javax.swing.Action;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 /**
@@ -37,6 +38,8 @@ import java.util.List;
  * @author Nicolas Fortin
  */
 public interface ActionsHolder {
+        public static final String PROP_ACTIONS = "actions";
+
         /**
          * Add action and show in registered control.
          * @param action action to show
@@ -61,4 +64,35 @@ public interface ActionsHolder {
          * @param actionList
          */
         public void removeActions(List<Action> actionList);
+
+
+        /**
+         * Add a property-change listener for all properties.
+         * The listener is called for all properties.
+         * @param listener The PropertyChangeListener instance
+         * @note Use EventHandler.create to build the PropertyChangeListener instance
+         */
+        public void addPropertyChangeListener(PropertyChangeListener listener);
+
+        /**
+         * Add a property-change listener for a specific property.
+         * The listener is called only when there is a change to
+         * the specified property.
+         * @param prop The static property name PROP_..
+         * @param listener The PropertyChangeListener instance
+         * @note Use EventHandler.create to build the PropertyChangeListener instance
+         */
+        public void addPropertyChangeListener(String prop,PropertyChangeListener listener);
+        /**
+         * Remove the specified listener from the list
+         * @param listener The listener instance
+         */
+        public void removePropertyChangeListener(PropertyChangeListener listener);
+
+        /**
+         * Remove the specified listener for a specified property from the list
+         * @param prop The static property name PROP_..
+         * @param listener The listener instance
+         */
+        public void removePropertyChangeListener(String prop,PropertyChangeListener listener);
 }

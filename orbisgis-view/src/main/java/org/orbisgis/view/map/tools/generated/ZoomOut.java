@@ -29,71 +29,42 @@
 package org.orbisgis.view.map.tools.generated;
 
 import java.awt.Graphics;
-import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.*;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
+/**
+ * Zoom out common methods
+ */
+public abstract class ZoomOut extends AbstractAutomaton {
 
-public abstract class ZoomOut implements Automaton {
-        protected static final I18n I18N = I18nFactory.getI18n(ZoomOut.class);
-	private static Logger logger = Logger.getLogger(ZoomOut.class.getName());
-
-	private Status status = Status.STANDBY;
-
-	private MapContext ec;
-
-	private ToolManager tm;
-
-        @Override
-        public ImageIcon getCursor() {
-            return null;
-        }
-
-        
-        
-        @Override
+    @Override
 	public String[] getTransitionLabels() {
 		return new String[0];
 	}
 
-        @Override
+    @Override
 	public Code[] getTransitionCodes() {
 		return new Code[]{};
 	}
 
-        @Override
-	public void init(MapContext ec, ToolManager tm) throws TransitionException,
-			FinishedAutomatonException {
-		logger.info("status: " + status);
-		this.ec = ec;
-		this.tm = tm;
-		status = Status.STANDBY;
-		transitionTo_Standby(ec, tm);
-		if (isFinished(status)) {
-			throw new FinishedAutomatonException();
-		}
-	}
-
-        @Override
+    @Override
 	public void transition(Code code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
-		logger.info("transition code: " + code);
+                if (Code.ESC == code) {
+                    status = Status.CANCEL;
+                    transitionTo_Cancel(mc, tm);
+                    if (isFinished(status)) {
+                        throw new FinishedAutomatonException();
+                    }
+                }
                 Status preStatus;
                 switch(status){
                         case STANDBY:
-                                if (Code.POINT.equals(code)) {
+                                if (Code.POINT == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.DONE;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_Done(ec, tm);
+                                                transitionTo_Done(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -104,16 +75,11 @@ public abstract class ZoomOut implements Automaton {
                                 }
                                 break;
                         case DONE:
-                                if (Code.INIT.equals(code)) {
+                                if (Code.INIT == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.STANDBY;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_Standby(ec, tm);
+                                                transitionTo_Standby(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -124,15 +90,7 @@ public abstract class ZoomOut implements Automaton {
                                 }
                                 break;
                         default:
-                                if (Code.ESC.equals(code)) {
-                                        status = Status.CANCEL;
-                                        transitionTo_Cancel(ec, tm);
-                                        if (isFinished(status)) {
-                                                throw new FinishedAutomatonException();
-                                        }
-                                } else {
-                                        throw new NoSuchTransitionException(code.toString());
-                                }
+                                throw new NoSuchTransitionException(code.toString());
                 }
 
 		
@@ -153,13 +111,13 @@ public abstract class ZoomOut implements Automaton {
 	public void draw(Graphics g) throws DrawingException {
                 switch(status){
                         case STANDBY:
-                                drawIn_Standby(g, ec, tm);
+                                drawIn_Standby(g, mc, tm);
                                 break;
                         case DONE:
-                                drawIn_Done(g, ec, tm);
+                                drawIn_Done(g, mc, tm);
                                 break;
                         case CANCEL:
-                                drawIn_Cancel(g, ec, tm);
+                                drawIn_Cancel(g, mc, tm);
                                 break;
                 }
 
@@ -182,23 +140,10 @@ public abstract class ZoomOut implements Automaton {
 
 	public abstract void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException;
-
-	protected void setStatus(Status status) throws NoSuchTransitionException {
-		this.status = status;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
-	public String getName() {
-		return "ZoomOut";
-	}
-
 	public String getMessage() {
                 switch(status){
                         case STANDBY:
-                        	return I18N.tr("Select the center of the zoom");
+                        	return i18n.tr("Select the center of the zoom");
                         case DONE:
                         case CANCEL:
                                 return "";
@@ -207,40 +152,10 @@ public abstract class ZoomOut implements Automaton {
                 }
 	}
 
-	public String getConsoleCommand() {
-		return "";
-	}
-
-        @Override
-	public String getTooltip() {
-		return I18N.tr("Zoom out");
-	}
-
-	private ImageIcon mouseCursor;
-
-        @Override
-	public ImageIcon getImageIcon() {
-		if (mouseCursor != null) {
-			return mouseCursor;
-		} else {
-			return null;
-		}
-	}
-
-	public void setMouseCursor(ImageIcon mouseCursor) {
-		this.mouseCursor = mouseCursor;
-	}
-
-        @Override
+    @Override
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
 
 	}
-
-        @Override
-	public java.awt.Point getHotSpotOffset() {
-		return new java.awt.Point(5,5);
-	}
-
 }

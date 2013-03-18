@@ -79,6 +79,11 @@ public class CoreLauncher {
                                         }
                                         return null;
                                 }
+
+                            @Override
+                            public String toString() {
+                                return "CoreLauncher#onWorkspaceChange";
+                            }
                         };
                         worker.execute();
                 }

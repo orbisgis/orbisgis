@@ -31,8 +31,12 @@ package org.orbisgis.view.docking.internals.actions;
 
 import bibliothek.gui.dock.common.action.CAction;
 import bibliothek.gui.dock.toolbar.CToolbarItem;
-import javax.swing.*;
-import java.awt.*;
+import org.orbisgis.view.components.actions.ActionTools;
+
+import javax.swing.Action;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Dockable Tool Bar, related only with a swing Action instance.
@@ -40,14 +44,63 @@ import java.awt.*;
  */
 public class ToolBarItem extends CToolbarItem implements CActionHolder {
         private Action action;
-        public static final Dimension TOOLBAR_ITEM_SIZE = new Dimension(24,24);
-
-        public ToolBarItem(String id, CAction cAction, Action action) {
+        private PropertyChangeListener visibleListener = EventHandler.create(PropertyChangeListener.class,this,"onActionPropertyChange","");
+        private boolean trackActionVisibleState = false;
+        /**
+         * Create a new toolbar item
+         * @param id
+         * @param cAction Null or CAction instance
+         */
+        public ToolBarItem(String id,CAction cAction) {
                 super(id);
-                this.action = action;
                 setItem(cAction);
         }
 
+        /**
+         * If true the visible state of the ToolBarItem will be updated by the Visible property of the linked Action
+         * @param trackActionVisibleState
+         */
+        public void setTrackActionVisibleState(boolean trackActionVisibleState) {
+            this.trackActionVisibleState = trackActionVisibleState;
+        }
+
+        /**
+         * The visible property of an action has been updated
+         * @param evt
+         */
+        public void onActionPropertyChange(PropertyChangeEvent evt) {
+            if(trackActionVisibleState && ActionTools.VISIBLE.equals(evt.getPropertyName())) {
+                if(evt.getNewValue() instanceof Boolean) {
+                    this.setVisible((Boolean)evt.getNewValue());
+                }
+            }
+        }
+        /**
+         * In order to keep layout, the ToolBarItem can be kept and CAction and Action removed.
+         */
+        public void resetItem() {
+            setVisible(false);
+            setItem((CAction)null);
+        }
+        @Override
+        public void setItem(CAction item) {
+            if(item instanceof CActionHolder) {
+                setAction(((CActionHolder) item).getAction());
+            } else if(item==null) {
+                setAction(null);
+            }
+            super.setItem(item);
+        }
+        private void setAction(Action newAction) {
+            if(action!=null) {
+                action.removePropertyChangeListener(visibleListener);
+            }
+            if(newAction!=null) {
+                newAction.addPropertyChangeListener(visibleListener);
+            }
+            action = newAction;
+        }
+        @Override
         public Action getAction() {
                 return action;
         }

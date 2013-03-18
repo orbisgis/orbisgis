@@ -60,8 +60,8 @@ public class MapContextTest extends AbstractTest {
 	public void testRemoveSelectedLayer() throws Exception {
 		MapContext mc = new OwsMapContext();
 		mc.open(null);
-		ILayer layer = getDataManager().createLayer(
-				new File("src/test/resources/data/bv_sap.shp"));
+		ILayer layer = mc.createLayer(getDataManager().getDataSource(
+				new File("src/test/resources/data/bv_sap.shp").toURI()));
 		mc.getLayerModel().addLayer(layer);
 		mc.setSelectedLayers(new ILayer[] { layer });
 		assertTrue(mc.getSelectedLayers().length == 1);
@@ -75,10 +75,10 @@ public class MapContextTest extends AbstractTest {
 	public void testSetBadLayerSelection() throws Exception {
 		MapContext mc = new OwsMapContext();
 		mc.open(null);
-		ILayer layer = getDataManager().createLayer(
-				new File("src/test/resources/data/bv_sap.shp"));
-		ILayer layer2 = getDataManager().createLayer(
-				new File("src/test/resources/data/linestring.shp"));
+		ILayer layer = mc.createLayer(getDataManager().getDataSource(
+				new File("src/test/resources/data/bv_sap.shp").toURI()));
+		ILayer layer2 = mc.createLayer(getDataManager().getDataSource(
+				new File("src/test/resources/data/linestring.shp").toURI()));
 		mc.getLayerModel().addLayer(layer);
 		mc.setSelectedLayers(new ILayer[] { layer2 });
 		assertTrue(mc.getSelectedLayers().length == 0);
@@ -91,8 +91,8 @@ public class MapContextTest extends AbstractTest {
 	public void testRemoveActiveLayer() throws Exception {
 		MapContext mc = new OwsMapContext();
 		mc.open(null);
-		ILayer layer = getDataManager().createLayer(
-				new File("src/test/resources/data/bv_sap.shp"));
+		ILayer layer = mc.createLayer(getDataManager().getDataSource(
+				new File("src/test/resources/data/bv_sap.shp").toURI()));
 		mc.getLayerModel().addLayer(layer);
 		mc.setActiveLayer(layer);
 		mc.getLayerModel().remove(layer);
@@ -104,9 +104,9 @@ public class MapContextTest extends AbstractTest {
 //	public void testSaveAndRecoverMapContext() throws Exception {
 //		MapContext mc = new OwsMapContext();
 //		mc.open(null);
-//		ILayer layer1 = getDataManager().createLayer(
+//		ILayer layer1 = mc.createLayer(
 //				new File("src/test/resources/data/linestring.shp"));
-//		ILayer layer2 = getDataManager().createLayer(
+//		ILayer layer2 = mc.createLayer(
 //				new File("src/test/resources/data/bv_sap.shp"));
 //		mc.getLayerModel().addLayer(layer1);
 //		mc.getLayerModel().addLayer(layer2);
@@ -136,10 +136,10 @@ public class MapContextTest extends AbstractTest {
                 //Define a MapContext
 		MapContext mc = new OwsMapContext();
 		mc.open(null);
-		ILayer layer1 = getDataManager().createLayerCollection("a");
-		ILayer layer2 = getDataManager().createLayerCollection("a");
-		ILayer layer3 = getDataManager().createLayer("linestring",
-				new File("src/test/resources/data/linestring.shp"));
+        ILayer layer1 = mc.createLayerCollection("a");
+        ILayer layer2 = mc.createLayerCollection("a");
+        ILayer layer3 = mc.createLayer("linestring",
+                getDataManager().getDataSource(new File("src/test/resources/data/linestring.shp").toURI()));
 		mc.getLayerModel().addLayer(layer1);
 		layer1.addLayer(layer2);
 		layer2.addLayer(layer3);
@@ -248,8 +248,8 @@ public class MapContextTest extends AbstractTest {
 	public void testRemoveSource() throws Exception {
 		MapContext mc = new OwsMapContext();
 		mc.open(null);
-		ILayer layer = getDataManager().createLayer("linestring",
-				new File("src/test/resources/data/linestring.shp"));
+		ILayer layer = mc.createLayer("linestring",
+                getDataManager().getDataSource(new File("src/test/resources/data/linestring.shp").toURI()));
 		mc.getLayerModel().addLayer(layer);
 		getDataManager().getSourceManager().remove("linestring");
 		assertTrue(mc.getLayerModel().getLayerCount() == 0);
@@ -308,7 +308,7 @@ public class MapContextTest extends AbstractTest {
 //	public void testLegendPersistenceOpeningTwice() throws Exception {
 //		MapContext mc = new OwsMapContext();
 //		mc.open(null);
-//		ILayer layer = getDataManager().createLayer("bv_sap",
+//		ILayer layer = mc.createLayer("bv_sap",
 //				new File("src/test/resources/data/bv_sap.shp"));
 //		mc.getLayerModel().addLayer(layer);
 //		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
@@ -363,8 +363,8 @@ public class MapContextTest extends AbstractTest {
 	public void testActiveLayerClearedOnClose() throws Exception {
 		MapContext mc = new OwsMapContext();
 		mc.open(null);
-		ILayer layer = getDataManager().createLayer(
-				new File("src/test/resources/data/bv_sap.shp"));
+		ILayer layer = mc.createLayer(getDataManager().getDataSource(
+				new File("src/test/resources/data/bv_sap.shp").toURI()));
 		mc.getLayerModel().addLayer(layer);
 		mc.setActiveLayer(layer);
 		mc.close(null);
@@ -384,8 +384,8 @@ public class MapContextTest extends AbstractTest {
 		FileUtils.copyFile(new File("src/test/resources/data/bv_sap.shx"), shx);
 		MapContext mc = new OwsMapContext();
 		mc.open(null);
-		mc.getLayerModel().addLayer(getDataManager().createLayer("youhou",shp));
-		mc.getLayerModel().addLayer(getDataManager().createLayer("yaha",originalShp));
+		mc.getLayerModel().addLayer(mc.createLayer("youhou",getDataManager().getDataSource(shp.toURI())));
+		mc.getLayerModel().addLayer(mc.createLayer("yaha",getDataManager().getDataSource(originalShp.toURI())));
 		mc.close(null);
 		shp.delete();
 		dbf.delete();
@@ -409,7 +409,7 @@ public class MapContextTest extends AbstractTest {
 //		FileUtils.copy(new File("src/test/resources/data/bv_sap.shx"), shx);
 //		MapContext mc = new OwsMapContext();
 //		mc.open(null);
-//		ILayer layer = getDataManager().createLayer(shp);
+//		ILayer layer = mc.createLayer(shp);
 //		mc.getLayerModel().addLayer(layer);
 //		LabelLegend labelLegend = LegendFactory.createLabelLegend();
 //		int legendFieldIndex = 1;
@@ -437,11 +437,11 @@ public class MapContextTest extends AbstractTest {
 	public void testExportSVG() throws Exception {
 		MapContext mc = new OwsMapContext();
 		mc.open(null);
-		ILayer layer = getDataManager().createLayer("bv",
-				new File("src/test/resources/data/bv_sap.shp"));
+		ILayer layer = mc.createLayer("bv",
+                getDataManager().getDataSource(new File("src/test/resources/data/bv_sap.shp").toURI()));
 		mc.getLayerModel().addLayer(layer);
-		ILayer layer2 = getDataManager().createLayer("linestring",
-				new File("src/test/resources/data/linestring.shp"));
+		ILayer layer2 = mc.createLayer("linestring",
+                getDataManager().getDataSource(new File("src/test/resources/data/linestring.shp").toURI()));
 		mc.getLayerModel().addLayer(layer2);
 
 		MapExportManager mem = Services.getService(MapExportManager.class);

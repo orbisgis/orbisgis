@@ -100,7 +100,7 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition<FileDrive
                 throws DataSourceCreationException {
                 LOG.trace("Creating datasource");
                 if (!file.exists()) {
-                        throw new DataSourceCreationException(file + " "
+                        throw new DataSourceCreationException(file.getAbsolutePath() + " "
                                 + I18N.getString("gdms.datasource.error.noexits"));
                 }
                 FileDriver driver;

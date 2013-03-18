@@ -94,9 +94,8 @@ public class ZoomInTool extends AbstractRectangleTool {
 		double height = extent.getHeight() / 2;
 		double minx = x - width / 2;
 		double miny = y - height / 2;
-		Rectangle2D.Double newRect = new Rectangle2D.Double(minx, miny, width,
-				height);
-		return newRect;
+        return new Rectangle2D.Double(minx, miny, width,
+                height);
 	}
 
 	@Override
@@ -123,12 +122,12 @@ public class ZoomInTool extends AbstractRectangleTool {
         }
         @Override
 	public String getName() {
-		return I18N.tr("Zoom in");
+		return i18n.tr("Zoom in");
 	}
 
         @Override
         public String getTooltip() {
-                return I18N.tr("Click on the map to zoom in");
+                return i18n.tr("Click on the map to zoom in");
         }
         
 

@@ -128,6 +128,7 @@ public class MainContext {
      */
     public void dispose() {
         try {
+            dataManager.dispose();
             dataSourceFactory.freeResources();
         } catch (DataSourceFinalizationException ex) {
             LOGGER.error("Unable to free gdms resources, continue..", ex);

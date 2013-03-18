@@ -32,6 +32,8 @@ import com.vividsolutions.jts.geom.*;
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.DrawingException;
 import org.orbisgis.view.map.tool.FinishedAutomatonException;
@@ -45,10 +47,10 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
     private GeometryFactory gf = new GeometryFactory();
 
 
-    private ArrayList<Coordinate> points = new ArrayList<Coordinate>();
+    private List<Coordinate> points = new ArrayList<Coordinate>();
 
 
-    private ArrayList<Polygon> polygons = new ArrayList<Polygon>();
+    private List<Polygon> polygons = new ArrayList<Polygon>();
 
 
     @Override
@@ -71,25 +73,23 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
         points = ToolUtilities.removeDuplicated(points);
         if (points.size() < 3) {
             throw new TransitionException(
-                    I18N.tr("Polygons must have more than two points"));
+                    i18n.tr("Polygons must have more than two points"));
         }
         addPolygon(vc);
 
         transition(Code.INIT);
     }
 
-
-    @SuppressWarnings("unchecked")
     private void addPolygon(MapContext mapContext) throws TransitionException {
-        ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points.clone();
+        List<Coordinate> tempPoints = new ArrayList<Coordinate>(points);
         tempPoints.add(newCoordinate(points.get(0).x, points.get(0).y,
                                      mapContext));
-        Coordinate[] coords = tempPoints.toArray(new Coordinate[0]);
+        Coordinate[] coords = tempPoints.toArray(new Coordinate[tempPoints.size()]);
         Polygon p = gf.createPolygon(gf.createLinearRing(coords),
                                      new LinearRing[0]);
         if (!p.isValid()) {
             throw new TransitionException(
-                    I18N.tr("Invalid multipolygon"));
+                    i18n.tr("Invalid multipolygon"));
         }
         polygons.add(p);
     }
@@ -110,18 +110,18 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
     public void transitionTo_Done(MapContext vc, ToolManager tm)
             throws FinishedAutomatonException, TransitionException {
         points = ToolUtilities.removeDuplicated(points);
-        if (((points.size() < 3) && (points.size() > 0))
+        if (((points.size() < 3) && (!points.isEmpty()))
                 || ((points.isEmpty()) && (polygons.isEmpty()))) {
             throw new TransitionException(
-                    I18N.tr("Polygons must have more than two points"));
+                    i18n.tr("Polygons must have more than two points"));
         }
-        if (points.size() > 0) {
+        if (!points.isEmpty()) {
             addPolygon(vc);
         }
-        MultiPolygon mp = gf.createMultiPolygon(polygons.toArray(new Polygon[0]));
+        MultiPolygon mp = gf.createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
         if (!mp.isValid()) {
             throw new TransitionException(
-                    I18N.tr("Invalid multipolygon"));
+                    i18n.tr("Invalid multipolygon"));
         }
         multipolygonDone(mp, vc, tm);
 
@@ -152,26 +152,26 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
     public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
             throws DrawingException {
         Point2D current = tm.getLastRealMousePosition();
-        ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points.clone();
+        List<Coordinate> tempPoints = new ArrayList<Coordinate>(points);
         tempPoints.add(newCoordinate(current.getX(), current.getY(), vc));
         tempPoints.add(newCoordinate(tempPoints.get(0).x, tempPoints.get(0).y,
                                      vc));
-        ArrayList<Polygon> tempPolygons = (ArrayList<Polygon>) polygons.clone();
+        List<Polygon> tempPolygons = new ArrayList<Polygon>(polygons);
         if (tempPoints.size() >= 4) {
-            tempPolygons.add(gf.createPolygon(gf.createLinearRing(tempPoints.toArray(new Coordinate[0])), new LinearRing[0]));
+            tempPolygons.add(gf.createPolygon(gf.createLinearRing(tempPoints.toArray(new Coordinate[tempPoints.size()])), new LinearRing[0]));
         }
 
         if (tempPolygons.isEmpty()) {
             return;
         }
 
-        MultiPolygon mp = gf.createMultiPolygon(tempPolygons.toArray(new Polygon[0]));
+        MultiPolygon mp = gf.createMultiPolygon(tempPolygons.toArray(new Polygon[tempPolygons.size()]));
 
         tm.addGeomToDraw(mp);
 
         if (!mp.isValid()) {
             throw new DrawingException(
-                    I18N.tr("Invalid multipolygon"));
+                    i18n.tr("Invalid multipolygon"));
         }
     }
 

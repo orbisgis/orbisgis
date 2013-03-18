@@ -75,13 +75,12 @@ import org.orbisgis.view.map.tools.generated.Selection;
  * @author Fernando Gonzalez Cortes
  */
 public abstract class AbstractSelectionTool extends Selection {
+        private static final Color FILL_COLOR = new Color(255, 204, 51, 50);
+        private static final Color SELECTED_COLOR = new Color(255, 204, 51);
 
         private Rectangle2DDouble rect = new Rectangle2DDouble();
         protected ArrayList<Handler> selected = new ArrayList<Handler>();
 
-        /**
-         * @see org.orbisgis.view.map.tools.generated.Selection#transitionTo_Standby()
-         */
         @Override
         public void transitionTo_Standby(MapContext vc, ToolManager tm)
                 throws TransitionException {
@@ -120,7 +119,7 @@ public abstract class AbstractSelectionTool extends Selection {
                                                                 newSelection.add(rowIndex);
                                                         }
                                                         activeLayer.setSelection(newSelection);
-                                                        if (newSelection.size() > 0) {
+                                                        if (!newSelection.isEmpty()) {
                                                                 transition(Code.SELECTION);
                                                         } else {
                                                                 transition(Code.INIT);
@@ -152,23 +151,17 @@ public abstract class AbstractSelectionTool extends Selection {
                 String geomFieldName = ds.getMetadata().getFieldName(
                         ds.getSpatialFieldIndex());
                 Envelope env = new Envelope(rect.getMinX(), rect.getMaxX(), rect.getMinY(), rect.getMaxY());
-                Iterator<Integer> res = ds.queryIndex(new DefaultSpatialIndexQuery(geomFieldName,
-                        env));
 
-                return res;
+            return ds.queryIndex(new DefaultSpatialIndexQuery(geomFieldName,
+                    env));
         }
 
-        /**
-         * @see org.orbisgis.view.map.tools.generated.Selection#transitionTo_OnePointLeft()
-         */
+    
         @Override
         public void transitionTo_OnePointLeft(MapContext vc, ToolManager tm)
                 throws TransitionException {
         }
-
-        /**
-         * @see org.orbisgis.view.map.tools.generated.Selection#transitionTo_TwoPoints()
-         */
+    
         @Override
         public void transitionTo_TwoPoints(MapContext mc, ToolManager tm)
                 throws TransitionException, FinishedAutomatonException {
@@ -222,19 +215,14 @@ public abstract class AbstractSelectionTool extends Selection {
                         throw new TransitionException(e);
                 }
         }
-
-        /**
-         * @see org.orbisgis.view.map.tools.generated.Selection#transitionTo_Selection()
-         */
+    
         @Override
         public void transitionTo_Selection(MapContext vc, ToolManager tm)
                 throws TransitionException {
                 rect = new Rectangle2DDouble();
         }
 
-        /**
-         * @see org.orbisgis.view.map.tools.generated.Selection#transitionTo_PointWithSelection()
-         */
+    
         @Override
         public void transitionTo_PointWithSelection(MapContext mc, ToolManager tm)
                 throws TransitionException, FinishedAutomatonException {
@@ -243,24 +231,22 @@ public abstract class AbstractSelectionTool extends Selection {
                 BitSet geom = new BitSet();
                 ArrayList<Handler> handlers = tm.getCurrentHandlers();
                 selected.clear();
-                for (int i = 0; i < handlers.size(); i++) {
-                        Handler handler = handlers.get(i);
+                for (Handler handler : handlers) {
+                            /*
+                             * Don't select two handlers from the same geometry
+                             */
+                    if (geom.get(handler.getGeometryIndex())) {
+                        continue;
+                    }
 
-                        /*
-                         * Don't select two handlers from the same geometry
-                         */
-                        if (geom.get(handler.getGeometryIndex())) {
-                                continue;
+                    if (p.distance(handler.getPoint()) < tm.getTolerance()) {
+                        if (!ToolUtilities.isActiveLayerEditable(mc)) {
+                            throw new TransitionException(
+                                    i18n.tr("Cannot modify the theme"));
                         }
-
-                        if (p.distance(handler.getPoint()) < tm.getTolerance()) {
-                                if (!ToolUtilities.isActiveLayerEditable(mc)) {
-                                        throw new TransitionException(
-                                                I18N.tr("Cannot modify the theme"));
-                                }
-                                selected.add(handler);
-                                geom.set(handler.getGeometryIndex());
-                        }
+                        selected.add(handler);
+                        geom.set(handler.getGeometryIndex());
+                    }
                 }
 
                 if (selected.isEmpty()) {
@@ -271,58 +257,42 @@ public abstract class AbstractSelectionTool extends Selection {
                 }
         }
 
-        /**
-         * @see org.orbisgis.view.map.tools.generated.Selection#transitionTo_Movement()
-         */
         @Override
         public void transitionTo_Movement(MapContext vc, ToolManager tm)
                 throws TransitionException {
         }
 
-        /**
-         * @see org.orbisgis.view.map.tools.generated.Selection#transitionTo_MakeMove()
-         */
         @Override
         public void transitionTo_MakeMove(MapContext mc, ToolManager tm)
                 throws TransitionException, FinishedAutomatonException {
 		DataSource ds = getLayer(mc).getDataSource();
-		for (int i = 0; i < selected.size(); i++) {
-			Handler handler = selected.get(i);
-			Geometry g;
-			try {
-				g = handler.moveTo(tm.getValues()[0], tm.getValues()[1]);
-			} catch (CannotChangeGeometryException e1) {
-				throw new TransitionException(e1);
-        }
+            for (Handler handler : selected) {
+                Geometry g;
+                try {
+                    g = handler.moveTo(tm.getValues()[0], tm.getValues()[1]);
+                } catch (CannotChangeGeometryException e1) {
+                    throw new TransitionException(e1);
+                }
 
-			try {
-				ds.setGeometry(handler.getGeometryIndex(), g);
-			} catch (DriverException e) {
-				throw new TransitionException(e);
-			}
-		}
+                try {
+                    ds.setGeometry(handler.getGeometryIndex(), g);
+                } catch (DriverException e) {
+                    throw new TransitionException(e);
+                }
+            }
 
 		transition(Code.EMPTY);
 	}
 
-        /**
-         * @see org.orbisgis.view.map.tools.generated.Selection#drawIn_Standby(java.awt.Graphics)
-         */
         @Override
         public void drawIn_Standby(Graphics g, MapContext vc, ToolManager tm)
                 throws DrawingException {
         }
 
-        /**
-         * @see org.orbisgis.view.map.tools.generated.Selection#drawIn_OnePoint(java.awt.Graphics)
-         */
         @Override
         public void drawIn_OnePoint(Graphics g, MapContext vc, ToolManager tm) {
         }
 
-        /**
-         * @see org.orbisgis.view.map.tools.generated.Selection#drawIn_OnePointLeft(java.awt.Graphics)
-         */
         @Override
         public void drawIn_OnePointLeft(Graphics g, MapContext vc, ToolManager tm) {
                 Point p = tm.getMapTransform().fromMapPoint(
@@ -331,8 +301,7 @@ public abstract class AbstractSelectionTool extends Selection {
                 int miny = Math.min(p.y, tm.getLastMouseY());
                 int width = Math.abs(p.x - tm.getLastMouseX());
                 int height = Math.abs(p.y - tm.getLastMouseY());
-                Color fillColor = new Color(255, 204, 51, 50);
-                Color lineColor = new Color(255, 204, 51);
+                Color fillColor = FILL_COLOR;
                 if (tm.getLastMouseX() < p.x) {
 			((Graphics2D) g).setStroke(new BasicStroke(1,
 					BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10,
@@ -347,54 +316,38 @@ public abstract class AbstractSelectionTool extends Selection {
                 g2.fill(shape);
 		g2.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND,
 				BasicStroke.JOIN_ROUND));
-		g2.setColor(new Color(255, 204, 51));
+		g2.setColor(SELECTED_COLOR);
                 g2.draw(shape);
         }
 
-        /**
-         * @see org.orbisgis.view.map.tools.generated.Selection#drawIn_TwoPoints(java.awt.Graphics)
-         */
         @Override
         public void drawIn_TwoPoints(Graphics g, MapContext vc, ToolManager tm) {
         }
 
-        /**
-         * @see org.orbisgis.view.map.tools.generated.Selection#drawIn_Selection(java.awt.Graphics)
-         */
         @Override
         public void drawIn_Selection(Graphics g, MapContext vc, ToolManager tm) {
         }
 
-        /**
-         * @see org.orbisgis.view.map.tools.generated.Selection#drawIn_PointWithSelection(java.awt.Graphics)
-         */
         @Override
         public void drawIn_PointWithSelection(Graphics g, MapContext vc,
                 ToolManager tm) {
         }
 
-        /**
-         * @see org.orbisgis.view.map.tools.generated.Selection#drawIn_Movement(java.awt.Graphics)
-         */
         @Override
         public void drawIn_Movement(Graphics g, MapContext vc, ToolManager tm)
                 throws DrawingException {
                 Point2D p = tm.getLastRealMousePosition();
                 try {
-                        for (int i = 0; i < selected.size(); i++) {
-                                Handler handler = selected.get(i);
-                                Geometry geom = handler.moveTo(p.getX(), p.getY());
-                                tm.addGeomToDraw(geom);
+                        for (Handler handler : selected) {
+                            Geometry geom = handler.moveTo(p.getX(), p.getY());
+                            tm.addGeomToDraw(geom);
                         }
                 } catch (CannotChangeGeometryException e) {
                         throw new DrawingException(
-                                I18N.tr("Cannot move {0}",e.getMessage()));
+                                i18n.tr("Cannot move {0}",e.getMessage()));
                 }
         }
 
-        /**
-         * @see org.orbisgis.view.map.tools.generated.Selection#drawIn_MakeMove(java.awt.Graphics)
-         */
         @Override
         public void drawIn_MakeMove(Graphics g, MapContext vc, ToolManager tm) {
         }

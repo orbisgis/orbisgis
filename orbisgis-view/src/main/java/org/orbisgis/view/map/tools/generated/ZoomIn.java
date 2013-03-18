@@ -29,28 +29,13 @@
 package org.orbisgis.view.map.tools.generated;
 
 import java.awt.Graphics;
-import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.*;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
-
-public abstract class ZoomIn implements Automaton {
-        protected static final I18n I18N = I18nFactory.getI18n(ZoomIn.class);
-	private static Logger logger = Logger.getLogger(ZoomIn.class);
-
-	private Status status = Status.STANDBY;
-
-	private MapContext ec;
-
-	private ToolManager tm;
-
-        @Override
-        public ImageIcon getCursor() {
-            return null;
-        }
+/**
+ * ZoomIn common tools
+ */
+public abstract class ZoomIn extends AbstractAutomaton {
 
         @Override
 	public String[] getTransitionLabels() {
@@ -62,36 +47,25 @@ public abstract class ZoomIn implements Automaton {
 		return new Code[0];
 	}
 
-        @Override
-	public void init(MapContext ec, ToolManager tm) throws TransitionException,
-			FinishedAutomatonException {
-		logger.debug("status: " + status);
-		this.ec = ec;
-		this.tm = tm;
-		status = Status.STANDBY;
-		transitionTo_Standby(ec, tm);
-		if (isFinished(status)) {
-			throw new FinishedAutomatonException();
-		}
-	}
-
-        @Override
+    @Override
 	public void transition(Code code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
-		logger.debug("transition code: " + code);
+                if (Code.ESC==code) {
+                    status = Status.CANCEL;
+                    transitionTo_Cancel(mc, tm);
+                    if (isFinished(status)) {
+                        throw new FinishedAutomatonException();
+                    }
+                    return;
+                }
                 Status preStatus;
                 switch(status){
                         case STANDBY:
-                                if (Code.PRESS.equals(code)) {
+                                if (Code.PRESS == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.ONE_POINT_LEFT;
-                                                logger.info("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_OnePointLeft(ec, tm);
+                                                transitionTo_OnePointLeft(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -102,16 +76,11 @@ public abstract class ZoomIn implements Automaton {
                                 }
                                 break;
                         case ONE_POINT_LEFT:
-                                if (Code.RELEASE.equals(code)) {
+                                if (Code.RELEASE == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.RECTANGLE_DONE;
-                                                logger.debug("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_RectangleDone(ec, tm);
+                                                transitionTo_RectangleDone(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -122,16 +91,11 @@ public abstract class ZoomIn implements Automaton {
                                 }
                                 break;
                         case RECTANGLE_DONE:
-                                if (Code.INIT.equals(code)) {
+                                if (Code.INIT == code) {
                                         preStatus = status;
                                         try {
                                                 status = Status.STANDBY;
-                                                logger.debug("status: " + status);
-                                                double[] v = tm.getValues();
-                                                for (int i = 0; i < v.length; i++) {
-                                                        logger.info("value: " + v[i]);
-                                                }
-                                                transitionTo_Standby(ec, tm);
+                                                transitionTo_Standby(mc, tm);
                                                 if (isFinished(status)) {
                                                         throw new FinishedAutomatonException();
                                                 }
@@ -142,15 +106,7 @@ public abstract class ZoomIn implements Automaton {
                                 }
                                 break;
                         default:
-                               if ("esc".equals(code)) {
-                                        status = Status.CANCEL;
-                                        transitionTo_Cancel(ec, tm);
-                                        if (isFinished(status)) {
-                                                throw new FinishedAutomatonException();
-                                        }
-                                } else {
-                                        throw new NoSuchTransitionException(code.toString());
-                                }
+                                throw new NoSuchTransitionException(code.toString());
                 }
 	}
 
@@ -171,16 +127,16 @@ public abstract class ZoomIn implements Automaton {
 	public void draw(Graphics g) throws DrawingException {
                 switch(status){
                         case STANDBY:
-                                drawIn_Standby(g, ec, tm);
+                                drawIn_Standby(g, mc, tm);
                                 break;
                         case ONE_POINT_LEFT:
-                                drawIn_OnePointLeft(g, ec, tm);
+                                drawIn_OnePointLeft(g, mc, tm);
                                 break;
                         case RECTANGLE_DONE:
-                                drawIn_RectangleDone(g, ec, tm);
+                                drawIn_RectangleDone(g, mc, tm);
                                 break;
                         case CANCEL:
-                                drawIn_Cancel(g, ec, tm);
+                                drawIn_Cancel(g, mc, tm);
                                 break;
                 }
 	}
@@ -210,25 +166,12 @@ public abstract class ZoomIn implements Automaton {
 	public abstract void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException;
 
-	protected void setStatus(Status status) throws NoSuchTransitionException {
-		this.status = status;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
-        @Override
-	public String getName() {
-		return "ZoomIn";
-	}
-
 	public String getMessage() {
                 switch(status){
                         case STANDBY:
-                                return I18N.tr("Select the first point of the zooming rectangle");
+                                return i18n.tr("Select the first point of the zooming rectangle");
                         case ONE_POINT_LEFT:
-                                return I18N.tr("Select the second point");
+                                return i18n.tr("Select the second point");
                         case RECTANGLE_DONE:
                         case CANCEL:
                                 return "";
@@ -237,39 +180,10 @@ public abstract class ZoomIn implements Automaton {
                 }
 	}
 
-	public String getConsoleCommand() {
-		return "zoomin";
-	}
-
-        @Override
-	public String getTooltip() {
-		return I18N.tr("Zoom in");
-	}
-
-	private ImageIcon mouseCursor;
-
-        @Override
-	public ImageIcon getImageIcon() {
-		if (mouseCursor != null) {
-			return mouseCursor;
-		} else {
-			return null;
-		}
-	}
-
-	public void setMouseCursor(ImageIcon mouseCursor) {
-		this.mouseCursor = mouseCursor;
-	}
-
-        @Override
+    @Override
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
-	}
-
-        @Override
-	public java.awt.Point getHotSpotOffset() {
-		return new java.awt.Point(8, 8);
 	}
 
 }

@@ -38,8 +38,11 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
+
+import javax.swing.*;
 
 public class MultipointTool extends AbstractMultipointTool {
 
@@ -82,7 +85,11 @@ public class MultipointTool extends AbstractMultipointTool {
 
         @Override
 	public String getName() {
-		return I18N.tr("Draw a multipoint");
+		return i18n.tr("Draw a multipoint");
 	}
 
+    @Override
+    public ImageIcon getImageIcon() {
+        return OrbisGISIcon.getIcon("edition/drawmultipoint");
+    }
 }

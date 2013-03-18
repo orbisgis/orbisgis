@@ -126,8 +126,12 @@ public final class BshConsolePanel extends JPanel {
          * folder. The scripts are overrided after each run.
          */
         private class LoadBSHScripts extends SwingWorker<Object, Object> {
+            @Override
+            public String toString() {
+                return "BshConsolePanel#LoadBSHScripts";
+            }
 
-                @Override
+            @Override
                 protected Object doInBackground() {
                         CoreWorkspace ws = Services.getService(CoreWorkspace.class);
                         try {
