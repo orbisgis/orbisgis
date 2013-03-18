@@ -192,7 +192,7 @@ public class RecodedLine extends AbstractRecodedLegend<LineParameters> implement
 
         @Override
         public String getLegendTypeName() {
-                return "Recoded Line";
+                return "Value Classification - Line";
         }
 
         @Override

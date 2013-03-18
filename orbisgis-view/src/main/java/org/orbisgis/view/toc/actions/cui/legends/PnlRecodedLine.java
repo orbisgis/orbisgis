@@ -36,6 +36,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
@@ -66,6 +67,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -102,6 +104,8 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     public final static String CREATE_CLASSIF = "Create classification";
     private SelectDistinctJob selectDistinct;
     private BackgroundListener background;
+    public final static int CELL_PREVIEW_WIDTH = CanvasSE.WIDTH/2;
+    public final static int CELL_PREVIEW_HEIGHT = CanvasSE.HEIGHT/2;
 
     @Override
     public Component getComponent() {
@@ -113,6 +117,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     public void initialize(LegendContext lc) {
         if (legend == null) {
             setLegend(new RecodedLine());
+            initPreview();
         }
         setGeometryType(lc.getGeometryType());
         ILayer layer = lc.getLayer();
@@ -147,24 +152,25 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
      * @param me The MouseEvent that caused the call to this method.
      */
     public void onEditFallback(MouseEvent me){
-        legend.setFallbackParameters(editCanvas(fallbackPreview, legend.getFallbackParameters()));
+        legend.setFallbackParameters(editCanvas(fallbackPreview));
     }
 
     /**
      * Builds a SIF dialog used to edit the given LineParameters.
      * @param cse The canvas we want to edit
-     * @param lps The LineParameters to feed the canvas
      * @return The LineParameters that must be used at the end of the edition.
      */
-    private LineParameters editCanvas(CanvasSE cse, LineParameters lps){
+    private LineParameters editCanvas(CanvasSE cse){
+        LineParameters lps = legend.getFallbackParameters();
         UniqueSymbolLine usl = new UniqueSymbolLine(lps);
-        PnlUniqueLineSE pls = new PnlUniqueLineSE();
+        usl.setStrokeUom(legend.getStrokeUom());
+        PnlUniqueLineSE pls = new PnlUniqueLineSE(false);
         pls.setLegend(usl);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
             usl = (UniqueSymbolLine) pls.getLegend();
             LineParameters nlp = usl.getLineParameters();
             cse.setSymbol(usl.getSymbolizer());
-            cse.invalidate();
+            cse.imageChanged();
             return nlp;
         } else {
             return lps;
@@ -208,11 +214,21 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     }
 
     /**
+     * Gets the Symbolizer that is associated to the unique symbol matching the fallback configuration of this
+     * unique value classification.
+     * @return A Symbolizer.
+     */
+    private Symbolizer getFallbackSymbolizer(){
+        UniqueSymbolLine usl = new UniqueSymbolLine(legend.getFallbackParameters());
+        usl.setStrokeUom(legend.getStrokeUom());
+        return usl.getSymbolizer();
+    }
+
+    /**
      * Initializes the preview for the fallback configuration
      */
     private void initPreview() {
-        UniqueSymbolLine usl = new UniqueSymbolLine(legend.getFallbackParameters());
-        fallbackPreview = new CanvasSE(usl.getSymbolizer());
+        fallbackPreview = new CanvasSE(getFallbackSymbolizer());
         MouseListener l = EventHandler.create(MouseListener.class, this, "onEditFallback", "", "mouseClicked");
         fallbackPreview.addMouseListener(l);
     }
@@ -243,8 +259,8 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         TableModelRecodedLine model = new TableModelRecodedLine(legend);
         table = new JTable(model);
         table.setDefaultEditor(Object.class, null);
-        table.setRowHeight(CanvasSE.HEIGHT);
-        final int previewWidth = CanvasSE.WIDTH;
+        table.setRowHeight(CELL_PREVIEW_HEIGHT);
+        final int previewWidth = CELL_PREVIEW_WIDTH;
         TableColumn previews = table.getColumnModel().getColumn(TableModelRecodedLine.PREVIEW_COLUMN);
         previews.setWidth(previewWidth);
         previews.setMinWidth(previewWidth);
@@ -326,20 +342,49 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getFallback(), gbc);
-        //Classification generator
+        //UOM
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        glob.add(getUOMCombo(),gbc);
+        //Classification generator
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 3;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getCreateClassificationPanel(), gbc);
         //Table for the recoded configurations
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getTablePanel(), gbc);
         this.add(glob);
         this.revalidate();
+    }
+
+    private JPanel getUOMCombo(){
+        JPanel pan = new JPanel();
+        JComboBox jcb = getLineUomCombo(legend);
+        ActionListener aclUom = EventHandler.create(ActionListener.class, this, "updatePreview", "source");
+        jcb.addActionListener(aclUom);
+        pan.add(new JLabel(I18N.tr("Unit of measure :")));
+        pan.add(jcb);
+        return pan;
+    }
+
+    /**
+     * Update the inner CanvasSE. It updates its symbolizer and forced the image to be redrawn.
+     */
+    public void updatePreview(Object source){
+        JComboBox jcb = (JComboBox) source;
+        updateLUComboBox(jcb.getSelectedIndex());
+        CanvasSE prev = getPreview();
+        prev.setSymbol(getFallbackSymbolizer());
+        prev.imageChanged();
+        TableModelRecodedLine model = (TableModelRecodedLine) table.getModel();
+        model.fireTableDataChanged();
     }
 
     /**
@@ -584,6 +629,11 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         return rl;
     }
 
+    @Override
+    public CanvasSE getPreview() {
+        return fallbackPreview;
+    }
+
     /**
      * This Job can be used as a background operation to retrieve a set containing the distinct data of a specific
      * field in a DataSource.
@@ -604,7 +654,6 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         @Override
         public void run(ProgressMonitor pm) {
             result = getValues(pm);
-            result = result == null ? new HashSet<String>() : result;
             if(result != null){
                 RecodedLine rl;
                 if(colorConfig.isEnabled() && result.size() > 0){
@@ -627,7 +676,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
          * @param pm Used to be able to cancel the job.
          * @return The distinct values as String instances in a {@link HashSet} or null if the job has been cancelled.
          */
-        public HashSet<String> getValues(ProgressMonitor pm){
+        public HashSet<String> getValues(final ProgressMonitor pm){
             HashSet<String> ret = new HashSet<String>();
             try {
                 long rowCount=ds.getRowCount();
@@ -636,9 +685,25 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
                 double m = rowCount>0 ?(double)10/rowCount : 0;
                 int n =0;
                 int fieldIndex = ds.getFieldIndexByName(fieldName);
+                final int warn = 100;
                 for(long i=0; i<rowCount; i++){
                     Value val = ds.getFieldValue(i, fieldIndex);
                     ret.add(val.toString());
+                    if(ret.size() == warn){
+                        final UIPanel cancel = new CancelPanel(warn);
+                        try{
+                            SwingUtilities.invokeAndWait(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(!UIFactory.showDialog(cancel,true, true)){
+                                        pm.setCancelled(true);
+                                    }
+                                }
+                            });
+                        } catch (Exception ie){
+                            LOGGER.warn(I18N.tr("The application has ended unexpectedly"));
+                        }
+                    }
                     if(i*m>n*10){
                         n++;
                         pm.progressTo(n);
@@ -755,6 +820,51 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
 
         @Override
         public void jobReplaced(Job job) {
+        }
+    }
+
+    /**
+     * This panel is used to let the user cancel classifications on more values than a given threshold.
+     */
+    private static class CancelPanel implements UIPanel {
+
+        private int threshold;
+
+        /**
+         * Builds a new CancelPanel
+         * @param thres The expected limit, displayed in the inner JLable.
+         */
+        public CancelPanel(int thres){
+            super();
+            threshold = thres;
+        }
+
+        @Override
+        public URL getIconURL() {
+            return UIFactory.getDefaultIcon();
+        }
+
+        @Override
+        public String getTitle() {
+            return I18N.tr("Continue ?");
+        }
+
+        @Override
+        public String validateInput() {
+            return null;
+        }
+
+        @Override
+        public Component getComponent() {
+            JPanel pan = new JPanel();
+            JLabel lab = new JLabel();
+            StringBuilder sb = new StringBuilder();
+            sb.append(I18N.tr("<html><p>The analysis seems to generate more than "));
+            sb.append(threshold);
+            sb.append(I18N.tr(" different values...</p><p>Are you sure you want to continue ?</p></html>"));
+            lab.setText(sb.toString());
+            pan.add(lab);
+            return pan;
         }
     }
 }

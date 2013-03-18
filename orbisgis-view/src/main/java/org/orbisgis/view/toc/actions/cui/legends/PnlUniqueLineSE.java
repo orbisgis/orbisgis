@@ -41,6 +41,7 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
+import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -72,6 +73,24 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          * be unique symbol (ie constant) Legends.
          */
         private UniqueSymbolLine uniqueLine;
+        private final boolean displayUom;
+
+        /**
+         * Default constructor. The UOM combo box is displayed.
+         */
+        public PnlUniqueLineSE(){
+            this(true);
+        }
+
+        /**
+         * Builds a new PnlUniqueLineSE choosing if we want to display the uom combo box.
+         * @param uom if true, the uom combo box will be displayed.
+         */
+        public PnlUniqueLineSE(boolean uom){
+            super();
+            this.displayUom = uom;
+
+        }
 
         @Override
         public Component getComponent() {
@@ -186,6 +205,9 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 grid.setVgap(5);
                 jp.setLayout(grid);
                 lineUom = getLineUomCombo((StrokeUom)getLegend());
+                CanvasSE prev = getPreview();
+                ActionListener aclUom = EventHandler.create(ActionListener.class, prev, "imageChanged");
+                lineUom.addActionListener(aclUom);
                 lineWidth = getLineWidthSpinner(legend);
                 lineColor = getColorField(legend.getFillLegend());
                 lineOpacity = getLineOpacitySpinner(legend.getFillLegend());
@@ -202,8 +224,10 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                         lineCheckBox.setSelected(leg instanceof ConstantPenStrokeLegend);
                 }
                 //Uom
-                jp.add(buildText(I18N.tr("Unit of measure :")));
-                jp.add(lineUom);
+                if(displayUom){
+                    jp.add(buildText(I18N.tr("Unit of measure :")));
+                    jp.add(lineUom);
+                }
                 //Width
                 jp.add(buildText(I18N.tr("Line width :")));
                 jp.add(lineWidth);
