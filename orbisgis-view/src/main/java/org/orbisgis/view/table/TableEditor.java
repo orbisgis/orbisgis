@@ -74,6 +74,7 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.docking.DockingLocation;
@@ -85,6 +86,7 @@ import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.map.jobs.CreateSourceFromSelection;
+import org.orbisgis.view.table.ext.SourceTable;
 import org.orbisgis.view.table.filters.FieldsContainsFilterFactory;
 import org.orbisgis.view.table.filters.TableSelectionFilter;
 import org.orbisgis.view.table.filters.WhereSQLFilterFactory;
@@ -99,7 +101,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Edit a data source through a grid GUI.
  * @author Nicolas Fortin
  */
-public class TableEditor extends JPanel implements EditorDockable {
+public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         protected final static I18n I18N = I18nFactory.getI18n(TableEditor.class);
         private static final Logger LOGGER = Logger.getLogger("gui."+TableEditor.class);
         
@@ -126,7 +128,8 @@ public class TableEditor extends JPanel implements EditorDockable {
         private SourceListener sourceListener = 
                 EventHandler.create(SourceListener.class, this,"onSourceRemoved",
                 "","sourceRemoved");
-                
+        private ActionCommands popupActions = new ActionCommands();
+
         public TableEditor(TableEditableElement element) {
                 super(new BorderLayout());
                 //Add a listener to the source manager to close the table when
@@ -417,7 +420,8 @@ public class TableEditor extends JPanel implements EditorDockable {
                 findSameCells.addActionListener(
                         EventHandler.create(ActionListener.class,
                         this,"onMenuSelectSameCellValue"));
-                pop.add(findSameCells);                
+                pop.add(findSameCells);
+                popupActions.copyEnabledActions(pop);
                 return pop;
         }
         
@@ -630,6 +634,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                         pop.add(showStats);                                
                         
                 }
+                popupActions.copyEnabledActions(pop);
                 return pop;
 
         }
@@ -738,7 +743,8 @@ public class TableEditor extends JPanel implements EditorDockable {
         
         /**
          * When the editable element is open, 
-         * the data model of the table can be set
+         * the data model of the table can be set.
+         * Called only once.
          */
         private void readDataSource() {     
                 tableModel = new DataSourceTableModel(tableEditableElement);
@@ -769,8 +775,11 @@ public class TableEditor extends JPanel implements EditorDockable {
                 tableEditableElement.addPropertyChangeListener(TableEditableElement.PROP_SELECTION,
                         editableSelectionListener);
                 dockingPanelParameters.setDockActions(getDockActions());
+                initPopupActions();
         }
-        
+        private void initPopupActions() {
+                popupActions.addAction(new ActionRemoveColumn(this));
+        }
         /**
          * Frame visibility state change
          * @param visible 
@@ -987,5 +996,15 @@ public class TableEditor extends JPanel implements EditorDockable {
                 public String getTaskName() {
                         return I18N.tr("Open the data source {0}", tableEditableElement.getSourceName());
                 }
+        }
+
+        @Override
+        public JTable getTable() {
+                return table;
+        }
+
+        @Override
+        public Point getPopupCellAdress() {
+                return new Point(popupCellAdress);
         }
 }

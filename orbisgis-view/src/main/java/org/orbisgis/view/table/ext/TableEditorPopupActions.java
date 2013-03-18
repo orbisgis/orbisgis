@@ -30,22 +30,15 @@
 package org.orbisgis.view.table.ext;
 
 import org.orbisgis.view.components.actions.ActionFactoryService;
-import org.orbisgis.view.table.TableEditor;
 
 /**
+ * Actions on the Table Editor popup menu
  * @author Nicolas Fortin
  */
-public interface TableEditorActions extends ActionFactoryService<SourceTable> {
-    //LGROUP_EDITION
-    public static final String A_EDITION = "A_EDITION";
-    public static final String A_SAVE = "A_SAVE";
-    public static final String A_UNDO = "A_UNDO";
-    public static final String A_REDO = "A_REDO";
-    public static final String A_CANCEL = "A_CANCEL";
-    //LGROUP_MODIFICATION_GROUP
-    public static final String A_ADD_FIELD = "A_ADD_FIELD";
-    public static final String A_ADD_ROW = "A_ADD_ROW";
+public interface TableEditorPopupActions extends ActionFactoryService<SourceTable> {
+    // Cell popup menu
+    public static final String A_REMOVE_ROW = "A_REMOVE_ROW";
 
-    public static final String LGROUP_EDITION = "LGROUP_EDITION";
-    public static final String LGROUP_MODIFICATION_GROUP = "LGROUP_MODIFICATION_GROUP";
+    // Column popup menu
+    public static final String A_REMOVE_COLUMN = "A_REMOVE_COLUMN";
 }

@@ -29,23 +29,31 @@
 
 package org.orbisgis.view.table.ext;
 
-import org.orbisgis.view.components.actions.ActionFactoryService;
-import org.orbisgis.view.table.TableEditor;
+import org.orbisgis.view.table.TableEditableElement;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * @author Nicolas Fortin
  */
-public interface TableEditorActions extends ActionFactoryService<SourceTable> {
-    //LGROUP_EDITION
-    public static final String A_EDITION = "A_EDITION";
-    public static final String A_SAVE = "A_SAVE";
-    public static final String A_UNDO = "A_UNDO";
-    public static final String A_REDO = "A_REDO";
-    public static final String A_CANCEL = "A_CANCEL";
-    //LGROUP_MODIFICATION_GROUP
-    public static final String A_ADD_FIELD = "A_ADD_FIELD";
-    public static final String A_ADD_ROW = "A_ADD_ROW";
+public interface SourceTable {
 
-    public static final String LGROUP_EDITION = "LGROUP_EDITION";
-    public static final String LGROUP_MODIFICATION_GROUP = "LGROUP_MODIFICATION_GROUP";
+        /**
+        * @return The source document opened in the Table.
+        */
+        TableEditableElement getTableEditableElement();
+
+        /**
+        * @return The swing JTable component.
+        */
+        JTable getTable();
+
+
+        /**
+         * Use this property on the isEnabled action in order to show/hide your action depending on the popup location.
+         * {@link java.awt.Point#getY()} is equal to -1 if the user right click on table top header.
+         * @return The last right clicked popup cell address Col(x) and row(y)
+         */
+        Point getPopupCellAdress();
 }
