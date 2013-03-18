@@ -156,4 +156,6 @@ public class SQLFunctionsPanel extends JPanel {
                         expandedPanel.setVisible(true);
                 }
         }
+        
+        
 }
