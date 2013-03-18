@@ -63,6 +63,7 @@ import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
  * This class is responsible for drawing a preview of what will be rendered on
@@ -216,9 +217,16 @@ public class CanvasSE extends JPanel {
                 sb.append("\') as the_geom");
                 Set<Map.Entry<String,Object>> es =input.entrySet();
                 for(Map.Entry<String, Object> ent : es){
-                        sb.append(",\'");
-                        sb.append(ent.getValue().toString());
-                        sb.append("\' as ");
+                        Object val = ent.getValue();
+                        sb.append(", ");
+                        if(val instanceof StringParameter){
+                            sb.append("\'");
+                        }
+                        sb.append(val.toString());
+                        if(val instanceof StringParameter){
+                            sb.append("\'");
+                        }
+                        sb.append(" as ");
                         sb.append(ent.getKey());
                 }
                 sb.append(";");
