@@ -685,12 +685,11 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
                 double m = rowCount>0 ?(double)10/rowCount : 0;
                 int n =0;
                 int fieldIndex = ds.getFieldIndexByName(fieldName);
-                boolean moveOn = false;
                 final int warn = 100;
                 for(long i=0; i<rowCount; i++){
                     Value val = ds.getFieldValue(i, fieldIndex);
                     ret.add(val.toString());
-                    if(ret.size() == warn && !moveOn){
+                    if(ret.size() == warn){
                         final UIPanel cancel = new CancelPanel(warn);
                         try{
                             SwingUtilities.invokeAndWait(new Runnable() {
