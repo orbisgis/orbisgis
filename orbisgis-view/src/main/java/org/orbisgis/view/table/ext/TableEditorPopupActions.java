@@ -36,9 +36,6 @@ import org.orbisgis.view.components.actions.ActionFactoryService;
  * @author Nicolas Fortin
  */
 public interface TableEditorPopupActions extends ActionFactoryService<SourceTable> {
-    // Cell popup menu
-    public static final String A_REMOVE_ROW = "A_REMOVE_ROW";
-
     // Column popup menu
     public static final String A_REMOVE_COLUMN = "A_REMOVE_COLUMN";
 }

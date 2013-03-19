@@ -31,6 +31,7 @@ package org.orbisgis.view.table;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Collections;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.xnap.commons.i18n.I18n;
@@ -75,12 +76,12 @@ public class TableEditableElement extends EditableSource {
             this.selectedGeometries = new IntegerUnion();
         }
 
-    /**
+        /**
 	 * Get the selected geometries in the table
 	 * @return
 	 */
 	public Set<Integer> getSelection() {
-                return selectedGeometries;
+                return Collections.unmodifiableSet(selectedGeometries);
         }
 
         /**
@@ -91,7 +92,7 @@ public class TableEditableElement extends EditableSource {
                 LOGGER.debug("Editable selection change");
                 Set<Integer> oldSelection = this.selectedGeometries;
                 this.selectedGeometries = new IntegerUnion(selection);
-                propertyChangeSupport.firePropertyChange(PROP_SELECTION, oldSelection, this.selectedGeometries);
+                propertyChangeSupport.firePropertyChange(PROP_SELECTION, oldSelection, getSelection());
         }
         
         
