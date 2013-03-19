@@ -67,9 +67,9 @@ public class RecodedSolidFillLegend extends SolidFillLegend implements RecodedLe
          */
         public RecodedSolidFillLegend(SolidFill fill, RecodedColor colorLegend, RecodedReal opacity) {
                 super(fill, colorLegend, opacity);
-                TypeListener tl = EventHandler.create(TypeListener.class, this, "replaceColor", "source.parameter");
+                TypeListener tl = EventHandler.create(TypeListener.class, this, "replaceColor", "getSource.getParameter");
                 colorLegend.addListener(tl);
-                TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceOpacity", "source.parameter");
+                TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceOpacity", "getSource.getParameter");
                 opacity.addListener(tlZ);
         }
 
