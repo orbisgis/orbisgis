@@ -52,6 +52,7 @@ public abstract class AnalyzerTest {
         public static final String REAL_RECODE = "src/test/resources/org/orbisgis/legend/density_hatch_recode.se";
         public static final String STRING_RECODE = "src/test/resources/org/orbisgis/legend/stringRecode.se";
         public static final String COLOR_RECODE = "src/test/resources/org/orbisgis/legend/colorRecode.se";
+        public static final String AREA_RECODE = "src/test/resources/org/orbisgis/legend/recodedArea.se";
         public static final String DASH_RECODE = "src/test/resources/org/orbisgis/legend/dashRecode.se";
         public static final String DOUBLE_CATEGORIZE = "src/test/resources/org/orbisgis/legend/doubleCategorize.se";
         public static final String DOUBLE_CATEGORIZE_FIELD = "src/test/resources/org/orbisgis/legend/doubleCategorizeDoubleField.se";
