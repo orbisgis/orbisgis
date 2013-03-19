@@ -27,12 +27,10 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.map;
+package org.orbisgis.view.map.toolbar;
 
-import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.main.frames.ext.MainWindow;
 import org.orbisgis.view.main.frames.ext.ToolBarAction;
-import org.orbisgis.view.map.ext.MapEditorAction;
 import org.orbisgis.view.map.ext.MapEditorExtension;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tools.AutoCompletePolygonTool;
@@ -86,8 +84,8 @@ public class DrawingToolBar implements ToolBarAction {
         add(actions,DRAW_VERTEX_DELETION, new VertexDeletionTool());
         return actions;
     }
-    private AutomatonAction add(List<Action> actions,String ID,Automaton action) {
-        AutomatonAction newAction = new DrawingAction(ID,action,mapEditor);
+    private ActionAutomaton add(List<Action> actions,String ID,Automaton action) {
+        ActionAutomaton newAction = new ActionDrawingAutomaton(ID,action,mapEditor);
         newAction.setLogicalGroup("draw");
         actions.add(newAction);
         return newAction;
@@ -95,8 +93,8 @@ public class DrawingToolBar implements ToolBarAction {
     @Override
     public void disposeActions(MainWindow target, List<Action> actions) {
         for(Action action : actions) {
-            if(action instanceof AutomatonAction) {
-                ((AutomatonAction) action).disposeAutomaton();
+            if(action instanceof ActionDisposable) {
+                ((ActionDisposable) action).dispose();
             }
         }
     }
