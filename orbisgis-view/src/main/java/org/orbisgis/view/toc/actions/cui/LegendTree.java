@@ -56,7 +56,6 @@ import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.orbisgis.view.components.renderers.TreeLaFRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.toc.actions.cui.components.LegendPicker;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.LegendTreeModel;
