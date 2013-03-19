@@ -45,8 +45,11 @@ public class TypeEvent extends EventObject {
                 super(rl);
         }
 
-        @Override
-        public RecodedLegend getSource(){
+    /**
+     * Gets the legend that generated this event. Sad hack to solve an EventHandler bug ?
+     * @return A RecodedLegend.
+     */
+        public RecodedLegend getSourceLegend(){
                 return (RecodedLegend) super.getSource();
         }
 
