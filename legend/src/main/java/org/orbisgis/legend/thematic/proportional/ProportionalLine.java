@@ -31,7 +31,6 @@ package org.orbisgis.legend.thematic.proportional;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
-import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
