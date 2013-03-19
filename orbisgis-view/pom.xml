@@ -120,11 +120,6 @@
                         <artifactId>languagesupport</artifactId>
                         <version>0.9.1</version>
                 </dependency>
-                <dependency>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>org.apache.felix.framework</artifactId>
-                    <version>4.0.3</version>
-                </dependency>
         </dependencies>
         <pluginRepositories>
                 <pluginRepository>
