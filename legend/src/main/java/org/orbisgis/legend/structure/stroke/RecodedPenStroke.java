@@ -71,9 +71,9 @@ public class RecodedPenStroke implements RecodedLegendStructure {
             this.widthLegend = new RecodedReal(stroke.getWidth());
             StringParameter sp = stroke.getDashArray();
             this.dashLegend = new RecodedDash(sp);
-            TypeListener tl = EventHandler.create(TypeListener.class, this, "replaceWidth", "source.parameter");
+            TypeListener tl = EventHandler.create(TypeListener.class, this, "replaceWidth", "getSource.getParameter");
             widthLegend.addListener(tl);
-            TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceDash", "source.parameter");
+            TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceDash", "getSource.getParameter");
             dashLegend.addListener(tlZ);
         }
 
@@ -85,9 +85,9 @@ public class RecodedPenStroke implements RecodedLegendStructure {
                 this.fillLegend = fillLegend;
                 this.widthLegend = widthLegend;
                 this.dashLegend = dashLegend;
-                TypeListener tl = EventHandler.create(TypeListener.class, this, "replaceWidth", "source.parameter");
+                TypeListener tl = EventHandler.create(TypeListener.class, this, "replaceWidth", "getSource.getParameter");
                 widthLegend.addListener(tl);
-                TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceDash", "source.parameter");
+                TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceDash", "getSource.getParameter");
                 dashLegend.addListener(tlZ);
         }
 
