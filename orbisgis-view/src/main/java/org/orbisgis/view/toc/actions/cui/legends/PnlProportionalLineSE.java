@@ -67,11 +67,11 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * @author Alexis Guéganno
  */
-public class PnlProportionalLine extends PnlUniqueSymbolSE {
+public class PnlProportionalLineSE extends PnlUniqueSymbolSE {
 
         private ProportionalLine legend;
-        private static final I18n I18N = I18nFactory.getI18n(PnlProportionalLine.class);
-        private static final Logger LOGGER = Logger.getLogger("gui."+PnlProportionalLine.class);
+        private static final I18n I18N = I18nFactory.getI18n(PnlProportionalLineSE.class);
+        private static final Logger LOGGER = Logger.getLogger("gui."+PnlProportionalLineSE.class);
         private DataSource ds;
         private JComboBox lineUom;
         private JPanel lineColor;
@@ -145,7 +145,7 @@ public class PnlProportionalLine extends PnlUniqueSymbolSE {
 
         @Override
         public ISELegendPanel newInstance() {
-                return new PnlProportionalLine();
+                return new PnlProportionalLineSE();
         }
 
         @Override

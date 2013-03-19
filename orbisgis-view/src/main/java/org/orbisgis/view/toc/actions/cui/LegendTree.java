@@ -365,7 +365,7 @@ public class LegendTree extends JPanel {
                                 ids.add(legendPanelUI);
                         }
                 }
-                LegendPicker legendPicker = new LegendPicker(
+                LegendUIChooser legendPicker = new LegendUIChooser(
                         paneNames.toArray(new String[paneNames.size()]),
                         ids.toArray(new ILegendPanel[ids.size()]));
 
