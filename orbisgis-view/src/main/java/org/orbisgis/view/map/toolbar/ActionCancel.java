@@ -27,58 +27,65 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.table;
-
+package org.orbisgis.view.map.toolbar;
 
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
+import org.gdms.driver.DriverException;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.actions.ActionTools;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.table.ext.TableEditorActions;
+import org.orbisgis.view.main.frames.ext.ToolBarAction;
+import org.orbisgis.view.map.MapElement;
+import org.orbisgis.view.map.ext.MapEditorExtension;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
 
 /**
- * Lock/Unlock table edition action.
+ * Cancel button on the Drawing ToolBar
  * @author Nicolas Fortin
  */
-public class ActionCancel extends AbstractAction {
-    private final TableEditableElement editable;
+public class ActionCancel extends ActionDataSource {
     private static final I18n I18N = I18nFactory.getI18n(ActionCancel.class);
-    private final Logger logger = Logger.getLogger(ActionCancel.class);
-
-    public ActionCancel(TableEditableElement editable) {
-        super(I18N.tr("Cancel"), OrbisGISIcon.getIcon("cancel"));
-        putValue(ActionTools.MENU_ID, TableEditorActions.A_CANCEL);
-        putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_EDITION);
-        this.editable = editable;
-        updateState();
-        editable.addPropertyChangeListener(TableEditableElement.PROP_MODIFIED,
-                EventHandler.create(PropertyChangeListener.class,this,"updateState"));
-    }
+    private static final Logger LOGGER = Logger.getLogger(ActionCancel.class);
 
     /**
-     * Called when the edition state of TableEditableElement change.
+     * Constructor
+     * @param extension MapEditor instance
      */
-    public final void updateState() {
-        setEnabled(editable.isModified());
+    public ActionCancel(MapEditorExtension extension) {
+        super(ToolBarAction.DRAW_CANCEL, I18N.tr("Cancel"), extension, OrbisGISIcon.getIcon("cancel"));
+        putValue(SHORT_DESCRIPTION, I18N.tr("Cancel all unsaved modifications of this layer"));
+        setLogicalGroup(ToolBarAction.DRAWING_GROUP);
     }
+
     @Override
-    public void actionPerformed(ActionEvent actionEvent) {
+    protected void checkActionState() {
+        super.checkActionState();
+        // Active only if the DataSource is modified
+        if(ActionTools.isVisible(this)) {
+            DataSource dataSource = getExtension().getMapElement().getMapContext().getActiveLayer().getDataSource();
+            setEnabled(dataSource!=null && dataSource.isModified());
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent ae) {
         int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
                 I18N.tr("Are you sure to cancel all your modifications ?"),
                 I18N.tr("Return to the original state"),
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if(response==JOptionPane.YES_OPTION) {
-            try {
-                editable.getDataSource().syncWithSource();
-            } catch (Exception ex) {
-                logger.error(ex.getLocalizedMessage(),ex);
+            MapElement loadedMap = getExtension().getMapElement();
+            if(loadedMap!=null) {
+                try {
+                    loadedMap.getMapContext().getActiveLayer().getDataSource().syncWithSource();
+                } catch (DriverException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(),ex);
+                }
             }
         }
     }

@@ -34,8 +34,8 @@ import org.orbisgis.view.edition.SingleEditorFactory;
 import org.orbisgis.view.main.frames.ext.ToolBarAction;
 import org.orbisgis.view.map.ext.MapEditorAction;
 import org.orbisgis.view.map.ext.MapEditorExtension;
+import org.orbisgis.view.map.toolbar.DrawingToolBar;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 /**
@@ -49,6 +49,10 @@ public class MapEditorFactory implements SingleEditorFactory {
         private MenuItemServiceTracker<MapEditorExtension,MapEditorAction> mapEditorExt;
         private BundleContext hostBundle;
 
+        /**
+         * Factory constructor
+         * @param bc BundleContext for MapEditor extensions
+         */
         public MapEditorFactory(BundleContext bc) {
             hostBundle = bc;
         }
@@ -60,6 +64,9 @@ public class MapEditorFactory implements SingleEditorFactory {
             }
             if(mapEditorExt!=null) {
                 mapEditorExt.close(); //Unregister MapEditor actions
+            }
+            if(mapPanel!=null) {
+                mapPanel.dispose();
             }
         }
 

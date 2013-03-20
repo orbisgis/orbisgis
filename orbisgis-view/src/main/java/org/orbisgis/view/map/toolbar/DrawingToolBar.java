@@ -27,12 +27,10 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.map;
+package org.orbisgis.view.map.toolbar;
 
-import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.main.frames.ext.MainWindow;
 import org.orbisgis.view.main.frames.ext.ToolBarAction;
-import org.orbisgis.view.map.ext.MapEditorAction;
 import org.orbisgis.view.map.ext.MapEditorExtension;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tools.AutoCompletePolygonTool;
@@ -71,7 +69,11 @@ public class DrawingToolBar implements ToolBarAction {
     @Override
     public List<Action> createActions(MainWindow target) {
         List<Action> actions = new LinkedList<Action>();
-        add(actions,DRAW_AUTO_POLYGON,new AutoCompletePolygonTool());
+        actions.add(new ActionCancel(mapEditor));
+        actions.add(new ActionUndo(mapEditor));
+        actions.add(new ActionRedo(mapEditor));
+        actions.add(new ActionDelete(mapEditor));
+        add(actions,DRAW_AUTO_POLYGON, new AutoCompletePolygonTool());
         add(actions,DRAW_CUT_POLYGON, new CutPolygonTool());
         add(actions,DRAW_MULTI_POINT, new MultipointTool());
         add(actions,DRAW_MULTI_LINE, new MultilineTool());
@@ -86,17 +88,16 @@ public class DrawingToolBar implements ToolBarAction {
         add(actions,DRAW_VERTEX_DELETION, new VertexDeletionTool());
         return actions;
     }
-    private AutomatonAction add(List<Action> actions,String ID,Automaton action) {
-        AutomatonAction newAction = new DrawingAction(ID,action,mapEditor);
-        newAction.setLogicalGroup("draw");
+    private ActionAutomaton add(List<Action> actions,String ID,Automaton action) {
+        ActionAutomaton newAction = new ActionDrawingAutomaton(ID,action,mapEditor);
         actions.add(newAction);
         return newAction;
     }
     @Override
     public void disposeActions(MainWindow target, List<Action> actions) {
         for(Action action : actions) {
-            if(action instanceof AutomatonAction) {
-                ((AutomatonAction) action).disposeAutomaton();
+            if(action instanceof ActionDisposable) {
+                ((ActionDisposable) action).dispose();
             }
         }
     }

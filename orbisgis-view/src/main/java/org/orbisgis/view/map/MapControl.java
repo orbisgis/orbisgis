@@ -534,9 +534,11 @@ public class MapControl extends JComponent implements ContainerListener {
 		/*
 		 * if (drawer != null) { drawer.cancel(); }
 		 */
-		toolManager.freeResources();
-		toolManager = null;
+            if(toolManager!=null) {
+                toolManager.freeResources();
+                toolManager = null;
                 removeMapContextListener();
+            }
 	}
 
 	public void setShowCoordinates(boolean showCoordinates) {
@@ -574,14 +576,16 @@ public class MapControl extends JComponent implements ContainerListener {
          * Switch the loaded map context
          * @param mapContext new map context
          */
-	public void setMapContext(MapContext mapContext) {
-                //Remove the property listeners
-                removeMapContextListener();
+        public void setMapContext(MapContext mapContext) {
+            //Remove the property listeners
+            removeMapContextListener();
+            this.mapContext = mapContext;
+            if(mapContext!=null) {
                 mapContext.addPropertyChangeListener(boundingBoxPropertyListener);
                 // Add refresh listener
                 addLayerListenerRecursively(mapContext.getLayerModel(), refreshLayerListener);
-		this.mapContext = mapContext;
-	}
+            }
+        }
 
 	public MapContext getMapContext() {
 		return mapContext;

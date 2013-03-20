@@ -27,27 +27,16 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.map;
-
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.view.map.ext.MapEditorExtension;
-import org.orbisgis.view.map.tool.Automaton;
+package org.orbisgis.view.map.toolbar;
 
 /**
- * Drawing Automaton Action, visible only when there is an edited layer
+ * An action that need to be released when no longer used.
+ * Like un-register listeners.
  * @author Nicolas Fortin
  */
-public class DrawingAction extends AutomatonAction {
-    public DrawingAction(String actionId, Automaton automaton, MapEditorExtension extension) {
-        super(actionId, automaton, extension);
-        addTrackedMapContextProperty(MapContext.PROP_ACTIVELAYER);
-    }
-
-    @Override
-    protected void checkAutomatonState() {
-        super.checkAutomatonState();
-        MapEditorExtension extension = getExtension();
-        setVisible(extension!=null && extension.getMapElement()!=null &&
-                 extension.getMapElement().getMapContext().getActiveLayer()!=null);
-    }
+public interface ActionDisposable {
+        /**
+         * Release Action resources.
+         */
+        void dispose();
 }
