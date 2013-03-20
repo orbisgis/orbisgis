@@ -59,6 +59,13 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
     private final RecodedPenStroke ps;
 
     /**
+     * Default constructor : builds an empty classification based on the default {@link AreaSymbolizer}.
+     */
+    public RecodedArea(){
+        this(new AreaSymbolizer());
+    }
+
+    /**
      * Builds a new {@code RecodedArea} considering that {@code sym} matches the configuration constraints expected
      * by this class. That means it must be made of a {@link PenStroke} and of a {@link SolidFill} and that both of
      * them are built with literals or recode instances containing only literals, and that the recode instances are

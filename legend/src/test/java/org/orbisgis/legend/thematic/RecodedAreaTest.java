@@ -48,6 +48,12 @@ import static org.junit.Assert.fail;
 public class RecodedAreaTest extends AnalyzerTest {
 
     @Test
+    public void testDefaultConstructor() {
+        RecodedArea ar = new RecodedArea();
+        assertTrue(true);
+    }
+
+    @Test
     public void testInstanciation() throws Exception{
         AreaSymbolizer as = getAreaSymbolizer();
         AreaSymbolizerAnalyzer asa = new AreaSymbolizerAnalyzer(as);
