@@ -123,6 +123,9 @@ public class RecodedLine extends AbstractRecodedLegend<LineParameters> implement
          */
         public LineParameters get(Object objKey){
             String key = (String) objKey;
+            if(!keySet().contains(key)){
+                return null;
+            }
             Color c = getLineColor().getItemValue(key);
             c = c==null ? getLineColor().getFallbackValue() : c;
             Double op = getLineOpacity().getItemValue(key);

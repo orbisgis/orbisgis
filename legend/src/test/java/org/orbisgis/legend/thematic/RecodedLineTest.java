@@ -137,7 +137,7 @@ public class RecodedLineTest extends AnalyzerTest {
         assertTrue(lp.equals(t));
         lp = rl.get("bonjour");
         t = new LineParameters(new Color(0x33,0x55,0x66),1.0,.5,"");
-        assertTrue(lp.equals(t));
+        assertNull(lp);
     }
 
     @Test

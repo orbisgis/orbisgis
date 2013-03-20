@@ -145,6 +145,9 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters>  {
     @Override
     public AreaParameters get(Object objKey) {
         String key = (String) objKey;
+        if(!keySet().contains(key)){
+            return null;
+        }
         Color sc = getLineColor().getItemValue(key);
         sc = sc==null ? getLineColor().getFallbackValue() : sc;
         Double sop = getLineOpacity().getItemValue(key);
