@@ -91,4 +91,15 @@ public class AreaParameters extends LineParameters {
     public Double getFillOpacity() {
         return fillOpacity;
     }
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof AreaParameters){
+            AreaParameters other = (AreaParameters) o;
+            boolean sup = super.equals(other);
+            return sup && this.fillColor.equals(other.fillColor) && this.fillOpacity.equals(other.fillOpacity);
+        } else {
+            return false;
+        }
+    }
 }

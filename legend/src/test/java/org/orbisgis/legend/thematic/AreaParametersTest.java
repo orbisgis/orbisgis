@@ -34,6 +34,7 @@ import org.orbisgis.legend.AnalyzerTest;
 
 import java.awt.*;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -64,12 +65,20 @@ public class AreaParametersTest extends AnalyzerTest {
         assertTrue(ap.getLineWidth() - .25 < EPS);
     }
 
+    @Test
+    public void testEquality() throws Exception {
+        AreaParameters ap = new AreaParameters(Color.BLUE, .25, 42.0, "2", Color.YELLOW, .46);
+        AreaParameters ap2 = new AreaParameters(Color.BLUE, .25, 42.0, "2", Color.YELLOW, .46);
+        assertTrue(ap.equals(ap2));
+        assertFalse(ap.equals("ahoi"));
+    }
+
+    @Test
     public void testNullInput() throws Exception {
         AreaParameters ap = new AreaParameters(Color.BLUE, .25, 42.0, "2", null, .46);
-        assertTrue(ap.getFillColor().equals(new Color(SolidFill.GRAY50,SolidFill.GRAY50,SolidFill.GRAY50)));
+        assertTrue(ap.getFillColor().equals(new Color(SolidFill.GRAY50_INT,SolidFill.GRAY50_INT,SolidFill.GRAY50_INT)));
         ap = new AreaParameters(Color.BLUE, .25, 42.0, "2", Color.YELLOW, null);
-        assertTrue(ap.getFillOpacity() - .25 < EPS);
-
+        assertTrue(ap.getFillOpacity() - 1.0 < EPS);
     }
 
 }
