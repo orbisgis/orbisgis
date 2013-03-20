@@ -59,7 +59,7 @@ public class EPLegendHelper {
                 proportionalPoint.initialize(legendContext);
                 legends.add(proportionalPoint);
                 //ProportionalLine
-                ILegendPanel proportionalLine = new PnlProportionalLine();
+                ILegendPanel proportionalLine = new PnlProportionalLineSE();
                 proportionalLine.initialize(legendContext);
                 legends.add(proportionalLine);
                 //Line Unique Value

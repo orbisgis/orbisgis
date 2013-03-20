@@ -37,7 +37,6 @@ import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
-
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -231,4 +230,11 @@ public class RecodedLine extends AbstractRecodedLegend<LineParameters> implement
             getLineWidth().setFallbackValue(lps.getLineWidth());
             getLineDash().setFallbackValue(lps.getLineDash());
         }
+
+    @Override
+    public String getLegendTypeId() {
+        return "org.orbisgis.legend.thematic.recode.RecodedLine";
+    }
+        
+        
 }
