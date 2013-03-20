@@ -226,10 +226,7 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
         return ret;
     }
 
-    /**
-     * Gets the configuration used for the line style used to draw features we can't get a value for in the map.
-     * @return
-     */
+    @Override
     public AreaParameters getFallbackParameters(){
         return new AreaParameters(getLineColor().getFallbackValue(),
                     getLineOpacity().getFallbackValue(),
@@ -239,10 +236,7 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
                     getFillOpacity().getFallbackValue());
     }
 
-    /**
-     * Sets the fallback configuration according to the one given in argument.
-     * @param ap The new basis for the fallback configuration.
-     */
+    @Override
     public void setFallbackParameters(AreaParameters ap){
         getLineColor().setFallbackValue(ap.getLineColor());
         getLineOpacity().setFallbackValue(ap.getLineOpacity());
