@@ -159,6 +159,7 @@ public class TocRenderer extends TocAbstractRenderer {
                                         checkBox.setSelected(layerNode.isVisible());
                                 } else if(value instanceof TocTreeNodeStyle)  {
                                         Style styleNode = ((TocTreeNodeStyle) value).getStyle();
+                                        rendererComponent.setIcon(OrbisGISIcon.getIcon("palette"));
                                         rendererComponent.setText(styleNode.getName());
                                         checkBox.setSelected(styleNode.isVisible());
                                 }

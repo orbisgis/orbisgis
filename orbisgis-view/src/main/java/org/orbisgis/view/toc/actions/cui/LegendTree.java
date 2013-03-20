@@ -56,7 +56,6 @@ import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.orbisgis.view.components.renderers.TreeLaFRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.toc.actions.cui.components.LegendPicker;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.LegendTreeModel;
@@ -365,7 +364,7 @@ public class LegendTree extends JPanel {
                                 ids.add(legendPanelUI);
                         }
                 }
-                LegendPicker legendPicker = new LegendPicker(
+                LegendUIChooser legendPicker = new LegendUIChooser(
                         paneNames.toArray(new String[paneNames.size()]),
                         ids.toArray(new ILegendPanel[ids.size()]));
 

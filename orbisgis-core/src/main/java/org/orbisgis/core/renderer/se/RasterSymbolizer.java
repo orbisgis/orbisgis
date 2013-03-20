@@ -3,8 +3,8 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
@@ -22,9 +22,8 @@
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * For more information, please consult: <http://www.orbisgis.org/> or contact
+ * directly: info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se;
 
@@ -49,13 +48,12 @@ import org.orbisgis.core.renderer.se.raster.Channel;
 import org.orbisgis.core.renderer.se.raster.ContrastEnhancement;
 import org.orbisgis.core.renderer.se.raster.OverlapBehavior;
 
-
 /**
  * @ todo implements almost all...
- * @author Maxence Laurent
+ *
+ * @author Maxence Laurent, Erwan Bocher
  */
-public class RasterSymbolizer extends Symbolizer {
-
+public class RasterSymbolizer extends Symbolizer implements UomNode {
 
     private RealParameter opacity;
     private Channel redChannel;
@@ -71,21 +69,27 @@ public class RasterSymbolizer extends Symbolizer {
     private double gamma;
     private boolean shadedReliefOnlyBrightness;
     private double shadedReliefFactor;
-
-    /*
-     * SE request either a LineSymbolizer or an AreaSymbolizer
-     * Since a line symbolizer is an area one witout the fill element, we only provide the latter
-     */
+    private Uom uom;
     private AreaSymbolizer outline;
+
+    /**
+     * Create a rastersymbolizer with a default AreaSymbolizer
+     *
+     * SE request either a LineSymbolizer or an AreaSymbolizer Since a line
+     * symbolizer is an area one without the fill element, we only provide the
+     * latter
+     */
+    public RasterSymbolizer() {
+        outline = new AreaSymbolizer();
+        setUom(Uom.PX);
+        name = "Raster symbolizer";
+    }
+
     @Override
     public void draw(Graphics2D g2, DataSet sds, long fid,
             boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
             throws ParameterException, IOException, DriverException {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Uom getUom() {
-        return Uom.MM;
     }
 
     public Channel getBlueChannel() {
@@ -158,9 +162,9 @@ public class RasterSymbolizer extends Symbolizer {
 
     public void setOpacity(RealParameter opacity) {
         this.opacity = opacity;
-		if (this.opacity != null){
-			this.opacity.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
-		}
+        if (this.opacity != null) {
+            this.opacity.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
+        }
     }
 
     public AreaSymbolizer getOutline() {
@@ -212,12 +216,21 @@ public class RasterSymbolizer extends Symbolizer {
     }
 
     @Override
+    public final void setUom(Uom uom) {
+        if (uom != null) {
+            this.uom = uom;
+        } else {
+            this.uom = Uom.PX;
+        }
+    }
+
+    @Override
     public JAXBElement<RasterSymbolizerType> getJAXBElement() {
         return null;
     }
 
     public RasterSymbolizer(JAXBElement<RasterSymbolizerType> st) throws InvalidStyle {
-		super(st);
+        super(st);
         RasterSymbolizerType lst = st.getValue();
         System.out.println("RasterSymb");
 
@@ -231,5 +244,15 @@ public class RasterSymbolizer extends Symbolizer {
     @Override
     public List<SymbolizerNode> getChildren() {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Uom getOwnUom() {
+        return uom;
+    }
+
+    @Override
+    public final Uom getUom() {
+        return uom == null ? Uom.PX : uom;
     }
 }
