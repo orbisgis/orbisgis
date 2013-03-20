@@ -28,6 +28,7 @@
  */
 package org.orbisgis.legend.thematic;
 
+import com.kitfox.svg.A;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
@@ -140,6 +141,14 @@ public class RecodedAreaTest extends AnalyzerTest {
         } catch (NullPointerException npe){
         }
         assertTrue(true);
+    }
+
+    @Test
+    public void testSetFallback() throws Exception {
+        RecodedArea ra = getRecodedArea();
+        AreaParameters ap = new AreaParameters();
+        ra.setFallbackParameters(ap);
+        assertTrue(ra.getFallbackParameters().equals(new AreaParameters()));
     }
 
     @Test
