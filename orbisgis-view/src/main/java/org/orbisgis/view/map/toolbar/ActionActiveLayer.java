@@ -26,40 +26,48 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table;
 
-import org.gdms.driver.DriverException;
-import org.orbisgis.view.components.actions.ActionTools;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.table.ext.TableEditorActions;
+package org.orbisgis.view.map.toolbar;
+
+import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.map.ext.MapEditorExtension;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 
 /**
- * Lock/Unlock table edition action.
+ * This action show up only when there is an active layer
  * @author Nicolas Fortin
  */
-public class ActionUndo extends ActionAbstractEdition {
+public class ActionActiveLayer extends ActionMapContext {
 
-    public ActionUndo(TableEditableElement editable) {
-        super(I18N.tr("Undo"),OrbisGISIcon.getIcon("edit-undo"),editable);
-        putValue(ActionTools.MENU_ID, TableEditorActions.A_UNDO);
-        putValue(SHORT_DESCRIPTION,I18N.tr("Undo the last modification"));
-        onSourceUpdate();
+    /**
+     * Constructor
+     * @param actionId Unique action id
+     * @param name Action name
+     * @param extension MapEditor instance
+     * @param icon Action icon
+     */
+    public ActionActiveLayer(String actionId,String name, MapEditorExtension extension,Icon icon) {
+        super(actionId, name, extension, icon);
+        addTrackedMapContextProperty(MapContext.PROP_ACTIVELAYER);
     }
 
-    @Override
-    public void onSourceUpdate() {
-        setEnabled(editable.getDataSource().canUndo());
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent actionEvent) {
-        try {
-            editable.getDataSource().undo();
-        } catch (DriverException ex) {
-            LOGGER.error(ex.getLocalizedMessage(),ex);
+    /**
+     * @return The active layer or null if none.
+     */
+    protected ILayer getActiveLayer() {
+        MapEditorExtension extension = getExtension();
+        if(extension != null && extension.getMapElement() != null) {
+            return extension.getMapElement().getMapContext().getActiveLayer();
+        }else{
+            return null;
         }
+    }
+    @Override
+    protected void checkActionState() {
+        super.checkActionState();
+        // Only visible if there is an active layer
+        setVisible(getActiveLayer() != null);
     }
 }

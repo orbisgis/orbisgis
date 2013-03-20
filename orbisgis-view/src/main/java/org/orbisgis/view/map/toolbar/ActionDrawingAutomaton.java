@@ -27,15 +27,27 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.table.ext;
+package org.orbisgis.view.map.toolbar;
 
-import org.orbisgis.view.components.actions.ActionFactoryService;
+import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.map.ext.MapEditorExtension;
+import org.orbisgis.view.map.tool.Automaton;
 
 /**
- * Actions on the Table Editor popup menu
+ * Drawing Automaton Action, visible only when there is an edited layer
  * @author Nicolas Fortin
  */
-public interface TableEditorPopupActions extends ActionFactoryService<SourceTable> {
-    // Column popup menu
-    public static final String A_REMOVE_COLUMN = "A_REMOVE_COLUMN";
+public class ActionDrawingAutomaton extends ActionAutomaton {
+    public ActionDrawingAutomaton(String actionId, Automaton automaton, MapEditorExtension extension) {
+        super(actionId, automaton, extension);
+        addTrackedMapContextProperty(MapContext.PROP_ACTIVELAYER);
+    }
+
+    @Override
+    protected void checkActionState() {
+        super.checkActionState();
+        MapEditorExtension extension = getExtension();
+        setVisible(extension!=null && extension.getMapElement()!=null &&
+                 extension.getMapElement().getMapContext().getActiveLayer()!=null);
+    }
 }

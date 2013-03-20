@@ -35,6 +35,7 @@ import org.orbisgis.view.components.actions.ActionFactoryService;
  * Implement this interface to define additional ToolBar items.
  * ToolBar items can be put in the same group by using the property
  * @see org.orbisgis.view.components.actions.ActionTools#LOGICAL_GROUP
+ * Only built-ins toolbar items are listed here in order to use it on the {@link org.orbisgis.view.components.actions.ActionTools#INSERT_AFTER_MENUID}
  * @author Nicolas Fortin
  */
 public interface ToolBarAction  extends ActionFactoryService<MainWindow> {
@@ -57,4 +58,10 @@ public interface ToolBarAction  extends ActionFactoryService<MainWindow> {
     public static final String DRAW_SPLIT_POLYGON = "DRAW_SPLIT_POLYGON";
     public static final String DRAW_VERTEX_ADDITION = "DRAW_VERTEX_ADDITION";
     public static final String DRAW_VERTEX_DELETION = "DRAW_VERTEX_DELETION";
+    public static final String DRAW_CANCEL = "DRAW_CANCEL";
+    public static final String DRAW_UNDO = "DRAW_UNDO";
+    public static final String DRAW_REDO = "DRAW_REDO";
+    public static final String DRAW_DELETE = "DRAW_DELETE";
+    // Toolbar items group
+    public static final String DRAWING_GROUP = "DRAWING_GROUP";
 }

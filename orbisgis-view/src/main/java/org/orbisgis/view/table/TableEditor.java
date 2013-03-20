@@ -130,6 +130,10 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 "","sourceRemoved");
         private ActionCommands popupActions = new ActionCommands();
 
+        /**
+         * Constructor
+         * @param element Source to read and edit
+         */
         public TableEditor(TableEditableElement element) {
                 super(new BorderLayout());
                 //Add a listener to the source manager to close the table when
@@ -147,22 +151,23 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 updateTitle();
         }
 
-        List<Action> getDockActions() {
-            List<Action> actions = new LinkedList<Action>();
-            if(tableEditableElement.getDataSource().isEditable()) {
-                try {
-                    actions.add(new ActionAddColumn(tableEditableElement));
-                    actions.add(new ActionAddRow(tableEditableElement));
-                    actions.add(new ActionCancel(tableEditableElement));
-                    actions.add(new ActionUndo(tableEditableElement));
-                    actions.add(new ActionRedo(tableEditableElement));
-                    actions.add(new ActionSave(tableEditableElement));
-                    actions.add(new ActionEdition(tableEditableElement));
-                } catch (UnsupportedOperationException ex) {
-                    LOGGER.error(ex.getLocalizedMessage(),ex);
+        private List<Action> getDockActions() {
+                List<Action> actions = new LinkedList<Action>();
+                if(tableEditableElement.getDataSource().isEditable()) {
+                        try {
+                                actions.add(new ActionAddColumn(tableEditableElement));
+                                actions.add(new ActionAddRow(tableEditableElement));
+                                actions.add(new ActionRemoveRow(tableEditableElement));
+                                actions.add(new ActionCancel(tableEditableElement));
+                                actions.add(new ActionUndo(tableEditableElement));
+                                actions.add(new ActionRedo(tableEditableElement));
+                                actions.add(new ActionSave(tableEditableElement));
+                                actions.add(new ActionEdition(tableEditableElement));
+                        } catch (UnsupportedOperationException ex) {
+                                LOGGER.error(ex.getLocalizedMessage(),ex);
+                        }
                 }
-            }
-            return actions;
+                return actions;
         }
         /**
          * The window is going to be closed, check for unsaved modifications
@@ -229,7 +234,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * propagate in the table if necessary
          * @param newValue 
          */
-        public void onEditableSelectionChange(IntegerUnion newValue) {
+        public void onEditableSelectionChange(Set<Integer> newValue) {
                 if (!onUpdateEditableSelection.getAndSet(true)) {
                         try {
                                 setRowSelection(newValue);
@@ -760,7 +765,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 tableRowHeader = new TableRowHeader(table);
                 tableScrollPane.setRowHeaderView(tableRowHeader);
                 //Apply the selection
-                setRowSelection((IntegerUnion)tableEditableElement.getSelection());              
+                setRowSelection(new IntegerUnion(tableEditableElement.getSelection()));
                 table.getSelectionModel().addListSelectionListener(
                         EventHandler.create(ListSelectionListener.class,this,
                         "onTableSelectionChange",""));
@@ -812,8 +817,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * Convert index from model to view then update the table selection
          * @param modelSelection ModelIndex selection
          */
-        private void setRowSelection(IntegerUnion modelSelection) {
-                IntegerUnion newSelection;
+        private void setRowSelection(Set<Integer> modelSelection) {
+                Set<Integer> newSelection;
                 if(tableSorter.isFiltered() || !tableSorter.getSortKeys().isEmpty()) {
                         newSelection = new IntegerUnion();
                         for(Integer modelId : modelSelection) {
@@ -832,8 +837,9 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * Update the table selection
          * @param viewSelection View index selection
          */
-        private void setViewRowSelection(IntegerUnion viewSelection) {             
-                Iterator<Integer> intervals = viewSelection.getValueRanges().iterator();
+        private void setViewRowSelection(Set<Integer> viewSelection) {
+                // Integer union is able to compute range of integer from a set of integer
+                Iterator<Integer> intervals = new IntegerUnion(viewSelection).getValueRanges().iterator();
                 final int maxRow = table.getRowCount();
                 try {
                         table.getSelectionModel().setValueIsAdjusting(true);

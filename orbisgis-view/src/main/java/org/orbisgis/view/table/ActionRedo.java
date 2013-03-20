@@ -43,6 +43,7 @@ public class ActionRedo extends ActionAbstractEdition {
 
     public ActionRedo(TableEditableElement editable) {
         super(I18N.tr("Redo"),OrbisGISIcon.getIcon("edit-redo"),editable);
+        putValue(SHORT_DESCRIPTION,I18N.tr("Redo the last modification"));
         putValue(ActionTools.MENU_ID, TableEditorActions.A_REDO);
         onSourceUpdate();
     }

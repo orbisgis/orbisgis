@@ -39,7 +39,6 @@ import java.awt.geom.Point2D;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.File;
@@ -47,7 +46,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -75,7 +73,6 @@ import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.map.ext.AutomatonHolder;
 import org.orbisgis.view.map.ext.MapEditorAction;
 import org.orbisgis.view.map.ext.MapEditorExtension;
 import org.orbisgis.view.map.jobs.CreateSourceFromSelection;
@@ -84,10 +81,10 @@ import org.orbisgis.view.map.jobs.ZoomToSelection;
 import org.orbisgis.view.map.mapsManager.MapsManager;
 import org.orbisgis.view.map.mapsManager.TreeLeafMapContextFile;
 import org.orbisgis.view.map.mapsManager.TreeLeafMapElement;
-import org.orbisgis.view.map.tool.Automaton;
-import org.orbisgis.view.map.tool.ToolListener;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
+import org.orbisgis.view.map.toolbar.ActionAutomaton;
+import org.orbisgis.view.map.toolbar.ActionDisposable;
 import org.orbisgis.view.map.tools.CompassTool;
 import org.orbisgis.view.map.tools.FencePolygonTool;
 import org.orbisgis.view.map.tools.MesureLineTool;
@@ -154,39 +151,11 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         // Tools that will be created later will also be set in the docking panel
         // thanks to this listener
         actions.addPropertyChangeListener(new ActionDockingListener(dockingPanelParameters));
-        // Auto-release Automaton Actions
-        actions.addPropertyChangeListener(ActionsHolder.PROP_ACTIONS,EventHandler.create(PropertyChangeListener.class,this,"onResetActions",""));
         //Set the Drop target
         dragDropHandler = new MapTransferHandler();
         this.setTransferHandler(dragDropHandler);
     }
 
-    /**
-     * Action list on Map Editor has been updated. Release no longer used AutomatonActions.
-     * @param evt
-     */
-    public void onResetActions(PropertyChangeEvent evt) {
-        // Populate old actions
-        List<AutomatonAction> oldValues = new ArrayList<AutomatonAction>();
-        Object oldAct = evt.getOldValue();
-        if(oldAct instanceof AutomatonAction) {
-            oldValues.add((AutomatonAction)oldAct);
-        } if(oldAct instanceof List) {
-            for(Object action : (List)oldAct) {
-                if(action instanceof AutomatonAction) {
-                    oldValues.add((AutomatonAction) action);
-                }
-            }
-        }
-        // Do not dispose kept actions
-        Object newValue = evt.getNewValue();
-        if(newValue instanceof List) {
-            oldValues.removeAll((List)oldAct);
-        }
-        for(AutomatonAction action : oldValues) {
-            action.disposeAutomaton();
-        }
-    }
     private void updateMapLabel() {
                 if (mapElement == null) {
                         dockingPanelParameters.setTitle(I18N.tr("Map"));
@@ -324,33 +293,38 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     private void loadMap(MapElement element) {
         MapElement oldMapElement = mapElement;
         ToolManager oldToolManager = getToolManager();
-        try {
-            removeListeners();
-            mapElement = element;
-            mapContext = (MapContext) element.getObject();
-            mapContext.addPropertyChangeListener(MapContext.PROP_ACTIVELAYER, activeLayerListener);
-            //We (unfortunately) need a cross reference here : this way, we'll
-            //be able to retrieve the MapTransform from the Toc..
-            element.setMapEditor(this);
-            mapControl.setMapContext(mapContext);
-            mapControl.getMapTransform().setExtent(mapContext.getBoundingBox());
-            mapControl.setElement(this);
-            mapControl.initMapControl(new PanTool());
-            // Update the default map context path with the relative path
-            ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
-            URI rootDir =(new File(viewWorkspace.getMapContextPath()+File.separator)).toURI();
-            String relative = rootDir.relativize(element.getMapContextFile().toURI()).getPath();
-            getMapEditorPersistence().setDefaultMapContext(relative);
-            // Set the loaded map hint to the MapCatalog
-            mapsManager.setLoadedMap(element.getMapContextFile());
-            // Update the editor label with the new editable name
-            updateMapLabel();
-            mapElement.addPropertyChangeListener(MapElement.PROP_MODIFIED, modificationListener);
-            repaint();
-        } catch (IllegalStateException ex) {
-            GUILOGGER.error(ex);
-        } catch (TransitionException ex) {
-            GUILOGGER.error(ex);
+        removeListeners();
+        mapElement = element;
+        if(element!=null) {
+            try {
+                mapContext = (MapContext) element.getObject();
+                mapContext.addPropertyChangeListener(MapContext.PROP_ACTIVELAYER, activeLayerListener);
+                //We (unfortunately) need a cross reference here : this way, we'll
+                //be able to retrieve the MapTransform from the Toc..
+                element.setMapEditor(this);
+                mapControl.setMapContext(mapContext);
+                mapControl.getMapTransform().setExtent(mapContext.getBoundingBox());
+                mapControl.setElement(this);
+                mapControl.initMapControl(new PanTool());
+                // Update the default map context path with the relative path
+                ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
+                URI rootDir =(new File(viewWorkspace.getMapContextPath()+File.separator)).toURI();
+                String relative = rootDir.relativize(element.getMapContextFile().toURI()).getPath();
+                getMapEditorPersistence().setDefaultMapContext(relative);
+                // Set the loaded map hint to the MapCatalog
+                mapsManager.setLoadedMap(element.getMapContextFile());
+                // Update the editor label with the new editable name
+                updateMapLabel();
+                mapElement.addPropertyChangeListener(MapElement.PROP_MODIFIED, modificationListener);
+                repaint();
+            } catch (IllegalStateException ex) {
+                GUILOGGER.error(ex);
+            } catch (TransitionException ex) {
+                GUILOGGER.error(ex);
+            }
+        } else {
+            // Load null MapElement
+            mapControl.setMapContext(null);
         }
         firePropertyChange(PROP_TOOL_MANAGER,oldToolManager,getToolManager());
         firePropertyChange(PROP_MAP_ELEMENT,oldMapElement, mapElement);
@@ -372,12 +346,14 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             }
     }
 
-        @Override
-        public void removeNotify() {
-                super.removeNotify();
-                removeListeners();
+        /**
+         * Free MapEditor resources
+         **/
+        public void dispose() {
+            removeListeners();
+            getMapControl().closing();
+            loadMap(null);
         }
-
 
         @Override
         public MapElement getMapElement() {
@@ -389,15 +365,15 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
      */
     private void createActions() {
         // Navigation tools
-        actions.addAction(new AutomatonAction(MapEditorAction.A_ZOOM_IN,new ZoomInTool(),this).setLogicalGroup("navigation"));
-        actions.addAction(new AutomatonAction(MapEditorAction.A_ZOOM_OUT,new ZoomOutTool(),this).setLogicalGroup("navigation"));
-        actions.addAction(new AutomatonAction(MapEditorAction.A_PAN,new PanTool(),this).setLogicalGroup("navigation"));
+        actions.addAction(new ActionAutomaton(MapEditorAction.A_ZOOM_IN,new ZoomInTool(),this).setLogicalGroup("navigation"));
+        actions.addAction(new ActionAutomaton(MapEditorAction.A_ZOOM_OUT,new ZoomOutTool(),this).setLogicalGroup("navigation"));
+        actions.addAction(new ActionAutomaton(MapEditorAction.A_PAN,new PanTool(),this).setLogicalGroup("navigation"));
         actions.addAction(new DefaultAction(MapEditorAction.A_FULL_EXTENT,I18N.tr("Full extent"),
                 OrbisGISIcon.getIcon("world"),EventHandler.create(ActionListener.class,this,"onFullExtent"))
                 .setToolTipText(I18N.tr("Zoom to show all geometries")).setLogicalGroup("navigation"));
 
         // Selection tools
-        actions.addAction(new AutomatonAction(MapEditorAction.A_SELECTION,new SelectionTool(),this)
+        actions.addAction(new ActionAutomaton(MapEditorAction.A_SELECTION,new SelectionTool(),this)
                 .addTrackedMapContextProperty(MapContext.PROP_SELECTEDLAYERS).setLogicalGroup("selection"));
         actions.addAction(new DefaultAction(MapEditorAction.A_CLEAR_SELECTION, I18N.tr("Clear selection"),
                 OrbisGISIcon.getIcon("edit-clear"),EventHandler.create(ActionListener.class,this,"onClearSelection"))
@@ -412,18 +388,18 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
         // Measure tools
         actions.addAction(new DefaultAction(MapEditorAction.A_MEASURE_GROUP,I18N.tr("Mesure tools")).setMenuGroup(true));
-        actions.addAction(new AutomatonAction(MapEditorAction.A_MEASURE_LINE,new MesureLineTool(),this)
+        actions.addAction(new ActionAutomaton(MapEditorAction.A_MEASURE_LINE,new MesureLineTool(),this)
                 .setParent(MapEditorAction.A_MEASURE_GROUP));
-        actions.addAction(new AutomatonAction(MapEditorAction.A_MEASURE_POLYGON,new MesurePolygonTool(),this)
+        actions.addAction(new ActionAutomaton(MapEditorAction.A_MEASURE_POLYGON,new MesurePolygonTool(),this)
                 .setParent(MapEditorAction.A_MEASURE_GROUP));
-        actions.addAction(new AutomatonAction(MapEditorAction.A_COMPASS,new CompassTool(),this)
+        actions.addAction(new ActionAutomaton(MapEditorAction.A_COMPASS,new CompassTool(),this)
                 .setParent(MapEditorAction.A_MEASURE_GROUP));
 
         // Drawing tools
         actions.addAction(new DefaultAction(MapEditorAction.A_DRAWING_GROUP,I18N.tr("Graphic tools")).setMenuGroup(true));
-        actions.addAction(new AutomatonAction(MapEditorAction.A_FENCE,new FencePolygonTool(),this)
+        actions.addAction(new ActionAutomaton(MapEditorAction.A_FENCE,new FencePolygonTool(),this)
                 .setParent(MapEditorAction.A_DRAWING_GROUP));
-        actions.addAction(new AutomatonAction(MapEditorAction.A_PICK_COORDINATES, new PickCoordinatesPointTool(),this)
+        actions.addAction(new ActionAutomaton(MapEditorAction.A_PICK_COORDINATES, new PickCoordinatesPointTool(),this)
                 .setParent(MapEditorAction.A_DRAWING_GROUP));
 
         // Maps manager
