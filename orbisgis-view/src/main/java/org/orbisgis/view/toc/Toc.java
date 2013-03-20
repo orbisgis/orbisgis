@@ -41,6 +41,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
@@ -939,9 +940,13 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         public void onAddStyle() {
                 ILayer[] layers = mapContext.getSelectedLayers();
                 if (layers.length == 1) {
-                        ILayer layer = layers[0];
+                    ILayer layer = layers[0];
+                    if (isStyleAllowed(layer)) {
                         Style s = new Style(layer, true);
                         layer.addStyle(s);
+                    } else {
+                        LOGGER.info("This functionality is not supported.");
+                    }
 
                 }
         }
@@ -950,11 +955,11 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
          * The user choose to import a style and to add it to the selected layer
          * through the dedicated menu.
          */
-        public void onImportStyle() {
-                isStyleAllowed();
+        public void onImportStyle() {                
                 ILayer[] layers = mapContext.getSelectedLayers();
                 if (layers.length == 1) {
                         ILayer layer = layers[0];
+                        if (isStyleAllowed(layer)){
                         final OpenFilePanel inputXMLPanel = new OpenFilePanel(
                                 "org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
                                 "Choose a location");
@@ -971,6 +976,9 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                         JOptionPane.showMessageDialog(null, msg,
                                                 "Error while loading the style", JOptionPane.ERROR_MESSAGE);
                                 }
+                        }}
+                        else{
+                            LOGGER.info("This functionality is not supported.");
                         }
                 }
         }
@@ -985,18 +993,22 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         if(styles.length == 1){
                                 Style style = styles[0];
                                 ILayer layer = style.getLayer();
-                                int index = layer.indexOf(style);
-                                // Obtain MapTransform
-                                MapEditor editor = mapElement.getMapEditor();
-                                MapTransform mt = editor.getMapControl().getMapTransform();
-                                if (mt == null) {
-                                        JOptionPane.showMessageDialog(null,I18N.tr("Advanced Editor can't be loaded"));
-                                }
+                                if(isStyleAllowed(layer)){
+                                    int index = layer.indexOf(style);
+                                    // Obtain MapTransform
+                                    MapEditor editor = mapElement.getMapEditor();
+                                    MapTransform mt = editor.getMapControl().getMapTransform();
+                                    if (mt == null) {
+                                            JOptionPane.showMessageDialog(null,I18N.tr("Advanced Editor can't be loaded"));
+                                    }
 
-                                LegendUIController controller = new LegendUIController(style);
+                                    LegendUIController controller = new LegendUIController(style);
 
-                                if (UIFactory.showDialog((UIPanel)controller.getMainPanel())) {
-                                        layer.setStyle(index,controller.getEditedFeatureTypeStyle());
+                                    if (UIFactory.showDialog((UIPanel)controller.getMainPanel())) {
+                                            layer.setStyle(index,controller.getEditedFeatureTypeStyle());
+                                    }
+                                }else{
+                                   LOGGER.info("This functionality is not supported."); 
                                 }
                         }
 		} catch (SeExceptions.InvalidStyle ex) {
@@ -1010,25 +1022,29 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         try {
                                 Style style = ((TocTreeNodeStyle) selObjs.getLastPathComponent()).getStyle();
                                 Layer layer = (Layer) style.getLayer();
-                                int index = layer.indexOf(style);
-                                Type typ = layer.getDataSource().getMetadata().getFieldType(
-                                        layer.getDataSource().getSpatialFieldIndex());
-                                //In order to be able to cancel all of our modifications,
-                                //we produce a copy of our style.
-                                MapEditor editor = mapElement.getMapEditor();
-                                MapTransform mt = editor.getMapControl().getMapTransform();
-                                JAXBElement<StyleType> jest = style.getJAXBElement();
-                                LegendsPanel pan = new LegendsPanel();
-                                Style copy = new Style(jest, layer);
-                                ILegendPanel[] legends = EPLegendHelper.getLegendPanels(pan);
-                                pan.init(mt, typ, copy, legends, layer);
-                                if (UIFactory.showDialog(pan)) {
-                                        try {
-                                                layer.setStyle(index, pan.getStyleWrapper().getStyle());
-                                        } catch (ClassificationMethodException e) {
-                                                LOGGER.error(e.getMessage());
-                                        }
-                                }
+                                 if(isStyleAllowed(layer)){
+                                    int index = layer.indexOf(style);
+                                    Type typ = layer.getDataSource().getMetadata().getFieldType(
+                                            layer.getDataSource().getSpatialFieldIndex());
+                                    //In order to be able to cancel all of our modifications,
+                                    //we produce a copy of our style.
+                                    MapEditor editor = mapElement.getMapEditor();
+                                    MapTransform mt = editor.getMapControl().getMapTransform();
+                                    JAXBElement<StyleType> jest = style.getJAXBElement();
+                                    LegendsPanel pan = new LegendsPanel();
+                                    Style copy = new Style(jest, layer);
+                                    ILegendPanel[] legends = EPLegendHelper.getLegendPanels(pan);
+                                    pan.init(mt, typ, copy, legends, layer);
+                                    if (UIFactory.showDialog(pan)) {
+                                            try {
+                                                    layer.setStyle(index, pan.getStyleWrapper().getStyle());
+                                            } catch (ClassificationMethodException e) {
+                                                    LOGGER.error(e.getMessage());
+                                            }
+                                    }
+                                 }else{
+                                      LOGGER.info("This functionality is not supported."); 
+                                 }
                         } catch (SeExceptions.InvalidStyle sis) {
                                 //I don't know how this could happen : we are creating a style
                                 //from a valid style. Should be valid too, consequently...
@@ -1160,11 +1176,20 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         }
 
        /**
-        *
-        */
-        private void isStyleAllowed() {
-            
-        }
+         * Return true is the layer is vectorial because of only SE geometry style
+        * is currently supported
+         */
+        private boolean isStyleAllowed(ILayer layer) {
+            try {
+                if (layer.isVectorial()) {
+                    return true;
+                }
+            } catch (DriverException ex) {
+                return false;
+            }
+        return false;
+
+    }
         
         private class TocLayerListener implements LayerListener {
 
