@@ -33,6 +33,8 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.map.ext.MapEditorExtension;
+
+import javax.swing.*;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -63,9 +65,17 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
      * @param name Action name
      * @param extension MapEditor instance
      */
-    public ActionMapContext(String actionId,String name, MapEditorExtension extension) {
+    public ActionMapContext(String actionId,String name, MapEditorExtension extension,Icon icon) {
         super(actionId, name);
+        putValue(Action.SMALL_ICON,icon);
+        putValue(Action.LARGE_ICON_KEY,icon);
         this.extension = extension;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        checkActionState();
+        return super.isEnabled();
     }
 
     /**

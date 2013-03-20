@@ -534,9 +534,11 @@ public class MapControl extends JComponent implements ContainerListener {
 		/*
 		 * if (drawer != null) { drawer.cancel(); }
 		 */
-		toolManager.freeResources();
-		toolManager = null;
+            if(toolManager!=null) {
+                toolManager.freeResources();
+                toolManager = null;
                 removeMapContextListener();
+            }
 	}
 
 	public void setShowCoordinates(boolean showCoordinates) {

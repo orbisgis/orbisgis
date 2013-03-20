@@ -30,6 +30,7 @@
 package org.orbisgis.view.map.toolbar;
 
 import org.orbisgis.view.components.actions.ActionTools;
+import org.orbisgis.view.main.frames.ext.ToolBarAction;
 import org.orbisgis.view.map.ext.AutomatonHolder;
 import org.orbisgis.view.map.ext.MapEditorAction;
 import org.orbisgis.view.map.ext.MapEditorExtension;
@@ -61,12 +62,11 @@ public class ActionAutomaton extends ActionMapContext implements AutomatonHolder
      * @param extension MapEditor instance
      */
     public ActionAutomaton(String actionId, Automaton automaton, MapEditorExtension extension) {
-        super(actionId, automaton.getName(),extension);
+        super(actionId, automaton.getName(),extension,automaton.getImageIcon());
         this.automaton = automaton;
-        putValue(Action.SMALL_ICON,automaton.getImageIcon());
-        putValue(Action.LARGE_ICON_KEY,automaton.getImageIcon());
         putValue(Action.SHORT_DESCRIPTION,automaton.getTooltip());
         putValue(ActionTools.TOGGLE_GROUP, MapEditorAction.TOGGLE_GROUP_AUTOMATONS); //radio group
+        putValue(ActionTools.LOGICAL_GROUP, ToolBarAction.DRAWING_GROUP);
         if(extension.getToolManager()!=null) {
             putValue(Action.SELECTED_KEY,isEqual(extension.getToolManager().getTool()));
         }
@@ -126,12 +126,6 @@ public class ActionAutomaton extends ActionMapContext implements AutomatonHolder
                 setEnabled(automatonState);
             }
         }
-    }
-
-    @Override
-    public boolean isEnabled() {
-        checkActionState();
-        return super.isEnabled();
     }
 
     @Override

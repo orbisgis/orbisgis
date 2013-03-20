@@ -346,14 +346,14 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             }
     }
 
-        @Override
-        public void removeNotify() {
-                super.removeNotify();
-                removeListeners();
-                getMapControl().closing();
-                loadMap(null);
+        /**
+         * Free MapEditor resources
+         * */
+        public void dispose() {
+            removeListeners();
+            getMapControl().closing();
+            loadMap(null);
         }
-
 
         @Override
         public MapElement getMapElement() {

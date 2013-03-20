@@ -61,6 +61,9 @@ public class MapEditorFactory implements SingleEditorFactory {
             if(mapEditorExt!=null) {
                 mapEditorExt.close(); //Unregister MapEditor actions
             }
+            if(mapPanel!=null) {
+
+            }
         }
 
         @Override

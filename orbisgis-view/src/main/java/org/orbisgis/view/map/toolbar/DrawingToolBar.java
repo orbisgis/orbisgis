@@ -69,6 +69,7 @@ public class DrawingToolBar implements ToolBarAction {
     @Override
     public List<Action> createActions(MainWindow target) {
         List<Action> actions = new LinkedList<Action>();
+        actions.add(new ActionCancel(mapEditor));
         add(actions,DRAW_AUTO_POLYGON,new AutoCompletePolygonTool());
         add(actions,DRAW_CUT_POLYGON, new CutPolygonTool());
         add(actions,DRAW_MULTI_POINT, new MultipointTool());
@@ -86,7 +87,6 @@ public class DrawingToolBar implements ToolBarAction {
     }
     private ActionAutomaton add(List<Action> actions,String ID,Automaton action) {
         ActionAutomaton newAction = new ActionDrawingAutomaton(ID,action,mapEditor);
-        newAction.setLogicalGroup("draw");
         actions.add(newAction);
         return newAction;
     }
