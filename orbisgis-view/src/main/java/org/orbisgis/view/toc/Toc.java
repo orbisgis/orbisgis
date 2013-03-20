@@ -51,7 +51,6 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.StyleType;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.DataManager;
@@ -952,6 +951,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
          * through the dedicated menu.
          */
         public void onImportStyle() {
+                isStyleAllowed();
                 ILayer[] layers = mapContext.getSelectedLayers();
                 if (layers.length == 1) {
                         ILayer layer = layers[0];
@@ -1157,6 +1157,13 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         newStyle.addPropertyChangeListener(tocStyleListener);                        
                 }
                 treeModel.nodeStructureChanged(new TocTreeNodeLayer((ILayer) evt.getSource()));
+        }
+
+       /**
+        *
+        */
+        private void isStyleAllowed() {
+            
         }
         
         private class TocLayerListener implements LayerListener {

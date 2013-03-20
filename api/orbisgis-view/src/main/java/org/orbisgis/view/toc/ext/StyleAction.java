@@ -28,11 +28,10 @@
  */
 package org.orbisgis.view.toc.ext;
 
-import org.orbisgis.view.components.actions.DefaultAction;
-
+import java.awt.event.ActionListener;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
-import java.awt.event.ActionListener;
+import org.orbisgis.view.components.actions.DefaultAction;
 
 /**
  * Action shown on style items
