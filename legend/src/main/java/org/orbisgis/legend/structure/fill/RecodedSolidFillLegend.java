@@ -40,6 +40,7 @@ import org.orbisgis.legend.structure.recode.RecodedColor;
 import org.orbisgis.legend.structure.recode.RecodedLegend;
 import org.orbisgis.legend.structure.recode.RecodedLegendStructure;
 import org.orbisgis.legend.structure.recode.RecodedReal;
+import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 
 /**
@@ -66,11 +67,21 @@ public class RecodedSolidFillLegend extends SolidFillLegend implements RecodedLe
          * @param opacity The representation of the opacity
          */
         public RecodedSolidFillLegend(SolidFill fill, RecodedColor colorLegend, RecodedReal opacity) {
-                super(fill, colorLegend, opacity);
-                TypeListener tl = EventHandler.create(TypeListener.class, this, "replaceColor", "getSource.getParameter");
-                colorLegend.addListener(tl);
-                TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceOpacity", "getSource.getParameter");
-                opacity.addListener(tlZ);
+            super(fill, colorLegend, opacity);
+            TypeListener tl = new TypeListener() {
+                @Override
+                public void typeChanged(TypeEvent te) {
+                    replaceColor(te.getSource().getParameter());
+                }
+            };
+            colorLegend.addListener(tl);
+            TypeListener tlZ = new TypeListener() {
+                @Override
+                public void typeChanged(TypeEvent te) {
+                    replaceOpacity(te.getSource().getParameter());
+                }
+            };
+            opacity.addListener(tlZ);
         }
 
         /**
