@@ -35,6 +35,9 @@ import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.analyzer.symbolizers.AreaSymbolizerAnalyzer;
 import org.orbisgis.legend.thematic.recode.RecodedArea;
 
+import java.awt.*;
+
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -50,14 +53,41 @@ public class RecodedAreaTest extends AnalyzerTest {
         assertTrue(true);
     }
 
+    @Test
+    public void testGetParams() throws Exception {
+        RecodedArea ra = getRecodedArea();
+        assertTrue(ra.size() == 5);
+        assertTrue(ra.get("potato").equals(ra.getFallbackParameters()));
+        AreaParameters ap = new AreaParameters(new Color(34,51,68), 1.0, 1.0, "", new Color(34,51,68), 0.9);
+        AreaParameters ret = ra.get("1");
+        assertTrue(ret.equals(ap));
+    }
 
+    @Test
+    public void testGetParamFallbackVal() throws Exception {
+        RecodedArea ra = getRecodedArea();
+        AreaParameters ap = new AreaParameters(new Color(88,174, 35), 1.0, 0.4, "", new Color(88,172, 35), 0.9);
+        AreaParameters ret = ra.get("9999");
+        assertTrue(ret.equals(ap));
+        ap = new AreaParameters(new Color(170,23,180), 1.0, 0.4, "", new Color(51,85,102), .5);
+        ret = ra.get("25");
+        assertTrue(ret.equals(ap));
+    }
+
+    @Test
+    public void testGetFallback() throws Exception {
+        RecodedArea ra = getRecodedArea();
+        AreaParameters fb = ra.getFallbackParameters();
+        AreaParameters t = new AreaParameters(new Color(51, 85, 103),1.0,0.4,"",new Color(51,85,102),.9);
+        assertTrue(t.equals(fb));
+    }
 
     private AreaSymbolizer getAreaSymbolizer() throws Exception{
         Style s = getStyle(AREA_RECODE);
         return (AreaSymbolizer) s.getRules().get(0).getCompositeSymbolizer().getChildren().get(0);
     }
 
-    private RecodedArea getRecodedLine() throws Exception {
+    private RecodedArea getRecodedArea() throws Exception {
         return new RecodedArea(getAreaSymbolizer());
     }
 }

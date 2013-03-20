@@ -154,9 +154,9 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters>  {
         String d = getLineDash().getItemValue(key);
         d = d==null ? getLineDash().getFallbackValue() : d;
         Color fc = getFillColor().getItemValue(key);
-        fc = fc==null ? getLineColor().getFallbackValue() : fc;
-        Double fop = getLineOpacity().getItemValue(key);
-        fop = sop==null || fop.isNaN() ? getLineOpacity().getFallbackValue() : fop;
+        fc = fc==null ? getFillColor().getFallbackValue() : fc;
+        Double fop = getFillOpacity().getItemValue(key);
+        fop = sop==null || fop.isNaN() ? getFillOpacity().getFallbackValue() : fop;
         return new AreaParameters(sc,sop,w,d,fc,fop);
 
     }
@@ -200,5 +200,18 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters>  {
         ret.addAll(psl);
         ret.addAll(fsl);
         return ret;
+    }
+
+    /**
+     * Gets the configuration used for the line style used to draw features we can't get a value for in the map.
+     * @return
+     */
+    public AreaParameters getFallbackParameters(){
+        return new AreaParameters(getLineColor().getFallbackValue(),
+                    getLineOpacity().getFallbackValue(),
+                    getLineWidth().getFallbackValue(),
+                    getLineDash().getFallbackValue(),
+                    getFillColor().getFallbackValue(),
+                    getFillOpacity().getFallbackValue());
     }
 }

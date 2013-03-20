@@ -23,15 +23,26 @@
 						</MapItem>
 						<MapItem>
 							<Key>9999</Key>
-							<Value>#58AE23</Value>
+							<Value>#58AC23</Value>
 						</MapItem>
 					</Recode>
 				</Color>
+				<Opacity>
+					<Recode fallbackValue=".9">
+						<LookupValue>
+							<fes:ValueReference>PREC_ALTI</fes:ValueReference>
+						</LookupValue>
+						<MapItem>
+							<Key>25</Key>
+							<Value>.5</Value>
+						</MapItem>
+					</Recode>
+				</Opacity>
 			</SolidFill>
 			<PenStroke>
 				<SolidFill>
 					<Color>
-						<Recode fallbackValue="#335566">
+						<Recode fallbackValue="#335567">
 							<LookupValue>
 								<fes:ValueReference>PREC_ALTI</fes:ValueReference>
 							</LookupValue>
@@ -40,7 +51,7 @@
 								<Value>#223344</Value>
 							</MapItem>
 							<MapItem>
-								<Key>2.5</Key>
+								<Key>25</Key>
 								<Value>#AA17B4</Value>
 							</MapItem>
 							<MapItem>
@@ -70,10 +81,6 @@
 						<MapItem>
 							<Key>20</Key>
 							<Value>20</Value>
-						</MapItem>
-						<MapItem>
-							<Key>9999</Key>
-							<Value>9</Value>
 						</MapItem>
 					</Recode>
 				</Width>
