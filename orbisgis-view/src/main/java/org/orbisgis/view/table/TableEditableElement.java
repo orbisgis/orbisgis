@@ -28,10 +28,10 @@
  */
 package org.orbisgis.view.table;
 
+import java.util.Collections;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Collections;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.xnap.commons.i18n.I18n;

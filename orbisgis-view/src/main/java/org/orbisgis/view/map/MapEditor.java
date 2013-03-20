@@ -348,7 +348,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
         /**
          * Free MapEditor resources
-         * */
+         **/
         public void dispose() {
             removeListeners();
             getMapControl().closing();

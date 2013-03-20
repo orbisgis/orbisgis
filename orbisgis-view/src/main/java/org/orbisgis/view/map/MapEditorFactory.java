@@ -49,6 +49,10 @@ public class MapEditorFactory implements SingleEditorFactory {
         private MenuItemServiceTracker<MapEditorExtension,MapEditorAction> mapEditorExt;
         private BundleContext hostBundle;
 
+        /**
+         * Factory constructor
+         * @param bc BundleContext for MapEditor extensions
+         */
         public MapEditorFactory(BundleContext bc) {
             hostBundle = bc;
         }
@@ -62,7 +66,7 @@ public class MapEditorFactory implements SingleEditorFactory {
                 mapEditorExt.close(); //Unregister MapEditor actions
             }
             if(mapPanel!=null) {
-
+                mapPanel.dispose();
             }
         }
 
