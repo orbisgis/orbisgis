@@ -86,11 +86,13 @@ public class RecodedAreaTest extends AnalyzerTest {
     @Test
     public void testPutNonExistingKey() throws Exception {
         RecodedArea ra = getRecodedArea();
+        assertTrue(ra.size()==5);
         AreaParameters ap = new AreaParameters(new Color(88,74, 235), 1.0, 0.4, "2", new Color(0xEC,0x44, 5), 0.9);
         String newKey = "I am new !";
         AreaParameters ret = ra.put(newKey, ap);
         assertNull(ret);
         assertTrue(ra.get(newKey).equals(new AreaParameters(new Color(88,74, 235), 1.0, 0.4, "2", new Color(0xEC,0x44, 5), 0.9)));
+        assertTrue(ra.size() == 6);
     }
 
     @Test
@@ -117,6 +119,33 @@ public class RecodedAreaTest extends AnalyzerTest {
         } catch (NullPointerException npe){
         }
         assertTrue(true);
+    }
+
+    @Test
+    public void testRemove() throws Exception{
+        RecodedArea ra = getRecodedArea();
+        assertTrue(ra.size() == 5);
+        AreaParameters expected = new AreaParameters(new Color(34,51,68), 1.0, 1.0, "", new Color(34,51,68), 0.9);
+        AreaParameters ap = ra.remove("1");
+        assertTrue(ap.equals(expected));
+        assertTrue(ra.size()==4);
+    }
+
+    @Test
+    public void testRemoveNull() throws Exception {
+        RecodedArea ra = getRecodedArea();
+        try{
+            ra.remove(null);
+            fail();
+        } catch (NullPointerException npe){
+        }
+        assertTrue(true);
+    }
+
+    @Test
+    public void testRemoveNotExisting() throws Exception {
+        RecodedArea ra = getRecodedArea();
+        assertNull(ra.remove("I do not exist :-("));
     }
 
     private AreaSymbolizer getAreaSymbolizer() throws Exception{
