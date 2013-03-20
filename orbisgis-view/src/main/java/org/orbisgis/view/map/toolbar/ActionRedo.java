@@ -32,7 +32,6 @@ package org.orbisgis.view.map.toolbar;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.actions.ActionTools;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.main.frames.ext.ToolBarAction;
@@ -41,24 +40,23 @@ import org.orbisgis.view.map.ext.MapEditorExtension;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 /**
  * Cancel button on the Drawing ToolBar
  * @author Nicolas Fortin
  */
-public class ActionCancel extends ActionDataSource {
-    private static final I18n I18N = I18nFactory.getI18n(ActionCancel.class);
-    private static final Logger LOGGER = Logger.getLogger(ActionCancel.class);
+public class ActionRedo extends ActionDataSource {
+    private static final I18n I18N = I18nFactory.getI18n(ActionRedo.class);
+    private static final Logger LOGGER = Logger.getLogger(ActionRedo.class);
 
     /**
      * Constructor
      * @param extension MapEditor instance
      */
-    public ActionCancel(MapEditorExtension extension) {
-        super(ToolBarAction.DRAW_CANCEL, I18N.tr("Cancel"), extension, OrbisGISIcon.getIcon("cancel"));
-        putValue(SHORT_DESCRIPTION, I18N.tr("Cancel all unsaved modifications of this layer"));
+    public ActionRedo(MapEditorExtension extension) {
+        super(ToolBarAction.DRAW_REDO, I18N.tr("Redo"), extension, OrbisGISIcon.getIcon("edit-redo"));
+        putValue(SHORT_DESCRIPTION,I18N.tr("Redo the last modification"));
         setLogicalGroup(ToolBarAction.DRAWING_GROUP);
     }
 
@@ -68,24 +66,18 @@ public class ActionCancel extends ActionDataSource {
         // Active only if the DataSource is modified
         if(ActionTools.isVisible(this)) {
             DataSource dataSource = getExtension().getMapElement().getMapContext().getActiveLayer().getDataSource();
-            setEnabled(dataSource!=null && dataSource.isModified());
+            setEnabled(dataSource!=null && dataSource.canRedo());
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-        int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
-                I18N.tr("Are you sure to cancel all your modifications ?"),
-                I18N.tr("Return to the original state"),
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        if(response==JOptionPane.YES_OPTION) {
-            MapElement loadedMap = getExtension().getMapElement();
-            if(loadedMap!=null) {
-                try {
-                    loadedMap.getMapContext().getActiveLayer().getDataSource().syncWithSource();
-                } catch (DriverException ex) {
-                    LOGGER.error(ex.getLocalizedMessage(),ex);
-                }
+        MapElement loadedMap = getExtension().getMapElement();
+        if(loadedMap!=null) {
+            try {
+                loadedMap.getMapContext().getActiveLayer().getDataSource().redo();
+            } catch (DriverException ex) {
+                LOGGER.error(ex.getLocalizedMessage(),ex);
             }
         }
     }

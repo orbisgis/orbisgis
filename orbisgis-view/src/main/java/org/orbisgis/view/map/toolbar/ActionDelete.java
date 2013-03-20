@@ -29,36 +29,57 @@
 
 package org.orbisgis.view.map.toolbar;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceListener;
-import org.gdms.data.edition.EditionListener;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.background.DefaultJobId;
+import org.orbisgis.view.components.actions.ActionTools;
+import org.orbisgis.view.components.gdms.DeleteRows;
+import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.main.frames.ext.ToolBarAction;
 import org.orbisgis.view.map.ext.MapEditorExtension;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Set;
 
 /**
- * This action check its enabled state depending on {@link MapContext#PROP_ACTIVELAYER} DataSource.
+ * Delete selected geometries.
  * @author Nicolas Fortin
  */
-public class ActionDataSource extends ActionActiveLayer {
-    private final EditionListener editionListener = EventHandler.create(EditionListener.class, this, "sourceEvent");
-    private final DataSourceListener dataSourceListener = EventHandler.create(DataSourceListener.class, this, "sourceEvent");
+public class ActionDelete extends ActionActiveLayer {
+    private static final I18n I18N = I18nFactory.getI18n(ActionDelete.class);
+    private PropertyChangeListener selectionChangeListener = EventHandler.create(PropertyChangeListener.class,this,"onSelectionUpdate");
 
     /**
      * Constructor
-     * @param actionId Unique action id
-     * @param name Action name
-     * @param extension MapEditor instance
-     * @param icon Action icon
+     * @param extension MapExtension instance
      */
-    public ActionDataSource(String actionId, String name, MapEditorExtension extension,Icon icon) {
-        super(actionId, name, extension,icon);
-        addTrackedMapContextProperty(MapContext.PROP_ACTIVELAYER);
-        addLayerListeners(getActiveLayer());
+    public ActionDelete(MapEditorExtension extension) {
+        super(ToolBarAction.DRAW_DELETE, I18N.tr("Delete"), extension, OrbisGISIcon.getIcon("edition/delete"));
+        setToolTipText(I18N.tr("Delete selected geometries"));
+        setLogicalGroup(ToolBarAction.DRAWING_GROUP);
+    }
+
+    /**
+     * Selection has been updated
+     */
+    public void onSelectionUpdate() {
+        checkActionState();
+    }
+    @Override
+    protected void checkActionState() {
+        super.checkActionState();
+        if(getActiveLayer()!=null) {
+            setEnabled(!getActiveLayer().getSelection().isEmpty());
+        }
     }
 
     @Override
@@ -90,46 +111,29 @@ public class ActionDataSource extends ActionActiveLayer {
 
     private void addLayerListeners(ILayer activeLayer) {
         if(activeLayer!=null) {
-            DataSource dataSource = activeLayer.getDataSource();
-            if(dataSource!=null && dataSource.isEditable()) {
-                try {
-                    dataSource.addEditionListener(editionListener);
-                    dataSource.addDataSourceListener(dataSourceListener);
-                } catch (UnsupportedOperationException ex) {
-                    //An active layer would be always an editable
-                }
-            }
+            activeLayer.addPropertyChangeListener(ILayer.PROP_SELECTION, selectionChangeListener);
         }
     }
     private void removeLayerListeners(ILayer activeLayer) {
         if(activeLayer!=null) {
-            DataSource dataSource = activeLayer.getDataSource();
-            if(dataSource!=null && dataSource.isEditable()) {
-                try {
-                    dataSource.removeEditionListener(editionListener);
-                    dataSource.removeDataSourceListener(dataSourceListener);
-                } catch (UnsupportedOperationException ex) {
-                    //An active layer would be always an editable
-                }
-            }
+            activeLayer.removePropertyChangeListener(selectionChangeListener);
         }
     }
 
-    /**
-     * Called when the DataSource has been updated
-     */
-    public final void sourceEvent() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                checkActionState();
-            }
-        });
-    }
     @Override
-    public void dispose() {
-        super.dispose();
-        // Remove active layer source listener
-        removeLayerListeners(getActiveLayer());
+    public void actionPerformed(ActionEvent ae) {
+        ILayer activeLayer = getActiveLayer();
+        if(activeLayer!=null) {
+            Set<Integer> selectedRows = activeLayer.getSelection();
+            int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                    I18N.tr("Are you sure to remove the {0} selected geometries ?", selectedRows.size()),
+                    I18N.tr("Delete selected geometries"),
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if(response==JOptionPane.YES_OPTION) {
+                // Launch process
+                BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
+                backgroundManager.nonBlockingBackgroundOperation(new DefaultJobId("DeleteRows"),new DeleteRows(selectedRows,activeLayer.getDataSource()));
+            }
+        }
     }
 }

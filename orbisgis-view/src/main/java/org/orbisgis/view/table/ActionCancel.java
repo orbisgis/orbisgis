@@ -72,8 +72,8 @@ public class ActionCancel extends AbstractAction {
     public void actionPerformed(ActionEvent actionEvent) {
         int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
                 I18N.tr("Are you sure to cancel all your modifications ?"),
-                I18N.tr("Return to original state"),
-                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                I18N.tr("Return to the original state"),
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if(response==JOptionPane.YES_OPTION) {
             try {
                 editable.getDataSource().syncWithSource();

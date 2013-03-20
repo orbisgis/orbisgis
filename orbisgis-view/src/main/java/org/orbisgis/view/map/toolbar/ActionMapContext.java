@@ -64,6 +64,7 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
      * @param actionId Unique action id
      * @param name Action name
      * @param extension MapEditor instance
+     * @param icon Action icon
      */
     public ActionMapContext(String actionId,String name, MapEditorExtension extension,Icon icon) {
         super(actionId, name);
@@ -124,10 +125,20 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
                     }
             }
     }
-    private void removeMapContextListener(MapContext mapContext) {
+
+    /**
+     * Remove listeners related to this MapContext
+     * @param mapContext MapContext instance
+     */
+    protected void removeMapContextListener(MapContext mapContext) {
         mapContext.removePropertyChangeListener(mapContextListener);
     }
-    private void installMapContextListener(MapContext mapContext) {
+
+    /**
+     * Add listeners related to this MapContext
+     * @param mapContext
+     */
+    protected void installMapContextListener(MapContext mapContext) {
         if(trackedMapContextProperties.size()==1) {
             mapContext.addPropertyChangeListener(trackedMapContextProperties.iterator().next(),mapContextListener);
         } else if(!trackedMapContextProperties.isEmpty()) {

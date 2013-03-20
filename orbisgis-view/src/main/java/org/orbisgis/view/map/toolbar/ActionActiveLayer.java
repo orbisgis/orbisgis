@@ -40,8 +40,13 @@ import javax.swing.*;
  * @author Nicolas Fortin
  */
 public class ActionActiveLayer extends ActionMapContext {
+
     /**
-     * {@link ActionMapContext#ActionMapContext(String, String, org.orbisgis.view.map.ext.MapEditorExtension,Icon)}
+     * Constructor
+     * @param actionId Unique action id
+     * @param name Action name
+     * @param extension MapEditor instance
+     * @param icon Action icon
      */
     public ActionActiveLayer(String actionId,String name, MapEditorExtension extension,Icon icon) {
         super(actionId, name, extension, icon);

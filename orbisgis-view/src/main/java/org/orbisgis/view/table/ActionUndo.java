@@ -33,6 +33,7 @@ import org.orbisgis.view.components.actions.ActionTools;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.table.ext.TableEditorActions;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 /**
@@ -44,6 +45,7 @@ public class ActionUndo extends ActionAbstractEdition {
     public ActionUndo(TableEditableElement editable) {
         super(I18N.tr("Undo"),OrbisGISIcon.getIcon("edit-undo"),editable);
         putValue(ActionTools.MENU_ID, TableEditorActions.A_UNDO);
+        putValue(SHORT_DESCRIPTION,I18N.tr("Undo the last modification"));
         onSourceUpdate();
     }
 

@@ -70,7 +70,10 @@ public class DrawingToolBar implements ToolBarAction {
     public List<Action> createActions(MainWindow target) {
         List<Action> actions = new LinkedList<Action>();
         actions.add(new ActionCancel(mapEditor));
-        add(actions,DRAW_AUTO_POLYGON,new AutoCompletePolygonTool());
+        actions.add(new ActionUndo(mapEditor));
+        actions.add(new ActionRedo(mapEditor));
+        actions.add(new ActionDelete(mapEditor));
+        add(actions,DRAW_AUTO_POLYGON, new AutoCompletePolygonTool());
         add(actions,DRAW_CUT_POLYGON, new CutPolygonTool());
         add(actions,DRAW_MULTI_POINT, new MultipointTool());
         add(actions,DRAW_MULTI_LINE, new MultilineTool());

@@ -40,6 +40,7 @@ import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.DefaultJobId;
 import org.orbisgis.view.components.actions.ActionTools;
+import org.orbisgis.view.components.gdms.DeleteRows;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.table.ext.TableEditorActions;
 import org.xnap.commons.i18n.I18n;
@@ -105,48 +106,4 @@ public class ActionRemoveRow extends AbstractAction {
                 }
         }
 
-        /**
-         * Delete row process
-         */
-        private static class DeleteRows implements BackgroundJob {
-                private List<Integer> rowsToDelete;
-                private DataSource source;
-                private Logger logger = Logger.getLogger(DeleteRows.class);
-
-                private DeleteRows(Collection<Integer> rowsToDelete, DataSource source) {
-                        this.rowsToDelete = new ArrayList(rowsToDelete);
-                        this.source = source;
-                }
-
-                @Override
-                public void run(ProgressMonitor pm) {
-                        long rowCount = rowsToDelete.size();
-                        // Reverse the Row index deletion order to keep valid row index.
-                        Collections.sort(rowsToDelete,Collections.reverseOrder());
-                        long done=0;
-                        pm.startTask(getTaskName(),rowCount);
-                        try {
-
-                                source.setDispatchingMode(DataSource.STORE);
-                                for(int rowid : rowsToDelete) {
-                                        pm.progressTo(done);
-                                        source.deleteRow(rowid);
-                                        done++;
-                                        if(pm.isCancelled()) {
-                                                break;
-                                        }
-                                }
-                        } catch (DriverException ex) {
-                                logger.error(ex.getLocalizedMessage(),ex);
-                        } finally {
-                                source.setDispatchingMode(DataSource.DISPATCH);
-                                pm.endTask();
-                        }
-                }
-
-                @Override
-                public String getTaskName() {
-                        return I18N.tr("Delete selected rows");
-                }
-        }
 }
