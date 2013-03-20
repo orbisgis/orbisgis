@@ -30,32 +30,49 @@ package org.orbisgis.view.toc.actions.cui.legends.model;
 
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;
-import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 
 import javax.swing.*;
+import javax.swing.table.TableCellEditor;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 /**
- * A cell editor dedicated to the management of keys in a recoded legend. It embeds a simple JTextField that is used
- * to edit the value in the table.
  * @author alexis
  */
-public class KeyEditorRecodedLine extends KeyEditorUniqueValue<LineParameters> {
+public abstract class ParametersEditorUniqueValue  extends AbstractCellEditor implements TableCellEditor, ActionListener {
+    protected static final String EDIT = "edit";
+    private JButton button;
+    private String val;
+    private MappedLegend<String, ? extends LineParameters> rl;
 
     /**
-     * Build a cell editor dedicated to the management of keys in a recoded legend.
+     * Editors for a LineParameters stored in a JTable. We'll open a dedicated dialog
      */
-    public KeyEditorRecodedLine(){
-        super();
+    public ParametersEditorUniqueValue(){
+        button = new JButton();
+        button.setActionCommand(EDIT);
+        button.addActionListener(this);
+        button.setBorderPainted(false);
     }
+
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        setVal((String) value);
-        AbstractRecodedLegend<LineParameters> uv = ((TableModelRecodedLine) table.getModel()).getUniqueValue();
-        setLegend(uv);
-        getField().setText(getVal());
-        return getField();
+        val = (String) value;
+        rl = ((TableModelUniqueValue)table.getModel()).getUniqueValue();
+        return button;
     }
 
+    @Override
+    public Object getCellEditorValue() {
+        return val;
+    }
+
+    /**
+     * Gets the unique value.
+     * @return The unique value we're going to edit.
+     */
+    public MappedLegend<String, ? extends LineParameters> getUniqueValue(){
+        return rl;
+    }
 }

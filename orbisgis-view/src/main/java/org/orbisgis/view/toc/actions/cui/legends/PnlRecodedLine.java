@@ -51,10 +51,7 @@ import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
-import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorRecodedLine;
-import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorRecodedLine;
-import org.orbisgis.view.toc.actions.cui.legends.model.PreviewCellRenderer;
-import org.orbisgis.view.toc.actions.cui.legends.model.TableModelRecodedLine;
+import org.orbisgis.view.toc.actions.cui.legends.model.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -261,14 +258,14 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         table.setDefaultEditor(Object.class, null);
         table.setRowHeight(CELL_PREVIEW_HEIGHT);
         final int previewWidth = CELL_PREVIEW_WIDTH;
-        TableColumn previews = table.getColumnModel().getColumn(TableModelRecodedLine.PREVIEW_COLUMN);
+        TableColumn previews = table.getColumnModel().getColumn(TableModelUniqueValue.PREVIEW_COLUMN);
         previews.setWidth(previewWidth);
         previews.setMinWidth(previewWidth);
         previews.setMaxWidth(previewWidth);
         previews.setCellRenderer(new PreviewCellRenderer(table, String.class, legend));
         previews.setCellEditor(new ParametersEditorRecodedLine());
         //We put a default editor on the keys.
-        TableColumn keys = table.getColumnModel().getColumn(TableModelRecodedLine.KEY_COLUMN);
+        TableColumn keys = table.getColumnModel().getColumn(TableModelUniqueValue.KEY_COLUMN);
         KeyEditorRecodedLine ker = new KeyEditorRecodedLine();
         CellEditorListener  cel = EventHandler.create(CellEditorListener.class, model, "fireTableDataChanged", null, "editingStopped");
         ker.addCellEditorListener(cel);
@@ -288,10 +285,10 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
             String key = legend.getNotUsedKey("newValue");
             LineParameters lp = legend.getFallbackParameters();
             legend.put(key, lp);
-            TableModelRecodedLine model = (TableModelRecodedLine) table.getModel();
+            TableModelUniqueValue model = (TableModelUniqueValue) table.getModel();
             model.fireTableDataChanged();
         } else if (e.getActionCommand().equals(REMOVE)){
-            TableModelRecodedLine model = (TableModelRecodedLine) table.getModel();
+            TableModelUniqueValue model = (TableModelUniqueValue) table.getModel();
             int col = table.getSelectedColumn();
             int row = table.getSelectedRow();
             if(col>=0 && row >= 0){
@@ -383,7 +380,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         CanvasSE prev = getPreview();
         prev.setSymbol(getFallbackSymbolizer());
         prev.imageChanged();
-        TableModelRecodedLine model = (TableModelRecodedLine) table.getModel();
+        TableModelUniqueValue model = (TableModelUniqueValue) table.getModel();
         model.fireTableDataChanged();
     }
 
@@ -812,7 +809,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         @Override
         public void jobRemoved(Job job) {
             if(job.getId().is(new DefaultJobId(JOB_NAME))){
-                ((TableModelRecodedLine) table.getModel()).fireTableDataChanged();
+                ((TableModelUniqueValue) table.getModel()).fireTableDataChanged();
                 table.invalidate();
             }
         }

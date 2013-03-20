@@ -30,6 +30,7 @@ package org.orbisgis.view.toc.actions.cui.legends.model;
 
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
+import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
@@ -46,45 +47,26 @@ import java.awt.event.ActionListener;
  * LineParameters instance in a dedicated UI, similar to the one used for unique symbols.
  * @author alexis
  */
-public class ParametersEditorRecodedLine extends AbstractCellEditor implements TableCellEditor, ActionListener {
-    protected static final String EDIT = "edit";
-    private JButton button;
-    private String val;
-    private RecodedLine rl;
+public class ParametersEditorRecodedLine extends ParametersEditorUniqueValue {
 
     /**
      * Editors for a LineParameters stored in a JTable. We'll open a dedicated dialog
      */
     public ParametersEditorRecodedLine(){
-        button = new JButton();
-        button.setActionCommand(EDIT);
-        button.addActionListener(this);
-        button.setBorderPainted(false);
-    }
-
-
-    @Override
-    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        val = (String) value;
-        rl = ((TableModelRecodedLine)table.getModel()).getRecodedLine();
-        return button;
-    }
-
-    @Override
-    public Object getCellEditorValue() {
-        return val;
+        super();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().equals(EDIT)){
-            LineParameters lp = rl.get(val);
+            RecodedLine rl = (RecodedLine) getUniqueValue();
+            LineParameters lp = rl.get(getCellEditorValue());
             UniqueSymbolLine usl = new UniqueSymbolLine(lp);
             PnlUniqueLineSE pls = new PnlUniqueLineSE(false);
             pls.setLegend(usl);
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 LineParameters edited = usl.getLineParameters();
-                rl.put(val, edited);
+                rl.put((String)getCellEditorValue(), edited);
                 fireEditingStopped();
             }
             fireEditingCanceled();
