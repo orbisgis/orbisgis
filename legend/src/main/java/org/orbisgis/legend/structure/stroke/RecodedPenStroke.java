@@ -39,6 +39,7 @@ import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.recode.*;
+import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 
 import java.awt.*;
@@ -71,9 +72,19 @@ public class RecodedPenStroke implements RecodedLegendStructure {
             this.widthLegend = new RecodedReal(stroke.getWidth());
             StringParameter sp = stroke.getDashArray();
             this.dashLegend = new RecodedDash(sp);
-            TypeListener tl = EventHandler.create(TypeListener.class, this, "replaceWidth", "getSource.getParameter");
+            TypeListener tl = new TypeListener() {
+                @Override
+                public void typeChanged(TypeEvent te) {
+                    replaceWidth(te.getSource().getParameter());
+                }
+            };
             widthLegend.addListener(tl);
-            TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceDash", "getSource.getParameter");
+            TypeListener tlZ = new TypeListener() {
+                @Override
+                public void typeChanged(TypeEvent te) {
+                    replaceDash(te.getSource().getParameter());
+                }
+            };
             dashLegend.addListener(tlZ);
         }
 
@@ -85,7 +96,12 @@ public class RecodedPenStroke implements RecodedLegendStructure {
                 this.fillLegend = fillLegend;
                 this.widthLegend = widthLegend;
                 this.dashLegend = dashLegend;
-                TypeListener tl = EventHandler.create(TypeListener.class, this, "replaceWidth", "getSource.getParameter");
+                TypeListener tl = new TypeListener() {
+                    @Override
+                    public void typeChanged(TypeEvent te) {
+                        replaceWidth(te.getSource().getParameter());
+                    }
+                };
                 widthLegend.addListener(tl);
                 TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceDash", "getSource.getParameter");
                 dashLegend.addListener(tlZ);
