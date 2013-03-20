@@ -43,6 +43,8 @@ import sun.swing.StringUIClientPropertyKey;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Wrapper for unique value classification that are made on AreaSymbolizer instances.
@@ -229,5 +231,15 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters>  {
         getLineDash().setFallbackValue(ap.getLineDash());
         getFillColor().setFallbackValue(ap.getFillColor());
         getFillOpacity().setFallbackValue(ap.getFillOpacity());
+    }
+
+    @Override
+    public int hashCode(){
+        int ret = 0;
+        Set<Entry<String, AreaParameters>> entries = entrySet();
+        for(Map.Entry m : entries){
+            ret += m.hashCode();
+        }
+        return ret;
     }
 }

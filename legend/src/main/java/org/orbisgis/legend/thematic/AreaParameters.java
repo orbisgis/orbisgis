@@ -102,4 +102,10 @@ public class AreaParameters extends LineParameters {
             return false;
         }
     }
+
+    @Override
+    public int hashCode(){
+        int basis = super.hashCode();
+        return basis + 113 * fillOpacity.hashCode() + 41*fillColor.hashCode();
+    }
 }
