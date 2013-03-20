@@ -30,6 +30,7 @@ package org.orbisgis.legend.thematic.recode;
 
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
@@ -38,6 +39,7 @@ import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 import org.orbisgis.legend.thematic.AreaParameters;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 import sun.swing.StringUIClientPropertyKey;
 
 import java.awt.*;
@@ -50,7 +52,7 @@ import java.util.Set;
  * Wrapper for unique value classification that are made on AreaSymbolizer instances.
  * @author Alexis Guéganno
  */
-public class RecodedArea extends AbstractRecodedLegend<AreaParameters>  {
+public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implements StrokeUom {
 
     private AreaSymbolizer areaSymbolizer;
     private final RecodedSolidFillLegend fill;
@@ -142,6 +144,16 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters>  {
      */
     public RecodedColor getFillColor(){
         return (RecodedColor) fill.getFillColorLegend();
+    }
+
+    @Override
+    public Uom getStrokeUom() {
+        return areaSymbolizer.getStroke().getUom();
+    }
+
+    @Override
+    public void setStrokeUom(Uom u) {
+        areaSymbolizer.getStroke().setUom(u);
     }
 
     @Override
