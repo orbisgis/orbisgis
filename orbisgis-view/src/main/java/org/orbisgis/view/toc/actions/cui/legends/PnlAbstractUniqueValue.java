@@ -39,7 +39,6 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
-import org.orbisgis.legend.thematic.recode.RecodedLine;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
@@ -48,12 +47,17 @@ import org.orbisgis.view.joblist.JobListItem;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorUniqueValue;
+import org.orbisgis.view.toc.actions.cui.legends.model.PreviewCellRenderer;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelUniqueValue;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
+import javax.swing.event.CellEditorListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -76,6 +80,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
     private JPanel colorConfig;
     private JLabel endCol;
     private JLabel startCol;
+    private JTable table;
     public final static int CELL_PREVIEW_WIDTH = CanvasSE.WIDTH/2;
     public final static int CELL_PREVIEW_HEIGHT = CanvasSE.HEIGHT/2;
     protected final static String JOB_NAME = "recodeSelectDistinct";
@@ -84,7 +89,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
     @Override
     public void initialize(LegendContext lc) {
         if (getLegend() == null) {
-            setLegend(new RecodedLine());
+            setLegend(getEmptyAnalysis());
             initPreview();
         }
         setGeometryType(lc.getGeometryType());
@@ -94,24 +99,10 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         }
     }
 
-    @Override
-    public void setLegend(Legend legend) {
-        if (legend instanceof RecodedLine) {
-            if(getLegend() != null){
-                Rule rule = getLegend().getSymbolizer().getRule();
-                if(rule != null){
-                    CompositeSymbolizer compositeSymbolizer = rule.getCompositeSymbolizer();
-                    int i = compositeSymbolizer.getSymbolizerList().indexOf(this.getLegend().getSymbolizer());
-                    compositeSymbolizer.setSymbolizer(i, legend.getSymbolizer());
-                }
-            }
-            this.legend = (AbstractRecodedLegend<U>) legend;
-            this.initializeLegendFields();
-        } else {
-            throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in"
-                        + "this panel."));
-        }
+    protected void setLegendImpl(Legend leg){
+        this.legend = (AbstractRecodedLegend<U>) leg;
     }
+
     /**
      * Creates and fill the combo box that will be used to compute the
      * analysis.
@@ -359,7 +350,9 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
      * Gets the JTable used to draw the mapping
      * @return the JTable
      */
-    public abstract JTable getJTable();
+    public JTable getJTable(){
+        return table;
+    }
 
     /**
      * Gets the constant Symbolizer obtained when using all the constant and fallback values of the original Symbolizer.
@@ -378,6 +371,60 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         prev.imageChanged();
         AbstractTableModel model = (AbstractTableModel) getJTable().getModel();
         model.fireTableDataChanged();
+    }
+
+    /**
+     * Gets the model used to build the JTable.
+     * @return The table model.
+     */
+    public abstract AbstractTableModel getTableModel();
+
+    /**
+     * Gets the editor used to configure a cell with a preview.
+     * @return A cell editor.
+     */
+    public abstract TableCellEditor getParametersCellEditor();
+
+    /**
+     * Gets the editor used to configure a key of the table
+     * @return A cell editor.
+     */
+    public abstract KeyEditorUniqueValue<U> getKeyCellEditor();
+
+    /**
+     * Build the panel that contains the JTable where the map is displayed.
+     * @return The panel that contains the JTable where the map is displayed.
+     */
+    public JPanel getTablePanel() {
+        JPanel jp = new JPanel();
+        BoxLayout bl = new BoxLayout(jp, BoxLayout.Y_AXIS);
+        jp.setLayout(bl);
+        jp.setBorder(BorderFactory.createTitledBorder(I18N.tr("Unique value classification")));
+        //we build the table here
+        AbstractTableModel model = getTableModel();
+        table = new JTable(model);
+        table.setDefaultEditor(Object.class, null);
+        table.setRowHeight(CELL_PREVIEW_HEIGHT);
+        final int previewWidth = CELL_PREVIEW_WIDTH;
+        TableColumn previews = table.getColumnModel().getColumn(TableModelUniqueValue.PREVIEW_COLUMN);
+        previews.setWidth(previewWidth);
+        previews.setMinWidth(previewWidth);
+        previews.setMaxWidth(previewWidth);
+        previews.setCellRenderer(new PreviewCellRenderer(table, String.class, ((AbstractRecodedLegend<U>)getLegend())));
+        previews.setCellEditor(getParametersCellEditor());
+        //We put a default editor on the keys.
+        TableColumn keys = table.getColumnModel().getColumn(TableModelUniqueValue.KEY_COLUMN);
+        KeyEditorUniqueValue<U> ker = getKeyCellEditor();
+        CellEditorListener cel = EventHandler.create(CellEditorListener.class, model, "fireTableDataChanged", null, "editingStopped");
+        ker.addCellEditorListener(cel);
+        keys.setCellEditor(ker);
+        JScrollPane jsp = new JScrollPane(table);
+        table.setPreferredScrollableViewportSize(new Dimension(400,200));
+        jsp.setAlignmentX((float).5);
+        jp.add(jsp, BorderLayout.CENTER);
+        table.doLayout();
+        jp.add(getButtonsPanel());
+        return jp;
     }
 
     /**

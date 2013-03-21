@@ -28,53 +28,32 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.model;
 
-import org.orbisgis.legend.thematic.LineParameters;
-import org.orbisgis.legend.thematic.map.MappedLegend;
+import org.orbisgis.legend.thematic.AreaParameters;
+import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 
 import javax.swing.*;
-import javax.swing.table.TableCellEditor;
 import java.awt.*;
-import java.awt.event.ActionListener;
 
 /**
  * @author alexis
  */
-public abstract class ParametersEditorUniqueValue<U extends LineParameters>
-            extends AbstractCellEditor
-            implements TableCellEditor, ActionListener {
-    protected static final String EDIT = "edit";
-    private JButton button;
-    private String val;
-    private MappedLegend<String, U> rl;
+public class KeyEditorRecodedArea extends KeyEditorUniqueValue<AreaParameters> {
 
     /**
-     * Editors for a LineParameters stored in a JTable. We'll open a dedicated dialog
+     * Build a cell editor dedicated to the management of keys in a recoded legend.
      */
-    public ParametersEditorUniqueValue(){
-        button = new JButton();
-        button.setActionCommand(EDIT);
-        button.addActionListener(this);
-        button.setBorderPainted(false);
+    public KeyEditorRecodedArea() {
+        super();
     }
-
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        val = (String) value;
-        rl = ((TableModelUniqueValue)table.getModel()).getUniqueValue();
-        return button;
+        setVal((String) value);
+        AbstractRecodedLegend<AreaParameters> uv = ((TableModelRecodedArea) table.getModel()).getUniqueValue();
+        setLegend(uv);
+        getField().setText(getVal());
+        return getField();
     }
 
-    @Override
-    public Object getCellEditorValue() {
-        return val;
-    }
-
-    /**
-     * Gets the unique value.
-     * @return The unique value we're going to edit.
-     */
-    public MappedLegend<String, ? extends LineParameters> getUniqueValue(){
-        return rl;
-    }
 }
+
