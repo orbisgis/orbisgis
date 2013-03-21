@@ -37,7 +37,7 @@ public class EPLegendHelper {
     private EPLegendHelper(){}
 
 	/**
-	 * Create an arraylist with all legend panels used by the edit legend plugin. 
+	 * Create an array with all legend panels used by the edit legend plugin.
 	 */
 	public static ILegendPanel[] getLegendPanels(LegendContext legendContext) {
 
@@ -66,6 +66,10 @@ public class EPLegendHelper {
                 ILegendPanel uniqueLine = new PnlRecodedLine();
                 uniqueLine.initialize(legendContext);
                 legends.add(uniqueLine);
+                //Area Unique Value
+                ILegendPanel uniqueArea = new PnlRecodedArea();
+                uniqueArea.initialize(legendContext);
+                legends.add(uniqueArea);
 
 		return legends.toArray(new ILegendPanel[legends.size()]);
 	}

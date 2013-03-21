@@ -36,6 +36,7 @@ import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
+import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.ConstantStrokeArea;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.xnap.commons.i18n.I18n;
@@ -85,6 +86,20 @@ public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbo
     }
 
     /**
+     * Builds a new {@code UniqueSymbolArea} from the given {@link AreaParameters}.
+     * @param ap The unique symbol configuration.
+     */
+    public UniqueSymbolArea(AreaParameters ap){
+        this();
+        getFillLegend().setColor(ap.getFillColor());
+        getFillLegend().setOpacity(ap.getFillOpacity());
+        getStrokeLegend().setDashArray(ap.getLineDash());
+        getStrokeLegend().setLineWidth(ap.getLineWidth());
+        getStrokeLegend().setLineColor(ap.getLineColor());
+        getStrokeLegend().setLineOpacity(ap.getLineOpacity());
+    }
+
+    /**
      * Exposes the inner {@link LegendStructure} that represents the analysis
      * made on the {@link Fill}.
      * @return 
@@ -129,6 +144,19 @@ public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbo
     @Override
     public String getLegendTypeId(){
         return "org.orbisgis.legend.thematic.constant.UniqueSymbolArea";
+    }
+
+    /**
+     * Gets the representation of this symbol as a AreaParameters instance.
+     * @return This symbol as an AreaParameters.
+     */
+    public AreaParameters getAreaParameters(){
+        return new AreaParameters(getStrokeLegend().getLineColor(),
+                    getStrokeLegend().getLineOpacity(),
+                    getStrokeLegend().getLineWidth(),
+                    getStrokeLegend().getDashArray(),
+                    getFillLegend().getColor(),
+                    getFillLegend().getOpacity());
     }
     
 }
