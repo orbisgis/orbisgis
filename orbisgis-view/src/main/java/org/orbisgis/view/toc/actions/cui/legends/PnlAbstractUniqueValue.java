@@ -458,6 +458,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
                 }
                 if(rl != null){
                     rl.setLookupFieldName(legend.getLookupFieldName());
+                    rl.setName(legend.getName());
                     setLegend(rl);
                 }
             } else {
