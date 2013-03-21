@@ -31,6 +31,7 @@ package org.orbisgis.legend.thematic;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.legend.AnalyzerTest;
+import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 
 import java.awt.*;
 
@@ -79,6 +80,26 @@ public class AreaParametersTest extends AnalyzerTest {
         assertTrue(ap.getFillColor().equals(new Color(SolidFill.GRAY50_INT,SolidFill.GRAY50_INT,SolidFill.GRAY50_INT)));
         ap = new AreaParameters(Color.BLUE, .25, 42.0, "2", Color.YELLOW, null);
         assertTrue(ap.getFillOpacity() - 1.0 < EPS);
+    }
+
+    @Test
+    public void testUniqueSymbolAreaInstanciation() throws Exception {
+        AreaParameters ap = new AreaParameters(Color.BLUE, .25, 42.0, "2", Color.CYAN, .46);
+        UniqueSymbolArea usa = new UniqueSymbolArea(ap);
+        assertTrue(usa.getFillLegend().getColor().equals(Color.CYAN));
+        assertTrue(usa.getFillLegend().getOpacity() - .46 < EPS);
+        assertTrue(usa.getStrokeLegend().getDashArray().equals("2"));
+        assertTrue(usa.getStrokeLegend().getLineWidth() - 42.0 < EPS);
+        assertTrue(usa.getStrokeLegend().getLineColor().equals(Color.BLUE));
+        assertTrue(usa.getStrokeLegend().getLineOpacity() - .25 < EPS);
+    }
+
+    @Test
+    public void testFromUniqueSymbolArea() throws Exception {
+        AreaParameters ap = new AreaParameters(Color.BLUE, .25, 42.0, "2", Color.CYAN, .46);
+        AreaParameters ap2 = new AreaParameters(Color.BLUE, .25, 42.0, "2", Color.CYAN, .46);
+        UniqueSymbolArea usa = new UniqueSymbolArea(ap);
+        assertTrue(ap2.equals(usa.getAreaParameters()));
     }
 
 }
