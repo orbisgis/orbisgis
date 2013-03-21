@@ -123,6 +123,9 @@ public class RecodedLine extends AbstractRecodedLegend<LineParameters> implement
          */
         public LineParameters get(Object objKey){
             String key = (String) objKey;
+            if(!keySet().contains(key)){
+                return null;
+            }
             Color c = getLineColor().getItemValue(key);
             c = c==null ? getLineColor().getFallbackValue() : c;
             Double op = getLineOpacity().getItemValue(key);
@@ -209,10 +212,7 @@ public class RecodedLine extends AbstractRecodedLegend<LineParameters> implement
             return ps.getRecodedLegends();
         }
 
-        /**
-         * Gets the configuration used for the line style used to draw features we can't get a value for in the map.
-         * @return
-         */
+        @Override
         public LineParameters getFallbackParameters(){
             return new LineParameters(getLineColor().getFallbackValue(),
                         getLineOpacity().getFallbackValue(),
@@ -220,10 +220,7 @@ public class RecodedLine extends AbstractRecodedLegend<LineParameters> implement
                         getLineDash().getFallbackValue());
         }
 
-        /**
-         * Sets the configuration used for the line style used to draw features we can't get a value for in the map.
-         * @param lps The line configuration for orphan features.
-         */
+        @Override
         public void setFallbackParameters(LineParameters lps){
             getLineColor().setFallbackValue(lps.getLineColor());
             getLineOpacity().setFallbackValue(lps.getLineOpacity());

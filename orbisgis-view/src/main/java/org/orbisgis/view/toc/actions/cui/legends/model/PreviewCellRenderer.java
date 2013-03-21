@@ -38,6 +38,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * This renderer is used to draw previews of the symbols defined in unique value analysis. It draws a preview of the
+ * symbol that will be associated to a particular value from the original data.
  * @author alexis
  */
 public class PreviewCellRenderer extends TableLaFCellRenderer {

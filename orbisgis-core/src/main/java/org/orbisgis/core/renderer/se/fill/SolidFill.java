@@ -62,13 +62,18 @@ public final class SolidFill extends Fill {
 	private RealParameter opacity;
 
         /**
-         * Default value for opacity : {@value DEFAULT_OPACITY}
+         * Default value for opacity : {@value SolidFill#DEFAULT_OPACITY}
          */
         public static final double DEFAULT_OPACITY = 1;
         /**
-        * Default colour value : {@value GRAY50}
+        * Default colour value : {@value SolidFill#GRAY50}
         */
         public static final float GRAY50 = 128.0f;
+
+    /**
+     * Default colour value as an int :
+     */
+    public static final int GRAY50_INT = 128;
 
 
 	/**
@@ -114,7 +119,7 @@ public final class SolidFill extends Fill {
                 if (sf.getValue().getColor() != null) {
                         setColor(SeParameterFactory.createColorParameter(sf.getValue().getColor()));
                 } else {
-                        setColor(new ColorLiteral(new Color((int) GRAY50, (int) GRAY50, (int) GRAY50)));
+                        setColor(new ColorLiteral(new Color(GRAY50_INT,GRAY50_INT,GRAY50_INT)));
                 }
 
                 if (sf.getValue().getOpacity() != null) {

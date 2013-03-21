@@ -28,34 +28,32 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.model;
 
-import org.orbisgis.legend.thematic.LineParameters;
-import org.orbisgis.legend.thematic.map.MappedLegend;
+import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * A cell editor dedicated to the management of keys in a recoded legend. It embeds a simple JTextField that is used
- * to edit the value in the table.
  * @author alexis
  */
-public class KeyEditorRecodedLine extends KeyEditorUniqueValue<LineParameters> {
+public class KeyEditorRecodedArea extends KeyEditorUniqueValue<AreaParameters> {
 
     /**
      * Build a cell editor dedicated to the management of keys in a recoded legend.
      */
-    public KeyEditorRecodedLine(){
+    public KeyEditorRecodedArea() {
         super();
     }
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         setVal((String) value);
-        AbstractRecodedLegend<LineParameters> uv = ((TableModelRecodedLine) table.getModel()).getUniqueValue();
+        AbstractRecodedLegend<AreaParameters> uv = ((TableModelRecodedArea) table.getModel()).getUniqueValue();
         setLegend(uv);
         getField().setText(getVal());
         return getField();
     }
 
 }
+
