@@ -33,8 +33,6 @@ import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.renderer.se.CompositeSymbolizer;
-import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
@@ -64,6 +62,7 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.TreeSet;
 
 /**
  * Methods shared by unique value analysis.
@@ -246,7 +245,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
      * @param pm The progress monitor that can be used to stop the process.
      * @return A fresh unique value analysis.
      */
-    public AbstractRecodedLegend<U> createConstantClassification(HashSet<String> set, ProgressMonitor pm) {
+    public AbstractRecodedLegend<U> createConstantClassification(TreeSet<String> set, ProgressMonitor pm) {
         U lp = legend.getFallbackParameters();
         AbstractRecodedLegend newRL = getEmptyAnalysis();
         newRL.setFallbackParameters(lp);
@@ -282,7 +281,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
      * @param end the ending color for the gradient
      * @return A fresh unique value analysis.
      */
-    public final AbstractRecodedLegend<U> createColouredClassification(HashSet<String> set, ProgressMonitor pm,
+    public final AbstractRecodedLegend<U> createColouredClassification(TreeSet<String> set, ProgressMonitor pm,
                                                                        Color start, Color end) {
         U lp = legend.getFallbackParameters();
         AbstractRecodedLegend<U> newRL = getEmptyAnalysis();
@@ -434,7 +433,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
     public class SelectDistinctJob implements BackgroundJob {
 
         private final String fieldName;
-        private HashSet<String> result = null;
+        private TreeSet<String> result = null;
 
         /**
          * Builds the BackgroundJob.
@@ -458,6 +457,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
                 }
                 if(rl != null){
                     rl.setLookupFieldName(legend.getLookupFieldName());
+                    rl.setName(legend.getName());
                     setLegend(rl);
                 }
             } else {
@@ -471,8 +471,8 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
          * @param pm Used to be able to cancel the job.
          * @return The distinct values as String instances in a {@link HashSet} or null if the job has been cancelled.
          */
-        public HashSet<String> getValues(final ProgressMonitor pm){
-            HashSet<String> ret = new HashSet<String>();
+        public TreeSet<String> getValues(final ProgressMonitor pm){
+            TreeSet<String> ret = new TreeSet<String>();
             try {
                 long rowCount=ds.getRowCount();
                 pm.startTask(I18N.tr("Retrieving classes"), 10);
@@ -519,7 +519,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
          * Gets the generated DataSource.
          * @return The gathered information in a DataSource.
          */
-        public HashSet<String> getResult() {
+        public TreeSet<String> getResult() {
             return result;
         }
 
