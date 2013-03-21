@@ -31,17 +31,27 @@ package org.orbisgis.omanager.plugin;
 import org.orbisgis.view.main.frames.ext.MainFrameAction;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.obr.RepositoryAdmin;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * Register the OSGi plugin manager menu item.
  * @author Nicolas Fortin
  */
 public class Activator implements BundleActivator {
+        private ServiceTracker<RepositoryAdmin,RepositoryAdmin> obrTracker;
+
+        @Override
         public void start(BundleContext bc) throws Exception {
             // Register the new main menu item "manage plug-ins"
             bc.registerService(MainFrameAction.class,new ManagerMenuFactory(bc),null);
+            obrTracker = new ServiceTracker<RepositoryAdmin,RepositoryAdmin>(bc,RepositoryAdmin.class,new RepositoryAdminTracker(bc));
+            obrTracker.open();
         }
 
+        @Override
         public void stop(BundleContext bc) throws Exception {
+            // Save Repository list
+            obrTracker.close();
         }
 }
