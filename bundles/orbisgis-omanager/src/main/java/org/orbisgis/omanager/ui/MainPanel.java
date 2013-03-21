@@ -97,7 +97,6 @@ public class MainPanel extends JPanel {
     private static final int BORDER_PIXEL_GAP = 2;
     private static final int PROPERTY_TEXT_SIZE_INCREMENT = 3;
     private static final int PROPERTY_TITLE_SIZE_INCREMENT = 4;
-    public static final String DEFAULT_REPOSITORY = "http://plugins.orbisgis.org/repository.xml";
     private static final String DEFAULT_CATEGORY = "OrbisGIS";
     private ItemFilterStatusFactory.Status radioFilterStatus = ItemFilterStatusFactory.Status.ALL;
     private Map<String,ImageIcon> buttonIcons = new HashMap<String, ImageIcon>();
@@ -483,7 +482,7 @@ public class MainPanel extends JPanel {
      */
     public void onAddBundleRepository() {
         String errMessage = "";
-        String chosenURL = DEFAULT_REPOSITORY;
+        String chosenURL = "";
         do {
             chosenURL = showInputURI(chosenURL,errMessage);
             //If a string was returned, say so.

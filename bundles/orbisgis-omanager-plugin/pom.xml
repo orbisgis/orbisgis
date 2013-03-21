@@ -98,18 +98,24 @@
                 <dependency>
                     <groupId>org.xnap.commons</groupId>
                     <artifactId>gettext-commons</artifactId>
-                    <version>0.9.6</version>
+                    <version>0.9.7</version>
                 </dependency>
                 <dependency>
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
                     <version>1.2.16</version>
                 </dependency>
+                <dependency>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.osgi.service.obr</artifactId>
+                    <version>1.0.2</version>
+                    <scope>provided</scope>
+                </dependency>
         </dependencies>
         <pluginRepositories>
                 <pluginRepository>
                         <id>gettext-commons-site</id>
-                        <url>http://gettext-commons.googlecode.com/svn/maven-repository</url>
+                        <url>http://gettext-commons-maven-repository.googlecode.com/svn/repository</url>
                 </pluginRepository>
         </pluginRepositories>
 </project>

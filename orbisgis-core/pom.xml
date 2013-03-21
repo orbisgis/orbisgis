@@ -140,7 +140,7 @@
                 <dependency>
                         <groupId>org.xnap.commons</groupId>
                         <artifactId>gettext-commons</artifactId>
-                        <version>0.9.6</version>
+                        <version>0.9.7</version>
                 </dependency>
                 <dependency>
                         <groupId>org.orbisgis.schemas</groupId>
@@ -167,13 +167,13 @@
         <pluginRepositories>
                 <pluginRepository>
                         <id>gettext-commons-site</id>
-                        <url>http://gettext-commons.googlecode.com/svn/maven-repository</url>
+                        <url>http://gettext-commons-maven-repository.googlecode.com/svn/repository</url>
                 </pluginRepository>
         </pluginRepositories>
         <repositories>
                 <repository>
                         <id>gettext-commons-site</id>
-                        <url>http://gettext-commons.googlecode.com/svn/maven-repository/</url>
+                        <url>http://gettext-commons-maven-repository.googlecode.com/svn/repository/</url>
                 </repository>
         </repositories>    
 </project>
