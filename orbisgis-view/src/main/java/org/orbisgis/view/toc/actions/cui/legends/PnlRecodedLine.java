@@ -83,29 +83,13 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     private CanvasSE fallbackPreview;
     private JTable table;
     private JComboBox fieldCombo;
-    private final static String JOB_NAME = "recodeSelectDistinct";
     private SelectDistinctJob selectDistinct;
     private BackgroundListener background;
-    public final static int CELL_PREVIEW_WIDTH = CanvasSE.WIDTH/2;
-    public final static int CELL_PREVIEW_HEIGHT = CanvasSE.HEIGHT/2;
 
     @Override
     public Component getComponent() {
         initializeLegendFields();
         return this;
-    }
-
-    @Override
-    public void initialize(LegendContext lc) {
-        if (getLegend() == null) {
-            setLegend(new RecodedLine());
-            initPreview();
-        }
-        setGeometryType(lc.getGeometryType());
-        ILayer layer = lc.getLayer();
-        if (layer != null && layer.getDataSource() != null) {
-            setDataSource(layer.getDataSource());
-        }
     }
 
     @Override
@@ -177,7 +161,8 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
      * unique value classification.
      * @return A Symbolizer.
      */
-    private Symbolizer getFallbackSymbolizer(){
+    @Override
+    public Symbolizer getFallbackSymbolizer(){
         UniqueSymbolLine usl = new UniqueSymbolLine(((RecodedLine)getLegend()).getFallbackParameters());
         usl.setStrokeUom(((RecodedLine) getLegend()).getStrokeUom());
         return usl.getSymbolizer();
@@ -186,7 +171,7 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     /**
      * Initializes the preview for the fallback configuration
      */
-    private void initPreview() {
+    public void initPreview() {
         fallbackPreview = new CanvasSE(getFallbackSymbolizer());
         MouseListener l = EventHandler.create(MouseListener.class, this, "onEditFallback", "", "mouseClicked");
         fallbackPreview.addMouseListener(l);
@@ -305,19 +290,6 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     }
 
     /**
-     * Update the inner CanvasSE. It updates its symbolizer and forced the image to be redrawn.
-     */
-    public void updatePreview(Object source){
-        JComboBox jcb = (JComboBox) source;
-        updateLUComboBox(jcb.getSelectedIndex());
-        CanvasSE prev = getPreview();
-        prev.setSymbol(getFallbackSymbolizer());
-        prev.imageChanged();
-        TableModelUniqueValue model = (TableModelUniqueValue) table.getModel();
-        model.fireTableDataChanged();
-    }
-
-    /**
      * Gets the JPanel that gathers all the buttons and labels to create a classification from scratch;
      * @return The JPanel used to create a classification from scratch.
      */
@@ -385,58 +357,9 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
         }
     }
 
-    /**
-     * We take the fallback configuration and copy it for each key, changing the colour.
-     * @param set A set of keys we use as a basis.
-     */
     @Override
-    public RecodedLine createColouredClassification(HashSet<String> set, ProgressMonitor pm, Color start, Color end) {
-        LineParameters lp = ((RecodedLine)getLegend()).getFallbackParameters();
-        RecodedLine newRL = new RecodedLine();
-        newRL.setFallbackParameters(lp);
-        int size = set.size();
-        int redStart = start.getRed();
-        int greenStart = start.getGreen();
-        int blueStart = start.getBlue();
-        int alphaStart = start.getAlpha();
-        int redThreshold;
-        int greenThreshold;
-        int blueThreshold;
-        int alphaThreshold;
-        if(size <= 1){
-            redThreshold = 0;
-            greenThreshold = 0;
-            blueThreshold = 0;
-            alphaThreshold = 0;
-        } else {
-            redThreshold = (redStart-end.getRed())/(size-1);
-            greenThreshold = (greenStart-end.getGreen())/(size-1);
-            blueThreshold = (blueStart-end.getBlue())/(size-1);
-            alphaThreshold = (alphaStart-end.getAlpha())/(size-1);
-        }
-        double m = size == 0 ? 0 : 90.0/(double)size;
-        int i=0;
-        int n = 0;
-        pm.startTask(CREATE_CLASSIF , 100);
-        for(String s : set){
-            Color newCol = new Color(redStart-redThreshold*i,
-                        greenStart-i*greenThreshold,
-                        blueStart-i*blueThreshold,
-                        alphaStart-i*alphaThreshold);
-            LineParameters value = new LineParameters(newCol, lp.getLineOpacity(), lp.getLineWidth(), lp.getLineDash());
-            newRL.put(s, value);
-            if(i*m>n){
-                n++;
-                pm.progressTo(n+10);
-            }
-            if(pm.isCancelled()){
-                pm.endTask();
-                return null;
-            }
-            i++;
-        }
-        pm.endTask();
-        return newRL;
+    public LineParameters getColouredParameters(LineParameters lp, Color newCol){
+        return new LineParameters(newCol, lp.getLineOpacity(), lp.getLineWidth(), lp.getLineDash());
     }
 
     @Override
@@ -466,94 +389,5 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     @Override
     public CanvasSE getPreview() {
         return fallbackPreview;
-    }
-
-    /**
-     * This progress listener listens to the progression of the background operation that retrieves data from
-     * the analysed source and builds a simple unique value classification with it.
-     */
-    public class DistinctListener implements ProgressListener {
-
-        private JDialog window;
-        private final JobListItem jli;
-        private int count = 0;
-
-        /**
-         * Builds the listener from the given {@code JobListItem}. Not that the construction ends by displaying
-         * a {@link JDialog} in modal mode that stays always on top of the application.
-         * @param jli The item that will provide the progress bar.
-         */
-        public DistinctListener(JobListItem jli){
-            this.jli = jli;
-            JDialog root = (JDialog) SwingUtilities.getRoot(PnlRecodedLine.this);
-            root.setEnabled(false);
-            this.window = new JDialog(root,I18N.tr("Operation in progress..."));
-            window.setLayout(new BorderLayout());
-            window.setAlwaysOnTop(true);
-            window.setVisible(true);
-            window.setModal(true);
-            window.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            window.add(jli.getItemPanel());
-            window.setLocationRelativeTo(root);
-            window.setMinimumSize(jli.getItemPanel().getPreferredSize());
-        }
-
-        @Override
-        public void progressChanged(Job job) {
-            window.pack();
-        }
-
-        @Override
-        public void subTaskStarted(Job job) {
-        }
-
-        @Override
-        public void subTaskFinished(Job job) {
-            count ++;
-            //I know I have two subtasks... This is unfortunate, but I don't find really efficient way to hide my
-            //dialog from the listener without that..
-            if(count >= 2){
-                window.setVisible(false);
-                JDialog root = (JDialog) SwingUtilities.getRoot(PnlRecodedLine.this);
-                root.setEnabled(true);
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        jli.dispose();
-                    }
-                });
-            }
-
-        }
-    }
-
-    /**
-     * This backgroundListener waits for operation on {@code Job} with {@link PnlRecodedLine#JOB_NAME} as its name.
-     * When such a {@link Job} is added, it adds a DistinctListener to the associated Job. When it is removed, it
-     * retrieves the gathered information and build a new classification from it.
-     */
-    public class OperationListener implements BackgroundListener {
-
-        @Override
-        public  void jobAdded(Job job) {
-            if(job.getId().is(new DefaultJobId(JOB_NAME))){
-                JobListItem jli = new JobListItem(job).listenToJob(true);
-                DistinctListener listener = new DistinctListener(jli);
-                job.addProgressListener(listener);
-            }
-        }
-
-        @Override
-        public void jobRemoved(Job job) {
-            if(job.getId().is(new DefaultJobId(JOB_NAME))){
-                ((TableModelUniqueValue) table.getModel()).fireTableDataChanged();
-                table.invalidate();
-            }
-        }
-
-
-        @Override
-        public void jobReplaced(Job job) {
-        }
     }
 }

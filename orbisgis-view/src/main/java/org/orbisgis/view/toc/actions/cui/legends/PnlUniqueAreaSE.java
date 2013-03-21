@@ -68,6 +68,21 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
          */
         private UniqueSymbolArea uniqueArea;
 
+        /**
+         * Default constructor. UOM will be displayed.
+         */
+        public PnlUniqueAreaSE(){
+            this(true);
+        }
+
+        /**
+         * Constructor that is used to set if the UOM must be displayed or not.
+         * @param uom If true, the uom will be displayed.
+         */
+        public PnlUniqueAreaSE(boolean uom){
+            super(uom);
+        }
+
         @Override
         public Component getComponent() {
                 return this;
