@@ -133,7 +133,7 @@ public class BundleListModel extends AbstractListModel {
                         fireContentsChanged(this,index,index);
                     }
                 } else {
-                    BundleItem newBundle = new BundleItem();
+                    BundleItem newBundle = new BundleItem(bundleContext);
                     newBundle.setBundle(bundle);
                     curBundles.put(getIdentifier(bundle),newBundle);
                     int index = storedBundles.size();
@@ -170,7 +170,7 @@ public class BundleListModel extends AbstractListModel {
                         fireContentsChanged(this,index,index);
                     }
                 } else {
-                    BundleItem newBundle = new BundleItem();
+                    BundleItem newBundle = new BundleItem(bundleContext);
                     newBundle.setObrResource(resource);
                     curBundles.put(getIdentifier(resource),newBundle);
                     int index = storedBundles.size();
