@@ -179,7 +179,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
         private JPanel getLegendContainer() {
                 pnlContainer = new JPanel();
-                pnlContainer.setPreferredSize(new Dimension(600, 400));
+                pnlContainer.setPreferredSize(new Dimension(600, 650));
                 cardLayout = new CardLayout();
                 pnlContainer.setLayout(cardLayout);
                 pnlContainer.add(new JLabel(I18N.tr("Add or select a legend on the left")),
