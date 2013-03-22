@@ -40,7 +40,6 @@ import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
-import sun.swing.StringUIClientPropertyKey;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -254,5 +253,9 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
             ret += m.hashCode();
         }
         return ret;
+    }
+    @Override
+    public String getLegendTypeId() {
+        return "org.orbisgis.legend.thematic.recode.RecodedArea";
     }
 }
