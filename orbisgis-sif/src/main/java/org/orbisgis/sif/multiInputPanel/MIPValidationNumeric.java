@@ -91,7 +91,7 @@ public abstract class MIPValidationNumeric<T extends Number & Comparable<T>> imp
                     return i18n.tr("The {0} field must be lower or equal than {1}",fieldLabel,maxValue);
                 }
             } catch (NumberFormatException ex) {
-                return i18n.tr("The {0} field must be "+type.getSimpleName().toLowerCase(),fieldLabel);
+                return i18n.tr("The {0} field must be {1}",fieldLabel,type.getSimpleName().toLowerCase());
             }
         }
         return null;
