@@ -21,6 +21,7 @@
                                 <configuration>
                                         <executable>java</executable>
                                         <classpathScope>runtime</classpathScope>
+                                        <workingDirectory>target/</workingDirectory>
                                         <arguments>
                                                 <argument>-classpath</argument>
                                                 <classpath />
