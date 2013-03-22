@@ -30,12 +30,23 @@ package org.orbisgis.view.components.sif;
 
 import java.text.ParseException;
 import org.gdms.data.DataSource;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.orbisgis.sif.multiInputPanel.CheckBoxChoice;
+import org.orbisgis.sif.multiInputPanel.InputType;
+import org.orbisgis.sif.multiInputPanel.MIPValidationDouble;
+import org.orbisgis.sif.multiInputPanel.MIPValidationFloat;
+import org.orbisgis.sif.multiInputPanel.MIPValidationInteger;
+import org.orbisgis.sif.multiInputPanel.MIPValidationLong;
+import org.orbisgis.sif.multiInputPanel.MIPValidationNumeric;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
 
+/**
+ * An input panel created in order to insert a valid DataSource row.
+ */
 public class AskValidRow extends MultiInputPanel {
 
 	private int fieldCount;
@@ -48,37 +59,72 @@ public class AskValidRow extends MultiInputPanel {
 		this.fieldCount = ds.getFieldCount();
 		this.types = new int[fieldCount];
 		for (int i = 0; i < fieldCount; i++) {
+            String fieldName = "f" + i;
 			types[i] = ds.getFieldType(i).getTypeCode();
-			addInput("f" + i, ds.getFieldName(i), new TextBoxType());
+            InputType input;
+            //Field
+            switch (types[i]) {
+                case Type.BOOLEAN:
+                    input = new CheckBoxChoice(false);
+                    break;
+                default:
+                    input =  new TextBoxType();
+            }
+            // Constraint
+            switch (types[i]) {
+                case Type.INT:
+                    addValidation(new MIPValidationInteger(fieldName,ds.getFieldName(i)));
+                    break;
+                case Type.LONG:
+                    addValidation(new MIPValidationLong(fieldName,ds.getFieldName(i)));
+                    break;
+                case Type.FLOAT:
+                    addValidation(new MIPValidationFloat(fieldName,ds.getFieldName(i)));
+                    break;
+                case Type.DOUBLE:
+                    addValidation(new MIPValidationDouble(fieldName, ds.getFieldName(i)));
+                    break;
+            }
+			addInput(fieldName, ds.getFieldName(i),input);
 		}
 	}
 
 	@Override
 	public String validateInput() {
+        String errMess = super.validateInput();
 		try {
 			for (int i = 0; i < fieldCount; i++) {
 				String input = getInput("f" + i);
 				Value inputValue = ValueFactory.createNullValue();
-				if (input.length() > 0) {
-					                                   inputValue = AskValidValue.inputToValue(input, types[i]);
+				if (!input.isEmpty()) {
+                        inputValue = AskValidValue.inputToValue(input, types[i]);
 				}
 				String error = AskValidValue.validateValue(ds, inputValue, i,
 						types[i]);
-				
+				if(error!=null) {
 					return error;
-				
+                }
 			}
-		} catch (ParseException e) {
-			return e.getMessage();
+		} catch (Exception e) {
+            if(errMess!=null && !errMess.isEmpty()) {
+			    return errMess;
+            } else {
+                return e.getMessage();
+            }
 		}
-		return super.validateInput();
+		return null;
 	}
 
+    /**
+     * Get all fields
+     * @return A valid row
+     * @throws ParseException If the type conversion failed
+     */
 	public Value[] getRow() throws ParseException {
 		Value[] ret = new Value[fieldCount];
 		for (int i = 0; i < ret.length; i++) {
 			String input = getInput("f" + i);
-			if (input.length() > 0) {
+			if (!input.isEmpty()) {
 				ret[i] = AskValidValue.inputToValue(input, types[i]);
 			} else {
 				ret[i] = ValueFactory.createNullValue();
