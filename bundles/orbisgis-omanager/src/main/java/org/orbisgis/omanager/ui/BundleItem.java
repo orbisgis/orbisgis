@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.service.obr.Resource;
@@ -51,12 +52,21 @@ public class BundleItem {
     private static final I18n I18N = I18nFactory.getI18n(BundleItem.class);
     private static final int MAX_SHORT_DESCRIPTION_CHAR_COUNT = 50;
     private String shortDesc;
-    private Resource obrResource; // only if a remote bundle is available
-    private Bundle bundle;        // only for downloaded bundle
+    private Resource obrResource;      // only if a remote bundle is available
+    private long bundleId = -1;        // Bundle id
+    private BundleContext bundleContext;
     private static final Long KILO = 1024L;
     private static final Long MEGA = KILO * KILO;
     private static final Long LONG = MEGA * KILO;
     private static final Long TERA = LONG * KILO;
+
+    /**
+     * Constructor
+     * @param bundleContext Active bundle context
+     */
+    public BundleItem(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
 
     /**
      * @param bytes Bytes count
@@ -97,6 +107,7 @@ public class BundleItem {
      *         does not have a symbolic name.
      */
     String getSymbolicName()  {
+        Bundle bundle = getBundle();
         if(bundle!=null) {
             return bundle.getSymbolicName();
         } else if(obrResource!=null){
@@ -110,6 +121,7 @@ public class BundleItem {
      * @return Bundle version
      */
     Version getVersion() {
+        Bundle bundle = getBundle();
         if(bundle!=null) {
             return bundle.getVersion();
         } else if(obrResource!=null) {
@@ -129,14 +141,26 @@ public class BundleItem {
      * @param bundle Bundle reference
      */
     public void setBundle(Bundle bundle) {
-        this.bundle = bundle;
+        if(bundle!=null) {
+            this.bundleId = bundle.getBundleId();
+        }
     }
 
     /**
      * @return The bundle reference, can be null
      */
     public Bundle getBundle() {
-        return bundle;
+        if(bundleId!=-1) {
+            try {
+                return bundleContext.getBundle(bundleId);
+            } catch (IllegalStateException ex) {
+                // This bundle does not exists anymore
+                bundleId = -1;
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -150,6 +174,7 @@ public class BundleItem {
      * @return The bundle presentation name (artifact-id by default)
      */
     String getPresentationName() {
+        Bundle bundle = getBundle();
         if(bundle!=null && bundle.getHeaders()!=null) {
             return bundle.getHeaders().get(Constants.BUNDLE_NAME);
         } else if(obrResource!=null) {
@@ -172,9 +197,14 @@ public class BundleItem {
             return shortDesc;
         }
         String description=null;
-        if(bundle!=null && bundle.getHeaders()!=null) {
-            description = bundle.getHeaders().get(Constants.BUNDLE_DESCRIPTION);
-        } else if(obrResource!=null && obrResource.getProperties()!=null) {
+        Bundle bundle = getBundle();
+        if(bundle!=null) {
+            Dictionary<String,String> header = bundle.getHeaders();
+            if(header!=null) {
+                description = bundle.getHeaders().get(Constants.BUNDLE_DESCRIPTION);
+            }
+        }
+        if(obrResource!=null && obrResource.getProperties()!=null) {
             Object descrObj = obrResource.getProperties().get(Resource.DESCRIPTION);
             if(descrObj instanceof String) {
                 description = (String)descrObj;
@@ -206,6 +236,7 @@ public class BundleItem {
      * @return A map of bundle details to show on the right side of the GUI. (Title->Value)
      */
     public Map<String,String> getDetails() {
+        Bundle bundle = getBundle();
         if(bundle!=null) {
              // Copy deprecated dictionary into Map
              Dictionary<String,String> dic = bundle.getHeaders();
@@ -239,6 +270,7 @@ public class BundleItem {
      * @return Bundle tags
      */
     public Collection<String> getBundleCategories() {
+        Bundle bundle = getBundle();
         if(bundle!=null) {
             String categories = bundle.getHeaders().get(Constants.BUNDLE_CATEGORY);
             if(categories!=null) {
@@ -259,6 +291,7 @@ public class BundleItem {
      * @return True if the start method can be called.
      */
     public boolean isStartReady() {
+        Bundle bundle = getBundle();
         return (bundle!=null) && (bundle.getState()==Bundle.INSTALLED || bundle.getState()==Bundle.RESOLVED);
     }
 
@@ -266,6 +299,7 @@ public class BundleItem {
      * @return True if the stop method can be called.
      */
     public boolean isStopReady() {
+        Bundle bundle = getBundle();
         return (bundle!=null) && (bundle.getState()==Bundle.ACTIVE);
     }
 
@@ -273,6 +307,7 @@ public class BundleItem {
      * @return True if the update method can be called.
      */
     public boolean isUpdateReady() {
+        Bundle bundle = getBundle();
         return (bundle!=null) && (bundle.getState()!=Bundle.UNINSTALLED);
     }
 
@@ -280,6 +315,7 @@ public class BundleItem {
      * @return True if the uninstall method can be called.
      */
     public boolean isUninstallReady() {
+        Bundle bundle = getBundle();
         return (bundle!=null) && (bundle.getState()!=Bundle.UNINSTALLED);
     }
 
@@ -287,6 +323,7 @@ public class BundleItem {
      * @return True if the resource can be deployed
      */
     public boolean isDeployReady() {
+        Bundle bundle = getBundle();
         return bundle==null && obrResource!=null;
     }
 
