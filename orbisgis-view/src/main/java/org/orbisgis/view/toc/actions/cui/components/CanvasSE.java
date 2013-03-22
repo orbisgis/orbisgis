@@ -45,10 +45,11 @@ import java.util.Set;
 import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DataSet;
+import org.gdms.driver.DiskBufferDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.engine.Engine;
 import org.gdms.sql.engine.ParseException;
@@ -63,6 +64,7 @@ import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
@@ -136,16 +138,24 @@ public class CanvasSE extends JPanel {
             }
             try {
                 g2.setBackground(Color.WHITE);
-                g2.fillRect(0,0,width, height);
+                g2.fillRect(0, 0, width, height);
                 if(sample instanceof DataSource){
                     DataSource ds = (DataSource) sample;
                     if(!ds.isOpen()){
                         ds.open();
                     }
                 }
+                if(sample instanceof DiskBufferDriver){
+                    DiskBufferDriver dbd = (DiskBufferDriver) sample;
+                    dbd.open();
+                }
                 s.draw(g2, sample, 0, false, mt, geom, null);
                 if(sample instanceof DataSource){
                     ((DataSource) sample).close();
+                }
+                if(sample instanceof DiskBufferDriver){
+                    DiskBufferDriver dbd = (DiskBufferDriver) sample;
+                    dbd.close();
                 }
             } catch (DriverException de){
             } catch (ParameterException de){
@@ -211,37 +221,47 @@ public class CanvasSE extends JPanel {
          * @param input
          */
         public void setSampleDatasource(Map<String, Object> input){
-                StringBuilder sb = new StringBuilder(80+15*input.size());
-                sb.append("SELECT ST_GEOMFROMTEXT(\'");
-                sb.append(getSampleGeometry().toString());
-                sb.append("\') as the_geom");
-                Set<Map.Entry<String,Object>> es =input.entrySet();
+            StringBuilder sb = new StringBuilder(80+15*input.size());
+            sb.append("SELECT @{the_geom} :: GEOMETRY as the_geom");
+            Set<Map.Entry<String,Object>> es =input.entrySet();
+            for(Map.Entry<String, Object> ent : es){
+                    sb.append(", @{");
+                    sb.append(ent.getKey());
+                    sb.append("} as ");
+                    sb.append(ent.getKey());
+            }
+            sb.append(";");
+            try {
+                SQLScript sqlScript = Engine.parseScript(sb.toString(), DataSourceFactory.getDefaultProperties());
+                SQLStatement stat = sqlScript.getStatements()[0];
+                stat.setValueParameter("the_geom", ValueFactory.createValue(getSampleGeometry()));
                 for(Map.Entry<String, Object> ent : es){
-                        Object val = ent.getValue();
-                        sb.append(", ");
-                        if(val instanceof StringParameter || val instanceof String){
-                            sb.append("\'");
-                        }
-                        sb.append(val.toString());
-                        if(val instanceof StringParameter || val instanceof String){
-                            sb.append("\'");
-                        }
-                        sb.append(" as ");
-                        sb.append(ent.getKey());
+                    Value value = null;
+                    Object val = ent.getValue();
+                    if(val instanceof String || val instanceof StringParameter){
+                        value = ValueFactory.createValue(val.toString());
+                    } else if(val instanceof  Double) {
+                        value = ValueFactory.createValue((Double) val);
+                    } else if(val instanceof RealParameter) {
+                        value = ValueFactory.createValue(((RealParameter) val).getValue(null));
+                    }
+
+                    stat.setValueParameter(ent.getKey(), value);
                 }
-                sb.append(";");
+
                 DataManager dataManager = Services.getService(DataManager.class);
                 DataSourceFactory dsf = dataManager.getDataSourceFactory();
-                try {
-                        sample = dsf.getDataSourceFromSQL(sb.toString());
-                        dataManager.getSourceManager().remove(((DataSource)sample).getName());
-                } catch (DataSourceCreationException ex) {
-                        LOGGER.error("", ex);
-                } catch (DriverException ex) {
-                        LOGGER.error("", ex);
-                } catch (ParseException ex) {
-                        LOGGER.error("", ex);
-                }
+                stat.setDataSourceFactory(dsf);
+                stat.prepare();
+                sample = stat.execute();
+                stat.cleanUp();
+            } catch (DriverException ex) {
+                    LOGGER.error("", ex);
+            } catch (ParseException ex) {
+                    LOGGER.error("", ex);
+            } catch (ParameterException ex) {
+                    LOGGER.error("", ex);
+            }
         }
 
         /**
