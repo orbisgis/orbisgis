@@ -61,7 +61,6 @@ public class ActionBundle extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent actionEvent) {
-        setEnabled(false);
         // If this is done outside the SwingEventThread then a thread lock can occur
         action.actionPerformed(actionEvent);
     }
