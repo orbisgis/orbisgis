@@ -33,45 +33,33 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * An integer constraint for a specific field
+ * An Numeric constraint for a specific field
  * @author Nicolas Fortin
  */
-public class MipValidationInteger implements MIPValidation {
+public abstract class MIPValidationNumeric<T extends Number & Comparable<T>> implements MIPValidation {
     private String fieldName;
     private String fieldLabel;
-    private Integer minValue = Integer.MIN_VALUE;
-    private Integer maxValue = Integer.MAX_VALUE;
-    private final I18n i18n = I18nFactory.getI18n(MipValidationInteger.class);
-
+    private T minValue = null;
+    private T maxValue = null;
+    private final I18n i18n = I18nFactory.getI18n(MIPValidationNumeric.class);
+    private final Class<T> type;
     /**
      * Constructor
      * @param fieldName Field id
      * @param fieldLabel Field label, for error messages
+     * @param type Class, ex: Integer.class
      */
-    public MipValidationInteger(String fieldName, String fieldLabel) {
+    public MIPValidationNumeric(String fieldName, String fieldLabel, Class<T> type) {
         this.fieldName = fieldName;
         this.fieldLabel = fieldLabel;
-    }
-
-    /**
-     * Constructor.
-     * @param fieldName Field id
-     * @param fieldLabel Field label, for error messages
-     * @param minValue Minimum field value
-     * @param maxValue Maximum field value
-     */
-    public MipValidationInteger(String fieldName, String fieldLabel, Integer minValue, Integer maxValue) {
-        this.fieldName = fieldName;
-        this.fieldLabel = fieldLabel;
-        this.minValue = minValue;
-        this.maxValue = maxValue;
+        this.type = type;
     }
 
     /**
      * Set minimum value
      * @param minValue
      */
-    public void setMinValue(Integer minValue) {
+    public void setMinValue(T minValue) {
         this.minValue = minValue;
     }
 
@@ -79,23 +67,31 @@ public class MipValidationInteger implements MIPValidation {
      * Set maximum value
      * @param maxValue
      */
-    public void setMaxValue(Integer maxValue) {
+    public void setMaxValue(T maxValue) {
         this.maxValue = maxValue;
     }
+
+    /**
+     * Convert into T
+     * @param value String representation
+     * @return T instance
+     * @throws NumberFormatException
+     */
+    protected abstract T valueOf(String value) throws NumberFormatException;
 
     @Override
     public String validate(MultiInputPanel mid) {
         String value = mid.getInput(fieldName);
         if(value!=null) {
             try {
-                int val = Integer.valueOf(value);
-                if(val<minValue) {
+                T val = valueOf(value);
+                if(minValue!=null && Math.signum(val.compareTo(minValue))==-1) {
                     return i18n.tr("The {0} field must be greater or equal than {1}",fieldLabel,minValue);
-                } else if(val>maxValue) {
+                } else if(maxValue!=null && Math.signum(val.compareTo(maxValue))==1) {
                     return i18n.tr("The {0} field must be lower or equal than {1}",fieldLabel,maxValue);
                 }
             } catch (NumberFormatException ex) {
-                return i18n.tr("The {0} field must be an integer",fieldLabel);
+                return i18n.tr("The {0} field must be {1}",fieldLabel,type.getSimpleName().toLowerCase());
             }
         }
         return null;
