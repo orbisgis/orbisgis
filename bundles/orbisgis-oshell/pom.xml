@@ -100,4 +100,11 @@
                         <url>http://gettext-commons-maven-repository.googlecode.com/svn/repository</url>
                 </pluginRepository>
         </pluginRepositories>
+        <repositories>
+                <repository>
+                        <id>gettext-commons-site</id>
+                        <name>gettext</name>
+                        <url>http://gettext-commons-maven-repository.googlecode.com/svn/repository</url>
+                </repository>
+        </repositories>
 </project>
