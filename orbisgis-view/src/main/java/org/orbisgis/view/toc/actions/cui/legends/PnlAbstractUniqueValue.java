@@ -291,30 +291,30 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         int greenStart = start.getGreen();
         int blueStart = start.getBlue();
         int alphaStart = start.getAlpha();
-        int redThreshold;
-        int greenThreshold;
-        int blueThreshold;
-        int alphaThreshold;
+        double redThreshold;
+        double greenThreshold;
+        double blueThreshold;
+        double alphaThreshold;
         if(size <= 1){
             redThreshold = 0;
             greenThreshold = 0;
             blueThreshold = 0;
             alphaThreshold = 0;
         } else {
-            redThreshold = (redStart-end.getRed())/(size-1);
-            greenThreshold = (greenStart-end.getGreen())/(size-1);
-            blueThreshold = (blueStart-end.getBlue())/(size-1);
-            alphaThreshold = (alphaStart-end.getAlpha())/(size-1);
+            redThreshold = ((double)(redStart-end.getRed()))/(size-1);
+            greenThreshold = ((double)(greenStart-end.getGreen()))/(size-1);
+            blueThreshold = ((double)(blueStart-end.getBlue()))/(size-1);
+            alphaThreshold = ((double)(alphaStart-end.getAlpha()))/(size-1);
         }
         double m = size == 0 ? 0 : 90.0/(double)size;
         int i=0;
         int n = 0;
         pm.startTask(CREATE_CLASSIF , 100);
         for(String s : set){
-            Color newCol = new Color(redStart-redThreshold*i,
-                        greenStart-i*greenThreshold,
-                        blueStart-i*blueThreshold,
-                        alphaStart-i*alphaThreshold);
+            Color newCol = new Color(redStart-(int)(redThreshold*i),
+                        greenStart-(int)(i*greenThreshold),
+                        blueStart-(int)(i*blueThreshold),
+                        alphaStart-(int)(i*alphaThreshold));
             U value = getColouredParameters(lp, newCol);
             newRL.put(s, value);
             if(i*m>n){
