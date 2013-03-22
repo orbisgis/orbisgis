@@ -62,40 +62,8 @@ public class ActionBundle extends AbstractAction {
 
     public void actionPerformed(ActionEvent actionEvent) {
         setEnabled(false);
-        (new BackgroundProcess(actionEvent)).execute();
+        // If this is done outside the SwingEventThread then a thread lock can occur
+        action.actionPerformed(actionEvent);
     }
 
-    /**
-     * Process bundle actions in background.
-     */
-    private class BackgroundProcess extends SwingWorker<Integer,Integer> {
-        private ActionEvent actionEvent;
-
-        private BackgroundProcess(ActionEvent actionEvent) {
-            this.actionEvent = actionEvent;
-        }
-
-        @Override
-        protected Integer doInBackground() throws Exception {
-            if(action!=null) {
-                try {
-                    action.actionPerformed(actionEvent);
-                } catch( Exception ex) {
-                    LOGGER.error(ex.getLocalizedMessage(),ex);
-                }
-            }
-            return null;
-        }
-
-
-        @Override
-        public String toString() {
-            return "ActionBundle#BackgroundProcess";
-        }
-
-        @Override
-        protected void done() {
-            setEnabled(true);
-        }
-    }
 }
