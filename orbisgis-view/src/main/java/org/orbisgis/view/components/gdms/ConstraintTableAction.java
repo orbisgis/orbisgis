@@ -35,7 +35,8 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.sif.multiInputPanel.ComboBoxChoice;
 import org.orbisgis.sif.multiInputPanel.ListChoice;
-import org.orbisgis.sif.multiInputPanel.MipValidationInteger;
+import org.orbisgis.sif.multiInputPanel.MIPValidationLong;
+import org.orbisgis.sif.multiInputPanel.MIPValidationNumeric;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.xnap.commons.i18n.I18n;
@@ -114,8 +115,8 @@ public abstract class ConstraintTableAction extends AbstractAction {
 
         // Create input validations
         if(contraintParameterType == Constraint.CONSTRAINT_TYPE_INTEGER_LITERAL) {
-            // The field must be integer
-            inputPanel.addValidation(new MipValidationInteger(CONSTRAINT_INPUT_NAME,ConstraintFactory.getConstraintName(constraintCode)));
+            // The field must be number
+            inputPanel.addValidation(new MIPValidationLong(CONSTRAINT_INPUT_NAME,ConstraintFactory.getConstraintName(constraintCode)));
         }
 
         // Get result
