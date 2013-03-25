@@ -69,6 +69,8 @@ import java.util.TreeSet;
  * @author alexis
  */
 public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends AbstractFieldPanel implements ILegendPanel, ActionListener {
+    private static final String FALLBACK = "Fallback";
+    private static final String COMPUTED = "Computed";
     public final static String CREATE_CLASSIF = "Create classification";
     public final static Logger LOGGER = Logger.getLogger(PnlAbstractUniqueValue.class);
     private static I18n I18N = I18nFactory.getI18n(PnlAbstractUniqueValue.class);
@@ -426,6 +428,55 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         return jp;
     }
 
+    /**
+     * Gets the JPanel that gathers all the buttons and labels to create a classification from scratch;
+     * @return The JPanel used to create a classification from scratch.
+     */
+    public JPanel getCreateClassificationPanel() {
+        JPanel ret = new JPanel();
+        BoxLayout bl = new BoxLayout(ret, BoxLayout.Y_AXIS);
+        ret.setLayout(bl);
+        ret.setBorder(BorderFactory.createTitledBorder(I18N.tr("Generate")));
+        //The button Group
+        JPanel btnPnl = new JPanel();
+        BoxLayout btnLayout = new BoxLayout(btnPnl, BoxLayout.Y_AXIS);
+        btnPnl.setLayout(btnLayout);
+        ButtonGroup bg = new ButtonGroup();
+        JRadioButton fromFallback = new JRadioButton(I18N.tr("Colour from the fallback symbol"));
+        fromFallback.setActionCommand(FALLBACK);
+        JRadioButton computed = new JRadioButton(I18N.tr("Computed colour"));
+        computed.setActionCommand(COMPUTED);
+        bg.add(fromFallback);
+        bg.add(computed);
+        bg.setSelected(fromFallback.getModel(), true);
+        fromFallback.setAlignmentX((float) 0);
+        computed.setAlignmentX((float)0);
+        btnPnl.add(fromFallback);
+        btnPnl.add(computed);
+        btnPnl.setAlignmentX((float).5);
+        ret.add(btnPnl);
+        //We build the panel used to configure the color before creating the classification.
+        ret.add(getColorConfig());
+        //We still need a button to configure all of that
+        JPanel btnPanel = new JPanel();
+        JButton createButton = new JButton(I18N.tr("Create Classification"));
+        createButton.setActionCommand("click");
+        btnPanel.add(createButton);
+        btnPanel.setAlignmentX((float).5);
+        ret.add(btnPanel);
+        //We still must feed all of that with listeners...
+        //Colours
+        ActionListener al1 = EventHandler.create(ActionListener.class, this, "onFromFallback");
+        ActionListener al2 = EventHandler.create(ActionListener.class, this, "onComputed");
+        fromFallback.addActionListener(al1);
+        computed.addActionListener(al2);
+        //Creation
+        ActionListener btn = EventHandler.create(ActionListener.class, this, "onCreateClassification","");
+        createButton.addActionListener(btn);
+        //We disable the color config by default
+        onFromFallback();
+        return ret;
+    }
     /**
      * This Job can be used as a background operation to retrieve a set containing the distinct data of a specific
      * field in a DataSource.
