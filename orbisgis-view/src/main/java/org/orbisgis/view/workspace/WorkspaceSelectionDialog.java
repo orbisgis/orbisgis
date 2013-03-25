@@ -56,17 +56,22 @@ public class WorkspaceSelectionDialog implements MIPValidation {
          * @return The user selected workspace folder
          */
         public static File showWorkspaceFolderSelection(CoreWorkspace coreWorkspace, boolean showCancelButton) {                
-                String defaultWorkspace = coreWorkspace.getWorkspaceFolder();
                 MultiInputPanel panel = new MultiInputPanel(I18N.tr("Workspace folder"));
                 panel.addValidation(new WorkspaceSelectionDialog());
-                DirectoryComboBoxChoice comboDir = new DirectoryComboBoxChoice(coreWorkspace.readKnownWorkspacesPath(),
+                List<File> knownWorkspaces = coreWorkspace.readKnownWorkspacesPath();
+                // Remove the loaded one
+                String workspaceFolder = coreWorkspace.getWorkspaceFolder();
+                if(workspaceFolder!=null && !workspaceFolder.isEmpty()) {
+                    knownWorkspaces.remove(new File(workspaceFolder));
+                }
+                DirectoryComboBoxChoice comboDir = new DirectoryComboBoxChoice(knownWorkspaces,
                         I18N.tr("Select an existing workspace or an empty folder."));
                 panel.addInput(FOLDER_COMBO_FIELD, I18N.tr("Workspace folder"),comboDir );
                 panel.addInput(DEFAULT_WORKSPACE_FIELD, I18N.tr("Default workspace"),
-                        new CheckBoxChoice(defaultWorkspace!=null));
+                        new CheckBoxChoice(false));
                 // Select default workspace on the combo box
-                if(defaultWorkspace!=null) {
-                        comboDir.setValue(defaultWorkspace);
+                if(!knownWorkspaces.isEmpty()) {
+                        comboDir.setValue(knownWorkspaces.get(0).getAbsolutePath());
                 }
                 if(UIFactory.showDialog(panel, showCancelButton, true)) {
                         String workspacePath = panel.getInput(FOLDER_COMBO_FIELD);
@@ -79,10 +84,15 @@ public class WorkspaceSelectionDialog implements MIPValidation {
                                 }
                                 // Save workspace list
                                 List<File> workspaces = comboDir.getValues();
+                                // Add old workspace
+                                if(workspaceFolder!=null && !workspaceFolder.isEmpty()) {
+                                    workspaces.add(new File(workspaceFolder));
+                                }
                                 coreWorkspace.writeKnownWorkspaces(workspaces);
                                 // Initialize the workspace if empty or not exists
                                 File wkFile = new File(workspacePath);
-                                if(!wkFile.exists() || wkFile.listFiles().length==0) {
+                                File[] files = wkFile.listFiles();
+                                if(!wkFile.exists() || (files!=null && files.length==0)) {
                                         ViewWorkspace.initWorkspaceFolder(wkFile);
                                 }
                         } catch (IOException ex) {
