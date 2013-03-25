@@ -81,8 +81,6 @@ import java.util.Set;
 public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     public final static Logger LOGGER = Logger.getLogger(PnlRecodedLine.class);
     private static I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
-    private static final String FALLBACK = "Fallback";
-    private static final String COMPUTED = "Computed";
     private String id;
     private CanvasSE fallbackPreview;
     private JComboBox fieldCombo;
