@@ -66,7 +66,7 @@ public class CoreLauncher {
          * The property workspace folder of CoreWorkspace has been changed
          */
         public void onWorkspaceChange() {
-                if(restartingOrbisGIS.getAndSet(true)) {
+                if(!restartingOrbisGIS.getAndSet(true)) {
                         SwingWorker worker = new SwingWorker() {
                                 @Override
                                 protected Object doInBackground() throws Exception {

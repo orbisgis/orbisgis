@@ -543,12 +543,12 @@ public class Core {
         public boolean shutdown(boolean stopVM) {
                 if (!isShutdownVetoed()) {
                         try {
+                                mainFrame.setVisible(false); //Hide the main panel
                                 mainContext.saveStatus(); //Save the services status
                                 // Save dialogs status
                                 saveSIFState();
                                 // Save layout
                                 dockManager.saveLayout();
-
                                 this.dispose();
                         } finally {
                                 //While public Plugins are not implemented do not close the VM in finally clause
