@@ -448,7 +448,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         computed.setActionCommand(COMPUTED);
         bg.add(fromFallback);
         bg.add(computed);
-        bg.setSelected(fromFallback.getModel(), true);
+        bg.setSelected(computed.getModel(), true);
         fromFallback.setAlignmentX((float) 0);
         computed.setAlignmentX((float)0);
         btnPnl.add(fromFallback);
@@ -473,8 +473,8 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         //Creation
         ActionListener btn = EventHandler.create(ActionListener.class, this, "onCreateClassification","");
         createButton.addActionListener(btn);
-        //We disable the color config by default
-        onFromFallback();
+        //We enable the color config by default
+        onComputed();
         return ret;
     }
     /**
