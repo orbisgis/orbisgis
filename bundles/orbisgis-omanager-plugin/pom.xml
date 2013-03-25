@@ -51,6 +51,7 @@
                                         <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/omanager/plugin/translation/</poDirectory>
                                         <targetBundle>org.orbisgis.omanager.plugin.Messages</targetBundle>
                                         <keywords>-ktr</keywords>
+                                        <outputFormat>properties</outputFormat>
                                 </configuration>
                         </plugin>
                 </plugins>
