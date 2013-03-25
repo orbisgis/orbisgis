@@ -576,10 +576,12 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
             if(!item.isVisible()) {
                 item.setVisible(true);
             }
-            if(!itemNext.isVisible()) {
+            // itemNext.setLocationsAside(item);
+            CLocation location = commonControl.getLocationManager().getLocation(item.intern());
+            if(location!=null) {
+                itemNext.setLocation(location.aside());
                 itemNext.setVisible(true);
             }
-            itemNext.setLocationsAside(item);
         }
         /**
          * Recreate all CAction and put them in already shown ToolBarItems.
