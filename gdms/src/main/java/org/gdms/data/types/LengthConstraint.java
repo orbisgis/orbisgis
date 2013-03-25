@@ -56,7 +56,7 @@ public final class LengthConstraint extends AbstractIntConstraint {
 
         @Override
 	public String check(Value value) {
-	 if (value.toString().length() > constraintValue) {
+	 if (!value.isNull() && value.toString().length() > constraintValue) {
 			return "Maximum length is " + constraintValue;
 		}
 		
