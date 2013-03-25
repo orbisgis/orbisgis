@@ -72,7 +72,7 @@ public class PolygonTool extends AbstractPolygonTool {
 			row = ToolUtilities.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);
 		} catch (DriverException e) {
-			throw new TransitionException("Cannot insert polygon", e);
+			throw new TransitionException("Cannot insert polygon :"+e.getMessage(), e);
 		}
 	}
 

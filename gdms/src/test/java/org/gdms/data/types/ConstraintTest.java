@@ -459,6 +459,17 @@ public class ConstraintTest extends TestBase {
                 assertTrue(TypeFactory.canBeCastTo(Type.TIME, Type.TIMESTAMP));
         }
 
+        @Test
+        public void testNullLengthWorks() throws Exception {
+            Value nv = ValueFactory.createNullValue();
+            LengthConstraint lc = new LengthConstraint(3);
+            assertTrue(lc.check(nv) == null);
+            lc = new LengthConstraint(2);
+            assertTrue(lc.check(nv) == null);
+            lc = new LengthConstraint(4);
+            assertTrue(lc.check(nv) == null);
+        }
+
         private void checkUniqueness() throws DriverException {
                 DataSource ds = getDataSource();
                 ds.open();
