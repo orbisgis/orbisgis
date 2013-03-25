@@ -188,7 +188,7 @@ public class PolygonHandler implements ShapeHandler {
 
                         length = finish - start;
 
-                        CoordinateSequence csRing = geometryFactory.getCoordinateSequenceFactory().create(length, dimensions);
+                        CoordinateSequence csRing = geometryFactory.getCoordinateSequenceFactory().create(length, 3);
                         // double area = 0;
                         // int sx = offset;
                         for (int i = 0; i < length; i++) {
