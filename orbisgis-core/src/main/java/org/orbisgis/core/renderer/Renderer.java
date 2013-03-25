@@ -284,7 +284,7 @@ public abstract class Renderer {
                         //and a message will be shown to the user...
                         VectorSymbolizer vs = (VectorSymbolizer)s;
                         theGeom = vs.getGeometry(sds, originalIndex.longValue());
-                        if(theGeom.getEnvelopeInternal().intersects(extent)){
+                        if(theGeom != null && theGeom.getEnvelopeInternal().intersects(extent)){
                                 somethingReached = true;
                         }
                 }
