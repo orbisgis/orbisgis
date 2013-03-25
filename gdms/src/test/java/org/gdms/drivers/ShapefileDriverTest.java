@@ -33,23 +33,8 @@
  */
 package org.gdms.drivers;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.gdms.Geometries;
 import org.gdms.TestBase;
 import org.gdms.TestResourceHandler;
@@ -67,6 +52,18 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.MemoryDataSetDriver;
+import org.gdms.driver.shapefile.ShapeType;
+import org.gdms.driver.shapefile.ShapefileHeader;
+import org.gdms.driver.shapefile.ShapefileReader;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import static org.junit.Assert.*;
 
 public class ShapefileDriverTest extends TestBase {
 
@@ -156,7 +153,7 @@ public class ShapefileDriverTest extends TestBase {
                 ds.close();
                 ds.open();
                 ds.insertFilledRow(new Value[]{ValueFactory.createValue("0"),
-                                ValueFactory.createValue(Geometries.getPoint()),});
+                            ValueFactory.createValue(Geometries.getPoint()),});
                 ds.insertFilledRow(new Value[]{ValueFactory.createValue("1"),
                                 ValueFactory.createValue(Geometries.getPolygon()),});
                 try {
@@ -282,7 +279,7 @@ public class ShapefileDriverTest extends TestBase {
                 MemoryDataSetDriver omd = new MemoryDataSetDriver(
                         new String[]{"geom"}, new Type[]{TypeFactory.createType(Type.GEOMETRY)});
                 omd.addValues(new Value[]{ValueFactory.createValue(new GeometryFactory().createPoint(new Coordinate(
-                                2, 2, 2)))});
+                            2, 2, 2)))});
                 DataSource ds = dsf.getDataSource(omd, "main");
 
                 File shpFile = getTempFile(".shp");
@@ -373,7 +370,7 @@ public class ShapefileDriverTest extends TestBase {
         @Test
         public void testReadAndWriteSHP() throws Exception {
                 DataSource ds = dsf.getDataSource(getTempCopyOf(new File(
-                        TestResourceHandler.TESTRESOURCES, "alltypes.shp")));
+                            TestResourceHandler.TESTRESOURCES, "alltypes.shp")));
                 GeometryFactory gf = new GeometryFactory();
                 for (int i = 0; i < 2; i++) {
                         ds.open();
@@ -450,5 +447,24 @@ public class ShapefileDriverTest extends TestBase {
                 assertEquals(ds.getRowCount(), sql.getRowCount());
                 sql.close();
                 ds.close();
+        }
+
+        @Test
+        public void test2DTypeKept() throws Exception {
+                sm.register("tokeep", new File(TestResourceHandler.TESTRESOURCES, "landcover2000.shp"));
+
+                DataSource sql = dsf.getDataSourceFromSQL(
+                        "select * from tokeep;",
+                        DataSourceFactory.DEFAULT);
+                File out = getTempFile(".shp");
+                DataSourceCreation target = new FileSourceCreation(out, null);
+
+                sm.register("buffer", target);
+                sql.open();
+                dsf.saveContents("buffer", sql);
+                FileInputStream fis = new FileInputStream(out);
+                ShapefileHeader sfh = ShapefileReader.readHeader(fis.getChannel());
+                assertTrue(sfh.getShapeType().id == ShapeType.POLYGON.id);
+                sql.close();
         }
 }
