@@ -159,7 +159,8 @@ public abstract class AbstractFieldPanel extends JPanel {
     public void chooseFillColor(MouseEvent e) {
         Component source = (Component)e.getSource();
         if(source.isEnabled()){
-            ColorPicker picker = new ColorPicker();
+            JLabel lab = (JLabel) source;
+            ColorPicker picker = new ColorPicker(lab.getBackground());
             if (UIFactory.showDialog(picker,false, true)) {
                 Color color = picker.getColor();
                 source.setBackground(color);
