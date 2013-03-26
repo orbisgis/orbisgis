@@ -3,14 +3,14 @@
         <modelVersion>4.0.0</modelVersion>
         <groupId>org.orbisgis</groupId>
         <artifactId>legend-monomap</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1-beta2</version>
         <packaging>jar</packaging>
         <name>legend</name>
         <url>http://www.orbisgis.org</url>
         <parent>
                 <artifactId>orbisgis-monomap</artifactId>
                 <groupId>org.orbisgis</groupId>
-                <version>4.0-SNAPSHOT</version>
+                <version>4.0-beta2</version>
         </parent>
         <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -26,7 +26,7 @@
                 <dependency>
                         <groupId>org.orbisgis</groupId>
                         <artifactId>orbisgis-core-monomap</artifactId>
-                        <version>4.0-SNAPSHOT</version>
+                        <version>4.0-beta2</version>
                 </dependency>
         </dependencies>
         <build>

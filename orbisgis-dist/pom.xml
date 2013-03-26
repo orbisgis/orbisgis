@@ -5,11 +5,11 @@
         <parent>
                 <artifactId>orbisgis-monomap</artifactId>
                 <groupId>org.orbisgis</groupId>
-                <version>4.0-SNAPSHOT</version>
+                <version>4.0-beta2</version>
         </parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>orbisgis-dist</artifactId>
-        <version>4.0-SNAPSHOT</version>
+        <version>4.0-beta2</version>
         <name>orbisgis-dist</name>
         <url>http://maven.apache.org</url>
         <build>
@@ -118,7 +118,7 @@
                 <dependency>
                         <groupId>org.orbisgis</groupId>
                         <artifactId>orbisgis-view</artifactId>
-                        <version>4.0-SNAPSHOT</version>
+                        <version>4.0-beta2</version>
                 </dependency>
                 <dependency>
                   <groupId>org.apache.felix</groupId>
