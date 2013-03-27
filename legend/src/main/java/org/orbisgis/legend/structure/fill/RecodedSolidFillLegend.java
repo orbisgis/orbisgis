@@ -28,10 +28,6 @@
  */
 package org.orbisgis.legend.structure.fill;
 
-import java.beans.EventHandler;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
@@ -43,6 +39,9 @@ import org.orbisgis.legend.structure.recode.RecodedReal;
 import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * A {@code Legend} that represents a {@code SolidFill} where the color is defined
  * according to a {@code Recode} operation.
@@ -53,7 +52,7 @@ public class RecodedSolidFillLegend extends SolidFillLegend implements RecodedLe
         /**
          * Build a new {@code RecodedSolidFill} from the given {@link SolidFill}. If it can't be recognized as a {@code
          * RecodedSolidFill}, you'll receive {@link UnsupportedOperationException} or {@link ClassCastException}.
-         * @param fill
+         * @param fill The original SolidFill
          */
         public RecodedSolidFillLegend(SolidFill fill){
             this(fill, new RecodedColor(fill.getColor()), new RecodedReal(fill.getOpacity()));

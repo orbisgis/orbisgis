@@ -28,11 +28,11 @@
  */
 package org.orbisgis.legend.structure.literal;
 
-import java.awt.Color;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
-import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.structure.parameter.ParameterLegend;
+
+import java.awt.*;
 
 /**
  * {@code LegendStructure} associated to a numeric constant, that is represented as a
@@ -47,7 +47,7 @@ public class ColorLiteralLegend implements ParameterLegend {
         /**
          * Build a new {@code RealLiteralLegend} that is associated to the
          * {@code ColorLiteral r}.
-         * @param r
+         * @param literal the input {@link ColorLiteral}
          */
         public ColorLiteralLegend(ColorLiteral literal){
                 cl = literal;
