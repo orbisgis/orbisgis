@@ -79,11 +79,11 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
         } else {
             throw new UnsupportedOperationException("Can't build a RecodedLine with such a Stroke: "+p.getClass().getName());
         }
-        Fill fill = areaSymbolizer.getFill();
-        if(fill instanceof SolidFill){
-            this.fill = new RecodedSolidFillLegend((SolidFill)fill);
+        Fill originalFill = areaSymbolizer.getFill();
+        if(originalFill instanceof SolidFill){
+            this.fill = new RecodedSolidFillLegend((SolidFill)originalFill);
         }   else {
-            throw new UnsupportedOperationException("Can't build a RecodedLine with such a Fill: "+fill.getClass().getName());
+            throw new UnsupportedOperationException("Can't build a RecodedLine with such a Fill: "+originalFill.getClass().getName());
         }
         FieldAggregatorVisitor fav = new FieldAggregatorVisitor();
         applyGlobalVisitor(fav);

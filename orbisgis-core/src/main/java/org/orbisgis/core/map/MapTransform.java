@@ -29,6 +29,7 @@
 package org.orbisgis.core.map;
 
 import com.vividsolutions.jts.awt.PointTransformation;
+import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -108,7 +109,6 @@ public class MapTransform implements PointTransformation {
         /**
          * When true, the rendered map will always respects the CRS aspect ratio
          * When false, the Map extent will be bound to the output extent and may re-scale the map
-         * 
          * @return
          */
         public boolean isAdjustExtent() {
@@ -122,7 +122,7 @@ public class MapTransform implements PointTransformation {
         /**
          * Sets the painted image
          *
-         * @param newImage
+         * @param newImage The image where we will draw anything from now.
          */
         public void setImage(BufferedImage newImage) {
                 image = newImage;
@@ -139,10 +139,18 @@ public class MapTransform implements PointTransformation {
                 LOGGER.debug("Switch to Hign-Quality!");
         }
 
+        /**
+         * Gets the current {@code RenderContext}
+         * @return the current {@link RenderContext}
+         */
         public RenderContext getCurrentRenderContext() {
                 return this.currentRenderContext;
         }
 
+        /**
+         * Gets the current {@code RenderingHints}
+         * @return the current {@link RenderingHints}
+         */
         public RenderingHints getRenderingHints() {
                 return this.currentRenderContext.getRenderingHints();
         }
@@ -150,23 +158,30 @@ public class MapTransform implements PointTransformation {
         /**
          * Gets the painted image
          *
-         * @return
+         * @return The image where we've drawn things.
          */
         public BufferedImage getImage() {
                 return image;
         }
 
+        /**
+         * @return The currently configured dot-per-inch measure.
+         */
         public double getDpi() {
                 return dpi;
         }
 
+        /**
+         *
+         * @param dpi The new dot-per-inch measure as a double.
+         */
         public void setDpi(double dpi) {
                 this.dpi = dpi;
         }
 
         /**
          * Gets the extent used to calculate the transformation. This extent is the
-         * same as the setted one but adjusted to have the same ratio than the image
+         * same as the set one but adjusted to have the same ratio than the image
          *
          * @return
          */
@@ -237,7 +252,7 @@ public class MapTransform implements PointTransformation {
         /**
          * Gets the height of the drawn image
          *
-         * @return
+         * @return The height of the image
          */
         public int getHeight() {
                 if (image == null) {
@@ -250,7 +265,7 @@ public class MapTransform implements PointTransformation {
         /**
          * Gets the width of the drawn image
          *
-         * @return
+         * @return The width of the image
          */
         public int getWidth() {
                 if (image == null) {
@@ -265,7 +280,7 @@ public class MapTransform implements PointTransformation {
          * to calculate the transformation but is adjusted to obtain an extent with
          * the same ratio than the image
          *
-         * @param newExtent
+         * @param newExtent The new base extent.
          */
         public void setExtent(Envelope newExtent) {
                 if ((newExtent != null)
@@ -290,10 +305,10 @@ public class MapTransform implements PointTransformation {
         }
 
         /**
-         * Creates new image with the specified size
+         * Replaces the inner image with a new one with the specified size.
          *
-         * @param width
-         * @param height
+         * @param width The width of the new image
+         * @param height The height of the new image.
          */
         public void resizeImage(int width, int height) {
                 int oldWidth = getWidth();
@@ -331,9 +346,8 @@ public class MapTransform implements PointTransformation {
         /**
          * Transforms an envelope in map units to image units
          *
-         * @param geographic
-         *            envelope
-         * @return Rectangle2DDouble
+         * @param geographicEnvelope The {@link Envelope} in map units.
+         * @return Rectangle2DDouble The envelope in image units as a {@link Rectangle2DDouble}.
          */
         public Rectangle2DDouble toPixel(Envelope geographicEnvelope) {
                 final Point2D lowerRight = new Point2D.Double(geographicEnvelope.getMaxX(), geographicEnvelope.getMinY());
@@ -349,9 +363,9 @@ public class MapTransform implements PointTransformation {
         /**
          * Transforms an image coordinate in pixels into a map coordinate
          *
-         * @param i
-         * @param j
-         * @return
+         * @param i The x ordinate of the point in the image
+         * @param j The y ordinate of the point in the image
+         * @return The Point2D instance on the map computed from the given coordinates.
          */
         public Point2D toMapPoint(int i, int j) {
                 if (transInv != null) {
@@ -395,7 +409,7 @@ public class MapTransform implements PointTransformation {
                 }
         }
         /**
-         * 
+         *
          * @return The Image width in meter
          */
         private double getImageMeters() {
@@ -417,10 +431,18 @@ public class MapTransform implements PointTransformation {
                 }
         }
 
+        /**
+         * Adds a listener waiting for transformation changes.
+         * @param listener The new {@code TransformListener}.
+         */
         public void addTransformListener(TransformListener listener) {
                 listeners.add(listener);
         }
 
+        /**
+         * Removes the given listener of the associated TransformListener instances.
+         * @param listener The listener to be removed.
+         */
         public void removeTransformListener(TransformListener listener) {
                 listeners.remove(listener);
         }
@@ -430,9 +452,11 @@ public class MapTransform implements PointTransformation {
                 dest.setLocation(src.x, src.y);
                 trans.transform(dest, dest);
         }
-        
-        
 
+        /**
+         * Gets the JTS {@code ShapeWriter} used for decimation and geometry simplifications we make before rendering
+         * @return The currently used {@code ShapeWriter} instance.
+         */
         public ShapeWriter getShapeWriter() {
                 if (converter == null) {
                         converter = new ShapeWriter(this);
@@ -449,18 +473,20 @@ public class MapTransform implements PointTransformation {
         }
 
         /**
-         * @param geom
-         * @return
+         * Gets the AWT {@link Shape}  we'll use to represent {@code geom} on the map.
+         * @param geom The geometry we want to draw.
+         * @param generalize If true we'll perform generalization
+         * @return An AWT Shape instance.
          */
-        public Shape getShape(Geometry geom, boolean generalize) {                
-                if (generalize) {                        
+        public Shape getShape(Geometry geom, boolean generalize) {
+                if (generalize) {
                         Rectangle2DDouble rectangle2dDouble = toPixel(geom.getEnvelopeInternal());
                         if ((rectangle2dDouble.getHeight() <= MAXPIXEL_DISPLAY)
                                 && (rectangle2dDouble.getWidth() <= MAXPIXEL_DISPLAY)) {
                                 if(geom.getDimension()==1){
                                      Coordinate[] coords = geom.getCoordinates();
                                      return getShapeWriter().toShape(geom.getFactory().createLineString(
-                                             new Coordinate[]{coords[0], coords[coords.length-1]})); 
+                                             new Coordinate[]{coords[0], coords[coords.length-1]}));
                                 }
                                 else{
                                 return rectangle2dDouble;

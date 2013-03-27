@@ -75,7 +75,7 @@ public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbo
     /**
      * Builds a new {@code UniqueSymbolArea} directly from the given {@code
      * AreaSymbolizer}.
-     * @param symbolizer
+     * @param symbolizer The original symbolizer
      */
     public UniqueSymbolArea(AreaSymbolizer symbolizer){
         super(symbolizer);
@@ -102,7 +102,7 @@ public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbo
     /**
      * Exposes the inner {@link LegendStructure} that represents the analysis
      * made on the {@link Fill}.
-     * @return 
+     * @return The fill legend associated to the AreaSymbolizer's fill.
      */
     @Override
     public ConstantSolidFill getFillLegend(){
@@ -111,7 +111,7 @@ public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbo
 
     @Override
     public ConstantPenStroke getPenStroke() {
-        return (ConstantPenStroke) getStrokeLegend();
+        return getStrokeLegend();
     }
 
     @Override
@@ -123,7 +123,8 @@ public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbo
      * Sets the legend describing the structure of the fill contained in the
      * inner {@link AreaSymbolizer}. This will update the fill of the {@code
      * AreaSymbolizer} in question.
-     * @param cfl
+     * @param cfl The new fill legend that is associated to this unique symbol. Will replace the fill of the inner
+     *            symbolizer.
      */
     @Override
     public void setFillLegend(ConstantSolidFill cfl){

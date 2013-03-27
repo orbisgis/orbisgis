@@ -33,18 +33,13 @@ import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
-import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.structure.fill.FillLegend;
 import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
-import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 
 import java.awt.*;
 import java.beans.EventHandler;
-import java.util.*;
 import java.util.List;
 
 /**
