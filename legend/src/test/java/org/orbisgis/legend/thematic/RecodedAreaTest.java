@@ -28,19 +28,17 @@
  */
 package org.orbisgis.legend.thematic;
 
-import com.kitfox.svg.A;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.analyzer.symbolizers.AreaSymbolizerAnalyzer;
 import org.orbisgis.legend.thematic.recode.RecodedArea;
 
 import java.awt.*;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * @author alexis
@@ -163,6 +161,50 @@ public class RecodedAreaTest extends AnalyzerTest {
         assertNull(ra.remove("I do not exist :-("));
     }
 
+    @Test
+    public void testNullStroke() throws Exception {
+        RecodedArea ra = getNullStrokeRecodedArea();
+        assertFalse(ra.isStrokeEnabled());
+    }
+
+    @Test
+    public void testSetEnabled() throws Exception {
+        AreaSymbolizer as = getAreaSymbolizer();
+        as.setStroke(null);
+        RecodedArea ra = new RecodedArea(as);
+        ra.setStrokeEnabled(true);
+        assertNotNull(as.getStroke());
+        assertTrue(ra.isStrokeEnabled());
+        assertTrue(ra.getFallbackParameters().getLineColor().equals(Color.BLACK));
+        assertTrue(ra.getFallbackParameters().getLineWidth().equals(PenStroke.DEFAULT_WIDTH));
+        assertTrue(ra.getFallbackParameters().getLineDash().isEmpty());
+        assertTrue(ra.getFallbackParameters().getLineOpacity().equals(1.0));
+        ra.setStrokeEnabled(false);
+        assertFalse(ra.isStrokeEnabled());
+        assertTrue(ra.getFallbackParameters().getLineColor().equals(Color.WHITE));
+        assertTrue(ra.getFallbackParameters().getLineWidth().equals(0.0));
+        assertTrue(ra.getFallbackParameters().getLineDash().isEmpty());
+        assertTrue(ra.getFallbackParameters().getLineOpacity().equals(0.0));
+    }
+
+    @Test
+    public void testGetPutRemoveWithNullStroke() throws Exception {
+        RecodedArea ra = getNullStrokeRecodedArea();
+        assertTrue(ra.size() == 5);
+        assertNotNull(ra.get("1"));
+        assertNotNull(ra.remove("1"));
+        assertNull(ra.put("1", new AreaParameters(Color.BLUE, .75, 2.0, "2", Color.YELLOW, .25)));
+        AreaParameters ap = ra.get("1");
+        assertTrue(ap.getLineColor().equals(Color.WHITE));
+        assertTrue(ap.getLineWidth().equals(0.0));
+        assertTrue(ap.getLineOpacity().equals(0.0));
+        assertTrue(ap.getLineDash().isEmpty());
+        assertNull(ra.getLineColor());
+        assertNull(ra.getLineOpacity());
+        assertNull(ra.getLineWidth());
+        assertNull(ra.getLineDash());
+    }
+
     private AreaSymbolizer getAreaSymbolizer() throws Exception{
         Style s = getStyle(AREA_RECODE);
         return (AreaSymbolizer) s.getRules().get(0).getCompositeSymbolizer().getChildren().get(0);
@@ -170,5 +212,11 @@ public class RecodedAreaTest extends AnalyzerTest {
 
     private RecodedArea getRecodedArea() throws Exception {
         return new RecodedArea(getAreaSymbolizer());
+    }
+
+    private RecodedArea getNullStrokeRecodedArea() throws Exception {
+        AreaSymbolizer as = getAreaSymbolizer();
+        as.setStroke(null);
+        return new RecodedArea(as);
     }
 }

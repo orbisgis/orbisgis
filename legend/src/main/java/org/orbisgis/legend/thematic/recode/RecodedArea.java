@@ -55,7 +55,7 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
 
     private AreaSymbolizer areaSymbolizer;
     private final RecodedSolidFillLegend fill;
-    private final RecodedPenStroke ps;
+    private RecodedPenStroke ps;
 
     /**
      * Default constructor : builds an empty classification based on the default {@link AreaSymbolizer}.
@@ -76,6 +76,8 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
         Stroke p = areaSymbolizer.getStroke();
         if(p instanceof PenStroke){
             ps=new RecodedPenStroke((PenStroke)p);
+        } else if( p == null){
+            ps = null;
         } else {
             throw new UnsupportedOperationException("Can't build a RecodedLine with such a Stroke: "+p.getClass().getName());
         }
@@ -109,7 +111,7 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
      * @return the recoded width
      */
     public RecodedReal getLineWidth(){
-        return ps.getWidthLegend();
+        return ps == null ? null :ps.getWidthLegend();
     }
 
     /**
@@ -117,7 +119,7 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
      * @return the recoded opacity
      */
     public RecodedReal getLineOpacity(){
-        return (RecodedReal) ps.getFillLegend().getFillOpacityLegend();
+        return ps == null ? null :(RecodedReal) ps.getFillLegend().getFillOpacityLegend();
     }
 
     /**
@@ -125,7 +127,7 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
      * @return the recoded color
      */
     public RecodedColor getLineColor(){
-        return (RecodedColor) ps.getFillLegend().getFillColorLegend();
+        return ps == null ? null :(RecodedColor) ps.getFillLegend().getFillColorLegend();
     }
 
     /**
@@ -133,7 +135,7 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
      * @return the recoded dash
      */
     public RecodedString getLineDash() {
-        return ps.getDashLegend();
+        return ps == null ? null :ps.getDashLegend();
     }
 
     /**
@@ -168,14 +170,25 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
         if(!keySet().contains(key)){
             return null;
         }
-        Color sc = getLineColor().getItemValue(key);
-        sc = sc==null ? getLineColor().getFallbackValue() : sc;
-        Double sop = getLineOpacity().getItemValue(key);
-        sop = sop==null || sop.isNaN() ? getLineOpacity().getFallbackValue() : sop;
-        Double w = getLineWidth().getItemValue(key);
-        w = w==null || w.isNaN()? getLineWidth().getFallbackValue() : w;
-        String d = getLineDash().getItemValue(key);
-        d = d==null ? getLineDash().getFallbackValue() : d;
+        Color sc;
+        Double sop;
+        Double w;
+        String d;
+        if(ps !=null){
+            sc = getLineColor().getItemValue(key);
+            sc = sc==null ? getLineColor().getFallbackValue() : sc;
+            sop = getLineOpacity().getItemValue(key);
+            sop = sop==null || sop.isNaN() ? getLineOpacity().getFallbackValue() : sop;
+            w = getLineWidth().getItemValue(key);
+            w = w==null || w.isNaN()? getLineWidth().getFallbackValue() : w;
+            d = getLineDash().getItemValue(key);
+            d = d==null ? getLineDash().getFallbackValue() : d;
+        } else {
+            sc=  Color.WHITE;
+            sop = 0.0;
+            w = 0.0;
+            d = "";
+        }
         Color fc = getFillColor().getItemValue(key);
         fc = fc==null ? getFillColor().getFallbackValue() : fc;
         Double fop = getFillOpacity().getItemValue(key);
@@ -190,10 +203,12 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
             throw new NullPointerException("We don't manage null as key");
         }
         AreaParameters ret = keySet().contains(key) ? get(key) : null;
-        getLineColor().addItem(key, value.getLineColor());
-        getLineOpacity().addItem(key, value.getLineOpacity());
-        getLineWidth().addItem(key, value.getLineWidth());
-        getLineDash().addItem(key, value.getLineDash());
+        if(this.ps != null){
+            getLineColor().addItem(key, value.getLineColor());
+            getLineOpacity().addItem(key, value.getLineOpacity());
+            getLineWidth().addItem(key, value.getLineWidth());
+            getLineDash().addItem(key, value.getLineDash());
+        }
         getFillColor().addItem(key, value.getFillColor());
         getFillOpacity().addItem(key, value.getFillOpacity());
         return ret;
@@ -206,10 +221,12 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
             throw new NullPointerException("We don't manage null as key");
         }
         AreaParameters ret = keySet().contains(key) ? get(key) : null;
-        getLineColor().removeItem(key);
-        getLineDash().removeItem(key);
-        getLineOpacity().removeItem(key);
-        getLineWidth().removeItem(key);
+        if(this.ps != null){
+            getLineColor().removeItem(key);
+            getLineDash().removeItem(key);
+            getLineOpacity().removeItem(key);
+            getLineWidth().removeItem(key);
+        }
         getFillColor().removeItem(key);
         getFillOpacity().removeItem(key);
         return ret;
@@ -217,7 +234,7 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
 
     @Override
     public List<RecodedLegend> getRecodedLegends() {
-        List<RecodedLegend> psl = ps.getRecodedLegends();
+        List<RecodedLegend> psl = ps == null ? new ArrayList<RecodedLegend>() : ps.getRecodedLegends();
         List<RecodedLegend> fsl = fill.getRecodedLegends();
         List<RecodedLegend> ret = new ArrayList<RecodedLegend>(psl.size()+fsl.size());
         ret.addAll(psl);
@@ -227,20 +244,31 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
 
     @Override
     public AreaParameters getFallbackParameters(){
-        return new AreaParameters(getLineColor().getFallbackValue(),
-                    getLineOpacity().getFallbackValue(),
-                    getLineWidth().getFallbackValue(),
-                    getLineDash().getFallbackValue(),
-                    getFillColor().getFallbackValue(),
-                    getFillOpacity().getFallbackValue());
+        if(ps == null){
+            return new AreaParameters(Color.WHITE,
+                        0.0,
+                        0.0,
+                        "",
+                        getFillColor().getFallbackValue(),
+                        getFillOpacity().getFallbackValue());
+        }   else {
+            return new AreaParameters(getLineColor().getFallbackValue(),
+                        getLineOpacity().getFallbackValue(),
+                        getLineWidth().getFallbackValue(),
+                        getLineDash().getFallbackValue(),
+                        getFillColor().getFallbackValue(),
+                        getFillOpacity().getFallbackValue());
+        }
     }
 
     @Override
     public void setFallbackParameters(AreaParameters ap){
-        getLineColor().setFallbackValue(ap.getLineColor());
-        getLineOpacity().setFallbackValue(ap.getLineOpacity());
-        getLineWidth().setFallbackValue(ap.getLineWidth());
-        getLineDash().setFallbackValue(ap.getLineDash());
+        if(ps != null){
+            getLineColor().setFallbackValue(ap.getLineColor());
+            getLineOpacity().setFallbackValue(ap.getLineOpacity());
+            getLineWidth().setFallbackValue(ap.getLineWidth());
+            getLineDash().setFallbackValue(ap.getLineDash());
+        }
         getFillColor().setFallbackValue(ap.getFillColor());
         getFillOpacity().setFallbackValue(ap.getFillOpacity());
     }
@@ -257,5 +285,29 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
     @Override
     public String getLegendTypeId() {
         return "org.orbisgis.legend.thematic.recode.RecodedArea";
+    }
+
+    /**
+     * Returns true if the stroke of the associated symbolizer.
+     * @return  true if the geometries can be stroked by the associated symbolizer, ie its inner {@code PenStroke} is
+     * not null.
+     */
+    public boolean isStrokeEnabled(){
+        return ps != null;
+    }
+
+    /**
+     * Enables or disables the usage of a stroke for the drawn geometries.
+     * @param enable If true, the stroke will be drawn. If false, it won't be drawn.
+     */
+    public void setStrokeEnabled(boolean enable){
+        if(enable && ps ==null){
+            PenStroke stroke = new PenStroke();
+            areaSymbolizer.setStroke(stroke);
+            ps = new RecodedPenStroke(stroke);
+        } else if(!enable && ps != null){
+            areaSymbolizer.setStroke(null);
+            ps = null;
+        }
     }
 }
