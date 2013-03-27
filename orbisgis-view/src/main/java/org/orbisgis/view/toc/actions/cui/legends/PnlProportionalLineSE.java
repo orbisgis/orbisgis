@@ -77,7 +77,6 @@ public class PnlProportionalLineSE extends PnlUniqueSymbolSE {
         private JPanel lineColor;
         private JPanel lineOpacity;
         private JPanel lineDash;
-//        private JComboBox fieldCombo;
 
         @Override
         public Legend getLegend() {

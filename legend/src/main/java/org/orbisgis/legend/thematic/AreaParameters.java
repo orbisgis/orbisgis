@@ -50,7 +50,7 @@ public class AreaParameters extends LineParameters {
     public AreaParameters(){
         this(Color.BLACK,
                     1.0,
-                    .25,
+                    PenStroke.DEFAULT_WIDTH,
                     "",
                     new Color((int)SolidFill.GRAY50,(int)SolidFill.GRAY50,(int)SolidFill.GRAY50),
                     1.0);

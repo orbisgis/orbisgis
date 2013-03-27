@@ -82,7 +82,7 @@ public class CanvasSE extends JPanel {
         private boolean displayed;
         private int width;
         private int height;
-        BufferedImage bi = null;
+        private BufferedImage bi = null;
         public final static int WIDTH = 126;
         public final static int HEIGHT = 70;
 
@@ -130,8 +130,8 @@ public class CanvasSE extends JPanel {
      */
     public BufferedImage getImage(){
         if(bi == null){
-            BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-            Graphics2D g2 = (Graphics2D) bi.getGraphics();
+            BufferedImage newBi = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+            Graphics2D g2 = (Graphics2D) newBi.getGraphics();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             if(sample == null){
                 setBasicDataSource();
@@ -163,7 +163,7 @@ public class CanvasSE extends JPanel {
             } catch (IllegalArgumentException ie){
                     LOGGER.error(ie.getMessage());
             }
-            this.bi = bi;
+            this.bi = newBi;
         }
         return bi;
     }

@@ -79,8 +79,8 @@ import java.util.Set;
 * @author Alexis Guéganno
 */
 public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
-    public final static Logger LOGGER = Logger.getLogger(PnlRecodedLine.class);
-    private static I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
+    public static final Logger LOGGER = Logger.getLogger(PnlRecodedLine.class);
+    private static final I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
     private String id;
     private CanvasSE fallbackPreview;
     private JComboBox fieldCombo;

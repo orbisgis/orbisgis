@@ -46,7 +46,7 @@ public abstract class AbstractAnalyzer implements Analyzer {
          * Set the {@code LegendStructure} associated to this {@code Analyzer}.
          * @param leg
          */
-        public void setLegend(LegendStructure leg){
+        public final void setLegend(LegendStructure leg){
                 legend = leg;
         }
 
