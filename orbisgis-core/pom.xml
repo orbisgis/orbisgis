@@ -58,8 +58,9 @@
                                 <artifactId>maven-gettext-plugin</artifactId>
                                 <configuration>
                                         <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/core/translation/language/</poDirectory>
-                                        <targetBundle>OrbisGISCore.i18n.Messages</targetBundle>
+                                        <targetBundle>org.orbisgis.core.Messages</targetBundle>
                                         <keywords>-ktr</keywords>
+                                        <outputFormat>properties</outputFormat>
                                 </configuration>
                         </plugin>
                 </plugins>
