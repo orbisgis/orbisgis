@@ -158,8 +158,8 @@ public class PolygonHandler implements ShapeHandler {
                         partOffsets[i] = buffer.getInt();
                 }
 
-                ArrayList<LinearRing> shells = new ArrayList<LinearRing>();
-                ArrayList<LinearRing> holes = new ArrayList<LinearRing>();
+                List<LinearRing> shells = new ArrayList<LinearRing>(numParts);
+                List<LinearRing> holes = new ArrayList<LinearRing>(numParts);
                 CoordinateSequence coords = readCoordinates(buffer, numPoints,
                         dimensions);
 
@@ -185,10 +185,18 @@ public class PolygonHandler implements ShapeHandler {
                         } else {
                                 finish = partOffsets[part + 1];
                         }
-
                         length = finish - start;
 
-                        CoordinateSequence csRing = geometryFactory.getCoordinateSequenceFactory().create(length, 3);
+                        int ringLength;
+                        // If the polygon is closed (first vertices equal to the last one)
+                        if(coords.getCoordinate(offset).equals(coords.getCoordinate(offset+length-1))) {
+                            ringLength = length;
+                        } else {
+                            // The polygon is open, need to add an additional coordinate
+                            ringLength = length + 1;
+                        }
+
+                        CoordinateSequence csRing = geometryFactory.getCoordinateSequenceFactory().create(ringLength, 3);
                         // double area = 0;
                         // int sx = offset;
                         for (int i = 0; i < length; i++) {
@@ -198,6 +206,14 @@ public class PolygonHandler implements ShapeHandler {
                                         csRing.setOrdinate(i, 2, coords.getOrdinate(offset, 2));
                                 }
                                 offset++;
+                        }
+                        // Close the ring if necessary
+                        if(ringLength>length) {
+                            csRing.setOrdinate(length, 0, csRing.getOrdinate(0, 0));
+                            csRing.setOrdinate(length, 1, csRing.getOrdinate(0, 1));
+                            if (dimensions == 3) {
+                                csRing.setOrdinate(length, 2, csRing.getOrdinate(0, 2));
+                            }
                         }
                         // REVISIT: polygons with only 1 or 2 points are not polygons -
                         // geometryFactory will bomb so we skip if we find one.
