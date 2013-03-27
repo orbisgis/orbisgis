@@ -421,6 +421,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         keys.setCellEditor(ker);
         JScrollPane jsp = new JScrollPane(table);
         table.setPreferredScrollableViewportSize(new Dimension(400,200));
+        table.setDoubleBuffered(true);
         jsp.setAlignmentX((float).5);
         jp.add(jsp, BorderLayout.CENTER);
         table.doLayout();
