@@ -99,6 +99,20 @@ public class ShapefileDriverTest extends TestBase {
                 ds.close();
         }
 
+        /**
+         * Load a ShapeFile that hold unclosed polygons, the driver should generate valid geometries
+         */
+        @Test
+        public void testLoadInvalidPolygons() throws Exception {
+            String sourceName = dsf.getSourceManager().nameAndRegister(getClass().getResource("invalid/invalid.shp").toURI());
+            DataSource source = dsf.getDataSource(sourceName);
+            source.open();
+            try {
+                assertTrue(source.getFieldValue(0,0).getAsGeometry().isValid());
+            } finally {
+                source.close();
+            }
+        }
         @Test
         public void testSaveEmptyGeometries() throws Exception {
                 MemoryDataSetDriver omd = new MemoryDataSetDriver(

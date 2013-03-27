@@ -1,0 +1,9 @@
+First 10 lines of the file
+http://www.insee.fr/fr/ppp/bases-de-donnees/donnees-detaillees/donnees-carroyees/dep/grille_R11D77.zip
+
+Source page is :
+
+http://www.insee.fr/fr/themes/detail.asp?reg_id=0&ref_id=donnees-carroyees&page=donnees-detaillees/donnees-carroyees/r11.htm
+link date 27/03/2013
+
+This file contain invalid polygons, the shape driver has been updated in order to fix this kind of invalid polygons.
