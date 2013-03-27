@@ -29,6 +29,7 @@
 package org.orbisgis.core.map;
 
 import com.vividsolutions.jts.awt.PointTransformation;
+import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
