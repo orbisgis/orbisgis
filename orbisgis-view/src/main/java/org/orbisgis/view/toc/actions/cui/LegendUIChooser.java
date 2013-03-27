@@ -27,22 +27,21 @@
  */
 package org.orbisgis.view.toc.actions.cui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Image;
-import java.net.URL;
-import java.util.ArrayList;
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import org.apache.log4j.Logger;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.Toc;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
-import org.orbisgis.view.toc.actions.cui.legends.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Display a UI with the name of all supported legends and their coresponding
@@ -67,8 +66,8 @@ public class LegendUIChooser implements UIPanel {
      * @param ids
      */
     public LegendUIChooser(String[] names, ILegendPanel[] ids) {
-        this.names = names;
-        this.ids = ids;
+        this.names = Arrays.copyOf(names, names.length);
+        this.ids = Arrays.copyOf(ids, ids.length);
         init();
     }
 

@@ -71,9 +71,9 @@ import java.util.TreeSet;
 public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends AbstractFieldPanel implements ILegendPanel, ActionListener {
     private static final String FALLBACK = "Fallback";
     private static final String COMPUTED = "Computed";
-    public final static String CREATE_CLASSIF = "Create classification";
-    public final static Logger LOGGER = Logger.getLogger(PnlAbstractUniqueValue.class);
-    private static I18n I18N = I18nFactory.getI18n(PnlAbstractUniqueValue.class);
+    public static final String CREATE_CLASSIF = "Create classification";
+    public static final Logger LOGGER = Logger.getLogger(PnlAbstractUniqueValue.class);
+    private static final I18n I18N = I18nFactory.getI18n(PnlAbstractUniqueValue.class);
     private AbstractRecodedLegend<U> legend;
     private static final String ADD = "add";
     private static final String REMOVE = "remove";
