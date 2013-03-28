@@ -176,17 +176,17 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     I18N.tr("Import style"), I18N.tr("Import a style from a file."),
                     OrbisGISIcon.getIcon("add"),
                     EventHandler.create(ActionListener.class, this, "onImportStyle"),null)
-                    .setSingleSelection(true).setOnRealLayerOnly(true));
+                    .setSingleSelection(true).setOnRealLayerOnly(true).setOnVectorSourceOnly(true));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_ADD_STYLE,
                     I18N.tr("Add style"), I18N.tr("Add a new style."),
                     OrbisGISIcon.getIcon("add"),
                     EventHandler.create(ActionListener.class, this, "onAddStyle"),null)
-                    .setSingleSelection(true).setOnRealLayerOnly(true));
+                    .setSingleSelection(true).setOnRealLayerOnly(true).setOnVectorSourceOnly(true));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_OPEN_ATTRIBUTES,
                     I18N.tr("Open the attributes"), I18N.tr("Open a spreadsheet view of the attributes."),
                     OrbisGISIcon.getIcon("openattributes"),
                     EventHandler.create(ActionListener.class,this, "onMenuShowTable"),null)
-                    .setOnRealLayerOnly(true));
+                    .setOnRealLayerOnly(true).setOnVectorSourceOnly(true));
             // DataSource Drawing Actions
             popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_EDIT_GEOMETRY,
                     I18N.tr("Switch to edition mode"), I18N.tr("The geometry edition toolbar will update this layer data source."),
@@ -210,11 +210,11 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_SIMPLE_EDITION,
                     I18N.tr("Simple style edition"), I18N.tr("Open the simple editor for SE styles"),
                     OrbisGISIcon.getIcon("pencil"),
-                    EventHandler.create(ActionListener.class, this, "onSimpleEditor"),null));
+                    EventHandler.create(ActionListener.class, this, "onSimpleEditor"),null).setOnSingleStyleSelection(true));
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_ADVANCED_EDITION,
                     I18N.tr("Advanced style edition"), I18N.tr("Open the advanced editor for SE styles"),
                     OrbisGISIcon.getIcon("pencil"),
-                    EventHandler.create(ActionListener.class, this, "onAdvancedEditor"),null));
+                    EventHandler.create(ActionListener.class, this, "onAdvancedEditor"),null).setOnSingleStyleSelection(true));
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_REMOVE_STYLE,
                     I18N.tr("Remove style"), I18N.tr("Remove this style from the associated layer."),
                     OrbisGISIcon.getIcon("remove"),
@@ -222,7 +222,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
             popupActions.addAction(new StyleAction(this, TocActionFactory.A_EXPORT_STYLE,
                     I18N.tr("Export style"), I18N.tr("Export this style from the associated layer."),
                     OrbisGISIcon.getIcon("add"),
-                    EventHandler.create(ActionListener.class, this, "onExportStyle"), null));
+                    EventHandler.create(ActionListener.class, this, "onExportStyle"), null).setOnSingleStyleSelection(true));
         }
         /**
          * User click on the save button

@@ -61,6 +61,7 @@ public class EditLayerSourceAction extends LayerAction {
         this.toc = toc;
         setLogicalGroup(TocActionFactory.G_DRAWING);
         setOnRealLayerOnly(true);
+        setOnVectorSourceOnly(true);
     }
 
     /**

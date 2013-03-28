@@ -28,6 +28,9 @@
  */
 package org.orbisgis.view.toc.actions;
 
+import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.toc.TocTreeNodeLayer;
@@ -43,11 +46,13 @@ import java.awt.event.ActionListener;
  */
 public class LayerAction extends DefaultAction {
     private TocExt toc;
+    private static Logger LOGGER = Logger.getLogger(LayerAction.class);
     private boolean singleSelection = false;
     private boolean onRealLayerOnly = false;
     private boolean onLayerWithRowSelection = false;
     private boolean onLayerGroup = false;
     private boolean onEmptySelection = false;
+    private boolean onVectorSourceOnly = false;
 
     /**
      * @param onLayerWithRowSelection If true this action is shown only if one of the selected layer contain a row selection.
@@ -55,6 +60,15 @@ public class LayerAction extends DefaultAction {
      */
     public LayerAction setOnLayerWithRowSelection(boolean onLayerWithRowSelection) {
         this.onLayerWithRowSelection = onLayerWithRowSelection;
+        return this;
+    }
+
+    /**
+     * @param onVectorSourceOnly If true, do not show this action if the layer source is not a vector
+     * @return this
+     */
+    public LayerAction setOnVectorSourceOnly(boolean onVectorSourceOnly) {
+        this.onVectorSourceOnly = onVectorSourceOnly;
         return this;
     }
 
@@ -118,18 +132,30 @@ public class LayerAction extends DefaultAction {
         int selectedLayersCount = 0;
         boolean rowSelection = false;
         boolean hasRealLayer = false;
+        boolean hasNonVectorSource = false;
         for(TocTreeNodeLayer layerNode : layerIterator) {
             selectedLayersCount++;
             ILayer layer = layerNode.getLayer();
-            if(onLayerWithRowSelection && !rowSelection && layer.getSelection().isEmpty()) {
-                rowSelection = true;
+            if(onLayerWithRowSelection && !rowSelection) {
+                rowSelection = !layer.getSelection().isEmpty();
             }
             hasRealLayer = !layerNode.getLayer().acceptsChilds();
+            if(onVectorSourceOnly && !hasNonVectorSource) {
+                DataSource dataSource = layer.getDataSource();
+                if(dataSource!=null) {
+                    try {
+                        hasNonVectorSource = !dataSource.isVectorial();
+                    } catch (DriverException ex) {
+                        LOGGER.debug(ex.getLocalizedMessage(),ex);
+                    }
+                }
+            }
         }
         return (!onLayerWithRowSelection || rowSelection) &&
                 (!singleSelection || selectedLayersCount<=1) &&
                 (!onRealLayerOnly || hasRealLayer) &&
                 (!onLayerGroup || !hasRealLayer) &&
-                (onEmptySelection || selectedLayersCount!=0) && super.isEnabled();
+                (!onVectorSourceOnly || !hasNonVectorSource) &&
+                ((onEmptySelection && toc.getTree().getSelectionCount()==0) || selectedLayersCount>=1) && super.isEnabled();
     }
 }

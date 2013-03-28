@@ -31,6 +31,11 @@ package org.orbisgis.view.toc.actions;
 import java.awt.event.ActionListener;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
+
+import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
+import org.gdms.driver.DriverException;
+import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.toc.TocTreeNodeStyle;
 import org.orbisgis.view.toc.TocTreeSelectionIterable;
@@ -42,7 +47,9 @@ import org.orbisgis.view.toc.ext.TocExt;
  */
 public class StyleAction extends DefaultAction {
     protected TocExt toc;
-
+    private boolean onSingleStyleSelection = false;
+    private boolean onVectorSourceOnly = true;
+    private static final Logger LOGGER = Logger.getLogger(StyleAction.class);
     /**
      * Show only on selected style
      * @param toc
@@ -58,10 +65,45 @@ public class StyleAction extends DefaultAction {
         this.toc = toc;
     }
 
+    /**
+     * @param onSingleStyleSelection If true, if there is more than one selected style then this action is not shown
+     * @return this
+     */
+    public StyleAction setOnSingleStyleSelection(boolean onSingleStyleSelection) {
+        this.onSingleStyleSelection = onSingleStyleSelection;
+        return this;
+    }
+
+    /**
+     * @param onVectorSourceOnly If one or more non vectorial style layer source is selected then this action is not shown
+     * @return this
+     */
+    public StyleAction setOnVectorSourceOnly(boolean onVectorSourceOnly) {
+        this.onVectorSourceOnly = onVectorSourceOnly;
+        return this;
+    }
+
     @Override
     public boolean isEnabled() {
         TocTreeSelectionIterable<TocTreeNodeStyle> styleIterator =
                 new TocTreeSelectionIterable<TocTreeNodeStyle>(toc.getTree().getSelectionPaths(),TocTreeNodeStyle.class);
-        return styleIterator.iterator().hasNext() && super.isEnabled();
+        int styleSelectionCount = 0;
+        boolean hasNonVectorSource = false;
+        for(TocTreeNodeStyle styleNode : styleIterator) {
+            styleSelectionCount++;
+            ILayer layer = styleNode.getStyle().getLayer();
+            if(onVectorSourceOnly && !hasNonVectorSource) {
+                DataSource source = layer.getDataSource();
+                try {
+                    if(source!=null) {
+                        hasNonVectorSource = !source.isVectorial();
+                    }
+                } catch (DriverException ex) {
+                    LOGGER.debug(ex.getLocalizedMessage(),ex);
+                }
+            }
+        }
+        return (!onSingleStyleSelection || styleSelectionCount==1) &&
+                (!onVectorSourceOnly || !hasNonVectorSource) && styleSelectionCount>=1 && super.isEnabled();
     }
 }
