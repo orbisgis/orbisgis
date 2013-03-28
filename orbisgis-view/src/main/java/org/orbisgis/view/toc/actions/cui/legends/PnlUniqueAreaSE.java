@@ -67,12 +67,15 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
          * be unique symbol (ie constant) Legends.
          */
         private UniqueSymbolArea uniqueArea;
+        private  boolean displayStroke;
+        private boolean displayBoxes;
 
-        /**
-         * Default constructor. UOM will be displayed.
+    /**
+         * Default constructor. UOM will be displayed as well as the stroke configuration and the check boxes used to
+         * enable or disable stroke and fill configuration panels.
          */
         public PnlUniqueAreaSE(){
-            this(true);
+            this(true, true, true);
         }
 
         /**
@@ -80,7 +83,20 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
          * @param uom If true, the uom will be displayed.
          */
         public PnlUniqueAreaSE(boolean uom){
+            this(uom, true, true);
+        }
+
+        /**
+         * Builds the panel.
+         * @param uom If true, the combo used to configure the symbolizer UOM will be displayed.
+         * @param displayStroke If true, the panel used to configure the symbol's stroke will be enabled.
+         * @param displayBoxes If true,  the two boxes that are used to enable and disable the stroke and fill of
+         *                     the symbol will be displayed.
+         */
+        public PnlUniqueAreaSE(boolean uom, boolean displayStroke, boolean displayBoxes){
             super(uom);
+            this.displayStroke = displayStroke;
+            this.displayBoxes = displayBoxes;
         }
 
         @Override
@@ -177,6 +193,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 gbc.gridy = 0;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 JPanel p1 = getLineBlock(uniqueArea.getPenStroke(), I18N.tr("Line configuration"));
+                setFieldState(displayStroke, p1);
                 glob.add(p1, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;
@@ -197,9 +214,9 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         /**
          * Builds the UI block used to configure the fill color of the
          * symbolizer.
-         * @param fillLegend
-         * @param title
-         * @return
+         * @param fillLegend  The fill we want to configure.
+         * @param title The title of the panel
+         * @return The JPanel that can be used to configure the way the area will be filled.
          */
         public JPanel getAreaBlock(ConstantSolidFill fillLegend, String title) {
                 if(getPreview() == null && getLegend() != null){
@@ -212,16 +229,18 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 GridLayout grid = new GridLayout(3,3);
                 grid.setVgap(5);
                 jp.setLayout(grid);
-                //The JCheckBox that can be used to enable/disable the fill conf.
-                jp.add(buildText(I18N.tr("Enable fill : ")));
-                areaCheckBox = new JCheckBox("");
-                ActionListener acl = EventHandler.create(ActionListener.class, this, "onClickAreaCheckBox");
-                areaCheckBox.addActionListener(acl);
-                jp.add(areaCheckBox);
-                //We must check the CheckBox according to leg, not to legend.
-                //legend is here mainly to let us fill safely all our
-                //parameters.
-                areaCheckBox.setSelected(fillLegend instanceof ConstantSolidFillLegend);
+                if(displayBoxes){
+                    //The JCheckBox that can be used to enable/disable the fill conf.
+                    jp.add(buildText(I18N.tr("Enable fill : ")));
+                    areaCheckBox = new JCheckBox("");
+                    ActionListener acl = EventHandler.create(ActionListener.class, this, "onClickAreaCheckBox");
+                    areaCheckBox.addActionListener(acl);
+                    jp.add(areaCheckBox);
+                    //We must check the CheckBox according to leg, not to legend.
+                    //legend is here mainly to let us fill safely all our
+                    //parameters.
+                    areaCheckBox.setSelected(fillLegend instanceof ConstantSolidFillLegend);
+                }
                 //Color
                 fill = getColorField(fl);
                 jp.add(buildText(I18N.tr("Fill color :")));
@@ -256,7 +275,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
 
         @Override
         protected boolean isLineOptional(){
-                return true;
+                return displayBoxes;
         }
 
         /**
@@ -264,10 +283,10 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
          * store the {@code ConstantSolidFillLegend} as a field before removing
          * it. This way, we will be able to use it back directly... unless the
          * editor as been closed before, of course.
-         * @param csfl
+         * @param fill The fill we want to keep in memory.
          */
-        protected void setSolidFillMemory(ConstantSolidFillLegend csfl){
-                solidFillMemory = csfl;
+        protected void setSolidFillMemory(ConstantSolidFillLegend fill){
+                solidFillMemory = fill;
         }
 
         private void setAreaFieldsState(boolean state){
