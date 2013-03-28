@@ -126,18 +126,28 @@ public class PluginHost {
         }
         return sb.toString();
     }
+
     /**
-     * Start the Framework
+     * Create a valid bundleContext, but do not start bundles
      */
-    public void start() {
+    public void init() {
         Map<String, String> frameworkConfig = new HashMap<String,String>();
         // Define service interface exported by Framework orbisgis-core
         frameworkConfig.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,getExtraPackage());
-        // Persistance data
+        // Persistence's data
         frameworkConfig.put(Constants.FRAMEWORK_STORAGE, pluginCacheFolder.getAbsolutePath());
         framework = createEmbeddedFramework(frameworkConfig);
         try {
             framework.init();
+        } catch(BundleException ex) {
+            LOGGER.error(ex.getLocalizedMessage(),ex);
+        }
+    }
+    /**
+     * Start the Framework
+     */
+    public void start() {
+        try {
             framework.start();  
             openTrackers();
         } catch(BundleException ex) {

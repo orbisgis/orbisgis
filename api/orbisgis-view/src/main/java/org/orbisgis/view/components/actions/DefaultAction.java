@@ -173,6 +173,11 @@ public class DefaultAction extends AbstractAction {
             return this;
         }
 
+        @Override
+        public String toString() {
+            return ActionTools.getMenuId(this);
+        }
+
         /**
          * If set, other actions with the same actionGroup will be unSet if this action is set active.
          * ButtonGroup will be created by ActionCommands.
