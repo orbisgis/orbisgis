@@ -38,7 +38,7 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 
 /**
- * Action shown only with layer selection.
+ * Layer related Actions.
  * @author Nicolas Fortin
  */
 public class LayerAction extends DefaultAction {
@@ -47,6 +47,7 @@ public class LayerAction extends DefaultAction {
     private boolean onRealLayerOnly = false;
     private boolean onLayerWithRowSelection = false;
     private boolean onLayerGroup = false;
+    private boolean onEmptySelection = false;
 
     /**
      * @param onLayerWithRowSelection If true this action is shown only if one of the selected layer contain a row selection.
@@ -58,8 +59,17 @@ public class LayerAction extends DefaultAction {
     }
 
     /**
-     * @param singleSelection If true this action is shown only if the user select one item,
-     *                        else the number of selected items does not change anything.
+     * @param onEmptySelection If true this Action will be visible without selection, default is false.
+     * @return this
+     */
+    public LayerAction setOnEmptySelection(boolean onEmptySelection) {
+        this.onEmptySelection = onEmptySelection;
+        return this;
+    }
+
+    /**
+     * @param singleSelection If true this action is shown only if the user select at most one layer,
+     *                        default is false
      * @return this
      */
     public LayerAction setSingleSelection(boolean singleSelection) {
@@ -78,7 +88,7 @@ public class LayerAction extends DefaultAction {
 
     /**
      * @param onRealLayerOnly If true this action is not shown if selected item is a layer collection.
-     * @return
+     * @return this
      */
     public LayerAction setOnRealLayerOnly(boolean onRealLayerOnly) {
         this.onRealLayerOnly = onRealLayerOnly;
@@ -108,22 +118,18 @@ public class LayerAction extends DefaultAction {
         int selectedLayersCount = 0;
         boolean rowSelection = false;
         boolean hasRealLayer = false;
-        boolean hasLayerGroup = false;
         for(TocTreeNodeLayer layerNode : layerIterator) {
             selectedLayersCount++;
             ILayer layer = layerNode.getLayer();
             if(onLayerWithRowSelection && !rowSelection && layer.getSelection().isEmpty()) {
                 rowSelection = true;
             }
-            if(onRealLayerOnly && !hasRealLayer) {
-                hasRealLayer = !layerNode.getLayer().acceptsChilds();
-            }
-            if(onLayerGroup && !hasLayerGroup) {
-                hasLayerGroup = layerNode.getLayer().acceptsChilds();
-            }
+            hasRealLayer = !layerNode.getLayer().acceptsChilds();
         }
         return (!onLayerWithRowSelection || rowSelection) &&
-                (!singleSelection || selectedLayersCount==1) &&
-                (!onRealLayerOnly || hasRealLayer) && selectedLayersCount!=0 && super.isEnabled();
+                (!singleSelection || selectedLayersCount<=1) &&
+                (!onRealLayerOnly || hasRealLayer) &&
+                (!onLayerGroup || !hasRealLayer) &&
+                (onEmptySelection || selectedLayersCount!=0) && super.isEnabled();
     }
 }
