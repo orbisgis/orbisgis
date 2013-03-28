@@ -43,10 +43,19 @@ public class BundleReference {
         private boolean autoInstall = true;
         private Version version;
 
-
+        /**
+         * Constructor
+         * @param artifactId Bundle symbolic name (Identifier of a Bundle is ArtifactId and Version)
+         */
         public BundleReference(String artifactId) {
                 this.artifactId = artifactId;
         }
+
+        /**
+         * Complete bundle identifier constructor
+         * @param artifactId Bundle symbolic name (Identifier of a Bundle is ArtifactId and Version)
+         * @param version Bundle version
+         */
         public BundleReference(String artifactId, Version version) {
             this.artifactId = artifactId;
             this.version = version;
