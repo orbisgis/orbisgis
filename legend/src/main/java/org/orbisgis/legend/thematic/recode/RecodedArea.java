@@ -156,12 +156,14 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
 
     @Override
     public Uom getStrokeUom() {
-        return areaSymbolizer.getStroke().getUom();
+        return ps == null ? Uom.PX : areaSymbolizer.getStroke().getUom();
     }
 
     @Override
     public void setStrokeUom(Uom u) {
-        areaSymbolizer.getStroke().setUom(u);
+        if(ps != null){
+            areaSymbolizer.getStroke().setUom(u);
+        }
     }
 
     @Override
