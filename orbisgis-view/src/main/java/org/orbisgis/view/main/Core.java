@@ -157,9 +157,11 @@ public class Core {
     private void startPluginHost() {
         try {
             pluginFramework = new PluginHost(new File(mainContext.getCoreWorkspace().getPluginCache()));
-            pluginFramework.start();
+            pluginFramework.init();
             // Install built-in bundles
             BundleFromResources.installResourceBundles(pluginFramework.getHostBundleContext());
+            // Start bundles
+            pluginFramework.start();
         } catch (Exception ex) {
             LOGGER.error(I18N.tr("Loading of plugins is aborted"),ex);
         }

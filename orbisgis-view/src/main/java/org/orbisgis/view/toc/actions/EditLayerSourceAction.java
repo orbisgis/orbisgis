@@ -32,7 +32,6 @@ package org.orbisgis.view.toc.actions;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.view.toc.Toc;
-import org.orbisgis.view.toc.ext.LayerAction;
 import org.orbisgis.view.toc.ext.TocActionFactory;
 
 import javax.swing.*;
@@ -47,10 +46,21 @@ public class EditLayerSourceAction extends LayerAction {
     private boolean enabledOnNotActiveLayer = false;
     private boolean enabledOnModifiedLayer = false;
 
+    /**
+     * Constructor
+     * @param toc Toc instance
+     * @param actionId Action identifier, should be unique for ActionCommands
+     * @param actionLabel I18N label short label
+     * @param actionToolTip I18N tool tip text
+     * @param icon Icon
+     * @param actionListener Fire the event to this listener
+     * @param keyStroke ShortCut for this action
+     */
     public EditLayerSourceAction(Toc toc, String actionId, String actionLabel, String actionToolTip, Icon icon, ActionListener actionListener, KeyStroke keyStroke) {
         super(toc,actionId, actionLabel, actionToolTip, icon, actionListener, keyStroke);
         this.toc = toc;
         setLogicalGroup(TocActionFactory.G_DRAWING);
+        setOnRealLayerOnly(true);
     }
 
     /**
@@ -97,7 +107,6 @@ public class EditLayerSourceAction extends LayerAction {
     }
     @Override
     public boolean isEnabled() {
-        return toc.getTree().getSelectionCount()==1 && checkDataSource()
-                && toc.isLayerSelection() && super.isEnabled();
+        return checkDataSource() && super.isEnabled();
     }
 }

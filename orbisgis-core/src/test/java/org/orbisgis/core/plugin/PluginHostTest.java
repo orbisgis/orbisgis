@@ -54,6 +54,7 @@ public class PluginHostTest extends AbstractTest {
     }
     private PluginHost startHost() {
         PluginHost host = new PluginHost(new File("target"+File.separator+"plugins"));
+        host.init();
         host.start();
         return host;
     }

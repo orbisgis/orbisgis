@@ -28,26 +28,40 @@
  */
 package org.orbisgis.view.toc.actions;
 
-import java.awt.event.*;
-import javax.swing.*;
-import org.orbisgis.view.components.actions.*;
-import org.orbisgis.view.toc.ext.*;
+import java.awt.event.ActionListener;
+import javax.swing.Icon;
+import javax.swing.KeyStroke;
+import org.orbisgis.view.components.actions.DefaultAction;
+import org.orbisgis.view.toc.TocTreeNodeStyle;
+import org.orbisgis.view.toc.TocTreeSelectionIterable;
+import org.orbisgis.view.toc.ext.TocExt;
 
 /**
- * Action shown only with layer selection.
+ * Action shown on style items
  * @author Nicolas Fortin
  */
-public class AddLayerGroupAction extends DefaultAction {
-    private TocExt toc;
+public class StyleAction extends DefaultAction {
+    protected TocExt toc;
 
-    public AddLayerGroupAction(TocExt toc, String actionId, String actionLabel, String actionToolTip, Icon icon, ActionListener actionListener, KeyStroke keyStroke) {
+    /**
+     * Show only on selected style
+     * @param toc
+     * @param actionId
+     * @param actionLabel
+     * @param actionToolTip
+     * @param icon
+     * @param actionListener
+     * @param keyStroke
+     */
+    public StyleAction(TocExt toc, String actionId, String actionLabel, String actionToolTip, Icon icon, ActionListener actionListener, KeyStroke keyStroke) {
         super(actionId, actionLabel, actionToolTip, icon, actionListener, keyStroke);
         this.toc = toc;
     }
 
     @Override
     public boolean isEnabled() {
-        return toc.getTree().getSelectionModel().isSelectionEmpty() ||
-                toc.hasLayerGroup() && toc.getTree().getSelectionCount()==1;
+        TocTreeSelectionIterable<TocTreeNodeStyle> styleIterator =
+                new TocTreeSelectionIterable<TocTreeNodeStyle>(toc.getTree().getSelectionPaths(),TocTreeNodeStyle.class);
+        return styleIterator.iterator().hasNext() && super.isEnabled();
     }
 }

@@ -26,9 +26,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.ext;
+package org.orbisgis.view.toc.actions;
 
+import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.view.components.actions.DefaultAction;
+import org.orbisgis.view.toc.TocTreeNodeLayer;
+import org.orbisgis.view.toc.TocTreeSelectionIterable;
+import org.orbisgis.view.toc.ext.TocExt;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -42,6 +46,7 @@ public class LayerAction extends DefaultAction {
     private boolean singleSelection = false;
     private boolean onRealLayerOnly = false;
     private boolean onLayerWithRowSelection = false;
+    private boolean onLayerGroup = false;
 
     /**
      * @param onLayerWithRowSelection If true this action is shown only if one of the selected layer contain a row selection.
@@ -63,6 +68,15 @@ public class LayerAction extends DefaultAction {
     }
 
     /**
+     * @param onLayerGroup Show only if there is at least one layer group selected
+     * @return this
+     */
+    public LayerAction setOnLayerGroup(boolean onLayerGroup) {
+        this.onLayerGroup = onLayerGroup;
+        return this;
+    }
+
+    /**
      * @param onRealLayerOnly If true this action is not shown if selected item is a layer collection.
      * @return
      */
@@ -71,6 +85,16 @@ public class LayerAction extends DefaultAction {
         return this;
     }
 
+    /**
+     * Constructor
+     * @param toc Toc instance
+     * @param actionId Action identifier, should be unique for ActionCommands
+     * @param actionLabel I18N label short label
+     * @param actionToolTip I18N tool tip text
+     * @param icon Icon
+     * @param actionListener Fire the event to this listener
+     * @param keyStroke ShortCut for this action
+     */
     public LayerAction(TocExt toc,String actionId, String actionLabel, String actionToolTip, Icon icon, ActionListener actionListener, KeyStroke keyStroke) {
         super(actionId, actionLabel, actionToolTip, icon, actionListener, keyStroke);
         this.toc = toc;
@@ -78,8 +102,28 @@ public class LayerAction extends DefaultAction {
 
     @Override
     public boolean isEnabled() {
-        return (!onLayerWithRowSelection || toc.hasLayerWithRowSelection()) &&
-                (!singleSelection || toc.getTree().getSelectionCount()==1) &&
-                (!onRealLayerOnly || !toc.hasLayerGroup()) && toc.isLayerSelection() && super.isEnabled();
+        // Create the layer iterator
+        TocTreeSelectionIterable<TocTreeNodeLayer> layerIterator =
+                new TocTreeSelectionIterable<TocTreeNodeLayer>(toc.getTree().getSelectionPaths(),TocTreeNodeLayer.class);
+        int selectedLayersCount = 0;
+        boolean rowSelection = false;
+        boolean hasRealLayer = false;
+        boolean hasLayerGroup = false;
+        for(TocTreeNodeLayer layerNode : layerIterator) {
+            selectedLayersCount++;
+            ILayer layer = layerNode.getLayer();
+            if(onLayerWithRowSelection && !rowSelection && layer.getSelection().isEmpty()) {
+                rowSelection = true;
+            }
+            if(onRealLayerOnly && !hasRealLayer) {
+                hasRealLayer = !layerNode.getLayer().acceptsChilds();
+            }
+            if(onLayerGroup && !hasLayerGroup) {
+                hasLayerGroup = layerNode.getLayer().acceptsChilds();
+            }
+        }
+        return (!onLayerWithRowSelection || rowSelection) &&
+                (!singleSelection || selectedLayersCount==1) &&
+                (!onRealLayerOnly || hasRealLayer) && selectedLayersCount!=0 && super.isEnabled();
     }
 }
