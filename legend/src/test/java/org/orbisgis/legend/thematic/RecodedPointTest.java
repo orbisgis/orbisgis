@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.analyzer.symbolizers.PointSymbolizerAnalyzer;
@@ -189,6 +190,22 @@ public class RecodedPointTest extends AnalyzerTest {
         assertTrue(ra.getFallbackParameters().getLineWidth().equals(0.0));
         assertTrue(ra.getFallbackParameters().getLineDash().isEmpty());
         assertTrue(ra.getFallbackParameters().getLineOpacity().equals(0.0));
+    }
+    @Test
+    public void testFeedConstant() throws Exception{
+        PointSymbolizer ps = new PointSymbolizer();
+        RecodedPoint rp = new RecodedPoint(ps);
+        PointParameters ppOrig = rp.getFallbackParameters();
+        PointParameters ppNew = new PointParameters(ppOrig.getLineColor(),ppOrig.getLineOpacity(), ppOrig.getLineWidth(),
+                    ppOrig.getLineDash(), ppOrig.getFillColor(), ppOrig.getFillOpacity(), ppOrig.getWidth(),
+                    ppOrig.getHeight(),"SQUARE");
+        PointParameters ppNewClone = new PointParameters(ppOrig.getLineColor(),ppOrig.getLineOpacity(), ppOrig.getLineWidth(),
+                    ppOrig.getLineDash(), ppOrig.getFillColor(), ppOrig.getFillOpacity(), ppOrig.getWidth(),
+                    ppOrig.getHeight(),"SQUARE");
+        rp.put("youhou", ppNew);
+        assertTrue(rp.get("youhou").equals(ppNewClone));
+        MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getChildren().get(0);
+        assertTrue(mg.getWkn() instanceof Recode2String);
     }
 
     private PointSymbolizer getPointSymbolizer() throws Exception{

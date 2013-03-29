@@ -37,13 +37,17 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.recode.*;
+import org.orbisgis.legend.structure.recode.type.TypeEvent;
+import org.orbisgis.legend.structure.recode.type.TypeListener;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
@@ -100,6 +104,13 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters> impleme
             throw new UnsupportedOperationException("Can't build a RecodedLine with such a Fill: "+originalFill.getClass().getName());
         }
         wkn = new RecodedString(mg.getWkn());
+        TypeListener tl = new TypeListener() {
+            @Override
+            public void typeChanged(TypeEvent te) {
+                replaceWkn(te.getSource().getParameter());
+            }
+        };
+        wkn.addListener(tl);
         ViewBox vb = mg.getViewBox();
         RealParameter rpw = vb.getWidth();
         RealParameter rph = vb.getHeight();
@@ -123,7 +134,21 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters> impleme
         }
 
         width = new RecodedReal(rpw);
+        TypeListener tlw = new TypeListener() {
+            @Override
+            public void typeChanged(TypeEvent te) {
+                replaceMarkWidth(te.getSource().getParameter());
+            }
+        };
+        width.addListener(tlw);
         height = new RecodedReal(rph);
+        TypeListener tlh = new TypeListener() {
+            @Override
+            public void typeChanged(TypeEvent te) {
+                replaceMarkHeight(te.getSource().getParameter());
+            }
+        };
+        height.addListener(tlh);
         FieldAggregatorVisitor fav = new FieldAggregatorVisitor();
         applyGlobalVisitor(fav);
         String f = getLookupFieldName();
@@ -131,6 +156,42 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters> impleme
             SetFieldVisitor sfv = new SetFieldVisitor(f);
             applyGlobalVisitor(sfv);
         }
+    }
+
+
+    /**
+     * Replace the {@code StringParameter} embedded in the inner MarkGraphic with {@code sp}. This method is called
+     * when a type change occurs in the associated {@link RecodedString} happens.
+     * @param sp The new {@code StringParameter}
+     * @throws ClassCastException if sp is not a {@code StringParameter}
+     */
+    public void replaceWkn(SeParameter sp){
+        MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getChildren().get(0);
+        mg.setWkn((StringParameter) sp);
+    }
+
+
+    /**
+     * Replace the {@code RealParameter} embedded in the inner MarkGraphic with {@code sp}. This method is called
+     * when a type change occurs in the associated {@link RecodedReal} happens.
+     * @param sp The new {@code RealParameter}
+     * @throws ClassCastException if sp is not a {@code StringParameter}
+     */
+    public void replaceMarkWidth(SeParameter sp){
+        MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getChildren().get(0);
+        mg.getViewBox().setWidth((RealParameter) sp);
+    }
+
+
+    /**
+     * Replace the {@code RealParameter} embedded in the inner MarkGraphic with {@code sp}. This method is called
+     * when a type change occurs in the associated {@link RecodedReal} happens.
+     * @param sp The new {@code RealParameter}
+     * @throws ClassCastException if sp is not a {@code StringParameter}
+     */
+    public void replaceMarkHeight(SeParameter sp){
+        MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getChildren().get(0);
+        mg.getViewBox().setHeight((RealParameter) sp);
     }
 
     @Override
