@@ -40,6 +40,7 @@ import org.orbisgis.core.log.FailErrorManager;
 import org.orbisgis.core.renderer.se.Style;
 
 public abstract class AnalyzerTest {
+        public final static Double EPS = 0.00001;
         
         protected FailErrorManager failErrorManager;
         private Appender consoleAppender;

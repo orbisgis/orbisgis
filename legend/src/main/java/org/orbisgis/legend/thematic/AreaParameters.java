@@ -64,6 +64,8 @@ public class AreaParameters extends LineParameters {
      *           interval.
      * @param lineWidth  The width, set to 0.25 if null.
      * @param lineDash  The dash pattern, set to the empty string if null or not valid.
+     * @param fillCol the colour used to fill the area
+     * @param fillOp the opacity of the fill
      */
     public AreaParameters(Color lineCol,
                           Double lineOp,

@@ -42,7 +42,6 @@ import static org.junit.Assert.assertTrue;
  * @author alexis
  */
 public class AreaParametersTest extends AnalyzerTest {
-    private final static Double EPS = 0.00001;
 
     @Test
     public void testInstanciation() throws Exception {
