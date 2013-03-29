@@ -74,21 +74,28 @@ public class SelectionTool extends AbstractSelectionTool {
 
 	@Override
 	protected ILayer getLayer(MapContext mc) {
-		return mc.getSelectedLayers()[0];
+        ILayer selectedLayer = null;
+        if(mc.getSelectedLayers().length == 1) {
+            selectedLayer = mc.getSelectedLayers()[0];
+        }
+        if(mc.getSelectedStyles().length != 0) {
+            selectedLayer = mc.getSelectedStyles()[0].getLayer();
+        }
+        return selectedLayer;
 	}
 
 	@Override
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		if (vc.getSelectedLayers().length == 1) {
+        ILayer selectedLayer = getLayer(vc);
+		if (selectedLayer!=null) {
 			try {
-                    if (vc.getSelectedLayers()[0].isVectorial()) {
-                            return vc.getSelectedLayers()[0].isVisible();
+                    if (selectedLayer.isVectorial()) {
+                            return selectedLayer.isVisible();
                     }
 			} catch (DriverException e) {
 				return false;
+		    }
 		}
-		}
-
 		return false;
 	}
 

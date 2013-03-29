@@ -374,7 +374,8 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
         // Selection tools
         actions.addAction(new ActionAutomaton(MapEditorAction.A_SELECTION,new SelectionTool(),this)
-                .addTrackedMapContextProperty(MapContext.PROP_SELECTEDLAYERS).setLogicalGroup("selection"));
+                .addTrackedMapContextProperty(MapContext.PROP_SELECTEDLAYERS)
+                .addTrackedMapContextProperty(MapContext.PROP_SELECTEDSTYLES).setLogicalGroup("selection"));
         actions.addAction(new DefaultAction(MapEditorAction.A_CLEAR_SELECTION, I18N.tr("Clear selection"),
                 OrbisGISIcon.getIcon("edit-clear"),EventHandler.create(ActionListener.class,this,"onClearSelection"))
                 .setToolTipText(I18N.tr("Clear all selected geometries of all layers")).setLogicalGroup("selection"));

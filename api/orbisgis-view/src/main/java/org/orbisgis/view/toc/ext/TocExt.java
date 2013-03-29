@@ -37,26 +37,6 @@ import javax.swing.*;
 public interface TocExt {
 
     /**
-     * @return True if one of the selected layer contain a row selection.
-     */
-    boolean hasLayerWithRowSelection();
-
-    /**
-     * @return True if one of the selected layer is a layer collection item.
-     */
-    boolean hasLayerGroup();
-
-    /**
-     * @return True if the selected item is a Layer.
-     */
-    boolean isLayerSelection();
-
-    /**
-     * @return True if the selected item is a Legend
-     */
-    boolean isStyleSelection();
-
-    /**
      * @return The JTree component.
      */
     JTree getTree();

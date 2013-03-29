@@ -125,10 +125,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         private PropertyChangeListener tableEditableClose = EventHandler.create(PropertyChangeListener.class,this,"onTableEditableClose","source");
         private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified","");
         private Action saveAction;
-        // Selection state cache, reset values before showing popup.
-        private Map<String,Boolean> selectionState = new HashMap<String, Boolean>();
-        private static final String HAS_LAYER_WITH_ROW_SELECTION = "HAS_LAYER_WITH_ROW_SELECTION";
-        private static final String HAS_LAYER_GROUP = "HAS_LAYER_GROUP"; //One of the selected item is a layer group
         // Actions containers
         private ActionCommands popupActions = new ActionCommands();
         private PropertyChangeListener mapContextPropertyChange = EventHandler.create(PropertyChangeListener.class,this,"onMapContextPropertyChange","");
@@ -180,17 +176,17 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     I18N.tr("Import style"), I18N.tr("Import a style from a file."),
                     OrbisGISIcon.getIcon("add"),
                     EventHandler.create(ActionListener.class, this, "onImportStyle"),null)
-                    .setSingleSelection(true).setOnRealLayerOnly(true));
+                    .setSingleSelection(true).setOnRealLayerOnly(true).setOnVectorSourceOnly(true));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_ADD_STYLE,
                     I18N.tr("Add style"), I18N.tr("Add a new style."),
                     OrbisGISIcon.getIcon("add"),
                     EventHandler.create(ActionListener.class, this, "onAddStyle"),null)
-                    .setSingleSelection(true).setOnRealLayerOnly(true));
+                    .setSingleSelection(true).setOnRealLayerOnly(true).setOnVectorSourceOnly(true));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_OPEN_ATTRIBUTES,
                     I18N.tr("Open the attributes"), I18N.tr("Open a spreadsheet view of the attributes."),
                     OrbisGISIcon.getIcon("openattributes"),
                     EventHandler.create(ActionListener.class,this, "onMenuShowTable"),null)
-                    .setOnRealLayerOnly(true));
+                    .setOnRealLayerOnly(true).setOnVectorSourceOnly(true));
             // DataSource Drawing Actions
             popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_EDIT_GEOMETRY,
                     I18N.tr("Switch to edition mode"), I18N.tr("The geometry edition toolbar will update this layer data source."),
@@ -205,19 +201,20 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     OrbisGISIcon.getIcon("save"),
                     EventHandler.create(ActionListener.class,this, "onMenuCommitDataSource"),null).setEnabledOnModifiedLayer(true));
 
-            popupActions.addAction(new AddLayerGroupAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
+            popupActions.addAction(new LayerAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
                     I18N.tr("Add layer group"),I18N.tr("Add a the layer group to the map context"),
                     OrbisGISIcon.getIcon("add"),
-                    EventHandler.create(ActionListener.class, this, "onAddGroup"),null));
+                    EventHandler.create(ActionListener.class, this, "onAddGroup"),null)
+                    .setOnLayerGroup(true).setSingleSelection(true).setOnEmptySelection(true));
             // Style actions
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_SIMPLE_EDITION,
                     I18N.tr("Simple style edition"), I18N.tr("Open the simple editor for SE styles"),
                     OrbisGISIcon.getIcon("pencil"),
-                    EventHandler.create(ActionListener.class, this, "onSimpleEditor"),null));
+                    EventHandler.create(ActionListener.class, this, "onSimpleEditor"),null).setOnSingleStyleSelection(true));
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_ADVANCED_EDITION,
                     I18N.tr("Advanced style edition"), I18N.tr("Open the advanced editor for SE styles"),
                     OrbisGISIcon.getIcon("pencil"),
-                    EventHandler.create(ActionListener.class, this, "onAdvancedEditor"),null));
+                    EventHandler.create(ActionListener.class, this, "onAdvancedEditor"),null).setOnSingleStyleSelection(true));
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_REMOVE_STYLE,
                     I18N.tr("Remove style"), I18N.tr("Remove this style from the associated layer."),
                     OrbisGISIcon.getIcon("remove"),
@@ -225,7 +222,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
             popupActions.addAction(new StyleAction(this, TocActionFactory.A_EXPORT_STYLE,
                     I18N.tr("Export style"), I18N.tr("Export this style from the associated layer."),
                     OrbisGISIcon.getIcon("add"),
-                    EventHandler.create(ActionListener.class, this, "onExportStyle"), null));
+                    EventHandler.create(ActionListener.class, this, "onExportStyle"), null).setOnSingleStyleSelection(true));
         }
         /**
          * User click on the save button
@@ -522,27 +519,11 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 }
         }
 
-        public ArrayList<ILayer> getSelectedLayers() {
-                return getSelectedLayers(tree.getSelectionPaths());
-        }
-
         /**
-         * Cast all ILayer elements of provided tree paths
-         *
-         * @param selectedPaths Internal Tree path
-         * @return All ILayer instances of provided path
+         * @return A list of selected layers, same as {@link org.orbisgis.core.layerModel.MapContext#getSelectedLayers()}
          */
-        private ArrayList<ILayer> getSelectedLayers(TreePath[] selectedPaths) {
-                ArrayList<ILayer> layers = new ArrayList<ILayer>();
-                if (selectedPaths != null) {
-                        for (int i = 0; i < selectedPaths.length; i++) {
-                                Object lastPathComponent = selectedPaths[i].getLastPathComponent();
-                                if (lastPathComponent instanceof TocTreeNodeLayer) {
-                                        layers.add(((TocTreeNodeLayer) lastPathComponent).getLayer());
-                                }
-                        }
-                }
-                return layers;
+        public List<ILayer> getSelectedLayers() {
+                return Arrays.asList(mapContext.getSelectedLayers());
         }
 
         /**
@@ -702,6 +683,22 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         }
 
         /**
+         * Get the path for a node
+         * @param node
+         * @return TreePath to use with this JTree
+         */
+        private TreePath getPathFromNode(TreeNode node) {
+            List<Object> nodeHierarchy = new LinkedList<Object>();
+            nodeHierarchy.add(node);
+            TreeNode parent = node.getParent();
+            while(parent!=null) {
+                nodeHierarchy.add(parent);
+                parent = parent.getParent();
+            }
+            Collections.reverse(nodeHierarchy);
+            return new TreePath(nodeHierarchy.toArray(new Object[nodeHierarchy.size()]));
+        }
+        /**
          * A property of the MapContext has been updated
          * @param evt Event information
          */
@@ -721,69 +718,8 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         }
 
         @Override
-        public boolean isLayerSelection() {
-            Object selected = tree.getLastSelectedPathComponent();
-            return selected!=null && selected instanceof TocTreeNodeLayer;
-        }
-
-        @Override
         public JTree getTree() {
             return tree;
-        }
-
-        @Override
-        public boolean isStyleSelection() {
-            Object selected = tree.getLastSelectedPathComponent();
-            return selected!=null && selected instanceof TocTreeNodeStyle;
-        }
-
-        @Override
-        public boolean hasLayerWithRowSelection() {
-            Boolean hasLayerWithRowSelection = selectionState.get(HAS_LAYER_WITH_ROW_SELECTION);
-            // If the value has not been cached
-            if(hasLayerWithRowSelection==null) {
-                hasLayerWithRowSelection = false;
-                // Fetch selected layers for Row selection
-                TreePath[] selectedItems = tree.getSelectionPaths();
-                if(selectedItems!=null) {
-                    for (TreePath path : selectedItems) {
-                        Object treeNode = path.getLastPathComponent();
-                        if (treeNode instanceof TocTreeNodeLayer) {
-                            ILayer l = ((TocTreeNodeLayer) treeNode).getLayer();
-                            if (!l.getSelection().isEmpty()) {
-                                hasLayerWithRowSelection = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                selectionState.put(HAS_LAYER_WITH_ROW_SELECTION,hasLayerWithRowSelection);
-            }
-            return hasLayerWithRowSelection;
-        }
-        @Override
-        public boolean hasLayerGroup() {
-            Boolean hasLayerGroup = selectionState.get(HAS_LAYER_GROUP);
-            // If the value has not been cached
-            if(hasLayerGroup==null) {
-                hasLayerGroup = false;
-                // Fetch selected layers for Row selection
-                TreePath[] selectedItems = tree.getSelectionPaths();
-                if(selectedItems!=null) {
-                    for (TreePath path : selectedItems) {
-                        Object treeNode = path.getLastPathComponent();
-                        if (treeNode instanceof TocTreeNodeLayer) {
-                            ILayer l = ((TocTreeNodeLayer) treeNode).getLayer();
-                            if (l instanceof LayerCollection) {
-                                hasLayerGroup = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                selectionState.put(HAS_LAYER_GROUP,hasLayerGroup);
-            }
-            return hasLayerGroup;
         }
 
         /**
@@ -1314,7 +1250,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
 
                 @Override
                 public void run(ProgressMonitor pm) {
-
+                        List<TreePath> dropPaths = new ArrayList<TreePath>(draggedResources.size());
                         DataManager dataManager = Services.getService(DataManager.class);
                         for (int i = 0; i < draggedResources.size(); i++) {
                                 String sourceName = draggedResources.get(i).getId();
@@ -1325,12 +1261,17 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                         try {
                                                     ILayer nl = mapContext.createLayer(dataManager.getDataSource(sourceName));
                                                     dropNode.insertLayer(nl, dropIndex);
+                                                    dropPaths.add(getPathFromNode(new TocTreeNodeLayer(nl)));
                                         } catch (Exception e) {
                                                 throw new RuntimeException(I18N.tr("Cannot add the layer to the destination"), e);
                                         }
                                 }
                         }
                         treeModel.nodeChanged(new TocTreeNodeLayer(dropNode));
+                        // Select the new layer(s) if there is no selection
+                        if(tree.getSelectionCount()==0) {
+                            tree.setSelectionPaths(dropPaths.toArray(new TreePath[dropPaths.size()]));
+                        }
                 }
 
                 @Override
@@ -1439,8 +1380,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                 } else {
                                         tree.setSelectionPath(path);
                                 }
-                                //Clear selection state cache (optimisation)
-                                selectionState.clear();
                                 //Show popup
                                 JPopupMenu menu = new JPopupMenu();
                                 popupActions.copyEnabledActions(menu);

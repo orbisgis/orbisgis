@@ -28,6 +28,8 @@
  */
 package org.orbisgis.core.plugin;
 
+import org.osgi.framework.Version;
+
 /**
  * Built-in bundle reference. Reference to a bundle stored as a Jar ressource.
  * Used to install minimal bundle of OrbisGIS.
@@ -39,11 +41,31 @@ public class BundleReference {
         private String bundleUri;
         private boolean autoStart = true;
         private boolean autoInstall = true;
+        private Version version;
 
+        /**
+         * Constructor
+         * @param artifactId Bundle symbolic name (Identifier of a Bundle is ArtifactId and Version)
+         */
         public BundleReference(String artifactId) {
                 this.artifactId = artifactId;
         }
 
+        /**
+         * Complete bundle identifier constructor
+         * @param artifactId Bundle symbolic name (Identifier of a Bundle is ArtifactId and Version)
+         * @param version Bundle version
+         */
+        public BundleReference(String artifactId, Version version) {
+            this.artifactId = artifactId;
+            this.version = version;
+        }
+
+        /**
+         *
+         * @param artifactId Bundle symbolic name (Identifier of a Bundle is ArtifactId and Version)
+         * @param bundleUri Representation of the URI, the validation of the URI is done later.
+         */
         public BundleReference(String artifactId, String bundleUri) {
                 this.artifactId = artifactId;
                 this.bundleUri = bundleUri;
@@ -109,5 +131,21 @@ public class BundleReference {
          */
         public String getArtifactId() {
                 return artifactId;
+        }
+
+        /**
+         * The bundle symbolic name
+         * @return
+         */
+        public String getSymbolicName() {
+            return artifactId;
+        }
+
+        /**
+         * Get the bundle Version
+         * @return Version instance or null
+         */
+        public Version getVersion() {
+            return version;
         }
 }

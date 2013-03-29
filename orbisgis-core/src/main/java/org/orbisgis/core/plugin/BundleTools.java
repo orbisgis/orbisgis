@@ -166,14 +166,24 @@ public class BundleTools {
 
             // Keep a reference to bundles in the framework cache
             for (Bundle bundle : hostBundle.getBundles()) {
-                installedBundleMap.put(bundle.getLocation(), bundle);
+                String key = bundle.getSymbolicName()+"_"+bundle.getVersion();
+                installedBundleMap.put(key, bundle);
             }
 
             //
             final List<Bundle> installedBundleList = new LinkedList<Bundle>();
             for (File jarFile : jarList) {
+                // Extract version and symbolic name of the bundle
+                String key="";
+                try {
+                    List<PackageDeclaration> packageDeclarations = new ArrayList<PackageDeclaration>();
+                    BundleReference jarRef = parseJarManifest(jarFile, packageDeclarations);
+                    key = jarRef.getArtifactId()+"_"+jarRef.getVersion();
+                } catch (IOException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(),ex);
+                }
                 // Retrieve from the framework cache the bundle at this location
-                Bundle b = installedBundleMap.remove(jarFile.toURI().toString());
+                Bundle b = installedBundleMap.remove(key);
 
                 // Read Jar manifest without installing it
                 BundleReference reference = new BundleReference(""); // Default deploy
@@ -193,6 +203,14 @@ public class BundleTools {
                 }
 
                 try {
+                    if(b!=null) {
+                        String installedBundleLocation = b.getLocation();
+                        if(!installedBundleLocation.equals(jarFile.toURI().toString())) {
+                            //if the location is not the same reinstall it
+                            b.uninstall();
+                            b=null;
+                        }
+                    }
                     // If the bundle is not in the framework cache install it
                     if ((b == null) && reference.isAutoInstall()) {
                         b = hostBundle.installBundle(jarFile.toURI().toString());
@@ -298,9 +316,15 @@ public class BundleTools {
      * @param packages
      * @throws IOException
      */
-    public static void parseManifest(Manifest manifest, List<PackageDeclaration> packages) throws IOException {
+    public static BundleReference parseManifest(Manifest manifest, List<PackageDeclaration> packages) throws IOException {
         Attributes attributes = manifest.getMainAttributes();
         String exports = attributes.getValue(Constants.EXPORT_PACKAGE);
+        String versionProperty = attributes.getValue(Constants.BUNDLE_VERSION_ATTRIBUTE);
+        Version version=null;
+        if(versionProperty!=null) {
+            version = new Version(versionProperty);
+        }
+        String symbolicName = attributes.getValue(Constants.BUNDLE_SYMBOLICNAME);
         org.apache.felix.framework.Logger logger = new org.apache.felix.framework.Logger();
         // Use Apache Felix to parse the Manifest Export header
         List<BundleCapability> exportsCapability = ManifestParser.parseExportHeader(logger,null,exports,"0",
@@ -313,6 +337,7 @@ public class BundleTools {
                         (Version)attr.get(Constants.VERSION_ATTRIBUTE)));
             }
         }
+        return new BundleReference(symbolicName,version);
     }
     private static void parseDirectoryManifest(File rootPath, File path, List<PackageDeclaration> packages) throws SecurityException {
         File[] files = path.listFiles();
@@ -341,9 +366,9 @@ public class BundleTools {
         }
     }
 
-    private static void parseJarManifest(File jarFilePath, List<PackageDeclaration> packages) throws IOException {
+    private static BundleReference parseJarManifest(File jarFilePath, List<PackageDeclaration> packages) throws IOException {
         JarFile jar = new JarFile(jarFilePath);
-        parseManifest(jar.getManifest(), packages);
+        return parseManifest(jar.getManifest(), packages);
     }
     private static Set<String> getAllPackages() {
         Set<String> packages = new HashSet<String>();
