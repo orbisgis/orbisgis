@@ -42,6 +42,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
+import org.orbisgis.legend.thematic.recode.RecodedPoint;
 
 import java.util.List;
 
@@ -82,7 +83,7 @@ public class PointSymbolizerAnalyzer extends SymbolizerTypeAnalyzer {
                     } else {
                             SeParameter p = an.get(0);
                             if(p instanceof Recode){
-                                    throw new UnsupportedOperationException("Not yet !");
+                                    return new RecodedPoint(sym);
                             } else if(p instanceof Categorize){
                                     throw new UnsupportedOperationException("Not yet !");
                             } else if(p instanceof RealParameter && validateInterpolateForProportionalPoint((RealParameter) p)){
