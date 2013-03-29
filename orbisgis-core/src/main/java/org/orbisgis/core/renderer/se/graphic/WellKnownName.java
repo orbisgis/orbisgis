@@ -121,11 +121,12 @@ public enum WellKnownName implements MarkGraphicSource {
 
     /**
      * Build a new {@code WellKnownName} from a {@code String token}.
-     * @param token
+     * @param tok
      * @return 
-     * A {@code WellKnownName} value.
+     * A {@code WellKnownName} value. Defaults to {@link #CIRCLE} if the name does not match anything.
      */
-    public static WellKnownName fromString(String token){
+    public static WellKnownName fromString(String tok){
+        String token = tok == null ? "" : tok;
         if (token.equalsIgnoreCase(I18n.marktr("SQUARE"))){
             return SQUARE;
         } else if (token.equalsIgnoreCase(I18n.marktr("HALFCIRCLE"))){
