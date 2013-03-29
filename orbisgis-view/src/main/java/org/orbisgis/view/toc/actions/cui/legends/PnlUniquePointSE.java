@@ -67,6 +67,25 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         private ContainerItemProperties[] uoms;
 
         /**
+         * Default constructor. UOM will be displayed as well as the stroke configuration and the check boxes used to
+         * enable or disable stroke and fill configuration panels.
+         */
+        public PnlUniquePointSE(){
+            this(true, true, true);
+        }
+
+        /**
+         * Builds the panel.
+         * @param uom If true, the combo used to configure the symbolizer UOM will be displayed.
+         * @param displayStroke If true, the panel used to configure the symbol's stroke will be enabled.
+         * @param displayBoxes If true,  the two boxes that are used to enable and disable the stroke and fill of
+         *                     the symbol will be displayed.
+         */
+        public PnlUniquePointSE(boolean uom, boolean displayStroke, boolean displayBoxes){
+            super(uom,displayStroke,displayBoxes);
+        }
+
+        /**
          * Here we can put all the Legend instances we want... but they have to
          * be unique symbol (ie constant) Legends.
          */

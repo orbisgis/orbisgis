@@ -70,7 +70,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         private  boolean displayStroke;
         private boolean displayBoxes;
 
-    /**
+        /**
          * Default constructor. UOM will be displayed as well as the stroke configuration and the check boxes used to
          * enable or disable stroke and fill configuration panels.
          */
