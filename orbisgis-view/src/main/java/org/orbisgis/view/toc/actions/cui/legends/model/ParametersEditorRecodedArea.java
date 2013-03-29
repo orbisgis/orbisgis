@@ -53,9 +53,10 @@ public class ParametersEditorRecodedArea extends ParametersEditorUniqueValue<Are
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().equals(EDIT)){
             RecodedArea rl = (RecodedArea) getUniqueValue();
-            AreaParameters lp = rl.get(getCellEditorValue());
+            String key = (String) getCellEditorValue();
+            AreaParameters lp = rl.get(key);
             UniqueSymbolArea usl = new UniqueSymbolArea(lp);
-            PnlUniqueAreaSE pls = new PnlUniqueAreaSE(false);
+            PnlUniqueAreaSE pls = new PnlUniqueAreaSE(false,rl.isStrokeEnabled(), false);
             pls.setLegend(usl);
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 AreaParameters edited = usl.getAreaParameters();
