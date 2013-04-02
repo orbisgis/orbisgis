@@ -31,6 +31,7 @@ package org.orbisgis.view.toc.actions.cui.legends;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
+import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
@@ -82,40 +83,54 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         JPanel glob = new JPanel();
         GridBagLayout grid = new GridBagLayout();
         glob.setLayout(grid);
+        int i = 0;
         //Field chooser
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = i;
+        i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getFieldLine(), gbc);
         //Fallback symbol
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = i;
+        i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getFallback(), gbc);
         //UOM
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = i;
+        i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getUOMCombo(),gbc);
+        //on vertex ?
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = i;
+        i++;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        glob.add(pnlOnVertex(),gbc);
         //Classification generator
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = i;
+        i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getCreateClassificationPanel(), gbc);
         //Classification generator
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = i;
+        i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getEnableStrokeCheckBox(), gbc);
         //Table for the recoded configurations
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = i;
+        i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getTablePanel(), gbc);
         this.add(glob);
@@ -149,6 +164,11 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         if(leg.isStrokeEnabled()){
             usa.setStrokeUom(leg.getStrokeUom());
         }
+        if(leg.isOnVertex()){
+            usa.setOnVertex();
+        } else {
+            usa.setOnCentroid();
+        }
         PnlUniquePointSE pls = new PnlUniquePointSE(false, leg.isStrokeEnabled(), false);
         pls.setLegend(usa);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
@@ -160,6 +180,58 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         } else {
             return lps;
         }
+    }
+
+    /**
+     * Returns the panel used to configure if the symbol must be drawn on vertex or on centroid.
+     * @return
+     */
+    private JPanel pnlOnVertex(){
+        JPanel jp = new JPanel();
+        RecodedPoint point = (RecodedPoint) getLegend();
+        JRadioButton bVertex = new JRadioButton(I18N.tr("On vertex"));
+        JRadioButton bCentroid = new JRadioButton(I18N.tr("On centroid"));
+        ButtonGroup bg = new ButtonGroup();
+        bg.add(bVertex);
+        bg.add(bCentroid);
+        ActionListener actionV = EventHandler.create(ActionListener.class, point, "setOnVertex");
+        ActionListener actionC = EventHandler.create(ActionListener.class, point, "setOnCentroid");
+        ActionListener actionRefV = EventHandler.create(ActionListener.class, this, "onClickVertex");
+        ActionListener actionRefC= EventHandler.create(ActionListener.class, this, "onClickCentroid");
+        bVertex.addActionListener(actionV);
+        bVertex.addActionListener(actionRefV);
+        bCentroid.addActionListener(actionC);
+        bCentroid.addActionListener(actionRefC);
+        bVertex.setSelected(((PointSymbolizer)point.getSymbolizer()).isOnVertex());
+        bCentroid.setSelected(!((PointSymbolizer)point.getSymbolizer()).isOnVertex());
+        jp.add(bVertex);
+        jp.add(bCentroid);
+        return jp;
+    }
+
+    /**
+     * called when the user wants to put the points on the vertices of the geometry.
+     */
+    public void onClickVertex(){
+        changeOnVertex(true);
+    }
+
+    /**
+     * called when the user wants to put the points on the centroid of the geometry.
+     */
+    public void onClickCentroid(){
+        changeOnVertex(false);
+    }
+
+    /**
+     * called when the user wants to put the points on the vertices or ont the centroid of the geometry.
+     * @param b If true, the points are set on the vertices.
+     */
+    private void changeOnVertex(boolean b){
+        CanvasSE prev = getPreview();
+        ((PointSymbolizer)prev.getSymbol()).setOnVertex(b);
+        prev.imageChanged();
+        updateTable();
     }
 
     @Override
@@ -313,7 +385,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         JComboBox jcb = getLineUomCombo(((RecodedPoint)getLegend()));
         ActionListener aclUom = EventHandler.create(ActionListener.class, this, "updatePreview", "source");
         jcb.addActionListener(aclUom);
-        pan.add(new JLabel(I18N.tr("Unit of measure :")));
+        pan.add(new JLabel(I18N.tr("Unit of measure - width :")));
         pan.add(jcb);
         return pan;
     }
@@ -339,9 +411,10 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     public void onEnableStroke(){
         RecodedPoint ra = (RecodedPoint) getLegend();
         ra.setStrokeEnabled(strokeBox.isSelected());
-        getPreview().setSymbol(new UniqueSymbolPoint(ra.getFallbackParameters()).getSymbolizer());
+        PointSymbolizer ps = (PointSymbolizer) new UniqueSymbolPoint(ra.getFallbackParameters()).getSymbolizer();
+        ps.setOnVertex(ra.isOnVertex());
+        getPreview().setSymbol(ps);
         getPreview().imageChanged();
-        TableModelUniqueValue model = (TableModelUniqueValue) getJTable().getModel();
-        model.fireTableDataChanged();
+        updateTable();
     }
 }

@@ -121,6 +121,7 @@ public class CanvasSE extends JPanel {
      */
     public void imageChanged(){
         bi = null;
+        geom = getSampleGeometry();
         repaint();
     }
 

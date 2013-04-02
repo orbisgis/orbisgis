@@ -463,4 +463,44 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters> impleme
         }
     }
 
+    /**
+     * Sets that symbols must be drawn on vertices or on centroid.
+     */
+    public void setOnVertex(){
+        pointSymbolizer.setOnVertex(true);
+    }
+
+    /**
+     * Sets that symbols must be drawn on vertices or on centroid.
+     */
+    public void setOnCentroid(){
+        pointSymbolizer.setOnVertex(false);
+    }
+
+    /**
+     * Returns true if the symbol will be drawn on the vertices of the symbol.
+     * @return
+     */
+    public boolean isOnVertex(){
+        return pointSymbolizer.isOnVertex();
+    }
+
+    /**
+     * Gets the unit of measure used to size the associated {@code Stroke}.
+     * @return
+     */
+    public Uom getSymbolUom(){
+        MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getChildren().get(0);
+        return mg.getUom();
+    }
+
+    /**
+     * Sets the unit of measure used to size the associated {@code Stroke}.
+     * @param u
+     */
+    public void setSymbolUom(Uom u){
+        MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getChildren().get(0);
+        mg.setUom(u);
+    }
+
 }
