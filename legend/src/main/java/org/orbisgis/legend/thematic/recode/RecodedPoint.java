@@ -175,7 +175,7 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters> impleme
      * Replace the {@code RealParameter} embedded in the inner MarkGraphic with {@code sp}. This method is called
      * when a type change occurs in the associated {@link RecodedReal} happens.
      * @param sp The new {@code RealParameter}
-     * @throws ClassCastException if sp is not a {@code StringParameter}
+     * @throws ClassCastException if sp is not a {@code RealParameter}
      */
     public void replaceMarkWidth(SeParameter sp){
         MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getChildren().get(0);
@@ -187,7 +187,7 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters> impleme
      * Replace the {@code RealParameter} embedded in the inner MarkGraphic with {@code sp}. This method is called
      * when a type change occurs in the associated {@link RecodedReal} happens.
      * @param sp The new {@code RealParameter}
-     * @throws ClassCastException if sp is not a {@code StringParameter}
+     * @throws ClassCastException if sp is not a {@code RealParameter}
      */
     public void replaceMarkHeight(SeParameter sp){
         MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getChildren().get(0);
