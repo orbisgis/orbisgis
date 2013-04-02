@@ -477,11 +477,14 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
     }
 
     /**
-     * Update the table.
+     * Update the table if it is not null.
      */
     public void updateTable(){
-        TableModelUniqueValue model = (TableModelUniqueValue) getJTable().getModel();
-        model.fireTableDataChanged();
+        JTable table = getJTable();
+        if(table != null){
+            TableModelUniqueValue model = (TableModelUniqueValue) table.getModel();
+            model.fireTableDataChanged();
+        }
     }
     /**
      * This Job can be used as a background operation to retrieve a set containing the distinct data of a specific

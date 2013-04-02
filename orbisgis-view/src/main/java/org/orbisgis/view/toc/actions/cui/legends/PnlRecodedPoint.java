@@ -34,6 +34,7 @@ import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
@@ -41,6 +42,7 @@ import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.orbisgis.legend.thematic.recode.RecodedPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.background.BackgroundListener;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.DefaultJobId;
@@ -74,8 +76,8 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     private CanvasSE fallbackPreview;
     private JComboBox fieldCombo;
     private JCheckBox strokeBox;
-    private SelectDistinctJob selectDistinct;
     private BackgroundListener background;
+    private ContainerItemProperties[] uoms;
 
     @Override
     public void initializeLegendFields() {
@@ -105,6 +107,13 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getUOMCombo(),gbc);
+        //UOM - symbol size
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = i;
+        i++;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        glob.add(getSymbolUOMCombo(),gbc);
         //on vertex ?
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -160,15 +169,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     private PointParameters editCanvas(CanvasSE cse){
         RecodedPoint leg = (RecodedPoint) getLegend();
         PointParameters lps = leg.getFallbackParameters();
-        UniqueSymbolPoint usa = new UniqueSymbolPoint(lps);
-        if(leg.isStrokeEnabled()){
-            usa.setStrokeUom(leg.getStrokeUom());
-        }
-        if(leg.isOnVertex()){
-            usa.setOnVertex();
-        } else {
-            usa.setOnCentroid();
-        }
+        UniqueSymbolPoint usa =getFallBackLegend();
         PnlUniquePointSE pls = new PnlUniquePointSE(false, leg.isStrokeEnabled(), false);
         pls.setLegend(usa);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
@@ -184,7 +185,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
 
     /**
      * Returns the panel used to configure if the symbol must be drawn on vertex or on centroid.
-     * @return
+     * @return The panel with the radio buttons.
      */
     private JPanel pnlOnVertex(){
         JPanel jp = new JPanel();
@@ -243,9 +244,20 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
 
     @Override
     public Symbolizer getFallbackSymbolizer() {
-        UniqueSymbolPoint usl = new UniqueSymbolPoint(((RecodedPoint)getLegend()).getFallbackParameters());
-        usl.setStrokeUom(((RecodedPoint)getLegend()).getStrokeUom());
-        return usl.getSymbolizer();
+        return getFallBackLegend().getSymbolizer();
+    }
+
+    private UniqueSymbolPoint getFallBackLegend(){
+        RecodedPoint leg = (RecodedPoint)getLegend();
+        UniqueSymbolPoint usl = new UniqueSymbolPoint(leg.getFallbackParameters());
+        usl.setStrokeUom(leg.getStrokeUom());
+        usl.setSymbolUom(leg.getSymbolUom());
+        if(leg .isOnVertex()){
+            usl.setOnVertex();
+        } else {
+            usl.setOnCentroid();
+        }
+        return usl;
     }
 
     @Override
@@ -343,7 +355,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     public void onCreateClassification(ActionEvent e){
         if(e.getActionCommand().equals("click")){
             String fieldName = fieldCombo.getSelectedItem().toString();
-            selectDistinct = new SelectDistinctJob(fieldName);
+            SelectDistinctJob selectDistinct = new SelectDistinctJob(fieldName);
             BackgroundManager bm = Services.getService(BackgroundManager.class);
             JobId jid = new DefaultJobId(JOB_NAME);
             if(background == null){
@@ -388,6 +400,48 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         pan.add(new JLabel(I18N.tr("Unit of measure - width :")));
         pan.add(jcb);
         return pan;
+    }
+
+    /**
+     * A JPanel containing the combo returned bu getPointUomCombo
+     * @return The JComboBox with a JLabel in a JPanel.
+     */
+    private JPanel getSymbolUOMCombo(){
+        JPanel pan = new JPanel();
+        JComboBox jcb = getPointUomCombo();
+        pan.add(new JLabel(I18N.tr("Unit of measure - size :")));
+        pan.add(jcb);
+        return pan;
+    }
+
+
+    /**
+     * ComboBox to configure the unit of measure used to draw th stroke.
+     * @return A JComboBox the user can use to set the unit of measure of the symbol's dimensions.
+     */
+    private JComboBox getPointUomCombo(){
+        uoms= getUomProperties();
+        String[] values = new String[uoms.length];
+        for (int i = 0; i < values.length; i++) {
+                values[i] = I18N.tr(uoms[i].toString());
+        }
+        final JComboBox jcc = new JComboBox(values);
+        ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex");
+        jcc.addActionListener(acl2);
+        jcc.setSelectedItem(((RecodedPoint)getLegend()).getSymbolUom().toString().toUpperCase());
+        return jcc;
+    }
+    /**
+     * Sets the underlying graphic to use the ith element of the combo box
+     * as its uom. Used when changing the combo box selection.
+     * @param index The index of the selected unit of measure.
+     */
+    public void updateSUComboBox(int index){
+        RecodedPoint leg = (RecodedPoint)getLegend();
+        leg.setSymbolUom(Uom.fromString(uoms[index].getKey()));
+        CanvasSE prev = getPreview();
+        prev.setSymbol(getFallbackSymbolizer());
+        updateTable();
     }
 
     /**
