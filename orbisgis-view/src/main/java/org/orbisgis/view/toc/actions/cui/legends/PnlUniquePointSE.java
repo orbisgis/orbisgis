@@ -67,6 +67,13 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         private ContainerItemProperties[] uoms;
 
         /**
+         * Here we can put all the Legend instances we want... but they have to
+         * be unique symbol (ie constant) Legends.
+         */
+        private UniqueSymbolPoint uniquePoint;
+        private ContainerItemProperties[] wkns;
+
+        /**
          * Default constructor. UOM will be displayed as well as the stroke configuration and the check boxes used to
          * enable or disable stroke and fill configuration panels.
          */
@@ -76,21 +83,15 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
 
         /**
          * Builds the panel.
-         * @param uom If true, the combo used to configure the symbolizer UOM will be displayed.
+         * @param uomAndOnVertex If true, the combo used to configure the symbolizer UOM and the radio buttons used to
+         *                       decide if the symbol must be displayed on vertices or on centroid will be displayed.
          * @param displayStroke If true, the panel used to configure the symbol's stroke will be enabled.
          * @param displayBoxes If true,  the two boxes that are used to enable and disable the stroke and fill of
          *                     the symbol will be displayed.
          */
-        public PnlUniquePointSE(boolean uom, boolean displayStroke, boolean displayBoxes){
-            super(uom,displayStroke,displayBoxes);
+        public PnlUniquePointSE(boolean uomAndOnVertex, boolean displayStroke, boolean displayBoxes){
+            super(uomAndOnVertex,displayStroke,displayBoxes);
         }
-
-        /**
-         * Here we can put all the Legend instances we want... but they have to
-         * be unique symbol (ie constant) Legends.
-         */
-        private UniqueSymbolPoint uniquePoint;
-        private ContainerItemProperties[] wkns;
 
         @Override
         public Component getComponent() {
@@ -235,20 +236,24 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 JPanel glob = new JPanel();
                 glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
                 JPanel jp = new JPanel();
-                boolean canBeOnV = geometryType != SimpleGeometryType.POINT;
+                boolean withUom = isUomEnabled();
+                boolean canBeOnV = geometryType != SimpleGeometryType.POINT && withUom;
                 int onV = canBeOnV ? 1 : 0;
-                GridLayout grid = new GridLayout(5+onV,2);
+                int wu = withUom ? 1 : 0;
+                GridLayout grid = new GridLayout(3+wu+onV,2);
                 grid.setVgap(5);
                 jp.setLayout(grid);
                 //If geometryType != POINT, we must let the user choose if he
                 //wants to draw symbols on centroid or on vertices.
-                if(geometryType != SimpleGeometryType.POINT){
+                if(canBeOnV){
                         addPointOnVertices(point, jp);
                 }
                 //Uom
-                jp.add(buildText(I18N.tr("Unit of measure :")));
-                jp.add(getPointUomCombo());
-                //Combobox
+                if(withUom){
+                    jp.add(buildText(I18N.tr("Unit of measure :")));
+                    jp.add(getPointUomCombo());
+                }
+                //Combo box
                 jp.add(buildText(I18N.tr("Symbol form :")));
                 jp.add(getWKNCombo(point));
                 //Mark width

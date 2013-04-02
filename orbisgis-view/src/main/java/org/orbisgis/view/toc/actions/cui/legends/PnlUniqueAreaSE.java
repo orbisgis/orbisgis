@@ -226,7 +226,8 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 JPanel glob = new JPanel();
                 glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
                 JPanel jp = new JPanel();
-                GridLayout grid = new GridLayout(3,3);
+                int db = displayBoxes ? 1 : 0;
+                GridLayout grid = new GridLayout(2+db,3);
                 grid.setVgap(5);
                 jp.setLayout(grid);
                 if(displayBoxes){
