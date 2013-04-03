@@ -29,10 +29,7 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.beans.EventHandler;
 import javax.swing.*;
 import org.orbisgis.core.map.MapTransform;
@@ -225,6 +222,14 @@ public class PnlRule extends JPanel implements ISELegendPanel {
          */
         public void setTitle(String s) {
                 rule.setName(s);
+        }
+
+        /**
+         * Change silently the content of the field text that displays the name of the rule.
+         * @param s
+         */
+        public void setTextFieldContent(String s){
+            txtName.setText(s);
         }
 
         /**

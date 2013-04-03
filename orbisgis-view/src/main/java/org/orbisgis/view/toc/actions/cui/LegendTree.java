@@ -92,6 +92,9 @@ public class LegendTree extends JPanel {
                 //are added by the tree when calling setModel.
                 LegendTreeModel ltm = new LegendTreeModel(tree, style);
                 tree.setModel(ltm);
+                //..A custom cell editor...
+                LegendTreeCellEditor editor = new LegendTreeCellEditor();
+                tree.setCellEditor(editor);
                 //...and a custom TreeCellRenderer.
                 LegendCellRenderer lcr = new LegendCellRenderer(tree);
                 tree.setCellRenderer(lcr);
@@ -104,6 +107,8 @@ public class LegendTree extends JPanel {
                 TreeSelectionListener tslb = EventHandler.create(TreeSelectionListener.class, legendsPanel, "legendSelected");
                 tree.addTreeSelectionListener(tslb);
                 expandAll(tree);
+                //We want an editable tree
+                tree.setEditable(true);
                 initButtons();
                 setPreferredSize(new Dimension(300,200));
                 this.setLayout(new BorderLayout());
@@ -196,7 +201,8 @@ public class LegendTree extends JPanel {
         }
 
         public final void renameElement(ActionEvent evt) {
-                throw new UnsupportedOperationException();
+            TreePath tp = tree.getSelectionPath();
+            tree.startEditingAtPath(tp);
         }
 
         /**
