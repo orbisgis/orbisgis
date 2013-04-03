@@ -367,6 +367,7 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     @Override
     public Legend copyLegend() {
         RecodedArea rl = new RecodedArea();
+        rl.setStrokeEnabled(((RecodedArea)getLegend()).isStrokeEnabled());
         Set<Map.Entry<String,AreaParameters>> entries = ((RecodedArea)getLegend()).entrySet();
         for(Map.Entry<String,AreaParameters> entry : entries){
             rl.put(entry.getKey(),entry.getValue());

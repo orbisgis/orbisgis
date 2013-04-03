@@ -70,6 +70,10 @@ public class EPLegendHelper {
                 ILegendPanel uniqueArea = new PnlRecodedArea();
                 uniqueArea.initialize(legendContext);
                 legends.add(uniqueArea);
+                ILegendPanel uniquePoint = new PnlRecodedPoint();
+                uniquePoint.initialize(legendContext);
+                legends.add(uniquePoint);
+
 
 		return legends.toArray(new ILegendPanel[legends.size()]);
 	}

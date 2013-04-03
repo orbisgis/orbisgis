@@ -155,16 +155,14 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
             String key = legend.getNotUsedKey("newValue");
             U lp = legend.getFallbackParameters();
             legend.put(key, lp);
-            TableModelUniqueValue model = (TableModelUniqueValue) getJTable().getModel();
-            model.fireTableDataChanged();
+            updateTable();
         } else if (e.getActionCommand().equals(REMOVE)){
-            TableModelUniqueValue model = (TableModelUniqueValue) getJTable().getModel();
             int col = getJTable().getSelectedColumn();
             int row = getJTable().getSelectedRow();
             if(col>=0 && row >= 0){
                 String key = (String)getJTable().getValueAt(row, col);
                 legend.remove(key);
-                model.fireTableDataChanged();
+                updateTable();
             }
         }
     }
@@ -370,8 +368,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         CanvasSE prev = getPreview();
         prev.setSymbol(getFallbackSymbolizer());
         prev.imageChanged();
-        AbstractTableModel model = (AbstractTableModel) getJTable().getModel();
-        model.fireTableDataChanged();
+        updateTable();
     }
 
     /**
@@ -477,6 +474,17 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         //We enable the color config by default
         onComputed();
         return ret;
+    }
+
+    /**
+     * Update the table if it is not null.
+     */
+    public void updateTable(){
+        JTable table = getJTable();
+        if(table != null){
+            TableModelUniqueValue model = (TableModelUniqueValue) table.getModel();
+            model.fireTableDataChanged();
+        }
     }
     /**
      * This Job can be used as a background operation to retrieve a set containing the distinct data of a specific

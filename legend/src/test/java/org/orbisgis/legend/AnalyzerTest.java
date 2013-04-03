@@ -40,12 +40,15 @@ import org.orbisgis.core.log.FailErrorManager;
 import org.orbisgis.core.renderer.se.Style;
 
 public abstract class AnalyzerTest {
+        public final static Double EPS = 0.00001;
         
         protected FailErrorManager failErrorManager;
         private Appender consoleAppender;
         public static final String CONSTANT_POINT = "src/test/resources/org/orbisgis/legend/constantWKN.se";
         public static final String CONSTANT2D_POINT = "src/test/resources/org/orbisgis/legend/constant2DWKN.se";
         public static final String PROPORTIONAL_POINT = "src/test/resources/org/orbisgis/legend/proportionalSymbol.se";
+        public static final String PROPORTIONAL_POINT_WITHOUT_STROKE = "src/test/resources/org/orbisgis/legend/PropPointWithoutStroke.se";
+        public static final String PROPORTIONAL_POINT_WITHOUT_FILL = "src/test/resources/org/orbisgis/legend/PropPointWithoutFill.se";
         public static final String PROP_LINE = "src/test/resources/org/orbisgis/legend/linearProportional.se";
         public static final String CONSTANT_LINE = "src/test/resources/org/orbisgis/legend/uniqueLineSymbol.se";
         public static final String CONSTANT_DASHED_LINE = "src/test/resources/org/orbisgis/legend/uniqueLineSymbolDash.se";
@@ -53,6 +56,7 @@ public abstract class AnalyzerTest {
         public static final String STRING_RECODE = "src/test/resources/org/orbisgis/legend/stringRecode.se";
         public static final String COLOR_RECODE = "src/test/resources/org/orbisgis/legend/colorRecode.se";
         public static final String AREA_RECODE = "src/test/resources/org/orbisgis/legend/recodedArea.se";
+        public static final String POINT_RECODE = "src/test/resources/org/orbisgis/legend/recodedPoint.se";
         public static final String DASH_RECODE = "src/test/resources/org/orbisgis/legend/dashRecode.se";
         public static final String DOUBLE_CATEGORIZE = "src/test/resources/org/orbisgis/legend/doubleCategorize.se";
         public static final String DOUBLE_CATEGORIZE_FIELD = "src/test/resources/org/orbisgis/legend/doubleCategorizeDoubleField.se";

@@ -36,7 +36,10 @@ import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
 import org.orbisgis.legend.structure.graphic.ConstantWKNLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
+import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
+
+import java.awt.*;
 
 /**
  * We are dealing with a simple point symbolizer. If we succeeded in recognizing
@@ -74,7 +77,7 @@ public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbo
     /**
      * Tries to build an instance of {@code UniqueSymbolPoint} using the given
      * {@code PointSymbolizer}.
-     * @param pointSymbolizer
+     * @param pointSymbolizer  The original symbolizer
      * @throws IllegalArgumentException
      * If {@code pointSymbolizer} can't be recognized as a valid {@code
      * UniqueSymbolPoint}.
@@ -94,10 +97,27 @@ public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbo
     }
 
     /**
+     * Builds a new {@code UniqueSymbolPoint} using the configuration given in argument
+     * @param pp The point configuration with all parameters gathered in a {@code PointParameters} instance.
+     */
+    public UniqueSymbolPoint(PointParameters pp){
+        this();
+        getPenStroke().setDashArray(pp.getLineDash());
+        getPenStroke().setLineColor(pp.getLineColor());
+        getPenStroke().setLineOpacity(pp.getLineOpacity());
+        getPenStroke().setLineWidth(pp.getLineWidth());
+        getFillLegend().setColor(pp.getFillColor());
+        getFillLegend().setOpacity(pp.getFillOpacity());
+        setViewBoxWidth(pp.getWidth());
+        setViewBoxHeight(pp.getHeight());
+        setWellKnownName(pp.getWkn());
+    }
+
+    /**
      * Create a new {@code UniqueSymbolPoint}. As the associated analysis is
      * given in parameter, it is up to the calling method to be sure that
-     * @param symbolizer
-     * @param markGraphic
+     * @param symbolizer   the original symbolizer
+     * @param markGraphic its associated legend
      */
     public UniqueSymbolPoint(PointSymbolizer symbolizer, ConstantWKNLegend markGraphic) {
         super(symbolizer);
@@ -179,4 +199,25 @@ public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbo
         return "org.orbisgis.legend.thematic.constant.UniqueSymbolPoint";
     }
 
+    /**
+     * Gets the configuration defining this point, uom excluded, as a {@link PointParameters} instance.
+     * @return This point as a {@code PointParameters}.
+     */
+    public PointParameters getPointParameters() {
+        ConstantPenStroke cps = getPenStroke();
+        Double lw=cps.getLineWidth();
+        Double lop = cps.getLineOpacity();
+        Color lCol = cps.getLineColor();
+        String lDash = cps.getDashArray();
+        ConstantSolidFill csf = getFillLegend();
+        return new PointParameters(lCol,
+                    lop,
+                    lw,
+                    lDash,
+                    csf.getColor(),
+                    csf.getOpacity(),
+                    getViewBoxWidth(),
+                    getViewBoxHeight(),
+                    getWellKnownName());
+    }
 }
