@@ -56,6 +56,20 @@ public class ProportionalPointTest extends AnalyzerTest {
                 ProportionalPoint uvp = new ProportionalPoint(ps);
                 assertTrue(true);
     }
+    @Test
+    public void testProportionalPointConstructorWithoutStroke() throws Exception {
+                Style st = getStyle(PROPORTIONAL_POINT_WITHOUT_STROKE);
+                PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
+                ProportionalPoint uvp = new ProportionalPoint(ps);
+                assertTrue(true);
+    }
+    @Test
+    public void testProportionalPointConstructorWithoutFill() throws Exception {
+                Style st = getStyle(PROPORTIONAL_POINT_WITHOUT_FILL);
+                PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
+                ProportionalPoint uvp = new ProportionalPoint(ps);
+                assertTrue(true);
+    }
 
     @Test
     public void testLegendFromAnalyzerProportionalPoint() throws Exception {

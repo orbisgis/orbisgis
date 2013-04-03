@@ -92,6 +92,14 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         }
 
+        /**
+         * Returns true if the combo box used to configure the unit of measures must be displayed, false if they must not.
+         * @return true if the combo box used to configure the unit of measures must be displayed, false if they must not.
+         */
+        protected boolean isUomEnabled(){
+            return displayUom;
+        }
+
         @Override
         public Component getComponent() {
                 return this;
@@ -198,10 +206,11 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 }
                 ConstantPenStroke legend = leg instanceof ConstantPenStrokeLegend ? leg : penStrokeMemory;
                 int ilo = isLineOptional() ? 1 : 0;
+                int du = displayUom ? 1 : 0;
                 JPanel glob = new JPanel();
                 glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
                 JPanel jp = new JPanel();
-                GridLayout grid = new GridLayout(5+ilo,2);
+                GridLayout grid = new GridLayout(4+du+ilo,2);
                 grid.setVgap(5);
                 jp.setLayout(grid);
                 lineUom = getLineUomCombo((StrokeUom)getLegend());

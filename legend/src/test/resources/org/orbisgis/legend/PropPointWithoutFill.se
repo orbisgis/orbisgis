@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns4:Style xmlns:ns1="http://www.opengis.net/ows/2.0" xmlns:ns2="http://www.w3.org/1999/xlink" xmlns:ns3="http://www.opengis.net/ows-context" xmlns:ns4="http://www.opengis.net/se/2.0/core" xmlns:ns5="http://www.opengis.net/fes/2.1" xmlns:ns6="http://www.opengis.net/gml" xmlns:ns7="http://www.opengis.net/kml/2.2" xmlns:ns8="http://www.w3.org/2005/Atom" xmlns:ns9="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0" xmlns:ns10="http://www.opengis.net/sld/1.2" xmlns:ns11="http://www.opengis.net/se/2.0/thematic" xmlns:ns12="http://www.opengis.net/wfs/2.1" xmlns:ns13="http://www.w3.org/2001/SMIL20/" xmlns:ns14="http://www.opengis.net/wms" xmlns:ns15="http://www.opengis.net/se/2.0/raster" xmlns:ns16="http://www.w3.org/2001/SMIL20/Language" version="2.0.0">
+	<ns4:Name>Unnamed Style</ns4:Name>
+	<ns4:Rule>
+		<ns4:PointSymbolizer uom="urn:ogc:def:uom:se::px" version="2.0.0">
+			<ns4:Name>Proportional Point</ns4:Name>
+			<ns4:MarkGraphic uom="urn:ogc:def:uom:se::px">
+				<ns4:WellKnownName>CIRCLE</ns4:WellKnownName>
+				<ns4:ViewBox>
+					<ns4:Height>
+						<ns4:Interpolate mode="linear" fallbackValue="0.0">
+							<ns4:LookupValue>
+								<ns5:Function name="SQRT">
+									<ns5:ValueReference>PTOT99</ns5:ValueReference>
+								</ns5:Function>
+							</ns4:LookupValue>
+							<ns4:InterpolationPoint>
+								<ns4:Data>60.58052492344384</ns4:Data>
+								<ns4:Value>1.0</ns4:Value>
+							</ns4:InterpolationPoint>
+							<ns4:InterpolationPoint>
+								<ns4:Data>526.9990512325426</ns4:Data>
+								<ns4:Value>30.0</ns4:Value>
+							</ns4:InterpolationPoint>
+						</ns4:Interpolate>
+					</ns4:Height>
+				</ns4:ViewBox>
+				<ns4:PenStroke />
+			</ns4:MarkGraphic>
+		</ns4:PointSymbolizer>
+	</ns4:Rule>
+</ns4:Style>

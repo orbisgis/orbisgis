@@ -121,6 +121,7 @@ public class CanvasSE extends JPanel {
      */
     public void imageChanged(){
         bi = null;
+        geom = getSampleGeometry();
         repaint();
     }
 
@@ -271,7 +272,7 @@ public class CanvasSE extends JPanel {
 	public void setSymbol(Symbolizer sym) {
 		this.s = sym;
         geom = getSampleGeometry();
-		this.repaint();
+		this.imageChanged();
 	}
 
         /**
