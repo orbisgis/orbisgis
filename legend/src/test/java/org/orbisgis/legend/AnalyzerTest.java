@@ -47,6 +47,8 @@ public abstract class AnalyzerTest {
         public static final String CONSTANT_POINT = "src/test/resources/org/orbisgis/legend/constantWKN.se";
         public static final String CONSTANT2D_POINT = "src/test/resources/org/orbisgis/legend/constant2DWKN.se";
         public static final String PROPORTIONAL_POINT = "src/test/resources/org/orbisgis/legend/proportionalSymbol.se";
+        public static final String PROPORTIONAL_POINT_WITHOUT_STROKE = "src/test/resources/org/orbisgis/legend/PropPointWithoutStroke.se";
+        public static final String PROPORTIONAL_POINT_WITHOUT_FILL = "src/test/resources/org/orbisgis/legend/PropPointWithoutFill.se";
         public static final String PROP_LINE = "src/test/resources/org/orbisgis/legend/linearProportional.se";
         public static final String CONSTANT_LINE = "src/test/resources/org/orbisgis/legend/uniqueLineSymbol.se";
         public static final String CONSTANT_DASHED_LINE = "src/test/resources/org/orbisgis/legend/uniqueLineSymbolDash.se";
