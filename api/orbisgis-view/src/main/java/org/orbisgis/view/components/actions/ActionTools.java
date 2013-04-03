@@ -39,24 +39,24 @@ import javax.swing.KeyStroke;
  */
 public class ActionTools {
         // Additional properties
-        // Value List<KeyStroke>
+        /** A collection of KeyStroke*/
         public static final String ADDITIONAL_ACCELERATOR_KEY = "additionalAcceleratorKeys";
-        // Optional Parent action ID (parent menu), String value
+        /** Optional Parent action ID (parent menu), String value */
         public static final String PARENT_ID = "parentMenuId";
-        // Unique menu identifier, String value
+        /** Unique menu identifier, String value */
         public static final String MENU_ID = "menuId";
-        // Define if this action is a Menu container, String value
+        /** Define if this action is a Menu container, String value */
         public static final String MENU_GROUP = "menuGroup";
-        // If set, the action will try to be inserted just before the provided menu id.
+        /** If set, the action will try to be inserted just before the provided menu id. */
         public static final String INSERT_BEFORE_MENUID = "insertBeforeMenuId";
-        // If set, the action will try to be inserted just after the provided menu id.
+        /** If set, the action will try to be inserted just after the provided menu id. */
         public static final String INSERT_AFTER_MENUID = "insertAfterMenuId";
-        // if set, the action will be inserted first instead of last (default)
+        /** if set, the action will be inserted first instead of last (default) */
         public static final String INSERT_FIRST = "insertFirst";
-        // Using logical group on actions will automatically create JSeparator between such groups
-        // Actions with the same logical group are created on the same toolbar also
+        /** Using logical group on actions will automatically create JSeparator between such groups
+         *  Actions with the same logical group are created on the same toolbar also */
         public static final String LOGICAL_GROUP = "logicalGroup";
-        // To hide an Action control without removing the Action
+        /**  To hide an Action control without removing the Action */
         public static final String VISIBLE = "visible";
         /** If set, other actions with the same actionGroup will be unSet if this action is set active.
          * ButtonGroup will be created by ActionCommands.
@@ -64,8 +64,12 @@ public class ActionTools {
          * @see Action#SELECTED_KEY
          */
         public static final String TOGGLE_GROUP = "toggleGroupName";
+
+        /**
+         * Utility class
+         */
         private ActionTools() {
-        };
+        }
 
         /**
          * Return the icon.
