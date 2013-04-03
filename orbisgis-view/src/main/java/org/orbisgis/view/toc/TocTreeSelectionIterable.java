@@ -77,6 +77,7 @@ public class TocTreeSelectionIterable<Node extends TreeNode> implements Iterable
             return hasNext;
         }
 
+        @Override
         public Node next() {
             index++;
             if(index >= selected.length) {
