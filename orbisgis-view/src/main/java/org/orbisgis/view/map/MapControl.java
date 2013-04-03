@@ -604,7 +604,7 @@ public class MapControl extends JComponent implements ContainerListener {
                             MapTransform mapTransform) {
                     invalidateImage();
                     // Record new BoundingBox value for map context
-                    mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
+                    mapContext.setBoundingBox(mapTransform.getExtent());
             }            
         }
         
