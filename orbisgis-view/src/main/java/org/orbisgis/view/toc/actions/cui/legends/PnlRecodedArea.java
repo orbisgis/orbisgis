@@ -47,10 +47,7 @@ import org.orbisgis.view.background.JobId;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
-import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorRecodedArea;
-import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorUniqueValue;
-import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorRecodedArea;
-import org.orbisgis.view.toc.actions.cui.legends.model.TableModelRecodedArea;
+import org.orbisgis.view.toc.actions.cui.legends.model.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -87,6 +84,7 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     private final static String JOB_NAME = "recodeSelectDistinct";
     private SelectDistinctJob selectDistinct;
     private BackgroundListener background;
+    private JCheckBox strokeBox;
 
     @Override
     public Component getComponent() {
@@ -129,15 +127,18 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
      * @return The LineParameters that must be used at the end of the edition.
      */
     private AreaParameters editCanvas(CanvasSE cse){
-        AreaParameters lps = ((RecodedArea)getLegend()).getFallbackParameters();
-        UniqueSymbolArea usl = new UniqueSymbolArea(lps);
-        usl.setStrokeUom(((RecodedArea)getLegend()).getStrokeUom());
-        PnlUniqueAreaSE pls = new PnlUniqueAreaSE(false);
-        pls.setLegend(usl);
+        RecodedArea leg = (RecodedArea) getLegend();
+        AreaParameters lps = leg.getFallbackParameters();
+        UniqueSymbolArea usa = new UniqueSymbolArea(lps);
+        if(leg.isStrokeEnabled()){
+            usa.setStrokeUom(leg.getStrokeUom());
+        }
+        PnlUniqueAreaSE pls = new PnlUniqueAreaSE(false, leg.isStrokeEnabled(), false);
+        pls.setLegend(usa);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
-            usl = (UniqueSymbolArea) pls.getLegend();
-            AreaParameters nlp = usl.getAreaParameters();
-            cse.setSymbol(usl.getSymbolizer());
+            usa = (UniqueSymbolArea) pls.getLegend();
+            AreaParameters nlp = usa.getAreaParameters();
+            cse.setSymbol(usa.getSymbolizer());
             cse.imageChanged();
             return nlp;
         } else {
@@ -244,19 +245,57 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
         gbc.gridy = 3;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getCreateClassificationPanel(), gbc);
-        //Table for the recoded configurations
+        //Classification generator
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 4;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        glob.add(getEnableStrokeCheckBox(), gbc);
+        //Table for the recoded configurations
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 5;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getTablePanel(), gbc);
         this.add(glob);
         this.revalidate();
     }
 
+    /**
+     * Gets the panel used to set if the stroke will be drawable or not.
+     * @return The configuration panel for the stroke use.
+     */
+    public JPanel getEnableStrokeCheckBox(){
+        JPanel ret = new JPanel();
+        ret.add(new JLabel(I18N.tr("Enable Stroke:")));
+        strokeBox = new JCheckBox(I18N.tr(""));
+        RecodedArea ra = (RecodedArea) getLegend();
+        strokeBox.setSelected(ra.isStrokeEnabled());
+        strokeBox.addActionListener(EventHandler.create(ActionListener.class, this, "onEnableStroke"));
+        ret.add(strokeBox);
+        return ret;
+    }
+
+    /**
+     * Action done when the checkbox used to activate the stroke is pressed.
+     */
+    public void onEnableStroke(){
+        RecodedArea ra = (RecodedArea) getLegend();
+        ra.setStrokeEnabled(strokeBox.isSelected());
+        getPreview().setSymbol(new UniqueSymbolArea(ra.getFallbackParameters()).getSymbolizer());
+        getPreview().imageChanged();
+        TableModelUniqueValue model = (TableModelUniqueValue) getJTable().getModel();
+        model.fireTableDataChanged();
+    }
+
     @Override
     public AbstractRecodedLegend<AreaParameters> getEmptyAnalysis() {
-        return new RecodedArea();
+        RecodedArea ra = new RecodedArea();
+        RecodedArea old = (RecodedArea)getLegend();
+        if(old != null){
+            ra.setStrokeEnabled(old.isStrokeEnabled());
+        }
+        return ra;
     }
 
     private JPanel getUOMCombo(){
