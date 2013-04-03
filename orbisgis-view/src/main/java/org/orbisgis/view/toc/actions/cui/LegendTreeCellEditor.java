@@ -34,10 +34,8 @@ import org.orbisgis.view.toc.wrapper.RuleWrapper;
 import org.orbisgis.view.toc.wrapper.StyleWrapper;
 
 import javax.swing.*;
-import javax.swing.tree.TreeCellEditor;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.EventObject;
 
 /**
@@ -69,11 +67,15 @@ public class LegendTreeCellEditor extends DefaultCellEditor {
             ILegendPanel ilp = (ILegendPanel) value;
             return super.getTreeCellEditorComponent(tree, ilp.getLegend().getName(), isSelected, expanded, leaf, row);
         }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public boolean isCellEditable(EventObject anEvent){
+		if (anEvent instanceof MouseEvent) {
+            MouseEvent me = (MouseEvent) anEvent;
+             return me.getClickCount() >= 2;
+		}
         return true;
     }
 
