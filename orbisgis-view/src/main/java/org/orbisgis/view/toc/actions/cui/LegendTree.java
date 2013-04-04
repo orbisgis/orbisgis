@@ -92,6 +92,10 @@ public class LegendTree extends JPanel {
                 //are added by the tree when calling setModel.
                 LegendTreeModel ltm = new LegendTreeModel(tree, style);
                 tree.setModel(ltm);
+                //..A custom cell editor...
+                LegendTreeCellEditor editor = new LegendTreeCellEditor();
+                editor.setClickCountToStart(2);
+                tree.setCellEditor(editor);
                 //...and a custom TreeCellRenderer.
                 LegendCellRenderer lcr = new LegendCellRenderer(tree);
                 tree.setCellRenderer(lcr);
@@ -101,9 +105,11 @@ public class LegendTree extends JPanel {
                 TreeSelectionListener tsl = EventHandler.create(TreeSelectionListener.class, this, "refreshIcons");
                 tree.addTreeSelectionListener(tsl);
                 //We refresh the CardLayout of the associated LegendsPanel
-                TreeSelectionListener tslb = EventHandler.create(TreeSelectionListener.class, legendsPanel, "legendSelected");
-                tree.addTreeSelectionListener(tslb);
+                TreeSelectionListener select = EventHandler.create(TreeSelectionListener.class, legendsPanel, "legendSelected");
+                tree.addTreeSelectionListener(select);
                 expandAll(tree);
+                //We want an editable tree
+                tree.setEditable(true);
                 initButtons();
                 setPreferredSize(new Dimension(300,200));
                 this.setLayout(new BorderLayout());
@@ -195,15 +201,20 @@ public class LegendTree extends JPanel {
                 }
         }
 
+        /**
+         * Start editing the name of the currently selected element.
+         * @param evt The initial event.
+         */
         public final void renameElement(ActionEvent evt) {
-                throw new UnsupportedOperationException();
+            TreePath tp = tree.getSelectionPath();
+            tree.startEditingAtPath(tp);
         }
 
         /**
          * Get the currently selected Legend, if any. If we find it, we return
          * it. Otherwise, we return null.
          *
-         * @return
+         * @return The currently selected panel, or null if none is selected.
          */
         public ILegendPanel getSelectedLegend() {
                 TreePath tp = tree.getSelectionPath();
@@ -220,7 +231,7 @@ public class LegendTree extends JPanel {
          * Gets the {@code ISELegendPanel} that is associated to the currently
          * selected element in the tree.
          *
-         * @return
+         * @return  The currently selected panel, or null if none is selected.
          */
         public ISELegendPanel getSelectedPanel() {
                 TreePath tp = tree.getSelectionPath();
@@ -229,9 +240,9 @@ public class LegendTree extends JPanel {
                         if (last instanceof ILegendPanel) {
                                 return (ILegendPanel) last;
                         } else if (last instanceof RuleWrapper) {
-                                return (ISELegendPanel) ((RuleWrapper) last).getPanel();
+                                return ((RuleWrapper) last).getPanel();
                         } else if (last instanceof StyleWrapper) {
-                                return (ISELegendPanel) ((StyleWrapper) last).getPanel();
+                                return ((StyleWrapper) last).getPanel();
                         }
                 }
                 return null;
@@ -527,12 +538,20 @@ public class LegendTree extends JPanel {
                         lab.setText(s);
                         return lab;
                 }
-        }        
+        }
+
+        /**
+         * The name of the selected element changed !
+         */
+        public void selectedNameChanged(){
+            LegendTreeModel model = (LegendTreeModel) tree.getModel();
+            model.refresh();
+        }
         
         /**
          * Expand configuration tree
          *
-         * @param tree
+         * @param tree The tree we want to process.
          */
         private void expandAll(JTree tree) {
                 for (int row = 0; row < tree.getRowCount(); row++) {

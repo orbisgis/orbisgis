@@ -32,6 +32,9 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -54,13 +57,15 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
+import org.orbisgis.view.toc.actions.cui.legends.PnlRule;
+import org.orbisgis.view.toc.actions.cui.legends.PnlStyle;
 import org.orbisgis.view.toc.wrapper.RuleWrapper;
 import org.orbisgis.view.toc.wrapper.StyleWrapper;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * This {@code Panel} contains all the needed informations to build an UI that
+ * This {@code Panel} contains all the needed information to build an UI that
  * will let the user edit the legends. It is built with the following properties
  * :</p>
  * <ul><li>Legends are displayed in the {@code LegendList}.</li>
@@ -70,7 +75,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * <li>A {@code CardLayout} that is used to switch fast between the {@code
  * Legend} instances stored in {@code legends}</li>
  * <li>Two text fields : one for the min scale, the other for the max scale.</li>
- * <li>Two buttons that are used to fastly set the min and/or max scales to the
+ * <li>Two buttons that are used to quickly set the min and/or max scales to the
  * current one.</li>
  * <li>A {@code MapTransform} that represents the current state of the map</li>
  * <li>A {@code Type} instance (should be the type of the {@code DataSource}
@@ -133,17 +138,33 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                                 pnlContainer.add(jsp, ilp.getId());
                         }
                         RuleWrapper rw = new RuleWrapper(r, ll);
-                        rw.getPanel().setId(getNewId());
-                        rw.getPanel().initialize(this);
+                        PnlRule rulePan = (PnlRule) rw.getPanel();
+                        rulePan.setId(getNewId());
+                        rulePan.initialize(this);
+                        PropertyChangeListener pcl = EventHandler.create(PropertyChangeListener.class,this,"onNodeNameChange", "");
+                        rulePan.addPropertyChangeListener(pcl);
                         pnlContainer.add(rw.getPanel().getComponent(), rw.getPanel().getId());
                         lrw.add(rw);
                 }
                 styleWrapper = new StyleWrapper(style, lrw);
-                styleWrapper.getPanel().setId(getNewId());
+                PnlStyle stylePan = styleWrapper.getPanel();
+                stylePan.setId(getNewId());
+                PropertyChangeListener pcl = EventHandler.create(PropertyChangeListener.class,this,"onNodeNameChange", "");
+                stylePan.addPropertyChangeListener(pcl);
                 pnlContainer.add(styleWrapper.getPanel().getComponent(), styleWrapper.getPanel().getId());
                 legendTree = new LegendTree(this);
                 this.add(legendTree, BorderLayout.WEST);
                 refreshLegendContainer();
+        }
+
+        /**
+         * Method called when the name of the selected element changes.
+         * @param pce The original event.
+         */
+        public void onNodeNameChange(PropertyChangeEvent pce){
+            if(pce.getPropertyName().equals(PnlRule.NAME_PROPERTY)){
+                legendTree.selectedNameChanged();
+            }
         }
 
         /**
