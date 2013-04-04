@@ -37,8 +37,8 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import javax.swing.*;
+import javax.swing.InputVerifier;
+import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
 import java.text.ParseException;
 
@@ -91,7 +91,7 @@ public class ValueInputVerifier extends InputVerifier {
         @Override
         public boolean verify(JComponent jComponent) {
                 if(jComponent instanceof JTextComponent) {
-                        String value = ((JTextField) jComponent).getText();
+                        String value = ((JTextComponent) jComponent).getText();
                         try {
                                 getValue(value);
                                 return true;
