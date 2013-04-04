@@ -537,7 +537,15 @@ public class LegendTree extends JPanel {
                         lab.setText(s);
                         return lab;
                 }
-        }        
+        }
+
+        /**
+         * The name of the selected element changed !
+         */
+        public void selectedNameChanged(){
+            LegendTreeModel model = (LegendTreeModel) tree.getModel();
+            model.refresh();
+        }
         
         /**
          * Expand configuration tree

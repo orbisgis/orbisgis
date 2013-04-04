@@ -30,6 +30,7 @@ package org.orbisgis.view.toc.actions.cui;
 
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.PnlRule;
+import org.orbisgis.view.toc.actions.cui.legends.PnlStyle;
 import org.orbisgis.view.toc.wrapper.RuleWrapper;
 import org.orbisgis.view.toc.wrapper.StyleWrapper;
 
@@ -84,6 +85,8 @@ public class LegendTreeCellEditor extends DefaultCellEditor {
         if(obj instanceof StyleWrapper){
             StyleWrapper sw = (StyleWrapper) obj;
             sw.getStyle().setName(field.getText());
+            PnlStyle pnl = sw.getPanel();
+            pnl.setTextFieldContent(field.getText());
         } else if(obj instanceof RuleWrapper){
             RuleWrapper sw = (RuleWrapper) obj;
             sw.getRule().setName(field.getText());

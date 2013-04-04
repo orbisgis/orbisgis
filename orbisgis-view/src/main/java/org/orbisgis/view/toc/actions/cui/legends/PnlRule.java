@@ -31,6 +31,8 @@ package org.orbisgis.view.toc.actions.cui.legends;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import javax.swing.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
@@ -43,8 +45,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Panel associated to {@code Rule} instances in the legend edition UI.
  * @author Alexis Guéganno
  */
-public class PnlRule extends JPanel implements ISELegendPanel {
-
+public class PnlRule extends NameChangePanel {
         private static final I18n I18N = I18nFactory.getI18n(PnlRule.class);
         private JButton btnCurrentScaleToMin;
         private JButton btnCurrentScaleToMax;
@@ -221,12 +222,14 @@ public class PnlRule extends JPanel implements ISELegendPanel {
          * manage it.
          */
         public void setTitle(String s) {
-                rule.setName(s);
+            String old = rule.getName();
+            rule.setName(s);
+            propertySupport.firePropertyChange(NAME_PROPERTY,old, s);
         }
 
         /**
          * Change silently the content of the field text that displays the name of the rule.
-         * @param s
+         * @param s The new text.
          */
         public void setTextFieldContent(String s){
             txtName.setText(s);

@@ -45,7 +45,7 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * @author Alexis Guéganno
  */
-public class PnlStyle extends JPanel implements ISELegendPanel {
+public class PnlStyle extends NameChangePanel {
         private static final I18n I18N = I18nFactory.getI18n(PnlStyle.class);
         private Style style;
         private JTextField txtName;
@@ -85,7 +85,7 @@ public class PnlStyle extends JPanel implements ISELegendPanel {
                 gbc.gridx = 1;
                 gbc.gridy = 0;
                 gbc.anchor = GridBagConstraints.LINE_START;
-                txtName = new JTextField(style.getName(),10);
+                txtName = new JTextField(style.getName(),40);
                 txtName.addFocusListener(EventHandler.create(FocusListener.class, this, "setTitle","source.text","focusLost"));
                 panel.add(txtName, gbc);
                 this.add(panel);
@@ -119,8 +119,22 @@ public class PnlStyle extends JPanel implements ISELegendPanel {
                 return null;
         }
 
+        /**
+         * Sets the name of the inner style
+         * @param title The new name.
+         */
         public void setTitle(String title){
-                style.setName(title);
+            String old = style.getName();
+            style.setName(title);
+            propertySupport.firePropertyChange(NAME_PROPERTY,old, title);
+        }
+
+        /**
+         * Change silently the content of the field text that displays the name of the rule.
+         * @param s The new text.
+         */
+        public void setTextFieldContent(String s){
+            txtName.setText(s);
         }
 
 }
