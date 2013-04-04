@@ -191,7 +191,7 @@ public class PnlRule extends NameChangePanel {
                 gbc.anchor = GridBagConstraints.LINE_START;
                 panel.add(max, gbc);
                 this.add(panel);
-                this.setPreferredSize(new Dimension(200, 100));
+                this.setMinimumSize(panel.getPreferredSize());
                 this.setBorder(BorderFactory.createTitledBorder(I18N.tr("Rule Configuration")));
                 return this;
         }
