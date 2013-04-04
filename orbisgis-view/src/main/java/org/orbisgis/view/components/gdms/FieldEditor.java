@@ -159,10 +159,10 @@ public class FieldEditor extends JPanel implements UIPanel, ConstraintHolder {
         if (cmbTypes.getSelectedIndex() != lastSelectedType) {
             if (constraintTableModel.getRowCount() > 0) {
                 int option = JOptionPane.showConfirmDialog(FieldEditor.this,
-                        "Changing the "
+                        I18N.tr("Changing the "
                                 + "type will remove all constraints"
-                                + ". Do you want to continue?",
-                        "Continue?", JOptionPane.YES_NO_OPTION);
+                                + ". Do you want to continue?"),
+                        I18N.tr("Continue?"), JOptionPane.YES_NO_OPTION);
                 if (option == JOptionPane.NO_OPTION) {
                     cmbTypes.setSelectedIndex(lastSelectedType);
                     return;
