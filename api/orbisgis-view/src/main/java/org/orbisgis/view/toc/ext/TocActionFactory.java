@@ -46,6 +46,7 @@ public interface TocActionFactory extends ActionFactoryService<TocExt> {
     public static final String A_EDIT_GEOMETRY = "A_EDIT_GEOMETRY";
     public static final String A_STOP_EDIT_GEOMETRY = "A_STOP_EDIT_GEOMETRY";
     public static final String A_SAVE_EDIT_GEOMETRY = "A_SAVE_EDIT_GEOMETRY";
+    public static final String A_CANCEL_EDIT_GEOMETRY = "A_CANCEL_EDIT_GEOMETRY";
     public static final String A_ADD_LAYER_GROUP = "A_ADD_LAYER_GROUP";
 
     // Style actions

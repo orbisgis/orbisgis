@@ -62,6 +62,8 @@ public interface ToolBarAction  extends ActionFactoryService<MainWindow> {
     public static final String DRAW_UNDO = "DRAW_UNDO";
     public static final String DRAW_REDO = "DRAW_REDO";
     public static final String DRAW_DELETE = "DRAW_DELETE";
+    public static final String DRAW_SAVE = "DRAW_SAVE";
+    public static final String DRAW_STOP = "DRAW_STOP";
     // Toolbar items group
     public static final String DRAWING_GROUP = "DRAWING_GROUP";
 }
