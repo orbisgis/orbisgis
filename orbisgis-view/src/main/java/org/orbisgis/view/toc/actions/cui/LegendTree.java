@@ -116,7 +116,7 @@ public class LegendTree extends JPanel {
                 this.add(toolBar, BorderLayout.PAGE_START);
                 JScrollPane scrollPane = new JScrollPane(tree,
                                         JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                                        JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+                                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                 scrollPane.getViewport().setViewSize(new Dimension(200,200));
                 scrollPane.getViewport().setExtentSize(new Dimension(200,200));
                 this.add(scrollPane, BorderLayout.CENTER);
@@ -267,7 +267,10 @@ public class LegendTree extends JPanel {
                         Object last = tp.getLastPathComponent();
                         int index = -1;
                         int max = -1;
-                        if (last instanceof RuleWrapper) {
+                        if(last instanceof StyleWrapper){
+                            max = 0;
+                            index = 0;
+                        } else if (last instanceof RuleWrapper) {
                                 StyleWrapper sw = legendsPanel.getStyleWrapper();
                                 index = sw.indexOf((RuleWrapper) last);
                                 max = sw.getSize() - 1;

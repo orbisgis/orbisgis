@@ -89,7 +89,7 @@ public class PnlStyle extends NameChangePanel {
                 txtName.addFocusListener(EventHandler.create(FocusListener.class, this, "setTitle","source.text","focusLost"));
                 panel.add(txtName, gbc);
                 this.add(panel);
-                this.setPreferredSize(new Dimension(200, 100));
+                this.setMinimumSize(panel.getPreferredSize());
                 this.setBorder(BorderFactory.createTitledBorder(
                 I18N.tr("Style configuration")));
                 return this;

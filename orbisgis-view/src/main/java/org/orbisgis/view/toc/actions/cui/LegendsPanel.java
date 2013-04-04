@@ -143,7 +143,10 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                         rulePan.initialize(this);
                         PropertyChangeListener pcl = EventHandler.create(PropertyChangeListener.class,this,"onNodeNameChange", "");
                         rulePan.addPropertyChangeListener(pcl);
-                        pnlContainer.add(rw.getPanel().getComponent(), rw.getPanel().getId());
+                        JScrollPane jsp = new JScrollPane(rw.getPanel().getComponent(),
+                                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                        pnlContainer.add(jsp, rw.getPanel().getId());
                         lrw.add(rw);
                 }
                 styleWrapper = new StyleWrapper(style, lrw);
@@ -151,7 +154,10 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                 stylePan.setId(getNewId());
                 PropertyChangeListener pcl = EventHandler.create(PropertyChangeListener.class,this,"onNodeNameChange", "");
                 stylePan.addPropertyChangeListener(pcl);
-                pnlContainer.add(styleWrapper.getPanel().getComponent(), styleWrapper.getPanel().getId());
+                JScrollPane jsp = new JScrollPane(styleWrapper.getPanel().getComponent(),
+                        JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                pnlContainer.add(jsp, styleWrapper.getPanel().getId());
                 legendTree = new LegendTree(this);
                 this.add(legendTree, BorderLayout.WEST);
                 refreshLegendContainer();
