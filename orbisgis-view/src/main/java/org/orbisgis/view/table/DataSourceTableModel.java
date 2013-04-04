@@ -30,6 +30,7 @@ package org.orbisgis.view.table;
 
 import java.text.ParseException;
 import java.util.Iterator;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
@@ -61,7 +62,11 @@ public class DataSourceTableModel extends AbstractTableModel {
         private DataSource dataSource;
         private TableEditableElement element;
         private ModificationListener dataSourceListener;
-        
+
+        /**
+         * Constructor
+         * @param element DataSource to show
+         */
         public DataSourceTableModel(TableEditableElement element) {
                 this.element = element;
                 dataSource = element.getDataSource();
@@ -234,9 +239,13 @@ public class DataSourceTableModel extends AbstractTableModel {
                 try {
                         Value v;
                         if(aValue!=null) {
-                            Type type = getMetadata().getFieldType(columnIndex);
-                            String strValue = aValue.toString().trim();
-                            v = ValueFactory.createValueByType(strValue, type.getTypeCode());
+                            if(!(aValue instanceof Value)) {
+                                    Type type = getMetadata().getFieldType(columnIndex);
+                                    String strValue = aValue.toString().trim();
+                                    v = ValueFactory.createValueByType(strValue, type.getTypeCode());
+                            } else {
+                                    v = (Value)aValue;
+                            }
                         } else {
                             v = ValueFactory.createNullValue();
                         }
@@ -327,7 +336,7 @@ public class DataSourceTableModel extends AbstractTableModel {
                 @Override
                 public void fieldAdded(FieldEditionEvent event) {
                         LOGGER.debug("ModificationListener:fieldAdded");
-                        fireTableStructureChanged();
+                        fireTableChanged(new TableModelEvent(DataSourceTableModel.this,TableModelEvent.HEADER_ROW,TableModelEvent.HEADER_ROW,event.getFieldIndex(),TableModelEvent.INSERT));
                 }
 
                 /**
@@ -337,7 +346,7 @@ public class DataSourceTableModel extends AbstractTableModel {
                 @Override
                 public void fieldModified(FieldEditionEvent event) {
                         LOGGER.debug("ModificationListener:fieldModified");
-                        fireTableStructureChanged();
+                        fireTableChanged(new TableModelEvent(DataSourceTableModel.this,TableModelEvent.HEADER_ROW,TableModelEvent.HEADER_ROW,event.getFieldIndex(),TableModelEvent.UPDATE));
                 }
 
                 /**
@@ -347,7 +356,7 @@ public class DataSourceTableModel extends AbstractTableModel {
                 @Override
                 public void fieldRemoved(FieldEditionEvent event) {
                         LOGGER.debug("ModificationListener:fieldRemoved");
-                        fireTableStructureChanged();
+                        fireTableChanged(new TableModelEvent(DataSourceTableModel.this,TableModelEvent.HEADER_ROW,TableModelEvent.HEADER_ROW,event.getFieldIndex(),TableModelEvent.DELETE));
                 }
         }
 }

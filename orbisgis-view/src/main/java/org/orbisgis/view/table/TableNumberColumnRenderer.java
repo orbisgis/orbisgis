@@ -28,6 +28,8 @@
  */
 package org.orbisgis.view.table;
 
+import org.apache.log4j.Logger;
+
 import java.awt.Component;
 import java.awt.Point;
 import java.text.NumberFormat;
@@ -41,6 +43,7 @@ import javax.swing.JTable;
  */
 public class TableNumberColumnRenderer extends TableDefaultColumnRenderer {
         private NumberFormat decimalFormat;
+        private static final Logger LOGGER = Logger.getLogger(TableNumberColumnRenderer.class);
         
         public TableNumberColumnRenderer(JTable table,Point popupCellAdress) {
                 super(table, Number.class,popupCellAdress);
@@ -53,8 +56,13 @@ public class TableNumberColumnRenderer extends TableDefaultColumnRenderer {
         public Component getTableCellRendererComponent(JTable jtable, Object o, boolean bln, boolean bln1, int i, int i1) {
                 Component lafComp = super.getTableCellRendererComponent(jtable, o, bln, bln1, i, i1);
                 if(lafComp instanceof JLabel && o!=null) {
-                        JLabel lafTF = (JLabel)lafComp;
-                        lafTF.setText(decimalFormat.format(o));
+                        try {
+                                JLabel lafTF = (JLabel)lafComp;
+                                lafTF.setText(decimalFormat.format(o));
+                        } catch( IllegalArgumentException ex) {
+                                LOGGER.debug(ex.getLocalizedMessage(),ex);
+                                //ignore
+                        }
                 }                
                 return lafComp;
         }
