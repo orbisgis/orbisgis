@@ -94,6 +94,7 @@ public class LegendTree extends JPanel {
                 tree.setModel(ltm);
                 //..A custom cell editor...
                 LegendTreeCellEditor editor = new LegendTreeCellEditor();
+                editor.setClickCountToStart(2);
                 tree.setCellEditor(editor);
                 //...and a custom TreeCellRenderer.
                 LegendCellRenderer lcr = new LegendCellRenderer(tree);
