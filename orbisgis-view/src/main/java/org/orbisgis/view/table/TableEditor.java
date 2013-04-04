@@ -28,8 +28,7 @@
  */
 package org.orbisgis.view.table;
 
-import java.awt.BorderLayout;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -52,6 +51,7 @@ import javax.swing.event.RowSorterListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
@@ -77,6 +77,7 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
+import org.orbisgis.view.components.gdms.ValueInputVerifier;
 import org.orbisgis.view.docking.DockingLocation;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
@@ -940,6 +941,16 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         int colWidth = OptimalWidthJob.getColumnOptimalWidth(table, rowsToCheck, maxWidth, i,
                                         new NullProgressMonitor());
                         col.setPreferredWidth(colWidth);
+
+                        // Create DataSource specific field editor using native editor
+                        TableCellEditor cellEditor = table.getDefaultEditor(tableModel.getColumnClass(i));
+                        if(cellEditor instanceof DefaultCellEditor) {
+                                Component component = ((DefaultCellEditor) cellEditor).getComponent();
+                                if(component instanceof JTextField) {
+                                        ValueInputVerifier verifier = new ValueInputVerifier(tableModel.getDataSource(),i);
+                                        col.setCellEditor(new ValidatorCellEditor(verifier));
+                                }
+                        }
                         colModel.addColumn(col);
                 }
                 table.setColumnModel(colModel);

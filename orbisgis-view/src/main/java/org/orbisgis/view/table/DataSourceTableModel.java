@@ -234,9 +234,13 @@ public class DataSourceTableModel extends AbstractTableModel {
                 try {
                         Value v;
                         if(aValue!=null) {
-                            Type type = getMetadata().getFieldType(columnIndex);
-                            String strValue = aValue.toString().trim();
-                            v = ValueFactory.createValueByType(strValue, type.getTypeCode());
+                            if(!(aValue instanceof Value)) {
+                                    Type type = getMetadata().getFieldType(columnIndex);
+                                    String strValue = aValue.toString().trim();
+                                    v = ValueFactory.createValueByType(strValue, type.getTypeCode());
+                            } else {
+                                    v = (Value)aValue;
+                            }
                         } else {
                             v = ValueFactory.createNullValue();
                         }
