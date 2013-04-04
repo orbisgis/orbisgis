@@ -48,6 +48,9 @@ public class LegendTreeCellEditor extends DefaultCellEditor {
     private JTextField field = new JTextField(20);
     Object obj;
 
+    /**
+     * Builds a new editor.
+     */
     public LegendTreeCellEditor(){
         this(new JTextField(20));
     }
@@ -71,21 +74,6 @@ public class LegendTreeCellEditor extends DefaultCellEditor {
             return super.getTreeCellEditorComponent(tree, ilp.getLegend().getName(), isSelected, expanded, leaf, row);
         }
         return null;
-    }
-
-    /**
-     * If the input event is a MouseEvent, this method will return true if the number of clicks embedded in the event
-     * is greater than getClickCountToStart, false otherwise. For other events, returns always true.
-     * @param anEvent The input event
-     * @return A boolean.
-     */
-    @Override
-    public boolean isCellEditable(EventObject anEvent){
-        if (anEvent instanceof MouseEvent) {
-            MouseEvent me = (MouseEvent) anEvent;
-            return me.getClickCount() >= getClickCountToStart();
-        }
-        return true;
     }
 
     @Override
