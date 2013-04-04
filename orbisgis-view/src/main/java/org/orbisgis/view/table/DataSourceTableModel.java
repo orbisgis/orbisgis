@@ -356,7 +356,7 @@ public class DataSourceTableModel extends AbstractTableModel {
                 @Override
                 public void fieldRemoved(FieldEditionEvent event) {
                         LOGGER.debug("ModificationListener:fieldRemoved");
-                        fireTableChanged(new TableModelEvent(DataSourceTableModel.this,TableModelEvent.HEADER_ROW,TableModelEvent.HEADER_ROW,TableModelEvent.DELETE));
+                        fireTableChanged(new TableModelEvent(DataSourceTableModel.this,TableModelEvent.HEADER_ROW,TableModelEvent.HEADER_ROW,event.getFieldIndex(),TableModelEvent.DELETE));
                 }
         }
 }
