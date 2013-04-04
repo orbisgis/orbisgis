@@ -200,8 +200,13 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     I18N.tr("Save modifications"), I18N.tr("Apply the data source modifications"),
                     OrbisGISIcon.getIcon("save"),
                     EventHandler.create(ActionListener.class,this, "onMenuCommitDataSource"),null).setEnabledOnModifiedLayer(true));
+            popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_CANCEL_EDIT_GEOMETRY,
+                    I18N.tr("Cancel modifications"), I18N.tr("Undo all data source modifications"),
+                    OrbisGISIcon.getIcon("cancel"),
+                    EventHandler.create(ActionListener.class,this, "onMenuSyncDataSource"),null).setEnabledOnModifiedLayer(true));
 
-            popupActions.addAction(new LayerAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
+
+                popupActions.addAction(new LayerAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
                     I18N.tr("Add layer group"),I18N.tr("Add a the layer group to the map context"),
                     OrbisGISIcon.getIcon("add"),
                     EventHandler.create(ActionListener.class, this, "onAddGroup"),null)
@@ -232,7 +237,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         mapElement.save();
                 }
         }
-
         /**
          * User select the Start/Stop edition of a layer geometries
          */
@@ -260,6 +264,31 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                 } catch (Exception ex) {
                                     LOGGER.error(ex.getLocalizedMessage(),ex);
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /**
+         * User select Cancel modifications on layer node
+         */
+        public void onMenuSyncDataSource() {
+            int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                    I18N.tr("Are you sure to cancel all your modifications ?"),
+                    I18N.tr("Return to the original state"),
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if(response==JOptionPane.YES_OPTION) {
+                if(mapContext!=null) {
+                    List<ILayer> selectedLayers = getSelectedLayers();
+                    for(ILayer layer : selectedLayers) {
+                        DataSource dataSource = layer.getDataSource();
+                        if(dataSource!=null) {
+                            try {
+                                dataSource.syncWithSource();
+                            } catch (DriverException ex) {
+                                LOGGER.error(ex.getLocalizedMessage(),ex);
                             }
                         }
                     }

@@ -83,7 +83,8 @@ public class ToolUtilities {
 		for (int i = 0; i < sds.getFieldCount(); i++) {
 			Type type = sds.getFieldType(i);
 			if (type.getBooleanConstraint(Constraint.NOT_NULL)
-					&& !type.getBooleanConstraint(Constraint.AUTO_INCREMENT)) {
+					&& !type.getBooleanConstraint(Constraint.AUTO_INCREMENT) &&
+                    row[i]==null) {
 				AskValidValue av = new AskValidValue(sds, i);
 				if (UIFactory.showDialog(av)) {
 					try {
