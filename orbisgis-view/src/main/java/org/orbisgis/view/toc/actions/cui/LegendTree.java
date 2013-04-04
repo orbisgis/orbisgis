@@ -104,8 +104,8 @@ public class LegendTree extends JPanel {
                 TreeSelectionListener tsl = EventHandler.create(TreeSelectionListener.class, this, "refreshIcons");
                 tree.addTreeSelectionListener(tsl);
                 //We refresh the CardLayout of the associated LegendsPanel
-                TreeSelectionListener tslb = EventHandler.create(TreeSelectionListener.class, legendsPanel, "legendSelected");
-                tree.addTreeSelectionListener(tslb);
+                TreeSelectionListener select = EventHandler.create(TreeSelectionListener.class, legendsPanel, "legendSelected");
+                tree.addTreeSelectionListener(select);
                 expandAll(tree);
                 //We want an editable tree
                 tree.setEditable(true);
@@ -200,6 +200,10 @@ public class LegendTree extends JPanel {
                 }
         }
 
+        /**
+         * Start editing the name of the currently selected element.
+         * @param evt The initial event.
+         */
         public final void renameElement(ActionEvent evt) {
             TreePath tp = tree.getSelectionPath();
             tree.startEditingAtPath(tp);
@@ -209,7 +213,7 @@ public class LegendTree extends JPanel {
          * Get the currently selected Legend, if any. If we find it, we return
          * it. Otherwise, we return null.
          *
-         * @return
+         * @return The currently selected panel, or null if none is selected.
          */
         public ILegendPanel getSelectedLegend() {
                 TreePath tp = tree.getSelectionPath();
@@ -226,7 +230,7 @@ public class LegendTree extends JPanel {
          * Gets the {@code ISELegendPanel} that is associated to the currently
          * selected element in the tree.
          *
-         * @return
+         * @return  The currently selected panel, or null if none is selected.
          */
         public ISELegendPanel getSelectedPanel() {
                 TreePath tp = tree.getSelectionPath();
@@ -235,9 +239,9 @@ public class LegendTree extends JPanel {
                         if (last instanceof ILegendPanel) {
                                 return (ILegendPanel) last;
                         } else if (last instanceof RuleWrapper) {
-                                return (ISELegendPanel) ((RuleWrapper) last).getPanel();
+                                return ((RuleWrapper) last).getPanel();
                         } else if (last instanceof StyleWrapper) {
-                                return (ISELegendPanel) ((StyleWrapper) last).getPanel();
+                                return ((StyleWrapper) last).getPanel();
                         }
                 }
                 return null;
@@ -538,7 +542,7 @@ public class LegendTree extends JPanel {
         /**
          * Expand configuration tree
          *
-         * @param tree
+         * @param tree The tree we want to process.
          */
         private void expandAll(JTree tree) {
                 for (int row = 0; row < tree.getRowCount(); row++) {
