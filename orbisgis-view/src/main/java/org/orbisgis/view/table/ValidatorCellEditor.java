@@ -63,6 +63,17 @@ public class ValidatorCellEditor extends DefaultCellEditor {
                         return super.getCellEditorValue();
                 }
         }
+        private void resetBorder() {
+                Component component = getComponent();
+                if(component instanceof JComponent) {
+                        ((JComponent) component).setBorder((new JTextField()).getBorder());
+                }
+        }
+        @Override
+        public void cancelCellEditing() {
+                resetBorder();
+                super.cancelCellEditing();
+        }
 
         @Override
         public boolean stopCellEditing() {
@@ -74,6 +85,7 @@ public class ValidatorCellEditor extends DefaultCellEditor {
                                 return false;
                         }
                 }
+                resetBorder();
                 return super.stopCellEditing();
         }
 }

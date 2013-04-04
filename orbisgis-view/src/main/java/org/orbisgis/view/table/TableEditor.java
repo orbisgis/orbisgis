@@ -53,6 +53,8 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
@@ -137,6 +139,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          */
         public TableEditor(TableEditableElement element) {
                 super(new BorderLayout());
+
                 //Add a listener to the source manager to close the table when
                 //the source is removed
                 Services.getService(DataManager.class).getSourceManager().
@@ -267,7 +270,6 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 filterManager.registerFilterFactory(new WhereSQLFilterFactory());
                 filterManager.addFilter(factory.getDefaultFilterValue());
                 filterManager.getEventFilterChange().addListener(this, EventHandler.create(FilterFactoryManager.FilterChangeListener.class, this, "onApplySelectionFilter"));
-                tableModel.addTableModelListener(EventHandler.create(TableModelListener.class,this,"onFieldsUpdate",""));
                 return filterComp;
         }
                 
@@ -283,24 +285,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         LOGGER.info(I18N.tr("Searching request is already launched. Please wait a moment, or cancel it."));
                 }
         }
-        
-        /**
-         * Reload the filter ui on header update
-         * @param evt Update event information         
-         */
-        public void onFieldsUpdate(TableModelEvent evt) {
-                LOGGER.debug("onFieldsUpdate "+evt.getType());                
-                if(evt.getFirstRow() == TableModelEvent.HEADER_ROW) {
-                        SwingUtilities.invokeLater(new Runnable() {
 
-                                @Override
-                                public void run() {
-                                        reloadFilters();
-                                        resetRenderers();
-                                }
-                        });
-                }
-        }
         /**
          * Reload filter GUI components
          */
@@ -312,6 +297,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         }
         private JComponent makeTable() {
                 table = new JTable();
+                table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+                table.setAutoCreateColumnsFromModel(false);
                 table.addMouseListener(EventHandler.create(MouseListener.class,
                         this,
                         "onMouseActionOnTableCells",
@@ -752,10 +739,11 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * the data model of the table can be set.
          * Called only once.
          */
-        private void readDataSource() {     
+        private void readDataSource() {
                 tableModel = new DataSourceTableModel(tableEditableElement);
+                tableModel.addTableModelListener(new FieldResetListener());
                 table.setModel(tableModel);
-                table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+                updateTableColumnModel();
                 quickAutoResize();
                 tableSorter = new DataSourceRowSorter(tableModel);
                 tableSorter.addRowSorterListener(
@@ -932,16 +920,26 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         }
 
         private void autoResizeColWidth(int rowsToCheck) {
-                DefaultTableColumnModel colModel = new DefaultTableColumnModel();
+                TableColumnModel colModel = table.getColumnModel();
                 int maxWidth = 200;
+                for (int i = 0; i < colModel.getColumnCount(); i++) {
+                        TableColumn col = colModel.getColumn(i);
+                        int colWidth = OptimalWidthJob.getColumnOptimalWidth(table, rowsToCheck, maxWidth, i,
+                                        new NullProgressMonitor());
+                        col.setPreferredWidth(colWidth);
+                }
+                resetRenderers();
+        }
+
+        /**
+         * Sync the table column model with the DataSource
+         */
+        private void updateTableColumnModel() {
+                TableColumnModel colModel = new DefaultTableColumnModel();
                 for (int i = 0; i < tableModel.getColumnCount(); i++) {
                         TableColumn col = new TableColumn(i);
                         String columnName = tableModel.getColumnName(i);
                         col.setHeaderValue(columnName);
-                        int colWidth = OptimalWidthJob.getColumnOptimalWidth(table, rowsToCheck, maxWidth, i,
-                                        new NullProgressMonitor());
-                        col.setPreferredWidth(colWidth);
-
                         // Create DataSource specific field editor using native editor
                         TableCellEditor cellEditor = table.getDefaultEditor(tableModel.getColumnClass(i));
                         if(cellEditor instanceof DefaultCellEditor) {
@@ -954,9 +952,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         colModel.addColumn(col);
                 }
                 table.setColumnModel(colModel);
-                resetRenderers();
         }
-
         /**
          * @param column Column index
          * @return True if the field type is numeric
@@ -1023,5 +1019,16 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         @Override
         public Point getPopupCellAdress() {
                 return new Point(popupCellAdress);
+        }
+
+        private class FieldResetListener implements TableModelListener {
+                @Override
+                public void tableChanged(TableModelEvent tableModelEvent) {
+                        if(tableModelEvent.getFirstRow() == TableModelEvent.HEADER_ROW) {
+                                updateTableColumnModel();
+                                reloadFilters();
+                                resetRenderers();
+                        }
+                }
         }
 }

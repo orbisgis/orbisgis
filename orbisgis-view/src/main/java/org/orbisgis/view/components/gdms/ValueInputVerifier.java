@@ -96,7 +96,7 @@ public class ValueInputVerifier extends InputVerifier {
                                 getValue(value);
                                 return true;
                         } catch (ParseException ex) {
-                                LOGGER.error(I18N.tr("The entered value cannot be parsed",ex));
+                                LOGGER.error(I18N.tr("The entered value cannot be parsed"),ex);
                                 return false;
                         }  catch (Exception ex) {
                                 LOGGER.error(ex.getLocalizedMessage(),ex);
