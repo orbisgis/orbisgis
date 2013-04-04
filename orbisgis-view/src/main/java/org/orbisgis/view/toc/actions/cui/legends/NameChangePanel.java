@@ -29,6 +29,7 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
+import org.orbisgis.view.util.PropertyHost;
 
 import javax.swing.*;
 import java.beans.PropertyChangeListener;
@@ -38,7 +39,7 @@ import java.beans.PropertyChangeSupport;
  * Abstract class for JPanel instances that are ISELegendPanel instances who need some property support for some name...
  * @author Alexis Guéganno
  */
-public abstract class NameChangePanel extends JPanel  implements ISELegendPanel {
+public abstract class NameChangePanel extends JPanel  implements ISELegendPanel, PropertyHost {
 
     protected PropertyChangeSupport propertySupport = new PropertyChangeSupport(this);
     public static final String NAME_PROPERTY = "name_property";
@@ -50,6 +51,7 @@ public abstract class NameChangePanel extends JPanel  implements ISELegendPanel 
      * @param listener The PropertyChangeListener instance
      * @note Use EventHandler.create to build the PropertyChangeListener instance
      */
+    @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         propertySupport.addPropertyChangeListener(listener);
     }
@@ -61,6 +63,7 @@ public abstract class NameChangePanel extends JPanel  implements ISELegendPanel 
      * @param listener The PropertyChangeListener instance
      * @note Use EventHandler.create to build the PropertyChangeListener instance
      */
+    @Override
     public void addPropertyChangeListener(String prop,PropertyChangeListener listener) {
         propertySupport.addPropertyChangeListener(prop, listener);
     }
@@ -68,6 +71,7 @@ public abstract class NameChangePanel extends JPanel  implements ISELegendPanel 
      * Remove the specified listener from the list
      * @param listener The listener instance
      */
+    @Override
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertySupport.removePropertyChangeListener(listener);
     }
@@ -77,6 +81,7 @@ public abstract class NameChangePanel extends JPanel  implements ISELegendPanel 
      * @param prop The static property name PROP_..
      * @param listener The listener instance
      */
+    @Override
     public void removePropertyChangeListener(String prop,PropertyChangeListener listener) {
         propertySupport.removePropertyChangeListener(prop,listener);
     }
