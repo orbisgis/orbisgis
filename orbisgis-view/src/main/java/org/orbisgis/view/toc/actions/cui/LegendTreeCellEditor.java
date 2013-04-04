@@ -40,6 +40,8 @@ import java.awt.event.MouseEvent;
 import java.util.EventObject;
 
 /**
+ * Cell editor dedicated to nodes of the tree hosted in the simple legend editor. It basically uses the UI of the
+ * {@link DefaultCellEditor} for String.
  * @author alexis
  */
 public class LegendTreeCellEditor extends DefaultCellEditor {
