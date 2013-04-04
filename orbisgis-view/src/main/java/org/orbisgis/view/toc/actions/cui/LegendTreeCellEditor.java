@@ -36,8 +36,6 @@ import org.orbisgis.view.toc.wrapper.StyleWrapper;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.util.EventObject;
 
 /**
  * Cell editor dedicated to nodes of the tree hosted in the simple legend editor. It basically uses the UI of the
