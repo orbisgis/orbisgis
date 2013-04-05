@@ -35,7 +35,6 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.DefaultJobId;
-import org.orbisgis.view.components.actions.ActionTools;
 import org.orbisgis.view.components.gdms.DeleteRows;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.main.frames.ext.ToolBarAction;

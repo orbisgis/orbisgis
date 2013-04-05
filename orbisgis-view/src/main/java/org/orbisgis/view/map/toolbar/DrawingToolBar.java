@@ -69,9 +69,11 @@ public class DrawingToolBar implements ToolBarAction {
     @Override
     public List<Action> createActions(MainWindow target) {
         List<Action> actions = new LinkedList<Action>();
+        actions.add(new ActionStop(mapEditor));
         actions.add(new ActionCancel(mapEditor));
         actions.add(new ActionUndo(mapEditor));
         actions.add(new ActionRedo(mapEditor));
+        actions.add(new ActionSave(mapEditor));
         actions.add(new ActionDelete(mapEditor));
         add(actions,DRAW_AUTO_POLYGON, new AutoCompletePolygonTool());
         add(actions,DRAW_CUT_POLYGON, new CutPolygonTool());
