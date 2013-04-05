@@ -122,6 +122,12 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         // Action trackers
         private MenuItemServiceTracker<PopupTarget,PopupMenu> popupActionTracker;
         private MenuItemServiceTracker<TitleActionBar,GeoCatalogMenu> dockingActionTracker;
+        /**
+         * Grouping keys
+         */
+        private static final String GROUP_ADD = "ADD";
+        private static final String GROUP_OPEN = "OPEN";
+        private static final String GROUP_CLOSE = "CLOSE";
 
         /**
          * For the Unit test purpose
@@ -527,7 +533,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         }
         private void createPopupActions() {
             //Popup:Add
-            popupActions.addAction(new DefaultAction(PopupMenu.M_ADD,I18N.tr("Add")).setMenuGroup(true));
+            popupActions.addAction(new DefaultAction(PopupMenu.M_ADD,I18N.tr("Add")).setMenuGroup(true).setLogicalGroup(GROUP_ADD));
             //Popup:Add:File
             popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_FILE,I18N.tr("File"),
                     I18N.tr("Add a file from hard drive."),
@@ -550,7 +556,11 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                     OrbisGISIcon.getIcon("server_connect"),EventHandler.create(ActionListener.class,
                     this,"onMenuAddWMSServer"),null).setParent(PopupMenu.M_ADD));
             //Popup:Save
-            popupActions.addAction(new ActionOnSelection(PopupMenu.M_SAVE,I18N.tr("Save"),true,getListSelectionModel()));
+            popupActions.addAction(new ActionOnSelection(
+                        PopupMenu.M_SAVE,I18N.tr("Save"),
+                        true,
+                        getListSelectionModel()
+                    ).setLogicalGroup(GROUP_ADD));
             //Popup:Save:File
             popupActions.addAction(new ActionOnSelection(PopupMenu.M_SAVE_FILE,I18N.tr("File"),
                     I18N.tr("Save selected sources in files"),OrbisGISIcon.getIcon("page_white_save"),
@@ -562,15 +572,16 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             //Popup:Open attributes
             popupActions.addAction(new ActionOnSelection(PopupMenu.M_OPEN_ATTRIBUTES,I18N.tr("Open the attributes"),
                     I18N.tr("Open the data source table"),OrbisGISIcon.getIcon("openattributes"),
-                    EventHandler.create(ActionListener.class,this, "onMenuShowTable"),getListSelectionModel()));
+                    EventHandler.create(ActionListener.class,this, "onMenuShowTable"),getListSelectionModel()).setLogicalGroup(GROUP_OPEN));
             //Popup:Remove sources
             popupActions.addAction(new ActionOnSelection(PopupMenu.M_REMOVE,I18N.tr("Remove the source"),
                     I18N.tr("Remove from this list the selected sources."),OrbisGISIcon.getIcon("remove"),
-                    EventHandler.create(ActionListener.class,this,"onMenuRemoveSource"),getListSelectionModel()));
+                    EventHandler.create(ActionListener.class,this,"onMenuRemoveSource"),getListSelectionModel())
+                        .setLogicalGroup(GROUP_CLOSE));
             //Clear Geo-catalog
             popupActions.addAction(new ActionOnNonEmptySourceList(PopupMenu.M_CLEAR_CATALOG,I18N.tr("Clear the GeoCatalog"),
                     I18N.tr("Remove all sources in this list"),OrbisGISIcon.getIcon("bin_closed"),
-                    EventHandler.create(ActionListener.class,this,"onMenuClearGeoCatalog")));
+                    EventHandler.create(ActionListener.class,this,"onMenuClearGeoCatalog")).setLogicalGroup(GROUP_CLOSE));
         }
 
         /**
