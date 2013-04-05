@@ -51,4 +51,16 @@ public interface PopupMenu extends ActionFactoryService<PopupTarget> {
     public static final String M_REMOVE = "M_REMOVE";
 
     public static final String M_CLEAR_CATALOG = "M_CLEAR_CATALOG";
+    /**
+     * Grouping keys : Group of menus used to add sources
+     */
+    public static final String GROUP_ADD = "ADD";
+    /**
+     * Grouping keys : Group of menus used to display table of sources
+     */
+    public static final String GROUP_OPEN = "OPEN";
+    /**
+     * Grouping keys : Group of menus used to close things
+     */
+    public static final String GROUP_CLOSE = "CLOSE";
 }
