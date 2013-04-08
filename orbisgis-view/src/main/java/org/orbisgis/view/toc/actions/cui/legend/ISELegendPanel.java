@@ -36,6 +36,7 @@ import org.orbisgis.view.toc.actions.cui.LegendContext;
  * @author Alexis Guéganno
  */
 public interface ISELegendPanel {
+    static final String NAME_PROPERTY = "name_property";
 
 	/**
 	 * This function will return the Component of the object (normally a
