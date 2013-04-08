@@ -82,18 +82,14 @@ public class URIUtility {
     public static String getConcatenatedParameters(Map<String,String> parameters, String... keys) {
         StringBuilder keyValues = new StringBuilder();
         for(String key : keys) {
-            try {
-                String value = parameters.get(key.toLowerCase().trim());
-                if(value!=null) {
-                    if(keyValues.length()!=0) {
-                        keyValues.append("&");
-                    }
-                    keyValues.append(URLEncoder.encode(key.toUpperCase(),ENCODING));
-                    keyValues.append("=");
-                    keyValues.append(URLEncoder.encode(value,ENCODING));
+            String value = parameters.get(key.toLowerCase().trim());
+            if(value!=null) {
+                if(keyValues.length()!=0) {
+                    keyValues.append("&");
                 }
-            } catch (UnsupportedEncodingException ex) {
-                LOGGER.error(ex.getLocalizedMessage(),ex);
+                keyValues.append(key.toUpperCase());
+                keyValues.append("=");
+                keyValues.append(value);
             }
         }
         return keyValues.toString();

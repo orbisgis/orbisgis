@@ -691,7 +691,7 @@ public class SourceManagementTest extends TestBase {
                 testFile = new File(TestResourceHandler.OTHERRESOURCES, "test.csv");
                 testDB = new DBSource(null, 0, TestResourceHandler.OTHERRESOURCES
                         + "testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
-                testWMS = new StreamSource("http://127.0.0.1", 80, "cantons", "wms", "format/pig", "EPSG:1234");
+                testWMS = new StreamSource("http","127.0.0.1", 80,"", "cantons", "wms", "format/pig", "EPSG:1234","1.3.0");
                 obj = new MemoryDataSetDriver();
         }
 }

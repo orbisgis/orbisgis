@@ -57,7 +57,7 @@ public class StreamSource implements Serializable {
         /** Image type ex:image/png */
         public static final String OUTPUTFORMAT_PARAMETER = "outputformat";
         /** CRS replace SRS from this version */
-        public Version CRS_BEGINING_VERSION = new Version("1.3.0");
+        public static final Version CRS_BEGINING_VERSION = new Version("1.3.0");
         /** Coordinate reference system ex:EPSG:27572 Version >= 1.3.0 */
         public static final String CRS_PARAMETER = "crs"; // Version >= 1.3.0
         /** Spatial reference system ex:EPSG:27572 Version < 1.3.0 */
@@ -67,10 +67,10 @@ public class StreamSource implements Serializable {
         /** WMS server version */
         public static final String VERSION_PARAMETER = "version";
 
-        private String scheme;
+        private String scheme="http";
         private String host;
         private int port;
-        private String path;
+        private String path="";
         private Version version;
         private Map<String,String> parameters = new HashMap<String, String>();
 
@@ -106,7 +106,7 @@ public class StreamSource implements Serializable {
                 this.host = host;
                 this.path = path;
                 setVersion(version);
-                if(port==-1) {
+                if(port<=0) { //invalid port
                     try {
                         this.port = URI.create(scheme+"://dummy.org").toURL().getDefaultPort();
                     } catch (MalformedURLException ex) {
@@ -116,7 +116,11 @@ public class StreamSource implements Serializable {
                 parameters.put(LAYER_PARAMETER,layerName);
                 parameters.put(SERVICE_PARAMETER,service);
                 parameters.put(OUTPUTFORMAT_PARAMETER,imageFormat);
-                parameters.put(CRS_PARAMETER,crs);
+                if(this.version.compareTo(CRS_BEGINING_VERSION)<0) {
+                    parameters.put(SRS_PARAMETER,crs);
+                } else {
+                    parameters.put(CRS_PARAMETER,crs);
+                }
         }
 
         /**
@@ -126,6 +130,13 @@ public class StreamSource implements Serializable {
         public void setVersion(String version) {
             parameters.put(VERSION_PARAMETER,version);
             this.version = new Version(version);
+        }
+
+        /**
+         * @return The stream version x.y.z
+         */
+        public String getVersion() {
+            return parameters.get(VERSION_PARAMETER);
         }
         /**
          * Construct the stream source from an URI
@@ -137,15 +148,29 @@ public class StreamSource implements Serializable {
             host = uri.getHost();
             port = uri.getPort();
             scheme = uri.getScheme();
+            path = uri.getPath();
             if(port==-1) {
                 try {
-                    uri.toURL().getDefaultPort();
+                    port = uri.toURL().getDefaultPort();
                 } catch (MalformedURLException ex) {
                     // Not a url
                     port = DEFAULT_PORT;
                 }
             }
             parameters = new HashMap<String, String>(URIUtility.getQueryKeyValuePairs(uri));
+            // If version is not set in the URI, find the appropriate one by using the projection system variable
+            String version = parameters.get(VERSION_PARAMETER);
+            if(version==null) {
+                String srs = parameters.get(SRS_PARAMETER);
+                String crs = parameters.get(CRS_PARAMETER);
+                if(crs!=null || srs==null) {
+                    setVersion("1.3.0");
+                } else {
+                    setVersion("1.1.1");
+                }
+            } else {
+                setVersion(version);
+            }
         }
         private String getQuery() {
             if(version.compareTo(CRS_BEGINING_VERSION)<0) {
@@ -155,8 +180,7 @@ public class StreamSource implements Serializable {
             }
         }
         /**
-         *
-         * @return
+         * @return URI equivalent of this request
          */
         public URI toURI() {
             try {
@@ -261,15 +285,20 @@ public class StreamSource implements Serializable {
          * @return the srs of the source
          */
         public String getSRS() {
-                return parameters.get(SRS_PARAMETER);
+                return getReferenceSystem();
         }
-
+        private String getReferenceSystem() {
+            if(version.compareTo(CRS_BEGINING_VERSION)<0) {
+                return parameters.get(SRS_PARAMETER);
+            } else {
+                return parameters.get(CRS_PARAMETER);
+            }
+        }
         /**
-         * If version >= 1.3.0
          * @return the crs of the source
          */
         public String getCRS() {
-                parameters.get(CRS_PARAMETER);
+                return getReferenceSystem();
         }
 
         /**
@@ -309,35 +338,33 @@ public class StreamSource implements Serializable {
                         if ((this.host == null) ? (other.host != null) : !this.host.equals(other.host)) {
                                 return false;
                         }
+                        if((this.path == null) ? (other.path != null) : !this.path.equals(other.path)) {
+                                return false;
+                        }
                         if (this.port != other.port) {
                                 return false;
                         }
-                        if ((getLayerName() == null) ? (other.layerName != null) : !this.layerName.equals(other.layerName)) {
+                        // Compare query
+                        for(Map.Entry<String,String> entry : other.getQueryMap().entrySet()) {
+                            String value = parameters.get(entry.getKey());
+                            if((value==null && entry.getValue()!=null) ||
+                                    !(value!=null && value.equals(entry.getValue()))) {
                                 return false;
-                        }
-                        if ((this.imageFormat == null) ? (other.imageFormat != null) : !this.imageFormat.equals(other.imageFormat)) {
-                                return false;
-                        }
-                        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
-                                return false;
-                        }
-                        if ((this.srs == null) ? (other.srs != null) : !this.srs.equals(other.srs)) {
-                                return false;
+                            }
                         }
                         return true;
+                } else {
+                    return false;
                 }
-                return false;
         }
 
-        @Override
-        public int hashCode() {
-                int hash = 7;
-                hash = 73 * hash + (this.host != null ? this.host.hashCode() : 0);
-                hash = 73 * hash + this.port;
-                hash = 73 * hash + (this.layerName != null ? this.layerName.hashCode() : 0);
-                hash = 73 * hash + (this.imageFormat != null ? this.imageFormat.hashCode() : 0);
-                hash = 73 * hash + (this.type != null ? this.type.hashCode() : 0);
-                hash = 73 * hash + (this.srs != null ? this.srs.hashCode() : 0);
-                return hash;
-        }
+    @Override
+    public int hashCode() {
+        int result = scheme.hashCode();
+        result = 31 * result + host.hashCode();
+        result = 31 * result + port;
+        result = 31 * result + (path != null ? path.hashCode() : 0);
+        result = 31 * result + parameters.hashCode();
+        return result;
+    }
 }

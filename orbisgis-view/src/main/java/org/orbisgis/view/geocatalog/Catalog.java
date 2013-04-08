@@ -483,7 +483,8 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                                         if (sm.exists(layerName)) {
                                                 uniqueLayerName = sm.getUniqueName(layerName);
                                         }
-                                        StreamSource wmsSource = new StreamSource(client.getHost(), client.getPort(), layerName, "wms", validImageFormat, srsPanel.getSRS());
+                                        URI streamUri = URI.create(client.getHost());
+                                        StreamSource wmsSource = new StreamSource(streamUri.getScheme(),streamUri.getHost(), client.getPort(), streamUri.getPath() ,layerName, "wms", validImageFormat, srsPanel.getSRS(),client.getVersion());
                                         StreamSourceDefinition streamSourceDefinition = new StreamSourceDefinition(wmsSource);
                                         sm.register(uniqueLayerName, streamSourceDefinition);
                                 }
