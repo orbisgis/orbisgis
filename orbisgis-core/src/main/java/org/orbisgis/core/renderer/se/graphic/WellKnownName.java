@@ -30,10 +30,7 @@ package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.Polygon;
 import java.awt.Shape;
-import java.awt.geom.Arc2D;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.*;
 import java.util.Map;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -172,7 +169,7 @@ public enum WellKnownName implements MarkGraphicSource {
             case HALFCIRCLE:
                 return new Arc2D.Double(-x2, -y2, x, y, -90, -180, Arc2D.CHORD);
             case CIRCLE:
-                return new Arc2D.Double(-x2, -y2, x, y, 0, -360, Arc2D.CHORD);
+                return new Ellipse2D.Double(-x2, -y2, x, y);
             case TRIANGLE: {
                 int h3 = (int) (y / 3);
                 Polygon polygon = new Polygon();

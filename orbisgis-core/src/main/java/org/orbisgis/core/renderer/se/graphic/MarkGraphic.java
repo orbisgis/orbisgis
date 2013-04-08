@@ -28,27 +28,12 @@
  */
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MarkGraphicType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.FillNode;
+import org.orbisgis.core.renderer.se.*;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.StrokeNode;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.UomNode;
-import org.orbisgis.core.renderer.se.ViewBoxNode;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
@@ -64,6 +49,17 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
+
+import javax.xml.bind.JAXBElement;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A {@code MarkGraphic} is created by stroking and filling a geometry line or shape.
@@ -93,7 +89,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         ViewBoxNode, UomNode, TransformNode {
 
         /**
-         * The defautl size used to build {@code MarkGraphic} instances.
+         * The default size used to build {@code MarkGraphic} instances.
          */
     public static final double DEFAULT_SIZE = 3;
     //private MarkGraphicSource source;
@@ -135,7 +131,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
     /**
      * Build a new {@code MarkGraphic} from the given {@code JAXBElement}.
-     * @param markG
+     * @param markG The JAXB representation of a MarkGraphic
      * @throws IOException
      * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
      */
@@ -240,7 +236,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
     /**
      * Get the {@link Halo} defined around this {@code MarkGraphic}.
-     * @return 
+     * @return The Halo drawn around the symbol
      */
     public Halo getHalo() {
         return halo;
@@ -248,7 +244,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
     /**
      * Set the {@link Halo} defined around this {@code MarkGraphic}.
-     * @param halo 
+     * @param halo The new halo to draw around the symbol.
      */
     public void setHalo(Halo halo) {
         this.halo = halo;
@@ -294,7 +290,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     }*/
     /**
      * Get the perpendicular offset applied to this {@code MarkGraphic} before rendering.
-     * @return 
+     * @return The perpendicular offset
      */
     public RealParameter getPerpendicularOffset() {
         return pOffset;
@@ -302,7 +298,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
     /**
      * Set the perpendicular offset applied to this {@code MarkGraphic} before rendering.
-     * @param pOffset 
+     * @param pOffset The perpendicular offset
      */
     public void setPerpendicularOffset(RealParameter pOffset) {
         this.pOffset = pOffset;
@@ -315,7 +311,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     /**
      * Gets the index where to retrieve the mark in the collection associated to
      * this {@code MarkGraphic}.
-     * @param mIndex 
+     * @param mIndex The index of the mark
      */
     private void setMarkIndex(RealParameter mIndex) {
         this.markIndex = mIndex;
@@ -324,7 +320,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     }
 
     /*
-     * This method must be called after each modification of uom, viewbox, source
+     * This method must be called after each modification of uom, view box, source
      *
      */
     @Override
@@ -340,9 +336,9 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
     /**
      * Tries to retrieve the source that defines this {@code MarkGraphic} in the 
-     * DataSet, at the diven index.
-     * @param map
-     * @return
+     * DataSet, at the given index.
+     * @param map The map of input values
+     * @return The source that defines this MarkGraphic
      * @throws ParameterException 
      */
     private MarkGraphicSource getSource(Map<String,Value> map) throws ParameterException {
@@ -516,7 +512,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     }*/
     /**
      * Get the online resource that defines this {@code MarkGraphic}.
-     * @return 
+     * @return The online resource that defines this {@code MarkGraphic}.
      */
     public VariableOnlineResource getOnlineResource() {
         return onlineResource;
@@ -524,7 +520,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
     /**
      * Set the online resource that defines this {@code MarkGraphic}.
-     * @param onlineResource 
+     * @param onlineResource the online resource that defines this {@code MarkGraphic}.
      */
     public void setOnlineResource(VariableOnlineResource onlineResource) {
         this.onlineResource = onlineResource;
@@ -535,7 +531,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
     /**
      * Gets the WellKnownName defining this {@code MarkGraphic}.
-     * @return 
+     * @return the well-known name currently used, as a StringParameter.
      */
     public StringParameter getWkn() {
         return wkn;
@@ -543,7 +539,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
     /**
      * Sets the WellKnownName defining this {@code MarkGraphic}.
-     * @param wkn 
+     * @param wkn The new well-known name to use, as a StringParameter.
      */
     public void setWkn(StringParameter wkn) {
         this.wkn = wkn;
