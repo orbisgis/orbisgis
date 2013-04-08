@@ -1002,6 +1002,9 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
 		}
         }
 
+        /**
+         * Opens the simple editor, if we have only known configurations.
+         */
         public void onSimpleEditor() {
                 TreePath selObjs = tree.getSelectionPath();
                 if (selObjs.getLastPathComponent() instanceof TocTreeNodeStyle) {

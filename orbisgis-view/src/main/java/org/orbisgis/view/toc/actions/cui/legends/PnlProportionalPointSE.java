@@ -40,10 +40,15 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
+import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
+import org.orbisgis.legend.thematic.PointParameters;
+import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -54,6 +59,8 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
@@ -73,6 +80,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
         private ProportionalPoint proportionalPoint;
         private DataSource ds;
         private JComboBox fieldCombo;
+        MouseListener l;
 
         @Override
         public Component getComponent() {
@@ -101,10 +109,8 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                                 setSolidFillMemory(new ConstantSolidFillLegend(new SolidFill()));
                         }
                         initPreview();
-                        String fieldName = proportionalPoint.getLookupFieldName();
-//                        if(fieldName == null || fieldName.isEmpty()){
-                                getPreview().setDisplayed(false);
-//                        }
+                        getPreview().setDisplayed(false);
+
                         this.initializeLegendFields();
                 } else {
                         throw new IllegalArgumentException("The given Legend is not"
@@ -175,46 +181,79 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 JPanel glob = new JPanel();
                 GridBagLayout grid = new GridBagLayout();
                 glob.setLayout(grid);
+                int i = 0;
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.gridx = 0;
-                gbc.gridy = 0;
+                gbc.gridy = i;
+                i++;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 initFieldCombo();
-                JPanel jpane = new JPanel();
-                jpane.add(fieldCombo);
-                glob.add(jpane, gbc);
+                JPanel pane = new JPanel();
+                pane.add(fieldCombo);
+                glob.add(pane, gbc);
                 gbc.gridx = 0;
-                gbc.gridy = 1;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                JPanel p1 = getLineBlock(proportionalPoint.getPenStroke(), I18N.tr("Line configuration"));
-                glob.add(p1, gbc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 2;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                gbc.insets = new Insets(5, 0, 5, 0);
-                JPanel p2 = getAreaBlock(proportionalPoint.getFillLegend(), I18N.tr("Fill configuration"));
-                glob.add(p2, gbc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 3;
+                gbc.gridy = i;
+                i++;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.insets = new Insets(5, 0, 5, 0);
                 JPanel p3 = getProportionalBlock(proportionalPoint, I18N.tr("Mark configuration"));
                 glob.add(p3, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;
-                gbc.gridy = 4;
-                glob.add(getPreview(), gbc);
+                gbc.gridy = i;
+                CanvasSE prev = getPreview();
+                //The preview is created only once while the other panels are created twice, currently. Adds a locally
+                //stored listener to avoid having it twice because of this double call of initializeLegendFields.
+                if(l == null || prev.getMouseListeners().length == 0){
+                    l = EventHandler.create(MouseListener.class, this, "onClickOnPreview", "", "mouseClicked");
+                    prev.addMouseListener(l);
+                }
+                glob.add(prev, gbc);
                 this.add(glob);
+        }
+
+        /**
+         * Opens a OK - Cancel window used to edit the symbol configuration, size excepted.
+         */
+        public void onClickOnPreview(MouseEvent mouseEvent){
+            //We create a copy of the constant part of the symbol
+            PointParameters pp = new PointParameters(proportionalPoint.getPenStroke().getLineColor(),
+                        proportionalPoint.getPenStroke().getLineOpacity(),
+                        proportionalPoint.getPenStroke().getLineWidth(),
+                        proportionalPoint.getPenStroke().getDashArray(),
+                        proportionalPoint.getFillLegend().getColor(),
+                        proportionalPoint.getFillLegend().getOpacity(),
+                        3.0,
+                        3.0,
+                        proportionalPoint.getWellKnownName());
+            UniqueSymbolPoint usp = new UniqueSymbolPoint(pp);
+            if(proportionalPoint.getPenStroke() instanceof NullPenStrokeLegend){
+                usp.setPenStroke(new NullPenStrokeLegend());
+            }
+            if(proportionalPoint.getFillLegend() instanceof NullSolidFillLegend){
+                usp.setFillLegend(new NullSolidFillLegend());
+            }
+            usp.setStrokeUom(proportionalPoint.getStrokeUom());
+            usp.setSymbolUom(proportionalPoint.getSymbolUom());
+            ConfigPanel cp = new ConfigPanel(usp);
+            if(UIFactory.showDialog(cp)){
+                proportionalPoint.getPenStroke().setLineColor(usp.getPenStroke().getLineColor());
+                proportionalPoint.getPenStroke().setLineOpacity(usp.getPenStroke().getLineOpacity());
+                proportionalPoint.getPenStroke().setLineWidth(usp.getPenStroke().getLineWidth());
+                proportionalPoint.getPenStroke().setDashArray(usp.getPenStroke().getDashArray());
+                proportionalPoint.getFillLegend().setColor(usp.getFillLegend().getColor());
+                proportionalPoint.getFillLegend().setOpacity(usp.getFillLegend().getOpacity());
+                proportionalPoint.setWellKnownName(usp.getWellKnownName());
+                getPreview().imageChanged();
+            }
         }
 
         /**
          * Gets the block that will contain the configuration of the size of
          * a proportional point symbol.
-         * @param prop
-         * @param title
-         * @return
+         * @param prop The input proportional point
+         * @param title The title of the block
+         * @return The JPanel containing the fields that sets the symbol min and max size.
          */
         public JPanel getProportionalBlock(ProportionalPoint prop, String title){
                 JPanel glob = new JPanel();
@@ -233,7 +272,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 //Uom
                 jp.add(buildText(I18N.tr("Unit of measure :")));
                 jp.add(getPointUomCombo());
-                //Combobox
+                //Combo box
                 jp.add(buildText(I18N.tr("Symbol form :")));
                 jp.add(getWKNCombo(prop));
                 //Max size
@@ -302,7 +341,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
 
         /**
          * Used when the field against which the analysis is made changes.
-         * @param obj
+         * @param obj  The new name.
          */
         public void updateField(String obj){
                 try {
@@ -321,4 +360,51 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                         LOGGER.error("", ex);
                 }
         }
+
+    private class ConfigPanel extends JPanel implements UIPanel {
+
+        private UniqueSymbolPoint usp;
+
+        public ConfigPanel(UniqueSymbolPoint point){
+            usp = point;
+        }
+
+        @Override
+        public URL getIconURL() {
+            return null;
+        }
+
+        @Override
+        public String getTitle() {
+            return I18N.tr("Stroke and Fill Configuration");
+        }
+
+        @Override
+        public String validateInput() {
+            return null;
+        }
+
+        @Override
+        public Component getComponent() {
+            JPanel glob = new JPanel();
+            GridBagLayout grid = new GridBagLayout();
+            glob.setLayout(grid);
+            int i = 0;
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = i;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            i++;
+            JPanel p1 = getLineBlock(usp.getPenStroke(), I18N.tr("Line configuration"));
+            glob.add(p1, gbc);
+            gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = i;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.insets = new Insets(5, 0, 5, 0);
+            JPanel p2 = getAreaBlock(usp.getFillLegend(), I18N.tr("Fill configuration"));
+            glob.add(p2, gbc);
+            return glob;
+        }
+    }
 }
