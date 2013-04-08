@@ -156,61 +156,82 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         }
         private void initPopupActions() {
             // Layer actions
-            popupActions.addAction(new LayerAction(this, TocActionFactory.A_REMOVE_LAYER, I18N.tr("Remove layer"),
-                    I18N.tr("Remove the layer from the map context"),OrbisGISIcon.getIcon("remove"),
-                    EventHandler.create(ActionListener.class, this, "onDeleteLayer"),null));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_ZOOM_TO, I18N.tr("Zoom to"),
                     I18N.tr("Zoom to the layer bounding box"), OrbisGISIcon.getIcon("magnifier"),
-                    EventHandler.create(ActionListener.class, this, "zoomToLayer"), null));
+                    EventHandler.create(ActionListener.class, this, "zoomToLayer"), null)
+                        .setLogicalGroup(TocActionFactory.G_ZOOM));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_ZOOM_TO_SELECTION,
                     I18N.tr("Zoom to selection"), I18N.tr("Zoom to selected geometries"),
                     OrbisGISIcon.getIcon("zoom_selected"),
                     EventHandler.create(ActionListener.class, this, "zoomToLayerSelection"), null)
-                    .setOnLayerWithRowSelection(true));
+                        .setOnLayerWithRowSelection(true)
+                        .setLogicalGroup(TocActionFactory.G_ZOOM));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_CLEAR_SELECTION,
                     I18N.tr("Clear selection"), I18N.tr("Clear the selected geometries"),
                     OrbisGISIcon.getIcon("edit-clear"),
                     EventHandler.create(ActionListener.class,this, "clearLayerRowSelection"),null)
-                    .setOnLayerWithRowSelection(true));
+                        .setOnLayerWithRowSelection(true)
+                        .setLogicalGroup(TocActionFactory.G_SELECTION));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_IMPORT_STYLE,
                     I18N.tr("Import style"), I18N.tr("Import a style from a file."),
                     OrbisGISIcon.getIcon("add"),
                     EventHandler.create(ActionListener.class, this, "onImportStyle"),null)
-                    .setSingleSelection(true).setOnRealLayerOnly(true).setOnVectorSourceOnly(true));
+                        .setSingleSelection(true)
+                        .setOnRealLayerOnly(true)
+                        .setOnVectorSourceOnly(true)
+                        .setLogicalGroup(TocActionFactory.G_STYLE));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_ADD_STYLE,
                     I18N.tr("Add style"), I18N.tr("Add a new style."),
                     OrbisGISIcon.getIcon("add"),
                     EventHandler.create(ActionListener.class, this, "onAddStyle"),null)
-                    .setSingleSelection(true).setOnRealLayerOnly(true).setOnVectorSourceOnly(true));
+                        .setSingleSelection(true)
+                        .setOnRealLayerOnly(true)
+                        .setOnVectorSourceOnly(true)
+                        .setLogicalGroup(TocActionFactory.G_STYLE));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_OPEN_ATTRIBUTES,
                     I18N.tr("Open the attributes"), I18N.tr("Open a spreadsheet view of the attributes."),
                     OrbisGISIcon.getIcon("openattributes"),
                     EventHandler.create(ActionListener.class,this, "onMenuShowTable"),null)
-                    .setOnRealLayerOnly(true).setOnVectorSourceOnly(true));
+                        .setOnRealLayerOnly(true)
+                        .setOnVectorSourceOnly(true)
+                        .setLogicalGroup(TocActionFactory.G_ATTRIBUTES));
             // DataSource Drawing Actions
             popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_EDIT_GEOMETRY,
                     I18N.tr("Switch to edition mode"), I18N.tr("The geometry edition toolbar will update this layer data source."),
                     OrbisGISIcon.getIcon("pencil"),
-                    EventHandler.create(ActionListener.class,this, "onMenuSetActiveLayer"),null).setEnabledOnNotActiveLayer(true).setSingleSelection(true));
+                    EventHandler.create(ActionListener.class,this, "onMenuSetActiveLayer"),null)
+                        .setEnabledOnNotActiveLayer(true)
+                        .setSingleSelection(true));
             popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_STOP_EDIT_GEOMETRY,
                     I18N.tr("Stop edition mode"), I18N.tr("Close the geometry edition toolbar."),
                     OrbisGISIcon.getIcon("stop"),
-                    EventHandler.create(ActionListener.class,this, "onMenuUnsetActiveLayer"),null).setEnabledOnActiveLayer(true).setSingleSelection(true));
+                    EventHandler.create(ActionListener.class,this, "onMenuUnsetActiveLayer"),null)
+                        .setEnabledOnActiveLayer(true)
+                        .setSingleSelection(true));
             popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_SAVE_EDIT_GEOMETRY,
                     I18N.tr("Save modifications"), I18N.tr("Apply the data source modifications"),
                     OrbisGISIcon.getIcon("save"),
-                    EventHandler.create(ActionListener.class,this, "onMenuCommitDataSource"),null).setEnabledOnModifiedLayer(true));
+                    EventHandler.create(ActionListener.class,this, "onMenuCommitDataSource"),null)
+                        .setEnabledOnModifiedLayer(true));
             popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_CANCEL_EDIT_GEOMETRY,
                     I18N.tr("Cancel modifications"), I18N.tr("Undo all data source modifications"),
                     OrbisGISIcon.getIcon("cancel"),
-                    EventHandler.create(ActionListener.class,this, "onMenuSyncDataSource"),null).setEnabledOnModifiedLayer(true));
+                    EventHandler.create(ActionListener.class,this, "onMenuSyncDataSource"),null)
+                        .setEnabledOnModifiedLayer(true));
 
 
-                popupActions.addAction(new LayerAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
+            popupActions.addAction(new LayerAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
                     I18N.tr("Add layer group"),I18N.tr("Add a the layer group to the map context"),
                     OrbisGISIcon.getIcon("add"),
                     EventHandler.create(ActionListener.class, this, "onAddGroup"),null)
-                    .setOnLayerGroup(true).setSingleSelection(true).setOnEmptySelection(true));
+                        .setOnLayerGroup(true)
+                        .setSingleSelection(true)
+                        .setOnEmptySelection(true)
+                        .setLogicalGroup(TocActionFactory.G_LAYER_GROUP));
+            popupActions.addAction(new LayerAction(this, TocActionFactory.A_REMOVE_LAYER, I18N.tr("Remove layer"),
+                        I18N.tr("Remove the layer from the map context"),OrbisGISIcon.getIcon("remove"),
+                        EventHandler.create(ActionListener.class, this, "onDeleteLayer"),null)
+                        .setLogicalGroup(TocActionFactory.G_REMOVE));
             // Style actions
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_SIMPLE_EDITION,
                     I18N.tr("Simple style edition"), I18N.tr("Open the simple editor for SE styles"),

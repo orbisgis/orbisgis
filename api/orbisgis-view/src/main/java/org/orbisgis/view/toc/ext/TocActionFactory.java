@@ -56,6 +56,12 @@ public interface TocActionFactory extends ActionFactoryService<TocExt> {
     public static final String A_EXPORT_STYLE = "A_EXPORT_STYLE";
 
     // Logic groups
+    public static final String G_ATTRIBUTES = "G_ATTRIBUTES";
     public static final String G_DRAWING = "G_DRAWING";
+    public static final String G_LAYER_GROUP = "G_LAYER_GROUP";
+    public static final String G_REMOVE = "G_REMOVE";
+    public static final String G_SELECTION = "G_SELECTION";
+    public static final String G_STYLE = "G_STYLE";
+    public static final String G_ZOOM = "G_ZOOM";
 
 }
