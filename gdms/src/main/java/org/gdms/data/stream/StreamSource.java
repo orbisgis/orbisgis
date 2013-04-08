@@ -33,7 +33,15 @@
  */
 package org.gdms.data.stream;
 
+import org.geotools.util.Version;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Contains the information to identify a stream.
@@ -42,48 +50,121 @@ import java.io.Serializable;
  * @author Vincent Dépériers
  */
 public class StreamSource implements Serializable {
+        private static final int DEFAULT_PORT = 80;
+        private static final long serialVersionUID = 144456789L;
+        /** Layers name */
+        public static final String LAYER_PARAMETER = "layers";
+        /** Image type ex:image/png */
+        public static final String OUTPUTFORMAT_PARAMETER = "outputformat";
+        /** CRS replace SRS from this version */
+        public Version CRS_BEGINING_VERSION = new Version("1.3.0");
+        /** Coordinate reference system ex:EPSG:27572 Version >= 1.3.0 */
+        public static final String CRS_PARAMETER = "crs"; // Version >= 1.3.0
+        /** Spatial reference system ex:EPSG:27572 Version < 1.3.0 */
+        public static final String SRS_PARAMETER = "srs"; // Version < 1.3.0
+        /** SERVICE ex:WMS */
+        public static final String SERVICE_PARAMETER = "service";
+        /** WMS server version */
+        public static final String VERSION_PARAMETER = "version";
 
-        private static final long serialVersionUID = 123456789L;
+        private String scheme;
         private String host;
         private int port;
-        private String layerName;
-        private String imageFormat;
-        private String type;
-        private String srs;
+        private String path;
+        private Version version;
+        private Map<String,String> parameters = new HashMap<String, String>();
+
 
         /**
-         * Creates a new Stream Source with the host, the port,the name of the layer and the prefix.
-         *
-         * @param host
-         * @param port
-         * @param layerName
-         * @param prefix
+         * Short constructor, imageFormat is "image/png", crs is "EPSG:4326", version 1.3.0
+         * @param scheme Protocol ex:http
+         * @param host Host name or IP, ex: services.orbisgis.org
+         * @param port Service port, -1 for default
+         * @param path URL path
+         * @param layerName Layers, separated by a comma character
+         * @param service Service (ex: WMS)
          */
-        public StreamSource(String host, int port, String layerName, String prefix) {
-                this(host, port, layerName, prefix, "image/png", "");
+        public StreamSource(String scheme, String host, int port, String path, String layerName, String service) {
+                this(scheme,host, port, path, layerName, service, "image/png", "EPSG:4326", "1.3.0");
         }
 
         /**
-         * Creates a new Stream Source with the host, the port,the name of the layer ,
-         * the prefix,the format of the image and the srs.
-         *
-         * @param host
-         * @param port
-         * @param layerName
-         * @param prefix
-         * @param imageFormat
-         * @param srs
+         * Complete constructor.
+         * @param scheme Protocol ex:http
+         * @param host Host name or IP, ex: services.orbisgis.org
+         * @param port Service port, -1 for default
+         * @param path URL path
+         * @param layerName Layers, separated by a comma character
+         * @param service Service (ex: WMS)
+         * @param imageFormat Output format of the service ex:image/png
+         * @param crs Spatial reference system ex:
+         * @param version Wms server version ex: 1.3.0
          */
-        public StreamSource(String host, int port, String layerName, String prefix,
-                String imageFormat, String srs) {
+        public StreamSource(String scheme, String host, int port, String path, String layerName, String service,
+                String imageFormat, String crs,String version) {
+                this.scheme = scheme;
                 this.host = host;
-                this.port = port;
-                this.layerName = layerName;
-                this.type = prefix;
-                this.imageFormat = imageFormat;
-                this.srs = srs;
+                this.path = path;
+                setVersion(version);
+                if(port==-1) {
+                    try {
+                        this.port = URI.create(scheme+"://dummy.org").toURL().getDefaultPort();
+                    } catch (MalformedURLException ex) {
+                        this.port = DEFAULT_PORT;
+                    }
+                }
+                parameters.put(LAYER_PARAMETER,layerName);
+                parameters.put(SERVICE_PARAMETER,service);
+                parameters.put(OUTPUTFORMAT_PARAMETER,imageFormat);
+                parameters.put(CRS_PARAMETER,crs);
         }
 
+        /**
+         * Set the service version
+         * @param version Service version "x.y.z"
+         */
+        public void setVersion(String version) {
+            parameters.put(VERSION_PARAMETER,version);
+            this.version = new Version(version);
+        }
+        /**
+         * Construct the stream source from an URI
+         * @param uri Stream uri
+         * @throws IllegalArgumentException If the URI does not contain a required query, fragment
+         * @throws UnsupportedEncodingException If the URI contains non-utf8 characters
+         */
+        public StreamSource(URI uri) throws IllegalArgumentException, UnsupportedEncodingException {
+            host = uri.getHost();
+            port = uri.getPort();
+            scheme = uri.getScheme();
+            if(port==-1) {
+                try {
+                    uri.toURL().getDefaultPort();
+                } catch (MalformedURLException ex) {
+                    // Not a url
+                    port = DEFAULT_PORT;
+                }
+            }
+            parameters = new HashMap<String, String>(URIUtility.getQueryKeyValuePairs(uri));
+        }
+        private String getQuery() {
+            if(version.compareTo(CRS_BEGINING_VERSION)<0) {
+                return URIUtility.getConcatenatedParameters(parameters, SERVICE_PARAMETER, LAYER_PARAMETER, SRS_PARAMETER);
+            } else {
+                return URIUtility.getConcatenatedParameters(parameters, SERVICE_PARAMETER, LAYER_PARAMETER, CRS_PARAMETER);
+            }
+        }
+        /**
+         *
+         * @return
+         */
+        public URI toURI() {
+            try {
+                return new URI(scheme,null,host,port,path,getQuery(),null);
+            } catch (URISyntaxException ex) {
+                return null;
+            }
+        }
         /**
          * @return the host of the source.
          */
@@ -91,6 +172,25 @@ public class StreamSource implements Serializable {
                 return this.host;
         }
 
+        /**
+         * @return URI query as a map of key, values
+         */
+        public Map<String,String> getQueryMap() {
+            return Collections.unmodifiableMap(parameters);
+        }
+        /**
+         * @return The path of the service
+         */
+        public String getPath() {
+                return path;
+        }
+
+        /**
+         * @return The protocol of the stream (ex: http)
+         */
+        public String getScheme() {
+            return scheme;
+        }
         /**
          * Sets the host of the source.
          *
@@ -120,7 +220,7 @@ public class StreamSource implements Serializable {
          * @return the name of the layer of the source
          */
         public String getLayerName() {
-                return this.layerName;
+                return parameters.get(LAYER_PARAMETER);
         }
 
         /**
@@ -129,14 +229,14 @@ public class StreamSource implements Serializable {
          * @param layerName a new layer name
          */
         public void setLayerName(String layerName) {
-                this.layerName = layerName;
+                parameters.put(LAYER_PARAMETER,layerName);
         }
 
         /**
          * @return the format of the image, as a MIME type
          */
         public String getImageFormat() {
-                return this.imageFormat;
+                return parameters.get(OUTPUTFORMAT_PARAMETER);
         }
 
         /**
@@ -145,39 +245,52 @@ public class StreamSource implements Serializable {
          * @param imageFormat a MIME format string.
          */
         public void setImageFormat(String imageFormat) {
-                this.imageFormat = imageFormat;
+                parameters.put(OUTPUTFORMAT_PARAMETER,imageFormat);
         }
 
         /**
          * Sets the srs of the source.
-         *
+         * If version < 1.3.0
          * @param srs a new SRS String
          */
         public void setSRS(String srs) {
-                this.srs = srs;
+                parameters.put(SRS_PARAMETER,srs);
         }
 
         /**
          * @return the srs of the source
          */
         public String getSRS() {
-                return srs;
+                return parameters.get(SRS_PARAMETER);
+        }
+
+        /**
+         * If version >= 1.3.0
+         * @return the crs of the source
+         */
+        public String getCRS() {
+                parameters.get(CRS_PARAMETER);
+        }
+
+        /**
+         * Sets the crs of the source.
+         * If version >= 1.3.0
+         * @param crs a new CRS String
+         */
+        public void setCRS(String crs) {
+                parameters.put(CRS_PARAMETER,crs);
         }
 
         @Override
         public String toString() {
-                return type + "-" + host + ":" + port + "-" + layerName + "-" + imageFormat + "-" + srs;
-        }
-
-        public String getDbms() {
-                return host + ":" + port + "//request=getMap&layers=" + layerName;
+                return toURI().toString();
         }
 
         /**
          * @return the prefix of the source
          */
         public String getStreamType() {
-                return type;
+                return parameters.get(SERVICE_PARAMETER);
         }
 
         /**
@@ -186,7 +299,7 @@ public class StreamSource implements Serializable {
          * @param type a new prefix
          */
         public void setStreamType(String type) {
-                this.type = type;
+                parameters.put(SERVICE_PARAMETER,type);
         }
 
         @Override
@@ -199,7 +312,7 @@ public class StreamSource implements Serializable {
                         if (this.port != other.port) {
                                 return false;
                         }
-                        if ((this.layerName == null) ? (other.layerName != null) : !this.layerName.equals(other.layerName)) {
+                        if ((getLayerName() == null) ? (other.layerName != null) : !this.layerName.equals(other.layerName)) {
                                 return false;
                         }
                         if ((this.imageFormat == null) ? (other.imageFormat != null) : !this.imageFormat.equals(other.imageFormat)) {
