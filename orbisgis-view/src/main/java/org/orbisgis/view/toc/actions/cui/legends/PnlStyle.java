@@ -45,7 +45,7 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * @author Alexis Guéganno
  */
-public class PnlStyle extends NameChangePanel {
+public class PnlStyle extends JPanel  implements ISELegendPanel {
         private static final I18n I18N = I18nFactory.getI18n(PnlStyle.class);
         private Style style;
         private JTextField txtName;
@@ -126,7 +126,7 @@ public class PnlStyle extends NameChangePanel {
         public void setTitle(String title){
             String old = style.getName();
             style.setName(title);
-            propertySupport.firePropertyChange(NAME_PROPERTY,old, title);
+            firePropertyChange(NAME_PROPERTY,old, title);
         }
 
         /**
