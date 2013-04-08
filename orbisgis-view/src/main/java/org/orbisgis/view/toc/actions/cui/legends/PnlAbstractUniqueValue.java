@@ -100,8 +100,8 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         }
     }
 
-    protected void setLegendImpl(Legend leg){
-        this.legend = (AbstractRecodedLegend<U>) leg;
+    protected void setLegendImpl(AbstractRecodedLegend<U> leg){
+        this.legend =  leg;
     }
 
     /**
