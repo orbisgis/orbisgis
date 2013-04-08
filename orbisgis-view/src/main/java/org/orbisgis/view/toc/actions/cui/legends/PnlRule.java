@@ -45,7 +45,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Panel associated to {@code Rule} instances in the legend edition UI.
  * @author Alexis Guéganno
  */
-public class PnlRule extends NameChangePanel {
+public class PnlRule extends JPanel  implements ISELegendPanel {
         private static final I18n I18N = I18nFactory.getI18n(PnlRule.class);
         private JButton btnCurrentScaleToMin;
         private JButton btnCurrentScaleToMax;
@@ -224,7 +224,7 @@ public class PnlRule extends NameChangePanel {
         public void setTitle(String s) {
             String old = rule.getName();
             rule.setName(s);
-            propertySupport.firePropertyChange(NAME_PROPERTY,old, s);
+            firePropertyChange(NAME_PROPERTY,old, s);
         }
 
         /**
