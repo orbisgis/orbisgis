@@ -1292,7 +1292,12 @@ public final class DefaultSourceManager implements SourceManager {
                 if ("file".equals(scheme)) {
                         return new FileSourceDefinition(new File(uri), DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                 } else if (scheme.startsWith("http")) {
-                        throw new UnsupportedOperationException("Unsupported URI: " + uri);
+                        try {
+                            StreamSource source = new StreamSource(uri);
+                            return new StreamSourceDefinition(source);
+                        } catch (UnsupportedEncodingException ex) {
+                            throw new UnsupportedOperationException("Fail to register source "+uri.toString(),ex);
+                        }
                 } else {
                         return uriToDBDef(uri);
                 }                

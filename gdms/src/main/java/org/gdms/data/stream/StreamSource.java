@@ -174,9 +174,9 @@ public class StreamSource implements Serializable {
         }
         private String getQuery() {
             if(version.compareTo(CRS_BEGINING_VERSION)<0) {
-                return URIUtility.getConcatenatedParameters(parameters, SERVICE_PARAMETER, LAYER_PARAMETER, SRS_PARAMETER);
+                return URIUtility.getConcatenatedParameters(parameters, SERVICE_PARAMETER, LAYER_PARAMETER, SRS_PARAMETER, VERSION_PARAMETER, OUTPUTFORMAT_PARAMETER);
             } else {
-                return URIUtility.getConcatenatedParameters(parameters, SERVICE_PARAMETER, LAYER_PARAMETER, CRS_PARAMETER);
+                return URIUtility.getConcatenatedParameters(parameters, SERVICE_PARAMETER, LAYER_PARAMETER, CRS_PARAMETER, VERSION_PARAMETER, OUTPUTFORMAT_PARAMETER);
             }
         }
         /**

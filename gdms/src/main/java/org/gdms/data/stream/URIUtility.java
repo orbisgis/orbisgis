@@ -34,7 +34,6 @@ import org.apache.log4j.Logger;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
