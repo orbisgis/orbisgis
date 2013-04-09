@@ -57,7 +57,7 @@ public class StreamSource implements Serializable {
         /** Image type ex:image/png */
         public static final String OUTPUTFORMAT_PARAMETER = "outputformat";
         /** CRS replace SRS from this version */
-        public static final Version CRS_BEGINING_VERSION = new Version("1.3.0");
+        public static final Version CRS_BEGINNING_VERSION = new Version("1.3.0");
         /** Coordinate reference system ex:EPSG:27572 Version >= 1.3.0 */
         public static final String CRS_PARAMETER = "crs"; // Version >= 1.3.0
         /** Spatial reference system ex:EPSG:27572 Version < 1.3.0 */
@@ -116,7 +116,7 @@ public class StreamSource implements Serializable {
                 parameters.put(LAYER_PARAMETER,layerName);
                 parameters.put(SERVICE_PARAMETER,service);
                 parameters.put(OUTPUTFORMAT_PARAMETER,imageFormat);
-                if(this.version.compareTo(CRS_BEGINING_VERSION)<0) {
+                if(this.version.compareTo(CRS_BEGINNING_VERSION)<0) {
                     parameters.put(SRS_PARAMETER,crs);
                 } else {
                     parameters.put(CRS_PARAMETER,crs);
@@ -173,7 +173,7 @@ public class StreamSource implements Serializable {
             }
         }
         private String getQuery() {
-            if(version.compareTo(CRS_BEGINING_VERSION)<0) {
+            if(version.compareTo(CRS_BEGINNING_VERSION)<0) {
                 return URIUtility.getConcatenatedParameters(parameters, SERVICE_PARAMETER, LAYER_PARAMETER, SRS_PARAMETER, VERSION_PARAMETER, OUTPUTFORMAT_PARAMETER);
             } else {
                 return URIUtility.getConcatenatedParameters(parameters, SERVICE_PARAMETER, LAYER_PARAMETER, CRS_PARAMETER, VERSION_PARAMETER, OUTPUTFORMAT_PARAMETER);
@@ -288,7 +288,7 @@ public class StreamSource implements Serializable {
                 return getReferenceSystem();
         }
         private String getReferenceSystem() {
-            if(version.compareTo(CRS_BEGINING_VERSION)<0) {
+            if(version.compareTo(CRS_BEGINNING_VERSION)<0) {
                 return parameters.get(SRS_PARAMETER);
             } else {
                 return parameters.get(CRS_PARAMETER);
