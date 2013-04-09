@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -406,7 +407,12 @@ public final class DefaultSourceManager implements SourceManager {
                                 register(name, false, new FileSourceDefinition(new File(uri), DriverManager.DEFAULT_SINGLE_TABLE_NAME));
                         }
                 } else if (scheme.startsWith("http")) {
-                        throw new UnsupportedOperationException("Unsupported URI: " + uri);
+                        try {
+                            StreamSource source = new StreamSource(uri);
+                            register(name, wellKnown, new StreamSourceDefinition(source));
+                        } catch (UnsupportedEncodingException ex) {
+                            LOG.error("Fail to register source "+uri.toString(),ex);
+                        }
                 } else {
                         String table = null;
                         String sch = null;
@@ -1286,7 +1292,12 @@ public final class DefaultSourceManager implements SourceManager {
                 if ("file".equals(scheme)) {
                         return new FileSourceDefinition(new File(uri), DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                 } else if (scheme.startsWith("http")) {
-                        throw new UnsupportedOperationException("Unsupported URI: " + uri);
+                        try {
+                            StreamSource source = new StreamSource(uri);
+                            return new StreamSourceDefinition(source);
+                        } catch (UnsupportedEncodingException ex) {
+                            throw new UnsupportedOperationException("Fail to register source "+uri.toString(),ex);
+                        }
                 } else {
                         return uriToDBDef(uri);
                 }                

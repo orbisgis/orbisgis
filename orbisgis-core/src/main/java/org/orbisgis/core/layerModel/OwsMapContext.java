@@ -522,12 +522,10 @@ public final class OwsMapContext extends BeanMapContext {
                                         try {
                                                 URI resourceURI = new URI(resType.getHref());
                                                 layerSource = registerLayerResource(resourceURI);
-                                        } catch (NoSuchTableException ex) {
-                                                throw new LayerException(I18N.tr("Unable to load the data source uri {0}.", resType.getHref()), ex);
-                                        } catch (DataSourceCreationException ex) {
-                                                throw new LayerException(I18N.tr("Unable to load the data source uri {0}.", resType.getHref()), ex);
                                         } catch (URISyntaxException ex) {
                                                 throw new LayerException(I18N.tr("Unable to parse the href URI {0}.", resType.getHref()), ex);
+                                        } catch (Exception ex) {
+                                            throw new LayerException(I18N.tr("Unable to load the data source uri {0}.", resType.getHref()), ex);
                                         }
                                 }
                         }
