@@ -433,6 +433,8 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         JScrollBar verticalScrollBar = jsp.getVerticalScrollBar();
         verticalScrollBar.setUnitIncrement(rowHeight);
         verticalScrollBar.setBlockIncrement(tableHeight);
+        // Set the scroll mode.
+        jsp.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
         return jp;
     }
 

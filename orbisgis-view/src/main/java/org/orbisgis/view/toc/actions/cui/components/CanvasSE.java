@@ -171,7 +171,7 @@ public class CanvasSE extends JPanel {
 
 	@Override
 	public void paintComponent(Graphics g) {
-        g.drawImage(getImage(), 0, 0, null);
+            g.drawImage(getImage(), 0, 0, null);
 	}
 
         /**
