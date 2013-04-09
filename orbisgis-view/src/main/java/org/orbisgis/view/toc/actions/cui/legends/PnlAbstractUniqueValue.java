@@ -367,7 +367,6 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         updateLUComboBox(jcb.getSelectedIndex());
         CanvasSE prev = getPreview();
         prev.setSymbol(getFallbackSymbolizer());
-        prev.imageChanged();
         updateTable();
     }
 

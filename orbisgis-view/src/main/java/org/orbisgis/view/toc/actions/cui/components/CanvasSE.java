@@ -270,9 +270,9 @@ public class CanvasSE extends JPanel {
          * @param sym
          */
 	public void setSymbol(Symbolizer sym) {
-		this.s = sym;
-        geom = getSampleGeometry();
-		this.imageChanged();
+            this.s = sym;
+            geom = getSampleGeometry();
+            this.imageChanged();
 	}
 
         /**
