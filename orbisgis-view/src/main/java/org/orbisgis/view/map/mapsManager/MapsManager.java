@@ -46,14 +46,12 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.FileTree;
 import org.orbisgis.view.components.fstree.FileTreeModel;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;
-import org.orbisgis.view.components.fstree.TreeNodePath;
 import org.orbisgis.view.map.mapsManager.jobs.ReadStoredMap;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
@@ -67,9 +65,7 @@ public class MapsManager extends JPanel {
         // Minimal tree size is incremented by this emptySpace
         private static final long serialVersionUID = 1L;
         private static final I18n I18N = I18nFactory.getI18n(MapsManager.class);
-        private static final Logger LOGGER = Logger.getLogger(MapsManager.class);
         private FileTree tree;
-        private DefaultTreeModel treeModel;
         private MutableTreeNode rootNode = new DefaultMutableTreeNode();
         private TreeNodeFolder rootFolder;
         private TreeNodeRemoteRoot rootRemote;
@@ -83,7 +79,7 @@ public class MapsManager extends JPanel {
          */
         public MapsManager() {
                 super(new BorderLayout());
-                treeModel = new FileTreeModel(rootNode, true);
+            DefaultTreeModel treeModel = new FileTreeModel(rootNode, true);
                 treeModel.setAsksAllowsChildren(true);
                 // Add the tree in the panel                
                 tree = new FileTree(treeModel);
@@ -94,7 +90,7 @@ public class MapsManager extends JPanel {
                 // Add the root folder
                 File rootFolderPath = new File(workspace.getMapContextPath());
                 if(!rootFolderPath.exists()) {
-                        rootFolderPath.mkdirs();
+                    rootFolderPath.mkdirs();
                 }
                 rootFolder = new TreeNodeFolder(rootFolderPath,tree);
                 rootFolder.setLabel(I18N.tr("Local")); 
@@ -178,17 +174,23 @@ public class MapsManager extends JPanel {
 
         /**
          * The map manager will read and update the map server list
-         * @param mapCatalogServers 
+         * @param mapCatalogServers List of Map catalog servers
          */
         public void setServerList(List<String> mapCatalogServers) {
                 rootRemote.setServerList(mapCatalogServers);
         }
 
         /**
+         * @return Loaded server list
+         */
+        public List<String> getServerList() {
+                return rootRemote.getServerList();
+        }
+        /**
          * Update the state of the tree to show to the user a visual hint that a
          * map is currently shown in the MapEditor or not.
          *
-         * @param loadedMap
+         * @param loadedMap Set a visual hint on this file
          
          */
         public void setLoadedMap(File loadedMap) {
@@ -199,13 +201,11 @@ public class MapsManager extends JPanel {
                 if(loadedMap!=null) {
                         List<TreeLeafMapElement> mapElements = getAllMapElements(rootFolder);
                         for(TreeLeafMapElement mapEl : mapElements) {
-                                if(mapEl instanceof TreeNodePath) {
-                                        if(((TreeNodePath)mapEl).getFilePath().equals(loadedMap)) {
-                                                mapEl.setLoaded(true);
-                                        } else {
-                                                mapEl.setLoaded(false);
-                                        }
-                                }
+                            if(mapEl.getFilePath().equals(loadedMap)) {
+                                    mapEl.setLoaded(true);
+                            } else {
+                                    mapEl.setLoaded(false);
+                            }
                         }
                 }
         }

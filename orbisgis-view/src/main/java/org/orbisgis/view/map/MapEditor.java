@@ -194,6 +194,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                                 EventHandler.create(VetoableChangeListener.class, this,
                                 "onUserSetScaleDenominator", ""));
                         // Load the Remote Map Catalog servers and keep track for updates
+                        getMapEditorPersistence().addPropertyChangeListener(MapEditorPersistence.PROP_SERVER_URI_LIST,EventHandler.create(PropertyChangeListener.class,this,"onMapServerListUpdate",""));
                         mapsManager.setServerList(getMapEditorPersistence().getMapCatalogUrlList());
                         // When the tree is expanded update the manager size
                         mapsManager.getTree().addComponentListener(sizeListener);
@@ -202,6 +203,13 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 }
         }
 
+        /**
+         * The map server list on {@link MapEditorPersistence} has been updated
+         * @param evt update event
+         */
+        public void onMapServerListUpdate(PropertyChangeEvent evt) {
+            mapsManager.setServerList(getMapEditorPersistence().getMapCatalogUrlList());
+        }
         private void initMapContext() {
                 BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
                 ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
@@ -350,6 +358,8 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
          * Free MapEditor resources
          **/
         public void dispose() {
+            // Update server list
+            getMapEditorPersistence().setMapCatalogUrlList(mapsManager.getServerList());
             removeListeners();
             getMapControl().closing();
             loadMap(null);

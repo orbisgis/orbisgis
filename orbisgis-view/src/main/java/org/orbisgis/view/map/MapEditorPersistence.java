@@ -28,44 +28,52 @@
  */
 package org.orbisgis.view.map;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import org.orbisgis.core.Services;
 import org.orbisgis.view.docking.DockingPanelLayout;
+import org.orbisgis.view.util.PropertyHost;
 import org.orbisgis.view.util.XElement;
-import org.orbisgis.view.workspace.ViewWorkspace;
 
 /**
  * The map editor stores the last open default map context
  * @author Nicolas Fortin
  */
-public class MapEditorPersistence implements DockingPanelLayout, Serializable {
+public class MapEditorPersistence implements DockingPanelLayout, Serializable, PropertyHost {
         private static final long serialVersionUID = 2L; // One by new property
-        private static final String PROP_DEFAULTMAPCONTEXT = "defaultMapContext";
+        /**
+         * Map Context file name to show on application start.
+         * {@link org.orbisgis.view.map.MapEditorPersistence#getDefaultMapContext()}
+         */
+        public static final String PROP_DEFAULTMAPCONTEXT = "defaultMapContext";
+        /**
+         * Property of server uri list {@link org.orbisgis.view.map.MapEditorPersistence#getMapCatalogUrlList()}
+         */
+        public static final String PROP_SERVER_URI_LIST = "mapCatalogUrlList";
+        private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
         
-        private String defaultMapContext = ""; //Default map context on application start
+        private String defaultMapContext = "map.ows"; //Default map context on application start
         private List<String> mapCatalogUrlList = new ArrayList<String>();
         
         // XML consts
         private static final String URL_LIST_NODE = "mapCatalogUrlList";
         private static final String URL_NODE = "mapcatalog";
         private static final String URL_NODE_PROPERTY = "url";
-                
-        public MapEditorPersistence() {
-                ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
-                setDefaultMapContext(viewWorkspace.getDockingLayoutFile());
-        }
-        
+
         /**
          * Update the default map context
          * @param defaultMapContext 
          */
         final public void setDefaultMapContext(String defaultMapContext) {
+                String oldDefaultMapContext = this.defaultMapContext;
                 this.defaultMapContext = defaultMapContext;
+                propertyChangeSupport.firePropertyChange(PROP_DEFAULTMAPCONTEXT,oldDefaultMapContext,defaultMapContext);
         }
 
         /**
@@ -73,7 +81,9 @@ public class MapEditorPersistence implements DockingPanelLayout, Serializable {
          * @param mapCatalogUrlList 
          */
         public void setMapCatalogUrlList(List<String> mapCatalogUrlList) {
+                List<String> oldList = this.mapCatalogUrlList;
                 this.mapCatalogUrlList = new ArrayList<String>(mapCatalogUrlList);
+                propertyChangeSupport.firePropertyChange(PROP_SERVER_URI_LIST,oldList,mapCatalogUrlList);
         }
 
         /**
@@ -81,7 +91,7 @@ public class MapEditorPersistence implements DockingPanelLayout, Serializable {
          * @return 
          */
         public List<String> getMapCatalogUrlList() {
-                return mapCatalogUrlList;
+                return Collections.unmodifiableList(mapCatalogUrlList);
         }
         
         /**
@@ -133,14 +143,35 @@ public class MapEditorPersistence implements DockingPanelLayout, Serializable {
                 long version = element.getLong("serialVersionUID");
                 if(version>=1) {
                         setDefaultMapContext(element.getString(PROP_DEFAULTMAPCONTEXT));
-                        mapCatalogUrlList.clear();
+                        List<String> mapCatalogUrlList = new ArrayList<String>();
                         if(version==serialVersionUID) {
                                 for(XElement map : element.getElement(URL_LIST_NODE).children()) {
                                         if(map.getName().equals(URL_NODE)) {
-                                                mapCatalogUrlList.add(map.getString(URL_NODE_PROPERTY));
+                                            mapCatalogUrlList.add(map.getString(URL_NODE_PROPERTY));
                                         }
                                 }
-                        }                        
+                        }
+                        setMapCatalogUrlList(mapCatalogUrlList);
                 }
-        }        
+        }
+
+        @Override
+        public void addPropertyChangeListener(PropertyChangeListener listener) {
+                propertyChangeSupport.addPropertyChangeListener(listener);
+        }
+
+        @Override
+        public void addPropertyChangeListener(String prop, PropertyChangeListener listener) {
+                propertyChangeSupport.addPropertyChangeListener(prop,listener);
+        }
+
+        @Override
+        public void removePropertyChangeListener(PropertyChangeListener listener) {
+                propertyChangeSupport.removePropertyChangeListener(listener);
+        }
+
+        @Override
+        public void removePropertyChangeListener(String prop, PropertyChangeListener listener) {
+                propertyChangeSupport.removePropertyChangeListener(prop,listener);
+        }
 }

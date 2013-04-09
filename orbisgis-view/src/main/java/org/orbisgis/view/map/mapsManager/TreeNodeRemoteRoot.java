@@ -32,6 +32,8 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -56,6 +58,9 @@ public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements Pop
         // This list must be updated to the current state of shown servers
         private List<String> serverList;
 
+        /**
+         * Default constructor
+         */
         public TreeNodeRemoteRoot() {
                 setLabel(I18N.tr("Remote"));
                 setEditable(false);
@@ -75,20 +80,26 @@ public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements Pop
         /**
          * Set the server list
          * Keep updated to the current state of shown servers
-         * @param serverList 
+         * @param serverList New server list
          */
         public void setServerList(List<String> serverList) {                
-                for (String serverAdress : serverList) {
+                for (String serverAddress : serverList) {
                         try {
-                                URL serverUrl = new URL(serverAdress);
+                                URL serverUrl = new URL(serverAddress);
                                 model.insertNodeInto(new TreeNodeMapCatalogServer(serverUrl), this, getChildCount());
                         } catch (MalformedURLException ex) {
-                                LOGGER.error(I18N.tr("Cannot load map catalog server {0}", serverAdress), ex);
+                                LOGGER.error(I18N.tr("Cannot load map catalog server {0}", serverAddress), ex);
                         }
                 }
-                this.serverList = serverList;
-        }        
-        
+                this.serverList = new ArrayList<String>(serverList);
+        }
+
+        /**
+         * @return Server list
+         */
+        public List<String> getServerList() {
+            return Collections.unmodifiableList(serverList);
+        }
         @Override
         public void remove(int i) {
                 super.remove(i);
