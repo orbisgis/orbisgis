@@ -33,22 +33,22 @@
  */
 package org.gdms.data.stream;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 
+import org.apache.log4j.Logger;
+import org.gdms.data.DataSourceDefinition;
+import org.gdms.source.directory.DefinitionType;
+import org.gdms.source.directory.StreamDefinitionType;
 import org.orbisgis.progress.ProgressMonitor;
-
 import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceDefinition;
 import org.gdms.driver.DataSet;
-import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.StreamDriver;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.source.directory.DefinitionType;
-import org.gdms.source.directory.StreamDefinitionType;
 
 /**
  * Definition of stream source.
@@ -63,7 +63,7 @@ import org.gdms.source.directory.StreamDefinitionType;
  * @author Vincent Dépériers
  */
 public class StreamSourceDefinition extends AbstractDataSourceDefinition<StreamDriver> {
-
+        private static final Logger LOGGER = Logger.getLogger(StreamSourceDefinition.class);
         private StreamSource streamSource;
 
         /**
@@ -110,7 +110,7 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition<StreamD
                         getDriver().setDataSourceFactory(getDataSourceFactory());
 
                         StreamDataSourceAdapter sdsa = new StreamDataSourceAdapter(
-                                getSource(tableName), streamSource, (StreamDriver) getDriver());
+                                getSource(tableName), streamSource, getDriver());
                         sdsa.setDataSourceFactory(getDataSourceFactory());
                         return sdsa;
                 } catch (DriverException e) {
@@ -126,13 +126,7 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition<StreamD
         @Override
         public DefinitionType getDefinition() {
                 StreamDefinitionType ret = new StreamDefinitionType();
-                ret.setLayerName(streamSource.getLayerName());
-                ret.setHost(streamSource.getHost());
-                ret.setPort(String.valueOf(streamSource.getPort()));
-                ret.setImageFormat(streamSource.getImageFormat());
-                ret.setType(streamSource.getStreamType());
-                ret.setSRS(streamSource.getSRS());
-
+                ret.setSrc(streamSource.toURI().toString());
                 return ret;
         }
 
@@ -141,17 +135,20 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition<StreamD
                 return DriverManager.DEFAULT_SINGLE_TABLE_NAME;
         }
 
-        public static DataSourceDefinition createFromXML(StreamDefinitionType definition) {
-                StreamSource streamSource = new StreamSource(definition.getHost(), Integer.parseInt(definition.getPort()),
-                        definition.getLayerName(), definition.getType(),
-                        definition.getImageFormat(), definition.getSRS());
-
-                return new StreamSourceDefinition(streamSource);
+        /**
+         * Create a StreamSourceDefinition from an URI
+         * @param uri URI instance
+         * @return Instance of StreamSourceDefinition
+         * @throws UnsupportedEncodingException Encoding in URI is not supported
+         */
+        public static DataSourceDefinition createFromURI(URI uri) throws UnsupportedEncodingException {
+            StreamSource streamSource = new StreamSource(uri);
+            return new StreamSourceDefinition(streamSource);
         }
 
         @Override
         public URI getURI() throws DriverException {
-                return URI.create(streamSource.getDbms());
+                return streamSource.toURI();
         }
 
         @Override

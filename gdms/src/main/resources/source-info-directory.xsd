@@ -138,17 +138,14 @@
 
 	<xs:element name="db-definition" type="db-definition-type"/>
 
-	<xs:complexType name="wms-definition-type">
+	<xs:complexType name="stream-definition-type">
 		<xs:complexContent>
 			<xs:extension base="definition-type">
-				<xs:attribute name="host" type="xs:string" use="required"/>
-				<xs:attribute name="layer-name" type="xs:string" use="required"/>
-				<xs:attribute name="srs" type="xs:string" use="required"/>
-				<xs:attribute name="format" type="xs:string" use="required"/>
+                <xs:attribute name="src" type="xs:anyURI"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:element name="wms-definition" type="wms-definition-type"/>
+	<xs:element name="stream-definition" type="stream-definition-type"/>
 	
 </xs:schema>
