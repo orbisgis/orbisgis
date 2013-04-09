@@ -417,12 +417,23 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         ker.addCellEditorListener(cel);
         keys.setCellEditor(ker);
         JScrollPane jsp = new JScrollPane(table);
-        table.setPreferredScrollableViewportSize(new Dimension(400,200));
+        // Set the viewport to view 6 rows with a width of 400 pixels.
+        int rowHeight = table.getRowHeight();
+        int tableWidth = 400;
+        int tableHeight = rowHeight*6;
+        table.setPreferredScrollableViewportSize(
+                new Dimension(tableWidth, tableHeight));
         table.setDoubleBuffered(true);
         jsp.setAlignmentX((float).5);
         jp.add(jsp, BorderLayout.CENTER);
         table.doLayout();
         jp.add(getButtonsPanel());
+        // Set the unit (click once on down arrow: scroll down one row)
+        // and block (one mouse scroll wheel: scroll down one half page)
+        // increments.
+        JScrollBar verticalScrollBar = jsp.getVerticalScrollBar();
+        verticalScrollBar.setUnitIncrement(rowHeight);
+        verticalScrollBar.setBlockIncrement(tableHeight);
         return jp;
     }
 
