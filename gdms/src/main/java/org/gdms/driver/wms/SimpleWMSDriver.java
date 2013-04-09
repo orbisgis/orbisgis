@@ -105,7 +105,9 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                 LOG.trace("Opening WMS Stream");
                 try {
                         //Initialise the WMSClient and get the capabilities
-                        wmsClient = new WMSClient(streamSource.getHost());
+                        String streamURL = streamSource.getScheme()+"://"+streamSource.getHost()+streamSource.getPath();
+                        wmsClient = new WMSClient(streamURL);
+                        wmsClient.setPort(streamSource.getPort());
                         wmsClient.getCapabilities(null, true, null);
 
                         //Get the layer largest boundingbox
