@@ -171,7 +171,7 @@ public class CanvasSE extends JPanel {
 
 	@Override
 	public void paintComponent(Graphics g) {
-        g.drawImage(getImage(), 0, 0, null);
+            g.drawImage(getImage(), 0, 0, null);
 	}
 
         /**
@@ -270,9 +270,9 @@ public class CanvasSE extends JPanel {
          * @param sym
          */
 	public void setSymbol(Symbolizer sym) {
-		this.s = sym;
-        geom = getSampleGeometry();
-		this.imageChanged();
+            this.s = sym;
+            geom = getSampleGeometry();
+            this.imageChanged();
 	}
 
         /**

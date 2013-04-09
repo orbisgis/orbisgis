@@ -139,7 +139,6 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
             usa = (UniqueSymbolArea) pls.getLegend();
             AreaParameters nlp = usa.getAreaParameters();
             cse.setSymbol(usa.getSymbolizer());
-            cse.imageChanged();
             return nlp;
         } else {
             return lps;
@@ -283,7 +282,6 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
         RecodedArea ra = (RecodedArea) getLegend();
         ra.setStrokeEnabled(strokeBox.isSelected());
         getPreview().setSymbol(new UniqueSymbolArea(ra.getFallbackParameters()).getSymbolizer());
-        getPreview().imageChanged();
         TableModelUniqueValue model = (TableModelUniqueValue) getJTable().getModel();
         model.fireTableDataChanged();
     }

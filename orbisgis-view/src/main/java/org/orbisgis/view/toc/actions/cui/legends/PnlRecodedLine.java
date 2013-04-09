@@ -137,7 +137,6 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
             usl = (UniqueSymbolLine) pls.getLegend();
             LineParameters nlp = usl.getLineParameters();
             cse.setSymbol(usl.getSymbolizer());
-            cse.imageChanged();
             return nlp;
         } else {
             return lps;

@@ -176,7 +176,6 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
             usa = (UniqueSymbolPoint) pls.getLegend();
             PointParameters nlp = usa.getPointParameters();
             cse.setSymbol(usa.getSymbolizer());
-            cse.imageChanged();
             return nlp;
         } else {
             return lps;
@@ -468,7 +467,6 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         PointSymbolizer ps = (PointSymbolizer) new UniqueSymbolPoint(ra.getFallbackParameters()).getSymbolizer();
         ps.setOnVertex(ra.isOnVertex());
         getPreview().setSymbol(ps);
-        getPreview().imageChanged();
         updateTable();
     }
 }
