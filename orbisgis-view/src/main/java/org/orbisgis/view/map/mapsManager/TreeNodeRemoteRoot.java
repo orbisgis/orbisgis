@@ -30,11 +30,13 @@ package org.orbisgis.view.map.mapsManager;
 
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -44,6 +46,7 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
 import org.orbisgis.view.components.fstree.PopupTreeNode;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.map.MapEditorPersistence;
 import org.orbisgis.view.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -57,6 +60,8 @@ public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements Pop
         private static final Logger LOGGER = Logger.getLogger(TreeNodeRemoteRoot.class);
         // This list must be updated to the current state of shown servers
         private List<String> serverList;
+        private MapsManagerPersistence mapsManagerPersistence;
+        private AtomicBoolean onUpdateSerialisation = new AtomicBoolean(false);
 
         /**
          * Default constructor
@@ -65,7 +70,32 @@ public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements Pop
                 setLabel(I18N.tr("Remote"));
                 setEditable(false);
         }
-        
+
+        /**
+         * The server list will keep this instance updated
+         * @param mapsManagerPersistence
+         */
+        public void setMapsManagerPersistence(MapsManagerPersistence mapsManagerPersistence) {
+            this.mapsManagerPersistence = mapsManagerPersistence;
+            // Install listeners
+            mapsManagerPersistence.addPropertyChangeListener(MapsManagerPersistence.PROP_SERVER_URI_LIST, EventHandler.create(PropertyChangeListener.class, this, "onMapServerListUpdate"));
+            onMapServerListUpdate();
+        }
+        private void updateServerList() {
+            if(mapsManagerPersistence!=null && serverList!=null) {
+                onUpdateSerialisation.set(true);
+                try {
+                    mapsManagerPersistence.setMapCatalogUrlList(serverList);
+                } finally {
+                    onUpdateSerialisation.set(false);
+                }
+            }
+        }
+        public void onMapServerListUpdate() {
+            if(!onUpdateSerialisation.get()) {
+                    setServerList(mapsManagerPersistence.getMapCatalogUrlList());
+            }
+        }
         @Override
         public void insert(MutableTreeNode mtn, int i) {
                 super.insert(mtn, i);                        
@@ -73,6 +103,7 @@ public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements Pop
                         TreeNodeMapCatalogServer newChild = (TreeNodeMapCatalogServer)mtn;
                         if(serverList!=null) {
                                 serverList.add(i,newChild.getServerUrl().toExternalForm());
+                                updateServerList();
                         }
                 }
         }
@@ -105,6 +136,7 @@ public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements Pop
                 super.remove(i);
                 if(serverList!=null) {
                         serverList.remove(i);
+                        updateServerList();
                 }
         }
 

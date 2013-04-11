@@ -107,7 +107,14 @@ public class MapsManager extends JPanel {
                 add(scrollPane,BorderLayout.CENTER);
                 setBorder(BorderFactory.createEtchedBorder());
         }
-        
+
+        /**
+         * The server list will keep this instance updated
+         * @param mapsManagerPersistence
+         */
+        public void setMapsManagerPersistence(MapsManagerPersistence mapsManagerPersistence) {
+            rootRemote.setMapsManagerPersistence(mapsManagerPersistence);
+        }
         /**
          * Used by the UI to convert a File into a MapElement
          * @return The Map file factory manager

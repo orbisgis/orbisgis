@@ -32,6 +32,7 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Arrays;
@@ -51,6 +52,7 @@ import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.LayerListenerAdapter;
 import org.orbisgis.core.layerModel.LayerListenerEvent;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.core.layerModel.SelectionEvent;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
@@ -89,6 +91,22 @@ public final class MapElement extends AbstractEditableElement {
                 mapId = String.valueOf(mapContext.getIdTime());
 	}
 
+    /**
+     * Constructor that read the provided map context file
+     * @param mapContextFile
+     */
+    public MapElement(File mapContextFile) {
+        mapContext = new OwsMapContext();
+        try {
+            mapContext.read(new FileInputStream(mapContextFile));
+        } catch (FileNotFoundException ex) {
+            LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
+        } catch (IllegalArgumentException ex) {
+            LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
+        }
+        this.mapContextFile = mapContextFile;
+        mapId = String.valueOf(mapContext.getIdTime());
+    }
         /**
          * Use the EditorManager service and search for the first available editable map.
          * @return The map context or null if it is not found.

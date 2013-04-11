@@ -34,10 +34,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import org.orbisgis.view.docking.DockingPanelLayout;
+import org.orbisgis.view.map.mapsManager.MapsManagerPersistence;
 import org.orbisgis.view.util.PropertyHost;
 import org.orbisgis.view.util.XElement;
 
@@ -46,25 +44,16 @@ import org.orbisgis.view.util.XElement;
  * @author Nicolas Fortin
  */
 public class MapEditorPersistence implements DockingPanelLayout, Serializable, PropertyHost {
-        private static final long serialVersionUID = 2L; // One by new property
+        private static final long serialVersionUID = 3L; // One by new property
+        private MapsManagerPersistence mapsManagerPersistence = new MapsManagerPersistence();
+        private static final String MAP_EDITOR_NODE = "mapEditor";
         /**
          * Map Context file name to show on application start.
          * {@link org.orbisgis.view.map.MapEditorPersistence#getDefaultMapContext()}
          */
         public static final String PROP_DEFAULTMAPCONTEXT = "defaultMapContext";
-        /**
-         * Property of server uri list {@link org.orbisgis.view.map.MapEditorPersistence#getMapCatalogUrlList()}
-         */
-        public static final String PROP_SERVER_URI_LIST = "mapCatalogUrlList";
         private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-        
         private String defaultMapContext = "map.ows"; //Default map context on application start
-        private List<String> mapCatalogUrlList = new ArrayList<String>();
-        
-        // XML consts
-        private static final String URL_LIST_NODE = "mapCatalogUrlList";
-        private static final String URL_NODE = "mapcatalog";
-        private static final String URL_NODE_PROPERTY = "url";
 
         /**
          * Update the default map context
@@ -77,23 +66,12 @@ public class MapEditorPersistence implements DockingPanelLayout, Serializable, P
         }
 
         /**
-         * Set the map context server list
-         * @param mapCatalogUrlList 
+         * @return Serialisation class related to the maps manager
          */
-        public void setMapCatalogUrlList(List<String> mapCatalogUrlList) {
-                List<String> oldList = this.mapCatalogUrlList;
-                this.mapCatalogUrlList = new ArrayList<String>(mapCatalogUrlList);
-                propertyChangeSupport.firePropertyChange(PROP_SERVER_URI_LIST,oldList,mapCatalogUrlList);
+        public MapsManagerPersistence getMapsManagerPersistence() {
+            return mapsManagerPersistence;
         }
 
-        /**
-         * Retrieve the list of map context
-         * @return 
-         */
-        public List<String> getMapCatalogUrlList() {
-                return Collections.unmodifiableList(mapCatalogUrlList);
-        }
-        
         /**
          * 
          * @return The last loaded map context path, or the default one
@@ -106,52 +84,34 @@ public class MapEditorPersistence implements DockingPanelLayout, Serializable, P
         public void writeStream(DataOutputStream out) throws IOException {
                 out.writeLong(serialVersionUID);
                 out.writeUTF(defaultMapContext);
-                out.writeInt(mapCatalogUrlList.size());
-                for(String mcUrl : mapCatalogUrlList) {
-                        out.writeUTF(mcUrl);
-                }
+                mapsManagerPersistence.writeStream(out);
         }
 
         @Override
         public void readStream(DataInputStream in) throws IOException {
                 // Check version
                 long version = in.readLong();
-                if(version>=1) {
+                if(version==serialVersionUID) {
                         setDefaultMapContext(in.readUTF());
-                        mapCatalogUrlList.clear();
-                        if(version==serialVersionUID) {
-                                int size = in.readInt();
-                                for(int i=0;i<size;i++) {
-                                        mapCatalogUrlList.add(in.readUTF());
-                                }
-                        }
+                        mapsManagerPersistence.readStream(in);
                 }
         }
 
         @Override
         public void writeXML(XElement element) {
                 element.addLong("serialVersionUID", serialVersionUID);
-                element.addString(PROP_DEFAULTMAPCONTEXT, defaultMapContext);
-                XElement urlList = element.addElement(URL_LIST_NODE);
-                for(String mcUrl : mapCatalogUrlList) {
-                        urlList.addElement(URL_NODE).addString(URL_NODE_PROPERTY, mcUrl);
-                }
+                XElement mapElement = element.addElement(MAP_EDITOR_NODE);
+                mapElement.addString(PROP_DEFAULTMAPCONTEXT, defaultMapContext);
+                mapsManagerPersistence.writeXML(mapElement);
         }
 
         @Override
         public void readXML(XElement element) {
                 long version = element.getLong("serialVersionUID");
-                if(version>=1) {
-                        setDefaultMapContext(element.getString(PROP_DEFAULTMAPCONTEXT));
-                        List<String> mapCatalogUrlList = new ArrayList<String>();
-                        if(version==serialVersionUID) {
-                                for(XElement map : element.getElement(URL_LIST_NODE).children()) {
-                                        if(map.getName().equals(URL_NODE)) {
-                                            mapCatalogUrlList.add(map.getString(URL_NODE_PROPERTY));
-                                        }
-                                }
-                        }
-                        setMapCatalogUrlList(mapCatalogUrlList);
+                if(version==serialVersionUID) {
+                        XElement mapElement =  element.getElement(MAP_EDITOR_NODE);
+                        setDefaultMapContext(mapElement.getString(PROP_DEFAULTMAPCONTEXT));
+                        mapsManagerPersistence.readXML(mapElement);
                 }
         }
 
