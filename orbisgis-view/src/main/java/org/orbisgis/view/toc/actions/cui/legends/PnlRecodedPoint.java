@@ -290,7 +290,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
                     compositeSymbolizer.setSymbolizer(i, legend.getSymbolizer());
                 }
             }
-            setLegendImpl(legend);
+            setLegendImpl((RecodedPoint)legend);
             this.initializeLegendFields();
         } else {
             throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedArea instances in"

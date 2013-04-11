@@ -100,8 +100,8 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         }
     }
 
-    protected void setLegendImpl(Legend leg){
-        this.legend = (AbstractRecodedLegend<U>) leg;
+    protected void setLegendImpl(AbstractRecodedLegend<U> leg){
+        this.legend =  leg;
     }
 
     /**
@@ -253,12 +253,13 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         double m = size == 0 ? 0 : 90.0/(double)size;
         int i = 0;
         int n = 0;
+        pm.progressTo(50);
         pm.startTask(CREATE_CLASSIF, 100);
         for(String s : set){
             newRL.put(s, lp);
             if(i*m>n){
                 n++;
-                pm.progressTo(n+10);
+                pm.progressTo(50*i/size);
             }
             if(pm.isCancelled()){
                 pm.endTask();
@@ -268,6 +269,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         }
         pm.progressTo(100);
         pm.endTask();
+        pm.progressTo(100);
         return newRL;
     }
 
@@ -306,9 +308,10 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
             blueThreshold = ((double)(blueStart-end.getBlue()))/(size-1);
             alphaThreshold = ((double)(alphaStart-end.getAlpha()))/(size-1);
         }
-        double m = size == 0 ? 0 : 90.0/(double)size;
+        double m = size == 0 ? 0 : 50.0/(double)size;
         int i=0;
         int n = 0;
+        pm.progressTo(50);
         pm.startTask(CREATE_CLASSIF , 100);
         for(String s : set){
             Color newCol = new Color(redStart-(int)(redThreshold*i),
@@ -319,7 +322,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
             newRL.put(s, value);
             if(i*m>n){
                 n++;
-                pm.progressTo(n+10);
+                pm.progressTo(50*i/size);
             }
             if(pm.isCancelled()){
                 pm.endTask();
@@ -328,6 +331,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
             i++;
         }
         pm.endTask();
+        pm.progressTo(100);
         return newRL;
     }
 
@@ -547,9 +551,9 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
             TreeSet<String> ret = new TreeSet<String>();
             try {
                 long rowCount=ds.getRowCount();
-                pm.startTask(I18N.tr("Retrieving classes"), 10);
+                pm.startTask(I18N.tr("Retrieving classes"), 50);
                 pm.progressTo(0);
-                double m = rowCount>0 ?(double)10/rowCount : 0;
+                double m = rowCount>0 ?(double)50/rowCount : 0;
                 int n =0;
                 int fieldIndex = ds.getFieldIndexByName(fieldName);
                 final int warn = 100;
@@ -571,9 +575,9 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
                             LOGGER.warn(I18N.tr("The application has ended unexpectedly"));
                         }
                     }
-                    if(i*m>n*10){
+                    if(i*m>n && rowCount > 0){
                         n++;
-                        pm.progressTo(n);
+                        pm.progressTo(50*i/rowCount);
                     }
                     if(pm.isCancelled()){
                         pm.endTask();
@@ -597,7 +601,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
 
         @Override
         public String getTaskName() {
-            return "select distinct";
+            return "Creating classification...";
         }
     }
 
