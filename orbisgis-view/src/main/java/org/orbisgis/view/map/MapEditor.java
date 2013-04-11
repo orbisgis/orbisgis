@@ -42,23 +42,18 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
 import javax.swing.event.TreeExpansionListener;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.DataManager;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
 import org.orbisgis.progress.NullProgressMonitor;
@@ -66,7 +61,6 @@ import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
-import org.orbisgis.view.components.actions.ActionsHolder;
 import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
@@ -84,7 +78,6 @@ import org.orbisgis.view.map.mapsManager.TreeLeafMapElement;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.toolbar.ActionAutomaton;
-import org.orbisgis.view.map.toolbar.ActionDisposable;
 import org.orbisgis.view.map.tools.CompassTool;
 import org.orbisgis.view.map.tools.FencePolygonTool;
 import org.orbisgis.view.map.tools.MesureLineTool;
@@ -117,7 +110,6 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     //the MapStatusBar
     private AtomicBoolean processingCursor = new AtomicBoolean(false);
     private Point lastCursorPosition = new Point();
-    private Point lastTranslatedCursorPosition = new Point();
     private AtomicBoolean initialised = new AtomicBoolean(false);
     private MapsManager mapsManager = new MapsManager();
     private JLayeredPane layeredPane = new JLayeredPane();
@@ -125,7 +117,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified");
     private PropertyChangeListener activeLayerListener = EventHandler.create(PropertyChangeListener.class,this,"onActiveLayerChange","");
     private ActionCommands actions = new ActionCommands();
-
+    private MapEditorPersistence mapEditorPersistence = new MapEditorPersistence();
     /**
      * Constructor
      */
@@ -138,10 +130,13 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         dockingPanelParameters.setMinimizable(false);
         dockingPanelParameters.setExternalizable(false);
         dockingPanelParameters.setCloseable(false);
-        dockingPanelParameters.setLayout(new MapEditorPersistence());
+        dockingPanelParameters.setLayout(mapEditorPersistence);
         layeredPane.add(mapControl,1);
         layeredPane.add(mapsManager, 0);
         mapsManager.setVisible(false);
+        mapsManager.setMapsManagerPersistence(mapEditorPersistence.getMapsManagerPersistence());
+        // when the layout is loaded, this editor will load the map element linked with this layout
+        mapEditorPersistence.addPropertyChangeListener(MapEditorPersistence.PROP_DEFAULTMAPCONTEXT,EventHandler.create(PropertyChangeListener.class,this,"onSerialisationMapChange"));
         add(layeredPane, BorderLayout.CENTER);
         add(mapStatusBar, BorderLayout.PAGE_END);
         //Declare Tools of Map Editors
@@ -167,6 +162,12 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                         }
                 }
         }
+
+    /**
+     * The user update the scale field
+     * @param pce update event
+     * @throws PropertyVetoException If the property entered is incorrect
+     */
     public void onUserSetScaleDenominator(PropertyChangeEvent pce) throws PropertyVetoException {
             long newScale = (Long)pce.getNewValue();
             if(newScale<1) {
@@ -193,8 +194,6 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                                 MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
                                 EventHandler.create(VetoableChangeListener.class, this,
                                 "onUserSetScaleDenominator", ""));
-                        // Load the Remote Map Catalog servers and keep track for updates
-                        mapsManager.setServerList(getMapEditorPersistence().getMapCatalogUrlList());
                         // When the tree is expanded update the manager size
                         mapsManager.getTree().addComponentListener(sizeListener);
                         mapsManager.getTree().addTreeExpansionListener(EventHandler.create(TreeExpansionListener.class,this,"updateMapControlSize"));
@@ -206,7 +205,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
                 ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
 
-                File serialisedMapContextPath = new File(viewWorkspace.getMapContextPath() + File.separator, getMapEditorPersistence().getDefaultMapContext());
+                File serialisedMapContextPath = new File(viewWorkspace.getMapContextPath() + File.separator, mapEditorPersistence.getDefaultMapContext());
                 if(!serialisedMapContextPath.exists()) {
                         createDefaultMapContext();
                 } else {
@@ -229,9 +228,6 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
                 ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
 
-                MapContext defaultMapContext = new OwsMapContext();
-
-
                 //Load the map context
                 File mapContextFolder = new File(viewWorkspace.getMapContextPath());
                 if (!mapContextFolder.exists()) {
@@ -243,14 +239,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                         //Create an empty map context
                         TreeLeafMapContextFile.createEmptyMapContext(mapContextFile);
                 }
-                try {
-                        defaultMapContext.read(new FileInputStream(mapContextFile));
-                } catch (FileNotFoundException ex) {
-                        GUILOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
-                } catch (IllegalArgumentException ex) {
-                        GUILOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
-                }
-                MapElement editableMap = new MapElement(defaultMapContext, mapContextFile);
+                MapElement editableMap = new MapElement(mapContextFile);
                 backgroundManager.backgroundOperation(new ReadMapContextJob(editableMap));
         }
 
@@ -278,7 +267,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         }
     /**
      * The user Drop a list of Editable
-     * @param editableList
+     * @param editableList Load the editable elements in the current map context
      */
     public void onDropEditable(EditableElement[] editableList) {
         BackgroundManager bm = Services.getService(BackgroundManager.class);
@@ -288,7 +277,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
     /**
      * Load a new map context
-     * @param element
+     * @param element Editable to load
      */
     private void loadMap(MapElement element) {
         MapElement oldMapElement = mapElement;
@@ -310,7 +299,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
                 URI rootDir =(new File(viewWorkspace.getMapContextPath()+File.separator)).toURI();
                 String relative = rootDir.relativize(element.getMapContextFile().toURI()).getPath();
-                getMapEditorPersistence().setDefaultMapContext(relative);
+                mapEditorPersistence.setDefaultMapContext(relative);
                 // Set the loaded map hint to the MapCatalog
                 mapsManager.setLoadedMap(element.getMapContextFile());
                 // Update the editor label with the new editable name
@@ -329,8 +318,23 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         firePropertyChange(PROP_TOOL_MANAGER,oldToolManager,getToolManager());
         firePropertyChange(PROP_MAP_ELEMENT,oldMapElement, mapElement);
     }
-    private MapEditorPersistence getMapEditorPersistence() {
-            return ((MapEditorPersistence)dockingPanelParameters.getLayout());
+
+    /**
+     * The DefaultMapContext property of {@link MapEditorPersistence} has been updated, load this map
+     */
+    public void onSerialisationMapChange() {
+        ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
+        String fileName = mapEditorPersistence.getDefaultMapContext();
+        File mapFilePath = new File(viewWorkspace.getMapContextPath(),fileName);
+        if(!mapFilePath.exists()) {
+            return;
+        }
+        if(mapElement!=null && mapFilePath.equals(mapElement.getMapContextFile())) {
+            return;
+        }
+        MapElement mapElement = new MapElement(mapFilePath);
+        BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
+        backgroundManager.backgroundOperation(new ReadMapContextJob(mapElement));
     }
     /**
      * MouseMove event on the MapControl
@@ -504,8 +508,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     }
 
     /**
-     * Gets the {@link MapControl} linked to this {@code MapEditor}.
-     * @return
+     * @return {@link MapControl} linked to this {@code MapEditor}.
      */
     public MapControl getMapControl(){
             return mapControl;
@@ -577,20 +580,19 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         private EditableElement[] editableList;
 
         public DropDataSourceProcess(EditableElement[] editableList) {
-            this.editableList = editableList;
+            this.editableList = editableList.clone();
         }
 
         @Override
         public void run(org.orbisgis.progress.ProgressMonitor pm) {
-            DataManager dataManager = Services.getService(DataManager.class);
             ILayer dropLayer = mapContext.getLayerModel();
             int i=0;
             for(EditableElement eElement : editableList) {
                 pm.progressTo(100 * i++ / editableList.length);
                 if(eElement instanceof EditableSource) {
-                    String sourceName = eElement.getId();
+                    DataSource source = ((EditableSource) eElement).getDataSource();
                     try {
-                        dropLayer.addLayer(dataManager.createLayer(sourceName));
+                        dropLayer.addLayer(mapContext.createLayer(source));
                     } catch (LayerException e) {
                         //This layer can not be inserted, we continue to the next layer
                         GUILOGGER.warn(I18N.tr("Unable to create and drop the layer"),e);
