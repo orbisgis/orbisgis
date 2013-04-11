@@ -326,7 +326,7 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
                     compositeSymbolizer.setSymbolizer(i, legend.getSymbolizer());
                 }
             }
-            setLegendImpl(legend);
+            setLegendImpl((RecodedLine)legend);
             this.initializeLegendFields();
         } else {
             throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in"

@@ -344,7 +344,7 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
                     compositeSymbolizer.setSymbolizer(i, legend.getSymbolizer());
                 }
             }
-            setLegendImpl(legend);
+            setLegendImpl((RecodedArea)legend);
             this.initializeLegendFields();
         } else {
             throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedArea instances in"
