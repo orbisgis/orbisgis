@@ -228,11 +228,12 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
                 }
                 if(doReset) {
                     resetToolBarsCActions(addedToolBarActions);
+                } else {
+                    // All toolbars have been set to visible in order to set layout
+                    // The visible state can be reset here
+                    // Set the visibility of all ToolBarItems
+                    refreshToolBarsState();
                 }
-                // All toolbars have been set to visible in order to set layout
-                // The visible state can be reset here
-                // Set the visibility of all ToolBarItems
-                refreshToolBarsState();
         }
 
         private void writeXML() throws IOException {
@@ -633,6 +634,7 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
                 lastToolBarLocation.put(logicalGroup,defaultLocation);
                 addToolbarItem(newCAction, action, defaultLocation);
             }
+            refreshToolBarsState();
         }
 
     @SuppressWarnings("deprecation")
