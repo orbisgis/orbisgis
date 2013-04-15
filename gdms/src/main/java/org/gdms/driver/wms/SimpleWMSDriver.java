@@ -37,18 +37,28 @@ import java.awt.Image;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.wms.BoundingBox;
+import com.vividsolutions.wms.Capabilities;
+import com.vividsolutions.wms.MapLayer;
+import com.vividsolutions.wms.MapRequest;
+import com.vividsolutions.wms.WMService;
+import java.util.ArrayList;
 import org.apache.log4j.Logger;
-import org.gvsig.remoteClient.exceptions.ServerErrorException;
-import org.gvsig.remoteClient.exceptions.WMSException;
-import org.gvsig.remoteClient.utils.BoundaryBox;
-import org.gvsig.remoteClient.wms.WMSClient;
-import org.gvsig.remoteClient.wms.WMSLayer;
-import org.gvsig.remoteClient.wms.WMSStatus;
+import org.gdms.data.values.*;
+import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.spatial.geometry.crs.ST_Transform;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.progress.ProgressMonitor;
 
 import org.gdms.data.DataSourceFactory;
@@ -61,8 +71,6 @@ import org.gdms.data.stream.GeoStream;
 import org.gdms.data.stream.StreamSource;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
@@ -85,7 +93,9 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
         private static final Logger LOG = Logger.getLogger(SimpleWMSDriver.class);
         private Schema schema;
         private GeoStream geoStream;
-        private WMSClient wmsClient;
+        private WMService wmsClient;
+        private Capabilities cap;
+        private MapLayer mapLayer;
 
         /**
          * Creates a new WMS driver.
@@ -105,17 +115,28 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                 LOG.trace("Opening WMS Stream");
                 try {
                         //Initialise the WMSClient and get the capabilities
-                        String streamURL = streamSource.getScheme()+"://"+streamSource.getHost()+streamSource.getPath();
-                        wmsClient = new WMSClient(streamURL);
-                        wmsClient.setPort(streamSource.getPort());
-                        wmsClient.getCapabilities(null, true, null);
-
-                        //Get the layer largest boundingbox
-                        BoundaryBox bbox = getLayerBoundingBox(streamSource.getLayerName(), wmsClient.getRootLayer(), streamSource.getSRS());
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(streamSource.getScheme());
+                        sb.append("://");
+                        sb.append(streamSource.getHost());
+                        sb.append(streamSource.getPath());
+                        String streamURL = sb.toString();
+                        if(!(streamURL.charAt(streamURL.length()-1) == '?')){
+                            sb.append("?");
+                            streamURL = sb.toString();
+                        }
+                        wmsClient = new WMService(streamURL);
+                        wmsClient.initialize();
+                        cap = wmsClient.getCapabilities();
+                        String name = streamSource.getLayerName();
+                        mapLayer = cap.getTopLayer();
+                        MapLayer ml = cap.getTopLayer();
+                        MapLayer node = find(name,ml);
+                        BoundingBox bbox = node.getBoundingBox();
 
                         //Create the GeoStream object
                         geoStream = new DefaultGeoStream(this, streamSource, 
-                                new Envelope(bbox.getXmin(), bbox.getXmax(), bbox.getYmin(), bbox.getYmax()));
+                                new Envelope(bbox.getMinX(), bbox.getMaxX(), bbox.getMinY(), bbox.getMaxY()));
                 } catch (ConnectException e) {
                         throw new DriverException(e);
                 } catch (IOException e) {
@@ -125,7 +146,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
 
         @Override
         public void close() throws DriverException {
-                wmsClient.close();
+//                wmsClient.close();
                 wmsClient = null;
         }
 
@@ -147,40 +168,36 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                 
                 try {
                         StreamSource streamSource = geoStream.getStreamSource();
+                        MapRequest mr = new MapRequest(wmsClient);
+                        List<String> layers = new ArrayList<String>(1);
+                        layers.add(mapLayer.getName());
+                        mr.setLayers(layers);
+                        BoundingBox bb = new BoundingBox(streamSource.getSRS(), extent.getMinX(),
+                                extent.getMinY(), extent.getMaxX(), extent.getMaxY());
+                        mr.setBoundingBox(bb);
+                        mr.setFormat(streamSource.getImageFormat());
+                        mr.setImageWidth(width);
+                        mr.setImageHeight(height);
 
-                        //Create the WMSStatus object
-                        WMSStatus wmsStatus = new WMSStatus();
-                        wmsStatus.addLayerName(streamSource.getLayerName());
-                        wmsStatus.setSrs(streamSource.getSRS());
-                        wmsStatus.setFormat(streamSource.getImageFormat());
-                        wmsStatus.setWidth(width);
-                        wmsStatus.setHeight(height);
-                        wmsStatus.setExtent(new Rectangle2D.Double(extent.getMinX(), extent.getMinY(), extent.getWidth(), extent.getHeight()));
-
-                        return ImageIO.read(wmsClient.getMap(wmsStatus, null));
-                } catch (WMSException e) {
-                        throw new DriverException(e);
-                } catch (ServerErrorException e) {
-                        throw new DriverException(e);
+                        return mr.getImage();
                 } catch (IOException e) {
                         throw new DriverException(e);
                 }
         }
 
-        private WMSLayer find(String layerName, WMSLayer layer) {
-                if (layerName.equals(layer.getName())) {
-                        return layer;
-                } else {
-                        List<WMSLayer> children = layer.getChildren();
-                        for (WMSLayer child : children) {
-                                WMSLayer ret = find(layerName, child);
-                                if (ret != null) {
-                                        return ret;
-                                }
-                        }
+        private MapLayer find(String name, MapLayer root) {
+            if((root.getName() != null && root.getName().equals(name))
+                    || (root.getName() == null && name == null)){
+                return root;
+            } else {
+                for(MapLayer l : root.getSubLayerList()){
+                    MapLayer ml = find(name,l);
+                    if(ml != null){
+                        return ml;
+                    }
                 }
-
-                return null;
+            }
+            return null;
         }
 
         /**
@@ -191,51 +208,51 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
          * @param srs
          * @return
          */
-        private BoundaryBox getLayerBoundingBox(String layerName, WMSLayer layer, String srs) throws DriverException {
-                WMSLayer wmsLayer = find(layerName, layer);
-                // Obtain the bbox at current level
-                BoundaryBox bbox = wmsLayer.getBbox(srs);
-                WMSLayer wmsLayerPar = wmsLayer;
-                while ((bbox == null) && (wmsLayerPar.getParent() != null)) {
-                        wmsLayerPar = wmsLayerPar.getParent();
-                        bbox = wmsLayerPar.getBbox(srs);
-                }
-
-                // Some wrong bbox to not have null pointer exceptions
-                if (bbox == null) {
-                    HashMap bboxes = wmsLayer.getBboxes();
-                    String originalSrs = (String) bboxes.keySet().iterator().next();
-                    BoundaryBox original = (BoundaryBox) bboxes.get(originalSrs);
-                    Envelope env = new Envelope(original.getXmax(), original.getXmin(), original.getYmax(), original.getYmin());
-                    GeometryFactory gf = new GeometryFactory();
-                    Polygon poly = (Polygon) gf.toGeometry(env);
-                    ST_Transform transformFunction = new ST_Transform();
-                    try{
-                        CoordinateReferenceSystem inputCRS = CRS.decode(originalSrs);
-                        Value val = transformFunction.evaluate(null,
-                                    ValueFactory.createValue(poly,inputCRS),
-                                    ValueFactory.createValue(srs));
-                        Envelope retEnv = val.getAsGeometry().getEnvelopeInternal();
-                        BoundaryBox retBB = new BoundaryBox();
-                        retBB.setXmax(retEnv.getMaxX());
-                        retBB.setXmin(retEnv.getMinX());
-                        retBB.setYmax(retEnv.getMaxY());
-                        retBB.setYmin(retEnv.getMinY());
-                        retBB.setSrs(srs);
-                        return retBB;
-                    } catch (FunctionException fe){
-                        throw new DriverException("Could not find a valid bounding box for the layer " + layerName
-                            + " : " + fe.getCause());
-                    }  catch (NoSuchAuthorityCodeException fe){
-                        throw new DriverException("Could not find a valid bounding box for the layer " + layerName
-                            + " : " + fe.getCause());
-                    }  catch (FactoryException fe){
-                        throw new DriverException("Could not find a valid bounding box for the layer " + layerName
-                            + " : " + fe.getCause());
-                    }
-                }
-                return bbox;
-        }
+//        private BoundaryBox getLayerBoundingBox(String layerName, WMSLayer layer, String srs) throws DriverException {
+//                WMSLayer wmsLayer = find(layerName, layer);
+//                // Obtain the bbox at current level
+//                BoundaryBox bbox = wmsLayer.getBbox(srs);
+//                WMSLayer wmsLayerPar = wmsLayer;
+//                while ((bbox == null) && (wmsLayerPar.getParent() != null)) {
+//                        wmsLayerPar = wmsLayerPar.getParent();
+//                        bbox = wmsLayerPar.getBbox(srs);
+//                }
+//
+//                // Some wrong bbox to not have null pointer exceptions
+//                if (bbox == null) {
+//                    HashMap bboxes = wmsLayer.getBboxes();
+//                    String originalSrs = (String) bboxes.keySet().iterator().next();
+//                    BoundaryBox original = (BoundaryBox) bboxes.get(originalSrs);
+//                    Envelope env = new Envelope(original.getXmax(), original.getXmin(), original.getYmax(), original.getYmin());
+//                    GeometryFactory gf = new GeometryFactory();
+//                    Polygon poly = (Polygon) gf.toGeometry(env);
+//                    ST_Transform transformFunction = new ST_Transform();
+//                    try{
+//                        CoordinateReferenceSystem inputCRS = CRS.decode(originalSrs);
+//                        Value val = transformFunction.evaluate(null,
+//                                    ValueFactory.createValue(poly,inputCRS),
+//                                    ValueFactory.createValue(srs));
+//                        Envelope retEnv = val.getAsGeometry().getEnvelopeInternal();
+//                        BoundaryBox retBB = new BoundaryBox();
+//                        retBB.setXmax(retEnv.getMaxX());
+//                        retBB.setXmin(retEnv.getMinX());
+//                        retBB.setYmax(retEnv.getMaxY());
+//                        retBB.setYmin(retEnv.getMinY());
+//                        retBB.setSrs(srs);
+//                        return retBB;
+//                    } catch (FunctionException fe){
+//                        throw new DriverException("Could not find a valid bounding box for the layer " + layerName
+//                            + " : " + fe.getCause());
+//                    }  catch (NoSuchAuthorityCodeException fe){
+//                        throw new DriverException("Could not find a valid bounding box for the layer " + layerName
+//                            + " : " + fe.getCause());
+//                    }  catch (FactoryException fe){
+//                        throw new DriverException("Could not find a valid bounding box for the layer " + layerName
+//                            + " : " + fe.getCause());
+//                    }
+//                }
+//                return bbox;
+//        }
 
         @Override
         public long getRowCount() throws DriverException {
