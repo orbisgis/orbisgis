@@ -195,14 +195,44 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                 WMSLayer wmsLayer = find(layerName, layer);
                 // Obtain the bbox at current level
                 BoundaryBox bbox = wmsLayer.getBbox(srs);
-                while ((bbox == null) && (wmsLayer.getParent() != null)) {
-                        wmsLayer = wmsLayer.getParent();
-                        bbox = wmsLayer.getBbox(srs);
+                WMSLayer wmsLayerPar = wmsLayer;
+                while ((bbox == null) && (wmsLayerPar.getParent() != null)) {
+                        wmsLayerPar = wmsLayerPar.getParent();
+                        bbox = wmsLayerPar.getBbox(srs);
                 }
 
                 // Some wrong bbox to not have null pointer exceptions
                 if (bbox == null) {
-                        throw new DriverException("Could not find a valid bounding box for the layer " + layerName);
+                    HashMap bboxes = wmsLayer.getBboxes();
+                    String originalSrs = (String) bboxes.keySet().iterator().next();
+                    BoundaryBox original = (BoundaryBox) bboxes.get(originalSrs);
+                    Envelope env = new Envelope(original.getXmax(), original.getXmin(), original.getYmax(), original.getYmin());
+                    GeometryFactory gf = new GeometryFactory();
+                    Polygon poly = (Polygon) gf.toGeometry(env);
+                    ST_Transform transformFunction = new ST_Transform();
+                    try{
+                        CoordinateReferenceSystem inputCRS = CRS.decode(originalSrs);
+                        Value val = transformFunction.evaluate(null,
+                                    ValueFactory.createValue(poly,inputCRS),
+                                    ValueFactory.createValue(srs));
+                        Envelope retEnv = val.getAsGeometry().getEnvelopeInternal();
+                        BoundaryBox retBB = new BoundaryBox();
+                        retBB.setXmax(retEnv.getMaxX());
+                        retBB.setXmin(retEnv.getMinX());
+                        retBB.setYmax(retEnv.getMaxY());
+                        retBB.setYmin(retEnv.getMinY());
+                        retBB.setSrs(srs);
+                        return retBB;
+                    } catch (FunctionException fe){
+                        throw new DriverException("Could not find a valid bounding box for the layer " + layerName
+                            + " : " + fe.getCause());
+                    }  catch (NoSuchAuthorityCodeException fe){
+                        throw new DriverException("Could not find a valid bounding box for the layer " + layerName
+                            + " : " + fe.getCause());
+                    }  catch (FactoryException fe){
+                        throw new DriverException("Could not find a valid bounding box for the layer " + layerName
+                            + " : " + fe.getCause());
+                    }
                 }
                 return bbox;
         }
