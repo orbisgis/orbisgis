@@ -67,6 +67,7 @@ import org.xml.sax.SAXException;
  */
 public class Parser {
   private static Logger LOG = Logger.getLogger(Parser.class);
+  private String foundVersion;
   /**
    * Creates a Parser for dealing with WMS XML.
    */
@@ -83,12 +84,39 @@ public class Parser {
    */
 
   public Capabilities parseCapabilities( WMService service, InputStream inStream ) throws IOException {
-      if ( WMService.WMS_1_1_1.equals( service.getVersion() )
-                      || WMService.WMS_1_1_0.equals( service.getVersion() ) ){
-          return parseCapabilities_1_1_1(service, inStream);
+      Document doc = getDocument(inStream);
+      Node simpleXPath = simpleXPath( doc, "WMT_MS_Capabilities");
+      if(simpleXPath != null){
+          NamedNodeMap attributes = simpleXPath.getAttributes();
+          Node namedItem = attributes.getNamedItem("version");
+          if(WMService.WMS_1_1_1.equals(namedItem.getNodeValue()) ||
+                 WMService.WMS_1_1_0.equals(namedItem.getNodeValue())){
+              foundVersion = WMService.WMS_1_1_1;
+              return parseCapabilities_1_1_1(service, doc);
+          }
+          foundVersion = WMService.WMS_1_0_0;
+          return parseCapabilities_1_0_0(service, doc);
       }
+      simpleXPath = simpleXPath(doc, "WMS_Capabilities");
+      if(simpleXPath != null){
+          NamedNodeMap attributes = simpleXPath.getAttributes();
+          Node namedItem = attributes.getNamedItem("version");
+          if (WMService.WMS_1_3_0.equals( namedItem.getNodeValue())){
+              foundVersion = WMService.WMS_1_3_0;
+              return parseCapabilities_1_3_0(service, doc);
+          }
+      }
+      foundVersion = WMService.WMS_1_0_0;
+      return parseCapabilities_1_0_0(service, doc);
+  }
 
-      return parseCapabilities_1_0_0(service, inStream);
+  /**
+   * Gets the version that has been found while parsing the getCapabilities
+   * answer.
+   * @return The version as a String.
+   */
+  public String getFoundVersion(){
+      return foundVersion;
   }
 
   /**
@@ -126,6 +154,21 @@ public class Parser {
             title = ((CharacterData)n.getFirstChild()).getData();
 
           } else if( n.getNodeName().equals( "SRS" ) ) {
+            String srsStr = ((CharacterData)n.getFirstChild()).getData();
+            // split the srs String on spaces
+            while( srsStr.length() > 0 ) {
+              int ws = srsStr.indexOf( ' ' );
+              if( ws > 0 ) {
+                srsList.add( srsStr.substring( 0, ws ) );
+                srsStr = srsStr.substring( ws + 1 );
+              } else {
+                if( srsStr.length() > 0 ) {
+                  srsList.add( srsStr );
+                  srsStr = "";
+                }
+              }
+            }
+          } else if( n.getNodeName().equals( "CRS" ) ) {
             String srsStr = ((CharacterData)n.getFirstChild()).getData();
             // split the srs String on spaces
             while( srsStr.length() > 0 ) {
@@ -178,7 +221,11 @@ public class Parser {
       if( n.getNodeName().equals( "LatLonBoundingBox" ) ) {
         srs = "LatLon";
       } else if( n.getNodeName().equals( "BoundingBox" ) ) {
-        srs = nm.getNamedItem( "SRS" ).getNodeValue();
+          if(WMService.WMS_1_3_0.equals(foundVersion)){
+              srs = nm.getNamedItem( "CRS" ).getNodeValue();
+          } else {
+              srs = nm.getNamedItem( "SRS" ).getNodeValue();
+          }
       } else {
           // don't bother...
 //        throw new Exception( I18N.get("com.vividsolutions.wms.Parser.not-a-latlon-boundingbox-element") );
@@ -227,22 +274,10 @@ public class Parser {
       throw new Exception( "invalid bounding box element node"+": " + e.toString() );
     }
   }
-  private Capabilities parseCapabilities_1_0_0( WMService service, InputStream inStream ) throws IOException {
+  private Capabilities parseCapabilities_1_0_0( WMService service, Document doc) throws IOException {
       MapLayer topLayer = null;
       String title = null;
       LinkedList<String> formatList = new LinkedList<String>();
-      Document doc;
-
-      try {
-        DOMParser parser = new DOMParser();
-        parser.setFeature( "http://xml.org/sax/features/validation", false );
-        parser.parse( new InputSource( inStream ) );
-        doc = parser.getDocument();
-        // DEBUG: printNode( doc, "" );
-      } catch( SAXException saxe ) {
-        throw new IOException( saxe.toString() );
-      }
-
       // get the title
       try {
         title = ((CharacterData)simpleXPath( doc, "WMT_MS_Capabilities/Service/Title" ).getFirstChild()).getData();
@@ -274,28 +309,10 @@ public class Parser {
   // private Capabilities parseCapabilities( WMService service, InputStream inStream,
   	// String version)
 
-  private Capabilities parseCapabilities_1_1_1( WMService service, InputStream inStream ) throws IOException {
-      MapLayer topLayer = null;
-      String title = null;
+  private Capabilities parseCapabilities_1_1_1( WMService service, Document doc) throws IOException {
+      String title;
       String getMapURL, getFeatureInfoURL;
       LinkedList<String> formatList = new LinkedList<String>();
-      Document doc;
-
-      try {
-          DOMParser parser = new DOMParser();
-          parser.setFeature( "http://xml.org/sax/features/validation", false );
-          parser.setFeature( "http://apache.org/xml/features/nonvalidating/load-external-dtd", false );
-          //was throwing java.io.UTFDataFormatException: Invalid byte 2 of 3-byte UTF-8 sequence.
-//          parser.parse( new InputSource( inStream ) );
-          InputStreamReader ireader = new InputStreamReader( inStream );
-
-          parser.parse( new InputSource( ireader ) );
-          doc = parser.getDocument();
-
-      } catch( SAXException saxe ) {
-        throw new IOException( saxe.toString() );
-      }
-
       // throw error if the xml is not a capability answer
       if ( simpleXPath( doc, "WMT_MS_Capabilities") == null) {
         DOMImplementationRegistry registry;
@@ -351,7 +368,88 @@ public class Parser {
         }
 
       // get the top layer
-      topLayer = wmsLayerFromNode( simpleXPath( doc, "WMT_MS_Capabilities/Capability/Layer" ) );
+      MapLayer topLayer = wmsLayerFromNode( simpleXPath( doc, "WMT_MS_Capabilities/Capability/Layer" ) );
+
+      return new Capabilities( service, title, topLayer, formatList, getMapURL, getFeatureInfoURL );
+    }
+  private Document getDocument(InputStream inStream)throws IOException{
+      try {
+          DOMParser parser = new DOMParser();
+          parser.setFeature( "http://xml.org/sax/features/validation", false );
+          parser.setFeature( "http://apache.org/xml/features/nonvalidating/load-external-dtd", false );
+          //was throwing java.io.UTFDataFormatException: Invalid byte 2 of 3-byte UTF-8 sequence.
+//          parser.parse( new InputSource( inStream ) );
+          InputStreamReader ireader = new InputStreamReader( inStream );
+
+          parser.parse( new InputSource( ireader ) );
+          return parser.getDocument();
+
+      } catch( SAXException saxe ) {
+        throw new IOException( saxe.toString() );
+      }
+
+  }
+
+  private Capabilities parseCapabilities_1_3_0( WMService service, Document doc ) throws IOException {
+      String title;
+      String getMapURL, getFeatureInfoURL;
+      LinkedList<String> formatList = new LinkedList<String>();
+      // throw error if the xml is not a capability answer
+      if ( simpleXPath( doc, "WMS_Capabilities") == null) {
+        DOMImplementationRegistry registry;
+        String str = "";
+        try {
+          registry = DOMImplementationRegistry.newInstance();
+//          DOMImplementationList list = registry.getDOMImplementationList("LS");
+//          for (int i = 0; i < list.getLength(); i++) {
+//            System.out.println(list.item(i));
+//          }
+
+          DOMImplementationLS impl = (DOMImplementationLS) registry
+              .getDOMImplementation("LS");
+          LSSerializer writer = impl.createLSSerializer();
+          str = writer.writeToString(doc);
+        } catch (Exception e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+        throw new WMSException("Unexpected answer from server. Missing node <WMT_MS_Capabilities>.", str);
+      }
+
+      // get the title
+      try {
+        title = ((CharacterData)simpleXPath( doc, "WMS_Capabilities/Service/Title" ).getFirstChild()).getData();
+      } catch (NullPointerException e) {
+        title = "not available";
+      }
+
+      // get the supported file formats			// UT was "WMT_MS_Capabilities/Capability/Request/Map/Format"
+      final Node formatNode = simpleXPath( doc, "WMS_Capabilities/Capability/Request/GetMap" );
+
+      NodeList nl = formatNode.getChildNodes();
+      for( int i=0; i < nl.getLength(); i++ ) {
+        Node n = nl.item( i );
+        if( n.getNodeType() == Node.ELEMENT_NODE && "Format".equals( n.getNodeName() )) {
+            formatList.add( n.getFirstChild().getNodeValue() );
+        }
+      }
+
+      // get the possible URLs
+      String xp = "DCPType/HTTP/Get/OnlineResource";
+      String xlink = "http://www.w3.org/1999/xlink";
+      Element e = (Element) simpleXPath(formatNode, xp);
+      getMapURL = e.getAttributeNS(xlink, "href");
+
+      xp = "WMS_Capabilities/Capability/Request/GetFeatureInfo/DCPType/HTTP/Get/OnlineResource";
+      e = (Element) simpleXPath(doc, xp);
+      if (e != null) {
+            getFeatureInfoURL = e.getAttributeNS(xlink, "href");
+        } else {
+            getFeatureInfoURL = "";
+        }
+
+      // get the top layer
+      MapLayer topLayer = wmsLayerFromNode( simpleXPath( doc, "WMS_Capabilities/Capability/Layer" ) );
 
       return new Capabilities( service, title, topLayer, formatList, getMapURL, getFeatureInfoURL );
     }

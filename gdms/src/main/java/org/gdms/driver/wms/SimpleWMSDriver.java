@@ -34,31 +34,21 @@
 package org.gdms.driver.wms;
 
 import java.awt.Image;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.net.ConnectException;
-import java.util.HashMap;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.wms.BoundingBox;
 import com.vividsolutions.wms.Capabilities;
+import com.vividsolutions.wms.MapImageFormatChooser;
 import com.vividsolutions.wms.MapLayer;
 import com.vividsolutions.wms.MapRequest;
 import com.vividsolutions.wms.WMService;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import org.gdms.data.values.*;
-import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.spatial.geometry.crs.ST_Transform;
-import org.geotools.referencing.CRS;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.progress.ProgressMonitor;
 
 import org.gdms.data.DataSourceFactory;
@@ -129,10 +119,9 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                         wmsClient.initialize();
                         cap = wmsClient.getCapabilities();
                         String name = streamSource.getLayerName();
-                        mapLayer = cap.getTopLayer();
                         MapLayer ml = cap.getTopLayer();
-                        MapLayer node = find(name,ml);
-                        BoundingBox bbox = node.getBoundingBox();
+                        mapLayer = find(name,ml);
+                        BoundingBox bbox = mapLayer.getBoundingBox();
 
                         //Create the GeoStream object
                         geoStream = new DefaultGeoStream(this, streamSource, 
@@ -169,9 +158,12 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                 try {
                         StreamSource streamSource = geoStream.getStreamSource();
                         MapRequest mr = new MapRequest(wmsClient);
+                        mr.setVersion(wmsClient.getVersion());
                         List<String> layers = new ArrayList<String>(1);
                         layers.add(mapLayer.getName());
                         mr.setLayers(layers);
+                        MapImageFormatChooser mifc = new MapImageFormatChooser(wmsClient.getVersion());
+                        mr.setFormat(mifc.chooseFormat(cap.getMapFormats()));
                         BoundingBox bb = new BoundingBox(streamSource.getSRS(), extent.getMinX(),
                                 extent.getMinY(), extent.getMaxX(), extent.getMaxY());
                         mr.setBoundingBox(bb);
@@ -208,11 +200,11 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
          * @param srs
          * @return
          */
-//        private BoundaryBox getLayerBoundingBox(String layerName, WMSLayer layer, String srs) throws DriverException {
-//                WMSLayer wmsLayer = find(layerName, layer);
+//        private BoundingBox getLayerBoundingBox(String layerName, MapLayer layer, String srs) throws DriverException {
+//                MapLayer wmsLayer = find(layerName, layer);
 //                // Obtain the bbox at current level
-//                BoundaryBox bbox = wmsLayer.getBbox(srs);
-//                WMSLayer wmsLayerPar = wmsLayer;
+//                BoundingBox bbox = wmsLayer.getBoundingBox(srs);
+//                MapLayer wmsLayerPar = wmsLayer;
 //                while ((bbox == null) && (wmsLayerPar.getParent() != null)) {
 //                        wmsLayerPar = wmsLayerPar.getParent();
 //                        bbox = wmsLayerPar.getBbox(srs);

@@ -64,7 +64,7 @@ public class WMService {
 
 
   private String serverUrl;
-  private String wmsVersion = WMS_1_0_0;
+  private String wmsVersion = "";
   private Capabilities cap;
 
   /**
@@ -101,8 +101,10 @@ public class WMService {
    */
 	public void initialize(boolean alertDifferingURL) throws IOException {
 	    // [UT]
-	    String req = "request=capabilities&WMTVER=1.0";
-	    if( WMS_1_1_0.equals( wmsVersion) ){
+        String req = "SERVICE=WMS&REQUEST=GetCapabilities";
+        if(WMS_1_0_0.equals(wmsVersion)){
+            req = "request=capabilities&WMTVER=1.0";
+        } else if( WMS_1_1_0.equals( wmsVersion) ){
 	    	req = "SERVICE=WMS&VERSION=1.1.0&REQUEST=GetCapabilities";
 	    } else if ( WMS_1_1_1.equals( wmsVersion) ){
 	    	req = "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities";
@@ -111,6 +113,9 @@ public class WMService {
 	    }
 
         try {
+            if(serverUrl.charAt(serverUrl.length() -1) != '?'){
+                serverUrl = serverUrl + "?";
+            }
             String requestUrlString = this.serverUrl + req;
             URL requestUrl = new URL( requestUrlString );
             URLConnection con = requestUrl.openConnection();
@@ -120,6 +125,9 @@ public class WMService {
             }
             Parser p = new Parser();
             cap = p.parseCapabilities( this, con.getInputStream() );
+            if(wmsVersion.isEmpty()){
+                wmsVersion = p.getFoundVersion();
+            }
             String url1 = cap.getService().getServerUrl();
             String url2 = cap.getGetMapURL();
             if(!url1.equals(url2)){
