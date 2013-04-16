@@ -43,6 +43,7 @@ import java.util.*;
  * Represents a WMS Layer.
  *
  * @author Chris Hodgson chodgson@refractions.net
+ * @author Alexis Guéganno
  */
 public class MapLayer {
 
@@ -52,7 +53,7 @@ public class MapLayer {
   private String title;
   private ArrayList<String> srsList;
   private ArrayList<MapLayer> subLayers;
-  private BoundingBox bbox;
+  private BoundingBox latLonBBox;
 
 // I think, bbox contains the information about LatLonBoundingBox
 // (see Parser.java)
@@ -63,9 +64,14 @@ public class MapLayer {
   private boolean enabled = false;
 
   /**
-   * Creates a new instance of MapLayer
+   * * Creates a new instance of MapLayer
+   * @param name Name of the layer
+   * @param title Title of the layer
+   * @param srsList List of supported SRS
+   * @param subLayers List of children
+   * @param latLon LatLong bounding box as defined in WMS 1.1.1
    */
-  public MapLayer(String name, String title, Collection<String> srsList, Collection<MapLayer> subLayers, BoundingBox bbox) {
+  public MapLayer(String name, String title, Collection<String> srsList, Collection<MapLayer> subLayers, BoundingBox latLon) {
     this.parent = null;
     this.name = name;
     this.title = title;
@@ -75,22 +81,26 @@ public class MapLayer {
     while( it.hasNext() ) {
       ((MapLayer)it.next()).parent = this;
     }
-    this.bbox = bbox;
+    this.latLonBBox = latLon;
   }
-
-// ----------------------------------------------------- MapLayer MapLayer ( )
+  
   /**
    * Creates a new instance of MapLayer with boundingBoxList [uwe dalluege]
+   * @param name Name of the layer
+   * @param title Title of the layer
+   * @param srsList List of supported SRS
+   * @param subLayers List of children
+   * @param latLon LatLong bounding box as defined in WMS 1.1.1
+   * @param boundingBoxList List of additional bounding boxes.
    */
   public MapLayer
   	( String name, String title, Collection srsList, Collection subLayers,
-  		BoundingBox bbox, ArrayList<BoundingBox> boundingBoxList )
+  		BoundingBox latLon, ArrayList<BoundingBox> boundingBoxList )
   {
-  	this ( name, title, srsList, subLayers, bbox );
+  	this ( name, title, srsList, subLayers, latLon );
   	this.boundingBoxList = boundingBoxList;
   }
-// ----------------------------------------------------- MapLayer MapLayer ( )
-// ---------------------------------------- MapLayer getAllBoundingBoxList ( )
+  
 /**
 * @return All BoundingBoxes
 * If there is no BoundingBox for this MapLayer the parent-BoundingBox
@@ -206,8 +216,8 @@ public class MapLayer {
    */
   public BoundingBox getBoundingBox() {
 
-    if( bbox != null ) {
-      return bbox;
+    if( latLonBBox != null ) {
+      return latLonBBox;
     }
     if( parent != null ) {
       return parent.getBoundingBox();
@@ -231,8 +241,8 @@ public class MapLayer {
    */
   public BoundingBox getLatLonBoundingBox() {
 
-    if( bbox != null ) {
-      return bbox;
+    if( latLonBBox != null ) {
+      return latLonBBox;
     }
     if( parent != null ) {
       return parent.getBoundingBox();
@@ -260,8 +270,7 @@ public class MapLayer {
   public List<String> getSRSList() {
     return (List<String>)srsList.clone();
   }
-  //<<TODO>>I'd like to return generic Lists, rather than concrete ArrayLists.
-  //Or even better, Collections, since order is not significant (I think) [Jon Aquino]
+  
   /**
    * @return a list of the SRS list of this MapLayer and its ancestors
    */
@@ -276,6 +285,29 @@ public class MapLayer {
   }
 
   /**
+   * Gets a bouding box associated to srs
+   * @param srs The spatial reference system
+   * @return A bounding box in the srs system, if there's one, null otherwise.
+   * Note that srs may be a valid srs even if this methods return null as there
+   * may be srs and crs without bounding box.
+   */
+  public BoundingBox getBoundingBox(String srs){
+      if(latLonBBox.getSRS().equals(srs)){
+          return latLonBBox;
+      }
+      for(BoundingBox bb : boundingBoxList){
+          if(bb.getSRS().equals(srs)){
+              return bb;
+          }
+      }
+      if(parent != null){
+          return parent.getBoundingBox(srs);
+      } else {
+          return null;
+      }
+  }
+
+  /**
    * Returns a somewhat nicely-formatted string representing all of the details of
    * this layer and its sub-layers (recursively).
    * @return a somewhat nicely-formatted string representing all of the details of
@@ -283,17 +315,19 @@ public class MapLayer {
    */
   @Override
   public String toString() {
-    StringBuffer s = new StringBuffer( "WMSLayer {\n"
-        + "  name: \"" + name + "\"\n"
-        + "  title: \"" + title + "\"\n"
-        + "  srsList: " + srsList.toString() + "\n"
-        + "  subLayers: [\n" );
+    StringBuilder s = new StringBuilder( "WMSLayer {\n  name: \"");
+    s.append(name);
+    s.append("\"\n  title: \"");
+    s.append(title);
+    s.append("\"\n  srsList: ");
+    s.append(srsList.toString());
+    s.append("\n subLayers: [\n" );
     for( int i = 0; i < subLayers.size(); i++ ) {
       s.append( subLayers.get( i ).toString()).append(", ");
     }
     s.append( "  ]\n  bbox: " );
-    if( bbox != null ) {
-      s.append( bbox.toString() );
+    if( latLonBBox != null ) {
+      s.append( latLonBBox.toString() );
     } else {
       s.append( "null" );
     }
