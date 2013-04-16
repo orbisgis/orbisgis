@@ -52,9 +52,9 @@
                         <version>2.2.4</version>
                 </dependency>
                 <dependency>
-                        <groupId>biz.source_code</groupId>
-                        <artifactId>base64coder</artifactId>
-                        <version>2010-12-19</version>
+                        <groupId>org.orbisgis</groupId>
+                        <artifactId>wms-client</artifactId>
+                        <version>0.1-SNAPSHOT</version>
                 </dependency>
                 <dependency>
                         <groupId>net.sf.opencsv</groupId>
@@ -101,12 +101,6 @@
                         <groupId>org.geotools</groupId>
                         <artifactId>gt-api</artifactId>
                         <version>9.0</version>
-                </dependency>
-                <dependency>
-                        <groupId>xerces</groupId>
-                        <artifactId>xercesImpl</artifactId>
-                        <version>2.10.0</version>
-                        <type>jar</type>
                 </dependency>
         </dependencies>
         <build>
