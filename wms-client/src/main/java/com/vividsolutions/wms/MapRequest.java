@@ -45,7 +45,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -171,7 +170,7 @@ public class MapRequest {
     //for( int i = 0; i < formats.length; i++ ) {
     //  if( formats[i].equals( format ) ) {
         this.format = format;
-        return;
+//        return;
     //  }
     //}
     //throw new IllegalArgumentException();
@@ -242,7 +241,7 @@ public class MapRequest {
 //[UT] 02.05.2005 made static and public
   public static String listToString( List list ) {
     Iterator it = list.iterator();
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     while( it.hasNext() ) {
       String layer = (String)it.next();
       buf.append( layer );
@@ -259,34 +258,41 @@ public class MapRequest {
  */
   //[UT] changed to accept WMS 1.1.1
   public URL getURL() throws MalformedURLException {
-      StringBuffer urlBuf = new StringBuffer();
+      StringBuilder urlBuf = new StringBuilder();
       String ver = "REQUEST=map&WMTVER=1.0";
       if ( WMService.WMS_1_1_0.equals( version )){
           ver = "REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.0";
       } else if ( WMService.WMS_1_1_1.equals( version ) ){
           ver = "REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1";
+      } else if ( WMService.WMS_1_3_0.equals( version ) ){
+          ver = "REQUEST=GetMap&SERVICE=WMS&VERSION=1.3.0";
       }
-      urlBuf.append( service.getCapabilities().getGetMapURL() + ver + "&WIDTH=" + imgWidth + "&HEIGHT=" + imgHeight );
+      urlBuf.append(service.getCapabilities().getGetMapURL()).append(ver).append("&WIDTH=");
+      urlBuf.append(imgWidth).append("&HEIGHT=").append(imgHeight );
       try {
-        urlBuf.append( "&LAYERS=" + encode(listToString( layerList ), "UTF-8") );
-    } catch (UnsupportedEncodingException e1) {
-        LOG.debug("UTF8 not supported by Java version", e1);
-    }
+          urlBuf.append("&LAYERS=").append(encode(listToString(layerList), "UTF-8"));
+      } catch (UnsupportedEncodingException e1) {
+          LOG.debug("UTF8 not supported by Java version", e1);
+      }
       if( transparent ) {
         urlBuf.append( "&TRANSPARENT=TRUE" );
       }
       if( format != null ) {
         try {
-            urlBuf.append( "&FORMAT=" + encode(format, "UTF-8") );
+            urlBuf.append("&FORMAT=").append(encode(format, "UTF-8") );
         } catch (UnsupportedEncodingException e) {
             LOG.debug("UTF8 not supported by Java version", e);
         }
       }
       if( bbox != null ) {
-        urlBuf.append( "&BBOX=" + bbox.getMinX() + "," + bbox.getMinY()
-                      + "," + bbox.getMaxX() + "," + bbox.getMaxY() );
-        if( bbox.getSRS() != null && !bbox.getSRS().equals( "LatLon" ) ) {
-          urlBuf.append( "&SRS=" + bbox.getSRS() );
+        urlBuf.append( "&BBOX=").append(bbox.getMinX()).append(",").append(bbox.getMinY());
+        urlBuf.append(",").append(bbox.getMaxX()).append(",").append(bbox.getMaxY());
+        if(WMService.WMS_1_3_0.equals(version) && bbox.getSRS() != null){
+            String crs = bbox.getSRS();
+            crs = BoundingBox.LATLON.equals(crs) ? "EPSG:4326" : crs;
+            urlBuf.append("&CRS=").append(crs);
+        } else if(bbox.getSRS() != null && !bbox.getSRS().equals( "LatLon" ) ) {
+            urlBuf.append( "&SRS=").append(bbox.getSRS());
         }
       }
       // [UT] some style info is *required*, so add this to be spec conform

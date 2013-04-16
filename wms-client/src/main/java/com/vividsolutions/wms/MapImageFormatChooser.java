@@ -68,7 +68,9 @@ public class MapImageFormatChooser {
   public MapImageFormatChooser(String wmsVersion) {
     this.transparencyRequired = false;
     this.useLossy = false;
-    if( WMService.WMS_1_1_1.equals( wmsVersion ) || WMService.WMS_1_1_0.equals( wmsVersion )){
+    if(WMService.WMS_1_1_1.equals(wmsVersion) 
+            || WMService.WMS_1_1_0.equals(wmsVersion)
+            || WMService.WMS_1_3_0.equals(wmsVersion)){
         imageFormats = IMAGE_FORMATS[1];
     }
   }
