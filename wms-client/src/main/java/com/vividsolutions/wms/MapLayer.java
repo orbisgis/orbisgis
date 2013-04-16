@@ -285,20 +285,23 @@ public class MapLayer {
   }
 
   /**
-   * Gets a bouding box associated to srs
+   * Gets a bouding box associated to srs. It can be defined here or in any
+   * parent node.
    * @param srs The spatial reference system
    * @return A bounding box in the srs system, if there's one, null otherwise.
    * Note that srs may be a valid srs even if this methods return null as there
    * may be srs and crs without bounding box.
    */
   public BoundingBox getBoundingBox(String srs){
-      if(latLonBBox.getSRS().equals(srs)){
+      if(latLonBBox != null &&  latLonBBox.getSRS().equals(srs)){
           return latLonBBox;
       }
-      for(BoundingBox bb : boundingBoxList){
-          if(bb.getSRS().equals(srs)){
-              return bb;
-          }
+      if(boundingBoxList != null){
+        for(BoundingBox bb : boundingBoxList){
+            if(bb.getSRS().equals(srs)){
+                return bb;
+            }
+        }
       }
       if(parent != null){
           return parent.getBoundingBox(srs);

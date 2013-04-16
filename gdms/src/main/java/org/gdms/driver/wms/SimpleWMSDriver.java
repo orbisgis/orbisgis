@@ -40,6 +40,8 @@ import java.util.List;
 
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.wms.BoundingBox;
 import com.vividsolutions.wms.Capabilities;
 import com.vividsolutions.wms.MapImageFormatChooser;
@@ -67,6 +69,12 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.StreamDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
+import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.spatial.geometry.crs.ST_Transform;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A driver that accesses a WMS stream.
@@ -121,7 +129,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                         String name = streamSource.getLayerName();
                         MapLayer ml = cap.getTopLayer();
                         mapLayer = find(name,ml);
-                        BoundingBox bbox = mapLayer.getBoundingBox();
+                        BoundingBox bbox = getLayerBoundingBox(mapLayer, streamSource.getCRS());
 
                         //Create the GeoStream object
                         geoStream = new DefaultGeoStream(this, streamSource, 
@@ -200,51 +208,49 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
          * @param srs
          * @return
          */
-//        private BoundingBox getLayerBoundingBox(String layerName, MapLayer layer, String srs) throws DriverException {
+        private BoundingBox getLayerBoundingBox(MapLayer layer, String srs) throws DriverException {
 //                MapLayer wmsLayer = find(layerName, layer);
-//                // Obtain the bbox at current level
-//                BoundingBox bbox = wmsLayer.getBoundingBox(srs);
-//                MapLayer wmsLayerPar = wmsLayer;
-//                while ((bbox == null) && (wmsLayerPar.getParent() != null)) {
-//                        wmsLayerPar = wmsLayerPar.getParent();
-//                        bbox = wmsLayerPar.getBbox(srs);
-//                }
-//
-//                // Some wrong bbox to not have null pointer exceptions
-//                if (bbox == null) {
-//                    HashMap bboxes = wmsLayer.getBboxes();
-//                    String originalSrs = (String) bboxes.keySet().iterator().next();
-//                    BoundaryBox original = (BoundaryBox) bboxes.get(originalSrs);
-//                    Envelope env = new Envelope(original.getXmax(), original.getXmin(), original.getYmax(), original.getYmin());
-//                    GeometryFactory gf = new GeometryFactory();
-//                    Polygon poly = (Polygon) gf.toGeometry(env);
-//                    ST_Transform transformFunction = new ST_Transform();
-//                    try{
-//                        CoordinateReferenceSystem inputCRS = CRS.decode(originalSrs);
-//                        Value val = transformFunction.evaluate(null,
-//                                    ValueFactory.createValue(poly,inputCRS),
-//                                    ValueFactory.createValue(srs));
-//                        Envelope retEnv = val.getAsGeometry().getEnvelopeInternal();
-//                        BoundaryBox retBB = new BoundaryBox();
-//                        retBB.setXmax(retEnv.getMaxX());
-//                        retBB.setXmin(retEnv.getMinX());
-//                        retBB.setYmax(retEnv.getMaxY());
-//                        retBB.setYmin(retEnv.getMinY());
-//                        retBB.setSrs(srs);
-//                        return retBB;
-//                    } catch (FunctionException fe){
-//                        throw new DriverException("Could not find a valid bounding box for the layer " + layerName
-//                            + " : " + fe.getCause());
-//                    }  catch (NoSuchAuthorityCodeException fe){
-//                        throw new DriverException("Could not find a valid bounding box for the layer " + layerName
-//                            + " : " + fe.getCause());
-//                    }  catch (FactoryException fe){
-//                        throw new DriverException("Could not find a valid bounding box for the layer " + layerName
-//                            + " : " + fe.getCause());
-//                    }
-//                }
-//                return bbox;
-//        }
+                // Obtain the bbox at current level
+                BoundingBox bbox = layer.getBoundingBox(srs);
+                // Some wrong bbox to not have null pointer exceptions
+                if (bbox == null) {
+                    List<BoundingBox> allBoundingBoxList = layer.getAllBoundingBoxList();
+                    BoundingBox original;
+                    if(!allBoundingBoxList.isEmpty()){
+                        original = allBoundingBoxList.get(0);
+                    } else {
+                        original = layer.getLatLonBoundingBox();
+                    }
+                    Envelope env = new Envelope(original.getMinX(), original.getMaxX(), original.getMinY(), original.getMaxY());
+                    String originalSrs = original.getSRS();
+                    GeometryFactory gf = new GeometryFactory();
+                    Polygon poly = (Polygon) gf.toGeometry(env);
+                    ST_Transform transformFunction = new ST_Transform();
+                    try{
+                        if(BoundingBox.LATLON.equals(originalSrs)){
+                            originalSrs = "EPSG:4326";
+                        }
+                        CoordinateReferenceSystem inputCRS = CRS.decode(originalSrs);
+                        Value val = transformFunction.evaluate(null,
+                                    ValueFactory.createValue(poly,inputCRS),
+                                    ValueFactory.createValue(srs));
+                        Envelope retEnv = val.getAsGeometry().getEnvelopeInternal();
+                        BoundingBox retBB = new BoundingBox(srs, retEnv.getMinX()
+                                , retEnv.getMinY(), retEnv.getMaxX(), retEnv.getMaxY());
+                        return retBB;
+                    } catch (FunctionException fe){
+                        throw new DriverException("Could not find a valid bounding box for the layer " + layer.getName()
+                            + " : " + fe.getCause());
+                    }  catch (NoSuchAuthorityCodeException fe){
+                        throw new DriverException("Could not find a valid bounding box for the layer " + layer.getName()
+                            + " : " + fe.getCause());
+                    }  catch (FactoryException fe){
+                        throw new DriverException("Could not find a valid bounding box for the layer " + layer.getName()
+                            + " : " + fe.getCause());
+                    }
+                }
+                return bbox;
+        }
 
         @Override
         public long getRowCount() throws DriverException {

@@ -44,6 +44,7 @@ package com.vividsolutions.wms;
  * @author chodgson@refractions.net
  */
 public class BoundingBox {
+  public static final String LATLON="LatLon";
 
   private String srs;
   private double minx;

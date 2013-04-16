@@ -219,7 +219,7 @@ public class Parser {
       NamedNodeMap nm = n.getAttributes();
 
       if( n.getNodeName().equals( "LatLonBoundingBox" ) ) {
-        srs = "LatLon";
+        srs = BoundingBox.LATLON;
       } else if( n.getNodeName().equals( "BoundingBox" ) ) {
           if(WMService.WMS_1_3_0.equals(foundVersion)){
               srs = nm.getNamedItem( "CRS" ).getNodeValue();
