@@ -178,6 +178,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                         mr.setFormat(streamSource.getImageFormat());
                         mr.setImageWidth(width);
                         mr.setImageHeight(height);
+                        mr.setTransparent(true);
 
                         return mr.getImage();
                 } catch (IOException e) {
