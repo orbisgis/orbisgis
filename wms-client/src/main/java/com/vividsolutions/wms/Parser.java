@@ -154,19 +154,24 @@ public class Parser {
             title = ((CharacterData)n.getFirstChild()).getData();
 
           } else if( n.getNodeName().equals( "SRS" ) ) {
-            String srsStr = ((CharacterData)n.getFirstChild()).getData();
-            // split the srs String on spaces
-            while( srsStr.length() > 0 ) {
-              int ws = srsStr.indexOf( ' ' );
-              if( ws > 0 ) {
-                srsList.add( srsStr.substring( 0, ws ) );
-                srsStr = srsStr.substring( ws + 1 );
-              } else {
-                if( srsStr.length() > 0 ) {
-                  srsList.add( srsStr );
-                  srsStr = "";
+            CharacterData charDat = (CharacterData)n.getFirstChild();
+            //That may seem crazy, but I've found some servers with empty SRS tags.
+            //We don't want to face NPEs, so I just check we have something...
+            if(charDat != null){
+                String srsStr = charDat.getData();
+                // split the srs String on spaces
+                while( srsStr.length() > 0 ) {
+                  int ws = srsStr.indexOf( ' ' );
+                  if( ws > 0 ) {
+                    srsList.add( srsStr.substring( 0, ws ) );
+                    srsStr = srsStr.substring( ws + 1 );
+                  } else {
+                    if( srsStr.length() > 0 ) {
+                      srsList.add( srsStr );
+                      srsStr = "";
+                    }
+                  }
                 }
-              }
             }
           } else if( n.getNodeName().equals( "CRS" ) ) {
             String srsStr = ((CharacterData)n.getFirstChild()).getData();
