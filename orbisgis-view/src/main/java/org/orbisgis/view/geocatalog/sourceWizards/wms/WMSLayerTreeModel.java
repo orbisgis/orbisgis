@@ -80,7 +80,7 @@ public class WMSLayerTreeModel implements TreeModel {
 
 	@Override
 	public boolean isLeaf(Object node) {
-		return ((MapLayer) node).getLayerList().isEmpty();
+		return ((MapLayer) node).getSubLayerList().isEmpty();
 	}
 
 	@Override

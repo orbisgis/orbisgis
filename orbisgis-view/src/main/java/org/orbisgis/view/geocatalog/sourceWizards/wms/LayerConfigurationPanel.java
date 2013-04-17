@@ -117,6 +117,7 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
                 lstSelection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
                 listModel = new DefaultListModel();
                 lstSelection.setModel(listModel);
+                lstSelection.setCellRenderer(new WMSLayerListRenderer(lstSelection));
                 lstSelection.getSelectionModel().addListSelectionListener(
                         new ListSelectionListener() {
 
@@ -165,6 +166,7 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
                                         enableDisableButtons();
                                 }
                         });
+                treeOption.setCellRenderer(new WMSLayerTreeRenderer(treeOption));
                 JPanel panel = new JPanel(new BorderLayout());
                 JScrollPane ret = new JScrollPane(treeOption);
 
