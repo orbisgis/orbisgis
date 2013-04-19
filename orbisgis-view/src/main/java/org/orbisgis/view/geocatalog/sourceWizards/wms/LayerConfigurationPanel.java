@@ -27,6 +27,7 @@
  */
 package org.orbisgis.view.geocatalog.sourceWizards.wms;
 
+import com.vividsolutions.wms.MapLayer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,7 +36,6 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-import org.gvsig.remoteClient.wms.WMSClient;
 import org.orbisgis.sif.CRFlowLayout;
 import org.orbisgis.sif.CarriageReturn;
 import org.orbisgis.sif.UIPanel;
@@ -63,7 +63,7 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
         private JList lstSelection;
         private ActionListener actionListener;
         private DefaultListModel listModel;
-        private WMSClient client;
+        private MapLayer client;
         private JButtonTextField txtFilter;
         private final SRSPanel srsPanel;
 
@@ -117,6 +117,7 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
                 lstSelection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
                 listModel = new DefaultListModel();
                 lstSelection.setModel(listModel);
+                lstSelection.setCellRenderer(new WMSLayerListRenderer(lstSelection));
                 lstSelection.getSelectionModel().addListSelectionListener(
                         new ListSelectionListener() {
 
@@ -165,6 +166,7 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
                                         enableDisableButtons();
                                 }
                         });
+                treeOption.setCellRenderer(new WMSLayerTreeRenderer(treeOption));
                 JPanel panel = new JPanel(new BorderLayout());
                 JScrollPane ret = new JScrollPane(treeOption);
 
@@ -285,10 +287,10 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
         }
 
         /**
-         * The WMSClient used to obtain all informations from the server. 
+         * The MapLayer used to obtain all informations from the server.
          * @param client
          */
-        public void setClient(WMSClient client) {
+        public void setClient(MapLayer client) {
                 this.client = client;
                 optionTreeModel = new WMSLayerTreeModel(client);
         }
@@ -324,7 +326,7 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
          * Return the current WMS client
          * @return 
          */
-        public WMSClient getWMSClient() {
+        public MapLayer getMapLayer() {
                 return client;
         }
 }

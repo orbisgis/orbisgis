@@ -27,12 +27,11 @@
  */
 package org.orbisgis.view.geocatalog.sourceWizards.wms;
 
+import com.vividsolutions.wms.MapLayer;
 import java.util.ArrayList;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-import org.gvsig.remoteClient.wms.WMSClient;
-import org.gvsig.remoteClient.wms.WMSLayer;
 
 /**
  * This class is used to populate a treemodel with the list of layers available
@@ -42,7 +41,7 @@ import org.gvsig.remoteClient.wms.WMSLayer;
  */
 public class WMSLayerTreeModel implements TreeModel {
 
-	private WMSClient client;
+	private MapLayer client;
 	private ArrayList<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
 
         /**
@@ -50,8 +49,8 @@ public class WMSLayerTreeModel implements TreeModel {
          * It's used to list the name of all layers.
          * @param client 
          */
-	public WMSLayerTreeModel(WMSClient client) {
-		this.client = client;
+	public WMSLayerTreeModel(MapLayer root) {
+		this.client = root;
 	}
 
 	@Override
@@ -61,27 +60,27 @@ public class WMSLayerTreeModel implements TreeModel {
 
 	@Override
 	public Object getChild(Object parent, int index) {
-		return ((WMSLayer) parent).getChildren().get(index);
+		return ((MapLayer) parent).getSubLayer(index);
 	}
 
 	@Override
 	public int getChildCount(Object parent) {
-		return ((WMSLayer) parent).getChildren().size();
+		return ((MapLayer) parent).numSubLayers();
 	}
 
 	@Override
 	public int getIndexOfChild(Object parent, Object child) {
-		return ((WMSLayer) parent).getChildren().indexOf(child);
+		return ((MapLayer) parent).getLayerList().indexOf(child);
 	}
 
 	@Override
 	public Object getRoot() {
-		return client.getRootLayer();
+		return client;
 	}
 
 	@Override
 	public boolean isLeaf(Object node) {
-		return ((WMSLayer) node).getChildren().isEmpty();
+		return ((MapLayer) node).getSubLayerList().isEmpty();
 	}
 
 	@Override

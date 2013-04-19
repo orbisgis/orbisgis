@@ -27,14 +27,14 @@
  */
 package org.orbisgis.view.geocatalog.sourceWizards.wms;
 
+import com.vividsolutions.wms.MapLayer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.net.URL;
-import java.util.Vector;
+import java.util.Collection;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import org.gvsig.remoteClient.wms.WMSClient;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.components.button.JButtonTextField;
 import org.xnap.commons.i18n.I18n;
@@ -92,10 +92,10 @@ public class SRSPanel extends JPanel implements UIPanel {
          *
          * @return
          */
-        public void createSRSList(WMSClient wMSClient) {
+        public void createSRSList(MapLayer wMSClient) {
                 if (null == lstSRS) {
                         lstSRS = new JList();
-                        Vector allSrs = wMSClient.getRootLayer().getAllSrs();
+                        Collection allSrs = wMSClient.getFullSRSList();
                         String[] srsNames = new String[allSrs.size()];
                         allSrs.toArray(srsNames);
                         SRSlistModel = new SRSListModel(srsNames);

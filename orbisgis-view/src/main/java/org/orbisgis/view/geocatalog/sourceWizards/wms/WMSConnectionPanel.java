@@ -27,6 +27,8 @@
  */
 package org.orbisgis.view.geocatalog.sourceWizards.wms;
 
+import com.vividsolutions.wms.MapLayer;
+import com.vividsolutions.wms.WMService;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Vector;
 import javax.swing.*;
 import org.apache.log4j.Logger;
-import org.gvsig.remoteClient.wms.WMSClient;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.progress.ProgressMonitor;
@@ -64,7 +65,8 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
         private JLabel lblVersion;
         private JLabel lblTitle;
         private JTextArea txtDescription;
-        private WMSClient client;
+        private MapLayer client;
+        private WMService service;
         private ArrayList<String> serverswms;
         private LayerConfigurationPanel configPanel;
 
@@ -282,7 +284,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
 
         @Override
         public String validateInput() {
-                if (client == null) {
+                if (service == null) {
                         return I18N.tr("Please connect to the WMS server");
                 }
 
@@ -295,26 +297,34 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
         }
 
         /**
-         * Return the current WMSClient.
+         * Gets the WMService instance that describes the WMS connection
+         * @return A WMService instance.
+         */
+        public WMService getServiceDescription(){
+            return service;
+        }
+
+        /**
+         * Return the current MapLayer.
          * @return 
          */
-        public WMSClient getWMSClient() {
+        public MapLayer getMapLayer() {
                 return client;
         }
 
         /**
-         * Return a WMSClient corresponding to a URL.
+         * Return a MapLayer corresponding to a URL.
          *
          * @param host
          * @return
          * @throws ConnectException
          * @throws IOException
          */
-        public WMSClient getWMSClient(String host) throws ConnectException,
+        public MapLayer getMapLayer(String host) throws ConnectException,
                 IOException {
                 if (client == null) {
-                        client = new WMSClient(host);
-                        client.getCapabilities(null, true, null);
+                        WMService wmsClient = new WMService(host);
+                        client = wmsClient.getCapabilities().getTopLayer();
                         return client;
                 }
                 return client;
@@ -353,25 +363,27 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
                         String originalWmsURL = cmbURLServer.getSelectedItem().toString();
                         String wmsURL = originalWmsURL.trim();
                         try {
-                                if (client == null) {
-                                        client = getWMSClient(wmsURL);
+                                if (service == null) {
+                                        service = new WMService(wmsURL);
                                 } else {
-                                        if (!client.getHost().equals(wmsURL)) {
-                                                client = getWMSClient(wmsURL);
+                                        if (!service.getServerUrl().equals(wmsURL)) {
+                                                service = new WMService(wmsURL);
                                         }
                                 }
+                                service.initialize();
+                                client = service.getCapabilities().getTopLayer();
                                 configPanel.setClient(client);
-                                client.getCapabilities(null, false, null);
+//                                client.getCapabilities(null, false, null);
                                 //This action populates the UI with all informations about the server.
                                 configPanel.initialize();
                                 SwingUtilities.invokeLater(new Runnable() {
                                         @Override
                                         public void run() {
                                                 lblVersion.setText(I18N.tr("Version :")
-                                                        + changeNullForEmptyString(client.getVersion()));
+                                                        + changeNullForEmptyString(service.getVersion()));
                                                 lblTitle.setText(I18N.tr("Nom :")
-                                                        + changeNullForEmptyString(client.getServiceName()));
-                                                txtDescription.setText(client.getServiceInformation().abstr);
+                                                        + changeNullForEmptyString(service.getTitle()));
+                                                txtDescription.setText(service.getTitle());
                                                 txtDescription.setCaretPosition(0);
 
                                         }
