@@ -27,6 +27,10 @@
  */
 package org.orbisgis.view.geocatalog;
 
+import com.vividsolutions.wms.Capabilities;
+import com.vividsolutions.wms.MapImageFormatChooser;
+import com.vividsolutions.wms.MapLayer;
+import com.vividsolutions.wms.WMService;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -48,8 +52,6 @@ import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.DriverFilter;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.*;
-import org.gvsig.remoteClient.wms.WMSClient;
-import org.gvsig.remoteClient.wms.WMSLayer;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.sif.UIFactory;
@@ -471,20 +473,31 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);
                 if (UIFactory.showDialog(new UIPanel[]{wmsConnection,
                                 layerConfiguration, srsPanel})) {
-                        WMSClient client = wmsConnection.getWMSClient();
-                        String validImageFormat = wmsConnection.getFirstImageFormat(client.getFormats());
+                        WMService service = wmsConnection.getServiceDescription();
+                        Capabilities cap = service.getCapabilities();
+                        MapImageFormatChooser mfc = new MapImageFormatChooser(service.getVersion());
+                        mfc.setTransparencyRequired(true);
+                        String validImageFormat = mfc.chooseFormat(cap.getMapFormats());
                         if (validImageFormat == null) {
                                 LOGGER.error(I18N.tr("Cannot find a valid image format for this WMS server"));
                         } else {
                                 Object[] layers = layerConfiguration.getSelectedLayers();
                                 for (Object layer : layers) {
-                                        String layerName = ((WMSLayer) layer).getName();
+                                        String layerName = ((MapLayer) layer).getName();
                                         String uniqueLayerName = layerName;
                                         if (sm.exists(layerName)) {
                                                 uniqueLayerName = sm.getUniqueName(layerName);
                                         }
-                                        URI streamUri = URI.create(client.getHost());
-                                        StreamSource wmsSource = new StreamSource(streamUri.getScheme(),streamUri.getHost(), client.getPort(), streamUri.getPath() ,layerName, "wms", validImageFormat, srsPanel.getSRS(),client.getVersion());
+                                        URI streamUri = URI.create(service.getServerUrl());
+                                        StreamSource wmsSource = new StreamSource(streamUri.getScheme(),
+                                                streamUri.getHost(),
+                                                streamUri.getPort(),
+                                                streamUri.getPath(),
+                                                layerName,
+                                                "wms",
+                                                validImageFormat,
+                                                srsPanel.getSRS(),
+                                                service.getVersion());
                                         StreamSourceDefinition streamSourceDefinition = new StreamSourceDefinition(wmsSource);
                                         sm.register(uniqueLayerName, streamSourceDefinition);
                                 }
