@@ -38,6 +38,7 @@ package com.vividsolutions.wms;
 
 import java.io.IOException;
 import java.io.InputStream;
+import org.w3c.dom.Document;
 
 
 /**
@@ -47,6 +48,7 @@ import java.io.InputStream;
  */
 public interface IParser {
     
-    public Capabilities parseCapabilities(WMService service, InputStream inStream) throws IOException;
+    Capabilities parseCapabilities(WMService service, InputStream inStream) throws IOException;
+    Capabilities parseCapabilities(WMService service, Document doc) throws IOException;
       
 }

@@ -66,7 +66,7 @@ public class ParserWMS1_3 extends AbstractParser {
     }
     
     
-    protected Capabilities parseCapabilities(WMService service, Document doc) throws IOException {
+    public Capabilities parseCapabilities(WMService service, Document doc) throws IOException {
         String title = getTitle(doc);
         MapLayer topLayer = wmsLayerFromNode(XMLTools.simpleXPath(doc, "WMS_Capabilities/Capability/Layer"));
         LinkedList<String> formatList = getFormatList(doc);

@@ -42,9 +42,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
+import org.apache.xerces.parsers.DOMParser;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * Represents a remote WMS Service.
@@ -64,7 +67,7 @@ public class WMService {
     
     
   private String serverUrl;
-  private String wmsVersion = WMS_1_1_1;
+  private String wmsVersion = "";
   private Capabilities cap;
   
   /**
@@ -92,7 +95,54 @@ public class WMService {
     public void initialize() throws IOException {
         initialize(false);
     }
-  
+
+    /**
+     * Get a parser for the given version
+     * @param version
+     * @return
+     */
+    private IParser getParser(String version) {
+        IParser parser;
+        if (WMS_1_0_0.equals(version)) {
+            parser = new ParserWMS1_0();
+        } else if (WMS_1_1_0.equals(version)) {
+            parser = new ParserWMS1_1();
+        } else if (WMS_1_1_1.equals(version)) {
+            parser = new ParserWMS1_1();
+        } else if (WMS_1_3_0.equals(version)) {
+            parser = new ParserWMS1_3();
+        } else {
+            parser = new ParserWMS1_1();
+        }
+        return parser;
+    }
+
+    /**
+     * Gets the DOM Document hidden behind the given URL.
+     * @param requestUrlString The URL as a String
+     * @return The DOM Document containing the parsed GetCapabilities answer.
+     * @throws IOException
+     */
+    private Document getDOMDocument(String requestUrlString) throws IOException{
+            URL requestUrl = new URL( requestUrlString );
+            URLConnection con = requestUrl.openConnection();
+            if(requestUrl.getUserInfo() != null) {
+                con.setRequestProperty("Authorization", "Basic " +
+                        Base64Coder.encode(requestUrl.getUserInfo().getBytes()));
+            }
+            DOMParser domParser = new DOMParser();
+            try {
+                domParser.setFeature("http://xml.org/sax/features/validation", false);
+                domParser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                domParser.parse(new InputSource(con.getInputStream()));
+            } catch (SAXException ex) {
+                LOGGER.error("Error during sax initialization", ex);
+            } catch (IOException ex) {
+                LOGGER.error("Error during while parsing the document", ex);
+            }
+            return domParser.getDocument();
+    }
+
   /**
    * Connect to the service and get the capabilities.
    * This must be called before anything else is done with this service.
@@ -101,32 +151,27 @@ public class WMService {
    */
 	public void initialize(boolean alertDifferingURL) throws IOException {
 	    // [UT]
-	    String req = "request=capabilities&WMTVER=1.0";
-	    IParser parser = new ParserWMS1_1();
+	    String req = "SERVICE=WMS&REQUEST=GetCapabilities";
 	    if( WMS_1_0_0.equals( wmsVersion) ){
 	    	req = "SERVICE=WMS&VERSION=1.0.0&REQUEST=GetCapabilities";
-	    	parser = new ParserWMS1_0();
 	    } else if( WMS_1_1_0.equals( wmsVersion) ){
 	    	req = "SERVICE=WMS&VERSION=1.1.0&REQUEST=GetCapabilities";
-	    	parser = new ParserWMS1_1();
 	    } else if ( WMS_1_1_1.equals( wmsVersion) ){
 	    	req = "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities";
-	    	parser = new ParserWMS1_1();
 	    } else if ( WMS_1_3_0.equals( wmsVersion) ){
 	    	req = "SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities";
-	    	parser = new ParserWMS1_3();
 	    }
-        
+        if(serverUrl.charAt(serverUrl.length() -1) != '?'){
+            serverUrl = serverUrl + "?";
+        }
+        String requestUrlString = this.serverUrl + req;
+        Document doc = getDOMDocument(requestUrlString);
+        if(wmsVersion.isEmpty()){
+            wmsVersion = VersionFinder.findVersion(doc);
+        }
+	    IParser parser = getParser(wmsVersion);
         try {
-            String requestUrlString = this.serverUrl + req;
-            URL requestUrl = new URL( requestUrlString );
-            URLConnection con = requestUrl.openConnection();
-            if(requestUrl.getUserInfo() != null) {
-                con.setRequestProperty("Authorization", "Basic " +
-                        Base64Coder.encode(requestUrl.getUserInfo().getBytes()));
-            }
-            //Parser p = new Parser();
-            cap = parser.parseCapabilities( this, con.getInputStream() );
+            cap = parser.parseCapabilities( this, doc );
             String url1 = cap.getService().getServerUrl();
             String url2 = cap.getGetMapURL();
             if(!url1.equals(url2)){

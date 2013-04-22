@@ -119,7 +119,7 @@ public abstract class AbstractParser implements IParser {
     }
     
     
-    abstract protected Capabilities parseCapabilities(WMService service, Document doc) throws IOException;
+    abstract public Capabilities parseCapabilities(WMService service, Document doc) throws IOException;
     
     protected String getTitlePath() {
         return getRootPath() + "/Service/Title";
