@@ -1,23 +1,23 @@
 /*
- * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI
+ * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
  *
  * Copyright (C) 2003 Vivid Solutions
- *
+ * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
+ * 
  * For more information, contact:
  *
  * Vivid Solutions
@@ -53,27 +53,27 @@ import org.apache.log4j.Logger;
  */
 public class WMService {
     private static final Logger LOGGER = Logger.getLogger(WMService.class);
-
+    
     public static final String WMS_1_0_0 = "1.0.0";
 
     public static final String WMS_1_1_0 = "1.1.0";
-
+    
     public static final String WMS_1_1_1 = "1.1.1";
-
+    
     public static final String WMS_1_3_0 = "1.3.0";
-
-
+    
+    
   private String serverUrl;
-  private String wmsVersion = "";
+  private String wmsVersion = WMS_1_1_1;
   private Capabilities cap;
-
+  
   /**
    * Constructs a WMService object from a server URL.
    * @param serverUrl the URL of the WMS server
-   * @param wmsVersion
+   * @param wmsVersion 
    */
   public WMService( String serverUrl, String wmsVersion ) {
-    this.serverUrl = serverUrl;
+    this.serverUrl = serverUrl;   
     this.wmsVersion = wmsVersion;
     this.cap = null;
   }
@@ -82,7 +82,7 @@ public class WMService {
    * @param serverUrl the URL of the WMS server
    */
   public WMService( String serverUrl ) {
-    this.serverUrl = serverUrl;
+    this.serverUrl = serverUrl;   
     this.cap = null;
   }
 
@@ -92,30 +92,32 @@ public class WMService {
     public void initialize() throws IOException {
         initialize(false);
     }
-
+  
   /**
    * Connect to the service and get the capabilities.
    * This must be called before anything else is done with this service.
    * @param alertDifferingURL alert the user if a different GetMap URL is available
-   * @throws IOException
+   * @throws IOException 
    */
 	public void initialize(boolean alertDifferingURL) throws IOException {
 	    // [UT]
-        String req = "SERVICE=WMS&REQUEST=GetCapabilities";
-        if(WMS_1_0_0.equals(wmsVersion)){
-            req = "request=capabilities&WMTVER=1.0";
-        } else if( WMS_1_1_0.equals( wmsVersion) ){
+	    String req = "request=capabilities&WMTVER=1.0";
+	    IParser parser = new ParserWMS1_1();
+	    if( WMS_1_0_0.equals( wmsVersion) ){
+	    	req = "SERVICE=WMS&VERSION=1.0.0&REQUEST=GetCapabilities";
+	    	parser = new ParserWMS1_0();
+	    } else if( WMS_1_1_0.equals( wmsVersion) ){
 	    	req = "SERVICE=WMS&VERSION=1.1.0&REQUEST=GetCapabilities";
+	    	parser = new ParserWMS1_1();
 	    } else if ( WMS_1_1_1.equals( wmsVersion) ){
 	    	req = "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities";
+	    	parser = new ParserWMS1_1();
 	    } else if ( WMS_1_3_0.equals( wmsVersion) ){
 	    	req = "SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities";
+	    	parser = new ParserWMS1_3();
 	    }
-
+        
         try {
-            if(serverUrl.charAt(serverUrl.length() -1) != '?'){
-                serverUrl = serverUrl + "?";
-            }
             String requestUrlString = this.serverUrl + req;
             URL requestUrl = new URL( requestUrlString );
             URLConnection con = requestUrl.openConnection();
@@ -123,11 +125,8 @@ public class WMService {
                 con.setRequestProperty("Authorization", "Basic " +
                         Base64Coder.encode(requestUrl.getUserInfo().getBytes()));
             }
-            Parser p = new Parser();
-            cap = p.parseCapabilities( this, con.getInputStream() );
-            if(wmsVersion.isEmpty()){
-                wmsVersion = p.getFoundVersion();
-            }
+            //Parser p = new Parser();
+            cap = parser.parseCapabilities( this, con.getInputStream() );
             String url1 = cap.getService().getServerUrl();
             String url2 = cap.getGetMapURL();
             if(!url1.equals(url2)){
@@ -194,7 +193,7 @@ public class WMService {
   	    mr.setVersion( this.wmsVersion );
         return mr;
 	}
-
+      
   	public String getVersion(){
   	    return wmsVersion;
 	}

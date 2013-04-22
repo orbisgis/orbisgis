@@ -3,25 +3,25 @@
 
 
 /*
- * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI
+ * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
  *
  * Copyright (C) 2003 Vivid Solutions
- *
+ * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
+ * 
  * For more information, contact:
  *
  * Vivid Solutions
@@ -40,6 +40,7 @@
 
 package com.vividsolutions.wms;
 
+import com.vividsolutions.wms.util.XMLTools;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -67,14 +68,13 @@ import org.xml.sax.SAXException;
  */
 public class Parser {
   private static Logger LOG = Logger.getLogger(Parser.class);
-  private String foundVersion;
-  /**
+  /** 
    * Creates a Parser for dealing with WMS XML.
    */
-
+  
   public Parser() {
   }
-
+  
   /**
    * Parses the WMT_MS_Capabilities XML from the given InputStream into
    * a Capabilities object.
@@ -82,46 +82,19 @@ public class Parser {
    * @param inStream the inputStream containing the WMT_MS_Capabilities XML to parse
    * @return the MapDescriptor object created from the specified XML InputStream
    */
-
+  
   public Capabilities parseCapabilities( WMService service, InputStream inStream ) throws IOException {
-      Document doc = getDocument(inStream);
-      Node simpleXPath = simpleXPath( doc, "WMT_MS_Capabilities");
-      if(simpleXPath != null){
-          NamedNodeMap attributes = simpleXPath.getAttributes();
-          Node namedItem = attributes.getNamedItem("version");
-          if(WMService.WMS_1_1_1.equals(namedItem.getNodeValue()) ||
-                 WMService.WMS_1_1_0.equals(namedItem.getNodeValue())){
-              foundVersion = WMService.WMS_1_1_1;
-              return parseCapabilities_1_1_1(service, doc);
-          }
-          foundVersion = WMService.WMS_1_0_0;
-          return parseCapabilities_1_0_0(service, doc);
+      if ( WMService.WMS_1_1_1.equals( service.getVersion() ) 
+                      || WMService.WMS_1_1_0.equals( service.getVersion() ) ){
+          return parseCapabilities_1_1_1(service, inStream);
       }
-      simpleXPath = simpleXPath(doc, "WMS_Capabilities");
-      if(simpleXPath != null){
-          NamedNodeMap attributes = simpleXPath.getAttributes();
-          Node namedItem = attributes.getNamedItem("version");
-          if (WMService.WMS_1_3_0.equals( namedItem.getNodeValue())){
-              foundVersion = WMService.WMS_1_3_0;
-              return parseCapabilities_1_3_0(service, doc);
-          }
-      }
-      foundVersion = WMService.WMS_1_0_0;
-      return parseCapabilities_1_0_0(service, doc);
-  }
 
-  /**
-   * Gets the version that has been found while parsing the getCapabilities
-   * answer.
-   * @return The version as a String.
-   */
-  public String getFoundVersion(){
-      return foundVersion;
+      return parseCapabilities_1_0_0(service, inStream);  
   }
-
+  
   /**
    * Traverses the DOM tree underneath the specified Node and generates
-   * a corresponding WMSLayer object tree. The returned WMSLayer will be set to
+   * a corresponding WMSLayer object tree. The returned WMSLayer will be set to 
    * have the specified parent.
    * @param layerNode a DOM Node which is a <layer> XML element
    * @return a WMSLayer with complete subLayer tree that corresponds
@@ -133,14 +106,14 @@ public class Parser {
     LinkedList<String> srsList = new LinkedList<String>();
     LinkedList<MapLayer> subLayers = new LinkedList<MapLayer>();
     BoundingBox bbox = null;
-
+    
 // I think, bbox is LatLonBoundingBox.
 // I need a new variable for BoundingBox.
 // It must be a list because in the OGC document
 // stands that Layers may have zero or more <BoundingBox> [uwe dalluege]
 //    BoundingBox boundingBox = null;
     ArrayList<BoundingBox> boundingBoxList = new ArrayList<BoundingBox> ( );
-
+    
     NodeList nl = layerNode.getChildNodes();
 
     for( int i = 0; i< nl.getLength(); i++ ) {
@@ -152,29 +125,9 @@ public class Parser {
             name = ((CharacterData)n.getFirstChild()).getData();
           } else if( n.getNodeName().equals( "Title" ) ) {
             title = ((CharacterData)n.getFirstChild()).getData();
-
+            
           } else if( n.getNodeName().equals( "SRS" ) ) {
-            CharacterData charDat = (CharacterData)n.getFirstChild();
-            //That may seem crazy, but I've found some servers with empty SRS tags.
-            //We don't want to face NPEs, so I just check we have something...
-            if(charDat != null){
-                String srsStr = charDat.getData();
-                // split the srs String on spaces
-                while( srsStr.length() > 0 ) {
-                  int ws = srsStr.indexOf( ' ' );
-                  if( ws > 0 ) {
-                    srsList.add( srsStr.substring( 0, ws ) );
-                    srsStr = srsStr.substring( ws + 1 );
-                  } else {
-                    if( srsStr.length() > 0 ) {
-                      srsList.add( srsStr );
-                      srsStr = "";
-                    }
-                  }
-                }
-            }
-          } else if( n.getNodeName().equals( "CRS" ) ) {
-            String srsStr = ((CharacterData)n.getFirstChild()).getData();
+            String srsStr = ((CharacterData)n.getFirstChild()).getData();      
             // split the srs String on spaces
             while( srsStr.length() > 0 ) {
               int ws = srsStr.indexOf( ' ' );
@@ -191,7 +144,7 @@ public class Parser {
           } else if( n.getNodeName().equals( "LatLonBoundingBox" ) ) {
               bbox = boundingBoxFromNode( n );
               boundingBoxList.add ( bbox );
-
+            
 // Check for BoundingBox [uwe dalluege]
           } else if( n.getNodeName( ).equals( "BoundingBox" ) ) {
               bbox = boundingBoxFromNode( n );
@@ -206,12 +159,12 @@ public class Parser {
         LOG.error( "Exception caught in wmsLayerFromNode(): " + e.toString() );
       }
     }
-
+    
 // call the new constructor with boundingBoxList in MapLayer [uwe dalluege]
     return new MapLayer
     	( name, title, srsList, subLayers, bbox, boundingBoxList );
   }
-
+ 
   /**
    * Creates a new BoundingBox object based on the DOM Node given.
    * @param n the DOM Node to create the Bounding box from, must be either a
@@ -226,76 +179,84 @@ public class Parser {
       if( n.getNodeName().equals( "LatLonBoundingBox" ) ) {
         srs = BoundingBox.LATLON;
       } else if( n.getNodeName().equals( "BoundingBox" ) ) {
-          if(WMService.WMS_1_3_0.equals(foundVersion)){
-              srs = nm.getNamedItem( "CRS" ).getNodeValue();
-          } else {
-              srs = nm.getNamedItem( "SRS" ).getNodeValue();
-          }
+        srs = nm.getNamedItem( "SRS" ).getNodeValue();
       } else {
           // don't bother...
 //        throw new Exception( I18N.get("com.vividsolutions.wms.Parser.not-a-latlon-boundingbox-element") );
       }
-
+      
       // could not parse when values equal "inf"
 			//	double minx = Double.parseDouble(nm.getNamedItem("minx").getNodeValue());
 			//	double miny = Double.parseDouble(nm.getNamedItem("miny").getNodeValue());
 			//	double maxx = Double.parseDouble(nm.getNamedItem("maxx").getNodeValue());
 			//	double maxy = Double.parseDouble(nm.getNamedItem("maxy").getNodeValue());
-
+		
       // change "inf" values with +/-"Infinity"
       double minx;
       if (nm.getNamedItem("minx").getNodeValue().equals("inf")){
 			minx = Double.NEGATIVE_INFINITY;
       } else {
-			minx = Double.parseDouble(nm.getNamedItem("minx").getNodeValue());
+			minx = Double.parseDouble(nm.getNamedItem("minx").getNodeValue()); 
       }
-
+      
       double miny;
       if (nm.getNamedItem("miny").getNodeValue().equals("inf")){
 			miny = Double.NEGATIVE_INFINITY;
       } else {
-			miny = Double.parseDouble(nm.getNamedItem("miny").getNodeValue());
+			miny = Double.parseDouble(nm.getNamedItem("miny").getNodeValue()); 
       }
       double maxx;
-
+		
       if (nm.getNamedItem("maxx").getNodeValue().equals("inf")) {
 			maxx = Double.POSITIVE_INFINITY;
       } else {
 			maxx = Double.parseDouble(nm.getNamedItem("maxx").getNodeValue());
       }
-
+      
       double maxy;
       if (nm.getNamedItem("maxy").getNodeValue().equals("inf")) {
 			maxy = Double.POSITIVE_INFINITY;
       } else {
 			maxy = Double.parseDouble(nm.getNamedItem("maxy").getNodeValue());
       }
-
+      
       return new BoundingBox( srs, minx, miny, maxx, maxy );
-
+      
     } catch( Exception e ) {
       // possible NullPointerException from getNamedItem returning a null
       // also possible NumberFormatException
       throw new Exception( "invalid bounding box element node"+": " + e.toString() );
-    }
+    }    
   }
-  private Capabilities parseCapabilities_1_0_0( WMService service, Document doc) throws IOException {
+  private Capabilities parseCapabilities_1_0_0( WMService service, InputStream inStream ) throws IOException {
       MapLayer topLayer = null;
       String title = null;
       LinkedList<String> formatList = new LinkedList<String>();
+      Document doc;
+      
+      try {
+        DOMParser parser = new DOMParser();
+        parser.setFeature( "http://xml.org/sax/features/validation", false );
+        parser.parse( new InputSource( inStream ) );
+        doc = parser.getDocument();
+        // DEBUG: XMLTools.printNode( doc, "" );
+      } catch( SAXException saxe ) {
+        throw new IOException( saxe.toString() );
+      }
+      
       // get the title
       try {
-        title = ((CharacterData)simpleXPath( doc, "WMT_MS_Capabilities/Service/Title" ).getFirstChild()).getData();
+        title = ((CharacterData)XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Service/Title" ).getFirstChild()).getData();
       } catch (Exception e) {
         // possible NullPointerException if there is no firstChild()
         // also possible miscast causing an Exception
-
+      	
           // 	[uwe dalluege]
           throw new IOException( "Maybe wrong Capabilities Version! " );
       }
-
+      
       // get the supported file formats
-      Node formatNode = simpleXPath( doc, "WMT_MS_Capabilities/Capability/Request/Map/Format" );
+      Node formatNode = XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Capability/Request/Map/Format" );
       NodeList nl = formatNode.getChildNodes();
       for( int i=0; i < nl.getLength(); i++ ) {
         Node n = nl.item( i );
@@ -303,81 +264,24 @@ public class Parser {
           formatList.add( n.getNodeName() );
         }
       }
-
+      
       // get the top layer
-      topLayer = wmsLayerFromNode( simpleXPath( doc, "WMT_MS_Capabilities/Capability/Layer" ) );
-
+      topLayer = wmsLayerFromNode( XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Capability/Layer" ) );
+      
       return new Capabilities( service, title, topLayer, formatList );
     }
-
+  
   //UT TODO move this into a common method (
-  // private Capabilities parseCapabilities( WMService service, InputStream inStream,
+  // private Capabilities parseCapabilities( WMService service, InputStream inStream, 
   	// String version)
-
-  private Capabilities parseCapabilities_1_1_1( WMService service, Document doc) throws IOException {
-      String title;
+  
+  private Capabilities parseCapabilities_1_1_1( WMService service, InputStream inStream ) throws IOException {
+      MapLayer topLayer = null;
+      String title = null;
       String getMapURL, getFeatureInfoURL;
       LinkedList<String> formatList = new LinkedList<String>();
-      // throw error if the xml is not a capability answer
-      if ( simpleXPath( doc, "WMT_MS_Capabilities") == null) {
-        DOMImplementationRegistry registry;
-        String str = "";
-        try {
-          registry = DOMImplementationRegistry.newInstance();
-//          DOMImplementationList list = registry.getDOMImplementationList("LS");
-//          for (int i = 0; i < list.getLength(); i++) {
-//            System.out.println(list.item(i));
-//          }
-
-          DOMImplementationLS impl = (DOMImplementationLS) registry
-              .getDOMImplementation("LS");
-          LSSerializer writer = impl.createLSSerializer();
-          str = writer.writeToString(doc);
-        } catch (Exception e1) {
-          // TODO Auto-generated catch block
-          e1.printStackTrace();
-        }
-        throw new WMSException("Unexpected answer from server. Missing node <WMT_MS_Capabilities>.", str);
-      }
-
-      // get the title
-      try {
-        title = ((CharacterData)simpleXPath( doc, "WMT_MS_Capabilities/Service/Title" ).getFirstChild()).getData();
-      } catch (NullPointerException e) {
-        title = "not available";
-      }
-
-      // get the supported file formats			// UT was "WMT_MS_Capabilities/Capability/Request/Map/Format"
-      final Node formatNode = simpleXPath( doc, "WMT_MS_Capabilities/Capability/Request/GetMap" );
-
-      NodeList nl = formatNode.getChildNodes();
-      for( int i=0; i < nl.getLength(); i++ ) {
-        Node n = nl.item( i );
-        if( n.getNodeType() == Node.ELEMENT_NODE && "Format".equals( n.getNodeName() )) {
-            formatList.add( n.getFirstChild().getNodeValue() );
-        }
-      }
-
-      // get the possible URLs
-      String xp = "DCPType/HTTP/Get/OnlineResource";
-      String xlink = "http://www.w3.org/1999/xlink";
-      Element e = (Element) simpleXPath(formatNode, xp);
-      getMapURL = e.getAttributeNS(xlink, "href");
-
-      xp = "WMT_MS_Capabilities/Capability/Request/GetFeatureInfo/DCPType/HTTP/Get/OnlineResource";
-      e = (Element) simpleXPath(doc, xp);
-      if (e != null) {
-            getFeatureInfoURL = e.getAttributeNS(xlink, "href");
-        } else {
-            getFeatureInfoURL = "";
-        }
-
-      // get the top layer
-      MapLayer topLayer = wmsLayerFromNode( simpleXPath( doc, "WMT_MS_Capabilities/Capability/Layer" ) );
-
-      return new Capabilities( service, title, topLayer, formatList, getMapURL, getFeatureInfoURL );
-    }
-  private Document getDocument(InputStream inStream)throws IOException{
+      Document doc;
+      
       try {
           DOMParser parser = new DOMParser();
           parser.setFeature( "http://xml.org/sax/features/validation", false );
@@ -385,22 +289,16 @@ public class Parser {
           //was throwing java.io.UTFDataFormatException: Invalid byte 2 of 3-byte UTF-8 sequence.
 //          parser.parse( new InputSource( inStream ) );
           InputStreamReader ireader = new InputStreamReader( inStream );
-
+          
           parser.parse( new InputSource( ireader ) );
-          return parser.getDocument();
-
+          doc = parser.getDocument();
+          
       } catch( SAXException saxe ) {
         throw new IOException( saxe.toString() );
       }
-
-  }
-
-  private Capabilities parseCapabilities_1_3_0( WMService service, Document doc ) throws IOException {
-      String title;
-      String getMapURL, getFeatureInfoURL;
-      LinkedList<String> formatList = new LinkedList<String>();
+      
       // throw error if the xml is not a capability answer
-      if ( simpleXPath( doc, "WMS_Capabilities") == null) {
+      if ( XMLTools.simpleXPath( doc, "WMT_MS_Capabilities") == null) {
         DOMImplementationRegistry registry;
         String str = "";
         try {
@@ -420,33 +318,33 @@ public class Parser {
         }
         throw new WMSException("Unexpected answer from server. Missing node <WMT_MS_Capabilities>.", str);
       }
-
+      
       // get the title
       try {
-        title = ((CharacterData)simpleXPath( doc, "WMS_Capabilities/Service/Title" ).getFirstChild()).getData();
+        title = ((CharacterData)XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Service/Title" ).getFirstChild()).getData();
       } catch (NullPointerException e) {
         title = "not available";
       }
-
+      
       // get the supported file formats			// UT was "WMT_MS_Capabilities/Capability/Request/Map/Format"
-      final Node formatNode = simpleXPath( doc, "WMS_Capabilities/Capability/Request/GetMap" );
+      final Node formatNode = XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Capability/Request/GetMap" );
 
       NodeList nl = formatNode.getChildNodes();
       for( int i=0; i < nl.getLength(); i++ ) {
         Node n = nl.item( i );
         if( n.getNodeType() == Node.ELEMENT_NODE && "Format".equals( n.getNodeName() )) {
-            formatList.add( n.getFirstChild().getNodeValue() );
+            formatList.add( n.getFirstChild().getNodeValue() );              
         }
       }
-
+      
       // get the possible URLs
       String xp = "DCPType/HTTP/Get/OnlineResource";
       String xlink = "http://www.w3.org/1999/xlink";
-      Element e = (Element) simpleXPath(formatNode, xp);
+      Element e = (Element) XMLTools.simpleXPath(formatNode, xp);
       getMapURL = e.getAttributeNS(xlink, "href");
 
-      xp = "WMS_Capabilities/Capability/Request/GetFeatureInfo/DCPType/HTTP/Get/OnlineResource";
-      e = (Element) simpleXPath(doc, xp);
+      xp = "WMT_MS_Capabilities/Capability/Request/GetFeatureInfo/DCPType/HTTP/Get/OnlineResource";
+      e = (Element) XMLTools.simpleXPath(doc, xp);
       if (e != null) {
             getFeatureInfoURL = e.getAttributeNS(xlink, "href");
         } else {
@@ -454,8 +352,8 @@ public class Parser {
         }
 
       // get the top layer
-      MapLayer topLayer = wmsLayerFromNode( simpleXPath( doc, "WMS_Capabilities/Capability/Layer" ) );
-
+      topLayer = wmsLayerFromNode( XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Capability/Layer" ) );
+      
       return new Capabilities( service, title, topLayer, formatList, getMapURL, getFeatureInfoURL );
     }
   /**
@@ -473,7 +371,7 @@ public class Parser {
       printNode( nl.item( i ), prefix + "  " );
     }
   }
-
+  
   /**
    * A very simple XPath implementation.
    * Recursively drills down into the DOM tree, starting at the given parent

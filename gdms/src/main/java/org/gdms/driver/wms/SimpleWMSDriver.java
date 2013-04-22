@@ -133,7 +133,8 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
 
                         //Create the GeoStream object
                         geoStream = new DefaultGeoStream(this, streamSource, 
-                                new Envelope(bbox.getMinX(), bbox.getMaxX(), bbox.getMinY(), bbox.getMaxY()));
+                                new Envelope(bbox.getWestBound(), bbox.getEastBound(),
+                                    bbox.getSouthBound(), bbox.getNorthBound()));
                 } catch (ConnectException e) {
                         throw new DriverException(e);
                 } catch (IOException e) {
@@ -169,7 +170,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                         mr.setVersion(wmsClient.getVersion());
                         List<String> layers = new ArrayList<String>(1);
                         layers.add(mapLayer.getName());
-                        mr.setLayers(layers);
+                        mr.setLayerNames(layers);
                         MapImageFormatChooser mifc = new MapImageFormatChooser(wmsClient.getVersion());
                         mr.setFormat(mifc.chooseFormat(cap.getMapFormats()));
                         BoundingBox bb = new BoundingBox(streamSource.getSRS(), extent.getMinX(),
@@ -222,7 +223,8 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                     } else {
                         original = layer.getLatLonBoundingBox();
                     }
-                    Envelope env = new Envelope(original.getMinX(), original.getMaxX(), original.getMinY(), original.getMaxY());
+                    Envelope env = new Envelope(bbox.getWestBound(), bbox.getEastBound(),
+                                    bbox.getSouthBound(), bbox.getNorthBound());
                     String originalSrs = original.getSRS();
                     GeometryFactory gf = new GeometryFactory();
                     Polygon poly = (Polygon) gf.toGeometry(env);
