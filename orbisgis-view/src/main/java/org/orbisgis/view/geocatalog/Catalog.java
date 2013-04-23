@@ -39,6 +39,7 @@ import java.beans.EventHandler;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -489,7 +490,8 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                                         if (sm.exists(layerName)) {
                                                 uniqueLayerName = sm.getUniqueName(layerName);
                                         }
-                                        StringBuilder url = new StringBuilder(service.getServerUrl());
+                                        URI origin = URI.create(service.getServerUrl());
+                                        StringBuilder url = new StringBuilder(origin.getQuery());
                                         url.append("SERVICE=WMS&REQUEST=GetMap");
                                         String version = service.getVersion();
                                         url.append("&VERSION=").append(version);
@@ -501,13 +503,16 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                                         url.append(srsPanel.getSRS());
                                         url.append("&LAYERS=").append(layerName);
                                         url.append("&FORMAT=").append(validImageFormat);
-                                        URI streamUri = URI.create(url.toString());
                                         try{
+                                            URI streamUri = new URI(origin.getScheme(), origin.getUserInfo(),origin.getHost(), origin.getPort(),
+                                                origin.getPath(), url.toString(), origin.getFragment());
                                             StreamSource wmsSource = new StreamSource(streamUri);
                                             StreamSourceDefinition streamSourceDefinition = new StreamSourceDefinition(wmsSource);
                                             sm.register(uniqueLayerName, streamSourceDefinition);
                                         } catch (UnsupportedEncodingException uee){
-                                            LOGGER.error(I18N.tr("Can't read the given URI: "+streamUri+" "+uee.getCause()));
+                                            LOGGER.error(I18N.tr("Can't read the given URI: "+uee.getCause()));
+                                        } catch (URISyntaxException use){
+                                            LOGGER.error(I18N.tr("The given URI contains illegal character"),use);
                                         }
                                 }
                         }
