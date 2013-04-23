@@ -161,8 +161,10 @@ public class WMService {
 	    } else if ( WMS_1_3_0.equals( wmsVersion) ){
 	    	req = "SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities";
 	    }
-        if(serverUrl.charAt(serverUrl.length() -1) != '?'){
+        if(!serverUrl.contains("?")){
             serverUrl = serverUrl + "?";
+        } else if(serverUrl.charAt(serverUrl.length() -1) != '&') {
+            serverUrl = serverUrl + "&";
         }
         String requestUrlString = this.serverUrl + req;
         Document doc = getDOMDocument(requestUrlString);

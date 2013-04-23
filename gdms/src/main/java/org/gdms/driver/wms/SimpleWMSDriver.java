@@ -49,6 +49,7 @@ import com.vividsolutions.wms.MapLayer;
 import com.vividsolutions.wms.MapRequest;
 import com.vividsolutions.wms.WMService;
 import java.util.ArrayList;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import org.gdms.data.values.*;
 import org.orbisgis.progress.ProgressMonitor;
@@ -118,11 +119,12 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                         sb.append("://");
                         sb.append(streamSource.getHost());
                         sb.append(streamSource.getPath());
-                        String streamURL = sb.toString();
-                        if(!(streamURL.charAt(streamURL.length()-1) == '?')){
-                            sb.append("?");
-                            streamURL = sb.toString();
+                        sb.append("?");
+                        Map<String,String> others = streamSource.getOthersQueryMap();
+                        for(Map.Entry<String,String> entry : others.entrySet()){
+                            sb.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
                         }
+                        String streamURL = sb.toString();
                         wmsClient = new WMService(streamURL);
                         wmsClient.initialize();
                         cap = wmsClient.getCapabilities();

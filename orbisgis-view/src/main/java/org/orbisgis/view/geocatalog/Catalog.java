@@ -37,6 +37,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.List;
 import javax.swing.*;
@@ -488,18 +489,26 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                                         if (sm.exists(layerName)) {
                                                 uniqueLayerName = sm.getUniqueName(layerName);
                                         }
-                                        URI streamUri = URI.create(service.getServerUrl());
-                                        StreamSource wmsSource = new StreamSource(streamUri.getScheme(),
-                                                streamUri.getHost(),
-                                                streamUri.getPort(),
-                                                streamUri.getPath(),
-                                                layerName,
-                                                "wms",
-                                                validImageFormat,
-                                                srsPanel.getSRS(),
-                                                service.getVersion());
-                                        StreamSourceDefinition streamSourceDefinition = new StreamSourceDefinition(wmsSource);
-                                        sm.register(uniqueLayerName, streamSourceDefinition);
+                                        StringBuilder url = new StringBuilder(service.getServerUrl());
+                                        url.append("SERVICE=WMS&REQUEST=GetMap");
+                                        String version = service.getVersion();
+                                        url.append("&VERSION=").append(version);
+                                        if(WMService.WMS_1_3_0.equals(version)){
+                                            url.append("&CRS=");
+                                        } else {
+                                            url.append("&SRS=");
+                                        }
+                                        url.append(srsPanel.getSRS());
+                                        url.append("&LAYERS=").append(layerName);
+                                        url.append("&FORMAT=").append(validImageFormat);
+                                        URI streamUri = URI.create(url.toString());
+                                        try{
+                                            StreamSource wmsSource = new StreamSource(streamUri);
+                                            StreamSourceDefinition streamSourceDefinition = new StreamSourceDefinition(wmsSource);
+                                            sm.register(uniqueLayerName, streamSourceDefinition);
+                                        } catch (UnsupportedEncodingException uee){
+                                            LOGGER.error(I18N.tr("Can't read the given URI: "+streamUri+" "+uee.getCause()));
+                                        }
                                 }
                         }
                 }

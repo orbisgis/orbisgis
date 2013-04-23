@@ -32,7 +32,10 @@ package org.gdms.data.stream;
 import org.junit.Test;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.util.Map;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Unit test of stream source
@@ -77,6 +80,53 @@ public class StreamSourceTest {
 
         // Port test
         assertEquals(80,streamSource.getPort());
+    }
+
+    @Test
+    public void testOtherParametersTest() throws Exception {
+        //http://188.64.1.61/cgi-bin/mapserv?map=/usr/map/osm-mapserver_i.map&REQUEST=GetCapabilities&SERVICE=WMS
+        URI uri = URI.create("http://188.64.1.61/cgi-bin/mapserv?map=/usr/map/osm-mapserver_i.map&"
+                + "REQUEST=GetMap&SERVICE=WMS&VERSION=1.3.0" +
+                "&LAYERS=cantons_dep44&CRS=EPSG:27572" +
+                "&BBOX=259555.01152073737,2218274.7695852537,342561.9239631337,2287024.7695852537&WIDTH=524&HEIGHT=434" +
+                "&FORMAT=image/png&STYLES=");
+        StreamSource streamSource = new StreamSource(uri);
+        Map<String, String> queryMap = streamSource.getQueryMap();
+        assertTrue(queryMap.containsKey(StreamSource.LAYER_PARAMETER));
+        assertTrue(queryMap.containsKey(StreamSource.CRS_PARAMETER));
+        assertTrue(queryMap.containsKey(StreamSource.OUTPUTFORMAT_PARAMETER));
+        assertTrue(queryMap.containsKey(StreamSource.SERVICE_PARAMETER));
+        assertTrue(queryMap.containsKey(StreamSource.VERSION_PARAMETER));
+        Map<String,String> others = streamSource.getOthersQueryMap();
+        assertTrue(others.containsKey("map"));
+    }
+
+    @Test
+    public void testForgottenParametersTest() throws Exception {
+        //http://188.64.1.61/cgi-bin/mapserv?map=/usr/map/osm-mapserver_i.map&REQUEST=GetCapabilities&SERVICE=WMS
+        URI uri = URI.create("http://188.64.1.61/cgi-bin/mapserv?map=/usr/map/osm-mapserver_i.map"
+                + "&REQUEST=GetMap"
+                + "&SERVICE=WMS"
+                + "&VERSION=1.3.0"
+                + "&LAYERS=cantons_dep44"
+                + "&CRS=EPSG:27572"
+                + "&BBOX=259555.01152073737,2218274.7695852537,342561.9239631337,2287024.7695852537"
+                + "&WIDTH=524"
+                + "&HEIGHT=434"
+                + "&FORMAT=image/png"
+                + "&STYLES="
+                + "&TRANSPARENT=true"
+                + "&TIME=12-12-2013"
+                + "&BGCOLOR=0x123456"
+                + "&ELEVATION=CRS:88"
+                + "EXCEPTIONS=xml");
+        StreamSource streamSource = new StreamSource(uri);
+        Map<String, String> queryMap = streamSource.getQueryMap();
+        Map<String,String> others = streamSource.getOthersQueryMap();
+        for(String s : StreamSource.IGNORED_WMS_KEYS){
+            assertFalse(queryMap.containsKey(s));
+            assertFalse(others.containsKey(s));
+        }
     }
 
 }
