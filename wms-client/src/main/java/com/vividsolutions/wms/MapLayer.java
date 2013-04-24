@@ -56,7 +56,7 @@ public class MapLayer {
     private ArrayList<MapLayer> subLayers;
     // Default bounding box in geographic coordinates
     private BoundingBox bbox;  
-    private ArrayList<BoundingBox> boundingBoxList;
+    private Map<String,BoundingBox> boundingBoxMap;
   
     // user modifiable members
     private boolean enabled = false;
@@ -76,42 +76,36 @@ public class MapLayer {
         this.title = title;
         this.srsList = new ArrayList<String>( srsList );
         this.subLayers = new ArrayList<MapLayer>( subLayers );
-        Iterator it = subLayers.iterator();
-        while( it.hasNext() ) { 
-            ((MapLayer)it.next()).parent = this;
+        for(MapLayer ml : subLayers){
+            ml.parent = this;
         }
     }
 
     /**
-     * Creates a new instance of MapLayer with boundingBoxList [uwe dalluege]
+     * Creates a new instance of MapLayer with boundingBoxMap [uwe dalluege]
      */
-    public MapLayer ( String name, String title, Collection srsList, Collection subLayers, 
-  		BoundingBox bbox, ArrayList<BoundingBox> boundingBoxList ) {
+    public MapLayer ( String name, String title, Collection<String> srsList, Collection<MapLayer> subLayers,
+  		BoundingBox bbox, Map<String,BoundingBox> boundingBoxMap) {
         this ( name, title, srsList, subLayers, bbox );
-  	    this.boundingBoxList = boundingBoxList;
+  	    this.boundingBoxMap = boundingBoxMap;
     }
   
   
     /**
-     * @return All BoundingBoxes
+     * @return All BoundingBoxes associated to this layer.
      * If there is no BoundingBox for this MapLayer the parent-BoundingBox
      * will be taken.
      * [uwe dalluege]
      */  
-    public List<BoundingBox> getAllBoundingBoxList ( )
-            {
-    	MapLayer mapLayer = this;
-    	List<BoundingBox> allBoundingBoxList = this.getBoundingBoxList ( );
-    	if ( allBoundingBoxList.size ( ) > 0 ){
-            return allBoundingBoxList;
+    public List<BoundingBox> getAllBoundingBoxList(){
+        if(boundingBoxMap != null){
+            Collection<BoundingBox> values = boundingBoxMap.values();
+            if(values != null && !values.isEmpty()){
+                return new ArrayList<BoundingBox>(values);
+            }
         }
-  		while ( mapLayer != null ) {
-  			mapLayer = mapLayer.getParent ( );
-  			if ( mapLayer == null ) return allBoundingBoxList;
-  			allBoundingBoxList = mapLayer.getBoundingBoxList ( );
-  			if ( allBoundingBoxList.size ( ) > 0 ) return allBoundingBoxList;
-  		}  	
-        return allBoundingBoxList;
+        //We didn't find anything, let's check the parents...
+        return parent == null ? new ArrayList<BoundingBox>() : parent.getAllBoundingBoxList();
     }
 
   
@@ -218,32 +212,38 @@ public class MapLayer {
         MapLayer p = this;
         while (envelope.getMinX() > envelope.getMaxX() && p.getParent() != null) {
             p = p.getParent();
-            for (BoundingBox bb : p.getBoundingBoxList()) {
-                if (srs.equals(bb.getSRS())) {
+            if(p != null){
+                BoundingBox bb = p.getBoundingBoxMap().get(srs);
+                if (bb != null) {
                     // if this layer has a bounding box for this srs, return its envelope
                     envelope.expandToInclude(bb.getEnvelope());
                     return new BoundingBox(srs, envelope);
                 }
             }
+            
         }
         return new BoundingBox(srs, envelope);
     }
-    
+
     /**
      * Return the envelope of this layer in the wished srs if a BoundingBox in
      * this srs exists. Else if, layer's children are scanned recursively.
+     * @param srs The expected SRS
+     * @param lyr The original Layer
+     * @param env The original envelope. It will be used as a basis and will be expanded to match the bounding box
+     *            of the layer.
+     * @return The envelope of the layer in the given srs or the expended Envelop of all the children of {@code lyr}
+     *         if no explicit bounding box was found for {@code lyr} in the provided srs.
      */
     public static Envelope getBoundingBox(String srs, MapLayer lyr, Envelope env) {
-        for (BoundingBox bb : lyr.getBoundingBoxList()) {
-            if (srs.equals(bb.getSRS())) {
-                // if this layer has a bounding box for this srs, return its envelope
-                env.expandToInclude(bb.getEnvelope());
-                return env;
+        BoundingBox bb = lyr.getBoundingBoxMap().get(srs);
+        if(bb!=null){
+            //this layer has a bounding box for this srs, return its envelope
+            env.expandToInclude(bb.getEnvelope());
+        } else {
+            for (MapLayer child : lyr.getSubLayerList()) {
+                env.expandToInclude(getBoundingBox(srs, child, env));
             }
-        }
-        // else include all the envelope of this layer's children
-        for (MapLayer child : lyr.getSubLayerList()) {
-            env.expandToInclude(getBoundingBox(srs, child, env));
         }
         return env;
     }
@@ -276,8 +276,8 @@ public class MapLayer {
      * Gets the BoundingBoxList for this Layer
      * @return the BoundingBoxList containing the BoundingBoxes
      */
-    public ArrayList<BoundingBox> getBoundingBoxList ( ) {// [uwe dalluege]
-  	    return ( ArrayList<BoundingBox> ) boundingBoxList.clone ( ); 
+    public Map<String,BoundingBox> getBoundingBoxMap() {// [uwe dalluege]
+        return new HashMap<String,BoundingBox>(boundingBoxMap);
     }
 
   

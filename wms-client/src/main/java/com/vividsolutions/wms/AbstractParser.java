@@ -40,9 +40,7 @@ package com.vividsolutions.wms;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
@@ -172,7 +170,7 @@ public abstract class AbstractParser implements IParser {
         LinkedList<String> srsList = new LinkedList<String>();
         LinkedList<MapLayer> subLayers = new LinkedList<MapLayer>();
         BoundingBox geographicBBox = null;
-        ArrayList<BoundingBox> boundingBoxList = new ArrayList<BoundingBox> ( );
+        Map<String, BoundingBox> boundingBoxMap = new HashMap<String, BoundingBox>();
     
         NodeList nl = layerNode.getChildNodes();
 
@@ -180,22 +178,26 @@ public abstract class AbstractParser implements IParser {
             Node n = nl.item( i );
             try {
                 if( n.getNodeType() == Node.ELEMENT_NODE ) {
-                    if( n.getNodeName().equals( "Name" ) ) {
+                    String nodeName = n.getNodeName();
+                    if( nodeName.equals( "Name" ) ) {
                         name = ((CharacterData)n.getFirstChild()).getData();
-                    } else if( n.getNodeName().equals( "Title" ) ) {
+                    } else if( nodeName.equals( "Title" ) ) {
                         title = ((CharacterData)n.getFirstChild()).getData();
-                    } else if( n.getNodeName().equals( getSRSName() ) ) {
+                    } else if(nodeName.equals( getSRSName() ) ) {
                         addSRSNode(n, srsList);
-                    } else if( n.getNodeName().equals( "LatLonBoundingBox" ) ) {
+                    } else if(nodeName.equals( "LatLonBoundingBox" ) ) {
                         geographicBBox = latLonBoundingBoxFromNode( n );
-                        boundingBoxList.add ( geographicBBox );
-                        boundingBoxList.add ( new BoundingBox("Geographics", geographicBBox.getEnvelope()) );
-                    } else if( n.getNodeName().equals( "BoundingBox" ) ) {
-                        boundingBoxList.add ( boundingBoxFromNode( n ) );
-                    } else if( n.getNodeName().equals( "EX_GeographicBoundingBox" ) ) {
+                        boundingBoxMap.put(BoundingBox.GEOGRAPHICS_EPSG, geographicBBox);
+                        boundingBoxMap.put(BoundingBox.GEOGRAPHICS,
+                                    new BoundingBox("Geographics", geographicBBox.getEnvelope()));
+                    } else if(nodeName.equals( "BoundingBox" ) ) {
+                        BoundingBox fromNode = boundingBoxFromNode(n);
+                        boundingBoxMap.put(fromNode.getSRS(),fromNode);
+                    } else if(nodeName.equals( "EX_GeographicBoundingBox" ) ) {
                         geographicBBox = exGeographicBoundingBoxFromNode( n );
-                        boundingBoxList.add ( geographicBBox );
-                        boundingBoxList.add ( new BoundingBox("Geographics", geographicBBox.getEnvelope()) );
+                        boundingBoxMap.put(BoundingBox.GEOGRAPHICS_EPSG, geographicBBox);
+                        boundingBoxMap.put(BoundingBox.GEOGRAPHICS,
+                                    new BoundingBox("Geographics", geographicBBox.getEnvelope()));
                     } else if( n.getNodeName().equals( "Layer" ) ) {
                         subLayers.add( wmsLayerFromNode( n ) );
                     }
@@ -207,7 +209,7 @@ public abstract class AbstractParser implements IParser {
         }
 
         // call the new constructor with boundingBoxList in MapLayer [uwe dalluege]
-        return new MapLayer(name, title, srsList, subLayers, geographicBBox, boundingBoxList);
+        return new MapLayer(name, title, srsList, subLayers, geographicBBox, boundingBoxMap);
     }
     
     protected void addSRSNode(Node n, List<String> srsList) throws Exception {
