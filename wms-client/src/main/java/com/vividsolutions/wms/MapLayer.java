@@ -83,6 +83,14 @@ public class MapLayer {
 
     /**
      * Creates a new instance of MapLayer with boundingBoxMap [uwe dalluege]
+     * @param name The name of the layer
+     * @param title The title of the layer
+     * @param srsList The collection of SRS/CRS that are explicitly associated to this layer
+     * @param subLayers The children of this layer
+     * @param bbox The geographic bounding box of the layer
+     * @param boundingBoxMap The BoundingBox mapped to their declared SRS/CRS.
+     * @throws NullPointerException When one of the expected collection/map that
+     * should be given in argument of this constructor is null.
      */
     public MapLayer ( String name, String title, Collection<String> srsList, Collection<MapLayer> subLayers,
   		BoundingBox bbox, Map<String,BoundingBox> boundingBoxMap) {
