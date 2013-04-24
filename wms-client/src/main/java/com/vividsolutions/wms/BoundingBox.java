@@ -49,6 +49,8 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public class BoundingBox {
   public static final String LATLON="LatLon";
+  public static final String GEOGRAPHICS="Geographics";
+  public static final String GEOGRAPHICS_EPSG="EPSG:4326";
    
   private String srs;
   // by default, use longitude, latitude order, as per WMS 1.0.x and 1.1.x
