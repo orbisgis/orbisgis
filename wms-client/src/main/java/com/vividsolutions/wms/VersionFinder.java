@@ -29,21 +29,14 @@
 package com.vividsolutions.wms;
 
 import com.vividsolutions.wms.util.XMLTools;
-import java.io.IOException;
-import java.io.InputStream;
 import org.apache.log4j.Logger;
-import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
 
 /**
- *
- * @author Alexis Guéganno
+ * Finds the actual version of a WMS GetCapabilities Document.
+ * @author Alexis Guéganno - FR CNRS 2488
  */
 public class VersionFinder {
 

@@ -44,7 +44,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 
-public class MapLayerTest {
+public class MapLayerTest extends AbstractWMSTest{
     private MapLayer parent;
     private MapLayer c2;
     private MapLayer c1;
@@ -143,13 +143,7 @@ public class MapLayerTest {
 
     @Test
     public void testCRSFromCapabilities() throws Exception {
-        File f = new File("src/test/resources/com/vividsolutions/wms/capabilities_1_3_0.xml");
-        FileInputStream fis = new FileInputStream(f);
-        DOMParser domParser = new DOMParser();
-        domParser.setFeature("http://xml.org/sax/features/validation", false);
-        domParser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        domParser.parse(new InputSource(fis));
-        Document doc = domParser.getDocument();
+        Document doc = getDocument(CAPABILITIES_1_3_0);
         ParserWMS1_3 parser = new ParserWMS1_3();
         WMService service = new WMService("http://dummy.org/wms?");
         Capabilities cap = parser.parseCapabilities(service, doc);

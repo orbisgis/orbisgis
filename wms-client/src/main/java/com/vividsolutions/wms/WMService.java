@@ -168,9 +168,7 @@ public class WMService {
         }
         String requestUrlString = this.serverUrl + req;
         Document doc = getDOMDocument(requestUrlString);
-        if(wmsVersion.isEmpty()){
-            wmsVersion = VersionFinder.findVersion(doc);
-        }
+        wmsVersion = VersionFinder.findVersion(doc);
 	    IParser parser = getParser(wmsVersion);
         try {
             cap = parser.parseCapabilities( this, doc );
