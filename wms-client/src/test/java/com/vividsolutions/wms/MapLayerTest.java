@@ -29,14 +29,19 @@
 package com.vividsolutions.wms;
 
 import com.vividsolutions.jts.geom.Envelope;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import org.apache.xerces.parsers.DOMParser;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 
 public class MapLayerTest {
@@ -134,6 +139,24 @@ public class MapLayerTest {
         assertTrue(exp1.equals(real1) || exp2.equals(real1));
         assertFalse(real1.equals(real0));
 
+    }
+
+    @Test
+    public void testCRSFromCapabilities() throws Exception {
+        File f = new File("src/test/resources/com/vividsolutions/wms/capabilities_1_3_0.xml");
+        FileInputStream fis = new FileInputStream(f);
+        DOMParser domParser = new DOMParser();
+        domParser.setFeature("http://xml.org/sax/features/validation", false);
+        domParser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        domParser.parse(new InputSource(fis));
+        Document doc = domParser.getDocument();
+        ParserWMS1_3 parser = new ParserWMS1_3();
+        WMService service = new WMService("http://dummy.org/wms?");
+        Capabilities cap = parser.parseCapabilities(service, doc);
+        MapLayer ml = cap.getTopLayer();
+        assertTrue(ml.getName().equals("top"));
+        assertTrue(ml.getTitle().equals("TopLayer"));
+        assertTrue(ml.getAllBoundingBoxList().size()==2);
     }
 
 }
