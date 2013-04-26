@@ -67,13 +67,13 @@ import java.util.Set;
  * implementations.</p>
  * <p>This strategy makes this source quite resistant to user input. Indeed,
  * we can accept about any valid GetMap request as an input and obtain a valid
- * StreamSource.
+ * WMSStreamSource.
  *
  * @author Antoine Gourlay
  * @author Vincent Dépériers
  * @author Alexis Guéganno
  */
-public class StreamSource implements Serializable {
+public class WMSStreamSource implements Serializable {
         private static final int DEFAULT_PORT = 80;
         private static final long serialVersionUID = 144456789L;
         public static final String SERVICE_NAME = "wms";
@@ -146,7 +146,7 @@ public class StreamSource implements Serializable {
          * @param service Service (ex: WMS)
          */
         @Deprecated
-        public StreamSource(String scheme, String host, int port, String path, String layerName, String service) {
+        public WMSStreamSource(String scheme, String host, int port, String path, String layerName, String service) {
                 this(scheme,host, port, path, layerName, service, "image/png", "EPSG:4326", "1.3.0");
         }
 
@@ -163,8 +163,8 @@ public class StreamSource implements Serializable {
          * @param version Wms server version ex: 1.3.0
          */
         @Deprecated
-        public StreamSource(String scheme, String host, int port, String path, String layerName, String service,
-                String imageFormat, String crs,String version) {
+        public WMSStreamSource(String scheme, String host, int port, String path, String layerName, String service,
+                               String imageFormat, String crs, String version) {
                 this.scheme = scheme;
                 this.host = host;
                 this.path = path;
@@ -207,7 +207,7 @@ public class StreamSource implements Serializable {
          * @throws IllegalArgumentException If the URI does not contain a required query, fragment
          * @throws UnsupportedEncodingException If the URI contains non-utf8 characters
          */
-        public StreamSource(URI uri) throws IllegalArgumentException, UnsupportedEncodingException {
+        public WMSStreamSource(URI uri) throws IllegalArgumentException, UnsupportedEncodingException {
             host = uri.getHost();
             port = uri.getPort();
             scheme = uri.getScheme();
@@ -457,8 +457,8 @@ public class StreamSource implements Serializable {
 
         @Override
         public boolean equals(Object obj) {
-                if (obj instanceof StreamSource) {
-                        final StreamSource other = (StreamSource) obj;
+                if (obj instanceof WMSStreamSource) {
+                        final WMSStreamSource other = (WMSStreamSource) obj;
                         if ((this.host == null) ? (other.host != null) : !this.host.equals(other.host)) {
                                 return false;
                         }

@@ -55,7 +55,7 @@ import org.gdms.driver.driverManager.DriverManager;
  *
  * This is in a way the interface between the management of the data itself and
  * their integration into gdms.<br>
- * Here we store the StreamSource to be able to create
+ * Here we store the WMSStreamSource to be able to create
  * the StreamDatasource, through the StreamDataSourceAdapter.
  * </p>
  *
@@ -64,13 +64,13 @@ import org.gdms.driver.driverManager.DriverManager;
  */
 public class StreamSourceDefinition extends AbstractDataSourceDefinition<StreamDriver> {
         private static final Logger LOGGER = Logger.getLogger(StreamSourceDefinition.class);
-        private StreamSource streamSource;
+        private WMSStreamSource streamSource;
 
         /**
          * Creates a new definition for a stream.
          * @param streamSource the information on the stream
          */
-        public StreamSourceDefinition(StreamSource streamSource) {
+        public StreamSourceDefinition(WMSStreamSource streamSource) {
                 if (streamSource == null) {
                         throw new IllegalArgumentException("Cannot create a definition from a null source!");
                 }
@@ -95,7 +95,7 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition<StreamD
         /**
          * @return the stream source for the definition
          */
-        public StreamSource getStreamSource() {
+        public WMSStreamSource getStreamSource() {
                 return this.streamSource;
         }
 
@@ -142,7 +142,7 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition<StreamD
          * @throws UnsupportedEncodingException Encoding in URI is not supported
          */
         public static DataSourceDefinition createFromURI(URI uri) throws UnsupportedEncodingException {
-            StreamSource streamSource = new StreamSource(uri);
+            WMSStreamSource streamSource = new WMSStreamSource(uri);
             return new StreamSourceDefinition(streamSource);
         }
 

@@ -41,16 +41,16 @@ import static org.junit.Assert.assertFalse;
  * Unit test of stream source
  * @author Nicolas Fortin
  */
-public class StreamSourceTest {
+public class WMSStreamSourceTest {
     @Test
     public void uriSerialisationTest() throws Exception {
         URI uri = URI.create("http://services.orbisgis.org/wms/wms?REQUEST=GetMap&SERVICE=WMS&VERSION=1.3.0" +
                 "&LAYERS=cantons_dep44&CRS=EPSG:27572" +
                 "&BBOX=259555.01152073737,2218274.7695852537,342561.9239631337,2287024.7695852537&WIDTH=524&HEIGHT=434" +
                 "&FORMAT=image/png&STYLES=");
-        StreamSource streamSource = new StreamSource(uri);
+        WMSStreamSource streamSource = new WMSStreamSource(uri);
         URI uri2 = streamSource.toURI();
-        StreamSource streamSource2 = new StreamSource(uri2);
+        WMSStreamSource streamSource2 = new WMSStreamSource(uri2);
         assertEquals(streamSource.getCRS(),streamSource2.getCRS());
     }
     @Test
@@ -59,7 +59,7 @@ public class StreamSourceTest {
                 "&LAYERS=cantons_dep44&CRS=EPSG:27572" +
                 "&BBOX=259555.01152073737,2218274.7695852537,342561.9239631337,2287024.7695852537&WIDTH=524&HEIGHT=434" +
                 "&FORMAT=image/png&STYLES=");
-        StreamSource streamSource = new StreamSource(uri);
+        WMSStreamSource streamSource = new WMSStreamSource(uri);
         assertEquals("services.orbisgis.org",streamSource.getHost());
         assertEquals("/wms/wms",streamSource.getPath());
         assertEquals("http",streamSource.getScheme());
@@ -68,13 +68,13 @@ public class StreamSourceTest {
 
         // If the version is not set and CRS is given
         uri = URI.create("http://services.orbisgis.org/wms/wms?SERVICE=WMS&CRS=EPSG:27572&FORMAT=image/png&STYLES=");
-        streamSource = new StreamSource(uri);
+        streamSource = new WMSStreamSource(uri);
         assertEquals("1.3.0",streamSource.getVersion());
         assertEquals("EPSG:27572",streamSource.getCRS());
 
         // If the version is not set and SRS is given
         uri = URI.create("http://services.orbisgis.org/wms/wms?SERVICE=WMS&SRS=EPSG:27572&FORMAT=image/png&STYLES=");
-        streamSource = new StreamSource(uri);
+        streamSource = new WMSStreamSource(uri);
         assertEquals("1.1.1",streamSource.getVersion());
         assertEquals("EPSG:27572",streamSource.getSRS());
 
@@ -90,13 +90,13 @@ public class StreamSourceTest {
                 "&LAYERS=cantons_dep44&CRS=EPSG:27572" +
                 "&BBOX=259555.01152073737,2218274.7695852537,342561.9239631337,2287024.7695852537&WIDTH=524&HEIGHT=434" +
                 "&FORMAT=image/png&STYLES=");
-        StreamSource streamSource = new StreamSource(uri);
+        WMSStreamSource streamSource = new WMSStreamSource(uri);
         Map<String, String> queryMap = streamSource.getQueryMap();
-        assertTrue(queryMap.containsKey(StreamSource.LAYER_PARAMETER));
-        assertTrue(queryMap.containsKey(StreamSource.CRS_PARAMETER));
-        assertTrue(queryMap.containsKey(StreamSource.OUTPUTFORMAT_PARAMETER));
-        assertTrue(queryMap.containsKey(StreamSource.SERVICE_PARAMETER));
-        assertTrue(queryMap.containsKey(StreamSource.VERSION_PARAMETER));
+        assertTrue(queryMap.containsKey(WMSStreamSource.LAYER_PARAMETER));
+        assertTrue(queryMap.containsKey(WMSStreamSource.CRS_PARAMETER));
+        assertTrue(queryMap.containsKey(WMSStreamSource.OUTPUTFORMAT_PARAMETER));
+        assertTrue(queryMap.containsKey(WMSStreamSource.SERVICE_PARAMETER));
+        assertTrue(queryMap.containsKey(WMSStreamSource.VERSION_PARAMETER));
         Map<String,String> others = streamSource.getOthersQueryMap();
         assertTrue(others.containsKey("map"));
     }
@@ -120,10 +120,10 @@ public class StreamSourceTest {
                 + "&BGCOLOR=0x123456"
                 + "&ELEVATION=CRS:88"
                 + "EXCEPTIONS=xml");
-        StreamSource streamSource = new StreamSource(uri);
+        WMSStreamSource streamSource = new WMSStreamSource(uri);
         Map<String, String> queryMap = streamSource.getQueryMap();
         Map<String,String> others = streamSource.getOthersQueryMap();
-        for(String s : StreamSource.IGNORED_WMS_KEYS){
+        for(String s : WMSStreamSource.IGNORED_WMS_KEYS){
             assertFalse(queryMap.containsKey(s));
             assertFalse(others.containsKey(s));
         }

@@ -41,7 +41,7 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.exporter.ExportSourceDefinition;
 import org.gdms.data.importer.ImportSourceDefinition;
 import org.gdms.data.schema.Schema;
-import org.gdms.data.stream.StreamSource;
+import org.gdms.data.stream.WMSStreamSource;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
@@ -203,7 +203,7 @@ public interface SourceManager {
          * @param wmsSource source to register
          * @throws org.gdms.data.SourceAlreadyExistsException
          */
-        void register(String name, StreamSource wmsSource);
+        void register(String name, WMSStreamSource wmsSource);
 
         /**
          * Registers a memory object with the specified name.
@@ -285,7 +285,7 @@ public interface SourceManager {
          * @param streamSource
          * @return the name of the registered source
          */
-        String nameAndRegister(StreamSource streamSource);
+        String nameAndRegister(WMSStreamSource streamSource);
 
         /**
          * Registers generating the name automatically.

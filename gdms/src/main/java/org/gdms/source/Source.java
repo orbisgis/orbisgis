@@ -39,7 +39,7 @@ import java.net.URI;
 
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.db.DBSource;
-import org.gdms.data.stream.StreamSource;
+import org.gdms.data.stream.WMSStreamSource;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
 
@@ -238,7 +238,7 @@ public interface Source {
          *
          * @return
          */
-        StreamSource getStreamSource();
+        WMSStreamSource getStreamSource();
 
         /**
          * Gets the source of the object source. If this source is not a object

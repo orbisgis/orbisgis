@@ -48,7 +48,7 @@ import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.RTreeIndex;
 import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.sql.SQLSourceDefinition;
-import org.gdms.data.stream.StreamSource;
+import org.gdms.data.stream.WMSStreamSource;
 import org.gdms.data.stream.StreamSourceDefinition;
 import org.gdms.data.system.SystemSource;
 import org.gdms.data.system.SystemSourceDefinition;
@@ -424,7 +424,7 @@ public final class DataSourceFactory {
          * @throws DataSourceCreationException if the instance creation fails
          * @throws DriverException
          */
-        public DataSource getDataSource(StreamSource streamSource, int mode)
+        public DataSource getDataSource(WMSStreamSource streamSource, int mode)
                 throws DataSourceCreationException, DriverException {
                 return getDataSource(new StreamSourceDefinition(streamSource), mode,
                         new NullProgressMonitor());
@@ -472,7 +472,7 @@ public final class DataSourceFactory {
          * @throws DataSourceCreationException if the instance creation fails
          * @throws DriverException
          */
-        public DataSource getDataSource(StreamSource streamSource)
+        public DataSource getDataSource(WMSStreamSource streamSource)
                 throws DataSourceCreationException, DriverException {
                 return getDataSource(new StreamSourceDefinition(streamSource), DEFAULT,
                         new NullProgressMonitor());

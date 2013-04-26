@@ -47,7 +47,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SourceAlreadyExistsException;
-import org.gdms.data.stream.StreamSource;
+import org.gdms.data.stream.WMSStreamSource;
 import org.gdms.data.stream.StreamSourceDefinition;
 import org.gdms.driver.Driver;
 import org.gdms.driver.FileDriver;
@@ -506,7 +506,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                                         try{
                                             URI streamUri = new URI(origin.getScheme(), origin.getUserInfo(),origin.getHost(), origin.getPort(),
                                                 origin.getPath(), url.toString(), origin.getFragment());
-                                            StreamSource wmsSource = new StreamSource(streamUri);
+                                            WMSStreamSource wmsSource = new WMSStreamSource(streamUri);
                                             StreamSourceDefinition streamSourceDefinition = new StreamSourceDefinition(wmsSource);
                                             sm.register(uniqueLayerName, streamSourceDefinition);
                                         } catch (UnsupportedEncodingException uee){
