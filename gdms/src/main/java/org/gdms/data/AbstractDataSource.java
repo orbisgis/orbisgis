@@ -395,20 +395,35 @@ public abstract class AbstractDataSource extends AbstractDataSet implements Data
 
         @Override
         public boolean isVectorial() throws DriverException {
-                Type fieldType = getMetadata().getFieldType(getSpatialFieldIndex());
-                return (fieldType.getTypeCode() & Type.GEOMETRY) != 0;
+                int spatialFieldIndex = getSpatialFieldIndex();
+                if(spatialFieldIndex!=-1) {
+                    Type fieldType = getMetadata().getFieldType(spatialFieldIndex);
+                    return (fieldType.getTypeCode() & Type.GEOMETRY) != 0;
+                } else {
+                    return false;
+                }
         }
 
         @Override
         public boolean isRaster() throws DriverException {
-                Type fieldType = getMetadata().getFieldType(getSpatialFieldIndex());
-                return fieldType.getTypeCode() == Type.RASTER;
+                int spatialFieldIndex = getSpatialFieldIndex();
+                if(spatialFieldIndex!=-1) {
+                    Type fieldType = getMetadata().getFieldType(spatialFieldIndex);
+                    return fieldType.getTypeCode() == Type.RASTER;
+                } else {
+                    return false;
+                }
         }
         
         @Override
         public boolean isStream() throws DriverException {
-                Type fieldType = getMetadata().getFieldType(getSpatialFieldIndex());
-                return fieldType.getTypeCode() == Type.STREAM;
+                int spatialFieldIndex = getSpatialFieldIndex();
+                if(spatialFieldIndex!=-1) {
+                    Type fieldType = getMetadata().getFieldType(spatialFieldIndex);
+                    return fieldType.getTypeCode() == Type.STREAM;
+                } else {
+                    return false;
+                }
         }
 
         @Override
