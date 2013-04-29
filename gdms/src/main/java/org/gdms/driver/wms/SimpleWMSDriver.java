@@ -49,7 +49,9 @@ import com.vividsolutions.wms.MapLayer;
 import com.vividsolutions.wms.MapRequest;
 import com.vividsolutions.wms.WMService;
 import java.util.ArrayList;
+import java.util.Map;
 import org.apache.log4j.Logger;
+import org.gdms.data.stream.WMSStreamSource;
 import org.gdms.data.values.*;
 import org.orbisgis.progress.ProgressMonitor;
 
@@ -60,7 +62,6 @@ import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.stream.DefaultGeoStream;
 import org.gdms.data.stream.GeoStream;
-import org.gdms.data.stream.StreamSource;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.driver.AbstractDataSet;
@@ -79,7 +80,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 /**
  * A driver that accesses a WMS stream.
  * 
- * This can be used to open and access a source described by a {@link StreamSource } whose
+ * This can be used to open and access a source described by a {@link org.gdms.data.stream.WMSStreamSource } whose
  * StreamType is "wms".
  * 
  * @author Antoine Gourlay
@@ -109,7 +110,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
         }
 
         @Override
-        public void open(StreamSource streamSource) throws DriverException {
+        public void open(WMSStreamSource streamSource) throws DriverException {
                 LOG.trace("Opening WMS Stream");
                 try {
                         //Initialise the WMSClient and get the capabilities
@@ -118,11 +119,12 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                         sb.append("://");
                         sb.append(streamSource.getHost());
                         sb.append(streamSource.getPath());
-                        String streamURL = sb.toString();
-                        if(!(streamURL.charAt(streamURL.length()-1) == '?')){
-                            sb.append("?");
-                            streamURL = sb.toString();
+                        sb.append("?");
+                        Map<String,String> others = streamSource.getOthersQueryMap();
+                        for(Map.Entry<String,String> entry : others.entrySet()){
+                            sb.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
                         }
+                        String streamURL = sb.toString();
                         wmsClient = new WMService(streamURL);
                         wmsClient.initialize();
                         cap = wmsClient.getCapabilities();
@@ -133,7 +135,8 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
 
                         //Create the GeoStream object
                         geoStream = new DefaultGeoStream(this, streamSource, 
-                                new Envelope(bbox.getMinX(), bbox.getMaxX(), bbox.getMinY(), bbox.getMaxY()));
+                                new Envelope(bbox.getWestBound(), bbox.getEastBound(),
+                                    bbox.getSouthBound(), bbox.getNorthBound()));
                 } catch (ConnectException e) {
                         throw new DriverException(e);
                 } catch (IOException e) {
@@ -164,12 +167,12 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                 }
                 
                 try {
-                        StreamSource streamSource = geoStream.getStreamSource();
+                        WMSStreamSource streamSource = geoStream.getStreamSource();
                         MapRequest mr = new MapRequest(wmsClient);
                         mr.setVersion(wmsClient.getVersion());
                         List<String> layers = new ArrayList<String>(1);
                         layers.add(mapLayer.getName());
-                        mr.setLayers(layers);
+                        mr.setLayerNames(layers);
                         MapImageFormatChooser mifc = new MapImageFormatChooser(wmsClient.getVersion());
                         mr.setFormat(mifc.chooseFormat(cap.getMapFormats()));
                         BoundingBox bb = new BoundingBox(streamSource.getSRS(), extent.getMinX(),
@@ -222,7 +225,8 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                     } else {
                         original = layer.getLatLonBoundingBox();
                     }
-                    Envelope env = new Envelope(original.getMinX(), original.getMaxX(), original.getMinY(), original.getMaxY());
+                    Envelope env = new Envelope(bbox.getWestBound(), bbox.getEastBound(),
+                                    bbox.getSouthBound(), bbox.getNorthBound());
                     String originalSrs = original.getSRS();
                     GeometryFactory gf = new GeometryFactory();
                     Polygon poly = (Polygon) gf.toGeometry(env);

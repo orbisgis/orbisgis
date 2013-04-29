@@ -51,7 +51,7 @@ public final class DefaultGeoStream implements GeoStream {
 
         private Envelope envelope;
         private StreamDriver streamDriver;
-        private StreamSource streamSource;
+        private WMSStreamSource streamSource;
 
         /**
          * Creates a new GeoStream over the given source and controlled by the specified driver.
@@ -60,7 +60,7 @@ public final class DefaultGeoStream implements GeoStream {
          * @param source the stream source this GeoStream accesses
          * @param env the full extend of the data behind this stream
          */
-        public DefaultGeoStream(StreamDriver driver, StreamSource source, Envelope env) {
+        public DefaultGeoStream(StreamDriver driver, WMSStreamSource source, Envelope env) {
                 streamDriver = driver;
                 streamSource = source;
                 envelope = env;
@@ -83,7 +83,7 @@ public final class DefaultGeoStream implements GeoStream {
          * @return the source of the Stream
          */
         @Override
-        public StreamSource getStreamSource() {
+        public WMSStreamSource getStreamSource() {
                 return this.streamSource;
         }
 }

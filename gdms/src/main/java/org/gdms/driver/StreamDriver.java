@@ -38,7 +38,7 @@ import java.awt.Image;
 import com.vividsolutions.jts.geom.Envelope;
 import org.orbisgis.progress.ProgressMonitor;
 
-import org.gdms.data.stream.StreamSource;
+import org.gdms.data.stream.WMSStreamSource;
 
 /**
  * A driver that manages a stream.
@@ -57,7 +57,7 @@ public interface StreamDriver extends Driver {
          * @param streamSource the stream source to open.
          * @throws DriverException
          */
-        void open(StreamSource streamSource) throws DriverException;
+        void open(WMSStreamSource streamSource) throws DriverException;
 
         /**
          * Closes the stream being accessed.

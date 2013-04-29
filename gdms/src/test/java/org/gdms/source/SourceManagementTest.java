@@ -49,7 +49,7 @@ import org.gdms.data.edition.FakeFileSourceDefinition;
 import org.gdms.data.edition.ReadAndWriteDriver;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.memory.MemorySourceDefinition;
-import org.gdms.data.stream.StreamSource;
+import org.gdms.data.stream.WMSStreamSource;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
@@ -69,7 +69,7 @@ public class SourceManagementTest extends TestBase {
         private static final String SOURCEMOD = "sourcd";
         private File testFile;
         private DBSource testDB;
-        private StreamSource testWMS;
+        private WMSStreamSource testWMS;
         private MemoryDataSetDriver obj;
         private String sql = "select count(*) from myfile;";
 
@@ -691,7 +691,7 @@ public class SourceManagementTest extends TestBase {
                 testFile = new File(TestResourceHandler.OTHERRESOURCES, "test.csv");
                 testDB = new DBSource(null, 0, TestResourceHandler.OTHERRESOURCES
                         + "testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
-                testWMS = new StreamSource("http","127.0.0.1", 80,"", "cantons", "wms", "format/pig", "EPSG:1234","1.3.0");
+                testWMS = new WMSStreamSource(new URI("http://127.0.0.1:80/?LAYERS=cantons&SERVICE=WMS&FORMAT=image/png&CRS=EPSG:1234&VERSION=1.3.0"));
                 obj = new MemoryDataSetDriver();
         }
 }

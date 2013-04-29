@@ -1,0 +1,200 @@
+<?xml version='1.0' encoding="ISO-8859-1" standalone="no" ?>
+<WMS_Capabilities version="1.3.0"  xmlns="http://www.opengis.net/wms"   xmlns:sld="http://www.opengis.net/sld"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"   xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd  http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd  http://mapserver.gis.umn.edu/mapserver http://dummy.org/wms?service=WMS&amp;version=1.3.0&amp;request=GetSchemaExtension">
+	<Service>
+		<Name>WMS</Name>
+		<Title>Test capabilities</Title>
+		<Abstract>Test Capabilities document</Abstract>
+	</Service>
+
+	<Capability>
+		<Request>
+			<GetCapabilities>
+				<Format>text/xml</Format>
+				<DCPType>
+					<HTTP>
+						<Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://dummy.org/wms?"/></Get>
+						<Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://dummy.org/wms?"/></Post>
+					</HTTP>
+				</DCPType>
+			</GetCapabilities>
+			<GetMap>
+				<Format>image/png</Format>
+				<Format>image/gif</Format>
+				<Format>image/jpeg</Format>
+				<Format>image/png; mode=24bit</Format>
+				<Format>image/vnd.wap.wbmp</Format>
+				<Format>image/tiff</Format>
+				<Format>image/svg+xml</Format>
+				<DCPType>
+					<HTTP>
+						<Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://dummy.org/wms?"/></Get>
+						<Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://dummy.org/wms?"/></Post>
+					</HTTP>
+				</DCPType>
+			</GetMap>
+			<GetFeatureInfo>
+				<Format>text/plain</Format>
+				<Format>application/vnd.ogc.gml</Format>
+				<DCPType>
+					<HTTP>
+						<Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://dummy.org/wms?"/></Get>
+						<Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://dummy.org/wms?"/></Post>
+					</HTTP>
+				</DCPType>
+			</GetFeatureInfo>
+			<sld:DescribeLayer>
+				<Format>text/xml</Format>
+				<DCPType>
+					<HTTP>
+						<Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://dummy.org/wms?"/></Get>
+						<Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://dummy.org/wms?"/></Post>
+					</HTTP>
+				</DCPType>
+			</sld:DescribeLayer>
+			<sld:GetLegendGraphic>
+				<Format>image/png</Format>
+				<Format>image/gif</Format>
+				<Format>image/jpeg</Format>
+				<Format>image/png; mode=24bit</Format>
+				<Format>image/vnd.wap.wbmp</Format>
+				<DCPType>
+					<HTTP>
+						<Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://dummy.org/wms?"/></Get>
+						<Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://dummy.org/wms?"/></Post>
+					</HTTP>
+				</DCPType>
+			</sld:GetLegendGraphic>
+			<ms:GetStyles>
+				<Format>text/xml</Format>
+				<DCPType>
+					<HTTP>
+						<Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://dummy.org/wms?"/></Get>
+						<Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://dummy.org/wms?"/></Post>
+					</HTTP>
+				</DCPType>
+			</ms:GetStyles>
+		</Request>
+		<Exception>
+			<Format>XML</Format>
+			<Format>INIMAGE</Format>
+			<Format>BLANK</Format>
+		</Exception>
+		<sld:UserDefinedSymbolization SupportSLD="1" UserLayer="0" UserStyle="1" RemoteWFS="0" InlineFeature="0" RemoteWCS="0"/>
+		<Layer>
+			<Name>top</Name>
+			<Title>TopLayer</Title>
+			<CRS>EPSG:42304</CRS>
+			<CRS>EPSG:42101</CRS>
+			<CRS>EPSG:4269</CRS>
+			<CRS>EPSG:4326</CRS>
+			<CRS>EPSG:2294</CRS>
+			<CRS>EPSG:2295</CRS>
+			<CRS>EPSG:26922</CRS>
+			<CRS>EPSG:26921</CRS>
+			<CRS>EPSG:26920</CRS>
+			<CRS>EPSG:26919</CRS>
+			<CRS>EPSG:26918</CRS>
+			<CRS>EPSG:26917</CRS>
+			<CRS>EPSG:26916</CRS>
+			<CRS>EPSG:26915</CRS>
+			<CRS>EPSG:26914</CRS>
+			<CRS>EPSG:26913</CRS>
+			<CRS>EPSG:26912</CRS>
+			<CRS>EPSG:26911</CRS>
+			<CRS>EPSG:26910</CRS>
+			<CRS>EPSG:26909</CRS>
+			<CRS>EPSG:26908</CRS>
+			<CRS>EPSG:26907</CRS>
+			<CRS>EPSG:26722</CRS>
+			<CRS>EPSG:26721</CRS>
+			<CRS>EPSG:26720</CRS>
+			<CRS>EPSG:26719</CRS>
+			<CRS>EPSG:26718</CRS>
+			<CRS>EPSG:26717</CRS>
+			<CRS>EPSG:26716</CRS>
+			<CRS>EPSG:26715</CRS>
+			<CRS>EPSG:26714</CRS>
+			<CRS>EPSG:26713</CRS>
+			<CRS>EPSG:26712</CRS>
+			<CRS>EPSG:26711</CRS>
+			<CRS>EPSG:26710</CRS>
+			<CRS>EPSG:26709</CRS>
+			<CRS>EPSG:26708</CRS>
+			<CRS>EPSG:26707</CRS>
+			<CRS>EPSG:2295</CRS>
+			<CRS>EPSG:2294</CRS>
+			<CRS>EPSG:54003</CRS>
+			<CRS>EPSG:54004</CRS>
+			<CRS>EPSG:54008</CRS>
+			<CRS>EPSG:54009</CRS>
+			<CRS>EPSG:54030</CRS>
+			<CRS>EPSG:102016</CRS>
+			<CRS>EPSG:102017</CRS>
+			<CRS>EPSG:102018</CRS>
+			<CRS>EPSG:102008</CRS>
+			<CRS>EPSG:102009</CRS>
+			<EX_GeographicBoundingBox>
+				<westBoundLongitude>-180</westBoundLongitude>
+				<eastBoundLongitude>180</eastBoundLongitude>
+				<southBoundLatitude>-90</southBoundLatitude>
+				<northBoundLatitude>90</northBoundLatitude>
+			</EX_GeographicBoundingBox>
+			<BoundingBox CRS="EPSG:4326"
+				minx="-90" miny="-180" maxx="90" maxy="180" />
+			<Layer>
+				<Name>monde</Name>
+				<Title>Monde</Title>
+				<Layer queryable="0" opaque="0" cascaded="0">
+					<Name>wld_ocean</Name>
+					<Title>Couche océanique</Title>
+					<Abstract>oceanique</Abstract>
+					<CRS>EPSG:4326</CRS>
+					<EX_GeographicBoundingBox>
+						<westBoundLongitude>-180</westBoundLongitude>
+						<eastBoundLongitude>180</eastBoundLongitude>
+						<southBoundLatitude>-90</southBoundLatitude>
+						<northBoundLatitude>90</northBoundLatitude>
+					</EX_GeographicBoundingBox>
+					<BoundingBox CRS="EPSG:4326"
+						minx="-90" miny="-180" maxx="90" maxy="180" />
+				</Layer>
+				<Layer queryable="0" opaque="0" cascaded="0">
+					<Name>wld_land</Name>
+					<Title>continent</Title>
+					<Abstract>Surface continentale du monde.</Abstract>
+					<CRS>EPSG:4326</CRS>
+					<EX_GeographicBoundingBox>
+						<westBoundLongitude>-180</westBoundLongitude>
+						<eastBoundLongitude>180</eastBoundLongitude>
+						<southBoundLatitude>-90</southBoundLatitude>
+						<northBoundLatitude>83.8264</northBoundLatitude>
+					</EX_GeographicBoundingBox>
+					<BoundingBox CRS="EPSG:4326"
+						minx="-90" miny="-180" maxx="83.8264" maxy="180" />
+				</Layer>
+				<Layer queryable="0" opaque="0" cascaded="0">
+					<Name>plans</Name>
+					<Title>Plans</Title>
+					<Abstract>oceans</Abstract>
+					<CRS>EPSG:42304</CRS>
+					<EX_GeographicBoundingBox>
+						<westBoundLongitude>-178.838</westBoundLongitude>
+						<eastBoundLongitude>179.94</eastBoundLongitude>
+						<southBoundLatitude>31.8844</southBoundLatitude>
+						<northBoundLatitude>89.8254</northBoundLatitude>
+					</EX_GeographicBoundingBox>
+					<BoundingBox CRS="EPSG:42304"
+						minx="-2.75056e+06" miny="-936639" maxx="3.58387e+06" maxy="4.67312e+06" />
+					<Style>
+						<Name>default</Name>
+						<Title>default</Title>
+						<LegendURL width="315" height="30">
+							<Format>image/png</Format>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://dummy.org/wms?version=1.3.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;sld_version=1.1.0&amp;layer=plans&amp;format=image/png&amp;STYLE=default"/>
+						</LegendURL>
+					</Style>
+				</Layer>
+			</Layer>
+		</Layer>
+	</Capability>
+</WMS_Capabilities>

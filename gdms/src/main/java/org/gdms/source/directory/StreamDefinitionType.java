@@ -40,7 +40,6 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 import org.gdms.data.DataSourceDefinition;
-import org.gdms.data.stream.StreamSource;
 import org.gdms.data.stream.StreamSourceDefinition;
 
 import java.io.UnsupportedEncodingException;

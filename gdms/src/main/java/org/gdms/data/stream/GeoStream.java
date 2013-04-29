@@ -67,5 +67,5 @@ public interface GeoStream {
          /**
           * @return the source of this stream
           */
-         StreamSource getStreamSource();
+         WMSStreamSource getStreamSource();
 }
