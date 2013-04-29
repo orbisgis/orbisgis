@@ -323,7 +323,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
         public MapLayer getMapLayer(String host) throws ConnectException,
                 IOException {
                 if (client == null) {
-                        WMService wmsClient = new WMService(host);
+                        WMService wmsClient = new WMService(host, WMService.WMS_1_1_1);
                         client = wmsClient.getCapabilities().getTopLayer();
                         return client;
                 }
@@ -364,10 +364,10 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
                         String wmsURL = originalWmsURL.trim();
                         try {
                                 if (service == null) {
-                                        service = new WMService(wmsURL);
+                                        service = new WMService(wmsURL, WMService.WMS_1_1_1);
                                 } else {
                                         if (!service.getServerUrl().equals(wmsURL)) {
-                                                service = new WMService(wmsURL);
+                                                service = new WMService(wmsURL, WMService.WMS_1_1_1);
                                         }
                                 }
                                 service.initialize();

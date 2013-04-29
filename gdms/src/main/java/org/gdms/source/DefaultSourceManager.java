@@ -58,7 +58,7 @@ import org.gdms.data.memory.MemorySourceCreation;
 import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.schema.*;
 import org.gdms.data.sql.SQLSourceDefinition;
-import org.gdms.data.stream.StreamSource;
+import org.gdms.data.stream.WMSStreamSource;
 import org.gdms.data.stream.StreamSourceDefinition;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.Driver;
@@ -408,7 +408,7 @@ public final class DefaultSourceManager implements SourceManager {
                         }
                 } else if (scheme.startsWith("http")) {
                         try {
-                            StreamSource source = new StreamSource(uri);
+                            WMSStreamSource source = new WMSStreamSource(uri);
                             register(name, wellKnown, new StreamSourceDefinition(source));
                         } catch (UnsupportedEncodingException ex) {
                             LOG.error("Fail to register source "+uri.toString(),ex);
@@ -461,7 +461,7 @@ public final class DefaultSourceManager implements SourceManager {
         }
 
         @Override
-        public void register(String name, StreamSource streamSource) {
+        public void register(String name, WMSStreamSource streamSource) {
                 register(name, new StreamSourceDefinition(streamSource));
         }
 
@@ -663,7 +663,7 @@ public final class DefaultSourceManager implements SourceManager {
         }
 
         @Override
-        public String nameAndRegister(StreamSource streamSource) {
+        public String nameAndRegister(WMSStreamSource streamSource) {
                 String name = getUID();
                 register(name, false, new StreamSourceDefinition(streamSource));
                 return name;
@@ -1293,7 +1293,7 @@ public final class DefaultSourceManager implements SourceManager {
                         return new FileSourceDefinition(new File(uri), DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                 } else if (scheme.startsWith("http")) {
                         try {
-                            StreamSource source = new StreamSource(uri);
+                            WMSStreamSource source = new WMSStreamSource(uri);
                             return new StreamSourceDefinition(source);
                         } catch (UnsupportedEncodingException ex) {
                             throw new UnsupportedOperationException("Fail to register source "+uri.toString(),ex);

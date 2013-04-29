@@ -50,7 +50,7 @@ import org.gdms.source.Source;
 public final class StreamDataSourceAdapter extends DriverDataSource {
 
         private StreamDriver driver;
-        private StreamSource def;
+        private WMSStreamSource def;
 
         /**
          * Creates a new StreamDataSourceAdapter.
@@ -59,7 +59,7 @@ public final class StreamDataSourceAdapter extends DriverDataSource {
          * @param def the stream info
          * @param driver the stream driver
          */
-        public StreamDataSourceAdapter(Source src, StreamSource def, StreamDriver driver) {
+        public StreamDataSourceAdapter(Source src, WMSStreamSource def, StreamDriver driver) {
                 super(src);
                 this.def = def;
                 this.driver = driver;

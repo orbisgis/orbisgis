@@ -52,7 +52,7 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.memory.MemorySourceDefinition;
-import org.gdms.data.stream.StreamSource;
+import org.gdms.data.stream.WMSStreamSource;
 import org.gdms.data.stream.StreamSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
@@ -492,7 +492,7 @@ final class ExtendedSource implements org.gdms.source.Source {
         }
 
         @Override
-        public StreamSource getStreamSource() {
+        public WMSStreamSource getStreamSource() {
                 if (def instanceof StreamSourceDefinition) {
                         return ((StreamSourceDefinition) def).getStreamSource();
                 }

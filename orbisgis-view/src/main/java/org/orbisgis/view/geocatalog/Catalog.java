@@ -37,7 +37,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -45,7 +47,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SourceAlreadyExistsException;
-import org.gdms.data.stream.StreamSource;
+import org.gdms.data.stream.WMSStreamSource;
 import org.gdms.data.stream.StreamSourceDefinition;
 import org.gdms.driver.Driver;
 import org.gdms.driver.FileDriver;
@@ -488,18 +490,30 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                                         if (sm.exists(layerName)) {
                                                 uniqueLayerName = sm.getUniqueName(layerName);
                                         }
-                                        URI streamUri = URI.create(service.getServerUrl());
-                                        StreamSource wmsSource = new StreamSource(streamUri.getScheme(),
-                                                streamUri.getHost(),
-                                                streamUri.getPort(),
-                                                streamUri.getPath(),
-                                                layerName,
-                                                "wms",
-                                                validImageFormat,
-                                                srsPanel.getSRS(),
-                                                service.getVersion());
-                                        StreamSourceDefinition streamSourceDefinition = new StreamSourceDefinition(wmsSource);
-                                        sm.register(uniqueLayerName, streamSourceDefinition);
+                                        URI origin = URI.create(service.getServerUrl());
+                                        StringBuilder url = new StringBuilder(origin.getQuery());
+                                        url.append("SERVICE=WMS&REQUEST=GetMap");
+                                        String version = service.getVersion();
+                                        url.append("&VERSION=").append(version);
+                                        if(WMService.WMS_1_3_0.equals(version)){
+                                            url.append("&CRS=");
+                                        } else {
+                                            url.append("&SRS=");
+                                        }
+                                        url.append(srsPanel.getSRS());
+                                        url.append("&LAYERS=").append(layerName);
+                                        url.append("&FORMAT=").append(validImageFormat);
+                                        try{
+                                            URI streamUri = new URI(origin.getScheme(), origin.getUserInfo(),origin.getHost(), origin.getPort(),
+                                                origin.getPath(), url.toString(), origin.getFragment());
+                                            WMSStreamSource wmsSource = new WMSStreamSource(streamUri);
+                                            StreamSourceDefinition streamSourceDefinition = new StreamSourceDefinition(wmsSource);
+                                            sm.register(uniqueLayerName, streamSourceDefinition);
+                                        } catch (UnsupportedEncodingException uee){
+                                            LOGGER.error(I18N.tr("Can't read the given URI: "+uee.getCause()));
+                                        } catch (URISyntaxException use){
+                                            LOGGER.error(I18N.tr("The given URI contains illegal character"),use);
+                                        }
                                 }
                         }
                 }
