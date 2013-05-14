@@ -47,7 +47,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * This is for example needed to generate  choropleth maps from continuous attributes".</p>
  * <p>A <code>Categorize</code> instance is built from many objects : 
  * <ul>
- * <li>A <code>RealParameter</code> used to retrieve the value to calssify</li>
+ * <li>A <code>RealParameter</code> used to retrieve the value to classify</li>
  * <li>A fallback value, whose type (<code>FallBackType</code>) is compatible with
  *      the values of the classes.</li>
  * <li>The list of class values</li>
@@ -79,7 +79,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     private boolean succeeding = true;
     /**
      * Gives the ability to retrieve the value that needs to be classified. The 
-     * RealParameter embeded all the needed informations (particularly the name of
+     * RealParameter embeds all the needed information (particularly the name of
      * the column where to search).
      */
     private RealParameter lookupValue;
@@ -121,15 +121,15 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      */
     public Categorize(ToType firstClassValue, FallbackType fallbackValue, RealParameter lookupValue) {
         this();
-        setClassValue(0, firstClassValue);
+        setValue(0, firstClassValue);
         setFallbackValue(fallbackValue);
         setLookupValue(lookupValue);
         this.method = CategorizeMethod.MANUAL;
     }
 
     /**
-     * Set the fall bacj value that is returned when a value can't be processed.
-     * @param fallbackValue 
+     * Set the fall back value that is returned when a value can't be processed.
+     * @param fallbackValue The new fall back value used when we can't find a value for a given input.
      */
     public void setFallbackValue(FallbackType fallbackValue) {
         this.fallbackValue = fallbackValue;
@@ -140,7 +140,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
     /**
      * Get the value that is returned when an input can't be processed.
-     * @return 
+     * @return The value used when we can't find a value for a given input.
      */
     public final FallbackType getFallbackValue() {
         return fallbackValue;
@@ -149,7 +149,10 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     /**
      * Set the lookup value. After using this methods, attributes to be processed in this
      * categorization will be retrieved using <code>lookupValue</code>
-     * @param lookupValue 
+     * @param lookupValue The RealParameter that will build the value used to get a mapping from this categorize. It is
+     *                    a generic RealParameter so that complex operation can be performed before getting the literal
+     *                    from the mapping. Note that the Categorize operation does not have much sense if the
+     *                    RealParameter given here does not contain a RealAttribute.
      */
     public final void setLookupValue(RealParameter lookupValue) {
         this.lookupValue = lookupValue;
@@ -161,14 +164,14 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
     /**
      * Get the current lookup value.
-     * @return 
+     * @return The RealParameter that builds the input given to the inner Double -> ToType mapping.
      */
     public final RealParameter getLookupValue() {
         return lookupValue;
     }
 
     /**
-     * Return the number of classes defined within the classification. According to this number (n),
+     * Return the number n of classes defined within the classification. According to this number (n),
      *  available class IDs are [0;n] and IDs for threshold are [0;n-1]
      *
      *  @return number of defined class
@@ -180,10 +183,10 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     /**
      * the new class begin from the specified threshold, up to the next one.
      * The class is inserted at the right place
-     * @param threshold
-     * @param value
+     * @param threshold The new threshold
+     * @param value The new value
      */
-    public void addClass(RealLiteral threshold, ToType value) {
+    public void put(RealLiteral threshold, ToType value) {
         thresholds.add(threshold);
         threshold.setContext(RealParameterContext.REAL_CONTEXT);
         threshold.register(this);
@@ -198,7 +201,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param i
      * @return 
      */
-    public boolean removeClass(int i) {
+    public boolean remove(int i) {
         if (getNumClasses() > 1 && i < getNumClasses() && i >= 0) {
                 if (i == 0) {
                     // when the first class is removed, the second one takes its place.
@@ -220,7 +223,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param i
      * @return 
      */
-    public ToType getClassValue(int i) {
+    public ToType get(int i) {
         if (i == 0) {
             return firstClass;
         } else {
@@ -233,7 +236,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param i
      * @param val 
      */
-    public void setClassValue(int i, ToType val) {
+    public void setValue(int i, ToType val) {
         int n = i;
         if (n == 0) {
             firstClass = val;
@@ -251,7 +254,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param i
      * @param threshold 
      */
-    public void setClassThreshold(int i, RealLiteral threshold) {
+    public void setThreshold(int i, RealLiteral threshold) {
         if (i >= 0 && i < getNumClasses() - 1) {
             RealParameter remove = thresholds.get(i);
             thresholds.set(i, threshold);
@@ -275,7 +278,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param i
      * @return 
      */
-    public RealParameter getClassThreshold(int i) {
+    public RealParameter getThreshold(int i) {
         return thresholds.get(i);
     }
 
@@ -324,7 +327,8 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     /**
      * Retrieves the value associated to the input data corresponding to the
      * lookupValue in {@code sds} at line {@code fid}.
-     * @param map
+     * @param sds
+     * @param fid
      * @return
      */
     protected ToType getParameter(DataSet sds, long fid) {

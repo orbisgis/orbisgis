@@ -70,12 +70,12 @@ public abstract class AbstractLiteralValidator extends AbstractAnalyzer implemen
          */
         @Override
         public boolean validateCategorize(Categorize cg){
-                if(!(cg.getClassValue(0) instanceof Literal)){
+                if(!(cg.get(0) instanceof Literal)){
                         return false;
                 }
                 for(int i=1; i<cg.getNumClasses();i++){
-                        if (!((cg.getClassValue(i) instanceof Literal)
-                                && (cg.getClassThreshold(i-1) instanceof Literal))) {
+                        if (!((cg.get(i) instanceof Literal)
+                                && (cg.getThreshold(i-1) instanceof Literal))) {
                                 return false;
                         }
                 }

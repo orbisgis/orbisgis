@@ -81,13 +81,13 @@ public final class Categorize2String extends Categorize<StringParameter, StringL
 
         Iterator<Object> it = t.getThresholdAndValue().iterator();
 
-        this.setClassValue(0, SeParameterFactory.createStringParameter((ParameterValueType)it.next()));
+        this.setValue(0, SeParameterFactory.createStringParameter((ParameterValueType)it.next()));
 
         // Fetch class values and thresholds
         while (it.hasNext()) {
             RealLiteral th = new RealLiteral((LiteralType)(it.next()));
             StringParameter vl = SeParameterFactory.createStringParameter((ParameterValueType)it.next());
-            this.addClass(th,vl);
+            this.put(th, vl);
         }
 
         if (t.getThresholdBelongsTo() == ThresholdBelongsToType.PRECEDING) {
@@ -117,8 +117,8 @@ public final class Categorize2String extends Categorize<StringParameter, StringL
     }
 
     @Override
-    public void addClass(RealLiteral th, StringParameter value){
-        super.addClass(th, value);
+    public void put(RealLiteral th, StringParameter value){
+        super.put(th, value);
         value.setRestrictionTo(restriction);
     }
 
@@ -126,7 +126,7 @@ public final class Categorize2String extends Categorize<StringParameter, StringL
     public void setRestrictionTo(String[] list) {
         restriction = list.clone();
         for (int i=0;i<this.getNumClasses();i++){
-            getClassValue(i).setRestrictionTo(list);
+            get(i).setRestrictionTo(list);
         }
     }
 }

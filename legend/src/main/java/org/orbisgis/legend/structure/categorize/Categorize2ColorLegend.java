@@ -94,7 +94,7 @@ public class Categorize2ColorLegend implements ParameterLegend {
          * @return
          */
         public Color getColor(int i) {
-            ColorLiteral cl = (ColorLiteral)c2c.getClassValue(i);
+            ColorLiteral cl = (ColorLiteral)c2c.get(i);
             return cl.getColor(null, -1);
         }
 
@@ -102,11 +102,11 @@ public class Categorize2ColorLegend implements ParameterLegend {
          * Set the {@code Color} that is returned for input values that are inferior
          * to the first threshold.
          * @param i
-         * The index of the class we want to set the {@code Color}.
+         * The index of the class we want to setValue the {@code Color}.
          * @param col
          */
         public void setColor(int i, Color col) {
-            ColorLiteral cl = (ColorLiteral)c2c.getClassValue(i);
+            ColorLiteral cl = (ColorLiteral)c2c.get(i);
             cl.setColor(col);
         }
 
@@ -124,7 +124,7 @@ public class Categorize2ColorLegend implements ParameterLegend {
          * @return
          */
         public double getThreshold(int i) {
-            RealLiteral rl = (RealLiteral) c2c.getClassThreshold(i);
+            RealLiteral rl = (RealLiteral) c2c.getThreshold(i);
             return rl .getValue(null, 0);
         }
 
@@ -134,7 +134,7 @@ public class Categorize2ColorLegend implements ParameterLegend {
          * @param d
          */
         public void setThreshold(int i, double d) {
-            RealLiteral rl = (RealLiteral) c2c.getClassThreshold(i);
+            RealLiteral rl = (RealLiteral) c2c.getThreshold(i);
             rl.setValue(d);
         }
 
@@ -146,7 +146,7 @@ public class Categorize2ColorLegend implements ParameterLegend {
         public void addClass(double threshold, Color col) {
             ColorLiteral value = new ColorLiteral(col);
             RealLiteral thres = new RealLiteral(threshold);
-            c2c.addClass(thres, value);
+            c2c.put(thres, value);
         }
 
         /**
@@ -154,7 +154,7 @@ public class Categorize2ColorLegend implements ParameterLegend {
          * @param i
          */
         public void removeClass(int i) {
-            c2c.removeClass(i);
+            c2c.remove(i);
         }
 
 }
