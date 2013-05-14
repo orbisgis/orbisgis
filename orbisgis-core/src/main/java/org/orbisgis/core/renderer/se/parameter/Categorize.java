@@ -57,7 +57,33 @@ import org.xnap.commons.i18n.I18nFactory;
  * <p>To build a categorization with n intervals, (n-1) thresholds are needed. The
  * first interval ranges from <i>-Infinity</i> to the first threshold.</p>
  * <p>It is also possible to determine whether the threshold values are associated to their 
- * preceding or succeeding interval.
+ * preceding or succeeding interval.</p>
+ * <p>
+ *     This class can be seen as a mapping between the lower limit of the interval and the value
+ *     associated to the interval. That means we have a map looking like this :
+ *     <ul>
+ *         <li> -INF -> val0</li>
+ *         <li>threshold0 -> val1 </li>
+ *         <li>threshold1 -> val2 </li>
+ *         <li>threshold2 -> val3 </li>
+ *         <li>threshold3 -> val4 </li>
+ *         <li>...</li>
+ *     </ul>
+ *     In this example, val0 will be returned for input between negative infinity and threshold0, val1 for input values
+ *     between threshold0 and threshold1. The value associated to the greatest threshold is used for input between
+ *     this particular threshold and positive infinity.
+ * </p>
+ * <p>
+ *     This mapping tries to behave consistently with the Map API (even if it is way more simpler). There are some
+ *     really important differences, though.
+ *     <ul>
+ *         <li>If the mapping is not empty, there shall be a value associated to -INF</li>
+ *         <li>If the mapping ahs more than one element, performing a remove(0) removes the first value and the lowest
+ *             threshold that is greater than negative infinity. In the previous example, we would obtain
+ *             -INF -> val1 as the first mapping after calling remove(0).</li>
+ *         <lI></lI>
+ *     </ul>
+ * </p>
  * @param <ToType> One of ColorParameter, RealParameter, StringParameter
  * @param <FallbackType> the Literal implementation of <ToType>. It is needed to store 
  * a default value, when an analyzed input can't be placed in any category.
