@@ -198,8 +198,9 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
     /**
      * Remove class number i in the categorization.
-     * @param i
-     * @return 
+     * @param i  The range of the class. A value of 0 will remove the the lowest threshold greater than negative infinity
+     * and the class value between negative infinity and this threshold.
+     * @return true if the class has been removed.
      */
     public boolean remove(int i) {
         if (getNumClasses() > 1 && i < getNumClasses() && i >= 0) {
@@ -219,9 +220,10 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     }
 
     /**
-     * Gets the value associated to class number i.
-     * @param i
-     * @return 
+     * Gets the class value used for input that lies between thresholds i and i+1, where threshold 0 is negative
+     * infinity.
+     * @param i The index of the class value we want to retrieve
+     * @return The class value between thresholds i and i+1
      */
     public ToType get(int i) {
         if (i == 0) {
@@ -232,9 +234,10 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     }
 
     /**
-     * Sets the value associated to class number i (if any) to <code>val</code>.
-     * @param i
-     * @param val 
+     * Sets the value associated to the interval between thresholds i and i+1 (if any) to <code>val</code>,  where
+     * threshold 0 is negative infinity.
+     * @param i The index of the class value we want to retrieve
+     * @param val The new class value
      */
     public void setValue(int i, ToType val) {
         int n = i;
