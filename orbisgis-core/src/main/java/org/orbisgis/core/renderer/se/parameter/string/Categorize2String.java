@@ -80,8 +80,7 @@ public final class Categorize2String extends Categorize<StringParameter, StringL
 
 
         Iterator<Object> it = t.getThresholdAndValue().iterator();
-
-        this.setValue(0, SeParameterFactory.createStringParameter((ParameterValueType)it.next()));
+        this.put(new RealLiteral(Double.NEGATIVE_INFINITY), SeParameterFactory.createStringParameter((ParameterValueType)it.next()));
 
         // Fetch class values and thresholds
         while (it.hasNext()) {

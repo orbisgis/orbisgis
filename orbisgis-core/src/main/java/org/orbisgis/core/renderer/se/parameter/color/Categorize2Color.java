@@ -79,9 +79,7 @@ public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> i
         this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
 
         Iterator<Object> it = t.getThresholdAndValue().iterator();
-
-
-        this.setValue(0, SeParameterFactory.createColorParameter((ParameterValueType)it.next()));
+        this.put(new RealLiteral(Double.NEGATIVE_INFINITY), SeParameterFactory.createColorParameter((ParameterValueType)it.next()));
 
         // Fetch class values and thresholds
         while (it.hasNext()) {
