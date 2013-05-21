@@ -300,9 +300,35 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     }
 
     /**
-     * Replace the ith threshold value with the parameter threshold.
-     * @param i
-     * @param threshold 
+     * <p>Replace the ith threshold value with the parameter threshold. This method takes care of keeping the good order
+     * of elements in the inner data structure. That means if we have a mapping like this :
+     * <ul>
+     *     <li>-INF -> v1</li>
+     *     <li> 1   -> v2</li>
+     *     <li> 3   -> v3</li>
+     *     <li> 4   -> v4</li>
+     *     <li> 5   -> v5</li>
+     * </ul>
+     * calling <code>setThreshold(1, 8)</code> will produce
+     * <ul>
+     *     <li>-INF -> v1</li>
+     *     <li> 3   -> v3</li>
+     *     <li> 4   -> v4</li>
+     *     <li> 5   -> v5</li>
+     *     <li> 8   -> v2</li>
+     * </ul>
+     * calling <code>setThreshold(0, 8)</code> will produce
+     * <ul>
+     *     <li>-INF -> v2</li>
+     *     <li> 3   -> v3</li>
+     *     <li> 4   -> v4</li>
+     *     <li> 5   -> v5</li>
+     *     <li> 8   -> v1</li>
+     * </ul>
+     * </p>
+     *
+     * @param i The index of the threshold we want to replace
+     * @param threshold The new threshold to be used.
      */
     public void setThreshold(int i, RealLiteral threshold) {
         if(i==0){
@@ -329,8 +355,8 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
     /**
      * Get the ith threshold value of this categorization.
-     * @param i
-     * @return 
+     * @param i The range of the needed threshold.
+     * @return The Threshold a s a RealLiteral.
      */
     public RealParameter getThreshold(int i) {
         return getKey(i);
@@ -385,9 +411,9 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     /**
      * Retrieves the value associated to the input data corresponding to the
      * lookupValue in {@code sds} at line {@code fid}.
-     * @param sds
-     * @param fid
-     * @return
+     * @param sds The original DataSet
+     * @param fid The line we'll read in the DataSet
+     * @return The value retrieved by this parameter in {@code sds} at line {fid}.
      */
     protected ToType getParameter(DataSet sds, long fid) {
         try {
