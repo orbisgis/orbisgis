@@ -211,20 +211,20 @@ public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
     public void testChoroGetThresholds() throws Exception {
         AreaSymbolizer ls = getChoroSymbolizer();
         ChoroplethArea ca = new ChoroplethArea(ls);
-        assertTrue(ca.getThreshold(0) == 70000.0);
-        assertTrue(ca.getThreshold(1) == 100000.0);
+        assertTrue(ca.getThreshold(1) == 70000.0);
+        assertTrue(ca.getThreshold(2) == 100000.0);
     }
 
     @Test
     public void testChoroSetThresholds() throws Exception {
         AreaSymbolizer ls = getChoroSymbolizer();
         ChoroplethArea ca = new ChoroplethArea(ls);
-        assertTrue(ca.getThreshold(0) == 70000.0);
-        ca.setThreshold(0, 25.3);
-        assertTrue(ca.getThreshold(0) == 25.3);
-        assertTrue(ca.getThreshold(1) == 100000.0);
-        ca.setThreshold(1, 25.4);
-        assertTrue(ca.getThreshold(1) == 25.4);
+        assertTrue(ca.getThreshold(1) == 70000.0);
+        ca.setThreshold(1, 25.3);
+        assertTrue(ca.getThreshold(1) == 25.3);
+        assertTrue(ca.getThreshold(2) == 100000.0);
+        ca.setThreshold(2, 25.4);
+        assertTrue(ca.getThreshold(2) == 25.4);
     }
 
     @Test
@@ -241,7 +241,7 @@ public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
         ca.addClass(2000000.5, Color.red);
         assertTrue(ca.getNumClass() == 4);
         assertTrue(ca.getColor(3).equals(Color.red));
-        assertTrue(ca.getThreshold(2) == 2000000.5);
+        assertTrue(ca.getThreshold(3) == 2000000.5);
 
     }
 
@@ -252,7 +252,7 @@ public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
         ca.removeClass(0);
         assertTrue(ca.getNumClass() == 2);
         assertTrue(ca.getColor(0).equals(new Color(0xdd, 0x66, 0xee)));
-        assertTrue(ca.getThreshold(0) == 100000);
+        assertTrue(ca.getThreshold(1) == 100000);
     }
 
     @Test
@@ -262,10 +262,10 @@ public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
         ca.removeClass(1);
         assertTrue(ca.getNumClass() == 2);
         assertTrue(ca.getColor(0).equals(new Color(0x11, 0x33, 0x55)));
-        assertTrue(ca.getThreshold(0) == 100000);
+        assertTrue(ca.getThreshold(1) == 100000);
         assertTrue(ca.getColor(1).equals(new Color(0xff, 0xaa, 0x99)));
         try{
-            ca.getThreshold(1);
+            ca.getThreshold(2);
             fail();
         } catch(IndexOutOfBoundsException ioobe){
             assertTrue(true);
