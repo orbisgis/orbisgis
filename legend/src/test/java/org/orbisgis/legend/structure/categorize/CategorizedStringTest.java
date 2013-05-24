@@ -152,14 +152,14 @@ public class CategorizedStringTest {
     @Test
     public void testRemoveFromCat(){
         CategorizedString cs = new CategorizedString(getCategorize2String());
-        assertTrue(cs.remove(20.0).equals(new StringLiteral("Greater")));
+        assertTrue(cs.remove(20.0).equals("Greater"));
         assertNull(cs.remove(20.0));
     }
 
     @Test
     public void testRemoveInfFromCat(){
         CategorizedString cs = new CategorizedString(getCategorize2String());
-        assertTrue(cs.remove(Double.NEGATIVE_INFINITY).equals(new StringLiteral("youhou")));
+        assertTrue(cs.remove(Double.NEGATIVE_INFINITY).equals("youhou"));
         assertTrue(cs.get(Double.NEGATIVE_INFINITY).equals("Greater"));
     }
 

@@ -162,8 +162,9 @@ public class CategorizedString extends CategorizedLegend{
      * Removes the mapping associated to d, if it exists and if it does not let the mapping empty.
      * @param d The threshold we want to remove.
      * @return  The value of the removed mapping, if any.
+     * @throws IllegalStateException if, for whatever reason, one the key of the mapping appears not to be a literal.
      */
-    public StringParameter remove(Double d){
+    public String remove(Double d){
         if(d==null){
             throw new NullPointerException("The input threshold must not be null");
         }
@@ -172,12 +173,21 @@ public class CategorizedString extends CategorizedLegend{
         } else {
             Categorize2String c2s = (Categorize2String) parameter;
             StringParameter ret = c2s.remove(new RealLiteral(d));
-            if(ret != null){
-                if(c2s.getNumClasses()==1 && c2s.getFallbackValue().equals(c2s.get(0))){
-                    parameter = new StringLiteral(c2s.getFallbackValue().getValue(null));
-                }
+            if(ret == null){
+                return null;
+            } else if(c2s.getNumClasses()==1 && c2s.getFallbackValue().equals(c2s.get(0))){
+                parameter = new StringLiteral(c2s.getFallbackValue().getValue(null));
             }
-            return ret;
+            if(ret instanceof StringLiteral){
+                try{
+                    return ret.getValue(null);
+                } catch (ParameterException pe){
+                    throw new IllegalStateException("We've failed at retrieved the value of a literal. " +
+                            "Something is going really wrong here.");
+                }
+            } else {
+                throw new IllegalStateException("We're not supposed to have values that are not StringLiteral in this categorize.");
+            }
         }
     }
 
