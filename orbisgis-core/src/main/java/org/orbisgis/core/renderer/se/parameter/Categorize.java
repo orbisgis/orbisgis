@@ -225,6 +225,34 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     }
 
     /**
+     * Removes the mapping associated to the given threshold, if any.
+     * @param threshold The threshold we want to remove in the map
+     * @return The value associated to {@code threshold} in the map before removal, if any. Null otherwise.
+     */
+    public ToType remove(RealLiteral threshold){
+        if(threshold == null){
+            throw new NullPointerException("");
+        }
+        Double d = threshold.getValue(null);
+        if(Double.isInfinite(d) && d<0){
+            if(mapping.size() <= 1){
+                return null;
+            } else {
+                ToType ret = mapping.remove(threshold);
+                RealLiteral k = getKey(0);
+                ToType rem = mapping.remove(k);
+                mapping.put(new RealLiteral(Double.NEGATIVE_INFINITY),rem);
+                return ret;
+            }
+        }
+        ToType ret = mapping.remove(threshold);
+        if(ret != null){
+            fireClassRemoved(threshold);
+        }
+        return ret;
+    }
+
+    /**
      * Remove class number i in the categorization.
      * @param i  The range of the class. A value of 0 will remove the the lowest threshold greater than negative infinity
      * and the class value between negative infinity and this threshold.

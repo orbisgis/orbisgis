@@ -99,6 +99,13 @@ public class Categorize2ColorTest {
         }
     }
 
+    private Categorize2Color getCategorize(){
+        categorize.put(t1, class2);
+        categorize.put(t2, class3);
+        categorize.put(t3, class4);
+        return categorize;
+    }
+
     @Test
     public void testAddClasses(){
         try {
@@ -137,11 +144,11 @@ public class Categorize2ColorTest {
     public void testSetThresholds(){
         try {
             // To retrieve classes...
+            getCategorize();
             // -INF -> class1
             // t3 (50)  -> class4
             // t1 (100) -> class2
             // t2 (200) -> class3
-            testAddClasses();
             categorize.setThreshold(2, t4);
             //We have replaced t1 with t4 and now have
             // -INF -> class1
@@ -194,7 +201,7 @@ public class Categorize2ColorTest {
     @Test
     public void testRemoveClasses(){
         try {
-            testAddClasses();
+            getCategorize();
             // -INF -> class1
             // t3 (50)  -> class4
             // t1 (100) -> class2
@@ -226,6 +233,34 @@ public class Categorize2ColorTest {
         } catch (ParameterException ex) {
             Logger.getLogger(Categorize2ColorTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    @Test
+    public void testRemoveFromKey() throws Exception {
+        getCategorize();
+        // -INF -> class1
+        // t3 (50)  -> class4
+        // t1 (100) -> class2
+        // t2 (200) -> class3
+        ColorParameter ret = categorize.remove(new RealLiteral(50));
+        assertTrue(ret.equals(class4));
+        assertTrue(categorize.getKey(1).equals(new RealLiteral(100)));
+        assertNull(categorize.get(new RealLiteral(50.0)));
+    }
+
+    @Test
+    public void testRemoveFromInfKey() throws Exception {
+        getCategorize();
+        // -INF -> class1
+        // t3 (50)  -> class4
+        // t1 (100) -> class2
+        // t2 (200) -> class3
+        ColorParameter ret = categorize.remove(new RealLiteral(Double.NEGATIVE_INFINITY));
+        assertTrue(ret.equals(class1));
+        assertTrue(categorize.getKey(0).equals(new RealLiteral(Double.NEGATIVE_INFINITY)));
+        assertTrue(categorize.get(new RealLiteral(Double.NEGATIVE_INFINITY)).equals(class4));
+        assertNull(categorize.get(new RealLiteral(50.0)));
+        assertNull(categorize.remove(new RealLiteral(85691)));
     }
 
     @Test
