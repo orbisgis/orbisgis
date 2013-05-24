@@ -84,6 +84,13 @@ import org.xnap.commons.i18n.I18nFactory;
  *         <lI></lI>
  *     </ul>
  * </p>
+ * <p>
+ *     The get, put, remove methods are used to manage the mapping itself. In particular, get must not be used to
+ *     retrieve the value associated in the end by the Categorize instance to a double in the interval [k1;k2[ where
+ *     k1 and k2 are two consecutive keys of the map. Even if it is the final goal of Categorize (to provide an interval
+ *     classification mechanism), this feature is achieved by the method getValue implemented in the concrete subclasses
+ *     of this class.
+ * </p>
  * @param <ToType> One of ColorParameter, RealParameter, StringParameter
  * @param <FallbackType> the Literal implementation of <ToType>. It is needed to store 
  * a default value, when an analyzed input can't be placed in any category.
