@@ -292,8 +292,9 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
     }
 
     @Override
-    public void classRemoved(int i) {
-        values.remove(i);
+    public void classRemoved(RealLiteral lit) {
+        int i = thresholds.indexOf(lit);
+        values.remove(lit);
 
         int ti = i - 1;
 
@@ -311,8 +312,9 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
     }
 
     @Override
-    public void classAdded(RealLiteral i) {
-        SeParameter classValue = categorize.get(i);
+    public void classAdded(RealLiteral lit) {
+        int i = thresholds.indexOf(lit);
+        SeParameter classValue = categorize.get(lit);
         if (classValue instanceof RealParameter) {
             values.add(i, new MetaRealValue(controller, this, (RealParameter) categorize.get(i), i));
         } else if (classValue instanceof ColorParameter) {
