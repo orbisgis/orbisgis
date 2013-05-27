@@ -51,13 +51,17 @@ public class BundleToolsTest {
         InputStream manifestStream = BundleToolsTest.class.getResourceAsStream("MANIFEST.MF");
         Manifest manifest = new Manifest(manifestStream);
         BundleTools.parseManifest(manifest,packages);
-        Assert.assertEquals(2,packages.size());
+        Assert.assertEquals(3,packages.size());
         PackageDeclaration packageInfo = packages.get(0);
         Assert.assertEquals("org.xnap.commons.i18n",packageInfo.getPackageName());
         Assert.assertEquals(new Version(0,9,6),packageInfo.getVersion());
         packageInfo = packages.get(1);
+        // BundleTools will use the Bundle version if the package version is not available
         Assert.assertEquals("org.xnap.commons.i18n.nover",packageInfo.getPackageName());
-        Assert.assertEquals(false,packageInfo.isVersionDefined());
+        Assert.assertEquals(new Version(0,9,6),packageInfo.getVersion());
+        packageInfo = packages.get(2);
+        Assert.assertEquals("org.xnap.commons.i18n.bla",packageInfo.getPackageName());
+        Assert.assertEquals(new Version(0,5,0),packageInfo.getVersion());
 
     }
 }

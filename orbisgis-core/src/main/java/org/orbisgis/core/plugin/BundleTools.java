@@ -30,7 +30,6 @@ package org.orbisgis.core.plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -40,7 +39,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -332,13 +330,25 @@ public class BundleTools {
         for(BundleCapability bc : exportsCapability) {
             Map<String,Object> attr = bc.getAttributes();
             // If the package contain a package name and a package version
-            if(attr.containsKey(PACKAGE_NAMESPACE) && attr.containsKey(Constants.VERSION_ATTRIBUTE)) {
-                packages.add(new PackageDeclaration((String)attr.get(PACKAGE_NAMESPACE),
-                        (Version)attr.get(Constants.VERSION_ATTRIBUTE)));
+            if(attr.containsKey(PACKAGE_NAMESPACE)) {
+                Version packageVersion = new Version(0,0,0);
+                if(attr.containsKey(Constants.VERSION_ATTRIBUTE)) {
+                    packageVersion = (Version)attr.get(Constants.VERSION_ATTRIBUTE);
+                }
+                if(packageVersion.getMajor()!=0 || packageVersion.getMinor()!=0 || packageVersion.getMicro()!=0) {
+                    packages.add(new PackageDeclaration((String)attr.get(PACKAGE_NAMESPACE),
+                            packageVersion));
+                } else {
+                    // No version, take the bundle version
+                    packages.add(new PackageDeclaration((String)attr.get(PACKAGE_NAMESPACE),
+                            version));
+                }
             }
         }
         return new BundleReference(symbolicName,version);
     }
+
+
     private static void parseDirectoryManifest(File rootPath, File path, List<PackageDeclaration> packages) throws SecurityException {
         File[] files = path.listFiles();
         for (File file : files) {
