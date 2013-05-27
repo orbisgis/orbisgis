@@ -10,6 +10,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Gettext Commons
 Bundle-SymbolicName: gettext-commons
 Bundle-Version: 0.9.6
-Export-Package: org.xnap.commons.i18n;version="0.9.6",org.xnap.commons.i18n.nover
+Export-Package: org.xnap.commons.i18n;version="0.9.6",org.xnap.commons.i18n.nover,org.xnap.commons.i18n.bla;version="0.5.0"
 Tool: Bnd-1.50.0
 
