@@ -185,9 +185,28 @@ public class CategorizedStringTest {
         cs.remove(20.0);
         cs.remove(30.0);
         assertTrue(cs.getParameter() instanceof StringLiteral);
-
     }
 
+    @Test
+    public void testVisit(){
+        CategorizedString cs = new CategorizedString(getCategorize2String());
+        cs.acceptVisitor(new Dummyvisitor());
+        assertTrue(cs.getField().equals(Dummyvisitor.FIELD));
+    }
+
+
+    /**
+     * A visitor that sets the field. Dummy.
+     */
+    public class Dummyvisitor implements CategorizedParameterVisitor {
+
+        public static final String FIELD = "My Beautiful Pony field";
+
+        @Override
+        public void visit(CategorizedLegend legend) {
+            legend.setField(FIELD);
+        }
+    }
 
     public class DummyTypeListener implements TypeListener {
         public int count = 0;

@@ -87,21 +87,29 @@ public abstract class CategorizedLegend extends AbstractAttributeLegend implemen
         }
     }
 
-  /**
-   * Adds a listener that will be notified when {@link CategorizedLegend#   fireTypeChanged} is called.
-   * @param l The listener that will be added.
-   */
-  public void addListener(TypeListener l){
-      listeners.add(l);
-  }
+    /**
+    * Adds a listener that will be notified when {@link CategorizedLegend#   fireTypeChanged} is called.
+    * @param l The listener that will be added.
+    */
+    public void addListener(TypeListener l){
+        listeners.add(l);
+    }
 
-  /**
-   * Notifies that the actual type of the inner {@code SeParameter} has changed.
-   */
-  public void fireTypeChanged(){
-      TypeEvent te = new TypeEvent(this);
-      for(TypeListener tl : listeners){
-          tl.typeChanged(te);
-      }
-  }
+    /**
+    * Notifies that the actual type of the inner {@code SeParameter} has changed.
+    */
+    public void fireTypeChanged(){
+          TypeEvent te = new TypeEvent(this);
+          for(TypeListener tl : listeners){
+              tl.typeChanged(te);
+          }
+    }
+
+    /**
+     * Implementation of the visitor pattern.
+     * @param cpv The external visitor.
+     */
+    public void acceptVisitor(CategorizedParameterVisitor cpv){
+        cpv.visit(this);
+    }
 }
