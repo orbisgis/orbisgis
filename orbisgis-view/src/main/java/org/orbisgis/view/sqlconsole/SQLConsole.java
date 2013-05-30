@@ -30,7 +30,6 @@ package org.orbisgis.view.sqlconsole;
 
 import javax.swing.*;
 
-import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
 import org.orbisgis.view.docking.DockingPanelParameters;
@@ -50,7 +49,6 @@ import org.xnap.commons.i18n.I18nFactory;
 public class SQLConsole implements EditorDockable,SQLConsoleEditor {
         private DockingPanelParameters dockingPanelParameters = new DockingPanelParameters();
         private SQLConsolePanel sqlPanel = new SQLConsolePanel();
-        private MapElement mapElement;
         protected final static I18n I18N = I18nFactory.getI18n(SQLConsole.class);
         
         public SQLConsole() {
@@ -94,15 +92,11 @@ public class SQLConsole implements EditorDockable,SQLConsoleEditor {
 
         @Override
         public EditableElement getEditableElement() {
-                return mapElement;
+                return null;
         }
 
         @Override
         public void setEditableElement(EditableElement editableElement) {
-                if(editableElement instanceof MapElement) {
-                        mapElement = (MapElement) editableElement;
-                        sqlPanel.setMapContext((MapContext)mapElement.getObject());
-                }
         }
 
         @Override
