@@ -291,9 +291,19 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 }
         }
 
+        /**
+         * Update linked tools enabled/disabled state.
+         */
+        public void updateToolsStatus() {
+            fireStateChanged();
+        }
         private void fireStateChanged() {
                 for (ToolListener listener : listeners) {
-                        listener.stateChanged(this);
+                        try {
+                            listener.stateChanged(this);
+                        } catch (Exception ex) {
+                            UILOGGER.error(ex.getLocalizedMessage(),ex);
+                        }
                 }
         }
 
