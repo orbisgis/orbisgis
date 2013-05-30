@@ -44,7 +44,7 @@ import java.util.List;
 /**
  * @author alexis
  */
-public abstract class CategorizedLegend extends AbstractAttributeLegend implements ParameterLegend {
+public abstract class CategorizedLegend<U> extends AbstractAttributeLegend implements ParameterLegend {
 
     protected String field = "";
     private List<TypeListener> listeners = new ArrayList<TypeListener>();
@@ -86,6 +86,29 @@ public abstract class CategorizedLegend extends AbstractAttributeLegend implemen
             }
         }
     }
+
+    /**
+     * Gets the U value associated to the key d. If d is not a valid key in the underlying mapping, this method
+     * returns null.
+     * @param d The key whose associated value is wanted
+     * @return The value associated to {@code d} or null if {@code d} is not a valid key.
+     */
+    public abstract U get(Double d);
+
+    /**
+     * Removes the mapping associated to d, if it exists and if it does not let the mapping empty.
+     * @param d The threshold we want to remove.
+     * @return  The value of the removed mapping, if any.
+     * @throws IllegalStateException if, for whatever reason, one the key of the mapping appears not to be a literal.
+     */
+    public abstract U remove(Double d);
+
+    /**
+     * Put the couple (d,v) in this categorization.
+     * @param d The key
+     * @param val The value
+     */
+    public abstract void put(Double d, U val);
 
     /**
     * Adds a listener that will be notified when {@link CategorizedLegend#   fireTypeChanged} is called.

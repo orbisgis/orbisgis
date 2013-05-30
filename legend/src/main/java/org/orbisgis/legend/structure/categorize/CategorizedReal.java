@@ -13,7 +13,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  * classification without much pain while keeping the SE models simple.
  * @author Alexis Guéganno
  */
-public class CategorizedReal extends CategorizedLegend{
+public class CategorizedReal extends CategorizedLegend<Double>{
     private RealParameter parameter = new RealLiteral();
 
     /**
@@ -79,12 +79,7 @@ public class CategorizedReal extends CategorizedLegend{
         }
     }
 
-    /**
-     * Gets the Double value associated to the key d. If d is not a valid key in the underlying mapping, this method
-     * returns null.
-     * @param d The key whose associated value is wanted
-     * @return The value associated to {@code d} or null if {@code d} is not a valid key.
-     */
+    @Override
     public Double get(Double d){
         if(parameter instanceof RealLiteral){
             return Double.isInfinite(d) && d < 0 ? ((RealLiteral) parameter).getValue(null) : null;
@@ -98,11 +93,7 @@ public class CategorizedReal extends CategorizedLegend{
         }
     }
 
-    /**
-     * Put the couple (d,v) in this categorization.
-     * @param d The key
-     * @param v The value
-     */
+    @Override
     public void put(Double d, Double v){
         if(d == null || v == null){
             throw new NullPointerException("Null values are not allowed in this mapping.");
@@ -128,12 +119,7 @@ public class CategorizedReal extends CategorizedLegend{
         }
     }
 
-    /**
-     * Removes the mapping associated to d, if it exists and if it does not let the mapping empty.
-     * @param d The threshold we want to remove.
-     * @return  The value of the removed mapping, if any.
-     * @throws IllegalStateException if, for whatever reason, one the key of the mapping appears not to be a literal.
-     */
+    @Override
     public Double remove(Double d){
         if(d==null){
             throw new NullPointerException("The input threshold must not be null");
