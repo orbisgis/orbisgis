@@ -43,7 +43,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
  * classification without much pain while keeping the SE models simple.
  * @author Alexis Guéganno
  */
-public class CategorizedString extends CategorizedLegend{
+public class CategorizedString extends CategorizedLegend<String>{
     private StringParameter parameter = new StringLiteral();
 
     /**
@@ -109,12 +109,7 @@ public class CategorizedString extends CategorizedLegend{
         }
     }
 
-    /**
-     * Gets the String value associated to the key d. If d is not a valid key in the underlying mapping, this method
-     * returns null.
-     * @param d The key whose associated value is wanted
-     * @return The value associated to {@code d} or null if {@code d} is not a valid key.
-     */
+    @Override
     public String get(Double d){
         if(parameter instanceof StringLiteral){
             return Double.isInfinite(d) && d < 0 ? ((StringLiteral) parameter).getValue(null) : null;
@@ -128,11 +123,7 @@ public class CategorizedString extends CategorizedLegend{
         }
     }
 
-    /**
-     * Put the couple (d,v) in this categorization.
-     * @param d The key
-     * @param v The value
-     */
+    @Override
     public void put(Double d, String v){
         if(d == null || v == null){
             throw new NullPointerException("Null values are not allowed in this mapping.");
@@ -158,12 +149,7 @@ public class CategorizedString extends CategorizedLegend{
         }
     }
 
-    /**
-     * Removes the mapping associated to d, if it exists and if it does not let the mapping empty.
-     * @param d The threshold we want to remove.
-     * @return  The value of the removed mapping, if any.
-     * @throws IllegalStateException if, for whatever reason, one the key of the mapping appears not to be a literal.
-     */
+    @Override
     public String remove(Double d){
         if(d==null){
             throw new NullPointerException("The input threshold must not be null");
