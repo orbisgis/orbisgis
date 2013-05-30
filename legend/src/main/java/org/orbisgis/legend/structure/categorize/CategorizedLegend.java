@@ -111,6 +111,13 @@ public abstract class CategorizedLegend<U> extends AbstractAttributeLegend imple
     public abstract void put(Double d, U val);
 
     /**
+     * Gets the value associated to d, if any, or to the lower threshold.
+     * @return The value associated to d in the mapping, if d is one of its keys. Otherwise, the returned value
+     * can be expressed as max( k in keys where k < d).
+     */
+    public abstract U getFromLower(Double d);
+
+    /**
     * Adds a listener that will be notified when {@link CategorizedLegend#   fireTypeChanged} is called.
     * @param l The listener that will be added.
     */

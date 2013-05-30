@@ -28,6 +28,8 @@
  */
 package org.orbisgis.legend.structure.categorize;
 
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
@@ -36,6 +38,9 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.Categorize2String;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class embeds a StringParameter that can be either a literal or a categorize. It is presented as a categorize
@@ -177,5 +182,25 @@ public class CategorizedString extends CategorizedLegend<String>{
         }
     }
 
+
+    @Override
+    public String getFromLower(Double d){
+        if(d==null){
+            throw new NullPointerException("The input threshold must not be null");
+        }
+        if(parameter instanceof StringLiteral){
+            return ((StringLiteral) parameter).getValue(null);
+        } else {
+            String col = get(d);
+            if(col == null){
+                Categorize2String c2s = (Categorize2String) parameter;
+                Map<String,Value> inp = new HashMap<String, Value>();
+                inp.put(getField(), ValueFactory.createValue(d));
+                return c2s.getValue(inp);
+            } else {
+                return col;
+            }
+        }
+    }
 
 }

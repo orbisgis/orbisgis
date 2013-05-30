@@ -1,11 +1,16 @@
 package org.orbisgis.legend.structure.categorize;
 
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.real.Categorize2Real;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class embeds a RealParameter that can be either a literal or a categorize. It is presented as a categorize
@@ -146,6 +151,29 @@ public class CategorizedReal extends CategorizedLegend<Double>{
             }
         }
     }
-
+       
+    @Override
+    public Double getFromLower(Double d){
+        if(d==null){
+            throw new NullPointerException("The input threshold must not be null");
+        }
+        if(parameter instanceof RealLiteral){
+            return ((RealLiteral) parameter).getValue(null);
+        } else {
+            Double col = get(d);
+            if(col == null){
+                Categorize2Real c2s = (Categorize2Real) parameter;
+                Map<String,Value> inp = new HashMap<String, Value>();
+                inp.put(getField(), ValueFactory.createValue(d));
+                try {
+                    return c2s.getValue(inp);
+                } catch (ParameterException e) {
+                    throw new IllegalStateException("May this categorize need many fields ?");
+                }
+            } else {
+                return col;
+            }
+        }
+    }
 
 }

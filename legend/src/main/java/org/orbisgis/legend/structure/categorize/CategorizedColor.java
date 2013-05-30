@@ -1,5 +1,7 @@
 package org.orbisgis.legend.structure.categorize;
 
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
@@ -10,6 +12,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Alexis Guéganno
@@ -148,5 +152,27 @@ public class CategorizedColor extends CategorizedLegend<Color>{
         }
     }
 
-
+    @Override
+    public Color getFromLower(Double d){
+        if(d==null){
+            throw new NullPointerException("The input threshold must not be null");
+        }
+        if(parameter instanceof ColorLiteral){
+            return ((ColorLiteral) parameter).getColor(null);
+        } else {
+            Color col = get(d);
+            if(col == null){
+                Categorize2Color c2s = (Categorize2Color) parameter;
+                Map<String,Value> inp = new HashMap<String, Value>();
+                inp.put(getField(), ValueFactory.createValue(d));
+                try {
+                    return c2s.getColor(inp);
+                } catch (ParameterException e) {
+                    throw new IllegalStateException("May this categorize need many fields ?");
+                }
+            } else {
+                return col;
+            }
+        }
+    }
 }
