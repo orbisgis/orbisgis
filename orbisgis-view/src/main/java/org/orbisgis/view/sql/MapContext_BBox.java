@@ -38,10 +38,7 @@ import org.gdms.sql.function.AbstractScalarFunction;
 import org.gdms.sql.function.BasicFunctionSignature;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.view.edition.EditableElement;
-import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.map.MapElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -56,16 +53,12 @@ public class MapContext_BBox extends AbstractScalarFunction {
 
         @Override
         public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
-                EditorManager editorManager = Services.getService(EditorManager.class);
-
-                for (EditableElement editable : editorManager.getEditableElements()) {
-                        if (editable instanceof MapElement) {
-                                MapElement mapElement = (MapElement) editable;
-                                MapContext mc = mapElement.getMapContext();
-                                if (mc != null) {
-                                        return ValueFactory.createValue(GeometryConvert.toGeometry(mc.getBoundingBox()));
-                                }
-                        }
+                MapElement mapElement = MapElement.fetchFirstMapElement();
+                if (mapElement != null) {
+                    MapContext mc = mapElement.getMapContext();
+                    if (mc != null) {
+                        return ValueFactory.createValue(GeometryConvert.toGeometry(mc.getBoundingBox()));
+                    }
                 }
                 return ValueFactory.createNullValue();
         }
