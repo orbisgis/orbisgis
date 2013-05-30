@@ -50,7 +50,7 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 /**
  * Compute the nearest points of two geometries.
  */
-public final class ST_NearestPoint extends AbstractScalarSpatialFunction {
+public final class ST_NearestPoints extends AbstractScalarSpatialFunction {
 
         @Override
         public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
@@ -73,7 +73,7 @@ public final class ST_NearestPoint extends AbstractScalarSpatialFunction {
 
         @Override
         public String getSqlOrder() {
-                return "select ST_NearestPoint(the_geom1, the_geom2) from myTable;";
+                return "select ST_NearestPoints(the_geom1, the_geom2) from myTable;";
         }
 
         @Override
