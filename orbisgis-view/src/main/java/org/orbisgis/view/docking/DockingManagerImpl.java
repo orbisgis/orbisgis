@@ -44,10 +44,7 @@ import bibliothek.gui.dock.common.menu.SingleCDockableListMenuPiece;
 import bibliothek.gui.dock.facile.menu.RootMenuPiece;
 import bibliothek.gui.dock.themes.ThemeManager;
 import bibliothek.gui.dock.toolbar.CToolbarContentArea;
-import bibliothek.gui.dock.util.BackgroundComponent;
-import bibliothek.gui.dock.util.BackgroundPaint;
-import bibliothek.gui.dock.util.PaintableComponent;
-import bibliothek.gui.dock.util.PropertyKey;
+import bibliothek.gui.dock.util.*;
 import bibliothek.util.PathCombiner;
 import bibliothek.util.xml.XElement;
 import bibliothek.util.xml.XIO;
@@ -120,6 +117,9 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
          */
 	    public DockingManagerImpl( JFrame owner){
                 this.owner = owner;
+                // Method bibliothek.gui.dock.util.DockUtilities.checkLayoutLocked(DockUtilities.java:723)
+                // Throw a RuntimeException: java.lang.Error: Trampoline must not be defined by the bootstrap classloader
+                DockUtilities.disableCheckLayoutLocked();
                 commonControl = new CControl(owner);
                 commonControl.addControlListener(new DockingListener());
                 dockableMenuTracker = new SingleCDockableListMenuPiece( commonControl);

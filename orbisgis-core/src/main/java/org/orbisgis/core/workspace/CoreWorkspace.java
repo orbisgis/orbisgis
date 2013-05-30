@@ -128,7 +128,14 @@ public class CoreWorkspace implements Serializable {
         }
 
         public void writeKnownWorkspaces(List<File> paths) throws IOException {
-                File currentWK = new File(applicationFolder + File.separator + ALL_WORKSPACE_FILENAME);
+                File appFolder = new File(applicationFolder + File.separator);
+                File currentWK = new File(appFolder, ALL_WORKSPACE_FILENAME);
+                // Create folder
+                if(!appFolder.exists()) {
+                    if(!appFolder.mkdirs() && !appFolder.exists()) {
+                        throw new IOException("Unable to create folders.");
+                    }
+                }
                 BufferedWriter writer = null;
                 try {
                         writer = new BufferedWriter(new FileWriter(currentWK));

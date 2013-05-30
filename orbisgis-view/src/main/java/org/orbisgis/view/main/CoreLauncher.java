@@ -93,7 +93,16 @@ public class CoreLauncher {
                 this.debugMode = debugMode;
                 coreWorkspace.addPropertyChangeListener(CoreWorkspace.PROP_WORKSPACEFOLDER, workspaceChangeListener);
         }
-        
+        private static void stopApplication(final LoadingFrame loadingFrame) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    loadingFrame.dispose();
+                    System.exit(0);
+                }
+            });
+
+        }
         /**
          * Create the view component and set visible
          */
@@ -103,15 +112,14 @@ public class CoreLauncher {
                 try {
                         viewCore = new Core(coreWorkspace, debugMode, loadingFrame);
                         viewCore.startup(loadingFrame);
-                } catch (Throwable ex) {
-                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                } catch (InterruptedException ex) {
+                        // Do not print user cancel action.
                         // Close the splash screen
-                        SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                        loadingFrame.dispose();
-                                }
-                        });
+                        LOGGER.info("Loading of OrbisGIS canceled by user.");
+                        stopApplication(loadingFrame);
+                } catch (Exception ex) {
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                        stopApplication(loadingFrame);
                 }                
         }
 }
