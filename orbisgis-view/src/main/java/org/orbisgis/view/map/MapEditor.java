@@ -564,6 +564,9 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                         public void run() {
                                 updateMapLabel();
                                 mapsManager.updateDiskTree();
+                                if(getToolManager()!=null) {
+                                    getToolManager().updateToolsStatus();
+                                }
                         }
                 });
     }
