@@ -50,12 +50,12 @@ public class WorkspaceSelectionDialog implements MIPValidation {
         private static final Logger LOGGER = Logger.getLogger(WorkspaceSelectionDialog.class);
         private static final String FOLDER_COMBO_FIELD = "foldersCombo";
         private static final String DEFAULT_WORKSPACE_FIELD = "default workspace";
-                
+
         /**
          * Show a dialog to choose the workspace folder
          * @return The user selected workspace folder
          */
-        public static File showWorkspaceFolderSelection(CoreWorkspace coreWorkspace, boolean showCancelButton) {                
+        public static File showWorkspaceFolderSelection(CoreWorkspace coreWorkspace, boolean showCancelButton) {
                 MultiInputPanel panel = new MultiInputPanel(I18N.tr("Workspace folder"));
                 panel.addValidation(new WorkspaceSelectionDialog());
                 List<File> knownWorkspaces = coreWorkspace.readKnownWorkspacesPath();
@@ -97,6 +97,7 @@ public class WorkspaceSelectionDialog implements MIPValidation {
                                 }
                         } catch (IOException ex) {
                                 LOGGER.error(ex.getLocalizedMessage(),ex);
+                                return null;
                         }
                         return new File(workspacePath);
                 }

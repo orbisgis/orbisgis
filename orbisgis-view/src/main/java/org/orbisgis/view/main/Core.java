@@ -175,7 +175,11 @@ public class Core {
                 File defaultWorkspace = coreWorkspace.readDefaultWorkspacePath();
                 if(defaultWorkspace==null || !ViewWorkspace.isWorkspaceValid(defaultWorkspace)) {
                         try {
-                                SwingUtilities.invokeAndWait(new PromptUserForSelectingWorkspace(coreWorkspace ));
+                                PromptUserForSelectingWorkspace dial = new PromptUserForSelectingWorkspace(coreWorkspace);
+                                SwingUtilities.invokeAndWait(dial);
+                                if(!dial.isOk()) {
+                                    throw new InterruptedException("Canceled by user.");
+                                }
                         } catch(InvocationTargetException ex) {
                                 mainFrame.dispose();
                                 throw ex;
@@ -187,21 +191,31 @@ public class Core {
         this.mainContext = new MainContext(debugMode,coreWorkspace,true);
     }
 
-    private class PromptUserForSelectingWorkspace implements Runnable {
+    private static class PromptUserForSelectingWorkspace implements Runnable {
                 private CoreWorkspace coreWorkspace;
+                /** User do not cancel workspace selection */
+                private boolean ok = false;
 
                 public PromptUserForSelectingWorkspace(CoreWorkspace coreWorkspace) {
                         this.coreWorkspace = coreWorkspace;
+                }
+
+                /**
+                 * Does the user accept a new workspace folder.
+                 * @return False if action is canceled by user
+                 */
+                private boolean isOk() {
+                    return ok;
                 }
 
                 @Override
                 public void run() {
                         // Ask the user to select a workspace folder
                         File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(coreWorkspace,true);
-                        if(newWorkspace==null) {
-                                throw new RuntimeException(I18N.tr("Invalid workspace"));
+                        if(newWorkspace!=null) {
+                            coreWorkspace.setWorkspaceFolder(newWorkspace.getAbsolutePath());
+                            ok = true;
                         }
-                        coreWorkspace.setWorkspaceFolder(newWorkspace.getAbsolutePath());
                 }
     }
     /**
