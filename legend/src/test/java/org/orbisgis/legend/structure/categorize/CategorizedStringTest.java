@@ -194,6 +194,12 @@ public class CategorizedStringTest {
         assertTrue(cs.getField().equals(Dummyvisitor.FIELD));
     }
 
+    @Test
+    public void testGetFromLower() throws Exception {
+        CategorizedString cs = new CategorizedString(getCategorize2String());
+        assertTrue(cs.getFromLower(25.0).equals("Greater"));
+    }
+
 
     /**
      * A visitor that sets the field. Dummy.
