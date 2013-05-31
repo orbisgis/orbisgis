@@ -40,9 +40,9 @@ public class CategorizedLineTest extends AnalyzerTest{
     public void testGet() throws Exception {
         CategorizedLine cl = getCategorizedLine();
         assertTrue(cl.get(Double.NEGATIVE_INFINITY).equals(new LineParameters(Color.decode("#113355"),.75,.5,"2 2")));
-        assertTrue(cl.get(70000.0).equals(new LineParameters(Color.decode("#dd66ee"),.75,1.0,"2 2")));
-        assertTrue(cl.get(80000.0).equals(new LineParameters(Color.decode("#dd66ee"),.75,1.25,"2 2")));
-        assertTrue(cl.get(100000.0).equals(new LineParameters(Color.decode("#ffaa99"),.75,1.5,"2 2")));
+        assertTrue(cl.get(70000.0 ).equals(new LineParameters(Color.decode("#dd66ee"),.75,1.0 ,"2 2")));
+        assertTrue(cl.get(80000.0 ).equals(new LineParameters(Color.decode("#dd66ee"),.75,1.25,"2 2")));
+        assertTrue(cl.get(100000.0).equals(new LineParameters(Color.decode("#ffaa99"),.75,1.5 ,"2 2")));
     }
 
     @Test
@@ -53,6 +53,24 @@ public class CategorizedLineTest extends AnalyzerTest{
         assertTrue(doubles.contains(70000.0));
         assertTrue(doubles.contains(80000.0));
         assertTrue(doubles.contains(100000.0));
+    }
+
+    @Test
+    public void testContainsValue() throws Exception {
+        CategorizedLine cl = getCategorizedLine();
+        assertTrue(cl.containsValue(new LineParameters(Color.decode("#113355"),.75,  .5,"2 2")));
+        assertTrue(cl.containsValue(new LineParameters(Color.decode("#dd66ee"),.75, 1.0,"2 2")));
+        assertTrue(cl.containsValue(new LineParameters(Color.decode("#dd66ee"),.75,1.25,"2 2")));
+        assertTrue(cl.containsValue(new LineParameters(Color.decode("#ffaa99"),.75, 1.5,"2 2")));
+    }
+
+    @Test
+    public void testContainsKey() throws Exception {
+        CategorizedLine cl = getCategorizedLine();
+        assertTrue(cl.containsKey(Double.NEGATIVE_INFINITY));
+        assertTrue(cl.containsKey( 70000.0));
+        assertTrue(cl.containsKey( 80000.0));
+        assertTrue(cl.containsKey(100000.0));
     }
 
     private LineSymbolizer getLineSymbolizer() throws Exception {
