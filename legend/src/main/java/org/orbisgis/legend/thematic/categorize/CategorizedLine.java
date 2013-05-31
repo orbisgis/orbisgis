@@ -88,17 +88,28 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> {
     public LineParameters put(Double d, LineParameters lp) {
         LineParameters ret = null;
         if(containsKey(d)){
-            Color col = color.getFromLower(d);
-            Double op = opacity.getFromLower(d);
-            Double w = width.getFromLower(d);
-            String da = dash.getFromLower(d);
-            ret = new LineParameters(col, op, w, da);
+            ret = get(d);
         }
+        forceMapping(d);
         color.put(d,lp.getLineColor());
         opacity.put(d,lp.getLineOpacity());
         width.put(d,lp.getLineWidth());
         dash.put(d, lp.getLineDash());
         return  ret;
+    }
+
+    private void forceMapping(Double d){
+        Double upper = getNextThreshold(d);
+        if(upper < Double.POSITIVE_INFINITY){
+            Color  c = color.getFromLower(upper);
+            Double aop = opacity.getFromLower(upper);
+            Double aw = width.getFromLower(upper);
+            String ada = dash.getFromLower(upper);
+            color.put(upper, c);
+            opacity.put(upper,aop);
+            width.put(upper,aw);
+            dash.put(upper, ada);
+        }
     }
 
     @Override

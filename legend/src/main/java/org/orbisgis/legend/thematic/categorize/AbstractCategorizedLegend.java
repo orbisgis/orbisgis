@@ -34,7 +34,9 @@ import org.orbisgis.legend.structure.parameter.ParameterVisitor;
 import org.orbisgis.legend.thematic.SymbolParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * @author alexis
@@ -62,6 +64,23 @@ public abstract class AbstractCategorizedLegend <U extends SymbolParameters> ext
             rl.acceptVisitor(cpv);
         }
 
+    }
+
+    /**
+     * Gets the lowest threshold strictly greater than {@code input} in this mapping.
+     * @param input The input value
+     * @return The lowest threshold strictly greater than {@code input} or {@code Double.POSITIVE_INFINITY}.
+     */
+    public Double getNextThreshold(Double input){
+        SortedSet<Double> keys = keySet();
+        Iterator<Double> it = keys.iterator();
+        while(it.hasNext()){
+            Double v = it.next();
+            if(v>input){
+                return v;
+            }
+        }
+        return Double.POSITIVE_INFINITY;
     }
 
 }

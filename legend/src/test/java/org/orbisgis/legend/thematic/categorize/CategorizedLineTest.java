@@ -89,9 +89,21 @@ public class CategorizedLineTest extends AnalyzerTest{
         LineParameters lp = cl.put(70000.0,new LineParameters(Color.decode("#dd6643"),.725, 10.0,"2 2 5"));
         assertTrue(lp.equals(new LineParameters(Color.decode("#dd66ee"),.75,1.0 ,"2 2")));
         assertTrue(cl.get(70000.0).equals(new LineParameters(Color.decode("#dd6643"),.725, 10.0,"2 2 5")));
+        assertTrue(cl.get(80000.0 ).equals(new LineParameters(Color.decode("#dd66ee"),.75,1.25,"2 2")));
+        assertTrue(cl.get(100000.0).equals(new LineParameters(Color.decode("#ffaa99"),.75,1.5 ,"2 2")));
         lp = cl.put(Double.NEGATIVE_INFINITY,new LineParameters(Color.decode("#ad6643"),.225, 20.0,"2 2 6"));
         assertTrue(lp.equals(new LineParameters(Color.decode("#113355"),.75,.5,"2 2")));
         assertTrue(cl.get(Double.NEGATIVE_INFINITY).equals(new LineParameters(Color.decode("#ad6643"),.225, 20.0,"2 2 6")));
+    }
+
+    @Test
+    public void testGetNextThreshold() throws Exception {
+        CategorizedLine cl = getCategorizedLine();
+        assertTrue(cl.getNextThreshold(50000.0).equals(70000.0));
+        assertTrue(cl.getNextThreshold(70000.0).equals(80000.0));
+        assertTrue(cl.getNextThreshold(75000.0).equals(80000.0));
+        assertTrue(cl.getNextThreshold(100000.0).equals(Double.POSITIVE_INFINITY));
+        assertTrue(cl.getNextThreshold(150000.0).equals(Double.POSITIVE_INFINITY));
     }
 
     @Test
