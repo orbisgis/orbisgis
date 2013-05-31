@@ -50,6 +50,8 @@ import org.orbisgis.view.map.tools.VertexDeletionTool;
 import javax.swing.Action;
 import java.util.LinkedList;
 import java.util.List;
+import static org.orbisgis.view.main.frames.ext.ToolBarAction.DRAW_SPLIT_LINESTRING;
+import org.orbisgis.view.map.tools.SplitLineByLine;
 
 /**
  * Generate the Actions for the Drawing ToolBar.
@@ -84,6 +86,7 @@ public class DrawingToolBar implements ToolBarAction {
         add(actions,DRAW_LINE, new LineTool());
         add(actions,DRAW_POLYGON, new PolygonTool());
         add(actions,DRAW_SPLIT_LINESTRING, new SplitLineStringTool());
+        add(actions,DRAW_SPLIT_LINE_BY_LINE, new SplitLineByLine());
         add(actions,DRAW_SPLIT_POLYGON,new SplitPolygonTool());
         add(actions,DRAW_MOVE_VERTEX, new MoveVertexTool());
         add(actions,DRAW_VERTEX_ADDITION, new VertexAdditionTool());
