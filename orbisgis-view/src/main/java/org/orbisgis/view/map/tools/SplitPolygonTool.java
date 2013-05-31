@@ -30,6 +30,7 @@ package org.orbisgis.view.map.tools;
 
 import com.vividsolutions.jts.geom.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Observable;
 import org.gdms.data.DataSource;
@@ -104,7 +105,7 @@ public class SplitPolygonTool extends AbstractLineTool {
                                                         GeometryDimensionConstraint.DIMENSION_SURFACE)))) {
                                 List<Polygon> pols = new ArrayList<Polygon>();
                                 for (int i = 0; i < geom.getNumGeometries(); i++) {
-                                        List<Polygon> polygons = GeometryEdit.splitPolygon((Polygon) geom.getGeometryN(i), ls);
+                                        Collection<Polygon> polygons = GeometryEdit.polygonWithLineSplitter((Polygon) geom.getGeometryN(i), ls);
                                         if(polygons!=null) {
                                             pols.addAll(polygons);
                                         }
@@ -118,7 +119,7 @@ public class SplitPolygonTool extends AbstractLineTool {
                                         TypeFactory.createType(Type.GEOMETRY, 
                                                 ConstraintFactory.createConstraint(Constraint.DIMENSION_2D_GEOMETRY,
                                                         GeometryDimensionConstraint.DIMENSION_SURFACE)))) {
-                                List<Polygon> polygons = GeometryEdit.splitPolygon((Polygon) geom, ls);
+                                Collection<Polygon> polygons = GeometryEdit.polygonWithLineSplitter((Polygon) geom, ls);
                                 if (polygons != null) {
                                         sds.deleteRow(handler.getGeometryIndex());
                                         Value[] row = sds.getRow(handler.getGeometryIndex());
