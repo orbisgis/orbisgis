@@ -107,9 +107,9 @@ public class ST_SplitLine extends AbstractTableFunction {
                                                                                 Geometry subGeom = result.getGeometryN(j);
                                                                                 if (subGeom.getDimension() == 0) {
                                                                                         if (geom instanceof MultiLineString) {
-                                                                                                geom = GeometryEdit.splitMultiLineString((MultiLineString) geom, (Point) subGeom);
+                                                                                                geom = GeometryEdit.splitMultiLineStringWithPoint((MultiLineString) geom, (Point) subGeom);
                                                                                         } else {
-                                                                                                LineString[] temp = GeometryEdit.splitLineString((LineString) geom, (Point) subGeom);
+                                                                                                LineString[] temp = GeometryEdit.splitLineStringWithPoint((LineString) geom, (Point) subGeom);
                                                                                                 geom = geom.getFactory().createMultiLineString(temp);
                                                                                         }
                                                                                 }
