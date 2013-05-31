@@ -11,6 +11,7 @@ import org.orbisgis.legend.structure.categorize.CategorizedReal;
 import org.orbisgis.legend.structure.categorize.CategorizedString;
 import org.orbisgis.legend.thematic.LineParameters;
 
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -84,12 +85,24 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> {
     }
 
     @Override
-    public LineParameters put(Double aDouble, LineParameters lineParameters) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public LineParameters put(Double d, LineParameters lp) {
+        LineParameters ret = null;
+        if(containsKey(d)){
+            Color col = color.getFromLower(d);
+            Double op = opacity.getFromLower(d);
+            Double w = width.getFromLower(d);
+            String da = dash.getFromLower(d);
+            ret = new LineParameters(col, op, w, da);
+        }
+        color.put(d,lp.getLineColor());
+        opacity.put(d,lp.getLineOpacity());
+        width.put(d,lp.getLineWidth());
+        dash.put(d, lp.getLineDash());
+        return  ret;
     }
 
     @Override
     public LineParameters remove(Object o) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException("remove not implemented yet in org.orbisgis.legend.thematic.categorize.CategorizedLine");
     }
 }

@@ -7,8 +7,11 @@ import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.thematic.LineParameters;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedSet;
 
+import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -71,6 +74,37 @@ public class CategorizedLineTest extends AnalyzerTest{
         assertTrue(cl.containsKey( 70000.0));
         assertTrue(cl.containsKey( 80000.0));
         assertTrue(cl.containsKey(100000.0));
+    }
+
+    @Test
+    public void testPutNotIn() throws Exception {
+        CategorizedLine cl = getCategorizedLine();
+        assertNull(cl.put(25.0, new LineParameters(Color.decode("#dd6643"), .725, 10.0, "2 2 5")));
+        assertTrue(cl.get(25.0).equals(new LineParameters(Color.decode("#dd6643"),.725, 10.0,"2 2 5")));
+    }
+
+    @Test
+    public void testPutAlreadyIn() throws Exception {
+        CategorizedLine cl = getCategorizedLine();
+        LineParameters lp = cl.put(70000.0,new LineParameters(Color.decode("#dd6643"),.725, 10.0,"2 2 5"));
+        assertTrue(lp.equals(new LineParameters(Color.decode("#dd66ee"),.75,1.0 ,"2 2")));
+        assertTrue(cl.get(70000.0).equals(new LineParameters(Color.decode("#dd6643"),.725, 10.0,"2 2 5")));
+        lp = cl.put(Double.NEGATIVE_INFINITY,new LineParameters(Color.decode("#ad6643"),.225, 20.0,"2 2 6"));
+        assertTrue(lp.equals(new LineParameters(Color.decode("#113355"),.75,.5,"2 2")));
+        assertTrue(cl.get(Double.NEGATIVE_INFINITY).equals(new LineParameters(Color.decode("#ad6643"),.225, 20.0,"2 2 6")));
+    }
+
+    @Test
+    public void testPutAll() throws Exception {
+        CategorizedLine cl = getCategorizedLine();
+        Map<Double, LineParameters> in = new HashMap<Double, LineParameters>();
+        in.put(70000.0,new LineParameters(Color.decode("#dd6643"),.725, 10.0,"2 2 5"));
+        in.put(25.0, new LineParameters(Color.decode("#dd6643"), .725, 10.0, "2 2 5"));
+        in.put(Double.NEGATIVE_INFINITY,new LineParameters(Color.decode("#ad6643"),.225, 20.0,"2 2 6"));
+        cl.putAll(in);
+        assertTrue(cl.get(25.0).equals(new LineParameters(Color.decode("#dd6643"), .725, 10.0, "2 2 5")));
+        assertTrue(cl.get(70000.0).equals(new LineParameters(Color.decode("#dd6643"),.725, 10.0,"2 2 5")));
+        assertTrue(cl.get(Double.NEGATIVE_INFINITY).equals(new LineParameters(Color.decode("#ad6643"),.225, 20.0,"2 2 6")));
     }
 
     private LineSymbolizer getLineSymbolizer() throws Exception {
