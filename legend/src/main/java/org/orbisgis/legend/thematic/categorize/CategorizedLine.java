@@ -11,6 +11,7 @@ import org.orbisgis.legend.structure.categorize.CategorizedReal;
 import org.orbisgis.legend.structure.categorize.CategorizedString;
 import org.orbisgis.legend.thematic.LineParameters;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -55,12 +56,17 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> {
 
     @Override
     public List<CategorizedLegend> getCategorizedLegend() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        List<CategorizedLegend> ret = new LinkedList<CategorizedLegend>();
+        ret.add(color);
+        ret.add(opacity);
+        ret.add(width);
+        ret.add(dash);
+        return ret;
     }
 
     @Override
     public Symbolizer getSymbolizer() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return symbolizer;
     }
 
     @Override

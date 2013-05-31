@@ -7,6 +7,7 @@ import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.thematic.LineParameters;
 
 import java.awt.*;
+import java.util.SortedSet;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -42,6 +43,16 @@ public class CategorizedLineTest extends AnalyzerTest{
         assertTrue(cl.get(70000.0).equals(new LineParameters(Color.decode("#dd66ee"),.75,1.0,"2 2")));
         assertTrue(cl.get(80000.0).equals(new LineParameters(Color.decode("#dd66ee"),.75,1.25,"2 2")));
         assertTrue(cl.get(100000.0).equals(new LineParameters(Color.decode("#ffaa99"),.75,1.5,"2 2")));
+    }
+
+    @Test
+    public void testKeySet() throws Exception {
+        CategorizedLine cl = getCategorizedLine();
+        SortedSet<Double> doubles = cl.keySet();
+        assertTrue(doubles.contains(Double.NEGATIVE_INFINITY));
+        assertTrue(doubles.contains(70000.0));
+        assertTrue(doubles.contains(80000.0));
+        assertTrue(doubles.contains(100000.0));
     }
 
     private LineSymbolizer getLineSymbolizer() throws Exception {

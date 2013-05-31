@@ -28,25 +28,37 @@
  */
 package org.orbisgis.legend.structure.recode;
 
+import org.orbisgis.legend.structure.categorize.CategorizedLegend;
+import org.orbisgis.legend.structure.categorize.CategorizedParameterVisitor;
+
+import java.util.Collection;
 import java.util.TreeSet;
 
 /**
- * Concatenate the keys used in all the visited {@link RecodedLegend}.
+ * Concatenate the keys used in all the visited {@link RecodedLegend} or {@link CategorizedLegend}.
+ * Note that this class has a parameter that must be set according to where it will be used. That means
+ * if you intend to use it on a RecodedLegend, the parameter must be String, and it must be Double for a
+ * CategorizedLegend. If you don't follow this rule, you'll face ClassCastExceptions.
  * @author alexis
  */
-public class KeysRetriever implements RecodedParameterVisitor {
+public class KeysRetriever<U> implements RecodedParameterVisitor, CategorizedParameterVisitor {
 
-    private final TreeSet<String> set;
+    private final TreeSet<U> set;
 
     /**
      * Default constructor.
      */
     public KeysRetriever(){
-        set = new TreeSet<String>();
+        set = new TreeSet<U>();
     }
 
     @Override
     public void visit(RecodedLegend legend) {
+        set.addAll((Collection<? extends U>) legend.getKeys());
+    }
+
+    @Override
+    public void visit(CategorizedLegend legend) {
         set.addAll(legend.getKeys());
     }
 
@@ -54,7 +66,7 @@ public class KeysRetriever implements RecodedParameterVisitor {
      * Gets the gathered keys.
      * @return The gathered keys in a Set.
      */
-    public TreeSet<String> getKeys() {
+    public TreeSet<U> getKeys() {
         return set;
     }
 }
