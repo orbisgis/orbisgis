@@ -28,11 +28,40 @@
  */
 package org.orbisgis.legend.thematic.categorize;
 
+import org.orbisgis.legend.structure.categorize.CategorizedLegend;
+import org.orbisgis.legend.structure.categorize.CategorizedParameterVisitor;
+import org.orbisgis.legend.structure.parameter.ParameterVisitor;
 import org.orbisgis.legend.thematic.SymbolParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;
+
+import java.util.List;
 
 /**
  * @author alexis
  */
 public abstract class AbstractCategorizedLegend <U extends SymbolParameters> extends MappedLegend<Double,U> {
+
+    /**
+     * Gets all the legends that are used to configure this Categorized symbol
+     * @return A list of CategorizedLegend instances.
+     */
+    public abstract List<CategorizedLegend> getCategorizedLegend();
+
+
+    @Override
+    public void applyGlobalVisitor(ParameterVisitor pv){
+        applyGlobalVisitor((CategorizedParameterVisitor)pv);
+    }
+
+    /**
+     * Apply the given visitor on all the inner CategorizedLegend instances.
+     * @param cpv The input visitor.
+     */
+    public void applyGlobalvisitor(CategorizedParameterVisitor cpv){
+        for(CategorizedLegend rl : getCategorizedLegend()){
+            rl.acceptVisitor(cpv);
+        }
+
+    }
+
 }
