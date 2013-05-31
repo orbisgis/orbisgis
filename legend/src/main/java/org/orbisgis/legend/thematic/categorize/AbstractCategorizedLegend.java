@@ -57,7 +57,7 @@ public abstract class AbstractCategorizedLegend <U extends SymbolParameters> ext
      * Apply the given visitor on all the inner CategorizedLegend instances.
      * @param cpv The input visitor.
      */
-    public void applyGlobalvisitor(CategorizedParameterVisitor cpv){
+    public void applyGlobalVisitor(CategorizedParameterVisitor cpv){
         for(CategorizedLegend rl : getCategorizedLegend()){
             rl.acceptVisitor(cpv);
         }

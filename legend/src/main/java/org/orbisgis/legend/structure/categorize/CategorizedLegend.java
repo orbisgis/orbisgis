@@ -28,9 +28,7 @@
  */
 package org.orbisgis.legend.structure.categorize;
 
-import org.orbisgis.core.renderer.se.parameter.Categorize;
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
-import org.orbisgis.core.renderer.se.parameter.ValueReference;
+import org.orbisgis.core.renderer.se.parameter.*;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.legend.structure.parameter.AbstractAttributeLegend;
@@ -40,6 +38,8 @@ import org.orbisgis.legend.structure.recode.type.TypeListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author alexis
@@ -116,6 +116,25 @@ public abstract class CategorizedLegend<U> extends AbstractAttributeLegend imple
      * can be expressed as max( k in keys where k < d).
      */
     public abstract U getFromLower(Double d);
+
+    public Set<Double> getKeys(){
+        SeParameter c = getParameter();
+        TreeSet<Double> ret = new TreeSet<Double>();
+        if(c instanceof Literal){
+            ret.add(Double.NEGATIVE_INFINITY);
+        } else {
+            Categorize cat = (Categorize) c;
+            int num = ((Categorize) c).getNumClasses();
+            for(int i = 0; i<num; i++){
+                try {
+                    ret.add(cat.getThreshold(i).getValue(null));
+                } catch (ParameterException e) {
+                    throw new IllegalStateException("We should need additional values to retrieve our thresholds.");
+                }
+            }
+        }
+        return ret;
+    }
 
     /**
     * Adds a listener that will be notified when {@link CategorizedLegend#   fireTypeChanged} is called.
