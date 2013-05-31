@@ -106,6 +106,41 @@ public class CategorizedLineTest extends AnalyzerTest{
         assertTrue(cl.getNextThreshold(150000.0).equals(Double.POSITIVE_INFINITY));
     }
 
+
+    @Test
+    public void testRemove() throws Exception {
+        CategorizedLine cl = getCategorizedLine();
+        LineParameters lp = cl.remove(70000.0);
+        assertTrue(lp.equals(new LineParameters(Color.decode("#dd66ee"),.75,1.0 ,"2 2")));
+        assertTrue(cl.get(Double.NEGATIVE_INFINITY).equals(new LineParameters(Color.decode("#113355"),.75,.5,"2 2")));
+        assertTrue(cl.get(80000.0 ).equals(new LineParameters(Color.decode("#dd66ee"),.75,1.25,"2 2")));
+        assertTrue(cl.get(100000.0).equals(new LineParameters(Color.decode("#ffaa99"),.75,1.5 ,"2 2")));
+    }
+
+
+    @Test
+    public void testRemoveInf() throws Exception {
+        CategorizedLine cl = getCategorizedLine();
+        cl.remove(Double.NEGATIVE_INFINITY);
+        assertTrue(cl.get(Double.NEGATIVE_INFINITY).equals(new LineParameters(Color.decode("#dd66ee"),.75,1.0 ,"2 2")));
+        assertTrue(cl.get(80000.0 ).equals(new LineParameters(Color.decode("#dd66ee"),.75,1.25,"2 2")));
+        assertTrue(cl.get(100000.0).equals(new LineParameters(Color.decode("#ffaa99"),.75,1.5 ,"2 2")));
+    }
+
+
+    @Test
+    public void testRemoveInfAlone() throws Exception {
+        CategorizedLine cl = getCategorizedLine();
+        cl.remove(Double.NEGATIVE_INFINITY);
+        cl.remove(Double.NEGATIVE_INFINITY);
+        cl.remove(Double.NEGATIVE_INFINITY);
+        assertTrue(cl.get(Double.NEGATIVE_INFINITY).equals(new LineParameters(Color.decode("#ffaa99"),.75,1.5 ,"2 2")));
+        assertTrue(cl.size()==1);
+        cl.remove(Double.NEGATIVE_INFINITY);
+        assertTrue(cl.get(Double.NEGATIVE_INFINITY).equals(new LineParameters(Color.decode("#ffaa99"),.75,1.5 ,"2 2")));
+        assertTrue(cl.size()==1);
+    }
+
     @Test
     public void testPutAll() throws Exception {
         CategorizedLine cl = getCategorizedLine();

@@ -86,11 +86,11 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> {
 
     @Override
     public LineParameters put(Double d, LineParameters lp) {
+        forceMapping(d);
         LineParameters ret = null;
         if(containsKey(d)){
             ret = get(d);
         }
-        forceMapping(d);
         color.put(d,lp.getLineColor());
         opacity.put(d,lp.getLineOpacity());
         width.put(d,lp.getLineWidth());
@@ -114,6 +114,19 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> {
 
     @Override
     public LineParameters remove(Object o) {
-        throw new UnsupportedOperationException("remove not implemented yet in org.orbisgis.legend.thematic.categorize.CategorizedLine");
+        if(!(o instanceof Double)){
+            throw new IllegalArgumentException("Keys are double values in this map");
+        }
+        Double d = (Double)o;
+        forceMapping(d);
+        LineParameters ret = null;
+        if(containsKey(d)){
+            ret = get(d);
+        }
+        color.remove(d);
+        opacity.remove(d);
+        width.remove(d);
+        dash.remove(d);
+        return ret;
     }
 }
