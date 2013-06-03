@@ -59,6 +59,7 @@ import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.components.findReplace.FindReplaceDialog;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.sqlconsole.actions.ExecuteScriptProcess;
 import org.orbisgis.view.sqlconsole.blockComment.QuoteSQL;
 import org.orbisgis.view.sqlconsole.codereformat.CodeReformator;
@@ -95,7 +96,6 @@ public class SQLConsolePanel extends JPanel {
         static CommentSpec[] COMMENT_SPECS = new CommentSpec[]{
                 new CommentSpec("/*", "*/"), new CommentSpec("--", "\n")};
         private FindReplaceDialog findReplaceDialog;
-        private MapContext mapContext;
         private ActionCommands actions = new ActionCommands();
         private SQLFunctionsPanel sqlFunctionsPanel;
         private DefaultAction executeAction;
@@ -220,14 +220,6 @@ public class SQLConsolePanel extends JPanel {
         public ActionCommands getActions() {
             return actions;
         }
-
-    /**
-         * The map context is used to show the selected geometries
-         * @param mapContext 
-         */
-        public void setMapContext(MapContext mapContext) {
-                this.mapContext = mapContext;
-        }
         
         private RTextScrollPane getCenterPanel() {
                 if (centerPanel == null) {
@@ -259,8 +251,12 @@ public class SQLConsolePanel extends JPanel {
         public void onExecute() {      
                 if (scriptPanel.getDocument().getLength() > 0) {
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
-
-                bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(getText(), this,mapContext));
+                    MapContext mapContext = null;
+                    MapElement mapElement = MapElement.fetchFirstMapElement();
+                    if(mapElement!=null) {
+                        mapContext = mapElement.getMapContext();
+                    }
+                    bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(getText(), this,mapContext));
                 }
         }
                
