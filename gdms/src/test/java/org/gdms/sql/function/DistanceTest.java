@@ -34,6 +34,7 @@ package org.gdms.sql.function;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import org.gdms.sql.function.spatial.geometry.distance.ST_LocateAlong;
+import org.gdms.sql.function.spatial.geometry.distance.ST_NearestPoints;
 import org.junit.Test;
 import com.vividsolutions.jts.geom.Polygon;
 import org.gdms.data.values.Value;
@@ -41,7 +42,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.FunctionTest;
 
 import org.gdms.sql.function.spatial.geometry.distance.ST_FurthestPoint;
-import org.gdms.sql.function.spatial.geometry.distance.ST_NearestPoint;
 import org.gdms.sql.function.spatial.geometry.distance.ST_ProjectTo;
 import static org.junit.Assert.*;
 
@@ -121,13 +121,13 @@ public class DistanceTest extends FunctionTest {
 
     @Test
     public void testST_NearestPoints() throws Exception {
-        ST_NearestPoint sT_NearestPoint = new ST_NearestPoint();
+        ST_NearestPoints sT_NearestPoints = new ST_NearestPoints();
         Geometry geom = wktReader.read("POLYGON ((150 420, 110 150, 305 148, 300 360, 150 420))");
         Geometry base = wktReader.read("POINT (40 270)");
         Geometry expectedGeom = wktReader.read("POINT (125.89261744966443 257.2751677852349)");
         Value[] values = new Value[]{ValueFactory.createValue(base),
             ValueFactory.createValue(geom)};
-        Value result = evaluate(sT_NearestPoint, values);
+        Value result = evaluate(sT_NearestPoints, values);
         assertTrue(result.getAsGeometry().equals(expectedGeom));
     }
 
@@ -179,7 +179,7 @@ public class DistanceTest extends FunctionTest {
         Value result = evaluate(sT_ProjectTo, values);
         assertTrue(result.getAsGeometry().equals(expectedGeom));
     }
-    
+
     @Test
     public void testST_Project4() throws Exception {
         ST_ProjectTo sT_ProjectTo = new ST_ProjectTo();
@@ -191,7 +191,7 @@ public class DistanceTest extends FunctionTest {
         Value result = evaluate(sT_ProjectTo, values);
         assertTrue(result.getAsGeometry().equals(expectedGeom));
     }
-    
+
     @Test
     public void testST_Project5() throws Exception {
         ST_ProjectTo sT_ProjectTo = new ST_ProjectTo();
