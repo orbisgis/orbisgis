@@ -59,7 +59,7 @@ public final class ST_BoundingCircle extends AbstractScalarSpatialFunction {
 
         @Override
         public String getName() {
-                return "ST_BoudingCircle";
+                return "ST_BoundingCircle";
         }
 
         @Override

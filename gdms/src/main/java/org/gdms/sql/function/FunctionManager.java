@@ -112,7 +112,7 @@ import org.gdms.sql.function.spatial.geometry.crs.ST_SetSRID;
 import org.gdms.sql.function.spatial.geometry.crs.ST_Transform;
 import org.gdms.sql.function.spatial.geometry.distance.ST_FurthestPoint;
 import org.gdms.sql.function.spatial.geometry.distance.ST_LocateAlong;
-import org.gdms.sql.function.spatial.geometry.distance.ST_NearestPoint;
+import org.gdms.sql.function.spatial.geometry.distance.ST_NearestPoints;
 import org.gdms.sql.function.spatial.geometry.edit.ST_3DReverse;
 import org.gdms.sql.function.spatial.geometry.edit.ST_AddZ;
 import org.gdms.sql.function.spatial.geometry.edit.ST_AddZFromRaster;
@@ -294,7 +294,7 @@ public final class FunctionManager {
                 addFunction(ST_BoundingCircle.class);
                 addFunction(ST_MinimumRectangle.class);
                 addFunction(ST_OctogonalEnvelope.class);
-                addFunction(ST_NearestPoint.class);
+                addFunction(ST_NearestPoints.class);
                 addFunction(ST_CircleCompacity.class);
                 addFunction(ST_IsClosed.class);
                 addFunction(ST_Simplify.class);
