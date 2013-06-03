@@ -55,13 +55,14 @@ import org.orbisgis.view.map.tool.Handler;
 /**
  * Convert a LineString into a MultiLineString
  */
-public class SplitLineStringTool extends AbstractPointTool {
+public class SplitLineByPointTool extends AbstractPointTool {
 
         @Override
         public void update(Observable o, Object arg) {
                 //PlugInContext.checkTool(this);
         }
 
+        @Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
                 return ToolUtilities.geometryTypeIs(vc, 
                                 TypeFactory.createType(Type.LINESTRING), 
@@ -69,6 +70,7 @@ public class SplitLineStringTool extends AbstractPointTool {
                         && ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionEqualsTo(vc, 1);
         }
 
+        @Override
         public boolean isVisible(MapContext vc, ToolManager tm) {
                 return isEnabled(vc, tm);
         }

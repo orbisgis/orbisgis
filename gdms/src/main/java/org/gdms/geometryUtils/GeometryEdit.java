@@ -587,12 +587,13 @@ public final class GeometryEdit {
      * @param lineString
      *
      */
-    public static Geometry splitMultiLineStringWithLine(MultiLineString input, LineString cut) {
+    public static MultiLineString splitMultiLineStringWithLine(MultiLineString input, LineString cut) {
         ArrayList<Geometry> geometries = new ArrayList<Geometry>();
-        for (int i = 0; i < input.getNumGeometries(); i++) {
-            geometries.add(splitLineStringWithLine((LineString) input.getGeometryN(i), cut));
+        Geometry lines = input.difference(cut);
+        for (int i = 0; i < lines.getNumGeometries(); i++) {
+            geometries.add(lines.getGeometryN(i));
         }
-        return FACTORY.buildGeometry(geometries);
+        return FACTORY.createMultiLineString(geometries.toArray(new LineString[geometries.size()]));
     }
 
     /**
