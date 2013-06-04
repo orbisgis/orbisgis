@@ -86,7 +86,6 @@ public class InfoTool extends AbstractRectangleTool {
         DataSource sds = layer.getDataSource();
 
         try {
-            GeometryFactory gf = ToolManager.toolsGeometryFactory;
             double minx = rect.getMinX();
             double miny = rect.getMinY();
             double maxx = rect.getMaxX();
