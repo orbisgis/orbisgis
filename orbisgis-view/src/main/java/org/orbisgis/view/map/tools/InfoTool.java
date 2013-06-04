@@ -172,8 +172,6 @@ public class InfoTool extends AbstractRectangleTool {
                 UILOGGER.error("Cannot obtain the data", e);
             } catch (IndexException e) {
                 UILOGGER.error("Cannot build the spatial index", e);
-            } catch (UnsupportedOperationException ex) {
-                java.util.logging.Logger.getLogger(InfoTool.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
