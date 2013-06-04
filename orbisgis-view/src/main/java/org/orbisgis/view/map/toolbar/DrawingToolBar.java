@@ -46,11 +46,9 @@ import org.orbisgis.view.map.tools.SplitLineByPointTool;
 import org.orbisgis.view.map.tools.SplitPolygonTool;
 import org.orbisgis.view.map.tools.VertexAdditionTool;
 import org.orbisgis.view.map.tools.VertexDeletionTool;
-
 import javax.swing.Action;
 import java.util.LinkedList;
 import java.util.List;
-import static org.orbisgis.view.main.frames.ext.ToolBarAction.DRAW_SPLIT_LINESTRING;
 import org.orbisgis.view.map.tools.SplitLineByLineTool;
 
 /**

@@ -55,6 +55,7 @@ public interface MapEditorAction extends ActionFactoryService<MapEditorExtension
     public static final String A_COMPASS = "A_COMPASS";
     public static final String A_FENCE = "A_FENCE";
     public static final String A_PICK_COORDINATES = "A_PICK_COORDINATES";
+    public static final String A_INFO_TOOL = "A_INFO_TOOL";
 
     // Standard actions
     public static final String A_FULL_EXTENT = "A_FULL_EXTENT";

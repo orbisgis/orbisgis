@@ -3,8 +3,8 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
@@ -23,130 +23,177 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * or contact directly: info_at_ orbisgis.org
  */
 package org.orbisgis.view.map.tools;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.io.WKTWriter;
 import java.awt.geom.Rectangle2D;
+import java.util.Iterator;
 import java.util.Observable;
+import java.util.logging.Level;
 import javax.swing.ImageIcon;
+import org.apache.commons.collections.IteratorUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.indexes.DefaultSpatialIndexQuery;
+import org.gdms.data.indexes.IndexException;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.DefaultJobId;
+import org.orbisgis.view.edition.EditableElementException;
+import org.orbisgis.view.edition.EditorDockable;
+import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
+import org.orbisgis.view.table.TableEditableElement;
+import org.orbisgis.view.table.TableEditor;
 
 /**
  * Show selected geometry information.
  */
 public class InfoTool extends AbstractRectangleTool {
-        private static Logger UILOGGER = Logger.getLogger("gui."+InfoTool.class);
 
-	@Override
-	public void update(Observable o, Object arg) {
-		//PlugInContext.checkTool(this);
-	}
+    private static Logger UILOGGER = Logger.getLogger("gui." + InfoTool.class);
 
-	@Override
-	protected void rectangleDone(Rectangle2D rect,
-			boolean smallerThanTolerance, MapContext vc, ToolManager tm)
-			throws TransitionException {
-		ILayer layer = vc.getSelectedLayers()[0];
-		DataSource sds = layer.getDataSource();
-		String sql;
-		try {
-			GeometryFactory gf = ToolManager.toolsGeometryFactory;
-			double minx = rect.getMinX();
-			double miny = rect.getMinY();
-			double maxx = rect.getMaxX();
-			double maxy = rect.getMaxY();
+    @Override
+    public void update(Observable o, Object arg) {
+        //PlugInContext.checkTool(this);
+    }
 
-			Coordinate lowerLeft = new Coordinate(minx, miny);
-			Coordinate upperRight = new Coordinate(maxx, maxy);
-			LinearRing envelopeShell = gf.createLinearRing(new Coordinate[] {
-					lowerLeft, new Coordinate(minx, maxy), upperRight,
-					new Coordinate(maxx, miny), lowerLeft, });
-			Geometry geomEnvelope = gf.createPolygon(envelopeShell,
-					new LinearRing[0]);
-			WKTWriter writer = new WKTWriter();
-			sql = "select * from " + layer.getName() + " where ST_intersects("
-					+ sds.getMetadata().getFieldName(sds.getSpatialFieldIndex()) + ", ST_geomfromtext('"
-					+ writer.write(geomEnvelope) + "'));";
-			BackgroundManager bm = Services.getService(BackgroundManager.class);
-			bm.backgroundOperation(new DefaultJobId(
-					"org.orbisgis.jobs.InfoTool"), new PopulateViewJob(sql));
-		} catch (DriverException e) {
-			throw new TransitionException(e);
-		} catch (DriverLoadException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    @Override
+    protected void rectangleDone(Rectangle2D rect,
+            boolean smallerThanTolerance, MapContext vc, ToolManager tm)
+            throws TransitionException {
+        ILayer layer = vc.getSelectedLayers()[0];
+        DataSource sds = layer.getDataSource();
 
-        @Override
-	public boolean isEnabled(MapContext vc, ToolManager tm) {
-            if (vc.getSelectedLayers().length == 1) {
-			try {
+        try {
+            GeometryFactory gf = ToolManager.toolsGeometryFactory;
+            double minx = rect.getMinX();
+            double miny = rect.getMinY();
+            double maxx = rect.getMaxX();
+            double maxy = rect.getMaxY();
+            BackgroundManager bm = Services.getService(BackgroundManager.class);
+            bm.backgroundOperation(new DefaultJobId(
+                    "org.orbisgis.jobs.InfoTool"), new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), sds));
+        } catch (DriverLoadException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean isEnabled(MapContext vc, ToolManager tm) {
+        if (vc.getSelectedLayers().length == 1) {
+            try {
                 if (vc.getSelectedLayers()[0].isVectorial()) {
-                        return vc.getSelectedLayers()[0].isVisible();
+                    return vc.getSelectedLayers()[0].isVisible();
                 }
-			} catch (DriverException e) {
-				return false;
+            } catch (DriverException e) {
+                return false;
             }
-		}
+        }
 
-            return false;
-	}
+        return false;
+    }
+
+    @Override
+    public boolean isVisible(MapContext vc, ToolManager tm) {
+        return true;
+    }
+
+    /**
+     * This class is used to open the selected features in a table component. If
+     * the table is closed a new table is openned. The selected feature replace
+     * the current selection if there is one.
+     */
+    private class PopulateViewJob implements BackgroundJob {
+
+        private final Envelope envelope;
+        private final DataSource sds;
+
+        private PopulateViewJob(Envelope envelope, DataSource sds) {
+            this.envelope = envelope;
+            this.sds = sds;
+        }
 
         @Override
-	public boolean isVisible(MapContext vc, ToolManager tm) {
-		return true;
-	}
+        public String getTaskName() {
+            return "Getting info";
+        }
 
-	private class PopulateViewJob implements BackgroundJob {
-
-		private String sql;
-
-		public PopulateViewJob(String sql) {
-			this.sql = sql;
-		}
-
-                @Override
-		public String getTaskName() {
-			return "Getting info";
-		}
-
-                @Override
-		public void run(ProgressMonitor pm) {
-			try {
-				UILOGGER.debug("Info query: " + sql);
-                                if (!pm.isCancelled()) {
-                                //					try {
-                                //						Services.getService(InformationManager.class).setContents(ds);
-                                //					} catch (DriverException e) {
-//						Services.getErrorManager().error(
-                                //								"Cannot show the data", e);
-                                //					}
-				}
-                        } catch (DriverLoadException e) {
-				UILOGGER.error("Cannot execute the query", e);
+        @Override
+        public void run(ProgressMonitor pm) {
+            try {
+                UILOGGER.debug("Info query: " + envelope.toString());
+                if (!pm.isCancelled()) {
+                    DataManager dm = Services.getService(DataManager.class);
+                    DataSourceFactory dsf = dm.getDataSourceFactory();
+                    int geomFieldindex = MetadataUtilities.getGeometryFieldIndex(sds.getMetadata());
+                    String geomField = sds.getMetadata().getFieldName(geomFieldindex);
+                    if (!dsf.getIndexManager().isIndexed(sds, geomField)) {
+                        dsf.getIndexManager().buildIndex(sds, geomField, pm);
+                    }
+                    DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(geomField, envelope);
+                    Iterator<Integer> iterator = sds.queryIndex(dsf, query);
+                    if (iterator.hasNext()) {
+                        IntegerUnion newSel = new IntegerUnion();
+                        newSel.addAll(IteratorUtils.toList(iterator));
+                        TableEditableElement tableOpenned = getOpennedTable(sds.getName());
+                        if (tableOpenned == null) {
+                            tableOpenned = new TableEditableElement(sds);
+                            EditorManager em = Services.getService(EditorManager.class);
+                            em.openEditable(tableOpenned);
                         }
-		}
-	}
+                        tableOpenned.setSelection(newSel);
+                    }
+                }
+            } catch (DriverLoadException e) {
+                UILOGGER.error("Cannot execute the query", e);
+            } catch (DriverException e) {
+                UILOGGER.error("Cannot obtain the geometry field", e);
+            } catch (NoSuchTableException e) {
+                UILOGGER.error("Cannot obtain the data", e);
+            } catch (IndexException e) {
+                UILOGGER.error("Cannot build the spatial index", e);
+            } catch (UnsupportedOperationException ex) {
+                java.util.logging.Logger.getLogger(InfoTool.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    /**
+     * Return true is the current TableEditableElement is already openned.
+     *
+     * @param tableEditableElement
+     * @return
+     */
+    public TableEditableElement getOpennedTable(String sourceName) {
+        EditorManager em = Services.getService(EditorManager.class);
+        for (EditorDockable editor : em.getEditors()) {
+            if (editor instanceof TableEditor && editor.getEditableElement().getId().equals(sourceName)) {
+                return (TableEditableElement) editor.getEditableElement();
+            }
+        }
+        return null;
+    }
 
     @Override
     public String getTooltip() {
@@ -154,12 +201,12 @@ public class InfoTool extends AbstractRectangleTool {
     }
 
     @Override
-	public String getName() {
-		return i18n.tr("Get feature attributes");
-	}
+    public String getName() {
+        return i18n.tr("Get feature attributes");
+    }
 
-        @Override
-        public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("information");
-        }
+    @Override
+    public ImageIcon getImageIcon() {
+        return OrbisGISIcon.getIcon("information");
+    }
 }
