@@ -223,6 +223,8 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
                         if(!item.isVisible() && item.getAction()!=null) {
                             doReset = true;
                             // Reset layout
+                            // Unlink action and removed ToolBar item
+                            item.resetItem();
                             commonControl.removeSingleDockable(item.getUniqueId());
                         }
                 }
