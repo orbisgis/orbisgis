@@ -55,6 +55,7 @@ public interface ToolBarAction  extends ActionFactoryService<MainWindow> {
     public static final String DRAW_MOVE_GEOMETRY = "DRAW_MOVE_GEOMETRY";
     public static final String DRAW_MOVE_VERTEX = "DRAW_MOVE_VERTEX";
     public static final String DRAW_SPLIT_LINESTRING = "DRAW_SPLIT_LINESTRING";
+    public static final String DRAW_SPLIT_LINE_BY_LINE = "DRAW_SPLIT_LINE_BY_LINE";
     public static final String DRAW_SPLIT_POLYGON = "DRAW_SPLIT_POLYGON";
     public static final String DRAW_VERTEX_ADDITION = "DRAW_VERTEX_ADDITION";
     public static final String DRAW_VERTEX_DELETION = "DRAW_VERTEX_DELETION";

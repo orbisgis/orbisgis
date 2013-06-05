@@ -49,7 +49,7 @@ import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
 
 /**
- *
+ * This function is used to project a point on a linestring or multilinestring
  * @author Erwan Bocher
  */
 public class ST_ProjectTo extends AbstractScalarFunction {
@@ -64,7 +64,7 @@ public class ST_ProjectTo extends AbstractScalarFunction {
                 if (result != null) {
                         return ValueFactory.createValue(result);
                 }
-                return ValueFactory.createNullValue();
+                return values[0];
         }
 
         @Override
@@ -75,7 +75,8 @@ public class ST_ProjectTo extends AbstractScalarFunction {
         @Override
         public String getDescription() {
                 return "Projet a point along a linestring. If the point projected is out of line "
-                        + "the first or last point on the line will be returned.";
+                        + "the first or last point on the line will be returned otherwise"
+                        + " the input point.";
         }
 
         @Override
