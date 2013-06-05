@@ -80,6 +80,7 @@ import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.toolbar.ActionAutomaton;
 import org.orbisgis.view.map.tools.CompassTool;
 import org.orbisgis.view.map.tools.FencePolygonTool;
+import org.orbisgis.view.map.tools.InfoTool;
 import org.orbisgis.view.map.tools.MesureLineTool;
 import org.orbisgis.view.map.tools.MesurePolygonTool;
 import org.orbisgis.view.map.tools.PanTool;
@@ -377,6 +378,9 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 .setToolTipText(I18N.tr("Zoom to show all geometries")).setLogicalGroup("navigation"));
 
         // Selection tools
+        actions.addAction(new ActionAutomaton(MapEditorAction.A_INFO_TOOL,new InfoTool(),this)
+                .addTrackedMapContextProperty(MapContext.PROP_SELECTEDLAYERS)
+                .addTrackedMapContextProperty(MapContext.PROP_SELECTEDSTYLES).setLogicalGroup("selection"));
         actions.addAction(new ActionAutomaton(MapEditorAction.A_SELECTION,new SelectionTool(),this)
                 .addTrackedMapContextProperty(MapContext.PROP_SELECTEDLAYERS)
                 .addTrackedMapContextProperty(MapContext.PROP_SELECTEDSTYLES).setLogicalGroup("selection"));

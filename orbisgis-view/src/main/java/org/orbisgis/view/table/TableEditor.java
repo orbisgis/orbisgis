@@ -712,6 +712,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * Return the editable document
          * @return 
          */
+        @Override
         public TableEditableElement getTableEditableElement() {
                 return tableEditableElement;
         }

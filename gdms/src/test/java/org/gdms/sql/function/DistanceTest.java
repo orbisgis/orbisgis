@@ -154,5 +154,53 @@ public class DistanceTest extends FunctionTest {
                 Value result = evaluate(sT_ProjectTo, values);
                 assertTrue(result.getAsGeometry().equals(expectedGeom));
         }
-        
+
+    @Test
+    public void testST_ProjectTo2() throws Exception {
+        ST_ProjectTo sT_ProjectTo = new ST_ProjectTo();
+        Geometry geom = wktReader.read("LINESTRING (0 0, 10 0)");
+        Geometry base = wktReader.read("POINT(5 5)");
+        Geometry expectedGeom = wktReader.read("POINT (5 0)");
+        Value[] values = new Value[]{ValueFactory.createValue(base),
+                ValueFactory.createValue(geom)};
+        Value result = evaluate(sT_ProjectTo, values);
+        assertTrue(result.getAsGeometry().equals(expectedGeom));
+    }
+
+    @Test
+    public void testST_Project3() throws Exception {
+        ST_ProjectTo sT_ProjectTo = new ST_ProjectTo();
+        Geometry geom = wktReader.read("MULTILINESTRING ((357635 6789300, 358259 "
+                + "6789277, 359425 6789433, 359994 6789299))");
+        Geometry base = wktReader.read("POINT (357904 6789139)");
+        Geometry expectedGeom = wktReader.read("POINT (357909.56128031184 6789289.879952809)");
+        Value[] values = new Value[]{ValueFactory.createValue(base),
+                ValueFactory.createValue(geom)};
+        Value result = evaluate(sT_ProjectTo, values);
+        assertTrue(result.getAsGeometry().equals(expectedGeom));
+    }
+
+    @Test
+    public void testST_Project4() throws Exception {
+        ST_ProjectTo sT_ProjectTo = new ST_ProjectTo();
+        Geometry geom = wktReader.read("LINESTRING(10 0 , 20 0)");
+        Geometry base = wktReader.read("POINT( 0 5)");
+        Geometry expectedGeom = wktReader.read("POINT (10 0)");
+        Value[] values = new Value[]{ValueFactory.createValue(base),
+                ValueFactory.createValue(geom)};
+        Value result = evaluate(sT_ProjectTo, values);
+        assertTrue(result.getAsGeometry().equals(expectedGeom));
+    }
+
+    @Test
+    public void testST_Project5() throws Exception {
+        ST_ProjectTo sT_ProjectTo = new ST_ProjectTo();
+        Geometry geom = wktReader.read("LINESTRING(10 0 , 20 0)");
+        Geometry base = wktReader.read("POINT(22 5)");
+        Geometry expectedGeom = wktReader.read("POINT (20 0)");
+        Value[] values = new Value[]{ValueFactory.createValue(base),
+                ValueFactory.createValue(geom)};
+        Value result = evaluate(sT_ProjectTo, values);
+        assertTrue(result.getAsGeometry().equals(expectedGeom));
+    }
 }

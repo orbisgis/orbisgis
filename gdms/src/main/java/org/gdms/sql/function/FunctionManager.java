@@ -112,6 +112,7 @@ import org.gdms.sql.function.spatial.geometry.crs.ST_SetSRID;
 import org.gdms.sql.function.spatial.geometry.crs.ST_Transform;
 import org.gdms.sql.function.spatial.geometry.distance.ST_FurthestPoint;
 import org.gdms.sql.function.spatial.geometry.distance.ST_LocateAlong;
+import org.gdms.sql.function.spatial.geometry.distance.ST_ProjectTo;
 import org.gdms.sql.function.spatial.geometry.distance.ST_NearestPoints;
 import org.gdms.sql.function.spatial.geometry.edit.ST_3DReverse;
 import org.gdms.sql.function.spatial.geometry.edit.ST_AddZ;
@@ -120,6 +121,7 @@ import org.gdms.sql.function.spatial.geometry.edit.ST_Normalize;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Reverse;
 import org.gdms.sql.function.spatial.geometry.edit.ST_SetZToExtremities;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Snap;
+import org.gdms.sql.function.spatial.geometry.edit.ST_Split;
 import org.gdms.sql.function.spatial.geometry.edit.ST_SplitLine;
 import org.gdms.sql.function.spatial.geometry.io.ST_AsWKT;
 import org.gdms.sql.function.spatial.geometry.io.ST_GeomFromText;
@@ -382,6 +384,8 @@ public final class FunctionManager {
                 addFunction(ST_PLYExporter.class);
                 addFunction(ST_SetSRID.class);
                 addFunction(ST_SRID.class);
+                addFunction(ST_ProjectTo.class);
+                addFunction(ST_Split.class);
         }
 
         /**
