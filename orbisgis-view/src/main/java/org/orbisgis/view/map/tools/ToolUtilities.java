@@ -32,7 +32,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.Constraint;

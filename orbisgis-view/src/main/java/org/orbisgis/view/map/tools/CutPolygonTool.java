@@ -66,14 +66,14 @@ public class CutPolygonTool extends AbstractPolygonTool {
                                 if (handler instanceof MultiPolygonHandler) {
                                         MultiPolygonHandler mp = (MultiPolygonHandler) handler;
                                         MultiPolygon mpolygon = (MultiPolygon) sds.getGeometry(mp.getGeometryIndex());
-                                        MultiPolygon result = GeometryEdit.cutMultiPolygon(mpolygon, pol);
+                                        MultiPolygon result = GeometryEdit.cutMultiPolygonWithPolygon(mpolygon, pol);
                                         if (result != null) {
                                                 sds.setGeometry(mp.getGeometryIndex(), result);
                                         }
                                 } else if (handler instanceof PolygonHandler) {
                                         PolygonHandler ph = (PolygonHandler) handler;
                                         Polygon polygon = (Polygon) sds.getGeometry(ph.getGeometryIndex());
-                                        Collection<Polygon> polygons = GeometryEdit.cutPolygon(polygon, pol);
+                                        Collection<Polygon> polygons = GeometryEdit.cutPolygonWithPolygon(polygon, pol);
                                         if (polygons != null) {
                                                 sds.deleteRow(handler.getGeometryIndex());
                                                 Value[] row = sds.getRow(handler.getGeometryIndex());

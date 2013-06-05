@@ -781,10 +781,8 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         }
 
         /**
-         * We'll use three dedicated tymbols to draw the selected features. We
-         * build them here... and that's quite long, as you'll see. Not that it
-         * takes much time to the CPU, but it's hard to access the part of the
-         * symbolizers we want to customize.
+         * This method is used to build three dedicated symbols to draw 
+         * the selected features.
          */
         private void buildSymbolizers(){
                 //Let's retrieve the values we want to set to our color to the
@@ -808,12 +806,12 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 PenStroke ps = (PenStroke)lineSymbolizer.getStroke();
                 ((SolidFill)(ps).getFill()).setColor(new ColorLiteral(col));
                 ((SolidFill)(ps).getFill()).setOpacity(new RealLiteral(.8));
-                ps.setWidth(new RealLiteral(0.1));
+                ps.setWidth(new RealLiteral(0.5));
                 //And finally, the AreaSymbolizer...
                 areaSymbolizer = new AreaSymbolizer();
                 PenStroke psa = (PenStroke)areaSymbolizer.getStroke();
                 ((SolidFill)(psa).getFill()).setColor(new ColorLiteral(col));
-                psa.setWidth(new RealLiteral(0.1));
+                psa.setWidth(new RealLiteral(0.5));
                 ((SolidFill)(psa).getFill()).setOpacity(new RealLiteral(.8));
                 ((SolidFill)areaSymbolizer.getFill()).setColor(new ColorLiteral(Color.YELLOW));
                 ((SolidFill)areaSymbolizer.getFill()).setOpacity(new RealLiteral(.5));

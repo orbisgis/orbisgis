@@ -55,13 +55,14 @@ import org.orbisgis.view.map.tool.Handler;
 /**
  * Convert a LineString into a MultiLineString
  */
-public class SplitLineStringTool extends AbstractPointTool {
+public class SplitLineByPointTool extends AbstractPointTool {
 
         @Override
         public void update(Observable o, Object arg) {
                 //PlugInContext.checkTool(this);
         }
 
+        @Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
                 return ToolUtilities.geometryTypeIs(vc, 
                                 TypeFactory.createType(Type.LINESTRING), 
@@ -69,6 +70,7 @@ public class SplitLineStringTool extends AbstractPointTool {
                         && ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionEqualsTo(vc, 1);
         }
 
+        @Override
         public boolean isVisible(MapContext vc, ToolManager tm) {
                 return isEnabled(vc, tm);
         }
@@ -83,12 +85,12 @@ public class SplitLineStringTool extends AbstractPointTool {
                         int uiTolerance = tm.getUITolerance();
                         Value[] row = sds.getRow(handler.getGeometryIndex());
                         if (ToolUtilities.geometryTypeIs(mc, TypeFactory.createType(Type.MULTILINESTRING))) {
-                               MultiLineString result =  GeometryEdit.splitMultiLineString((MultiLineString) geom,point, uiTolerance);
+                               MultiLineString result =  GeometryEdit.splitMultiLineStringWithPoint((MultiLineString) geom,point, uiTolerance);
                                 if (result != null) {
                                     sds.setGeometry(handler.getGeometryIndex(), result);
                                 }
                         } else if (ToolUtilities.geometryTypeIs(mc, TypeFactory.createType(Type.LINESTRING))) {
-                                LineString[] lines = GeometryEdit.splitLineString((LineString) geom, point, uiTolerance);
+                                LineString[] lines = GeometryEdit.splitLineStringWithPoint((LineString) geom, point, uiTolerance);
                                 if (lines != null) {
                                         sds.setGeometry(handler.getGeometryIndex(), lines[0]);
                                         row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(lines[1]);
