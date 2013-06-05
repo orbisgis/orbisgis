@@ -53,8 +53,6 @@ import static org.junit.Assert.*;
  */
 public class ColorAnalyzerTest extends AnalyzerTest{
 
-        private String xmlCategorize = "src/test/resources/org/orbisgis/legend/colorCategorize.se";
-
         @Test
         public void testRecodeWrapperGetter() throws Exception{
                 Recode2Color r2 = getRecode2Color();
