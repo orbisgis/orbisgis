@@ -114,6 +114,7 @@ public class CategorizedReal extends CategorizedLegend<Double>{
                             new RealAttribute(getField()));
                     c2s.put(new RealLiteral(d),new RealLiteral(v));
                     parameter = c2s;
+                    fireTypeChanged();
                 } catch (ParameterException pe){
                     throw new IllegalStateException("We've failed at retrieved the value of a literal. " +
                             "Something is going really wrong here.");

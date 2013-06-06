@@ -6,6 +6,8 @@ import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
+import org.orbisgis.core.renderer.se.parameter.Categorize;
+import org.orbisgis.core.renderer.se.parameter.Literal;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.thematic.PointParameters;
@@ -206,6 +208,44 @@ public class CategorizedPointTest extends AnalyzerTest {
         CategorizedPoint cp = new CategorizedPoint(ps);
         PointParameters tester = new PointParameters(Color.decode("#223344"),.2,2.0,"1 1",Color.decode("#113355"),.5,6.0,6.0,"SQUARE");
         assertTrue(cp.get(Double.NEGATIVE_INFINITY).equals(tester));
+    }
+
+    @Test
+    public void testParamsToCat() throws Exception {
+        PointSymbolizer ps = new PointSymbolizer();
+        CategorizedPoint cp = new CategorizedPoint(ps);
+        cp.put(25.0, new PointParameters(Color.decode("#223344"), .2, 22.0, "1 1", Color.decode("#113355"), .5, 5.0, 5.0, "SQUARE"));
+        MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
+        PenStroke str = (PenStroke) mg.getStroke();
+        assertTrue(str.getWidth() instanceof Categorize);
+        assertTrue(str.getDashArray() instanceof Categorize);
+        assertTrue(((SolidFill)str.getFill()).getColor() instanceof Categorize);
+        assertTrue(((SolidFill)str.getFill()).getOpacity() instanceof Categorize);
+        assertTrue(((SolidFill)mg.getFill()).getColor() instanceof Categorize);
+        assertTrue(((SolidFill)mg.getFill()).getOpacity() instanceof Categorize);
+        assertTrue(mg.getViewBox().getWidth() instanceof Categorize);
+        assertTrue(mg.getViewBox().getHeight() instanceof Categorize);
+        assertTrue(mg.getWkn() instanceof Categorize);
+    }
+
+    @Test
+    public void testParamsToCatAfterStrokeEnabling() throws Exception {
+        Style s = getStyle(CATEGORIZED_POINT_NO_STROKE);
+        PointSymbolizer ps = (PointSymbolizer) s.getRules().get(0).getCompositeSymbolizer().getChildren().get(0);
+        CategorizedPoint cp = new CategorizedPoint(ps);
+        assertFalse(cp.isStrokeEnabled());
+        cp.setStrokeEnabled(true);
+        MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
+        PenStroke str = (PenStroke) mg.getStroke();
+        assertTrue(str.getWidth() instanceof Literal);
+        assertTrue(str.getDashArray() instanceof Literal);
+        assertTrue(((SolidFill)str.getFill()).getColor() instanceof Literal);
+        assertTrue(((SolidFill)str.getFill()).getOpacity() instanceof Literal);
+        cp.put(25.0, new PointParameters(Color.decode("#223344"), .2, 22.0, "1 1", Color.decode("#113355"), .5, 5.0, 5.0, "SQUARE"));
+        assertTrue(str.getWidth() instanceof Categorize);
+        assertTrue(str.getDashArray() instanceof Categorize);
+        assertTrue(((SolidFill)str.getFill()).getColor() instanceof Categorize);
+        assertTrue(((SolidFill)str.getFill()).getOpacity() instanceof Categorize);
     }
 
     private PointSymbolizer getPointSymbolizer() throws Exception {
