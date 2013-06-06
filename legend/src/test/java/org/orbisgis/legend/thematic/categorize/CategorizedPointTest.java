@@ -1,4 +1,4 @@
-package org.orbisgis.legend.structure.categorize;
+package org.orbisgis.legend.thematic.categorize;
 
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
@@ -97,7 +97,7 @@ public class CategorizedPointTest extends AnalyzerTest {
     public void testPutNotExisting() throws Exception {
         CategorizedPoint ca = getCategorizedPoint();
         PointParameters tester = new PointParameters(Color.decode("#ababab"),1.2,12.0,"11 1",Color.decode("#bcbcbc"),1.5,17.0,15.0,"X");
-        ca.put(76000.0, new PointParameters(Color.decode("#ababab"),1.2,12.0,"11 1",Color.decode("#bcbcbc"),1.5,17.0,15.0,"X"));
+        ca.put(76000.0, new PointParameters(Color.decode("#ababab"), 1.2, 12.0, "11 1", Color.decode("#bcbcbc"), 1.5, 17.0, 15.0, "X"));
         assertTrue(ca.get(76000.0).equals(tester));
         tester = new PointParameters(Color.decode("#dd77ee"),.2,2.0,"1 1",Color.decode("#dd66ee"),.5,7.0,5.0,"STAR");
         assertTrue(ca.get(70000.0).equals(tester));
