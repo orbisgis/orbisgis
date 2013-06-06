@@ -5,6 +5,7 @@ import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.graphic.ViewBox;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.thematic.PointParameters;
@@ -174,6 +175,37 @@ public class CategorizedPointTest extends AnalyzerTest {
                 5.0,
                 "SQUARE");
         assertTrue(ap.equals(ca.get(Double.NEGATIVE_INFINITY)));
+    }
+
+    @Test
+    public void testNullViewBox() throws Exception {
+        PointSymbolizer ps = getPointSymbolizer();
+        MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
+        mg.setViewBox(null);
+        CategorizedPoint cp = new CategorizedPoint(ps);
+        PointParameters tester = new PointParameters(Color.decode("#223344"),.2,2.0,"1 1",Color.decode("#113355"),.5,
+                MarkGraphic.DEFAULT_SIZE,MarkGraphic.DEFAULT_SIZE,"SQUARE");
+        assertTrue(cp.get(Double.NEGATIVE_INFINITY).equals(tester));
+    }
+
+    @Test
+    public void testViewBoxNullWidth() throws Exception {
+        PointSymbolizer ps = getPointSymbolizer();
+        MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
+        mg.getViewBox().setWidth(null);
+        CategorizedPoint cp = new CategorizedPoint(ps);
+        PointParameters tester = new PointParameters(Color.decode("#223344"),.2,2.0,"1 1",Color.decode("#113355"),.5,5.0,5.0,"SQUARE");
+        assertTrue(cp.get(Double.NEGATIVE_INFINITY).equals(tester));
+    }
+
+    @Test
+    public void testViewBoxNullHeight() throws Exception {
+        PointSymbolizer ps = getPointSymbolizer();
+        MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
+        mg.getViewBox().setHeight(null);
+        CategorizedPoint cp = new CategorizedPoint(ps);
+        PointParameters tester = new PointParameters(Color.decode("#223344"),.2,2.0,"1 1",Color.decode("#113355"),.5,6.0,6.0,"SQUARE");
+        assertTrue(cp.get(Double.NEGATIVE_INFINITY).equals(tester));
     }
 
     private PointSymbolizer getPointSymbolizer() throws Exception {

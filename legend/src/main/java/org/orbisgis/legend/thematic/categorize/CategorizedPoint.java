@@ -1,11 +1,17 @@
 package org.orbisgis.legend.thematic.categorize;
 
+import net.opengis.se._2_0.core.ParameterValueType;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
+import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.graphic.ViewBox;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.structure.categorize.CategorizedColor;
@@ -77,8 +83,29 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
         } else {
             throw new IllegalArgumentException("Can't recognize a Categorized symbol in the input symbolizer.");
         }
-        widthSymbol = new CategorizedReal(mg.getViewBox().getWidth());
-        heightSymbol = new CategorizedReal(mg.getViewBox().getHeight());
+        ViewBox vb = mg.getViewBox();
+        RealParameter rpw = vb.getWidth();
+        RealParameter rph = vb.getHeight();
+        try {
+            if(rpw == null && rph == null) {
+                rpw = new RealLiteral(MarkGraphic.DEFAULT_SIZE);
+                rph = new RealLiteral(MarkGraphic.DEFAULT_SIZE);
+                vb.setHeight(rph);
+                vb.setWidth(rpw);
+            } else if(rpw == null){
+                ParameterValueType val = rph.getJAXBParameterValueType();
+                rpw = SeParameterFactory.createRealParameter(val);
+                vb.setWidth(rpw);
+            } else if(rph == null){
+                ParameterValueType val = rpw.getJAXBParameterValueType();
+                rph = SeParameterFactory.createRealParameter(val);
+                vb.setHeight(rph);
+            }
+        } catch (SeExceptions.InvalidStyle invalidStyle) {
+            throw new IllegalStateException("We've failed to clone a valid SE Parameter !", invalidStyle);
+        }
+        widthSymbol = new CategorizedReal(vb.getWidth());
+        heightSymbol = new CategorizedReal(vb.getHeight());
         wkn = new CategorizedString(mg.getWkn());
     }
 
