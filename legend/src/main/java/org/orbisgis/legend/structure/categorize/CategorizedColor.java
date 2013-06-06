@@ -114,6 +114,7 @@ public class CategorizedColor extends CategorizedLegend<Color>{
                             new RealAttribute(getField()));
                     c2s.put(new RealLiteral(d),new ColorLiteral(v));
                     parameter = c2s;
+                    fireTypeChanged();
                 } catch (ParameterException pe){
                     throw new IllegalStateException("We've failed at retrieved the value of a literal. " +
                             "Something is going really wrong here.");
