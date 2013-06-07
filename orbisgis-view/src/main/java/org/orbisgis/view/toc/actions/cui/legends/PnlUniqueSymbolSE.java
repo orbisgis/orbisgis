@@ -57,6 +57,8 @@ import java.beans.PropertyChangeListener;
  */
 public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements ILegendPanel, UIPanel {
 
+        public static final double SPIN_STEP = 0.1;
+
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlUniqueSymbolSE.class);
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueSymbolSE.class);
         private String id;
@@ -102,7 +104,7 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
          *      The wanted {@code JNumericSpinner}.
          */
         public JNumericSpinner getLineWidthSpinner(final ConstantPenStroke cps){
-                final JNumericSpinner jns = new JNumericSpinner(4, 0, Integer.MAX_VALUE, 0.01);
+                final JNumericSpinner jns = new JNumericSpinner(4, 0, Integer.MAX_VALUE, SPIN_STEP);
                 ChangeListener cl = EventHandler.create(ChangeListener.class, cps, "lineWidth", "source.value");
                 jns.addChangeListener(cl);
                 jns.setValue(cps.getLineWidth());
@@ -120,7 +122,7 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
          * @return
          */
         public JNumericSpinner getLineOpacitySpinner(final ConstantSolidFill cps){
-                final JNumericSpinner jns = new JNumericSpinner(4, 0, 1, 0.01);
+                final JNumericSpinner jns = new JNumericSpinner(4, 0, 1, SPIN_STEP);
                 ChangeListener cl = EventHandler.create(ChangeListener.class, cps, "opacity", "source.value");
                 jns.addChangeListener(cl);
                 jns.setValue(cps.getOpacity());
