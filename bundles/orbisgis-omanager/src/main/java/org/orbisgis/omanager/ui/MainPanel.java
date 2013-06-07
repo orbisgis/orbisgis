@@ -487,9 +487,11 @@ public class MainPanel extends JPanel {
             chosenURL = showInputURI(chosenURL,errMessage);
             //If a string was returned, say so.
             if ((chosenURL != null)) {
-                Collection<URL> urls = repositoryAdminTrackerCustomizer.getRepositoriesURL();
+                List<URL> urls = repositoryAdminTrackerCustomizer.getRepositoriesURL();
                 try {
-                    URI userURI = new URI(chosenURL);
+                    String chosenURLNoSpaces = chosenURL.replaceAll("\\s", "");
+                    URI userURI = new URI(chosenURLNoSpaces);
+                    // TODO: How can a list of URLs contain a URI?
                     if(urls.contains(userURI)) {
                         errMessage = I18N.tr("This repository URL already exists");
                     } else {
@@ -504,7 +506,7 @@ public class MainPanel extends JPanel {
 
     }
     private String showInputURI(String defaultValue,String errorMessage) {
-        StringBuilder message = new StringBuilder(I18N.tr("Enter repository URL :"));
+        StringBuilder message = new StringBuilder(I18N.tr("Enter the repository URL:"));
         if(!errorMessage.isEmpty()) {
             message.append("\n");
             message.append(errorMessage);
@@ -512,7 +514,7 @@ public class MainPanel extends JPanel {
         return (String) JOptionPane.showInputDialog(
                 this,
                 message.toString(),
-                I18N.tr("Add plug-in repository"),
+                I18N.tr("Add a plugin repository"),
                 JOptionPane.PLAIN_MESSAGE,
                 null,
                 null,
