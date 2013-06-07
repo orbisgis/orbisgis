@@ -35,6 +35,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.analyzer.symbolizers.AreaSymbolizerAnalyzer;
+import org.orbisgis.legend.thematic.categorize.CategorizedArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 
 import java.awt.*;
@@ -188,6 +189,20 @@ public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(usa.getStrokeUom() == Uom.IN);
         usa.setStrokeUom(null);
         assertTrue(usa.getStrokeUom() == Uom.PX);
+    }
+
+    @Test
+    public void testFindCategorizedArea() throws Exception {
+        Style st = getStyle(CATEGORIZED_AREA);
+        AreaSymbolizer as = (AreaSymbolizer) st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        assertTrue(new AreaSymbolizerAnalyzer(as).getLegend() instanceof CategorizedArea);
+    }
+
+    @Test
+    public void testFindCategorizedAreaNoStroke() throws Exception {
+        Style st = getStyle(CATEGORIZED_AREA_NO_STROKE);
+        AreaSymbolizer as = (AreaSymbolizer) st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        assertTrue(new AreaSymbolizerAnalyzer(as).getLegend() instanceof CategorizedArea);
     }
 
     private AreaSymbolizer getChoroSymbolizer() throws Exception {

@@ -38,6 +38,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.thematic.categorize.CategorizedLine;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
@@ -82,7 +83,7 @@ public class LineSymbolizerAnalyzer extends SymbolizerTypeAnalyzer {
                     if (p instanceof Recode) {
                         return new RecodedLine(symbolizer);
                     } else if (p instanceof Categorize) {
-                        throw new UnsupportedOperationException("Not yet !");
+                        return new CategorizedLine(symbolizer);
                     } else if (p instanceof RealParameter && validateLinearInterpolate((RealParameter)p)) {
                         //We need to analyze the width and its Interpolate instance
                         return new ProportionalLine(symbolizer);
