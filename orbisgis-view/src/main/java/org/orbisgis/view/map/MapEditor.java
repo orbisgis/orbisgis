@@ -601,7 +601,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 if(eElement instanceof EditableSource) {
                     try {
                         EditableSource edit = (EditableSource) eElement;
-                        if(!edit.isOpen()){
+                        if(edit.getDataSource() == null){
                             edit.open(new NullProgressMonitor());
                             edit.close(new NullProgressMonitor());
                         }
