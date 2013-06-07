@@ -46,6 +46,7 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.analyzer.symbolizers.LineSymbolizerAnalyzer;
 import org.orbisgis.legend.thematic.LineParameters;
+import org.orbisgis.legend.thematic.categorize.CategorizedLine;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 
@@ -266,6 +267,14 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(usl.getPenStroke().getLineOpacity() == .5);
         assertTrue(usl.getPenStroke().getLineWidth() == 2.6);
         assertTrue(usl.getPenStroke().getLineColor().equals(Color.BLUE));
+    }
+
+    @Test
+    public void testFindCategorizedLine() throws Exception {
+        Style st = getStyle(CATEGORIZED_LINE);
+        LineSymbolizer ls = (LineSymbolizer) st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        LineSymbolizerAnalyzer lsa = new LineSymbolizerAnalyzer(ls);
+        assertTrue(lsa.getLegend() instanceof CategorizedLine);
     }
 
     private UniqueSymbolLine getUniqueSymbolLine(String s)  throws Exception {

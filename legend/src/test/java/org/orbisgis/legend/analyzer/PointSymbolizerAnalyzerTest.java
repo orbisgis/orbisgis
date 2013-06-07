@@ -44,6 +44,7 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.analyzer.symbolizers.PointSymbolizerAnalyzer;
 import org.orbisgis.legend.structure.viewbox.ConstantViewBox;
+import org.orbisgis.legend.thematic.categorize.CategorizedPoint;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 
 /**
@@ -88,6 +89,22 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
                 UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
                 PointSymbolizerAnalyzer psa = new PointSymbolizerAnalyzer(ps);
                 assertTrue(psa.getLegend() instanceof UniqueSymbolPoint);
+    }
+
+    @Test
+    public void testFindCategorizedPoint() throws Exception {
+        Style st = getStyle(CATEGORIZED_POINT);
+        PointSymbolizer ps = (PointSymbolizer) st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        PointSymbolizerAnalyzer psa = new PointSymbolizerAnalyzer(ps);
+        assertTrue(psa.getLegend() instanceof CategorizedPoint);
+    }
+
+    @Test
+    public void testFindCategorizedPointNoStroke() throws Exception {
+        Style st = getStyle(CATEGORIZED_POINT_NO_STROKE);
+        PointSymbolizer ps = (PointSymbolizer) st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        PointSymbolizerAnalyzer psa = new PointSymbolizerAnalyzer(ps);
+        assertTrue(psa.getLegend() instanceof CategorizedPoint);
     }
     
     /**
