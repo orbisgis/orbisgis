@@ -1,8 +1,12 @@
 package org.orbisgis.legend.thematic.categorize;
 
+import junit.framework.Assert;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.Categorize;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.thematic.LineParameters;
 
@@ -152,6 +156,18 @@ public class CategorizedLineTest extends AnalyzerTest{
         assertTrue(cl.get(25.0).equals(new LineParameters(Color.decode("#dd6643"), .725, 10.0, "2 2 5")));
         assertTrue(cl.get(70000.0).equals(new LineParameters(Color.decode("#dd6643"),.725, 10.0,"2 2 5")));
         assertTrue(cl.get(Double.NEGATIVE_INFINITY).equals(new LineParameters(Color.decode("#ad6643"),.225, 20.0,"2 2 6")));
+    }
+
+    @Test
+    public void testTransformToCategorize() throws Exception {
+        LineSymbolizer ls = new LineSymbolizer();
+        CategorizedLine cl = new CategorizedLine(ls);
+        cl.put(25.0, new LineParameters(Color.decode("#dd6643"), .725, 10.0, "2 2 5"));
+        PenStroke ps = (PenStroke) ls.getStroke();
+        assertTrue(ps.getWidth() instanceof Categorize);
+        assertTrue(ps.getDashArray() instanceof Categorize);
+        assertTrue(((SolidFill)ps.getFill()).getColor() instanceof Categorize);
+        assertTrue(((SolidFill)ps.getFill()).getOpacity() instanceof Categorize);
     }
 
     private LineSymbolizer getLineSymbolizer() throws Exception {
