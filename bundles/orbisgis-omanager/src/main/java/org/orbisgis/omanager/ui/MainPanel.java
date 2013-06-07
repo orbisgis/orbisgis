@@ -489,8 +489,7 @@ public class MainPanel extends JPanel {
             if ((chosenURL != null)) {
                 List<URL> urls = repositoryAdminTrackerCustomizer.getRepositoriesURL();
                 try {
-                    String chosenURLNoSpaces = chosenURL.replaceAll("\\s", "");
-                    URI userURI = new URI(chosenURLNoSpaces);
+                    URI userURI = new URI(chosenURL.trim());
                     // TODO: How can a list of URLs contain a URI?
                     if(urls.contains(userURI)) {
                         errMessage = I18N.tr("This repository URL already exists");
