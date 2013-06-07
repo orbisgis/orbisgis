@@ -49,6 +49,7 @@ import javax.swing.*;
 import javax.swing.event.TreeExpansionListener;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
@@ -64,6 +65,7 @@ import org.orbisgis.view.components.actions.ActionDockingListener;
 import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -597,12 +599,18 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             for(EditableElement eElement : editableList) {
                 pm.progressTo(100 * i++ / editableList.length);
                 if(eElement instanceof EditableSource) {
-                    DataSource source = ((EditableSource) eElement).getDataSource();
                     try {
+                        EditableSource edit = (EditableSource) eElement;
+                        if(!edit.isOpen()){
+                            edit.open(new NullProgressMonitor());
+                        }
+                        DataSource source = edit.getDataSource();
                         dropLayer.addLayer(mapContext.createLayer(source));
                     } catch (LayerException e) {
                         //This layer can not be inserted, we continue to the next layer
                         GUILOGGER.warn(I18N.tr("Unable to create and drop the layer"),e);
+                    } catch (EditableElementException e) {
+                        GUILOGGER.warn(I18N.tr("A problem occurred while opening the DataSource :"),e);
                     }
                 } else if(eElement instanceof MapElement) {
                         final MapElement mapElement = (MapElement)eElement;
