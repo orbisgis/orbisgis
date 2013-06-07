@@ -449,7 +449,7 @@ public class MainPanel extends JPanel {
             //If a string was returned, say so.
             if ((chosenURL != null)) {
                 try {
-                    URI userURI = new URI(chosenURL);
+                    URI userURI = new URI(chosenURL.trim());
                     bundleContext.installBundle(userURI.toString());
                     return;
                 } catch(Exception ex) {
