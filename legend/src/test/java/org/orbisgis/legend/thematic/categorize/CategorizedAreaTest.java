@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.stroke.*;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.thematic.AreaParameters;
@@ -171,7 +172,21 @@ public class CategorizedAreaTest extends AnalyzerTest {
         assertTrue(ap.equals(ca.get(Double.NEGATIVE_INFINITY)));
     }
 
-
+    @Test
+    public void testTransformToCategorize() throws Exception {
+        AreaSymbolizer as = new AreaSymbolizer();
+        CategorizedArea ca = new CategorizedArea(as);
+        ca.put(76000.0, new AreaParameters(Color.decode("#ababab"),1.2,12.0,"11 2 1",Color.decode("#bcbcbc"),1.5));
+        SolidFill sfi = (SolidFill) as.getFill();
+        PenStroke ps = (PenStroke) as.getStroke();
+        SolidFill sfp = (SolidFill) ps.getFill();
+        assertTrue(sfi.getColor() instanceof Categorize);
+        assertTrue(sfi.getOpacity() instanceof Categorize);
+        assertTrue(sfp.getColor() instanceof Categorize);
+        assertTrue(sfp.getOpacity() instanceof Categorize);
+        assertTrue(ps.getDashArray() instanceof Categorize);
+        assertTrue(ps.getWidth() instanceof Categorize);
+    }
 
     private AreaSymbolizer getAreaSymbolizer() throws Exception {
         Style s = getStyle(CATEGORIZED_AREA);

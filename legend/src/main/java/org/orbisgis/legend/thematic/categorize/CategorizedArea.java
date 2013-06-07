@@ -4,12 +4,17 @@ import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.structure.categorize.CategorizedColor;
 import org.orbisgis.legend.structure.categorize.CategorizedLegend;
 import org.orbisgis.legend.structure.categorize.CategorizedReal;
 import org.orbisgis.legend.structure.categorize.CategorizedString;
+import org.orbisgis.legend.structure.recode.type.TypeEvent;
+import org.orbisgis.legend.structure.recode.type.TypeListener;
 import org.orbisgis.legend.thematic.AreaParameters;
 
 import java.awt.*;
@@ -65,8 +70,63 @@ public class CategorizedArea extends AbstractCategorizedLegend<AreaParameters> {
         } else {
             throw new IllegalArgumentException("Can't recognize a Categorized symbol in the input symbolizer.");
         }
+        feedListeners();
     }
 
+    private void feedListeners(){
+        final SolidFill pointFill = (SolidFill) symbolizer.getFill();
+        TypeListener cfListener = new TypeListener() {
+            @Override
+            public void typeChanged(TypeEvent te) {
+                ColorParameter p = (ColorParameter) te.getSource().getParameter();
+                pointFill.setColor(p);
+            }
+        };
+        colorFill.addListener(cfListener);
+        TypeListener ofListener = new TypeListener() {
+            @Override public void typeChanged(TypeEvent te) {
+                RealParameter p = (RealParameter) te.getSource().getParameter();
+                pointFill.setOpacity(p);
+            }
+        };
+        opacityFill.addListener(ofListener);
+        if(strokeEnabled){
+            feedStrokeListeners();
+        }
+    }
+
+    private void feedStrokeListeners(){
+        final PenStroke pointStroke = (PenStroke) symbolizer.getStroke();
+        final SolidFill strokeFill = (SolidFill) pointStroke.getFill();
+        TypeListener psColListener = new TypeListener() {
+            @Override public void typeChanged(TypeEvent te) {
+                ColorParameter p = (ColorParameter) te.getSource().getParameter();
+                strokeFill.setColor(p);
+            }
+        };
+        colorStroke.addListener(psColListener);
+        TypeListener psOpListener = new TypeListener() {
+            @Override public void typeChanged(TypeEvent te) {
+                RealParameter p = (RealParameter) te.getSource().getParameter();
+                strokeFill.setOpacity(p);
+            }
+        };
+        opacityStroke.addListener(psOpListener);
+        TypeListener dashListener = new TypeListener() {
+            @Override public void typeChanged(TypeEvent te) {
+                StringParameter p = (StringParameter) te.getSource().getParameter();
+                pointStroke.setDashArray(p);
+            }
+        };
+        dashStroke.addListener(dashListener);
+        TypeListener widthListener = new TypeListener() {
+            @Override public void typeChanged(TypeEvent te) {
+                RealParameter p = (RealParameter) te.getSource().getParameter();
+                pointStroke.setWidth(p);
+            }
+        };
+        widthStroke.addListener(widthListener);
+    }
 
     @Override
     public List<CategorizedLegend> getCategorizedLegend() {
@@ -201,6 +261,7 @@ public class CategorizedArea extends AbstractCategorizedLegend<AreaParameters> {
             opacityStroke = new CategorizedReal(((SolidFill)ps.getFill()).getOpacity());
             widthStroke = new CategorizedReal(ps.getWidth());
             dashStroke = new CategorizedString(ps.getDashArray());
+            feedStrokeListeners();
         }
         strokeEnabled = enable;
     }
