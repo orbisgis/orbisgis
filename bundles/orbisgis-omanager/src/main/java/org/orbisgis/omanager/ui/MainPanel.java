@@ -265,7 +265,7 @@ public class MainPanel extends JPanel {
         southButtons.add(addFile);
 
         JButton addUrl = new ButtonIcon(getIcon("install_plugin_from_url"));
-        addUrl.setToolTipText(I18N.tr("Add a plugin from URL (file:// or http(s)://). Dependencies are not automatically resolved."));
+        addUrl.setToolTipText(I18N.tr("Add a plugin from a URL (file:// or http(s)://). Dependencies are not automatically resolved."));
         addUrl.addActionListener(EventHandler.create(ActionListener.class,this,"onAddBundleJarUri"));
         southButtons.add(addUrl);
 
@@ -433,7 +433,7 @@ public class MainPanel extends JPanel {
         String errMessage = "";
         String chosenURL = "";
         do {
-            StringBuilder message = new StringBuilder(I18N.tr("Enter the plugin URL:"));
+            StringBuilder message = new StringBuilder(I18N.tr("Enter the plugin URL (file:// or http(s)://):"));
             if(!errMessage.isEmpty()) {
                 message.append("\n");
                 message.append(errMessage);
