@@ -164,7 +164,7 @@ public class ActionDeploy  extends ActionBundle {
                         }
                         LOGGER.error(sb.toString());
                     } else {
-                        LOGGER.error(I18N.tr("Could not resolve plug-in for unknown reason"));
+                        LOGGER.error(I18N.tr("Could not resolve plugin dependencies for an unknown reason"));
                     }
                 }
             }
