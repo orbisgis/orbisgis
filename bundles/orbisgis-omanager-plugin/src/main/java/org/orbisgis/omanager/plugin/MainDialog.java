@@ -79,7 +79,7 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
         setDefaultCloseOperation(HIDE_ON_CLOSE);
         setContentPane(contentPane);
         setSize(DEFAULT_DIMENSION);
-        setTitle(I18N.tr("Plug-ins manager"));
+        setTitle(I18N.tr("Plugin Manager"));
         shellPlugins.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
