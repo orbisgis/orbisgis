@@ -57,8 +57,8 @@ import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 
 /**
- * Rules are used to group rendering instructions by featyre-property conditions and map scales. 
- * Rule definitions are placed immediately inside of featuretype- or coverage-style definitions.</p>
+ * Rules are used to group rendering instructions by feature-property conditions and map scales.
+ * Rule definitions are placed immediately inside of FeatureType- or coverage-style definitions.</p>
  * <p>According to SE 2.0, a <code>Rule</code> contains only one <code>Symbolizer</code> - but that  
  * <code>Symbolizer</code> can be a composite one. This implementation directly embedded 
  * a <code>CompositeSymbolizer</code> that will contain one -or more- actual <code>Symbolizer</code>
@@ -102,7 +102,7 @@ public final class Rule extends AbstractSymbolizerNode {
      * That means we'll obtain a <code>LineSymbolizer</code> if this first geometry is of 
      * dimension 1, a <code>PolygonSymbolizer</code> if it is of dimension 2,
      * and a <code>PointSymbolizer</code> otherwise.
-     * @param layer 
+     * @param layer The layer that will receive a new default symbolizer.
      */
     public Rule(ILayer layer) {
         this();
@@ -115,7 +115,7 @@ public final class Rule extends AbstractSymbolizerNode {
     /**
      * Short circuit method to create the good symbolizer 
      * according the first spatial field.
-     * @param layer 
+     * @param layer The layer that will receive a new default symbolizer.
      */
     public void createSymbolizer(ILayer layer) {
         if (layer != null) {
@@ -171,9 +171,9 @@ public final class Rule extends AbstractSymbolizerNode {
     /**
      * We want to handle Geometry and GeometryCollection in a special way. We first check we don't have a dimension
      * constraint on the column. If we don't, we use the value of the first
-     * @param layer
-     * @param sfi
-     * @return
+     * @param layer The layer we want to analyze
+     * @param sfi The index we will query in the data source contained in the input layer. Must be a valid spatial field.
+     * @return The type found after analysis.
      */
     private int getAccurateType(ILayer layer, int sfi){
         try {
@@ -233,8 +233,8 @@ public final class Rule extends AbstractSymbolizerNode {
     /**
      * Build a rule, using both a <code>RuleType</code> and an <code>ILayer</code>.
      * The inner <code>CompositeSymbolizer</code> will be populated according to 
-     * the informations contained in <code>rt</code>
-     * @param rt
+     * the information contained in <code>rt</code>
+     * @param rt A JaXB representation of the input style.
      * @param layer
      * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
      */
@@ -280,7 +280,7 @@ public final class Rule extends AbstractSymbolizerNode {
 
     /**
      * Replace the current inner <code>CompositeSymbolizer</code> with <code>cs</code>
-     * @param cs 
+     * @param cs The new inner {@link CompositeSymbolizer}.
      */
     public void setCompositeSymbolizer(CompositeSymbolizer cs) {
         this.symbolizer = cs;
@@ -289,15 +289,15 @@ public final class Rule extends AbstractSymbolizerNode {
 
     /**
      * Get the inner <code>CompositeSymbolizer</code>
-     * @return 
+     * @return The inner {@link CompositeSymbolizer}.
      */
     public CompositeSymbolizer getCompositeSymbolizer() {
         return symbolizer;
     }
 
     /**
-     * Fill and return a Jaxb representation of this rule (ie a <code>RuleType</code>)
-     * @return 
+     * Fill and return a JaXB representation of this rule (ie a <code>RuleType</code>)
+     * @return The JaXB representation of this Rule as a {@link RuleType} instance.
      */
     public RuleType getJAXBType() {
         RuleType rt = new RuleType();
@@ -339,7 +339,7 @@ public final class Rule extends AbstractSymbolizerNode {
 
     /**
      * Replace the current inner <code>where</code> clause.
-     * @param where 
+     * @param where The new where clause.
      */
     public void setWhere(String where) {
         this.where = where;
@@ -349,9 +349,9 @@ public final class Rule extends AbstractSymbolizerNode {
      * Return a new Spatial data source, according to rule filter and specified extent
      * In the case there is no filter to apply, sds is returned
      *
-     * If the returned data source not equals sds, the new new datasource must be purged
+     * If the returned data source not equals sds, the new new data source must be purged
      *
-     * @return
+     * @return The filtered data source.
      * @throws DriverException
      */
     public FilterDataSourceDecorator getFilteredDataSet(FilterDataSourceDecorator fds)
@@ -367,7 +367,7 @@ public final class Rule extends AbstractSymbolizerNode {
 
     /**
      * Build a OrderBy clause to be used to optimize GDMS queries.
-     * @return 
+     * @return The "order by" clause
      */
     private String getOrderBy() {
         for (Symbolizer s : getCompositeSymbolizer().getSymbolizerList()) {
@@ -424,9 +424,9 @@ public final class Rule extends AbstractSymbolizerNode {
     }
 
     /**
-     * If <code>falbackrule</code> is true, this rule will be considered as an
+     * If <code>fallbackRule</code> is true, this rule will be considered as an
      * <code>ElseFilter</code> clause.
-     * @param fallbackRule 
+     * @param fallbackRule If true, this Rule will be considered as an ElseFilter.
      */
     public void setFallbackRule(boolean fallbackRule) {
         this.fallbackRule = fallbackRule;
@@ -491,7 +491,7 @@ public final class Rule extends AbstractSymbolizerNode {
      * {@link MapTransform}. That means that, if {@code scale} is the scale
      * denominator associated to the {@code MapTransform mt}, this method 
      * returns true if {@code minScaleDenom <= scale <= maxScalDenom}
-     * @param mt
+     * @param mt The tested MapTransform.
      * @return 
      * <ul><li>{@code true} if {@code minScaleDenom <= scale <= maxScalDenom}
      * . Note that {@code null} values for the inner scale denominator values
@@ -509,7 +509,7 @@ public final class Rule extends AbstractSymbolizerNode {
 
     /**
      * Get the description of this rule.
-     * @return
+     * @return The Description of this Rule.
      * @see Description
      */
     public Description getDescription() {
@@ -518,7 +518,7 @@ public final class Rule extends AbstractSymbolizerNode {
 
     /**
      * Set the description associated to this rule.
-     * @param description
+     * @param description The new description for this.
      * @see Description
      */
     public void setDescription(Description description) {
@@ -527,7 +527,7 @@ public final class Rule extends AbstractSymbolizerNode {
 
     /**
      * Get the name of this rule.
-     * @return 
+     * @return The name of the rule.
      */
     public String getName() {
         return name;
@@ -535,7 +535,7 @@ public final class Rule extends AbstractSymbolizerNode {
 
     /**
      * Set a new name to this rule.
-     * @param name 
+     * @param name The new name of this rule.
      */
     public void setName(String name) {
         this.name = name;
