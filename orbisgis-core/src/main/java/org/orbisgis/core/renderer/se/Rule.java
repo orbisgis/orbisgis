@@ -32,8 +32,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.vividsolutions.jts.geom.*;
 import net.opengis.se._2_0.core.ElseFilterType;
 import net.opengis.se._2_0.core.RuleType;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.FilterDataSourceDecorator;
 import org.gdms.data.schema.Metadata;
@@ -41,6 +44,7 @@ import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.data.values.GeometryValue;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
@@ -123,34 +127,16 @@ public final class Rule extends AbstractSymbolizerNode {
                     int typeCode = fieldType.getTypeCode();
                     if ((TypeFactory.isVectorial(typeCode) && typeCode != Type.NULL)
                             || (typeCode == Type.RASTER)) {
-                        switch (typeCode) {
+                        int test;
+                        if(typeCode == Type.GEOMETRY || typeCode == Type.GEOMETRYCOLLECTION){
+                            test = getAccurateType(layer, i);
+                        } else {
+                            test = typeCode;
+                        }
+                        switch (test) {
                             case Type.GEOMETRY:
                             case Type.GEOMETRYCOLLECTION:
-                                GeometryDimensionConstraint gdc =
-                                        (GeometryDimensionConstraint) fieldType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
-                                if (gdc == null) {
-                                    symb = new PointSymbolizer();
-                                    break;
-                                } else {
-                                    int dim = gdc.getDimension();
-                                    switch (dim) {
-                                        case Type.POINT:
-                                        case Type.MULTIPOINT:
-                                            symb = new PointSymbolizer();
-                                            break;
-                                        case Type.LINESTRING:
-                                        case Type.MULTILINESTRING:
-                                            symb = new LineSymbolizer();
-                                            break;
-                                        case Type.POLYGON:
-                                        case Type.MULTIPOLYGON:
-                                            symb = new AreaSymbolizer();
-                                            break;
-                                        default:
-                                            throw new UnsupportedOperationException("Can't get the dimension of this type : "
-                                                    + TypeFactory.getTypeName(typeCode));
-                                    }
-                                }
+                                symb = new PointSymbolizer();
                                 break;
                             case Type.POINT:
                             case Type.MULTIPOINT:
@@ -179,6 +165,68 @@ public final class Rule extends AbstractSymbolizerNode {
             } catch (DriverException ex) {
                 Logger.getLogger(Rule.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+    }
+
+    /**
+     * We want to handle Geometry and GeometryCollection in a special way. We first check we don't have a dimension
+     * constraint on the column. If we don't, we use the value of the first
+     * @param layer
+     * @param sfi
+     * @return
+     */
+    private int getAccurateType(ILayer layer, int sfi){
+        try {
+            DataSource ds = layer.getDataSource();
+            boolean opened = false;
+            if(!ds.isOpen()){
+                ds.open();
+                opened = true;
+            }
+            Type fieldType = ds.getMetadata().getFieldType(sfi);
+            int ret = fieldType.getTypeCode();
+            GeometryDimensionConstraint gdc =
+                    (GeometryDimensionConstraint) fieldType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+            if (gdc == null) {
+                if(ds.getRowCount() > 0 && sfi > -1){
+                    GeometryValue gv = (GeometryValue) ds.getFieldValue(0,sfi);
+                    Geometry geom = gv.getAsGeometry();
+                    if(geom instanceof Point || geom instanceof MultiPoint){
+                        ret = Type.POINT;
+                    } else if(geom instanceof LineString || geom instanceof MultiLineString){
+                        ret = Type.LINESTRING;
+                    } else if(geom instanceof Polygon || geom instanceof MultiPolygon){
+                        ret = Type.POLYGON;
+                    } else {
+                        ret = Type.GEOMETRY;
+                    }
+                }
+            } else {
+                int dim = gdc.getDimension();
+                switch (dim) {
+                    case Type.POINT:
+                    case Type.MULTIPOINT:
+                        ret = Type.POINT;
+                        break;
+                    case Type.LINESTRING:
+                    case Type.MULTILINESTRING:
+                        ret = Type.LINESTRING;
+                        break;
+                    case Type.POLYGON:
+                    case Type.MULTIPOLYGON:
+                        ret = Type.POLYGON;
+                        break;
+                    default:
+                        throw new UnsupportedOperationException("Can't get the dimension of this type : "
+                                + TypeFactory.getTypeName(dim));
+                }
+            }
+            if(opened){
+                ds.close();
+            }
+            return ret;
+        } catch (DriverException e) {
+            throw new UnsupportedOperationException("Not able to open the input data source.",e);
         }
     }
 
@@ -304,11 +352,7 @@ public final class Rule extends AbstractSymbolizerNode {
      * If the returned data source not equals sds, the new new datasource must be purged
      *
      * @return
-     * @throws DriverLoadException
-     * @throws DataSetCreationException
      * @throws DriverException
-     * @throws ParseException
-     * @throws SemanticException
      */
     public FilterDataSourceDecorator getFilteredDataSet(FilterDataSourceDecorator fds)
             throws DataSourceCreationException, DriverException {
