@@ -67,7 +67,7 @@ public class ManagerMenuFactory implements MainFrameAction {
     public List<Action> createActions(MainWindow target) {
         this.target = target;
         List<Action> actions = new ArrayList<Action>();
-        actions.add(new DefaultAction(MENU_MANAGE_PLUGINS,I18N.tr("&Manage plug-ins"),
+        actions.add(new DefaultAction(MENU_MANAGE_PLUGINS,I18N.tr("&Manage plugins"),
                 new ImageIcon(ManagerMenuFactory.class.getResource("panel_icon.png")),
                 EventHandler.create(ActionListener.class,this,"showManager")).setParent(MENU_TOOLS).setInsertFirst(true));
         return actions;

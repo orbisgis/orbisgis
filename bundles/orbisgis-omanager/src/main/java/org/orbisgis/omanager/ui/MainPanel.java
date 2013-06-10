@@ -265,7 +265,7 @@ public class MainPanel extends JPanel {
         southButtons.add(addFile);
 
         JButton addUrl = new ButtonIcon(getIcon("install_plugin_from_url"));
-        addUrl.setToolTipText(I18N.tr("Add a plugin from URL (file:// or http(s)://). Dependencies are not automatically resolved."));
+        addUrl.setToolTipText(I18N.tr("Add a plugin from a URL (file:// or http(s)://). Dependencies are not automatically resolved."));
         addUrl.addActionListener(EventHandler.create(ActionListener.class,this,"onAddBundleJarUri"));
         southButtons.add(addUrl);
 
@@ -433,7 +433,7 @@ public class MainPanel extends JPanel {
         String errMessage = "";
         String chosenURL = "";
         do {
-            StringBuilder message = new StringBuilder(I18N.tr("Enter the plugin URL:"));
+            StringBuilder message = new StringBuilder(I18N.tr("Enter the plugin URL (file:// or http(s)://):"));
             if(!errMessage.isEmpty()) {
                 message.append("\n");
                 message.append(errMessage);
@@ -449,7 +449,7 @@ public class MainPanel extends JPanel {
             //If a string was returned, say so.
             if ((chosenURL != null)) {
                 try {
-                    URI userURI = new URI(chosenURL.trim());
+                    URI userURI = new URI(chosenURL.trim().replaceAll(" ", "%20"));
                     bundleContext.installBundle(userURI.toString());
                     return;
                 } catch(Exception ex) {
@@ -489,9 +489,9 @@ public class MainPanel extends JPanel {
             if ((chosenURL != null)) {
                 List<URL> urls = repositoryAdminTrackerCustomizer.getRepositoriesURL();
                 try {
-                    URI userURI = new URI(chosenURL.trim());
+                    URI userURI = new URI(chosenURL.trim().replaceAll(" ", "%20"));
                     // TODO: How can a list of URLs contain a URI?
-                    if(urls.contains(userURI)) {
+                    if(urls.contains(userURI.toURL())) {
                         errMessage = I18N.tr("This repository URL already exists");
                     } else {
                         repositoryAdminTrackerCustomizer.addRepository(userURI.toURL());
