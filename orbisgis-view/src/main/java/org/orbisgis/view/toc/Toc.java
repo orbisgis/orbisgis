@@ -698,7 +698,8 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         this.mapContext.removeMapContextListener(tocMapContextListener);
                         this.mapContext.removePropertyChangeListener(mapContextPropertyChange);
                         mapElement.removePropertyChangeListener(modificationListener);
-                        for(TableEditableElement editable : linkedEditableElements.values()) {
+                        // We make a copy of the list to avoid ConcurrentModificationExceptions. See #421.
+                        for(TableEditableElement editable : new ArrayList<TableEditableElement>(linkedEditableElements.values())) {
                                 unlinkTableSelectionListening(editable);
                         }
                         linkedEditableElements.clear();
