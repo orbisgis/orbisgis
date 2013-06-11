@@ -41,7 +41,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.InterpolationBicubic2;
@@ -54,6 +55,8 @@ import net.opengis.se._2_0.core.MarkGraphicType;
 import net.opengis.se._2_0.core.VariableOnlineResourceType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.graphic.ExternalGraphicSource;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphicSource;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
@@ -64,13 +67,13 @@ import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 
 /**
  * An {@code OnlineResource} is used to keep a reference to an graphic resource
- * that is sotred on disk, or in a remote location, as an image.</p>
+ * that is stored on disk, or in a remote location, as an image.</p>
  * <p>An online resource is directly dependant on an URL that will be used to
  * retrieve the image we need.
  * @author Maxence Laurent, Alexis Guéganno
  * @todo implements MarkGraphicSource
  */
-public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource {
+public class OnlineResource extends AbstractSymbolizerNode implements ExternalGraphicSource, MarkGraphicSource {
 
 
     private URI uri;
@@ -93,7 +96,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
      * Build a new {@code OnlineResource} with the given String, that is supposed
      * to be an URL.
      * @param url
-     * @throws MalformedURLException
+     * @throws URISyntaxException
      * If {@code url} can't be used to build an {@code URL} instance.
      */
     public OnlineResource(String url) throws URISyntaxException {
@@ -105,7 +108,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
      * Build an {@code OnlineResource} from the given {@code OnlineResourceType}
      * .
      * @param onlineResource
-     * @throws MalformedURLException
+     * @throws URISyntaxException
      * If the href embedded in {@code onlineResource} can't be used to build an
      * {@code URL} instance.
      */
@@ -127,7 +130,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
     /**
      * Set the {@code URL} contained in this {@code OnlineResource}.
      * @param url
-     * @throws MalformedURLException
+     * @throws URISyntaxException
      */
     public void setUri(String url) throws URISyntaxException {
         if (url == null || url.isEmpty()) {
@@ -137,34 +140,10 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
         }
     }
 
-    //@Override
-    /**
-     * @deprecated
-     * @param viewBox
-     * @param sds
-     * @param fid
-     * @param mt
-     * @param mimeType
-     * @return
-     * @throws IOException
-     * @throws ParameterException
-     */
-    public RenderedImage getPlanarImage(ViewBox viewBox, Map<String,Value> map, MapTransform mt, String mimeType)
-            throws IOException, ParameterException {
-
-        if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
-            return getSvgImage(viewBox, map, mt, mimeType);
-        } else {
-            return getJAIImage(viewBox, map, mt, mimeType);
-        }
-    }
-
     /**
      * Get the boundnig box of this {@code OnlineResource} as a {@code
      * Rectangle2D.Double} instance.
      * @param viewBox
-     * @param sds
-     * @param fid
      * @param mt
      * @param mimeType
      * @return
@@ -214,8 +193,6 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
     /**
      *
      * @param viewBox
-     * @param sds
-     * @param fid
      * @param mt
      * @param mimeType
      * @return
@@ -338,7 +315,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
     }
 
     @Override
-    public void draw(Graphics2D g2, AffineTransform at, MapTransform mt, double opacity, String mimeType) {
+    public void draw(Graphics2D g2, Map<String,Value> map,AffineTransform at, MapTransform mt, double opacity, String mimeType) {
         if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
             drawSVG(g2, at, opacity);
         } else {
@@ -392,8 +369,6 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
     /**
      * @deprecated
      * @param viewBox
-     * @param sds
-     * @param fid
      * @param mt
      * @param mimeType
      * @return
@@ -609,5 +584,11 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
             Logger.getLogger(OnlineResource.class.getName()).log(Level.SEVERE, null, ex);
             throw new ParameterException(ex);
         }
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ret = new ArrayList<SymbolizerNode>();
+        return ret;
     }
 }
