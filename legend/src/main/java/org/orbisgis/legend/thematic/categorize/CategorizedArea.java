@@ -239,6 +239,29 @@ public class CategorizedArea extends AbstractCategorizedLegend<AreaParameters> {
 
     }
 
+    @Override
+    public void setFallbackParameters(AreaParameters fallback) {
+        if(strokeEnabled){
+            colorStroke.setFallbackValue(fallback.getLineColor());
+            opacityStroke.setFallbackValue(fallback.getLineOpacity());
+            dashStroke.setFallbackValue(fallback.getLineDash());
+            widthStroke.setFallbackValue(fallback.getLineWidth());
+        }
+        colorFill.setFallbackValue(fallback.getFillColor());
+        opacityFill.setFallbackValue(fallback.getFillOpacity());
+    }
+
+    @Override
+    public AreaParameters getFallbackParameters() {
+        return new AreaParameters(
+                strokeEnabled ? colorStroke.getFallbackValue() : Color.WHITE,
+                strokeEnabled ? opacityStroke.getFallbackValue() : .0,
+                strokeEnabled ? widthStroke.getFallbackValue() : .0,
+                strokeEnabled ? dashStroke.getFallbackValue() : "",
+                colorFill.getFallbackValue(),
+                opacityFill.getFallbackValue());
+    }
+
     /**
      * Return true if there is a stroke defined in the underlying symbolizer.
      * @return true if there is a stroke defined in the underlying symbolizer.

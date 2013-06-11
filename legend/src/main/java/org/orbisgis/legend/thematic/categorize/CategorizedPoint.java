@@ -353,4 +353,33 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
         }
         strokeEnabled = enable;
     }
+
+    @Override
+    public void setFallbackParameters(PointParameters fallback) {
+        if(strokeEnabled){
+            colorStroke.setFallbackValue(fallback.getLineColor());
+            opacityStroke.setFallbackValue(fallback.getLineOpacity());
+            dashStroke.setFallbackValue(fallback.getLineDash());
+            widthStroke.setFallbackValue(fallback.getLineWidth());
+        }
+        colorFill.setFallbackValue(fallback.getFillColor());
+        opacityFill.setFallbackValue(fallback.getFillOpacity());
+        widthSymbol.setFallbackValue(fallback.getWidth());
+        heightSymbol.setFallbackValue(fallback.getHeight());
+        wkn.setFallbackValue(fallback.getWkn());
+    }
+
+    @Override
+    public PointParameters getFallbackParameters() {
+        return new PointParameters(
+                strokeEnabled ? colorStroke.getFallbackValue() : Color.WHITE,
+                strokeEnabled ? opacityStroke.getFallbackValue() : .0,
+                strokeEnabled ? widthStroke.getFallbackValue() : .0,
+                strokeEnabled ? dashStroke.getFallbackValue() : "",
+                colorFill.getFallbackValue(),
+                opacityFill.getFallbackValue(),
+                widthSymbol.getFallbackValue(),
+                heightSymbol.getFallbackValue(),
+                wkn.getFallbackValue());
+    }
 }

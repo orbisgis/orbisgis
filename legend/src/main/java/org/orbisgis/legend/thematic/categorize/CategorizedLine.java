@@ -104,6 +104,23 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> {
     }
 
     @Override
+    public void setFallbackParameters(LineParameters fallback) {
+        color.setFallbackValue(fallback.getLineColor());
+        opacity.setFallbackValue(fallback.getLineOpacity());
+        dash.setFallbackValue(fallback.getLineDash());
+        width.setFallbackValue(fallback.getLineWidth());
+    }
+
+    @Override
+    public LineParameters getFallbackParameters() {
+        return new LineParameters(
+                color.getFallbackValue(),
+                opacity.getFallbackValue(),
+                width.getFallbackValue(),
+                dash.getFallbackValue());
+    }
+
+    @Override
     public Symbolizer getSymbolizer() {
         return symbolizer;
     }
