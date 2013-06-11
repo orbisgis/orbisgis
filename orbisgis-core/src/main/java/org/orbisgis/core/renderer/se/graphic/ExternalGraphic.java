@@ -236,6 +236,9 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
 
     public void setSource(ExternalGraphicSource src) throws IOException {
         this.source = src;
+        if(source != null){
+            source.setParent(this);
+        }
         updateGraphic();
     }
 

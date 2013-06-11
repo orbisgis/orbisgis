@@ -97,6 +97,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
      */
     public VariableOnlineResource(StringParameter url) throws MalformedURLException {
         this.url = url;
+        this.url.setParent(this);
     }
 
     /**
@@ -108,6 +109,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
     public VariableOnlineResource(VariableOnlineResourceType onlineResource)
             throws MalformedURLException, InvalidStyle {
         this.url = SeParameterFactory.createStringParameter(onlineResource.getHref());
+        this.url.setParent(this);
     }
 
     /**
@@ -124,6 +126,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
      */
     public void setUrl(StringParameter url) {
         this.url = url;
+        this.url.setParent(this);
     }
 
     /**
