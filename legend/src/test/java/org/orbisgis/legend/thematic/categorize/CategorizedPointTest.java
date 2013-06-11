@@ -42,6 +42,22 @@ public class CategorizedPointTest extends AnalyzerTest {
     }
 
     @Test
+    public void testGetFallback() throws Exception {
+        CategorizedPoint ca = getCategorizedPoint();
+        PointParameters ap = new PointParameters(Color.decode("#111111"),.2,2.0,"1 1",Color.decode("#111111"),.5,5.0,5.0,"CIRCLE");
+        assertTrue(ca.getFallbackParameters().equals(ap));
+    }
+
+    @Test
+    public void testSetFallback() throws Exception {
+        CategorizedPoint ca = getCategorizedPoint();
+        PointParameters ap1 = new PointParameters(Color.decode("#211111"),.4,22.0,"21 1",Color.decode("#211111"),.1254,25.0,25.0,"CIRCLE");
+        PointParameters ap2 = new PointParameters(Color.decode("#211111"),.4,22.0,"21 1",Color.decode("#211111"),.1254,25.0,25.0,"CIRCLE");
+        ca.setFallbackParameters(ap1);
+        assertTrue(ca.getFallbackParameters().equals(ap2));
+    }
+
+    @Test
     public void testGet() throws Exception {
         CategorizedPoint ca = getCategorizedPoint();
         PointParameters tester = new PointParameters(Color.decode("#223344"),.2,2.0,"1 1",Color.decode("#113355"),.5,6.0,5.0,"SQUARE");

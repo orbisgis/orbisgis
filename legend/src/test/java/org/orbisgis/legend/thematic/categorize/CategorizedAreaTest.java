@@ -8,6 +8,7 @@ import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.stroke.*;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.thematic.AreaParameters;
+import org.orbisgis.legend.thematic.LineParameters;
 
 import java.awt.*;
 
@@ -38,6 +39,22 @@ public class CategorizedAreaTest extends AnalyzerTest {
         } catch (IllegalArgumentException iae){
             assertTrue(true);
         }
+    }
+
+    @Test
+    public void testGetFallback() throws Exception {
+        CategorizedArea ca = getCategorizedArea();
+        AreaParameters ap = new AreaParameters(Color.decode("#111111"),.2,1.0,"1 1",Color.decode("#111111"),.5);
+        assertTrue(ca.getFallbackParameters().equals(ap));
+    }
+
+    @Test
+    public void testSetFallback() throws Exception {
+        CategorizedArea ca = getCategorizedArea();
+        AreaParameters ap1 = new AreaParameters(Color.decode("#211111"),.4,22.0,"21 1",Color.decode("#211111"),.4);
+        AreaParameters ap2 = new AreaParameters(Color.decode("#211111"),.4,22.0,"21 1",Color.decode("#211111"),.4);
+        ca.setFallbackParameters(ap1);
+        assertTrue(ca.getFallbackParameters().equals(ap2));
     }
 
     @Test

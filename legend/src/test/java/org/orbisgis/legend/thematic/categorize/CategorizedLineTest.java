@@ -44,6 +44,22 @@ public class CategorizedLineTest extends AnalyzerTest{
     }
 
     @Test
+    public void testGetFallback() throws Exception {
+        CategorizedLine ca = getCategorizedLine();
+        LineParameters ap = new LineParameters(Color.decode("#111111"),.75,1.0,"2 2");
+        assertTrue(ca.getFallbackParameters().equals(ap));
+    }
+
+    @Test
+    public void testSetFallback() throws Exception {
+        CategorizedLine ca = getCategorizedLine();
+        LineParameters ap1 = new LineParameters(Color.decode("#211111"),2.2,22.0,"21 1");
+        LineParameters ap2 = new LineParameters(Color.decode("#211111"),2.2,22.0,"21 1");
+        ca.setFallbackParameters(ap1);
+        assertTrue(ca.getFallbackParameters().equals(ap2));
+    }
+
+    @Test
     public void testGet() throws Exception {
         CategorizedLine cl = getCategorizedLine();
         assertTrue(cl.get(Double.NEGATIVE_INFINITY).equals(new LineParameters(Color.decode("#113355"),.75,.5,"2 2")));
