@@ -526,6 +526,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         this.onlineResource = onlineResource;
         if (onlineResource != null) {
             wkn = null;
+            onlineResource.setParent(this);
         }
     }
 
@@ -626,6 +627,9 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         }
         if (markIndex != null) {
             ls .add(markIndex);
+        }
+        if(onlineResource != null){
+            ls.add(onlineResource);
         }
         return ls;
     }

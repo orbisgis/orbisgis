@@ -236,6 +236,9 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
 
     public void setSource(ExternalGraphicSource src) throws IOException {
         this.source = src;
+        if(source != null){
+            source.setParent(this);
+        }
         updateGraphic();
     }
 
@@ -301,7 +304,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
             op = opacity.getValue(map);
         }
 
-        source.draw(g2, at, mt, op, mimeType);
+        source.draw(g2, map, at, mt, op, mimeType);
     }
 
     /*@Override
@@ -416,6 +419,9 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
         }
         if (viewBox != null) {
             ls.add(viewBox);
+        }
+        if(source != null){
+            ls.add(source);
         }
         return ls;
     }
