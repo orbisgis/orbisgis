@@ -35,8 +35,6 @@ import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -69,9 +67,14 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 
 /**
- *
+ * This class intends to make the link between an online image and the current symbolizing tree. It can be used for
+ * constant symbols and for classification. Indeed, the inner URL is stored in a StringParameter. Consequently, it can
+ * be computed through a SE String function.
+ * In order to improve performances, this class embeds two image caches : one for SVG images, the other one for raster
+ * images. If the underlying StringParameter changes, these caches are emptied in order to avoid incoherences between
+ * this class content and what is drawn on the map.
  * @author Maxence Laurent
- * @todo implements MarkGraphicSource
+ * @author Alexis Guéganno
  */
 public class VariableOnlineResource extends AbstractSymbolizerNode implements ExternalGraphicSource, MarkGraphicSource {
 
@@ -135,7 +138,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
      * @return The {@code PlanarImage} for the given configuration
      * @throws ParameterException If the given configuration can't be processed.
      */
-    private PlanarImage getPlanarJAI(Map<String, Value> map) throws ParameterException {
+    public PlanarImage getPlanarJAI(Map<String, Value> map) throws ParameterException {
         try {
             URL link = new URL(url.getValue(map));
             if (!imageCache.containsKey(link)) {
@@ -193,7 +196,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
      * @return The {@code SVGIcon} for the given configuration
      * @throws ParameterException If the given configuration can't be processed.
      */
-    private SVGIcon getSVGIcon(Map<String,Value> map) throws ParameterException {
+    public SVGIcon getSVGIcon(Map<String,Value> map) throws ParameterException {
         try {
             URI uri = new URI(url.getValue(map));
             if(!svgCache.containsKey(uri)){
@@ -363,56 +366,6 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
         }
     }
 
-
-    /**
-     * @deprecated
-     */
-    public RenderedImage getSvgImage(ViewBox viewBox,
-                                     Map<String,Value> map,
-                                     MapTransform mt, String mimeType)
-            throws IOException, ParameterException {
-        try {
-            SVGIcon icon = new SVGIcon();
-            icon.setSvgURI(new URI(url.getValue(map)));
-            BufferedImage img;
-
-            if (viewBox != null && mt != null && viewBox.usable()) {
-                FeaturesVisitor fv = new FeaturesVisitor();
-                viewBox.acceptVisitor(fv);
-                if (map == null && !fv.getResult().isEmpty()) {
-                    throw new ParameterException("View box depends on feature");
-                }
-
-                double width = icon.getIconWidth();
-                double height = icon.getIconHeight();
-
-                Point2D dim = viewBox.getDimensionInPixel(map, height, width, mt.getScaleDenominator(), mt.getDpi());
-
-                double widthDst = dim.getX();
-                double heightDst = dim.getY();
-
-                if (widthDst > 0 && heightDst > 0) {
-                    img = new BufferedImage((int) (widthDst + 0.5), (int) (heightDst + 0.5), BufferedImage.TYPE_4BYTE_ABGR);
-                    icon.setPreferredSize(new Dimension((int) (widthDst + 0.5), (int) (heightDst + 0.5)));
-                    icon.setScaleToFit(true);
-                } else {
-                    img = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-                }
-            } else {
-                img = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-            }
-            icon.setAntiAlias(true);
-            Graphics2D g2 = (Graphics2D) img.getGraphics();
-            if (mt != null) {
-                g2.addRenderingHints(mt.getRenderingHints());
-            }
-            icon.paintIcon((Component) null, g2, 0, 0);
-            return img;
-        } catch (URISyntaxException ex) {
-            throw new IOException(ex);
-        }
-    }
-
     @Override
     public void setJAXBSource(ExternalGraphicType e) {
         VariableOnlineResourceType o = new VariableOnlineResourceType();
@@ -491,6 +444,18 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
         }
     }
 
+    @Override
+    public void update(){
+        svgBounds = new HashMap<URI,Rectangle2D.Double>();
+        jaiBounds = new HashMap<URL,Rectangle2D.Double>();
+        svgCache = new HashMap<URI,SVGIcon>();
+        imageCache = new HashMap<URL,PlanarImage>();
+        SymbolizerNode par = getParent();
+        if(par != null) {
+            getParent().update();
+        }
+    }
+
 
     @Override
     public Shape getShape(ViewBox viewBox, Map<String,Value> map, Double scale, 
@@ -505,15 +470,10 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
         throw new ParameterException("Unknown MIME type: " + mimeType);
     }
 
-    //@Override
-
     public void setJAXBSource(MarkGraphicType m) {
         VariableOnlineResourceType o = new VariableOnlineResourceType();
-
         o.setHref(url.getJAXBParameterValueType());
-
         m.setOnlineResource(o);
-
     }
 
 
@@ -522,13 +482,11 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
                                      Double scale, Double dpi,
                                      RealParameter markIndex, String mimeType)
             throws IOException, ParameterException {
-
         if (mimeType != null) {
             if (mimeType.equalsIgnoreCase("application/x-font-ttf")) {
                 return getTrueTypeGlyphMaxSize(map, /*scale, dpi,*/ markIndex);
             }
         }
-
         return 0.0;
 
     }
@@ -542,24 +500,16 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
             InputStream iStream = u.openStream();
             Font font = Font.createFont(Font.TRUETYPE_FONT, iStream);
             iStream.close();
-
             double value = markIndex.getValue(map);
             char[] data = {(char) value};
-
             String text = String.copyValueOf(data);
-
             // Scale is used to have an high resolution
             AffineTransform at = AffineTransform.getTranslateInstance(0, 0);
-
             FontRenderContext fontCtx = new FontRenderContext(at, true, true);
             TextLayout tl = new TextLayout(text, font, fontCtx);
-
             Shape glyphOutline = tl.getOutline(at);
-
             Rectangle2D bounds2D = glyphOutline.getBounds2D();
-
             return Math.max(bounds2D.getWidth(), bounds2D.getHeight());
-
         } catch (FontFormatException ex) {
             Logger.getLogger(VariableOnlineResource.class.getName()).log(Level.SEVERE, null, ex);
             throw new ParameterException(ex);

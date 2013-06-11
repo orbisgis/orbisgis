@@ -50,8 +50,8 @@ public abstract class AbstractSymbolizerNode implements SymbolizerNode {
 
         @Override
         public void update() {
-                if(parent != null){
-                        parent.update();
+                if(getParent() != null){
+                        getParent().update();
                 }
         }
 

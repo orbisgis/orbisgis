@@ -136,6 +136,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         if(this.fallbackValue != null){
                 fallbackValue.setParent(this);
         }
+        update();
     }
 
     /**
@@ -324,8 +325,9 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     /**
      * Retrieves the value associated to the input data corresponding to the
      * lookupValue in {@code sds} at line {@code fid}.
-     * @param map
-     * @return
+     * @param sds The input data source
+     * param fid The index of the feature in the data source
+     * @return The parameter for the given configuration.
      */
     protected ToType getParameter(DataSet sds, long fid) {
         try {
@@ -589,12 +591,14 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         for (CategorizeListener l : listeners) {
             l.classAdded(index);
         }
+        update();
     }
 
     private void fireClassRemoved(int index) {
         for (CategorizeListener l : listeners) {
             l.classRemoved(index);
         }
+        update();
     }
 
     private void fireClassMoved(int i, int j) {
