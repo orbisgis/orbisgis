@@ -35,15 +35,14 @@ import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.InterpolationBicubic2;
@@ -55,7 +54,9 @@ import net.opengis.se._2_0.core.MarkGraphicType;
 import net.opengis.se._2_0.core.VariableOnlineResourceType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.graphic.ExternalGraphicSource;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphicSource;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
@@ -66,170 +67,195 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 
 /**
- *
+ * This class intends to make the link between an online image and the current symbolizing tree. It can be used for
+ * constant symbols and for classification. Indeed, the inner URL is stored in a StringParameter. Consequently, it can
+ * be computed through a SE String function.
+ * In order to improve performances, this class embeds two image caches : one for SVG images, the other one for raster
+ * images. If the underlying StringParameter changes, these caches are emptied in order to avoid incoherences between
+ * this class content and what is drawn on the map.
  * @author Maxence Laurent
- * @todo implements MarkGraphicSource
+ * @author Alexis Guéganno
  */
-public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphicSource {
+public class VariableOnlineResource extends AbstractSymbolizerNode implements ExternalGraphicSource, MarkGraphicSource {
 
     private StringParameter url;
-    private PlanarImage rawImage;
-    private SVGIcon svgIcon;
-    private Double effectiveWidth;
-    private Double effectiveHeight;
-    private Double svgInitialWidth;
-    private Double svgInitialHeight;
+    private Map<URL,PlanarImage> imageCache = new HashMap<URL,PlanarImage>();
+    private Map<URL,Rectangle2D.Double> jaiBounds = new HashMap<URL,Rectangle2D.Double>();
+    private Map<URI,SVGIcon> svgCache = new HashMap<URI,SVGIcon>();
+    private Map<URI,Rectangle2D.Double> svgBounds = new HashMap<URI,Rectangle2D.Double>();
 
 
     /**
-     *
+     * Builds a {@code VariableOnlineResource} that has an empty URL and caches.
      */
     public VariableOnlineResource() {
         url = null;
-        svgIcon = null;
     }
 
-
+    /**
+     * Builds a {@code VariableOnlineResource} whose image is stored at {@code url}.
+     * @param url The URL as a {@link StringParameter}. This way, it is possible to change the image according to
+     *            the processed data.
+     * @throws MalformedURLException
+     */
     public VariableOnlineResource(StringParameter url) throws MalformedURLException {
         this.url = url;
-        svgIcon = null;
+        this.url.setParent(this);
     }
 
-
+    /**
+     * Builds a new {@code VariableOnlineResource} from its JaXB representation?
+     * @param onlineResource The JaXB representation of a {@code VariableOnlineResource}.
+     * @throws MalformedURLException If the given JaXB object contains malformed URLs.
+     * @throws InvalidStyle If the input object can't be recognized as a valid SE style element.
+     */
     public VariableOnlineResource(VariableOnlineResourceType onlineResource)
             throws MalformedURLException, InvalidStyle {
         this.url = SeParameterFactory.createStringParameter(onlineResource.getHref());
-        svgIcon = null;
+        this.url.setParent(this);
     }
 
-
+    /**
+     * Gets the inner StringParameter that stores the URL(s) used to get the image(s) backed by this object.
+     * @return The inner StringParameter.
+     */
     public StringParameter getUrl() {
         return url;
     }
 
-
+    /**
+     * Sets the inner StringParameter that stores the URL(s) used to get the image(s) backed by this object.
+     * @param url The new inner StringParameter.
+     */
     public void setUrl(StringParameter url) {
         this.url = url;
+        this.url.setParent(this);
     }
-
-    //@Override
 
     /**
-     * @deprecated
-     * @param viewBox
-     * @param sds
-     * @param fid
-     * @param mt
-     * @param mimeType
-     * @return
-     * @throws IOException
-     * @throws ParameterException
+     * Gets the {@code PlanarImage} associated to a particular parameter configuration.
+     * @param map The input configuration.
+     * @return The {@code PlanarImage} for the given configuration
+     * @throws ParameterException If the given configuration can't be processed.
      */
-    public RenderedImage getPlanarImage(ViewBox viewBox,
-                                        Map<String,Value> map,
-                                        MapTransform mt, String mimeType)
-            throws IOException, ParameterException {
-
-        if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
-            return getSvgImage(viewBox, map, mt, mimeType);
-        } else {
-            return getJAIImage(viewBox, map, mt, mimeType);
+    public PlanarImage getPlanarJAI(Map<String, Value> map) throws ParameterException {
+        try {
+            URL link = new URL(url.getValue(map));
+            if (!imageCache.containsKey(link)) {
+                PlanarImage raw = JAI.create("url", link);
+                imageCache.put(link, raw);
+                Logger.getLogger(VariableOnlineResource.class.getName()).log(Level.INFO, "Download ExternalGraphic from: {0}", url);
+            }
+            return imageCache.get(link);
+        } catch (Exception ex) {
+            throw new ParameterException("Can't process the input URL",ex);
         }
     }
 
-
+    /**
+     * Gets the bounds of this {@code VariableOnlineResource} for the given configuration.
+     * @param viewBox The ViewBox of the symbol.
+     * @param map The input configuration.
+     * @param mt The current {@link MapTransform}.
+     * @param mimeType The input MIME type.
+     * @return The bounds oif the image.
+     * @throws ParameterException
+     */
     public Rectangle2D.Double getJAIBounds(ViewBox viewBox,
-                                          Map<String,Value> map, MapTransform mt,
+                                           Map<String, Value> map, MapTransform mt,
                                            String mimeType) throws ParameterException {
-        try {
-            if (rawImage == null) {
-                URL link = new URL(url.getValue(map));
-                rawImage = JAI.create("url", link);
-                Logger.getLogger(VariableOnlineResource.class.getName()).log(Level.INFO, "Download ExternalGraphic from: {0}", url);
-            }
-        } catch (Exception ex) {
-            throw new ParameterException(ex);
-        }
-
-        double width = rawImage.getWidth();
-        double height = rawImage.getHeight();
-
+        PlanarImage raw = getPlanarJAI(map);
+        double width = raw.getWidth();
+        double height = raw.getHeight();
         if (viewBox != null && mt != null && viewBox.usable()) {
             FeaturesVisitor fv = new FeaturesVisitor();
             viewBox.acceptVisitor(fv);
             if (map == null && !fv.getResult().isEmpty()) {
-                throw new ParameterException("View box depends on feature"); // TODO I18n 
+                throw new ParameterException("View box depends on feature"); // TODO I18n
             }
-
-            try {
-
-                Point2D dim = viewBox.getDimensionInPixel(map, height, width, mt.getScaleDenominator(), mt.getDpi());
-
-                effectiveWidth = dim.getX();
-                effectiveHeight = dim.getY();
-
-                if (effectiveWidth > 0 && effectiveHeight > 0) {
-                    return new Rectangle2D.Double(-effectiveWidth / 2, -effectiveHeight / 2, effectiveWidth, effectiveHeight);
-                } else {
-                    effectiveWidth = null;
-                    effectiveHeight = null;
+            Point2D dim = viewBox.getDimensionInPixel(map, height, width, mt.getScaleDenominator(), mt.getDpi());
+            double effectiveWidth = dim.getX();
+            double effectiveHeight = dim.getY();
+            if (effectiveWidth > 0 && effectiveHeight > 0) {
+                Rectangle2D.Double rect = new Rectangle2D.Double(-effectiveWidth / 2, -effectiveHeight / 2, effectiveWidth, effectiveHeight);
+                try{
+                    jaiBounds.put(new URL(url.getValue(map)),rect);
+                } catch (MalformedURLException mue){
+                    throw new ParameterException("Can't process the input URL", mue);
                 }
-            } catch (Exception ex) {
-                throw new ParameterException(ex);
+                return rect;
             }
         }
         // Others cases => native image bounds
         return new Rectangle2D.Double(-width / 2, -height / 2, width, height);
     }
 
+    /**
+     * Gets the {@code SVGIcon} associated to a particular parameter configuration.
+     * @param map The input configuration.
+     * @return The {@code SVGIcon} for the given configuration
+     * @throws ParameterException If the given configuration can't be processed.
+     */
+    public SVGIcon getSVGIcon(Map<String,Value> map) throws ParameterException {
+        try {
+            URI uri = new URI(url.getValue(map));
+            if(!svgCache.containsKey(uri)){
+                SVGIcon svgIcon = new SVGIcon();
+                svgIcon.setSvgURI(new URI(url.getValue(map)));
+                svgIcon.setAntiAlias(true);
+                svgCache.put(uri,svgIcon);
+            }
+            return svgCache.get(uri);
+        } catch (URISyntaxException e) {
+            throw new ParameterException("Can't process the input URI", e);
+        }
+    }
 
+
+    /**
+     * Gets the bounds of this {@code VariableOnlineResource} for the given configuration.
+     * @param viewBox The ViewBox of the symbol.
+     * @param map The input configuration.
+     * @param mt The current {@link MapTransform}.
+     * @param mimeType The input MIME type.
+     * @return The bounds oif the image.
+     * @throws ParameterException
+     */
     public Rectangle2D.Double getSvgBounds(ViewBox viewBox,
                                            Map<String,Value> map, MapTransform mt,
                                            String mimeType) throws ParameterException {
-        try {
-            /*
-             * Fetch SVG if not already done
-             */
-            if (svgIcon == null) {
-                svgIcon = new SVGIcon();
-                svgIcon.setSvgURI(new URI(url.getValue(map)));
-                svgIcon.setAntiAlias(true);
-
-                this.svgInitialHeight = (double) svgIcon.getIconHeight();
-                this.svgInitialWidth = (double) svgIcon.getIconWidth();
+        SVGIcon svgIcon = getSVGIcon(map);
+        double svgInitialHeight = (double) svgIcon.getIconHeight();
+        double svgInitialWidth = (double) svgIcon.getIconWidth();
+        if (viewBox != null && mt != null && viewBox.usable()) {
+            FeaturesVisitor fv = new FeaturesVisitor();
+            viewBox.acceptVisitor(fv);
+            if (map == null && !fv.getResult().isEmpty()) {
+                throw new ParameterException("View box depends on feature");
             }
-
-            if (viewBox != null && mt != null && viewBox.usable()) {
-                FeaturesVisitor fv = new FeaturesVisitor();
-                viewBox.acceptVisitor(fv);
-                if (map == null && !fv.getResult().isEmpty()) {
-                    throw new ParameterException("View box depends on feature"); // TODO I18n
-                }
-
-
-                Point2D dim = viewBox.getDimensionInPixel(map, svgInitialWidth,
-                        svgInitialHeight, mt.getScaleDenominator(), mt.getDpi());
-
-                effectiveWidth = dim.getX();
-                effectiveHeight = dim.getY();
-
-                if (effectiveHeight > 0 && effectiveWidth > 0) {
-                    return new Rectangle2D.Double(-effectiveWidth / 2, -effectiveHeight / 2, effectiveWidth, effectiveHeight);
-                } else {
-
-                    double width = svgInitialWidth;
-                    double height = svgInitialHeight;
-                    effectiveWidth = null;
-                    effectiveHeight = null;
-                    return new Rectangle2D.Double(-width / 2, -height / 2, width, height);
-                }
+            Point2D dim = viewBox.getDimensionInPixel(map, svgInitialWidth,
+                    svgInitialHeight, mt.getScaleDenominator(), mt.getDpi());
+            double effectiveWidth = dim.getX();
+            double effectiveHeight = dim.getY();
+            Rectangle2D.Double rect;
+            if (effectiveHeight > 0 && effectiveWidth > 0) {
+                rect = new Rectangle2D.Double(-effectiveWidth / 2, -effectiveHeight / 2, effectiveWidth, effectiveHeight);
             } else {
                 double width = svgInitialWidth;
                 double height = svgInitialHeight;
-                return new Rectangle2D.Double(-width / 2, -height / 2, width, height);
+                rect = new Rectangle2D.Double(-width / 2, -height / 2, width, height);
             }
-        } catch (URISyntaxException ex) {
-            throw new ParameterException("Invalid URI", ex);
+            try {
+                URI u = new URI(url.getValue(map));
+                svgBounds.put(u,rect);
+            } catch (URISyntaxException e) {
+                throw new ParameterException("Can't process the input URI",e);
+            }
+            return rect;
+        } else {
+            double width = svgInitialWidth;
+            double height = svgInitialHeight;
+            return new Rectangle2D.Double(-width / 2, -height / 2, width, height);
         }
     }
 
@@ -238,8 +264,6 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
     public Rectangle2D.Double updateCacheAndGetBounds(ViewBox viewBox,
                                                       Map<String,Value> map, MapTransform mt,
                                                       String mimeType) throws ParameterException {
-        effectiveWidth = null;
-        effectiveHeight = null;
         if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
             return getSvgBounds(viewBox, map, mt, mimeType);
         } else {
@@ -251,187 +275,96 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
      * Draw the svg on g2
      */
 
-    public void drawSVG(Graphics2D g2, AffineTransform at, double opacity) {
-        AffineTransform fat = new AffineTransform(at);
+    /**
+     *
+     * @param g2
+     * @param map
+     * @param at
+     * @param opacity
+     * @throws ParameterException
+     */
+    public void drawSVG(Graphics2D g2, Map<String,Value> map, AffineTransform at, double opacity)
+            throws ParameterException {
+        try {
+            AffineTransform fat = new AffineTransform(at);
+            URI u = new URI(url.getValue(map));
+            Rectangle2D.Double rect = svgBounds.get(u);
+            SVGIcon svgIcon = getSVGIcon(map);
 
-        if (effectiveHeight != null && effectiveWidth != null) {
-            svgIcon.setPreferredSize(new Dimension((int) (effectiveWidth + 0.5), (int) (effectiveHeight + 0.5)));
-            fat.concatenate(AffineTransform.getTranslateInstance(-effectiveWidth / 2, -effectiveHeight / 2));
-        } else {
-            svgIcon.setPreferredSize(new Dimension((int) (svgInitialWidth + 0.5), (int) (svgInitialHeight + 0.5)));
-            fat.concatenate(AffineTransform.getTranslateInstance(-svgInitialWidth / 2, -svgInitialHeight / 2));
+            if (rect != null) {
+                double effectiveWidth = rect.getWidth();
+                double effectiveHeight = rect.getHeight();
+                svgIcon.setPreferredSize(new Dimension((int) (effectiveWidth + 0.5), (int) (effectiveHeight + 0.5)));
+                fat.concatenate(AffineTransform.getTranslateInstance(-effectiveWidth / 2, -effectiveHeight / 2));
+            } else {
+                double svgInitialWidth = svgIcon.getIconWidth();
+                double svgInitialHeight = svgIcon.getIconHeight();
+                svgIcon.setPreferredSize(new Dimension((int) (svgInitialWidth + 0.5), (int) (svgInitialHeight + 0.5)));
+                fat.concatenate(AffineTransform.getTranslateInstance(-svgInitialWidth / 2, -svgInitialHeight / 2));
+            }
+            svgIcon.setScaleToFit(true);
+            AffineTransform atMedia = new AffineTransform(g2.getTransform());
+            g2.transform(fat);
+
+            svgIcon.paintIcon((Component) null, g2, 0, 0);
+            g2.setTransform(atMedia);
+        } catch (URISyntaxException e){
+            throw new ParameterException("Can't process the input URI",e);
         }
-        svgIcon.setScaleToFit(true);
-        AffineTransform atMedia = new AffineTransform(g2.getTransform());
-        g2.transform(fat);
-
-        svgIcon.paintIcon((Component) null, g2, 0, 0);
-        g2.setTransform(atMedia);
     }
 
+    /**
+     * Draw an image on the map with JAI.
+     * @param g2 The Graphics used to draw the symbol.
+     * @param map The input parameters.
+     * @param at The AffineTransform used on the input image
+     * @param mt The MapTransform used to put the resulting image on the map.
+     * @param opacity The opacity of the image.
+     * @throws ParameterException
+     */
+    public void drawJAI(Graphics2D g2, Map<String,Value> map, AffineTransform at, MapTransform mt,
+                        double opacity) throws ParameterException{
+        try{
+            AffineTransform fat = new AffineTransform(at);
+            PlanarImage rawImage = getPlanarJAI(map);
+            double width = rawImage.getWidth();
+            double height = rawImage.getHeight();
+            Rectangle2D.Double rect = jaiBounds.get(new URL(url.getValue(map)));
 
-    public void drawJAI(Graphics2D g2, AffineTransform at, MapTransform mt,
-                        double opacity) {
-        AffineTransform fat = new AffineTransform(at);
-        double width = rawImage.getWidth();
-        double height = rawImage.getHeight();
-
-        if (effectiveHeight != null && effectiveWidth != null) {
-            double ratioX = effectiveWidth / width;
-            double ratioY = effectiveHeight / height;
-
-            RenderedOp img;
-
-            if (ratioX > 1.0 || ratioY > 1.0) {
-                img = JAI.create("scale", rawImage,
-                                 (float) ratioX, (float) ratioY,
-                                 0.0f, 0.0f,
-                                 InterpolationBicubic2.getInstance(InterpolationBicubic2.INTERP_BICUBIC_2),
-                                 mt.getRenderingHints());
+            if (rect != null) {
+                double ratioX = rect.getWidth() / width;
+                double ratioY = rect.getHeight() / height;
+                RenderedOp img;
+                if (ratioX > 1.0 || ratioY > 1.0) {
+                    img = JAI.create("scale", rawImage,
+                                     (float) ratioX, (float) ratioY,
+                                     0.0f, 0.0f,
+                                     InterpolationBicubic2.getInstance(InterpolationBicubic2.INTERP_BICUBIC_2),
+                                     mt.getRenderingHints());
+                } else {
+                    img = JAI.create("SubsampleAverage", rawImage, ratioX, ratioY, mt.getRenderingHints());
+                }
+                fat.concatenate(AffineTransform.getTranslateInstance(-img.getWidth() / 2.0, -img.getHeight() / 2.0));
+                g2.drawRenderedImage(img, fat);
             } else {
-                img = JAI.create("SubsampleAverage", rawImage, ratioX, ratioY, mt.getRenderingHints());
+                fat.concatenate(AffineTransform.getTranslateInstance(-width / 2.0, -height / 2.0));
+                g2.drawRenderedImage(rawImage, fat);
             }
-            fat.concatenate(AffineTransform.getTranslateInstance(-img.getWidth() / 2.0, -img.getHeight() / 2.0));
-            g2.drawRenderedImage(img, fat);
-        } else {
-            fat.concatenate(AffineTransform.getTranslateInstance(-width / 2.0, -height / 2.0));
-            g2.drawRenderedImage(rawImage, fat);
+        } catch (MalformedURLException e){
+            throw new ParameterException("Can't process the input URL",e);
         }
     }
 
 
     @Override
-    public void draw(Graphics2D g2, AffineTransform at, MapTransform mt,
-                     double opacity, String mimeType) {
+    public void draw(Graphics2D g2, Map<String,Value> map, AffineTransform at, MapTransform mt,
+                     double opacity, String mimeType) throws ParameterException {
         if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
-            drawSVG(g2, at, opacity);
+            drawSVG(g2, map, at, opacity);
         } else {
-            drawJAI(g2, at, mt, opacity);
+            drawJAI(g2, map, at, mt, opacity);
         }
     }
-
-
-    /**
-     * @deprecated
-     */
-    public RenderedImage getSvgImage(ViewBox viewBox,
-                                     Map<String,Value> map,
-                                     MapTransform mt, String mimeType)
-            throws IOException, ParameterException {
-        try {
-            SVGIcon icon = new SVGIcon();
-            icon.setSvgURI(new URI(url.getValue(map)));
-            BufferedImage img;
-
-            if (viewBox != null && mt != null && viewBox.usable()) {
-                FeaturesVisitor fv = new FeaturesVisitor();
-                viewBox.acceptVisitor(fv);
-                if (map == null && !fv.getResult().isEmpty()) {
-                    throw new ParameterException("View box depends on feature"); // TODO I18n
-                }
-
-                double width = icon.getIconWidth();
-                double height = icon.getIconHeight();
-
-                Point2D dim = viewBox.getDimensionInPixel(map, height, width, mt.getScaleDenominator(), mt.getDpi());
-
-                double widthDst = dim.getX();
-                double heightDst = dim.getY();
-
-                if (widthDst > 0 && heightDst > 0) {
-                    img = new BufferedImage((int) (widthDst + 0.5), (int) (heightDst + 0.5), BufferedImage.TYPE_4BYTE_ABGR);
-                    icon.setPreferredSize(new Dimension((int) (widthDst + 0.5), (int) (heightDst + 0.5)));
-                    icon.setScaleToFit(true);
-                } else {
-                    img = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-                }
-            } else {
-                img = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-            }
-            icon.setAntiAlias(true);
-            Graphics2D g2 = (Graphics2D) img.getGraphics();
-            if (mt != null) {
-                g2.addRenderingHints(mt.getRenderingHints());
-            }
-            icon.paintIcon((Component) null, g2, 0, 0);
-            return img;
-        } catch (URISyntaxException ex) {
-            throw new IOException(ex);
-        }
-    }
-
-
-    /**
-     * @deprecated
-     * @param viewBox
-     * @param sds
-     * @param fid
-     * @param mt
-     * @param mimeType
-     * @return
-     * @throws IOException
-     * @throws ParameterException
-     */
-    public PlanarImage getJAIImage(ViewBox viewBox,
-                                   Map<String,Value> map,
-                                   MapTransform mt, String mimeType)
-            throws IOException, ParameterException {
-
-        try {
-            if (rawImage == null) {
-                rawImage = JAI.create("url", url);
-                Logger.getLogger(VariableOnlineResource.class.getName()).log(Level.INFO, "Download ExternalGraphic from: {0}", url);
-            }
-        } catch (Exception ex) {
-            throw new IOException(ex);
-        }
-
-        PlanarImage img = rawImage;
-
-
-        if (viewBox != null && mt != null && viewBox.usable()) {
-            FeaturesVisitor fv = new FeaturesVisitor();
-            viewBox.acceptVisitor(fv);
-            if (map == null && !fv.getResult().isEmpty()) {
-                throw new ParameterException("View box depends on feature"); // TODO I18n
-            }
-
-            try {
-                double width = img.getWidth();
-                double height = img.getHeight();
-
-                Point2D dim = viewBox.getDimensionInPixel(map, height, width, mt.getScaleDenominator(), mt.getDpi());
-
-                double widthDst = dim.getX();
-                double heightDst = dim.getY();
-
-                if (widthDst > 0 && heightDst > 0) {
-                    double ratioX = widthDst / width;
-                    double ratioY = heightDst / height;
-
-                    if (ratioX > 1.0 || ratioY > 1.0) {
-                        return JAI.create("scale", rawImage,
-                                          (float) ratioX, (float) ratioY,
-                                          0.0f, 0.0f,
-                                          InterpolationBicubic2.getInstance(InterpolationBicubic2.INTERP_BICUBIC_2),
-                                          mt.getRenderingHints());
-                    } else {
-                        //return JAI.create("SubsampleAverage", pb, mt.getRenderingHints());
-                        return JAI.create("SubsampleAverage", img, ratioX, ratioY, mt.getRenderingHints());
-                    }
-                } else {
-                    return img;
-                }
-
-            } catch (Exception ex) {
-                throw new ParameterException(ex);
-            }
-
-        } else {
-            return img;
-        }
-    }
-
 
     @Override
     public void setJAXBSource(ExternalGraphicType e) {
@@ -511,6 +444,18 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
         }
     }
 
+    @Override
+    public void update(){
+        svgBounds = new HashMap<URI,Rectangle2D.Double>();
+        jaiBounds = new HashMap<URL,Rectangle2D.Double>();
+        svgCache = new HashMap<URI,SVGIcon>();
+        imageCache = new HashMap<URL,PlanarImage>();
+        SymbolizerNode par = getParent();
+        if(par != null) {
+            getParent().update();
+        }
+    }
+
 
     @Override
     public Shape getShape(ViewBox viewBox, Map<String,Value> map, Double scale, 
@@ -525,15 +470,10 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
         throw new ParameterException("Unknown MIME type: " + mimeType);
     }
 
-    //@Override
-
     public void setJAXBSource(MarkGraphicType m) {
         VariableOnlineResourceType o = new VariableOnlineResourceType();
-
         o.setHref(url.getJAXBParameterValueType());
-
         m.setOnlineResource(o);
-
     }
 
 
@@ -542,13 +482,11 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
                                      Double scale, Double dpi,
                                      RealParameter markIndex, String mimeType)
             throws IOException, ParameterException {
-
         if (mimeType != null) {
             if (mimeType.equalsIgnoreCase("application/x-font-ttf")) {
                 return getTrueTypeGlyphMaxSize(map, /*scale, dpi,*/ markIndex);
             }
         }
-
         return 0.0;
 
     }
@@ -562,24 +500,16 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
             InputStream iStream = u.openStream();
             Font font = Font.createFont(Font.TRUETYPE_FONT, iStream);
             iStream.close();
-
             double value = markIndex.getValue(map);
             char[] data = {(char) value};
-
             String text = String.copyValueOf(data);
-
             // Scale is used to have an high resolution
             AffineTransform at = AffineTransform.getTranslateInstance(0, 0);
-
             FontRenderContext fontCtx = new FontRenderContext(at, true, true);
             TextLayout tl = new TextLayout(text, font, fontCtx);
-
             Shape glyphOutline = tl.getOutline(at);
-
             Rectangle2D bounds2D = glyphOutline.getBounds2D();
-
             return Math.max(bounds2D.getWidth(), bounds2D.getHeight());
-
         } catch (FontFormatException ex) {
             Logger.getLogger(VariableOnlineResource.class.getName()).log(Level.SEVERE, null, ex);
             throw new ParameterException(ex);
@@ -587,4 +517,10 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
     }
 
 
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ret = new ArrayList<SymbolizerNode>();
+        ret.add(url);
+        return ret;
+    }
 }

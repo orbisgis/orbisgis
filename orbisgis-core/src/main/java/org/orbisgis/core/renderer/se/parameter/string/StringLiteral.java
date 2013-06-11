@@ -86,7 +86,8 @@ public class StringLiteral extends Literal implements StringParameter{
      */
     public void setValue(String value){
         if(validateValue(value)){
-                v = value;
+            v = value;
+            update();
         } else {
                 throw new InvalidString("Can't validate the value against the current restrictions !");
         }
