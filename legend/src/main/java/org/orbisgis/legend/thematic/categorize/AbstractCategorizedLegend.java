@@ -84,15 +84,12 @@ public abstract class AbstractCategorizedLegend <U extends SymbolParameters> ext
     }
 
     /**
-     * Sets the fallback configuration according to the one given in argument.
-     * @param fallback The new basis for the fallback configuration.
+     * Gets a key not already used in the analysis.
+     * @return max(keySet()) + 1
      */
-    public abstract void setFallbackParameters(U fallback);
-
-    /**
-     * Gets the configuration used to draw features we can't get a value for in the map in the style .
-     * @return
-     */
-    public abstract U getFallbackParameters();
-
+    public Double getNotUsedKey() {
+        SortedSet<Double> keys = keySet();
+        Double max = keys.last();
+        return max + 1.0;
+    }
 }
