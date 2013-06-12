@@ -2,6 +2,7 @@ package org.orbisgis.legend.thematic.categorize;
 
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -32,6 +33,13 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> {
     private CategorizedReal opacity;
     private CategorizedReal width;
     private CategorizedString dash;
+
+    /**
+     * Builds a new, empty, {@code CategorizedLine}.
+     */
+    public CategorizedLine(){
+        this(new LineSymbolizer());
+    }
 
     /**
      * Build a new CategorizedLine from the given LineSymbolizer. This one must have been built with a PenStroke
@@ -183,5 +191,21 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> {
         width.remove(d);
         dash.remove(d);
         return ret;
+    }
+
+    /**
+     * Gets the Uom used for the inner Stroke.
+     * @return The unit of measure used to compute the width of the stroke.
+     */
+    public Uom getStrokeUom(){
+        return symbolizer.getStroke().getUom();
+    }
+
+    /**
+     * Gets the Uom used for the inner Stroke.
+     * @param u The unit of measure used to compute the width of the stroke.
+     */
+    public void setStrokeUom(Uom u){
+        symbolizer.getStroke().setUom(u);
     }
 }
