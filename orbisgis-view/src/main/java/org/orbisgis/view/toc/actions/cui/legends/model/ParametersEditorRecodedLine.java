@@ -30,24 +30,19 @@ package org.orbisgis.view.toc.actions.cui.legends.model;
 
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
-import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueLineSE;
 
-import javax.swing.*;
-import javax.swing.table.TableCellEditor;
-import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * This editor is used to change the values stored in a Map of type RecodedLine. It will let the user handle a
  * LineParameters instance in a dedicated UI, similar to the one used for unique symbols.
  * @author alexis
  */
-public class ParametersEditorRecodedLine extends ParametersEditorUniqueValue<LineParameters> {
+public class ParametersEditorRecodedLine extends ParametersEditorMappedLegend<String, LineParameters> {
 
     /**
      * Editors for a LineParameters stored in a JTable. We'll open a dedicated dialog
@@ -59,7 +54,7 @@ public class ParametersEditorRecodedLine extends ParametersEditorUniqueValue<Lin
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().equals(EDIT)){
-            RecodedLine rl = (RecodedLine) getUniqueValue();
+            RecodedLine rl = (RecodedLine) getMappedLegend();
             LineParameters lp = rl.get(getCellEditorValue());
             UniqueSymbolLine usl = new UniqueSymbolLine(lp);
             PnlUniqueLineSE pls = new PnlUniqueLineSE(false);

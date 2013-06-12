@@ -39,18 +39,18 @@ import java.awt.event.ActionListener;
 /**
  * @author alexis
  */
-public abstract class ParametersEditorUniqueValue<U extends LineParameters>
+public abstract class ParametersEditorMappedLegend<K,U extends LineParameters>
             extends AbstractCellEditor
             implements TableCellEditor, ActionListener {
     protected static final String EDIT = "edit";
     private JButton button;
     private String val;
-    private MappedLegend<String, U> rl;
+    private MappedLegend<K, U> rl;
 
     /**
      * Editors for a LineParameters stored in a JTable. We'll open a dedicated dialog
      */
-    public ParametersEditorUniqueValue(){
+    public ParametersEditorMappedLegend(){
         button = new JButton();
         button.setActionCommand(EDIT);
         button.addActionListener(this);
@@ -61,7 +61,7 @@ public abstract class ParametersEditorUniqueValue<U extends LineParameters>
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         val = (String) value;
-        rl = ((TableModelUniqueValue)table.getModel()).getUniqueValue();
+        rl = ((AbstractLegendTableModel)table.getModel()).getMappedLegend();
         return button;
     }
 
@@ -74,7 +74,7 @@ public abstract class ParametersEditorUniqueValue<U extends LineParameters>
      * Gets the unique value.
      * @return The unique value we're going to edit.
      */
-    public MappedLegend<String, ? extends LineParameters> getUniqueValue(){
+    public MappedLegend<K, ? extends LineParameters> getMappedLegend(){
         return rl;
     }
 }

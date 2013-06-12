@@ -45,75 +45,10 @@ import java.util.EventObject;
  * to edit the value in the table.
  * @author alexis
  */
-public abstract class KeyEditorUniqueValue<U extends LineParameters> extends AbstractCellEditor implements TableCellEditor, ActionListener {
-    protected static final String EDIT = "edit";
-    private JTextField field;
-    private String val;
-    private MappedLegend<String, U> rl;
-
-    /**
-     * Build a cell editor dedicated to the management of keys in a recoded legend.
-     */
-    public KeyEditorUniqueValue(){
-        field = new JTextField(25);
-        field.setActionCommand(EDIT);
-        field.addActionListener(this);
-    }
+public abstract class KeyEditorUniqueValue<U extends LineParameters> extends KeyEditorMappedLegend<String, U> {
 
     @Override
-    public boolean isCellEditable(EventObject event){
-        if(event instanceof MouseEvent){
-            MouseEvent me = (MouseEvent) event;
-            return me.getClickCount()>=2;
-        }
-        return false;
-    }
-
-    @Override
-    public Object getCellEditorValue() {
-        return val;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if(e.getActionCommand().equals(EDIT)){
-            U lp = rl.get(val);
-            rl.remove(val);
-            String k = ((AbstractRecodedLegend)rl).getNotUsedKey(field.getText());
-            rl.put(k, lp);
-            fireEditingStopped();
-        }
-    }
-
-    /**
-     * Sets the associated Legend.
-     * @param rl The legend we want to associate.
-     */
-    protected void setLegend(MappedLegend<String, U> rl) {
-        this.rl = rl;
-    }
-
-    /**
-     * Gets the text field used for edition.
-     * @return
-     */
-    public JTextField getField() {
-        return field;
-    }
-
-    /**
-     * Gets the stored string value
-     * @return the stored string value
-     */
-    public String getVal() {
-        return val;
-    }
-
-    /**
-     * Sets the stored string value
-     * @param val the new stored string value.
-     */
-    public void setVal(String val) {
-        this.val = val;
+    protected String getNotUsedKey(){
+        return ((AbstractRecodedLegend)getLegend()).getNotUsedKey(getField().getText());
     }
 }
