@@ -209,4 +209,9 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> i
     public void setStrokeUom(Uom u){
         symbolizer.getStroke().setUom(u);
     }
+
+    @Override
+    public String getLegendTypeId(){
+        return "org.orbisgis.legend.thematic.categorize.CategorizedLine";
+    }
 }
