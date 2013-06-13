@@ -56,7 +56,7 @@ public class ParametersEditorCategorizedArea extends ParametersEditorMappedLegen
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().equals(EDIT)){
             CategorizedArea ca = (CategorizedArea) getMappedLegend();
-            String key = (String) getCellEditorValue();
+            Double key = (Double) getCellEditorValue();
             AreaParameters lp = ca.get(key);
             UniqueSymbolArea usl = new UniqueSymbolArea(lp);
             PnlUniqueAreaSE pls = new PnlUniqueAreaSE(false,ca.isStrokeEnabled(), false);

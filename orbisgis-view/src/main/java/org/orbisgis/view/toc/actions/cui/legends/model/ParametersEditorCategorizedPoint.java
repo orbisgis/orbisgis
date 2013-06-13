@@ -55,7 +55,7 @@ public class ParametersEditorCategorizedPoint extends ParametersEditorMappedLege
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().equals(EDIT)){
             CategorizedPoint cp = (CategorizedPoint) getMappedLegend();
-            String key = (String) getCellEditorValue();
+            Double key = (Double) getCellEditorValue();
             PointParameters lp = cp.get(key);
             UniqueSymbolPoint usl = new UniqueSymbolPoint(lp);
             PnlUniquePointSE pls = new PnlUniquePointSE(false,cp.isStrokeEnabled(), false);
