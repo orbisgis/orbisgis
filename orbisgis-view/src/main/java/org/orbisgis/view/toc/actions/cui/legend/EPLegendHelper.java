@@ -78,6 +78,14 @@ public class EPLegendHelper {
                 ILegendPanel lineInterval = new PnlCategorizedLine();
                 lineInterval.initialize(legendContext);
                 legends.add(lineInterval);
+                //Area Interval
+                ILegendPanel areaInterval = new PnlCategorizedArea();
+                areaInterval.initialize(legendContext);
+                legends.add(areaInterval);
+                //Point Interval
+                ILegendPanel pointInterval = new PnlCategorizedPoint();
+                pointInterval.initialize(legendContext);
+                legends.add(pointInterval);
 
 
 		return legends.toArray(new ILegendPanel[legends.size()]);
