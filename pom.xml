@@ -20,8 +20,8 @@
                 <!-- <module>orbisgis-sif</module> -->
                 <!-- <module>api/orbisgis-view</module> -->
                 <module>bundles/orbisgis-oshell</module>
-                <!-- <module>bundles/orbisgis-omanager</module> -->
-                <!-- <module>bundles/orbisgis-omanager-plugin</module> -->
+                <module>bundles/orbisgis-omanager</module>
+                <module>bundles/orbisgis-omanager-plugin</module>
                 <!-- <module>orbisgis-view</module> -->
                 <!-- <module>orbisgis-dist</module> -->
         </modules>
