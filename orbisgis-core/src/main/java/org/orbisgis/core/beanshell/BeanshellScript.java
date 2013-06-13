@@ -33,17 +33,14 @@ import bsh.Interpreter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import org.gdms.data.DataSourceFactory;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.DefaultDataManager;
-import org.orbisgis.core.Services;
+import org.orbisgis.core.context.main.MainContext;
 
 /**
  *
  * @author Erwan Bocher
  */
 public final class BeanshellScript {
-
+        static MainContext mainContext;
         /**
          * Entry point.
          * @param args
@@ -62,18 +59,7 @@ public final class BeanshellScript {
          * This class is used to load a datasourcefactory
          */
         public static void servicesRegister() {
-
-                //Register the datasource
-                DataSourceFactory dsf = new DataSourceFactory();
-
-                dsf.loadPlugins();
-
-                // Installation of the service
-                Services.registerService(
-                        DataManager.class,
-                        "Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial",
-                        new DefaultDataManager(dsf));
-
+                mainContext = new MainContext(false);
         }
 
         /**
@@ -83,29 +69,30 @@ public final class BeanshellScript {
          * @throws FileNotFoundException 
          */
         private static void execute(String[] args) throws EvalError, FileNotFoundException {
-
-                String script = args[0];
-                if (script != null && !script.isEmpty()) {
-                        File file = new File(script);
-                        if (!file.isFile()){
-                            printHelp();    
-                        }
-                        else if (!file.exists()) {
-                                System.out.println("The file doesn't exist.");
+                try {
+                        String script = args[0];
+                        if (script != null && !script.isEmpty()) {
+                                File file = new File(script);
+                                if (!file.isFile()){
+                                    printHelp();
+                                }
+                                else if (!file.exists()) {
+                                        System.out.println("The file doesn't exist.");
+                                } else {
+                                        servicesRegister();
+                                        Interpreter interpreter = new Interpreter();
+                                        interpreter.setOut(System.out);
+                                        interpreter.setClassLoader(mainContext.getClass().getClassLoader());
+                                        interpreter.set("bsh.args", args);
+                                        interpreter.eval("setAccessibility(true)");
+                                        FileReader reader = new FileReader(file);
+                                        interpreter.eval(reader);
+                                }
                         } else {
-                                servicesRegister();
-                                Interpreter interpreter = new Interpreter();
-                                interpreter.setOut(System.out);
-                                DataManager dm = Services.getService(DataManager.class);
-                                interpreter.setClassLoader(dm.getDataSourceFactory().getClass().getClassLoader());
-                                interpreter.set("bsh.args", args);
-                                interpreter.set("dsf", dm.getDataSourceFactory());
-                                interpreter.eval("setAccessibility(true)");
-                                FileReader reader = new FileReader(file);
-                                interpreter.eval(reader);
+                                System.out.print("The second parameter must be not null.\n");
                         }
-                } else {
-                        System.out.print("The second parameter must be not null.\n");
+                } finally {
+                        mainContext.dispose();
                 }
         }
 
