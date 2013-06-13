@@ -9,7 +9,12 @@ import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
 public abstract class KeyEditorCategorized<U extends LineParameters> extends KeyEditorMappedLegend<Double, U> {
 
     @Override
-    protected Double getNotUsedKey(){
-        return ((AbstractCategorizedLegend)getLegend()).getNotUsedKey(Double.valueOf(getField().getText()));
+    protected Double getNotUsedKey(Double prev){
+        try{
+            Double d = Double.valueOf(getField().getText());
+            return ((AbstractCategorizedLegend)getLegend()).getNotUsedKey(d);
+        } catch (NumberFormatException nfe){
+            return prev;
+        }
     }
 }
