@@ -67,7 +67,7 @@ public class RealLiteral extends Literal implements RealParameter {
         /**
          * Create a new RealLiteral with value <code>d</code>, by transforming d
          * to a double, in a REAL_CONTEXT.
-         * @param literal 
+         * @param d
          */
         public RealLiteral(String d) {
                 this.v = new Double(d);
@@ -77,7 +77,7 @@ public class RealLiteral extends Literal implements RealParameter {
         /**
          * Create a new RealLiteral with value <code>l</code>, by transforming l
          * to a double, in a REAL_CONTEXT.
-         * @param literal 
+         * @param l
          */
         public RealLiteral(JAXBElement<LiteralType> l) {
                 this(l.getValue().getContent().get(0).toString());

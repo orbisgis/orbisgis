@@ -128,7 +128,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getCreateClassificationPanel(), gbc);
-        //Classification generator
+        //Enable Stroke
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = i;

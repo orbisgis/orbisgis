@@ -86,7 +86,7 @@ public class ParametersAnalyzer extends AbstractAnalyzer {
 
         /**
          * Returns true if and only if the found analysis does not contain other
-         * ones as paramater.
+         * ones as parameter.
          * @return
          */
         public boolean isAnalysisLight(){

@@ -49,7 +49,8 @@ public class KeyEditorRecodedArea extends KeyEditorUniqueValue<AreaParameters> {
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         setVal((String) value);
-        AbstractRecodedLegend<AreaParameters> uv = ((TableModelRecodedArea) table.getModel()).getUniqueValue();
+        AbstractRecodedLegend<AreaParameters> uv = (AbstractRecodedLegend<AreaParameters>)
+                ((TableModelRecodedArea) table.getModel()).getMappedLegend();
         setLegend(uv);
         getField().setText(getVal());
         return getField();

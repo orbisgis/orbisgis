@@ -188,6 +188,18 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
     }
 
     /**
+     * Sets the fallback configuration according to the one given in argument.
+     * @param fallback The new basis for the fallback configuration.
+     */
+    public abstract void setFallbackParameters(U fallback);
+
+    /**
+     * Gets the configuration used to draw features we can't get a value for in the map in the style .
+     * @return  The fallback configuration.
+     */
+    public abstract U getFallbackParameters();
+
+    /**
      * MapEntry dedicated to MappedLegend instances.
      */
     protected class MappedLegendEntry implements Map.Entry<T, U>{

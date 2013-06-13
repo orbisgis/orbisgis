@@ -81,7 +81,6 @@ import java.util.Set;
 public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlRecodedLine.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
-    private String id;
     private CanvasSE fallbackPreview;
     private JComboBox fieldCombo;
     private SelectDistinctJob selectDistinct;
@@ -96,16 +95,6 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     @Override
     public ISELegendPanel newInstance() {
         return new PnlRecodedLine();
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(String newId) {
-        id = newId;
     }
 
     @Override

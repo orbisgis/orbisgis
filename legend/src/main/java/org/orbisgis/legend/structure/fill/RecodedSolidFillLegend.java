@@ -65,7 +65,7 @@ public class RecodedSolidFillLegend extends SolidFillLegend implements RecodedLe
          * @param colorLegend The representation of the color
          * @param opacity The representation of the opacity
          */
-        public RecodedSolidFillLegend(SolidFill fill, RecodedColor colorLegend, RecodedReal opacity) {
+        private RecodedSolidFillLegend(SolidFill fill, RecodedColor colorLegend, RecodedReal opacity) {
             super(fill, colorLegend, opacity);
             TypeListener tl = new TypeListener() {
                 @Override

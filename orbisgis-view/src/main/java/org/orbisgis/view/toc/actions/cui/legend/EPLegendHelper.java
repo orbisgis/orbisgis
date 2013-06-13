@@ -70,9 +70,22 @@ public class EPLegendHelper {
                 ILegendPanel uniqueArea = new PnlRecodedArea();
                 uniqueArea.initialize(legendContext);
                 legends.add(uniqueArea);
+                //Point Unique Value
                 ILegendPanel uniquePoint = new PnlRecodedPoint();
                 uniquePoint.initialize(legendContext);
                 legends.add(uniquePoint);
+                //Line Interval
+                ILegendPanel lineInterval = new PnlCategorizedLine();
+                lineInterval.initialize(legendContext);
+                legends.add(lineInterval);
+                //Area Interval
+                ILegendPanel areaInterval = new PnlCategorizedArea();
+                areaInterval.initialize(legendContext);
+                legends.add(areaInterval);
+                //Point Interval
+                ILegendPanel pointInterval = new PnlCategorizedPoint();
+                pointInterval.initialize(legendContext);
+                legends.add(pointInterval);
 
 
 		return legends.toArray(new ILegendPanel[legends.size()]);

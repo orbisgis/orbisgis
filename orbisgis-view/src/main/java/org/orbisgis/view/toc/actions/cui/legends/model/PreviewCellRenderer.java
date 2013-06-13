@@ -61,7 +61,7 @@ public class PreviewCellRenderer extends TableLaFCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         JLabel lab = (JLabel)lookAndFeelRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        if(value instanceof String){
+        if(value instanceof String || value instanceof Double){
             lab.setText("");
             CanvasSE cse = new CanvasSE(symbolizer.getSymbolizer(),CanvasSE.WIDTH/2, CanvasSE.HEIGHT/2);
             Map<String,Object> map = new HashMap<String,Object>();

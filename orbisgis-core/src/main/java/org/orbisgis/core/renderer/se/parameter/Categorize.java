@@ -47,7 +47,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * This is for example needed to generate  choropleth maps from continuous attributes".</p>
  * <p>A <code>Categorize</code> instance is built from many objects : 
  * <ul>
- * <li>A <code>RealParameter</code> used to retrieve the value to calssify</li>
+ * <li>A <code>RealParameter</code> used to retrieve the value to classify</li>
  * <li>A fallback value, whose type (<code>FallBackType</code>) is compatible with
  *      the values of the classes.</li>
  * <li>The list of class values</li>
@@ -57,7 +57,40 @@ import org.xnap.commons.i18n.I18nFactory;
  * <p>To build a categorization with n intervals, (n-1) thresholds are needed. The
  * first interval ranges from <i>-Infinity</i> to the first threshold.</p>
  * <p>It is also possible to determine whether the threshold values are associated to their 
- * preceding or succeeding interval.
+ * preceding or succeeding interval.</p>
+ * <p>
+ *     This class can be seen as a mapping between the lower limit of the interval and the value
+ *     associated to the interval. That means we have a map looking like this :
+ *     <ul>
+ *         <li> -INF -> val0</li>
+ *         <li>threshold0 -> val1 </li>
+ *         <li>threshold1 -> val2 </li>
+ *         <li>threshold2 -> val3 </li>
+ *         <li>threshold3 -> val4 </li>
+ *         <li>...</li>
+ *     </ul>
+ *     In this example, val0 will be returned for input between negative infinity and threshold0, val1 for input values
+ *     between threshold0 and threshold1. The value associated to the greatest threshold is used for input between
+ *     this particular threshold and positive infinity.
+ * </p>
+ * <p>
+ *     This mapping tries to behave consistently with the Map API (even if it is way more simpler). There are some
+ *     really important differences, though.
+ *     <ul>
+ *         <li>If the mapping is not empty, there shall be a value associated to -INF</li>
+ *         <li>If the mapping ahs more than one element, performing a remove(0) removes the first value and the lowest
+ *             threshold that is greater than negative infinity. In the previous example, we would obtain
+ *             -INF -> val1 as the first mapping after calling remove(0).</li>
+ *         <lI></lI>
+ *     </ul>
+ * </p>
+ * <p>
+ *     The get, put, remove methods are used to manage the mapping itself. In particular, get must not be used to
+ *     retrieve the value associated in the end by the Categorize instance to a double in the interval [k1;k2[ where
+ *     k1 and k2 are two consecutive keys of the map. Even if it is the final goal of Categorize (to provide an interval
+ *     classification mechanism), this feature is achieved by the method getValue implemented in the concrete subclasses
+ *     of this class.
+ * </p>
  * @param <ToType> One of ColorParameter, RealParameter, StringParameter
  * @param <FallbackType> the Literal implementation of <ToType>. It is needed to store 
  * a default value, when an analyzed input can't be placed in any category.
@@ -79,16 +112,14 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     private boolean succeeding = true;
     /**
      * Gives the ability to retrieve the value that needs to be classified. The 
-     * RealParameter embeded all the needed informations (particularly the name of
+     * RealParameter embeds all the needed information (particularly the name of
      * the column where to search).
      */
     private RealParameter lookupValue;
     private FallbackType fallbackValue;
-    private ToType firstClass;
     private double sdFactor;
-    private List<ToType> classValues;
-    private List<RealLiteral> thresholds;
     private List<CategorizeListener> listeners;
+    private SortedMap<RealLiteral,ToType> mapping;
 
     /**
      * Describes the methods that can be used to build a categorization.
@@ -102,9 +133,8 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * Build a {@code Categorize} objects with empty class and threshold values.
      */
     protected Categorize() {
-        this.classValues = new ArrayList<ToType>();
-        this.thresholds = new ArrayList<RealLiteral>();
         this.listeners = new ArrayList<CategorizeListener>();
+        this.mapping = new TreeMap<RealLiteral, ToType>();
         this.sdFactor = 1.0;
     }
 
@@ -121,27 +151,26 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      */
     public Categorize(ToType firstClassValue, FallbackType fallbackValue, RealParameter lookupValue) {
         this();
-        setClassValue(0, firstClassValue);
+        mapping.put(new RealLiteral(Double.NEGATIVE_INFINITY), firstClassValue);
         setFallbackValue(fallbackValue);
         setLookupValue(lookupValue);
         this.method = CategorizeMethod.MANUAL;
     }
 
     /**
-     * Set the fall bacj value that is returned when a value can't be processed.
-     * @param fallbackValue 
+     * Set the fall back value that is returned when a value can't be processed.
+     * @param fallbackValue The new fall back value used when we can't find a value for a given input.
      */
     public void setFallbackValue(FallbackType fallbackValue) {
         this.fallbackValue = fallbackValue;
         if(this.fallbackValue != null){
                 fallbackValue.setParent(this);
         }
-        update();
     }
 
     /**
      * Get the value that is returned when an input can't be processed.
-     * @return 
+     * @return The value used when we can't find a value for a given input.
      */
     public final FallbackType getFallbackValue() {
         return fallbackValue;
@@ -150,7 +179,10 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     /**
      * Set the lookup value. After using this methods, attributes to be processed in this
      * categorization will be retrieved using <code>lookupValue</code>
-     * @param lookupValue 
+     * @param lookupValue The RealParameter that will build the value used to get a mapping from this categorize. It is
+     *                    a generic RealParameter so that complex operation can be performed before getting the literal
+     *                    from the mapping. Note that the Categorize operation does not have much sense if the
+     *                    RealParameter given here does not contain a RealAttribute.
      */
     public final void setLookupValue(RealParameter lookupValue) {
         this.lookupValue = lookupValue;
@@ -162,106 +194,191 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
     /**
      * Get the current lookup value.
-     * @return 
+     * @return The RealParameter that builds the input given to the inner Double -> ToType mapping.
      */
     public final RealParameter getLookupValue() {
         return lookupValue;
     }
 
     /**
-     * Return the number of classes defined within the classification. According to this number (n),
+     * Return the number n of classes defined within the classification. According to this number (n),
      *  available class IDs are [0;n] and IDs for threshold are [0;n-1]
      *
      *  @return number of defined class
      */
     public final int getNumClasses() {
-        return classValues.size() + 1;
+        return mapping.size();
     }
 
     /**
      * the new class begin from the specified threshold, up to the next one.
      * The class is inserted at the right place
-     * @param threshold
-     * @param value
+     * @param threshold The new threshold
+     * @param value The new value
      */
-    public void addClass(RealLiteral threshold, ToType value) {
-        thresholds.add(threshold);
+    public void put(RealLiteral threshold, ToType value) {
+        mapping.put(threshold,value);
         threshold.setContext(RealParameterContext.REAL_CONTEXT);
         threshold.register(this);
-        int tIndex = thresholds.indexOf(threshold);
-        classValues.add(tIndex, value);
         this.method = CategorizeMethod.MANUAL;
-        fireClassAdded(tIndex + 1);
+        fireClassAdded(threshold);
+    }
+
+    /**
+     * Removes the mapping associated to the given threshold, if any.
+     * @param threshold The threshold we want to remove in the map
+     * @return The value associated to {@code threshold} in the map before removal, if any. Null otherwise.
+     */
+    public ToType remove(RealLiteral threshold){
+        if(threshold == null){
+            throw new NullPointerException("");
+        }
+        Double d = threshold.getValue(null);
+        if(Double.isInfinite(d) && d<0){
+            if(mapping.size() <= 1){
+                return null;
+            } else {
+                ToType ret = mapping.remove(threshold);
+                RealLiteral k = getKey(0);
+                ToType rem = mapping.remove(k);
+                mapping.put(new RealLiteral(Double.NEGATIVE_INFINITY),rem);
+                return ret;
+            }
+        }
+        ToType ret = mapping.remove(threshold);
+        if(ret != null){
+            fireClassRemoved(threshold);
+        }
+        return ret;
     }
 
     /**
      * Remove class number i in the categorization.
-     * @param i
-     * @return 
+     * @param i  The range of the class. A value of 0 will remove the the lowest threshold greater than negative infinity
+     * and the class value between negative infinity and this threshold.
+     * @return true if the class has been removed.
      */
-    public boolean removeClass(int i) {
-        if (getNumClasses() > 1 && i < getNumClasses() && i >= 0) {
-                if (i == 0) {
-                    // when the first class is removed, the second one takes its place.
-                    firstClass = classValues.remove(0);
-                    thresholds.remove(0);
+    public boolean remove(int i) {
+        RealLiteral rl = getKey(i);
+        if(rl != null){
+            if(rl.getValue(null) == Double.NEGATIVE_INFINITY){
+                if(mapping.size() >= 2){
+                    ToType tt = get(1);
+                    mapping.remove(getKey(1));
+                    mapping.put(rl,tt);
                 } else {
-                    classValues.remove(i - 1);
-                    thresholds.remove(i - 1);
+                    mapping.remove(rl);
                 }
-                this.method = CategorizeMethod.MANUAL;
-                fireClassRemoved(i);
-                return true;
+            } else {
+                mapping.remove(rl);
+                fireClassRemoved(rl);
+            }
+            return true;
         }
         return false;
     }
 
     /**
-     * Gets the value associated to class number i.
-     * @param i
-     * @return 
+     * Gets the value associated to the interval whose lowest bound is rl.
+     * @param rl The lowest bound of the interval associated to the mapping we want.
+     * @return The value mapped to the interval whose lowest bound is rl.
      */
-    public ToType getClassValue(int i) {
-        if (i == 0) {
-            return firstClass;
+    public ToType get(RealLiteral rl){
+        return mapping.get(rl);
+    }
+
+    /**
+     * Gets the class value used for input that lies between thresholds i and i+1, where threshold 0 is negative
+     * infinity.
+     * @param i The index of the class value we want to retrieve
+     * @return The class value between thresholds i and i+1
+     */
+    public ToType get(int i) {
+        return mapping.get(getKey(i));
+    }
+
+    /**
+     * Gets the ith key of the mapping using the ascending order.
+     * @param i The range of the key we want to get.
+     * @return The ith key if any, null otherwise.
+     */
+    public RealLiteral getKey(int i){
+        if(i<0){
+            return null;
+        }
+        Set<RealLiteral> keys = mapping.keySet();
+        Iterator<RealLiteral> it = keys.iterator();
+        int r=0;
+        while(it.hasNext() && r<i){
+            it.next();
+            r++;
+        }
+        if(r==i && it.hasNext()){
+            return it.next();
         } else {
-            return classValues.get(i - 1);
+            return null;
         }
     }
 
     /**
-     * Sets the value associated to class number i (if any) to <code>val</code>.
-     * @param i
-     * @param val 
+     * Sets the value associated to the interval between thresholds i and i+1 (if any) to <code>val</code>,  where
+     * threshold 0 is negative infinity.
+     * @param i The index of the class value we want to retrieve
+     * @param val The new class value
      */
-    public void setClassValue(int i, ToType val) {
-        int n = i;
-        if (n == 0) {
-            firstClass = val;
-        } else if (n > 0 && n < getNumClasses() - 1) {
-            //classes.get(i - 1).setClassValue(value);
-            n--; // first class in not in the list
-            classValues.remove(n);
-            classValues.add(n, val);
+    public void setValue(int i, ToType val) {
+        RealLiteral rl = getKey(i);
+        if(rl != null){
+            put(rl, val);
+            val.setParent(this);
         }
-        val.setParent(this);
     }
 
     /**
-     * Replace the ith threshold value with the parameter threshold.
-     * @param i
-     * @param threshold 
+     * <p>Replace the ith threshold value with the parameter threshold. This method takes care of keeping the good order
+     * of elements in the inner data structure. That means if we have a mapping like this :
+     * <ul>
+     *     <li>-INF -> v1</li>
+     *     <li> 1   -> v2</li>
+     *     <li> 3   -> v3</li>
+     *     <li> 4   -> v4</li>
+     *     <li> 5   -> v5</li>
+     * </ul>
+     * calling <code>setThreshold(1, 8)</code> will produce
+     * <ul>
+     *     <li>-INF -> v1</li>
+     *     <li> 3   -> v3</li>
+     *     <li> 4   -> v4</li>
+     *     <li> 5   -> v5</li>
+     *     <li> 8   -> v2</li>
+     * </ul>
+     * calling <code>setThreshold(0, 8)</code> will produce
+     * <ul>
+     *     <li>-INF -> v2</li>
+     *     <li> 3   -> v3</li>
+     *     <li> 4   -> v4</li>
+     *     <li> 5   -> v5</li>
+     *     <li> 8   -> v1</li>
+     * </ul>
+     * </p>
+     *
+     * @param i The index of the threshold we want to replace
+     * @param threshold The new threshold to be used.
      */
-    public void setClassThreshold(int i, RealLiteral threshold) {
-        if (i >= 0 && i < getNumClasses() - 1) {
-            RealParameter remove = thresholds.get(i);
-            thresholds.set(i, threshold);
+    public void setThreshold(int i, RealLiteral threshold) {
+        if(i==0){
+            ToType rem = mapping.remove(mapping.firstKey());
+            mapping.put(threshold,rem);
+            rem = mapping.remove(mapping.firstKey());
+            mapping.put(new RealLiteral(Double.NEGATIVE_INFINITY),rem);
+        } else if (i > 0 && i < getNumClasses() - 1) {
+            RealParameter remove = getKey(i);
+            mapping.put(threshold, mapping.get(remove));
+            mapping.remove(remove);
             threshold.setContext(RealParameterContext.REAL_CONTEXT);
             threshold.register(this);
-            if (! remove.equals(threshold)) {
-                sortClasses();
-            }
             threshold.setParent(this);
+//            sortClasses();
         }
         this.method = CategorizeMethod.MANUAL;
     }
@@ -273,11 +390,11 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
     /**
      * Get the ith threshold value of this categorization.
-     * @param i
-     * @return 
+     * @param i The range of the needed threshold.
+     * @return The Threshold a s a RealLiteral.
      */
-    public RealParameter getClassThreshold(int i) {
-        return thresholds.get(i);
+    public RealParameter getThreshold(int i) {
+        return getKey(i);
     }
 
     /**
@@ -318,16 +435,20 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * sort the threshold values.
      */
     private void sortClasses() {
-        Collections.sort(thresholds);
+        TreeMap<RealLiteral,ToType> nMap = new TreeMap<RealLiteral, ToType>();
+        for(Map.Entry<RealLiteral,ToType> entry : mapping.entrySet()){
+            nMap.put(entry.getKey(), entry.getValue());
+        }
+        mapping = nMap;
         fireNewThresoldsOrder();
     }
 
     /**
      * Retrieves the value associated to the input data corresponding to the
      * lookupValue in {@code sds} at line {@code fid}.
-     * @param sds The input data source
-     * param fid The index of the feature in the data source
-     * @return The parameter for the given configuration.
+     * @param sds The original DataSet
+     * @param fid The line we'll read in the DataSet
+     * @return The value retrieved by this parameter in {@code sds} at line {fid}.
      */
     protected ToType getParameter(DataSet sds, long fid) {
         try {
@@ -336,26 +457,32 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
                 if(value == null){
                         return fallbackValue;
                 }
-                Iterator<ToType> cIt = classValues.iterator();
-                Iterator<RealLiteral> tIt = thresholds.iterator();
-                ToType classValue = this.firstClass;
-                while (cIt.hasNext()) {
-                    double threshold = tIt.next().getValue(sds, fid);
-
-                    if ((!succeeding && value <= threshold) || ((value < threshold))) {
-                        return classValue;
-                    }
-                    classValue = cIt.next();
-                }
-                return classValue;
+                return getClassValue(new RealLiteral(value));
             } else { // Means nbClass == 1
-                return firstClass;
+                return mapping.get(new RealLiteral(Double.NEGATIVE_INFINITY));
             }
 
         } catch (ParameterException ex) {
             LOGGER.warn(I18N.tr("Unable to categorize the feature"), ex);
         }
         return fallbackValue;
+    }
+
+    private ToType getClassValue(RealLiteral limit){
+        if(mapping.containsKey(limit)){
+            if(succeeding || limit.getValue(null) == Double.NEGATIVE_INFINITY){
+                return mapping.get(limit);
+            } else {
+                SortedMap<RealLiteral, ToType> head = mapping.headMap(limit);
+                return head.get(head.lastKey());
+            }
+        } else {
+            //we're not on a limit between two intervals
+            //We get the map of all the keys that are lower than limit (ie the headMap) and get the greatest
+            //element
+            SortedMap<RealLiteral, ToType> head = mapping.headMap(limit);
+            return head.get(head.lastKey());
+        }
     }
 
     /**
@@ -371,19 +498,9 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
                 if(value == null){
                         return fallbackValue;
                 }
-                Iterator<ToType> cIt = classValues.iterator();
-                Iterator<RealLiteral> tIt = thresholds.iterator();
-                ToType classValue = this.firstClass;
-                while (cIt.hasNext()) {
-                    double threshold = tIt.next().getValue(map);
-                    if ((!succeeding && value <= threshold) || ((value < threshold))) {
-                        return classValue;
-                    }
-                    classValue = cIt.next();
-                }
-                return classValue;
+                return getClassValue(new RealLiteral(value));
             } else { // Means nbClass == 1
-                return firstClass;
+                return mapping.get(new RealLiteral(Double.NEGATIVE_INFINITY));
             }
 
         } catch (ParameterException ex) {
@@ -528,16 +645,20 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         ObjectFactory of = new ObjectFactory();
 
         List<Object> tv = c.getThresholdAndValue();
-
+        ToType firstClass =mapping.get(new RealLiteral(Double.NEGATIVE_INFINITY));
         if (firstClass != null) {
             tv.add(firstClass.getJAXBParameterValueType());
         }
-        Iterator<RealLiteral> tIt = thresholds.iterator();
-        Iterator<ToType> cIt = classValues.iterator();
-
+        Set<Map.Entry<RealLiteral,ToType>> entries = mapping.entrySet();
+        Iterator<Map.Entry<RealLiteral, ToType>> tIt = entries.iterator();
+        if(tIt.hasNext()){
+            //We already registered the first value
+            tIt.next();
+        }
         while (tIt.hasNext()) {
-            tv.add(tIt.next().getJAXBLiteralType());
-            tv.add(cIt.next().getJAXBParameterValueType());
+            Map.Entry<RealLiteral, ToType> next = tIt.next();
+            tv.add(next.getKey().getJAXBLiteralType());
+            tv.add(next.getValue().getJAXBParameterValueType());
         }
 
 
@@ -562,11 +683,21 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
     @Override
     public List<SymbolizerNode> getChildren() {
-        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
-        ls.add(lookupValue);
-        if(firstClass != null){
-            ls.add(firstClass);
+        ArrayList<SymbolizerNode> classValues= new ArrayList<SymbolizerNode>(mapping.size());
+        ArrayList<SymbolizerNode> thresholds = new ArrayList<SymbolizerNode>(mapping.size());
+        Set<Map.Entry<RealLiteral,ToType>> entries = mapping.entrySet();
+        Iterator<Map.Entry<RealLiteral,ToType>> it = entries.iterator();
+        if(it.hasNext()){
+            classValues.add(it.next().getValue());
         }
+        while(it.hasNext()){
+            Map.Entry<RealLiteral, ToType> next = it.next();
+            classValues.add(next.getValue());
+            thresholds.add(next.getKey());
+
+        }
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>(classValues.size()+thresholds.size()+1);
+        ls.add(lookupValue);
         ls.addAll(classValues);
         ls.addAll(thresholds);
         return ls;
@@ -587,23 +718,15 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         }
     }
     
-    private void fireClassAdded(int index) {
+    private void fireClassAdded(RealLiteral val) {
         for (CategorizeListener l : listeners) {
-            l.classAdded(index);
+            l.classAdded(val);
         }
-        update();
     }
 
-    private void fireClassRemoved(int index) {
+    private void fireClassRemoved(RealLiteral val) {
         for (CategorizeListener l : listeners) {
-            l.classRemoved(index);
-        }
-        update();
-    }
-
-    private void fireClassMoved(int i, int j) {
-        for (CategorizeListener l : listeners) {
-            l.classMoved(i, j);
+            l.classRemoved(val);
         }
     }
     /**
