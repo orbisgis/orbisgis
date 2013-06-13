@@ -75,8 +75,8 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
      * @param lookupValue
      */
     public Recode(FallbackType fallbackValue, StringParameter lookupValue) {
-        this.fallbackValue = fallbackValue;
-        this.lookupValue = lookupValue;
+        setFallbackValue(fallbackValue);
+        setLookupValue(lookupValue);
         mapItems = new LinkedHashMap<String, ToType>();
     }
 
@@ -88,6 +88,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         this.fallbackValue = fallbackValue;
         if(this.fallbackValue != null){
                 this.fallbackValue.setParent(this);
+                update();
         }
     }
 
@@ -134,6 +135,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
     public void addMapItem(String key, ToType value) {
             mapItems.put(key, value);
             value.setParent(this);
+            update();
     }
 
     /**
@@ -280,6 +282,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
             i++;
         }
         mapItems = lhm;
+        update();
     }
 
     @Override
