@@ -29,52 +29,42 @@
 package org.orbisgis.view.toc.actions.cui.legends.model;
 
 import org.orbisgis.legend.thematic.LineParameters;
-import org.orbisgis.legend.thematic.map.MappedLegend;
+import org.orbisgis.legend.thematic.categorize.CategorizedLine;
+import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
+import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueLineSE;
 
-import javax.swing.*;
-import javax.swing.table.TableCellEditor;
-import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
+ * This editor is used to change the values stored in a Map of type CategorizedLine. It will let the user handle a
+ * LineParameters instance in a dedicated UI, similar to the one used for unique symbols.
  * @author alexis
  */
-public abstract class ParametersEditorMappedLegend<K,U extends LineParameters>
-            extends AbstractCellEditor
-            implements TableCellEditor, ActionListener {
-    protected static final String EDIT = "edit";
-    private JButton button;
-    private K val;
-    private MappedLegend<K, U> rl;
+public class ParametersEditorCategorizedLine extends ParametersEditorMappedLegend<Double, LineParameters> {
 
     /**
      * Editors for a LineParameters stored in a JTable. We'll open a dedicated dialog
      */
-    public ParametersEditorMappedLegend(){
-        button = new JButton();
-        button.setActionCommand(EDIT);
-        button.addActionListener(this);
-        button.setBorderPainted(false);
-    }
-
-
-    @Override
-    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        val = (K) value;
-        rl = ((AbstractLegendTableModel)table.getModel()).getMappedLegend();
-        return button;
+    public ParametersEditorCategorizedLine(){
+        super();
     }
 
     @Override
-    public Object getCellEditorValue() {
-        return val;
-    }
-
-    /**
-     * Gets the unique value.
-     * @return The unique value we're going to edit.
-     */
-    public MappedLegend<K, ? extends LineParameters> getMappedLegend(){
-        return rl;
+    public void actionPerformed(ActionEvent e) {
+        if(e.getActionCommand().equals(EDIT)){
+            CategorizedLine cl = (CategorizedLine) getMappedLegend();
+            LineParameters lp = cl.get(getCellEditorValue());
+            UniqueSymbolLine usl = new UniqueSymbolLine(lp);
+            PnlUniqueLineSE pls = new PnlUniqueLineSE(false);
+            pls.setLegend(usl);
+            if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
+                LineParameters edited = usl.getLineParameters();
+                cl.put((Double) getCellEditorValue(), edited);
+                fireEditingStopped();
+            }
+            fireEditingCanceled();
+        }
     }
 }
