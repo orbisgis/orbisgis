@@ -33,7 +33,10 @@ import bsh.Interpreter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.List;
+
 import org.orbisgis.core.context.main.MainContext;
+import org.orbisgis.core.workspace.CoreWorkspace;
 
 /**
  *
@@ -60,6 +63,18 @@ public final class BeanshellScript {
          */
         public static void servicesRegister() {
                 mainContext = new MainContext(false);
+                // Read user default workspace, or use predefined one
+                CoreWorkspace coreWorkspace = mainContext.getCoreWorkspace();
+                File defaultWorkspace = coreWorkspace.readDefaultWorkspacePath();
+                if(defaultWorkspace==null) {
+                    List<File> workspacesPath = coreWorkspace.readKnownWorkspacesPath();
+                    if(!workspacesPath.isEmpty()) {
+                        defaultWorkspace = workspacesPath.get(0);
+                    }
+                }
+                if(defaultWorkspace!=null) {
+                    coreWorkspace.setWorkspaceFolder(defaultWorkspace.getAbsolutePath());
+                }
         }
 
         /**

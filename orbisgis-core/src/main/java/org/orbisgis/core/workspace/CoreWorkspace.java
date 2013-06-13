@@ -69,6 +69,8 @@ public class CoreWorkspace implements Serializable {
         public static final String PROP_LOGFILE = "logFile";
         private static final String CURRENT_WORKSPACE_FILENAME = "currentWorkspace.txt";
         private static final String ALL_WORKSPACE_FILENAME = "workspaces.txt";
+        private String dataBaseUriFile = "database.uri";
+        public static final String PROP_DATA_BASE_URI_FILE = "dataBaseUriFile";
 
         /**
          * bean constructor
@@ -78,6 +80,50 @@ public class CoreWorkspace implements Serializable {
 
                 //Read default workspace
                 loadCurrentWorkSpace();
+        }
+
+        /**
+         * Read the file located at {@link #getDataBaseUriFilePath()}
+         * @return Content of the workspace database uri, or empty string if there is not one.
+         */
+        public String getJDBCConnectionReference() {
+            String uriFile = getDataBaseUriFilePath();
+            if(uriFile==null) {
+                return "";
+            }
+            try {
+                BufferedReader fileReader = new BufferedReader(new FileReader(
+                        new File(uriFile)));
+                String line;
+                while ((line = fileReader.readLine()) != null) {
+                    return line;
+                }
+            } catch (IOException ex) {
+                LOGGER.error("Could not read the DataBase URI from workspace",ex);
+            }
+            return "";
+        }
+        /**
+         * Get the value of dataBaseUriFile
+         *
+         * @return the value of dataBaseUriFile or null if workspaceFolder is not defined
+         */
+        public String getDataBaseUriFilePath() {
+                if(workspaceFolder==null) {
+                    return null;
+                }
+                return workspaceFolder + File.separator + dataBaseUriFile;
+        }
+
+        /**
+         * Set the value of dataBaseUriFile
+         *
+         * @param dataBaseUriFile new value of dataBaseUriFile
+         */
+        public void setDataBaseUriFilePath(String dataBaseUriFile) {
+                String olddataBaseUriFile = this.dataBaseUriFile;
+                this.dataBaseUriFile = dataBaseUriFile;
+                propertySupport.firePropertyChange(PROP_DATA_BASE_URI_FILE, olddataBaseUriFile, dataBaseUriFile);
         }
 
         /**

@@ -28,7 +28,17 @@
  */
 package org.orbisgis.core.context.main;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
+
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -38,8 +48,12 @@ import org.apache.log4j.spi.Filter;
 import org.apache.log4j.varia.LevelRangeFilter;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.workspace.CoreWorkspace;
+import org.osgi.service.jdbc.DataSourceFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.sql.DataSource;
+
 /**
  * @class MainContext
  * The larger surrounding part of OrbisGis base 
@@ -54,7 +68,8 @@ public class MainContext {
     private CoreWorkspace coreWorkspace;
     private boolean debugMode;
     private static String CONSOLE_LOGGER = "ConsoleLogger";
-    
+    private DataSource dataSource;
+
     /**
      * Single parameter constructor
      * Take use.home as a default application folder
@@ -84,11 +99,33 @@ public class MainContext {
         }
         registerServices();
     }
+
+    /**
+     * @param password Empty or contain the database password if not provided in u=URI
+     *                 @throws SQLException If the connection to a DataBase cannot be done
+     */
+    public void initDataBase(DataSourceFactory driver,String usename, String password) throws SQLException {
+        String dbUriFile = coreWorkspace.getJDBCConnectionReference();
+        if(!dbUriFile.isEmpty()) {
+            Properties properties = new Properties();
+            properties.setProperty(DataSourceFactory.JDBC_URL, dbUriFile);
+            if(!usename.isEmpty()) {
+                properties.setProperty(DataSourceFactory.JDBC_USER,usename);
+            }
+            if(!password.isEmpty()) {
+                properties.setProperty(DataSourceFactory.JDBC_PASSWORD, password);
+            }
+            dataSource = driver.createDataSource(properties);
+            Services.registerService(DataSource.class,"OrbisGIS main DataSource",dataSource);
+        } else {
+            throw new SQLException("DataBase path not found");
+        }
+    }
+
     /**
      * Register Services
      */
     private void registerServices() {
-        
         Services.registerService(CoreWorkspace.class, I18N.tr("Contains folders path"),
                         coreWorkspace);
     }
@@ -101,8 +138,16 @@ public class MainContext {
      */
     public void saveStatus() {
     }
-    
-    
+
+    /**
+     * @return The data source where OrbisGIS data are stored.
+     * Null if {@link #initDataBase(org.osgi.service.jdbc.DataSourceFactory, String, String)}
+     * has not been called or failed.
+     */
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
     /**
      * Free resources
      */

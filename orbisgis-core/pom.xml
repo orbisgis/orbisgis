@@ -159,6 +159,12 @@
                         <version>4.2.1</version>
                 </dependency>
                 <dependency>
+                        <groupId>org.osgi</groupId>
+                        <artifactId>org.osgi.compendium</artifactId>
+                        <version>${org.osgi.compendium-version}</version>
+                        <scope>provided</scope>
+                </dependency>
+                <dependency>
                         <groupId>${project.groupId}</groupId>
                         <artifactId>plugin</artifactId>
                         <version>1.0</version>
