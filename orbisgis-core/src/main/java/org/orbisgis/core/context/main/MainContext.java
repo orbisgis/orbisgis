@@ -28,7 +28,6 @@
  */
 package org.orbisgis.core.context.main;
 
-import java.io.File;
 import java.io.IOException;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -37,11 +36,6 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.varia.LevelRangeFilter;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.DataSourceFinalizationException;
-import org.gdms.driver.DriverException;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.xnap.commons.i18n.I18n;
@@ -57,9 +51,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class MainContext {
     private static final Logger LOGGER = Logger.getLogger(MainContext.class);
     private static final I18n I18N = I18nFactory.getI18n(MainContext.class);
-    private DataSourceFactory dataSourceFactory;
     private CoreWorkspace coreWorkspace;
-    private DataManager dataManager;
     private boolean debugMode;
     private static String CONSOLE_LOGGER = "ConsoleLogger";
     
@@ -90,19 +82,12 @@ public class MainContext {
         if (initLogger) {
                 initFileLogger(coreWorkspace);
         }
-        dataSourceFactory = new DataSourceFactory(coreWorkspace.getSourceFolder(), coreWorkspace.getTempFolder(), coreWorkspace.getPluginFolder());
-        dataSourceFactory.setResultDir(new File(coreWorkspace.getResultsFolder()));
-        dataManager = new DefaultDataManager(dataSourceFactory);
         registerServices();
     }
     /**
      * Register Services
      */
     private void registerServices() {
-
-        Services.registerService(DataManager.class,
-                        I18N.tr("Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial"),
-                        dataManager);
         
         Services.registerService(CoreWorkspace.class, I18N.tr("Contains folders path"),
                         coreWorkspace);
@@ -114,12 +99,7 @@ public class MainContext {
      * the next core initialisation.
      * - Save the list of registered data source
      */
-    public void saveStatus() {            
-        try {
-                dataSourceFactory.getSourceManager().saveStatus(); 
-        } catch (DriverException ex) {
-                LOGGER.error("Unable to save the source list", ex);
-        }
+    public void saveStatus() {
     }
     
     
@@ -127,12 +107,6 @@ public class MainContext {
      * Free resources
      */
     public void dispose() {
-        try {
-            dataManager.dispose();
-            dataSourceFactory.freeResources();
-        } catch (DataSourceFinalizationException ex) {
-            LOGGER.error("Unable to free gdms resources, continue..", ex);
-        }
         // Unlink loggers
         Logger.getRootLogger().removeAllAppenders();
     }
@@ -145,20 +119,6 @@ public class MainContext {
         return coreWorkspace;
     }
 
-    /**
-     * 
-     * @return The data source factory instance
-     */
-    public DataSourceFactory getDataSourceFactory() {
-        return dataSourceFactory;
-    }
-    /**
-     * 
-     * @return The data manager
-     */
-    public DataManager getDataManager() {
-        return dataManager;
-    }
     /**
      * Application is running in a verbose mode
      * @return 
