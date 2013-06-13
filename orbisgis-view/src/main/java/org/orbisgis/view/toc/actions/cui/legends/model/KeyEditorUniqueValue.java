@@ -48,7 +48,7 @@ import java.util.EventObject;
 public abstract class KeyEditorUniqueValue<U extends LineParameters> extends KeyEditorMappedLegend<String, U> {
 
     @Override
-    protected String getNotUsedKey(){
+    protected String getNotUsedKey(String s){
         return ((AbstractRecodedLegend)getLegend()).getNotUsedKey(getField().getText());
     }
 }

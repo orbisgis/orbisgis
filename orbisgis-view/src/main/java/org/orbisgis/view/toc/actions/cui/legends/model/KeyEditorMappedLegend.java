@@ -46,8 +46,7 @@ public abstract class KeyEditorMappedLegend<K,U extends LineParameters> extends 
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().equals(EDIT)){
             U lp = rl.get(val);
-            rl.remove(val);
-            K k = getNotUsedKey();
+            K k = getNotUsedKey(val);
             rl.put(k, lp);
             fireEditingStopped();
         }
@@ -55,9 +54,10 @@ public abstract class KeyEditorMappedLegend<K,U extends LineParameters> extends 
 
     /**
      * Gets a key that is not already used in the inner map.
+     * @param previous the previously used key. Will be used if the user input is invalid.
      * @return A key that is not already used in the inner map.
      */
-    protected abstract K getNotUsedKey();
+    protected abstract K getNotUsedKey(K previous);
 
     /**
      * Sets the associated Legend.
