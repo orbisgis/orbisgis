@@ -32,32 +32,23 @@ import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
+import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.background.*;
 import org.orbisgis.view.joblist.JobListItem;
-import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
-import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorUniqueValue;
-import org.orbisgis.view.toc.actions.cui.legends.model.PreviewCellRenderer;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelUniqueValue;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import javax.swing.event.CellEditorListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
@@ -68,124 +59,15 @@ import java.util.TreeSet;
  * Methods shared by unique value analysis.
  * @author alexis
  */
-public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends AbstractFieldPanel implements ILegendPanel, ActionListener {
-    private static final String FALLBACK = "Fallback";
+public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends PnlAbstractTableAnalysis<String,U> {
     private static final String COMPUTED = "Computed";
     public static final String CREATE_CLASSIF = "Create classification";
     public static final Logger LOGGER = Logger.getLogger(PnlAbstractUniqueValue.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlAbstractUniqueValue.class);
-    private AbstractRecodedLegend<U> legend;
-    private static final String ADD = "add";
-    private static final String REMOVE = "remove";
-    private DataSource ds;
     private JPanel colorConfig;
     private JLabel endCol;
     private JLabel startCol;
-    private JTable table;
-    public final static int CELL_PREVIEW_WIDTH = CanvasSE.WIDTH/2;
-    public final static int CELL_PREVIEW_HEIGHT = CanvasSE.HEIGHT/2;
     protected final static String JOB_NAME = "recodeSelectDistinct";
-
-
-    @Override
-    public void initialize(LegendContext lc) {
-        if (getLegend() == null) {
-            setLegend(getEmptyAnalysis());
-            initPreview();
-        }
-        setGeometryType(lc.getGeometryType());
-        ILayer layer = lc.getLayer();
-        if (layer != null && layer.getDataSource() != null) {
-            setDataSource(layer.getDataSource());
-        }
-    }
-
-    protected void setLegendImpl(AbstractRecodedLegend<U> leg){
-        this.legend =  leg;
-    }
-
-    /**
-     * Creates and fill the combo box that will be used to compute the
-     * analysis.
-     *
-     * @return  A ComboBox linked to the underlying MappedLegend that configures the analysis field.
-     */
-    public JComboBox getFieldComboBox() {
-        if (ds != null) {
-            JComboBox jcc = getFieldCombo(ds);
-            ActionListener acl2 = EventHandler.create(ActionListener.class,
-                        this, "updateField", "source.selectedItem");
-            String field = legend.getLookupFieldName();
-            if (field != null && !field.isEmpty()) {
-                jcc.setSelectedItem(field);
-            }
-            jcc.addActionListener(acl2);
-            updateField((String) jcc.getSelectedItem());
-            return jcc;
-        } else {
-            return new JComboBox();
-        }
-    }
-
-    /**
-     * Sets the associated data source
-     * @param newDS the new {@link DataSource}.
-     */
-    protected void setDataSource(DataSource newDS){
-        ds = newDS;
-    }
-
-    /**
-     * Used when the field against which the analysis is made changes.
-     *
-     * @param obj The new field.
-     */
-    public void updateField(String obj) {
-        legend.setLookupFieldName(obj);
-    }
-
-    @Override
-    public Legend getLegend() {
-        return legend;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if(e.getActionCommand().equals(ADD)){
-            String key = legend.getNotUsedKey("newValue");
-            U lp = legend.getFallbackParameters();
-            legend.put(key, lp);
-            updateTable();
-        } else if (e.getActionCommand().equals(REMOVE)){
-            int col = getJTable().getSelectedColumn();
-            int row = getJTable().getSelectedRow();
-            if(col>=0 && row >= 0){
-                String key = (String)getJTable().getValueAt(row, col);
-                legend.remove(key);
-                updateTable();
-            }
-        }
-    }
-
-    /**
-     * Creates the two buttons add and remove, links them to this through actions and put them in a JPanel.
-     * @return the two buttons in a JPanel.
-     */
-    public JPanel getButtonsPanel(){
-        JPanel jp = new JPanel();
-        JButton jb1 = new JButton(I18N.tr("Add"));
-        jb1.setActionCommand(ADD);
-        jb1.addActionListener(this);
-        jp.add(jb1);
-        jp.setAlignmentX((float) .5);
-        JButton remove = new JButton(I18N.tr("Remove"));
-        remove.setActionCommand(REMOVE);
-        remove.addActionListener(this);
-        jp.add(jb1);
-        jp.add(remove);
-        jp.setAlignmentX((float) .5);
-        return jp;
-    }
 
     /**
      * Gets the panel that can be used to produce the colours of a generated classification
@@ -215,22 +97,6 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
     }
 
     /**
-     * Initialize the panels.
-     */
-    public abstract void initializeLegendFields();
-
-    /**
-     * Gets an empty analysis that can be used ot build a panel equivalent to the caller.
-     * @return an empty analysis
-     */
-    public abstract AbstractRecodedLegend<U> getEmptyAnalysis();
-
-    /**
-     * Init the preview of the fallback symbol.
-     */
-    public abstract void initPreview();
-
-    /**
      * Gets a unique symbol configuration whose only difference with {@code fallback} is one of its color set to {@code
      * c}.
      * @param fallback The original configuration
@@ -246,8 +112,8 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
      * @return A fresh unique value analysis.
      */
     public AbstractRecodedLegend<U> createConstantClassification(TreeSet<String> set, ProgressMonitor pm) {
-        U lp = legend.getFallbackParameters();
-        AbstractRecodedLegend newRL = getEmptyAnalysis();
+        U lp = ((MappedLegend<String,U>)getLegend()).getFallbackParameters();
+        AbstractRecodedLegend newRL = (AbstractRecodedLegend) getEmptyAnalysis();
         newRL.setFallbackParameters(lp);
         int size = set.size();
         double m = size == 0 ? 0 : 90.0/(double)size;
@@ -285,8 +151,8 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
      */
     public final AbstractRecodedLegend<U> createColouredClassification(TreeSet<String> set, ProgressMonitor pm,
                                                                        Color start, Color end) {
-        U lp = legend.getFallbackParameters();
-        AbstractRecodedLegend<U> newRL = getEmptyAnalysis();
+        U lp = ((MappedLegend<String,U>)getLegend()).getFallbackParameters();
+        AbstractRecodedLegend<U> newRL = (AbstractRecodedLegend<U>)getEmptyAnalysis();
         newRL.setFallbackParameters(lp);
         int size = set.size();
         int redStart = start.getRed();
@@ -350,99 +216,6 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
     }
 
     /**
-     * Gets the JTable used to draw the mapping
-     * @return the JTable
-     */
-    public JTable getJTable(){
-        return table;
-    }
-
-    /**
-     * Gets the constant Symbolizer obtained when using all the constant and fallback values of the original Symbolizer.
-     * @return The fallback Symbolizer.
-     */
-    public abstract Symbolizer getFallbackSymbolizer();
-
-    /**
-     * Update the inner CanvasSE. It updates its symbolizer and forced the image to be redrawn.
-     */
-    public final void updatePreview(Object source){
-        JComboBox jcb = (JComboBox) source;
-        updateLUComboBox(jcb.getSelectedIndex());
-        CanvasSE prev = getPreview();
-        prev.setSymbol(getFallbackSymbolizer());
-        updateTable();
-    }
-
-    /**
-     * Gets the model used to build the JTable.
-     * @return The table model.
-     */
-    public abstract AbstractTableModel getTableModel();
-
-    /**
-     * Gets the editor used to configure a cell with a preview.
-     * @return A cell editor.
-     */
-    public abstract TableCellEditor getParametersCellEditor();
-
-    /**
-     * Gets the editor used to configure a key of the table
-     * @return A cell editor.
-     */
-    public abstract KeyEditorUniqueValue<U> getKeyCellEditor();
-
-    /**
-     * Build the panel that contains the JTable where the map is displayed.
-     * @return The panel that contains the JTable where the map is displayed.
-     */
-    public JPanel getTablePanel() {
-        JPanel jp = new JPanel();
-        BoxLayout bl = new BoxLayout(jp, BoxLayout.Y_AXIS);
-        jp.setLayout(bl);
-        jp.setBorder(BorderFactory.createTitledBorder(I18N.tr("Unique value classification")));
-        //we build the table here
-        AbstractTableModel model = getTableModel();
-        table = new JTable(model);
-        table.setDefaultEditor(Object.class, null);
-        table.setRowHeight(CELL_PREVIEW_HEIGHT);
-        final int previewWidth = CELL_PREVIEW_WIDTH;
-        TableColumn previews = table.getColumnModel().getColumn(TableModelUniqueValue.PREVIEW_COLUMN);
-        previews.setWidth(previewWidth);
-        previews.setMinWidth(previewWidth);
-        previews.setMaxWidth(previewWidth);
-        previews.setCellRenderer(new PreviewCellRenderer(table, String.class, ((AbstractRecodedLegend<U>)getLegend())));
-        previews.setCellEditor(getParametersCellEditor());
-        //We put a default editor on the keys.
-        TableColumn keys = table.getColumnModel().getColumn(TableModelUniqueValue.KEY_COLUMN);
-        KeyEditorUniqueValue<U> ker = getKeyCellEditor();
-        CellEditorListener cel = EventHandler.create(CellEditorListener.class, model, "fireTableDataChanged", null, "editingStopped");
-        ker.addCellEditorListener(cel);
-        keys.setCellEditor(ker);
-        JScrollPane jsp = new JScrollPane(table);
-        // Set the viewport to view 6 rows with a width of 400 pixels.
-        int rowHeight = table.getRowHeight();
-        int tableWidth = 400;
-        int tableHeight = rowHeight*6;
-        table.setPreferredScrollableViewportSize(
-                new Dimension(tableWidth, tableHeight));
-        table.setDoubleBuffered(true);
-        jsp.setAlignmentX((float).5);
-        jp.add(jsp, BorderLayout.CENTER);
-        table.doLayout();
-        jp.add(getButtonsPanel());
-        // Set the unit (click once on down arrow: scroll down one row)
-        // and block (one mouse scroll wheel: scroll down one half page)
-        // increments.
-        JScrollBar verticalScrollBar = jsp.getVerticalScrollBar();
-        verticalScrollBar.setUnitIncrement(rowHeight);
-        verticalScrollBar.setBlockIncrement(tableHeight);
-        // Set the scroll mode.
-        jsp.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
-        return jp;
-    }
-
-    /**
      * Gets the JPanel that gathers all the buttons and labels to create a classification from scratch;
      * @return The JPanel used to create a classification from scratch.
      */
@@ -492,16 +265,27 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         return ret;
     }
 
-    /**
-     * Update the table if it is not null.
-     */
-    public void updateTable(){
-        JTable table = getJTable();
-        if(table != null){
-            TableModelUniqueValue model = (TableModelUniqueValue) table.getModel();
-            model.fireTableDataChanged();
-        }
+    @Override
+    public int getPreviewColumn(){
+        return TableModelUniqueValue.PREVIEW_COLUMN;
     }
+
+    @Override
+    public int getKeyColumn(){
+        return TableModelUniqueValue.KEY_COLUMN;
+    }
+
+    @Override
+    public String getNotUsedKey(){
+        AbstractRecodedLegend leg = (AbstractRecodedLegend) getLegend();
+        return leg.getNotUsedKey("newValue");
+    }
+
+    @Override
+    public Class getPreviewClass() {
+        return String.class;
+    }
+
     /**
      * This Job can be used as a background operation to retrieve a set containing the distinct data of a specific
      * field in a DataSource.
@@ -521,6 +305,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
 
         @Override
         public void run(ProgressMonitor pm) {
+            MappedLegend<String,U> legend = ((MappedLegend<String,U>)getLegend());
             result = getValues(pm);
             if(result != null){
                 AbstractRecodedLegend<U> rl;
@@ -550,6 +335,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
         public TreeSet<String> getValues(final ProgressMonitor pm){
             TreeSet<String> ret = new TreeSet<String>();
             try {
+                DataSource ds = getDataSource();
                 long rowCount=ds.getRowCount();
                 pm.startTask(I18N.tr("Retrieving classes"), 50);
                 pm.progressTo(0);
@@ -615,7 +401,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends A
 
         /**
          * Builds a new CancelPanel
-         * @param thres The expected limit, displayed in the inner JLable.
+         * @param thres The expected limit, displayed in the inner JLabel.
          */
         public CancelPanel(int thres){
             super();
