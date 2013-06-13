@@ -286,6 +286,11 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
         return String.class;
     }
 
+    @Override
+    public String getTitleBorder(){
+        return I18N.tr("Unique value classification");
+    }
+
     /**
      * This Job can be used as a background operation to retrieve a set containing the distinct data of a specific
      * field in a DataSource.

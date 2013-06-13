@@ -31,6 +31,8 @@ package org.orbisgis.view.toc.actions.cui.legends.model;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Table model for recoded lines.
@@ -41,6 +43,7 @@ public abstract class TableModelUniqueValue<U extends LineParameters> extends Ab
     private AbstractRecodedLegend<U> recodedLine;
     public final static int KEY_COLUMN = 1;
     public final static int PREVIEW_COLUMN = 0;
+    private final static I18n I18N = I18nFactory.getI18n(TableModelInterval.class);
 
     /**
      * Builds a new {@code TableModelUniqueValue} linker to {@code rl}.
@@ -53,6 +56,16 @@ public abstract class TableModelUniqueValue<U extends LineParameters> extends Ab
     @Override
     public MappedLegend<String, U> getMappedLegend() {
         return recodedLine;
+    }
+
+    @Override
+    public String getColumnName(int col){
+        if(col == KEY_COLUMN){
+            return I18N.tr("Value");
+        } else if(col == PREVIEW_COLUMN){
+            return I18N.tr("Preview");
+        }
+        throw new IndexOutOfBoundsException("We did not found a column at index "+col+" !");
     }
 
 }

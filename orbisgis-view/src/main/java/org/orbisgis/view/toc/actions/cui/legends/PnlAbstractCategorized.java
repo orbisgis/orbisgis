@@ -35,4 +35,9 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     public Class getPreviewClass() {
         return Double.class;
     }
+
+    @Override
+    public String getTitleBorder(){
+        return I18N.tr("Interval classification");
+    }
 }

@@ -165,7 +165,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters> exte
         JPanel jp = new JPanel();
         BoxLayout bl = new BoxLayout(jp, BoxLayout.Y_AXIS);
         jp.setLayout(bl);
-        jp.setBorder(BorderFactory.createTitledBorder(I18N.tr("Unique value classification")));
+        jp.setBorder(BorderFactory.createTitledBorder(getTitleBorder()));
         //we build the table here
         AbstractTableModel model = getTableModel();
         table = new JTable(model);
@@ -206,6 +206,8 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters> exte
         jsp.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
         return jp;
     }
+
+    protected abstract String getTitleBorder();
 
     /**
      * Replaces the inner JTable.

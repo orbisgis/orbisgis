@@ -13,20 +13,9 @@ import java.util.SortedSet;
  * @author Alexis Guéganno
  */
 public abstract class AbstractLegendTableModel<K ,U extends LineParameters>  extends AbstractTableModel {
-    private final static I18n I18N = I18nFactory.getI18n(TableModelUniqueValue.class);
     private final static int COLUMN_COUNT = 2;
     public final static int KEY_COLUMN = 1;
     public final static int PREVIEW_COLUMN = 0;
-
-    @Override
-    public String getColumnName(int col){
-        if(col == KEY_COLUMN){
-            return I18N.tr("Value");
-        } else if(col == PREVIEW_COLUMN){
-            return I18N.tr("Preview");
-        }
-        throw new IndexOutOfBoundsException("We did not found a column at index "+col+" !");
-    }
 
     @Override
     public int getColumnCount() {
