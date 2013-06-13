@@ -35,14 +35,16 @@ import java.util.Map;
 import net.opengis.se._2_0.core.ExternalGraphicType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
  *
  * @author Maxence Laurent
+ * @author Alexis Guéganno
  * @todo implement in InlineContent
  */
-public interface ExternalGraphicSource {
+public interface ExternalGraphicSource extends SymbolizerNode{
 
 
         /**
@@ -61,11 +63,19 @@ public interface ExternalGraphicSource {
          */
     Rectangle2D.Double updateCacheAndGetBounds(ViewBox viewBox, 
             Map<String,Value> map, MapTransform mt, String mimeType) throws ParameterException;
-    
-    void draw(Graphics2D g2, AffineTransform at, MapTransform mt, double opacity, String mimeType);
 
-    //public abstract RenderedImage getPlanarImage(ViewBox viewBox, DataSet sds,
-    //long fid, MapTransform mt, String mimeType) throws IOException, ParameterException;
+    /**
+     * Draws the graphic on the map.
+     * @param g2 The Graphics used to draw the symbol.
+     * @param map The input parameters.
+     * @param at The AffineTransform used on the input image
+     * @param mt The MapTransform used to put the resulting image on the map.
+     * @param opacity The opacity of the image.
+     * @param mimeType The MIME type of the image.
+     * @throws ParameterException
+     */
+    void draw(Graphics2D g2, Map<String,Value> map, AffineTransform at, MapTransform mt,
+              double opacity, String mimeType) throws ParameterException;
 
     void setJAXBSource(ExternalGraphicType e);
 }

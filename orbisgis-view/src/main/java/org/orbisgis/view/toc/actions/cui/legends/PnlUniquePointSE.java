@@ -276,7 +276,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
 
         private JPanel getMarkWidth(UniqueSymbolPoint point){
                 CanvasSE prev = getPreview();
-                final JNumericSpinner jns = new JNumericSpinner(4, Integer.MIN_VALUE, Integer.MAX_VALUE, 0.01);
+                final JNumericSpinner jns = new JNumericSpinner(4, Integer.MIN_VALUE, Integer.MAX_VALUE, SPIN_STEP);
                 ChangeListener cl = EventHandler.create(ChangeListener.class, point, "viewBoxWidth", "source.value");
                 jns.addChangeListener(cl);
                 jns.setValue(point.getViewBoxWidth() == null? point.getViewBoxHeight() : point.getViewBoxWidth());
@@ -294,7 +294,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          */
         private JPanel getMarkHeight(UniqueSymbolPoint point){
                 CanvasSE prev = getPreview();
-                final JNumericSpinner jns = new JNumericSpinner(4, Integer.MIN_VALUE, Integer.MAX_VALUE, 0.01);
+                final JNumericSpinner jns = new JNumericSpinner(4, Integer.MIN_VALUE, Integer.MAX_VALUE, SPIN_STEP);
                 ChangeListener cl = EventHandler.create(ChangeListener.class, point, "viewBoxHeight", "source.value");
                 jns.addChangeListener(cl);
                 jns.setValue(point.getViewBoxHeight() == null? point.getViewBoxWidth() : point.getViewBoxHeight());

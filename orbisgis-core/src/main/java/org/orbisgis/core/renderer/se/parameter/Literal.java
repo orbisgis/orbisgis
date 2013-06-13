@@ -73,6 +73,7 @@ public abstract class Literal extends AbstractSymbolizerNode implements Comparab
                 for (LiteralListener l : listeners) {
                         l.literalChanged();
                 }
+            update();
         }
 
         @Override

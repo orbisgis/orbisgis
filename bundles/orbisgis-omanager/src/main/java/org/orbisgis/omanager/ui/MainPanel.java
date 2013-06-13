@@ -190,7 +190,7 @@ public class MainPanel extends JPanel {
 
     }
     /**
-     * The user select another plug-in in the list.
+     * The user select another plugin in the list.
      * @param e Event object
      */
     public void onBundleSelectionChange(ListSelectionEvent e) {
@@ -260,12 +260,12 @@ public class MainPanel extends JPanel {
     private void addSouthButtons(JPanel southButtons) {
 
         JButton addFile = new ButtonIcon(getIcon("install_plugin_from_disk"));
-        addFile.setToolTipText(I18N.tr("Add a plugin from disk, dependencies could not be resolved."));
+        addFile.setToolTipText(I18N.tr("Add a plugin from disk. Dependencies are not automatically resolved."));
         addFile.addActionListener(EventHandler.create(ActionListener.class, this, "onAddBundleJar"));
         southButtons.add(addFile);
 
         JButton addUrl = new ButtonIcon(getIcon("install_plugin_from_url"));
-        addUrl.setToolTipText(I18N.tr("Add a plugin from url file:// or http(s)://, dependencies could not be resolved."));
+        addUrl.setToolTipText(I18N.tr("Add a plugin from a URL (file:// or http(s)://). Dependencies are not automatically resolved."));
         addUrl.addActionListener(EventHandler.create(ActionListener.class,this,"onAddBundleJarUri"));
         southButtons.add(addUrl);
 
@@ -282,7 +282,7 @@ public class MainPanel extends JPanel {
         onRepositoryChange();
 
         JButton refreshRepositories = new ButtonIcon(getIcon("repository_refresh"));
-        refreshRepositories.setToolTipText(I18N.tr("Reload the list of plug-ins from the Internet."));
+        refreshRepositories.setToolTipText(I18N.tr("Reload available plugins from all remote repositories."));
         refreshRepositories.addActionListener(EventHandler.create(ActionListener.class,this,"onReloadPlugins"));
         southButtons.add(refreshRepositories);
     }
@@ -433,7 +433,7 @@ public class MainPanel extends JPanel {
         String errMessage = "";
         String chosenURL = "";
         do {
-            StringBuilder message = new StringBuilder(I18N.tr("Enter Jar URL :"));
+            StringBuilder message = new StringBuilder(I18N.tr("Enter the plugin URL (file:// or http(s)://):"));
             if(!errMessage.isEmpty()) {
                 message.append("\n");
                 message.append(errMessage);
@@ -441,7 +441,7 @@ public class MainPanel extends JPanel {
             chosenURL = (String) JOptionPane.showInputDialog(
                     this,
                     message.toString(),
-                    I18N.tr("Add plug-in file"),
+                    I18N.tr("Add a plugin file"),
                     JOptionPane.PLAIN_MESSAGE,
                     null,
                     null,
@@ -449,7 +449,7 @@ public class MainPanel extends JPanel {
             //If a string was returned, say so.
             if ((chosenURL != null)) {
                 try {
-                    URI userURI = new URI(chosenURL);
+                    URI userURI = new URI(chosenURL.trim().replaceAll(" ", "%20"));
                     bundleContext.installBundle(userURI.toString());
                     return;
                 } catch(Exception ex) {
@@ -487,10 +487,11 @@ public class MainPanel extends JPanel {
             chosenURL = showInputURI(chosenURL,errMessage);
             //If a string was returned, say so.
             if ((chosenURL != null)) {
-                Collection<URL> urls = repositoryAdminTrackerCustomizer.getRepositoriesURL();
+                List<URL> urls = repositoryAdminTrackerCustomizer.getRepositoriesURL();
                 try {
-                    URI userURI = new URI(chosenURL);
-                    if(urls.contains(userURI)) {
+                    URI userURI = new URI(chosenURL.trim().replaceAll(" ", "%20"));
+                    // TODO: How can a list of URLs contain a URI?
+                    if(urls.contains(userURI.toURL())) {
                         errMessage = I18N.tr("This repository URL already exists");
                     } else {
                         repositoryAdminTrackerCustomizer.addRepository(userURI.toURL());
@@ -504,7 +505,7 @@ public class MainPanel extends JPanel {
 
     }
     private String showInputURI(String defaultValue,String errorMessage) {
-        StringBuilder message = new StringBuilder(I18N.tr("Enter repository URL :"));
+        StringBuilder message = new StringBuilder(I18N.tr("Enter the repository URL:"));
         if(!errorMessage.isEmpty()) {
             message.append("\n");
             message.append(errorMessage);
@@ -512,7 +513,7 @@ public class MainPanel extends JPanel {
         return (String) JOptionPane.showInputDialog(
                 this,
                 message.toString(),
-                I18N.tr("Add plug-in repository"),
+                I18N.tr("Add a plugin repository"),
                 JOptionPane.PLAIN_MESSAGE,
                 null,
                 null,
@@ -527,7 +528,7 @@ public class MainPanel extends JPanel {
             URL chosenURL = (URL) JOptionPane.showInputDialog(
                     this,
                     I18N.tr("Select the server to remove"),
-                    I18N.tr("Remove plug-in repository"),
+                    I18N.tr("Remove plugin repository"),
                     JOptionPane.PLAIN_MESSAGE,
                     null,
                     urls.toArray(new URL[urls.size()]),
@@ -563,11 +564,11 @@ public class MainPanel extends JPanel {
         radioBar.setLayout(new BoxLayout(radioBar, BoxLayout.X_AXIS));
         // Create radio buttons
         ButtonGroup filterGroup = new ButtonGroup();
-        createRadioButton(I18N.tr("All state"),I18N.tr("Do not filter bundle by their state."),true,
+        createRadioButton(I18N.tr("All"),I18N.tr("Show all bundles."),true,
                 "onRemoveStateFilter",filterGroup,radioBar);
         createRadioButton(I18N.tr("Installed"),I18N.tr("Show only installed bundles."),false,"onFilterBundleInstall",
                 filterGroup, radioBar);
-        createRadioButton(I18N.tr("Update"), I18N.tr("Show only bundles where an update is available."), false,
+        createRadioButton(I18N.tr("Updatable"), I18N.tr("Show only bundles that can be updated."), false,
                 "onFilterBundleUpdate", filterGroup, radioBar);
 
         // Category
@@ -576,7 +577,7 @@ public class MainPanel extends JPanel {
         // Find text
         bundleSearchField.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,this,"onSearchTextChange"));
         bundleSearchField.addActionListener(EventHandler.create(ActionListener.class, this, "onSearchTextValidate"));
-        bundleSearchField.setToolTipText(I18N.tr("Type here to find plug-ins that contains the field words"));
+        bundleSearchField.setToolTipText(I18N.tr("Search for a plugin."));
         // Use MINIMUM_SEARCH_COLUMNS as minimum size
         bundleSearchField.setMinimumSize(bundleSearchField.getPreferredSize());
         radioBar.add(bundleSearchField);
