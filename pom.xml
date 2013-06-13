@@ -17,8 +17,8 @@
                 <!-- <module>bundles/plugin-test</module>-->
                 <module>orbisgis-core</module>
                 <!-- <module>legend</module> -->
-                <!-- <module>orbisgis-sif</module> -->
-                <!-- <module>api/orbisgis-view</module> -->
+                <module>orbisgis-sif</module>
+                <module>api/orbisgis-view</module>
                 <module>bundles/orbisgis-oshell</module>
                 <module>bundles/orbisgis-omanager</module>
                 <module>bundles/orbisgis-omanager-plugin</module>
