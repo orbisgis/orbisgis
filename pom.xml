@@ -13,17 +13,17 @@
         <url>http://www.orbisgis.org</url>
         <modules>
                 <module>wms-client</module>
-                <module>gdms</module>
-		<module>bundles/plugin-test</module>
+                <!-- <module>gdms</module> -->
+                <!-- <module>bundles/plugin-test</module>-->
                 <module>orbisgis-core</module>
-                <module>legend</module>
-                <module>orbisgis-sif</module>
-                <module>api/orbisgis-view</module>
+                <!-- <module>legend</module> -->
+                <!-- <module>orbisgis-sif</module> -->
+                <!-- <module>api/orbisgis-view</module> -->
                 <module>bundles/orbisgis-oshell</module>
-                <module>bundles/orbisgis-omanager</module>
-                <module>bundles/orbisgis-omanager-plugin</module>
-                <module>orbisgis-view</module>
-                <module>orbisgis-dist</module>
+                <!-- <module>bundles/orbisgis-omanager</module> -->
+                <!-- <module>bundles/orbisgis-omanager-plugin</module> -->
+                <!-- <module>orbisgis-view</module> -->
+                <!-- <module>orbisgis-dist</module> -->
         </modules>
         <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
