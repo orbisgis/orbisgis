@@ -16,6 +16,7 @@ import org.orbisgis.legend.structure.categorize.CategorizedString;
 import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 import org.orbisgis.legend.thematic.LineParameters;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -26,7 +27,7 @@ import java.util.List;
  * of literal or categorized parameters.
  * @author Alexis Guéganno
  */
-public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> {
+public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> implements StrokeUom{
 
     private LineSymbolizer symbolizer;
     private CategorizedColor color;

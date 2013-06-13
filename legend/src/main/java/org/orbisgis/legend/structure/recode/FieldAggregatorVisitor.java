@@ -28,6 +28,9 @@
  */
 package org.orbisgis.legend.structure.recode;
 
+import org.orbisgis.legend.structure.categorize.CategorizedLegend;
+import org.orbisgis.legend.structure.categorize.CategorizedParameterVisitor;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,7 +38,7 @@ import java.util.Set;
  * Gathers all the fields used in the visited RecodedLegend instances.
  * @author alexis
  */
-public class FieldAggregatorVisitor implements RecodedParameterVisitor {
+public class FieldAggregatorVisitor implements RecodedParameterVisitor, CategorizedParameterVisitor {
 
     private Set<String> fields = new HashSet<String>();
 
@@ -47,6 +50,12 @@ public class FieldAggregatorVisitor implements RecodedParameterVisitor {
     public void visit(RecodedLegend legend) {
         if(legend.field() !=null && !legend.field().isEmpty()){
             fields.add(legend.field());
+        }
+    }
+    @Override
+    public void visit(CategorizedLegend legend) {
+        if(legend.getField() !=null && !legend.getField().isEmpty()){
+            fields.add(legend.getField());
         }
     }
 
