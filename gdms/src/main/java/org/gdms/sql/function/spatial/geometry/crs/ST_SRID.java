@@ -33,7 +33,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.crs;
 
-
+import org.cts.crs.CoordinateReferenceSystem;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -43,57 +43,53 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Gets the CRS name of a geometry.
- * 
+ *
  * Note that this has nothing to do with the CRS constraint on a table column.
- * 
+ *
  * @author Antoine Gourlay, Erwan Bocher
  */
 public class ST_SRID extends AbstractScalarSpatialFunction {
 
-        @Override
-        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
-                final CoordinateReferenceSystem crs = args[0].getCRS();
-                
-                if (crs == null) {
-                        return ValueFactory.createNullValue();
-                } else {
-                        String identifiers = crs.getIdentifiers().toString();
-                        if(!identifiers.isEmpty()&&!identifiers.equals("[]")){
-                                return ValueFactory.createValue(identifiers);
-                        }
-                        return ValueFactory.createValue(crs.getName().getCode());
-                }
-                
+    @Override
+    public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
+        final CoordinateReferenceSystem crs = args[0].getCRS();
+
+        if (crs == null) {
+            return ValueFactory.createNullValue();
+        } else {
+            String identifiers = crs.getName();
+            return ValueFactory.createValue(identifiers);
         }
 
-        @Override
-        public String getDescription() {
-                return "Gets the name of the CRS associated with a particular geometry, or a null value if none.";
-        }
+    }
 
-        @Override
-        public String getName() {
-                return "ST_SRID";
-        }
+    @Override
+    public String getDescription() {
+        return "Gets the name of the CRS associated with a particular geometry, or a null value if none.";
+    }
 
-        @Override
-        public String getSqlOrder() {
-                return "SELECT ST_SRID(the_geom) FROM table;";
-        }
+    @Override
+    public String getName() {
+        return "ST_SRID";
+    }
 
-        @Override
-        public int getType(int[] types) {
-                return Type.STRING;
-        }
-        
-        @Override
-        public FunctionSignature[] getFunctionSignatures() {
-                return new FunctionSignature[]{
-                                new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY)
-                };
-        }
+    @Override
+    public String getSqlOrder() {
+        return "SELECT ST_SRID(the_geom) FROM table;";
+    }
+
+    @Override
+    public int getType(int[] types) {
+        return Type.STRING;
+    }
+
+    @Override
+    public FunctionSignature[] getFunctionSignatures() {
+        return new FunctionSignature[]{
+            new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY)
+        };
+    }
 }

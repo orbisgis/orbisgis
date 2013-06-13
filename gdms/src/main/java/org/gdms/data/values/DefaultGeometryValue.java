@@ -36,11 +36,11 @@ package org.gdms.data.values;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.ParseException;
 import java.util.Arrays;
+import org.cts.crs.CoordinateReferenceSystem;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.geometryUtils.GeometryTypeUtil;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 abstract class DefaultGeometryValue extends AbstractValue implements GeometryValue {
 

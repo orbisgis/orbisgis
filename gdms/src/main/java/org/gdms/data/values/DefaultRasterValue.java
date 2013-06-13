@@ -36,6 +36,7 @@ package org.gdms.data.values;
 import ij.ImagePlus;
 import ij.process.*;
 import java.io.*;
+import org.cts.crs.CoordinateReferenceSystem;
 import org.gdms.data.InitializationException;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
@@ -44,7 +45,6 @@ import org.grap.io.RasterReader;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.utils.ByteUtils;
 
 final class DefaultRasterValue extends AbstractValue implements RasterValue {

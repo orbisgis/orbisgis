@@ -46,60 +46,67 @@ import org.junit.Test;
  * @author Antoine Gourlay, Erwan Bocher
  */
 public class CRSFunctionTest extends TestBase {
-        
-        @Before
-        public void setUp() throws Exception {
-                super.setUpTestsWithEdition(false);
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUpTestsWithEdition(false);
+    }
+
+    //TODO : this test must be fixed in the future
+    //@Test
+    public void testSetCRSdata() throws Exception {
+        dsf.executeSQL("CREATE TABLE init AS SELECT * FROM ST_RandomGeometry('point', 2);");
+        DataSource ds = dsf.getDataSourceFromSQL("SELECT ST_SetSRID(the_geom, 'EPSG:27572') from init;");
+        ds.open();
+        assertTrue(ds.getCRS().getName().toString().equalsIgnoreCase("EPSG:27572"));
+        ds.close();
+    }
+
+    @Test
+    public void testGetSetCRSOntheFly() throws Exception {
+        dsf.executeSQL("CREATE TABLE init AS SELECT * FROM ST_RandomGeometry('point', 10);");
+        DataSource ds = dsf.getDataSourceFromSQL("SELECT ST_SRID(the_geom) from init;");
+
+        ds.open();
+        assertTrue(ds.isNull(0, 0));
+        ds.close();
+
+        ds = dsf.getDataSourceFromSQL("SELECT ST_SRID(ST_SetSRID(the_geom, 'EPSG:27572')) from init;");
+
+        ds.open();
+        for (int i = 0; i < ds.getRowCount(); i++) {
+            assertTrue(ds.getString(i, 0).contains("EPSG:27572"));
         }
-        
-        
-        //TODO : this test must be fixed in the future
-        //@Test
-        public void testSetCRSdata() throws Exception {
-                dsf.executeSQL("CREATE TABLE init AS SELECT * FROM ST_RandomGeometry('point', 2);");
-                DataSource  ds = dsf.getDataSourceFromSQL("SELECT ST_SetSRID(the_geom, 'EPSG:27572') from init;");
-                ds.open();
-                assertTrue(ds.getCRS().getName().toString().equalsIgnoreCase("EPSG:27572"));                
-                ds.close();
-        }
-        
-        @Test
-        public void testGetSetCRSOntheFly() throws Exception {
-                dsf.executeSQL("CREATE TABLE init AS SELECT * FROM ST_RandomGeometry('point', 10);");
-                DataSource ds = dsf.getDataSourceFromSQL("SELECT ST_SRID(the_geom) from init;");
-                
-                ds.open();
-                assertTrue(ds.isNull(0, 0));
-                ds.close();
-                
-                ds = dsf.getDataSourceFromSQL("SELECT ST_SRID(ST_SetSRID(the_geom, 'EPSG:27572')) from init;");
-                
-                ds.open();
-                for (int i = 0; i < ds.getRowCount(); i++) {
-                        assertTrue( ds.getString(i, 0).contains("EPSG:27572"));
-                }
-                ds.close();
-        }
-        
-        
-        @Test
-        public void testST_Transform() throws Exception {
-                dsf.executeSQL("CREATE TABLE init AS SELECT 'POINT(584173.736059813 2594514.82833411)'::GEOMETRY as the_geom;");
-                DataSource ds = dsf.getDataSourceFromSQL("SELECT *  from init;");
-                //EPSG:27572;584173.736059813;2594514.82833411;EPSG:4326;;0.01
-                
-                WKTReader wKTReader = new WKTReader();
-                Geometry targetGeom = wKTReader.read("POINT(2.114551393 50.345609791)");
-                ds.open();
-                assertTrue(!ds.isNull(0, 0));
-                ds.close();
-                
-                ds = dsf.getDataSourceFromSQL("SELECT ST_TRANSFORM(ST_SetSRID(the_geom, 'EPSG:27572'), 'EPSG:4326') from init;");
-                
-                ds.open();
-                
-                assertTrue(ds.getGeometry(0).equalsExact(targetGeom, 0.01));
-                
-                ds.close();
-        }
+        ds.close();
+    }
+
+    @Test
+    public void testST_Transform27572to4326() throws Exception {
+        dsf.executeSQL("CREATE TABLE init AS SELECT 'POINT(584173.736059813 2594514.82833411)'::GEOMETRY as the_geom;");
+        DataSource ds = dsf.getDataSourceFromSQL("SELECT *  from init;");
+        WKTReader wKTReader = new WKTReader();
+        Geometry targetGeom = wKTReader.read("POINT(2.114551393 50.345609791)");
+        ds.open();
+        assertTrue(!ds.isNull(0, 0));
+        ds.close();
+        ds = dsf.getDataSourceFromSQL("SELECT ST_TRANSFORM(ST_SetSRID(the_geom, 'EPSG:27572'), 'EPSG:4326') from init;");
+        ds.open();
+        assertTrue(ds.getGeometry(0).equalsExact(targetGeom, 0.01));
+        ds.close();
+    }
+    
+    @Test
+    public void testST_Transform27572toIGNF_NTFG() throws Exception {
+        dsf.executeSQL("CREATE TABLE init AS SELECT 'POINT(584173.736059813 2594514.82833411)'::GEOMETRY as the_geom;");
+        DataSource ds = dsf.getDataSourceFromSQL("SELECT *  from init;");
+        WKTReader wKTReader = new WKTReader();
+        Geometry targetGeom = wKTReader.read("POINT(2.114551393 50.345609791)");
+        ds.open();
+        assertTrue(!ds.isNull(0, 0));
+        ds.close();
+        ds = dsf.getDataSourceFromSQL("SELECT ST_TRANSFORM(ST_SetSRID(the_geom, 'EPSG:27572'), 'IGNF:NTFG') from init;");
+        ds.open();
+        assertTrue(ds.getGeometry(0).equalsExact(targetGeom, 0.01));
+        ds.close();
+    }
 }
