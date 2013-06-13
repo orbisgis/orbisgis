@@ -69,16 +69,16 @@ public final class BeanshellScript {
          * @throws FileNotFoundException 
          */
         private static void execute(String[] args) throws EvalError, FileNotFoundException {
-                try {
-                        String script = args[0];
-                        if (script != null && !script.isEmpty()) {
-                                File file = new File(script);
-                                if (!file.isFile()){
-                                    printHelp();
-                                }
-                                else if (!file.exists()) {
-                                        System.out.println("The file doesn't exist.");
-                                } else {
+                String script = args[0];
+                if (script != null && !script.isEmpty()) {
+                        File file = new File(script);
+                        if (!file.isFile()){
+                                printHelp();
+                        }
+                        else if (!file.exists()) {
+                                System.err.println("The file doesn't exist.");
+                        } else {
+                                try {
                                         servicesRegister();
                                         Interpreter interpreter = new Interpreter();
                                         interpreter.setOut(System.out);
@@ -87,12 +87,12 @@ public final class BeanshellScript {
                                         interpreter.eval("setAccessibility(true)");
                                         FileReader reader = new FileReader(file);
                                         interpreter.eval(reader);
+                                } finally {
+                                        mainContext.dispose();
                                 }
-                        } else {
-                                System.out.print("The second parameter must be not null.\n");
                         }
-                } finally {
-                        mainContext.dispose();
+                } else {
+                        System.err.print("The second parameter must be not null.\n");
                 }
         }
 
