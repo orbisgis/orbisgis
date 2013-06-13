@@ -86,6 +86,11 @@
                         <version>1.6</version>
                 </dependency>
                 <dependency>
+                        <groupId>com.vividsolutions</groupId>
+                        <artifactId>jts</artifactId>
+                        <version>${jts-version}</version>
+                </dependency>
+                <dependency>
                         <groupId>com.lowagie</groupId>
                         <artifactId>iText</artifactId>
                         <version>5.0.2</version>
