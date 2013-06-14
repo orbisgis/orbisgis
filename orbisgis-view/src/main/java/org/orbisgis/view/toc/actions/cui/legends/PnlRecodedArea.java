@@ -48,6 +48,7 @@ import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.model.*;
+import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -297,13 +298,10 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     }
 
     private JPanel getUOMCombo(){
-        JPanel pan = new JPanel();
-        JComboBox jcb = getLineUomCombo(((RecodedArea)getLegend()));
+        UomCombo jcb = getLineUomCombo(((RecodedArea) getLegend()));
         ActionListener aclUom = EventHandler.create(ActionListener.class, this, "updatePreview", "source");
         jcb.addActionListener(aclUom);
-        pan.add(new JLabel(I18N.tr("Unit of measure :")));
-        pan.add(jcb);
-        return pan;
+        return jcb;
     }
 
     /**

@@ -43,6 +43,7 @@ import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -62,7 +63,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueLineSE.class);
         private ConstantPenStrokeLegend penStrokeMemory;
         private JCheckBox lineCheckBox;
-        private JComboBox lineUom;
         private JPanel lineWidth;
         private JPanel lineColor;
         private JPanel lineOpacity;
@@ -213,7 +213,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 GridLayout grid = new GridLayout(4+du+ilo,2);
                 grid.setVgap(5);
                 jp.setLayout(grid);
-                lineUom = getLineUomCombo((StrokeUom)getLegend());
+                UomCombo lineUom = getLineUomCombo((StrokeUom) getLegend());
                 CanvasSE prev = getPreview();
                 ActionListener aclUom = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 lineUom.addActionListener(aclUom);

@@ -39,8 +39,8 @@ import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.ColorPicker;
-import org.orbisgis.view.components.fstree.TreeNodeFileFactory;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -50,7 +50,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import java.util.Arrays;
 
 /**
  * Some useful methods that will be available for all thematic panels.
@@ -174,17 +173,14 @@ public abstract class AbstractFieldPanel extends JPanel {
      * @param input The StrokeUom instance we get the unit from.
      * @return The JComboBox that can be used to change the UOM of {@code input}.
      */
-    public JComboBox getLineUomCombo(StrokeUom input){
-        strokeUoms= getUomProperties();
-        String[] values = new String[strokeUoms.length];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = I18N.tr(strokeUoms[i].getLabel());
-        }
-        final JComboBox jcc = new JComboBox(values);
+    public UomCombo getLineUomCombo(StrokeUom input){
+        strokeUoms = getUomProperties();
+        UomCombo puc = new UomCombo(input.getStrokeUom(),
+                strokeUoms,
+                I18N.tr("Unit of measure - stroke width :"));
         ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateLUComboBox", "source.selectedIndex");
-        jcc.addActionListener(acl2);
-        jcc.setSelectedItem(input.getStrokeUom().toString().toUpperCase());
-        return jcc;
+        puc.addActionListener(acl2);
+        return puc;
     }
 
     /**

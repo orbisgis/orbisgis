@@ -22,6 +22,7 @@ import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorCategorizedPoint
 import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorCategorizedPoint;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelCatPoint;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelInterval;
+import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -298,13 +299,10 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     }
 
     private JPanel getUOMCombo(){
-        JPanel pan = new JPanel();
-        JComboBox jcb = getLineUomCombo((CategorizedPoint)getLegend());
+        UomCombo jcb = getLineUomCombo(((CategorizedPoint) getLegend()));
         ActionListener aclUom = EventHandler.create(ActionListener.class, this, "updatePreview", "source");
         jcb.addActionListener(aclUom);
-        pan.add(new JLabel(I18N.tr("Unit of measure :")));
-        pan.add(jcb);
-        return pan;
+        return jcb;
     }
 
     /**
@@ -312,30 +310,15 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
      * @return The JComboBox with a JLabel in a JPanel.
      */
     private JPanel getSymbolUOMCombo(){
-        JPanel pan = new JPanel();
-        JComboBox jcb = getPointUomCombo();
-        pan.add(new JLabel(I18N.tr("Unit of measure - size :")));
-        pan.add(jcb);
-        return pan;
-    }
-
-
-    /**
-     * ComboBox to configure the unit of measure used to draw th stroke.
-     * @return A JComboBox the user can use to set the unit of measure of the symbol's dimensions.
-     */
-    private JComboBox getPointUomCombo(){
         uoms = getUomProperties();
-        String[] values = new String[uoms.length];
-        for (int i = 0; i < values.length; i++) {
-                values[i] = I18N.tr(uoms[i].toString());
-        }
-        final JComboBox jcc = new JComboBox(values);
+        UomCombo puc = new UomCombo(((CategorizedPoint)getLegend()).getSymbolUom(),
+                uoms,
+                I18N.tr("Unit of measure - size :"));
         ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex");
-        jcc.addActionListener(acl2);
-        jcc.setSelectedItem(((CategorizedPoint) getLegend()).getSymbolUom().toString().toUpperCase());
-        return jcc;
+        puc.addActionListener(acl2);
+        return puc;
     }
+
     /**
      * Sets the underlying graphic to use the ith element of the combo box
      * as its uom. Used when changing the combo box selection.

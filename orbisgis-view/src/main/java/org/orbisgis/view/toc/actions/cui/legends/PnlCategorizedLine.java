@@ -18,6 +18,7 @@ import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorCategorizedLine;
 import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorCategorizedLine;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelCatLine;
+import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -236,12 +237,9 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
     }
 
     private JPanel getUOMCombo(){
-        JPanel pan = new JPanel();
-        JComboBox jcb = getLineUomCombo((CategorizedLine)getLegend());
+        UomCombo jcb = getLineUomCombo(((CategorizedLine) getLegend()));
         ActionListener aclUom = EventHandler.create(ActionListener.class, this, "updatePreview", "source");
         jcb.addActionListener(aclUom);
-        pan.add(new JLabel(I18N.tr("Unit of measure :")));
-        pan.add(jcb);
-        return pan;
+        return jcb;
     }
 }

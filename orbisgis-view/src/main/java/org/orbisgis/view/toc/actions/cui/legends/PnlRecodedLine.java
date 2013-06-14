@@ -51,6 +51,7 @@ import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorRecodedLine;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorUniqueValue;
 import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorRecodedLine;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelRecodedLine;
+import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -243,13 +244,10 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     }
 
     private JPanel getUOMCombo(){
-        JPanel pan = new JPanel();
-        JComboBox jcb = getLineUomCombo((RecodedLine)getLegend());
+        UomCombo jcb = getLineUomCombo(((RecodedLine) getLegend()));
         ActionListener aclUom = EventHandler.create(ActionListener.class, this, "updatePreview", "source");
         jcb.addActionListener(aclUom);
-        pan.add(new JLabel(I18N.tr("Unit of measure :")));
-        pan.add(jcb);
-        return pan;
+        return jcb;
     }
 
     /**

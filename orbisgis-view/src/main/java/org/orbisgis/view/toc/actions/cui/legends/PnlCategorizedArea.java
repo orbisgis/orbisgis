@@ -19,6 +19,7 @@ import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorCategorizedArea;
 import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorCategorizedArea;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelCatArea;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelInterval;
+import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -272,12 +273,9 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     }
 
     private JPanel getUOMCombo(){
-        JPanel pan = new JPanel();
-        JComboBox jcb = getLineUomCombo((CategorizedArea)getLegend());
+        UomCombo jcb = getLineUomCombo(((CategorizedArea) getLegend()));
         ActionListener aclUom = EventHandler.create(ActionListener.class, this, "updatePreview", "source");
         jcb.addActionListener(aclUom);
-        pan.add(new JLabel(I18N.tr("Unit of measure :")));
-        pan.add(jcb);
-        return pan;
+        return jcb;
     }
 }
