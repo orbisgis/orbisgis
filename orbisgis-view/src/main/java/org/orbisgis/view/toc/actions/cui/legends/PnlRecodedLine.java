@@ -29,7 +29,6 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
@@ -40,10 +39,6 @@ import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.view.background.BackgroundListener;
-import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.background.DefaultJobId;
-import org.orbisgis.view.background.JobId;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
@@ -59,7 +54,6 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -84,8 +78,6 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     private static final I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
     private CanvasSE fallbackPreview;
     private JComboBox fieldCombo;
-    private SelectDistinctJob selectDistinct;
-    private BackgroundListener background;
 
     @Override
     public Component getComponent() {
@@ -101,6 +93,11 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     @Override
     public String validateInput() {
         return "";
+    }
+
+    @Override
+    public String getFieldName(){
+        return fieldCombo.getSelectedItem().toString();
     }
 
     /**
@@ -248,24 +245,6 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
         ActionListener aclUom = EventHandler.create(ActionListener.class, this, "updatePreview", "source");
         jcb.addActionListener(aclUom);
         return jcb;
-    }
-
-    /**
-     * Called to build a classification from the given data source and field. Makes a SELECT DISTINCT field FROM ds;
-     * and feeds the legend that has been cleared prior to that.
-     */
-    public void onCreateClassification(ActionEvent e){
-        if(e.getActionCommand().equals("click")){
-            String fieldName = fieldCombo.getSelectedItem().toString();
-            selectDistinct = new SelectDistinctJob(fieldName);
-            BackgroundManager bm = Services.getService(BackgroundManager.class);
-            JobId jid = new DefaultJobId(JOB_NAME);
-            if(background == null){
-                background = new OperationListener();
-                bm.addBackgroundListener(background);
-            }
-            bm.nonBlockingBackgroundOperation(jid, selectDistinct);
-        }
     }
 
     @Override

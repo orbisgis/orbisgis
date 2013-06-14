@@ -312,4 +312,10 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters> exte
      * @return The Class of the type used for the map's keys.
      */
     public abstract Class getPreviewClass();
+
+    /**
+     * Gets the name of the field on which we will perform the analysis
+     * @return The name of the field.
+     */
+    public abstract String getFieldName();
 }

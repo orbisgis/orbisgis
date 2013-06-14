@@ -261,6 +261,11 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         return "";
     }
 
+    @Override
+    public String getFieldName(){
+        return fieldCombo.getSelectedItem().toString();
+    }
+
     /**
      * Action done when the checkbox used to activate the stroke is pressed.
      */

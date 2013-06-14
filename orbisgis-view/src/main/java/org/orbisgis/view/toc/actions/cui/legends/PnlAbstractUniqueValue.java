@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;
@@ -50,6 +51,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
@@ -66,6 +68,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
     public static final Logger LOGGER = Logger.getLogger(PnlAbstractUniqueValue.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlAbstractUniqueValue.class);
     private ColorConfigurationPanel colorConfig;
+    private BackgroundListener background;
     protected final static String JOB_NAME = "recodeSelectDistinct";
 
     /**
@@ -264,6 +267,24 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
     @Override
     public String getTitleBorder(){
         return I18N.tr("Unique value classification");
+    }
+
+    /**
+     * Called to build a classification from the given data source and field. Makes a SELECT DISTINCT field FROM ds;
+     * and feeds the legend that has been cleared prior to that.
+     */
+    public void onCreateClassification(ActionEvent e){
+        if(e.getActionCommand().equals("click")){
+            String fieldName = getFieldName();
+            SelectDistinctJob selectDistinct = new SelectDistinctJob(fieldName);
+            BackgroundManager bm = Services.getService(BackgroundManager.class);
+            JobId jid = new DefaultJobId(JOB_NAME);
+            if(background == null){
+                background = new OperationListener();
+                bm.addBackgroundListener(background);
+            }
+            bm.nonBlockingBackgroundOperation(jid, selectDistinct);
+        }
     }
 
     /**

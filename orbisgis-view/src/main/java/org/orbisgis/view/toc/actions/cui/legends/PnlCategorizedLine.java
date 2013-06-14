@@ -210,6 +210,11 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
         return "";
     }
 
+    @Override
+    public String getFieldName(){
+        return fieldCombo.getSelectedItem().toString();
+    }
+
     /**
      * Build the panel used to select the classification field.
      *
