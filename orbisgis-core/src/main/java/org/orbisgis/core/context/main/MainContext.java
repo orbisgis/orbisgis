@@ -37,6 +37,7 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Properties;
 
 import org.apache.log4j.ConsoleAppender;
@@ -47,7 +48,13 @@ import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.varia.LevelRangeFilter;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.plugin.BundleReference;
+import org.orbisgis.core.plugin.BundleTools;
+import org.orbisgis.core.plugin.PluginHost;
 import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.sputilities.JDBCUrlParser;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -69,6 +76,7 @@ public class MainContext {
     private boolean debugMode;
     private static String CONSOLE_LOGGER = "ConsoleLogger";
     private DataSource dataSource;
+    private PluginHost pluginHost;
 
     /**
      * Single parameter constructor
@@ -78,6 +86,27 @@ public class MainContext {
     public MainContext(boolean debugMode) {
             this(debugMode,null, true);
     }
+
+    /**
+     * @return The plugin host instance or Null if
+     */
+    public PluginHost getPluginHost() {
+        return pluginHost;
+    }
+
+    /**
+     * Init and start bundle host
+     * @param bundleReferences Additional bundles and per-bundle launching instructions.
+     */
+    public void startBundleHost(BundleReference[] bundleReferences) {
+        pluginHost = new PluginHost(new File(getCoreWorkspace().getPluginCache()));
+        pluginHost.init();
+        // Install built-in bundles
+        BundleTools.installBundles(pluginHost.getHostBundleContext(), bundleReferences);
+        // Start bundles
+        pluginHost.start();
+    }
+
     /**
      * Constructor of the workspace
      * @param debugMode Use the Debug logging on console output
@@ -104,19 +133,38 @@ public class MainContext {
      * @param password Empty or contain the database password if not provided in u=URI
      *                 @throws SQLException If the connection to a DataBase cannot be done
      */
-    public void initDataBase(DataSourceFactory driver,String usename, String password) throws SQLException {
-        String dbUriFile = coreWorkspace.getJDBCConnectionReference();
-        if(!dbUriFile.isEmpty()) {
-            Properties properties = new Properties();
-            properties.setProperty(DataSourceFactory.JDBC_URL, dbUriFile);
-            if(!usename.isEmpty()) {
-                properties.setProperty(DataSourceFactory.JDBC_USER,usename);
+    public void initDataBase(String userName, String password) throws SQLException {
+        String jdbcConnectionReference = coreWorkspace.getJDBCConnectionReference();
+        if(!jdbcConnectionReference.isEmpty()) {
+            Properties properties = JDBCUrlParser.parse(jdbcConnectionReference);
+            if(!userName.isEmpty()) {
+                properties.setProperty(DataSourceFactory.JDBC_USER,userName);
             }
             if(!password.isEmpty()) {
                 properties.setProperty(DataSourceFactory.JDBC_PASSWORD, password);
             }
-            dataSource = driver.createDataSource(properties);
-            Services.registerService(DataSource.class,"OrbisGIS main DataSource",dataSource);
+            String driverName = jdbcConnectionReference.split(":")[1];
+            // Get OSGi service
+            Collection<ServiceReference<DataSourceFactory>> serviceReferences;
+            try {
+                serviceReferences =
+                        pluginHost.getHostBundleContext().getServiceReferences(DataSourceFactory.class,String.format("(&(%s=%s))",DataSourceFactory.OSGI_JDBC_DRIVER_NAME,driverName));
+            } catch (InvalidSyntaxException ex) {
+                throw new SQLException(String.format("JDBC Driver Service of %s not found",driverName));
+            }
+            if(serviceReferences==null || serviceReferences.isEmpty()) {
+                throw new SQLException(String.format("The driver %s is not available",driverName));
+            }
+            ServiceReference<DataSourceFactory> serviceReference = serviceReferences.iterator().next();
+            try {
+                DataSourceFactory dataSourceFactory = pluginHost.getHostBundleContext().getService(serviceReference);
+                dataSource = dataSourceFactory.createDataSource(properties);
+                // Register the connection factory in service hosts
+                Services.registerService(DataSource.class,"OrbisGIS main DataSource",dataSource);
+                pluginHost.getHostBundleContext().registerService(DataSource.class,dataSource,null);
+            } finally {
+                pluginHost.getHostBundleContext().ungetService(serviceReference);
+            }
         } else {
             throw new SQLException("DataBase path not found");
         }
@@ -141,7 +189,7 @@ public class MainContext {
 
     /**
      * @return The data source where OrbisGIS data are stored.
-     * Null if {@link #initDataBase(org.osgi.service.jdbc.DataSourceFactory, String, String)}
+     * Null if {@link #initDataBase(String, String)}
      * has not been called or failed.
      */
     public DataSource getDataSource() {
@@ -152,6 +200,14 @@ public class MainContext {
      * Free resources
      */
     public void dispose() {
+        // Stop plugin framework
+        if(pluginHost!=null) {
+            try {
+                pluginHost.stop();
+            } catch (Exception ex) {
+                LOGGER.error(ex.getLocalizedMessage(),ex);
+            }
+        }
         // Unlink loggers
         Logger.getRootLogger().removeAllAppenders();
     }

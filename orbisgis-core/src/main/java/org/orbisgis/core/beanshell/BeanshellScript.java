@@ -33,9 +33,13 @@ import bsh.Interpreter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.orbisgis.core.context.main.MainContext;
+import org.orbisgis.core.plugin.BundleReference;
 import org.orbisgis.core.workspace.CoreWorkspace;
 
 /**
@@ -44,6 +48,9 @@ import org.orbisgis.core.workspace.CoreWorkspace;
  */
 public final class BeanshellScript {
         static MainContext mainContext;
+        private static final String ARG_USERNAME = "-user";
+        private static final String ARG_PASSWORD = "-pwd";
+
         /**
          * Entry point.
          * @param args
@@ -61,7 +68,7 @@ public final class BeanshellScript {
         /**
          * This class is used to load a datasourcefactory
          */
-        public static void servicesRegister() {
+        public static void servicesRegister(Map<String,String> parameters) throws IllegalArgumentException {
                 mainContext = new MainContext(false);
                 // Read user default workspace, or use predefined one
                 CoreWorkspace coreWorkspace = mainContext.getCoreWorkspace();
@@ -74,7 +81,36 @@ public final class BeanshellScript {
                 }
                 if(defaultWorkspace!=null) {
                     coreWorkspace.setWorkspaceFolder(defaultWorkspace.getAbsolutePath());
+                    // Launch OSGi
+                    mainContext.startBundleHost(new BundleReference[0]);
+                    // Init BDD
+                    try {
+                        mainContext.initDataBase("","");
+                    } catch (SQLException ex) {
+                        throw new IllegalArgumentException("Cannot connect to the database",ex);
+                    }
                 }
+        }
+
+        /**
+         *
+         * @param offset Read args from this index
+         * @param args command line arguments
+         * @return Map of key value of arguments
+         */
+        private static Map<String,String> parseArgs(int offset,String[] args) {
+            //Pairs
+            Map<String,String> pairs = new HashMap<String, String>();
+            for(int i=offset;i<args.length;i++) {
+                String key = args[i];
+                if(i+1<args.length && key.startsWith("-")) {
+                    i++;
+                    pairs.put(key,args[i]);
+                } else {
+                    pairs.put(key,"");
+                }
+            }
+            return pairs;
         }
 
         /**
@@ -94,7 +130,7 @@ public final class BeanshellScript {
                                 System.err.println("The file doesn't exist.");
                         } else {
                                 try {
-                                        servicesRegister();
+                                        servicesRegister(parseArgs(1,args));
                                         Interpreter interpreter = new Interpreter();
                                         interpreter.setOut(System.out);
                                         interpreter.setClassLoader(mainContext.getClass().getClassLoader());
