@@ -43,6 +43,7 @@ import org.orbisgis.view.background.*;
 import org.orbisgis.view.joblist.JobListItem;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelUniqueValue;
+import org.orbisgis.view.toc.actions.cui.legends.panels.ColorConfigurationPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -64,37 +65,8 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
     public static final String CREATE_CLASSIF = "Create classification";
     public static final Logger LOGGER = Logger.getLogger(PnlAbstractUniqueValue.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlAbstractUniqueValue.class);
-    private JPanel colorConfig;
-    private JLabel endCol;
-    private JLabel startCol;
+    private ColorConfigurationPanel colorConfig;
     protected final static String JOB_NAME = "recodeSelectDistinct";
-
-    /**
-     * Gets the panel that can be used to produce the colours of a generated classification
-     * @return The configuration panel.
-     */
-    public JPanel getColorConfig(){
-        colorConfig = new JPanel();
-        BoxLayout classLayout = new BoxLayout(colorConfig, BoxLayout.Y_AXIS);
-        colorConfig.setLayout(classLayout);
-        //The start colour
-        JPanel start = new JPanel();
-        start.add(new JLabel(I18N.tr("Start colour :")));
-        startCol = getFilledLabel(Color.BLUE);
-        start.add(startCol);
-        start.setAlignmentX((float).5);
-        colorConfig.add(start);
-        //The end colour
-        JPanel end = new JPanel();
-        end.add(new JLabel(I18N.tr("End colour :")));
-        endCol = getFilledLabel(Color.RED);
-        end.setAlignmentX((float).5);
-        end.add(endCol);
-        colorConfig.add(end);
-        //We add colorConfig to the global panel
-        colorConfig.setAlignmentX((float).5);
-        return colorConfig;
-    }
 
     /**
      * Gets a unique symbol configuration whose only difference with {@code fallback} is one of its color set to {@code
@@ -243,7 +215,10 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
         btnPnl.setAlignmentX((float).5);
         ret.add(btnPnl);
         //We build the panel used to configure the color before creating the classification.
-        ret.add(getColorConfig());
+        if(colorConfig == null){
+            colorConfig = new ColorConfigurationPanel();
+        }
+        ret.add(colorConfig);
         //We still need a button to configure all of that
         JPanel btnPanel = new JPanel();
         JButton createButton = new JButton(I18N.tr("Create Classification"));
@@ -315,8 +290,8 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
             if(result != null){
                 AbstractRecodedLegend<U> rl;
                 if(colorConfig.isEnabled() && result.size() > 0){
-                    Color start = startCol.getBackground();
-                    Color end = endCol.getBackground();
+                    Color start = colorConfig.getStartColor();
+                    Color end = colorConfig.getEndCol();
                     rl = createColouredClassification(result, pm, start, end);
                 } else {
                     rl = createConstantClassification(result, pm);
