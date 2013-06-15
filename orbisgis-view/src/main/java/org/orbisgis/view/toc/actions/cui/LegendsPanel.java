@@ -3,8 +3,8 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
@@ -23,13 +23,13 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * or contact directly: info_at_ orbisgis.org
  */
 package org.orbisgis.view.toc.actions.cui;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.beans.EventHandler;
@@ -43,8 +43,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryTypeConstraint;
+import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 import org.gdms.data.types.Type;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
@@ -65,296 +65,409 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * This {@code Panel} contains all the needed information to build an UI that
- * will let the user edit the legends. It is built with the following properties
- * :</p>
- * <ul><li>Legends are displayed in the {@code LegendList}.</li>
- * <li>An inner list of available legends. It may be initialized using
- * {@code EPLegendHelper. It is used to validate a given {@code Legend}, in
- * order to determine if it can be edited or not.</li>
- * <li>A {@code CardLayout} that is used to switch fast between the {@code
- * Legend} instances stored in {@code legends}</li>
- * <li>Two text fields : one for the min scale, the other for the max scale.</li>
- * <li>Two buttons that are used to quickly set the min and/or max scales to the
- * current one.</li>
- * <li>A {@code MapTransform} that represents the current state of the map</li>
- * <li>A {@code Type} instance (should be the type of the {@code DataSource}
- * associated to the layer associated to the legend we want to edit.</li> </ul>
+ * This {@link JPanel} contains all the needed information to build a user
+ * interface for editing legends.
  *
- * @author Alexis Guéganno, others...
+ * It is currently the dialog that is displayed when the user clicks on "Simple
+ * style edition".
+ *
+ * @author Alexis Guéganno, Adam Gouge, others
  */
 public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
-        private static final I18n I18N = I18nFactory.getI18n(LegendsPanel.class);
-        private static final String NO_LEGEND_ID = "no-legend";
-        private int geometryType;
-        private LegendTree legendTree;
-        private ILegendPanel[] availableLegends;
-        private JPanel pnlContainer;
-        private CardLayout cardLayout;
-        private static String lastUID = "";
-        private Type gc;
-        private ILayer layer;
-        private MapTransform mt;
-        private StyleWrapper styleWrapper;
+    /**
+     * Tree to display legends.
+     */
+    private LegendTree legendTree;
+    // **********     GRAPHICS     **************
+    /**
+     * Used to switch between legend instances.
+     */
+    private CardLayout cardLayout;
+    /**
+     * Container panel.
+     */
+    private JPanel container;
+    // **********     INITIALIZATION VARIABLES     **************
+    /**
+     * Represents the current state of the map.
+     */
+    private MapTransform mt;
+    /**
+     * The type of the {@link DataSource} of the legend's layer currently being
+     * modified.
+     */
+    private Type type;
+    /**
+     * Inner list of available legends which may be initialized using
+     * {@link org.orbisgis.view.toc.actions.cui.legend.EPLegendHelper}.
+     *
+     * Used to determine whether a given {@link Legend} can be edited or not.
+     */
+    private ILegendPanel[] availableLegends;
+    /**
+     * The layer we are editing.
+     */
+    private ILayer layer;
+    // **********     INITIALIZATION-LIKE VARIABLES     **********
+    /**
+     * {@link SimpleGeometryType}.
+     */
+    private int geometryType;
+    /**
+     * {@link StyleWrapper} for the {@link Style}s of the layer we are editing.
+     */
+    private StyleWrapper styleWrapper;
+    // **********     IDS     **************
+    /**
+     * Id for the {@link CardLayout} panel to be shown when there is no legend.
+     */
+    private static final String NO_LEGEND_ID = "no-legend";
+    /**
+     * Id of the most recently added {@link CardLayout} panel.
+     */
+    private static String lastUID = "";
+    // **********     OTHER     **************
+    /**
+     * Translator.
+     */
+    private static final I18n I18N = I18nFactory.getI18n(LegendsPanel.class);
 
-        /**
-         * Initialize the {@code LegendsPanel}.
-         * @param mt
-         * @param gc
-         * @param style
-         * @param availableLegends
-         * @param layer
-         * @throws UnsupportedOperationException if at least one symbolizer of
-         * {@code style} can't be associated to a simple analysis.
-         *
-         */
-        public void init(MapTransform mt, Type gc, Style style, ILegendPanel[] availableLegends,
-                ILayer layer) {
-                this.mt = mt;
-                this.gc = gc;
-                this.layer = layer;
-                if (gc == null) {
-                        geometryType = SimpleGeometryType.ALL;
-                } else {
-                        geometryType = SimpleGeometryType.getSimpleType(gc);
-                }
+    /**
+     * Initializes this {@link LegendsPanel}.
+     *
+     * @param mt               Map transform
+     * @param type             Layer geometry type
+     * @param availableLegends Available legends
+     * @param layer            Layer
+     * @param style            Style
+     */
+    public void init(MapTransform mt,
+                     Type type,
+                     ILegendPanel[] availableLegends,
+                     ILayer layer,
+                     Style style) {
 
-                this.availableLegends = Arrays.copyOf(availableLegends, availableLegends.length);
-                initializeComponents();
-                List<RuleWrapper> lrw = new LinkedList<RuleWrapper>();
-                for (int i = 0; i < style.getRules().size(); i++) {
-                        Rule r = style.getRules().get(i);
-                        List<Symbolizer> sym = r.getCompositeSymbolizer().getSymbolizerList();
-                        List<ILegendPanel> ll = new LinkedList<ILegendPanel>();
-                        for (Symbolizer s : sym) {
-                                Legend leg = LegendFactory.getLegend(s);
-                                ILegendPanel ilp = getPanel(leg, geometryType);
-                                ilp.setId(getNewId());
-                                ll.add(ilp);
-                                JScrollPane jsp = new JScrollPane(ilp.getComponent(),
-                                        JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                                pnlContainer.add(jsp, ilp.getId());
-                        }
-                        RuleWrapper rw = new RuleWrapper(r, ll);
-                        PnlRule rulePan = (PnlRule) rw.getPanel();
-                        rulePan.setId(getNewId());
-                        rulePan.initialize(this);
-                        PropertyChangeListener pcl = EventHandler.create(PropertyChangeListener.class,this,"onNodeNameChange", "");
-                        rulePan.addPropertyChangeListener(pcl);
-                        JScrollPane jsp = new JScrollPane(rw.getPanel().getComponent(),
-                                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                        pnlContainer.add(jsp, rw.getPanel().getId());
-                        lrw.add(rw);
-                }
-                styleWrapper = new StyleWrapper(style, lrw);
-                PnlStyle stylePan = styleWrapper.getPanel();
-                stylePan.setId(getNewId());
-                PropertyChangeListener pcl = EventHandler.create(PropertyChangeListener.class,this,"onNodeNameChange", "");
-                stylePan.addPropertyChangeListener(pcl);
-                JScrollPane jsp = new JScrollPane(styleWrapper.getPanel().getComponent(),
-                        JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                pnlContainer.add(jsp, styleWrapper.getPanel().getId());
-                legendTree = new LegendTree(this);
-                this.add(legendTree, BorderLayout.WEST);
-                refreshLegendContainer();
+        // Initialize the first four paramters.
+        this.mt = mt;
+        this.type = type;
+        this.geometryType = (type == null)
+                ? SimpleGeometryType.ALL
+                : SimpleGeometryType.getSimpleType(type);
+        this.availableLegends = Arrays.copyOf(availableLegends,
+                                              availableLegends.length);
+        this.layer = layer;
+
+        // Set the layout and initialize the card layout.
+        setLayout(new BorderLayout());
+        cardLayout = new CardLayout();
+
+        // Add the legend toolbar.
+        add(getLegendToolBar(), BorderLayout.NORTH);
+        // Add the legend container.
+        add(getLegendContainer(), BorderLayout.CENTER);
+
+        // Add panels
+        styleWrapper = addStylePanel(style);
+
+        // Initialize a new legend tree and add it.
+        legendTree = new LegendTree(this);
+        add(legendTree, BorderLayout.WEST);
+
+        // Refresh the display.
+        showDialogForCurrentlySelectedLegend();
+    }
+
+    /**
+     * Creates a new legend toolbar containing just the name of the layer.
+     *
+     * @return A new legend toolbar containing just the name of the layer
+     */
+    private JToolBar getLegendToolBar() {
+        JToolBar toolBar = new JToolBar();
+        toolBar.add(new JLabel("<html><b> " + I18N.tr("Layer")
+                               + "</b>: " + layer.getName()));
+        toolBar.setFloatable(false);
+        return toolBar;
+    }
+
+    /**
+     * Creates a new container to hold a dialog for creating legends; initially
+     * holds just a label asking the user to add or select a legend.
+     *
+     * @return A new container holding a dialog for creating legends
+     */
+    private JPanel getLegendContainer() {
+        container = new JPanel(cardLayout);
+        container.setPreferredSize(new Dimension(600, 650));
+        JPanel textHolder = new JPanel(new BorderLayout());
+        JLabel text = new JLabel(I18N.tr("Add or select a legend."));
+        text.setHorizontalAlignment(SwingConstants.CENTER);
+        textHolder.add(text, BorderLayout.CENTER);
+        container.add(NO_LEGEND_ID, textHolder);
+        return container;
+    }
+
+    /**
+     * Adds the style panel and returns the corresponding {@link StyleWrapper}.
+     *
+     * @param style Style
+     *
+     * @return The {@link StyleWrapper} corresponding to the style panel
+     */
+    private StyleWrapper addStylePanel(Style style) {
+        StyleWrapper sw = new StyleWrapper(style,
+                                           addRulePanels(style));
+        PnlStyle stylePanel = sw.getPanel();
+        stylePanel.setId(createNewID());
+        stylePanel.addPropertyChangeListener(
+                EventHandler.create(PropertyChangeListener.class, this,
+                                    "onNodeNameChange", ""));
+        JScrollPane jsp = new JScrollPane(stylePanel.getComponent());
+        jsp.setBorder(new LineBorder(Color.GREEN, 2));
+        container.add(stylePanel.getId(), jsp);
+        return sw;
+    }
+
+    /**
+     * Adds the rule panels for the rules attached to the given style and
+     * returns a list of the corresponding {@link RuleWrapper}s.
+     *
+     * @param style Style
+     *
+     * @return A list of {@link RuleWrapper}s corresponding to the newly added
+     *         rule panels.
+     */
+    private List<RuleWrapper> addRulePanels(Style style) {
+        List<Rule> rules = style.getRules();
+        List<RuleWrapper> ruleWrapperList = new LinkedList<RuleWrapper>();
+        for (int i = 0; i < rules.size(); i++) {
+            // Get the rule.
+            Rule rule = rules.get(i);
+            // Get a new RuleWrapper based on this rule and the list of
+            // symbol panels constructed in the previous loop.
+            RuleWrapper ruleWrapper = new RuleWrapper(rule,
+                                                      addSymbolPanels(rule));
+            // Get the panel associated to this RuleWrapper, set its id,
+            // initialize it and add a listener for when its node name changes.
+            PnlRule rulePanel = (PnlRule) ruleWrapper.getPanel();
+            rulePanel.setId(createNewID());
+            rulePanel.initialize(this);
+            rulePanel.addPropertyChangeListener(
+                    EventHandler.create(PropertyChangeListener.class, this,
+                                        "onNodeNameChange", ""));
+            // Add the rule wrapper panel to the container after putting it in
+            // a new JScrollPane.
+            JScrollPane jsp = new JScrollPane(rulePanel.getComponent());
+            jsp.setBorder(new LineBorder(Color.BLUE, 2));
+            container.add(rulePanel.getId(), jsp);
+            // Add the rule wrapper panel to the list of rule wrapper panels.
+            ruleWrapperList.add(ruleWrapper);
         }
+        return ruleWrapperList;
+    }
 
-        /**
-         * Method called when the name of the selected element changes.
-         * @param pce The original event.
-         */
-        public void onNodeNameChange(PropertyChangeEvent pce){
-            if(pce.getPropertyName().equals(PnlRule.NAME_PROPERTY)){
-                legendTree.selectedNameChanged();
+    /**
+     * Adds the symbol panels for the legends (=symbols) attached to the given
+     * rule and returns a list of the corresponding {@link ILegendPanel}s.
+     *
+     * @param rule Rule
+     *
+     * @return A list of {@link ILegendPanel}s corresponding to the newly added
+     *         symbol panels.
+     */
+    // TODO: There is no property change listener here?
+    private List<ILegendPanel> addSymbolPanels(Rule rule) {
+        List<ILegendPanel> symbolPanelList = new LinkedList<ILegendPanel>();
+        // For each symbol in this rule, add its panel to the container.
+        for (Symbolizer symb : rule.getCompositeSymbolizer().
+                getSymbolizerList()) {
+            // Get this symbolizer's panel and give it a new id.
+            ILegendPanel symbPanel =
+                    associatePanel(LegendFactory.getLegend(symb));
+            symbPanel.setId(createNewID());
+            // Add the symbol panel to the container after putting it in a 
+            // new JScrollPane.
+            JScrollPane jsp = new JScrollPane(symbPanel.getComponent());
+            jsp.setBorder(new LineBorder(Color.RED, 2));
+            container.add(symbPanel.getId(), jsp);
+            // Add the symbol panel to the list of symbol panels
+            symbolPanelList.add(symbPanel);
+        }
+        return symbolPanelList;
+    }
+
+    /**
+     * Updates the name of the selected element when it changes.
+     *
+     * @param pce The original event
+     */
+    public void onNodeNameChange(PropertyChangeEvent pce) {
+        if (pce.getPropertyName().equals(PnlRule.NAME_PROPERTY)) {
+            legendTree.selectedNameChanged();
+        }
+    }
+
+    /**
+     * Retrieves the currently selected legend in the tree and shows the
+     * corresponding dialog in the card layout; shows the empty panel if no
+     * legend is selected.
+     */
+    protected void showDialogForCurrentlySelectedLegend() {
+        ISELegendPanel selected = legendTree.getSelectedPanel();
+        if (selected != null) {
+            cardLayout.show(container, selected.getId());
+        } else {
+            cardLayout.show(container, NO_LEGEND_ID);
+        }
+    }
+
+    /**
+     * Creates a new unique ID for retrieving panels in the card layout.
+     *
+     * @return A new unique ID
+     */
+    public static String createNewID() {
+        String name = "gdms" + System.currentTimeMillis();
+        while (name.equals(lastUID)) {
+            name = "" + System.currentTimeMillis();
+        }
+        lastUID = name;
+        return name;
+    }
+
+    /**
+     * Associates a panel to the given legend. This panel is cloned from one of
+     * the available panels.
+     *
+     * @param legend The legend for which we want a panel
+     *
+     * @return A newly cloned panel associated to the given legend, or a new
+     *         {@link NoPanel} if none are available
+     */
+    // TODO: This finds the first available legend panel. Is it guaranteed
+    // to be unique?
+    public ILegendPanel associatePanel(Legend legend) {
+        for (ILegendPanel avail : availableLegends) {
+            // If the type of the given legend matches the type of 
+            // an available legend panel ...
+            if (legend.getLegendTypeId().equals(
+                    avail.getLegend().getLegendTypeId())) {
+                // Create a new instance of the available legend panel, 
+                // initializing it with the LegendContext methods implemented
+                // in this class.
+                ILegendPanel ilp = (ILegendPanel) avail.newInstance();
+                ilp.initialize(this);
+                // Set the legend to be edited to the given legend
+                ilp.setLegend(legend);
+                // And return it
+                return ilp;
             }
         }
+        // If none were found, then return a new NoPanel.
+        return new NoPanel(legend);
+    }
 
-        /**
-         * Get a new unique ID used to retrieve panels in the CardLayout.
-         *
-         * @return
-         */
-        public static String getNewId() {
-                String name = "gdms" + System.currentTimeMillis();
-                while (name.equals(lastUID)) {
-                        name = "" + System.currentTimeMillis();
-                }
-                lastUID = name;
-                return name;
+    /**
+     * Initialize the given panel with this as {@link LegendContext}, set its
+     * id, add it to the container inside a {@link JScrollPane} and show its
+     * dialog.
+     *
+     * @param panel The panel to initialize and show
+     */
+    // TODO: Should this method be moved to LegendTree?
+    public void legendAdded(ISELegendPanel panel) {
+        panel.initialize(this);
+        panel.setId(createNewID());
+        JScrollPane jsp = new JScrollPane(panel.getComponent());
+        container.add(panel.getId(), jsp);
+        showDialogForCurrentlySelectedLegend();
+    }
+
+    // *************************     Getters     *****************************
+    /**
+     * Gets the style wrapper.
+     *
+     * @return The style wrapper
+     */
+    public StyleWrapper getStyleWrapper() {
+        return styleWrapper;
+    }
+
+    /**
+     * Gets the available legends.
+     *
+     * @return The available legends
+     */
+    public ILegendPanel[] getAvailableLegends() {
+        return availableLegends;
+    }
+
+    // ******************     LegendContext methods     **********************
+    @Override
+    public int getGeometryType() {
+        return geometryType;
+    }
+
+    @Override
+    public boolean isPoint() {
+        return (geometryType & SimpleGeometryType.POINT) > 0;
+    }
+
+    @Override
+    public boolean isLine() {
+        return (geometryType & SimpleGeometryType.LINE) > 0;
+    }
+
+    @Override
+    public boolean isPolygon() {
+        return (geometryType & SimpleGeometryType.POLYGON) > 0;
+    }
+
+    @Override
+    public ILayer getLayer() {
+        return layer;
+    }
+
+    @Override
+    public MapTransform getCurrentMapTransform() {
+        return mt;
+    }
+
+    // **********************     UIPanel methods     ************************
+    @Override
+    public URL getIconURL() {
+        return UIFactory.getDefaultIcon();
+    }
+
+    @Override
+    public String getTitle() {
+        // TODO: No usages. Why simple style edition?
+        return I18N.tr("Simple style edition");
+    }
+
+    @Override
+    public String validateInput() {
+        if (!legendTree.hasLegend()) {
+            return I18N.tr("You must create almost one legend");
         }
-
-        private void initializeComponents() {
-                this.setLayout(new BorderLayout());
-                this.add(getLegendToolBar(), BorderLayout.NORTH);
-                JPanel right = new JPanel();
-                right.setLayout(new BorderLayout());
-                right.add(getLegendContainer(), BorderLayout.CENTER);
-                this.add(right, BorderLayout.CENTER);
-
+        List<String> errors = styleWrapper.validateInput();
+        StringBuilder sb = new StringBuilder();
+        for (String message : errors) {
+            if (message != null && !message.isEmpty()) {
+                sb.append(message);
+                sb.append("\n");
+            }
         }
-
-        private JToolBar getLegendToolBar() {
-                JToolBar toolBar = new JToolBar();
-                toolBar.add(new JLabel(I18N.tr("Layer :") + layer.getName()));
-                toolBar.setFloatable(false);
-                return toolBar;
+        String err = sb.toString();
+        if (err != null && !err.isEmpty()) {
+            return err;
         }
+        return null;
+    }
 
-        private JPanel getLegendContainer() {
-                pnlContainer = new JPanel();
-                pnlContainer.setPreferredSize(new Dimension(600, 650));
-                cardLayout = new CardLayout();
-                pnlContainer.setLayout(cardLayout);
-                pnlContainer.add(new JLabel(I18N.tr("Add or select a legend on the left")),
-                        NO_LEGEND_ID);
-                return pnlContainer;
-        }
-
-        /**
-         * Gets the panel that can be associated to the {@code Legend} given in
-         * argument. This panel is cloned from one of the panels given in the
-         * original constructor.
-         * @param legend
-         * @return
-         */
-        public ILegendPanel getPanel(Legend legend, int type) {
-                for (ILegendPanel panel : availableLegends) {
-                        if (panel.getLegend().getLegendTypeId().equals(
-                                legend.getLegendTypeId())) {
-                                ILegendPanel ilp = (ILegendPanel) newInstance(panel);
-                                ilp.setLegend(legend);
-                                return ilp;
-                        }
-                }
-
-                return new NoPanel(legend);
-        }
-
-        public ILegendPanel[] getAvailableLegends() {
-                return availableLegends;
-        }
-
-        @Override
-        public int getGeometryType() {
-                return geometryType;
-        }
-
-        @Override
-        public boolean isLine() {
-                return (geometryType & SimpleGeometryType.LINE) > 0;
-        }
-
-        @Override
-        public boolean isPoint() {
-                return (geometryType & SimpleGeometryType.POINT) > 0;
-        }
-
-        @Override
-        public boolean isPolygon() {
-                return (geometryType & SimpleGeometryType.POLYGON) > 0;
-        }
-
-        void refreshLegendContainer() {
-                //We need to retrieve the currently selected legend in the tree,
-                //then find its id, and finally use it to show the panel.
-                ISELegendPanel selected = legendTree.getSelectedPanel();
-                if (selected != null) {
-                        cardLayout.show(pnlContainer, selected.getId());
-                } else {
-                        cardLayout.show(pnlContainer, NO_LEGEND_ID);
-                }
-        }
-
-        public void legendRemoved(ISELegendPanel panel) {
-                cardLayout.removeLayoutComponent(panel.getComponent());
-                refreshLegendContainer();
-        }
-
-        public void legendAdded(ISELegendPanel panel) {
-                //We can cast safely as we KNOW we are already dealing with a LegendPanel.
-                panel.initialize(this);
-                panel.setId(getNewId());
-                JScrollPane jsp = new JScrollPane(panel.getComponent(),
-                        JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                pnlContainer.add(jsp, panel.getId());
-                refreshLegendContainer();
-        }
-
-        private ISELegendPanel newInstance(ISELegendPanel panel) {
-                ISELegendPanel ret = panel.newInstance();
-                ret.initialize(this);
-
-                return ret;
-        }
-
-        public void legendRenamed(int idx, String newName) {
-//		legends.get(idx).getLegend().setName(newName);
-                refreshLegendContainer();
-        }
-
-        public void legendSelected() {
-                refreshLegendContainer();
-        }
-
-        @Override
-        public Component getComponent() {
-                return this;
-        }
-
-        @Override
-        public URL getIconURL() {
-                return UIFactory.getDefaultIcon();
-        }
-
-        @Override
-        public String getTitle() {
-                return I18N.tr("Simple style edition");
-        }
-
-
-        @Override
-        public String validateInput() {
-                if (!legendTree.hasLegend()) {
-                        return I18N.tr("You must create almost one legend");
-                }
-                List<String> errors = styleWrapper.validateInput();
-                StringBuilder sb = new StringBuilder();
-                for (String message : errors) {
-                        if (message != null && !message.isEmpty()) {
-                                sb.append(message);
-                                sb.append("\n");
-                        }
-                }
-                String err = sb.toString();
-                if (err != null && !err.isEmpty()) {
-                        return err;
-                }
-                return null;
-        }
-
-        @Override
-        public GeometryTypeConstraint getGeometryTypeConstraint() {
-                return (GeometryTypeConstraint) gc.getConstraint(Constraint.GEOMETRY_TYPE);
-        }
-
-        @Override
-        public ILayer getLayer() {
-                return layer;
-        }
-
-        @Override
-        public MapTransform getCurrentMapTransform() {
-                return mt;
-        }
-
-        public StyleWrapper getStyleWrapper() {
-                return styleWrapper;
-        }
-
-     
+    @Override
+    public Component getComponent() {
+        return this;
+    }
 }

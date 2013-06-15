@@ -136,12 +136,12 @@ public class LegendTree extends JPanel {
                         tree.setSelectionPath(null);
                         tm.removeElement(rw, select);
                         //We refresh the legend container
-                        legendsPanel.refreshLegendContainer();
+                        legendsPanel.showDialogForCurrentlySelectedLegend();
                         //We refresh the icons
                 } else if (select instanceof RuleWrapper) {
                         tree.setSelectionPath(null);
                         tm.removeElement(tm.getRoot(), select);
-                        legendsPanel.refreshLegendContainer();
+                        legendsPanel.showDialogForCurrentlySelectedLegend();
                 }
                 refreshIcons();
         }
@@ -458,7 +458,7 @@ public class LegendTree extends JPanel {
                         temp.setName(s);
                         Legend leg = LegendFactory.getLegend(
                                 temp.getCompositeSymbolizer().getSymbolizerList().get(0));
-                        ILegendPanel ilp = legendsPanel.getPanel(leg,legendsPanel.getGeometryType());
+                        ILegendPanel ilp = legendsPanel.associatePanel(leg);
                         List<ILegendPanel> list = new ArrayList<ILegendPanel>();
                         list.add(ilp);
                         RuleWrapper nrw = new RuleWrapper(temp, list);

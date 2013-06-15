@@ -31,8 +31,6 @@ package org.orbisgis.view.toc.actions.cui.legends;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import javax.swing.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
@@ -203,7 +201,7 @@ public class PnlRule extends JPanel  implements ISELegendPanel {
         }
 
         @Override
-        public ISELegendPanel newInstance() {
+        public PnlRule newInstance() {
                 return new PnlRule();
         }
 

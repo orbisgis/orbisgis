@@ -53,8 +53,6 @@ public interface UIPanel {
          */
         String getTitle();
 
-        
-
         /**
          * A method invoked when the user click on the ok or next button to validate the contents of the interface
          *

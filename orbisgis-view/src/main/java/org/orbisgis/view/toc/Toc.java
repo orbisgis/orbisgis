@@ -1045,7 +1045,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                     LegendsPanel pan = new LegendsPanel();
                                     Style copy = new Style(jest, layer);
                                     ILegendPanel[] legends = EPLegendHelper.getLegendPanels(pan);
-                                    pan.init(mt, typ, copy, legends, layer);
+                                    pan.init(mt, typ, legends, layer, copy);
                                     if (UIFactory.showDialog(pan)) {
                                             try {
                                                     layer.setStyle(index, pan.getStyleWrapper().getStyle());
