@@ -28,32 +28,28 @@
  */
 package org.orbisgis.core.renderer.se.parameter;
 
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+
 /**
  * Listens for modifications in a Categorize.
  * @author Maxence Laurent
+ * @author Alexis Guéganno
  */
 public interface CategorizeListener {
 
         /**
-         * fired when the class i has been revoved
+         * The class associated to i has been removed
          * 
-         * @param i 
+         * @param i The key of the class
          */
-        void classRemoved(int i);
+        void classRemoved(RealLiteral i);
 
         /** 
-         * the iest class is a new one
+         * The class associated to key i is new.
          * 
-         * @param i 
+         * @param i The key of the class
          */
-        void classAdded(int i);
-
-        /**
-         *  the iest has been moven at jest position
-         * @param i
-         * @param j 
-         */
-        void classMoved(int i, int j);
+        void classAdded(RealLiteral i);
 
         /**
          * The order of the thresholds has changed.

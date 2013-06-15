@@ -28,11 +28,12 @@
  */
 package org.orbisgis.legend.structure.recode.type;
 
+import org.orbisgis.legend.structure.parameter.ParameterLegend;
+
 import java.util.EventObject;
-import org.orbisgis.legend.structure.recode.RecodedLegend;
 
 /**
- * Events launched when the type of the wrapped object in a RecodedLegend changes.
+ * Events launched when the type of the wrapped object in a ParameterLegend changes.
  * @author Alexis Guéganno
  */
 public class TypeEvent extends EventObject {
@@ -41,13 +42,13 @@ public class TypeEvent extends EventObject {
          * Builds a new TypeEvent.
          * @param rl
          */
-        public TypeEvent(RecodedLegend rl){
+        public TypeEvent(ParameterLegend rl){
                 super(rl);
         }
 
         @Override
-        public RecodedLegend getSource(){
-                return (RecodedLegend) super.getSource();
+        public ParameterLegend getSource(){
+                return (ParameterLegend) super.getSource();
         }
 
 }

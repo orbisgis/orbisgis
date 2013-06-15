@@ -28,9 +28,6 @@
  */
 package org.orbisgis.legend.analyzer;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
@@ -39,10 +36,10 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.*;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
 import org.orbisgis.legend.analyzer.symbolizers.PointSymbolizerAnalyzer;
-import org.orbisgis.legend.structure.parameter.NumericLegend;
 import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
+
+import static org.junit.Assert.*;
 
 /**
  *

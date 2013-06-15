@@ -119,9 +119,9 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
                                 // Create a 4-class red-progression choropleth
                                 Categorize2Color choropleth = new Categorize2Color(new ColorLiteral("#dd0000"), new ColorLiteral("#FFFF00"), field);
-                                choropleth.addClass(new RealLiteral(ranges[0].getMaxRange()), new ColorLiteral("#aa0000"));
-                                choropleth.addClass(new RealLiteral(ranges[1].getMaxRange()), new ColorLiteral("#770000"));
-                                choropleth.addClass(new RealLiteral(ranges[2].getMaxRange()), new ColorLiteral("#330000"));
+                                choropleth.put(new RealLiteral(ranges[0].getMaxRange()), new ColorLiteral("#aa0000"));
+                                choropleth.put(new RealLiteral(ranges[1].getMaxRange()), new ColorLiteral("#770000"));
+                                choropleth.put(new RealLiteral(ranges[2].getMaxRange()), new ColorLiteral("#330000"));
 
                                 SolidFill choroplethFill = new SolidFill();
                                 choroplethFill.setColor(choropleth);

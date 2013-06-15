@@ -66,7 +66,7 @@ public class LineSymbolizerRecodedTest extends AnalyzerTest{
                 PenStroke ps = (PenStroke) ls.getStroke();
                 SolidFill sf = (SolidFill) ps.getFill();
                 assertTrue(sf.getColor() instanceof Recode2Color);
-                RecodedSolidFillLegend l = (RecodedSolidFillLegend)new FillAnalyzer(sf).getLegend();
+                RecodedSolidFillLegend l = new RecodedSolidFillLegend(sf);
                 RecodedColor rc = (RecodedColor) l.getFillColorLegend();
                 rc.removeItem(0);
                 rc.removeItem(0);
