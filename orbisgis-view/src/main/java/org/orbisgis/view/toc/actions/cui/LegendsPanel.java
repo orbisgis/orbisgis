@@ -384,6 +384,26 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         showDialogForCurrentlySelectedLegend();
     }
 
+    /**
+     * Remove the given panel from the card layout and refresh the display.
+     *
+     * @param panel Panel
+     */
+    public void legendRemoved(ISELegendPanel panel) {
+        cardLayout.removeLayoutComponent(panel.getComponent());
+        showDialogForCurrentlySelectedLegend();
+    }
+
+    // TODO: Find usages / Document.
+    public void legendRenamed(int idx, String newName) {
+        showDialogForCurrentlySelectedLegend();
+    }
+
+    // TODO: Find usages / Document.
+    public void legendSelected() {
+        showDialogForCurrentlySelectedLegend();
+    }
+
     // *************************     Getters     *****************************
     /**
      * Gets the style wrapper.
