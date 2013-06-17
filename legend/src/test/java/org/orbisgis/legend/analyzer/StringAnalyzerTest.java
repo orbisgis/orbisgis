@@ -28,11 +28,7 @@
  */
 package org.orbisgis.legend.analyzer;
 
-import java.io.File;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Unmarshaller;
 import net.opengis.se._2_0.core.StyleType;
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
@@ -40,59 +36,21 @@ import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.graphic.PointTextGraphic;
 import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
-import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.legend.AnalyzerTest;
-import org.orbisgis.legend.analyzer.parameter.StringParameterAnalyzer;
-import org.orbisgis.legend.structure.categorize.Categorize2StringLegend;
-import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import org.orbisgis.legend.structure.recode.RecodedString;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Unmarshaller;
+import java.io.File;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
  * @author Alexis Guéganno
  */
 public class StringAnalyzerTest extends AnalyzerTest {
-
-        @Test
-        public void testLiteralString() throws Exception {
-                String location = "src/test/resources/org/orbisgis/legend/simpleText.se";
-                File xml = new File(location);
-                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
-                JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(xml);
-                Style style = new Style(st, null);
-                PointSymbolizer ps = (PointSymbolizer) style.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-                PointTextGraphic ptg = (PointTextGraphic) ps.getGraphicCollection().getGraphic(0);
-                StringParameter sp = (StringParameter) ptg.getPointLabel().getLabel().getText();
-                StringParameterAnalyzer spa = new StringParameterAnalyzer(sp);
-                assertTrue(spa.getLegend() instanceof StringLiteralLegend);
-        }
-
-        @Test
-        public void testCategorize() throws Exception {
-                String location = "src/test/resources/org/orbisgis/legend/stringCategorize.se";
-                File xml = new File(location);
-                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
-                JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(xml);
-                Style style = new Style(st, null);
-                PointSymbolizer ps = (PointSymbolizer) style.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-                PointTextGraphic ptg = (PointTextGraphic) ps.getGraphicCollection().getGraphic(0);
-                StringParameter sp = (StringParameter) ptg.getPointLabel().getLabel().getText();
-                StringParameterAnalyzer spa = new StringParameterAnalyzer(sp);
-                assertTrue(spa.getLegend() instanceof Categorize2StringLegend);
-        }
-
-        @Test
-        public void testRecode() throws Exception {
-                File xml = new File(STRING_RECODE);
-                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
-                JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(xml);
-                Style style = new Style(st, null);
-                PointSymbolizer ps = (PointSymbolizer) style.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-                PointTextGraphic ptg = (PointTextGraphic) ps.getGraphicCollection().getGraphic(0);
-                StringParameter sp = (StringParameter) ptg.getPointLabel().getLabel().getText();
-                StringParameterAnalyzer spa = new StringParameterAnalyzer(sp);
-                assertTrue(spa.getLegend() instanceof RecodedString);
-        }
 
         private Recode2String getRecode2String() throws Exception {
                 File xml = new File(STRING_RECODE);

@@ -26,22 +26,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.legend.analyzer.function;
+package org.orbisgis.legend.thematic.categorize;
 
-import org.orbisgis.core.renderer.se.parameter.Recode;
+import org.orbisgis.legend.thematic.SymbolParameters;
+import org.orbisgis.legend.thematic.map.MappedLegend;
 
 /**
- * Used to validate a {@code Recode} instance against a particular condition.
- * @author Alexis Guéganno
+ * @author alexis
  */
-public interface RecodeValidator {
-
-        /**
-         * If true, {@code rc} is considered to be valid according to this
-         * validator.
-         * @param rc
-         * @return
-         */
-        boolean validateRecode(Recode rc);
-
+public abstract class AbstractCategorizedLegend <U extends SymbolParameters> extends MappedLegend<Double,U> {
 }

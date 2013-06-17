@@ -60,6 +60,15 @@ public class ColorLiteral extends Literal implements ColorParameter{
         color = new Color(r,g,b);
     }
 
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof ColorLiteral){
+            return ((ColorLiteral)o).color.equals(color);
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Create a <code>ColorLiteral</code> with the given <code>Color</code>.
      * @param color 
