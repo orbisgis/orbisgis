@@ -63,19 +63,20 @@ public class CRSFunctionTest extends TestBase {
     }
 
     @Test
-    public void testGetSetCRSOntheFly() throws Exception {
+    public void testGetSetCRSOntheFly1() throws Exception {
         dsf.executeSQL("CREATE TABLE init AS SELECT * FROM ST_RandomGeometry('point', 10);");
         DataSource ds = dsf.getDataSourceFromSQL("SELECT ST_SRID(the_geom) from init;");
-
         ds.open();
         assertTrue(ds.isNull(0, 0));
         ds.close();
+    }
 
-        ds = dsf.getDataSourceFromSQL("SELECT ST_SRID(ST_SetSRID(the_geom, 'EPSG:27572')) from init;");
-
+    @Test
+    public void testGetSetCRSOntheFly2() throws Exception {
+        DataSource ds = dsf.getDataSourceFromSQL("SELECT ST_SRID(ST_SetSRID(the_geom, 'EPSG:27572')) from init;");
         ds.open();
         for (int i = 0; i < ds.getRowCount(); i++) {
-            assertTrue(ds.getString(i, 0).contains("EPSG:27572"));
+            assertTrue(ds.getString(i, 0).equals("EPSG:27572"));
         }
         ds.close();
     }
@@ -94,7 +95,7 @@ public class CRSFunctionTest extends TestBase {
         assertTrue(ds.getGeometry(0).equalsExact(targetGeom, 0.01));
         ds.close();
     }
-    
+
     @Test
     public void testST_Transform27572toIGNF_NTFG() throws Exception {
         dsf.executeSQL("CREATE TABLE init AS SELECT 'POINT(584173.736059813 2594514.82833411)'::GEOMETRY as the_geom;");
