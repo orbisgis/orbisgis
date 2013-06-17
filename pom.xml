@@ -34,6 +34,8 @@
                 <jts-version>1.13</jts-version>
                 <org.osgi.compendium-version>4.3.1</org.osgi.compendium-version>
                 <spatial-utilities-version>1.0-SNAPSHOT</spatial-utilities-version>
+                <h2-version>1.0-SNAPSHOT</h2-version>
+                <h2-spatial-version>1.0.2-SNAPSHOT</h2-spatial-version>
         </properties>
         <scm>
                 <connection>scm:git:https://github.com/irstv/orbisgis.git</connection>

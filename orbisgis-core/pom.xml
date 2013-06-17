@@ -40,7 +40,7 @@
                                                         <overWriteSnapshots>false</overWriteSnapshots>
                                                         <overWriteIfNewer>true</overWriteIfNewer>
                                                         <excludeTransitive>true</excludeTransitive>
-                                                        <includeArtifactIds>h2</includeArtifactIds>
+                                                        <includeArtifactIds>h2,h2spatial-ext,h2spatial,h2spatial-api</includeArtifactIds>
                                                 </configuration>
                                         </execution>
                                 </executions>
@@ -206,10 +206,28 @@
                 <dependency>
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
-                    <version>1.3.172</version>
+                    <version>${h2-version}</version>
                     <scope>test</scope>
                 </dependency>
-        </dependencies>
+                <dependency>
+                    <groupId>org.h2gis</groupId>
+                    <artifactId>h2spatial-ext</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.h2gis</groupId>
+                    <artifactId>h2spatial</artifactId>
+                    <version>1.0.1</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.h2gis</groupId>
+                    <artifactId>h2spatial-api</artifactId>
+                    <version>1.0.1</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         <pluginRepositories>
                 <pluginRepository>
                         <id>gettext-commons-site</id>

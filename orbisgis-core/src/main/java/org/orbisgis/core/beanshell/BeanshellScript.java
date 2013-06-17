@@ -41,7 +41,6 @@ import java.util.Map;
 import org.orbisgis.core.context.main.MainContext;
 import org.orbisgis.core.plugin.BundleReference;
 import org.orbisgis.core.plugin.BundleTools;
-import org.orbisgis.core.plugin.PluginHost;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.osgi.framework.Bundle;
 
@@ -110,9 +109,12 @@ public final class BeanshellScript {
                 }
                 // Init BDD
                 try {
+                    Thread.sleep(1000);
                     mainContext.initDataBase("","");
                 } catch (SQLException ex) {
                     throw new IllegalArgumentException("Cannot connect to the database "+ex.getLocalizedMessage(),ex);
+                } catch (InterruptedException e) {
+                    //
                 }
         }
 
@@ -159,6 +161,8 @@ public final class BeanshellScript {
                                         interpreter.setOut(System.out);
                                         interpreter.setClassLoader(mainContext.getClass().getClassLoader());
                                         interpreter.set("bsh.args", args);
+                                        interpreter.set("bsh.bundleContext", mainContext.getPluginHost().getHostBundleContext());
+                                        interpreter.set("bsh.dataSource", mainContext.getDataSource());
                                         interpreter.eval("setAccessibility(true)");
                                         FileReader reader = new FileReader(file);
                                         interpreter.eval(reader);

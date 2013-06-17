@@ -180,6 +180,7 @@ public class MainContext {
                 dataSource = dataSourceFactory.createDataSource(properties);
                 // Register the connection factory in service hosts
                 Services.registerService(DataSource.class,"OrbisGIS main DataSource",dataSource);
+                // Register DataSource, will be used to register spatial features
                 pluginHost.getHostBundleContext().registerService(DataSource.class,dataSource,null);
             } finally {
                 pluginHost.getHostBundleContext().ungetService(dbDriverReference);
