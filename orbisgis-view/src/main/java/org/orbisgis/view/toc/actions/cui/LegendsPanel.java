@@ -36,7 +36,7 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JLabel;
@@ -57,8 +57,16 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
+import org.orbisgis.view.toc.actions.cui.legends.PnlProportionalLineSE;
+import org.orbisgis.view.toc.actions.cui.legends.PnlProportionalPointSE;
+import org.orbisgis.view.toc.actions.cui.legends.PnlRecodedArea;
+import org.orbisgis.view.toc.actions.cui.legends.PnlRecodedLine;
+import org.orbisgis.view.toc.actions.cui.legends.PnlRecodedPoint;
 import org.orbisgis.view.toc.actions.cui.legends.PnlRule;
 import org.orbisgis.view.toc.actions.cui.legends.PnlStyle;
+import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueAreaSE;
+import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueLineSE;
+import org.orbisgis.view.toc.actions.cui.legends.PnlUniquePointSE;
 import org.orbisgis.view.toc.wrapper.RuleWrapper;
 import org.orbisgis.view.toc.wrapper.StyleWrapper;
 import org.xnap.commons.i18n.I18n;
@@ -99,13 +107,6 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
      */
     private Type type;
     /**
-     * Inner list of available legends which may be initialized using
-     * {@link org.orbisgis.view.toc.actions.cui.legend.EPLegendHelper}.
-     *
-     * Used to determine whether a given {@link Legend} can be edited or not.
-     */
-    private ILegendPanel[] availableLegends;
-    /**
      * The layer we are editing.
      */
     private ILayer layer;
@@ -118,6 +119,12 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
      * {@link StyleWrapper} for the {@link Style}s of the layer we are editing.
      */
     private StyleWrapper styleWrapper;
+    /**
+     * Inner list of available legends.
+     *
+     * Used to determine whether a given {@link Legend} can be edited or not.
+     */
+    private ILegendPanel[] availableLegends;
     // **********     IDS     **************
     /**
      * Id for the {@link CardLayout} panel to be shown when there is no legend.
@@ -134,19 +141,17 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
     private static final I18n I18N = I18nFactory.getI18n(LegendsPanel.class);
 
     /**
-     * Initializes this {@link LegendsPanel}.
+     * Constructor
      *
-     * @param mt               Map transform
-     * @param type             Layer geometry type
-     * @param availableLegends Available legends
-     * @param layer            Layer
-     * @param style            Style
+     * @param mt    Map transform
+     * @param type  Layer geometry type
+     * @param layer Layer
+     * @param style Style
      */
-    public void init(MapTransform mt,
-                     Type type,
-                     ILegendPanel[] availableLegends,
-                     ILayer layer,
-                     Style style) {
+    public LegendsPanel(MapTransform mt,
+                        Type type,
+                        ILayer layer,
+                        Style style) {
 
         // Initialize the first four paramters.
         this.mt = mt;
@@ -154,8 +159,9 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         this.geometryType = (type == null)
                 ? SimpleGeometryType.ALL
                 : SimpleGeometryType.getSimpleType(type);
-        this.availableLegends = Arrays.copyOf(availableLegends,
-                                              availableLegends.length);
+
+        this.availableLegends = getAvailableLegendPanels();
+
         this.layer = layer;
 
         // Set the layout and initialize the card layout.
@@ -173,7 +179,52 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         add(legendTree, BorderLayout.WEST);
 
         // Refresh the display.
-        showDialogForCurrentlySelectedLegend();
+//        cardLayout.show(dialog, NO_LEGEND_ID);
+    }
+
+    /**
+     * Creates an array of all available legend panels.
+     *
+     * @return Array of available legend panels
+     */
+    private ILegendPanel[] getAvailableLegendPanels() {
+
+        ArrayList<ILegendPanel> legends = new ArrayList<ILegendPanel>();
+
+        // UniqueLine
+        ILegendPanel pnlUniqueLine = new PnlUniqueLineSE();
+        pnlUniqueLine.initialize(this);
+        legends.add(pnlUniqueLine);
+        // UniquePoint
+        ILegendPanel pnlUniquePoint = new PnlUniquePointSE();
+        pnlUniquePoint.initialize(this);
+        legends.add(pnlUniquePoint);
+        // UniqueArea
+        ILegendPanel pnlUniqueArea = new PnlUniqueAreaSE();
+        pnlUniqueArea.initialize(this);
+        legends.add(pnlUniqueArea);
+        // ProportionalPoint
+        ILegendPanel proportionalPoint = new PnlProportionalPointSE();
+        proportionalPoint.initialize(this);
+        legends.add(proportionalPoint);
+        // ProportionalLine
+        ILegendPanel proportionalLine = new PnlProportionalLineSE();
+        proportionalLine.initialize(this);
+        legends.add(proportionalLine);
+        // Line Unique Value
+        ILegendPanel uniqueLine = new PnlRecodedLine();
+        uniqueLine.initialize(this);
+        legends.add(uniqueLine);
+        // Area Unique Value
+        ILegendPanel uniqueArea = new PnlRecodedArea();
+        uniqueArea.initialize(this);
+        legends.add(uniqueArea);
+        // Point Unique Value
+        ILegendPanel uniquePoint = new PnlRecodedPoint();
+        uniquePoint.initialize(this);
+        legends.add(uniquePoint);
+
+        return legends.toArray(new ILegendPanel[legends.size()]);
     }
 
     /**

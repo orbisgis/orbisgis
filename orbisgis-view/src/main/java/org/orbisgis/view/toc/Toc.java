@@ -86,8 +86,6 @@ import org.orbisgis.view.table.TableEditableElement;
 import org.orbisgis.view.toc.actions.*;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.LegendsPanel;
-import org.orbisgis.view.toc.actions.cui.legend.EPLegendHelper;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.ext.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -1035,17 +1033,18 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                 Layer layer = (Layer) style.getLayer();
                                  if(isStyleAllowed(layer)){
                                     int index = layer.indexOf(style);
-                                    Type typ = layer.getDataSource().getMetadata().getFieldType(
-                                            layer.getDataSource().getSpatialFieldIndex());
+                                    
                                     //In order to be able to cancel all of our modifications,
                                     //we produce a copy of our style.
                                     MapEditor editor = mapElement.getMapEditor();
-                                    MapTransform mt = editor.getMapControl().getMapTransform();
                                     JAXBElement<StyleType> jest = style.getJAXBElement();
-                                    LegendsPanel pan = new LegendsPanel();
+                                    
+                                    MapTransform mt = editor.getMapControl().getMapTransform();
+                                    Type typ = layer.getDataSource().getMetadata().getFieldType(
+                                            layer.getDataSource().getSpatialFieldIndex());
                                     Style copy = new Style(jest, layer);
-                                    ILegendPanel[] legends = EPLegendHelper.getLegendPanels(pan);
-                                    pan.init(mt, typ, legends, layer, copy);
+                                    
+                                    LegendsPanel pan = new LegendsPanel(mt, typ, layer, copy);
                                     if (UIFactory.showDialog(pan)) {
                                             try {
                                                     layer.setStyle(index, pan.getStyleWrapper().getStyle());
