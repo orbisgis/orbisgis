@@ -91,7 +91,7 @@ public class DataBaseTableModel extends AbstractTableModel {
 
     /**
      * Create the panel to display the list of tables. Displayed tables are the
-     * ones that are neither raster and nor system tables.     * 
+     * ones that are neither raster and nor system tables.
      *
      * @param sourceManager The {@code SourceManager} used to retrieve sources.
      */
@@ -99,9 +99,8 @@ public class DataBaseTableModel extends AbstractTableModel {
         try {
             DataManager dm = Services.getService(DataManager.class);
             DataSourceFactory dsf = dm.getDataSourceFactory();
-
-            final int validType = SourceManager.VECTORIAL | SourceManager.RASTER
-                    | SourceManager.STREAM | SourceManager.SYSTEM_TABLE;
+            final int validType =  SourceManager.VECTORIAL | SourceManager.RASTER
+                        | SourceManager.STREAM | SourceManager.SYSTEM_TABLE;
             for (String sourceName : sourceNames) {
                 int type = sourceManager.getSource(sourceName).getType();
                 if ((validType & type) == 0) {
