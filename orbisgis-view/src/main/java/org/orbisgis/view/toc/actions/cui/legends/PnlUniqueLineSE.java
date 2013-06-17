@@ -237,7 +237,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 //Uom
                 if(displayUom){
                     jp.add(buildText(I18N.tr("Unit of measure :")));
-                    jp.add(lineUom);
+                    jp.add(lineUom.getCombo());
                 }
                 //Width
                 jp.add(buildText(I18N.tr("Line width :")));

@@ -15,7 +15,7 @@ import java.awt.event.ActionListener;
 public class UomCombo extends JPanel {
     private static final I18n I18N = I18nFactory.getI18n(UomCombo.class);
     private ContainerItemProperties[] units;
-    private JComboBox jcc;
+    private JComboBox<String> jcc;
 
     /**
      * Creates a JPanel containing
@@ -40,12 +40,24 @@ public class UomCombo extends JPanel {
         for (int i = 0; i < values.length; i++) {
             values[i] = I18N.tr(units[i].toString());
         }
-        jcc = new JComboBox(values);
+        jcc = new JComboBox<String>(values);
         jcc.setSelectedItem(uom.toString().toUpperCase());
         return jcc;
     }
 
+    /**
+     * Adds an ActionListener that is directly put on the JComboBox
+     * @param al The action listener.
+     */
     public void addActionListener(ActionListener al){
         jcc.addActionListener(al);
+    }
+
+    /**
+     * Gets the inner JComboBox
+     * @return  The inner JComboBox.
+     */
+    public JComboBox<String> getCombo(){
+        return jcc;
     }
 }
