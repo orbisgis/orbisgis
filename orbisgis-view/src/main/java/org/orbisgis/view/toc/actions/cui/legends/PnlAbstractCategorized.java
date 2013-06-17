@@ -129,7 +129,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         JPanel sec = new JPanel();
         JLabel numbLab = new JLabel(I18N.tr("Classes:"));
         JLabel clLab = new JLabel(I18N.tr("Method:"));
-        JButton createCl = new JButton(I18N.tr("Create Classification:"));
+        JButton createCl = new JButton(I18N.tr("Create Classification"));
         if(classNumber == null){
             classNumber = DEFAULT_CLASS_NUMBER;
         }
