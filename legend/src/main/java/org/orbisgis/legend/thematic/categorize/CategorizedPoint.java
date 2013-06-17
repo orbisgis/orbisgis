@@ -228,7 +228,7 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
 
     @Override
     public String getLegendTypeName() {
-        return "Categorized Point";
+        return "Interval Classification - Point";
     }
 
     @Override

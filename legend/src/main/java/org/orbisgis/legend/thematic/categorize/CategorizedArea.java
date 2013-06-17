@@ -158,7 +158,7 @@ public class CategorizedArea extends AbstractCategorizedLegend<AreaParameters> i
 
     @Override
     public String getLegendTypeName() {
-        return "Categorized Area";
+        return "Interval Classification - Area";
     }
 
     @Override

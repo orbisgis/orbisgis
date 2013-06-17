@@ -136,7 +136,7 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> i
 
     @Override
     public String getLegendTypeName() {
-        return "Categorized Line";
+        return "Interval Classification - Line";
     }
 
     @Override
