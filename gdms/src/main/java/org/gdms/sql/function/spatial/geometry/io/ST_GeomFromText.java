@@ -34,8 +34,6 @@ package org.gdms.sql.function.spatial.geometry.io;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.cts.crs.CRSException;
 import org.cts.crs.CoordinateReferenceSystem;
 import org.gdms.data.DataSourceFactory;
@@ -62,14 +60,14 @@ public final class ST_GeomFromText extends AbstractScalarSpatialFunction {
         } else {
             final Geometry geom;
             try {
-                geom = reader.read(args[0].toString());
+                geom = reader.read(args[0].getAsString());
             } catch (ParseException e) {
                 throw new FunctionException("Cannot parse the WKT.", e);
             }
 
             if (args.length > 1 && !args[1].isNull()) {
                 try {
-                    String crsStr = args[1].toString();
+                    String crsStr = args[1].getAsString();
                     CoordinateReferenceSystem crs = DataSourceFactory.getCRSFactory().getCRS("EPSG:" + crsStr);
                     return ValueFactory.createValue(geom, crs);
                 } catch (CRSException ex) {
