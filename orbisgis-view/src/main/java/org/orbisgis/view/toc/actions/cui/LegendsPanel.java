@@ -42,6 +42,7 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
@@ -85,9 +86,9 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
      */
     private CardLayout cardLayout;
     /**
-     * Container panel.
+     * Dialog panel.
      */
-    private JPanel container;
+    private JPanel dialog;
     // **********     INITIALIZATION VARIABLES     **************
     /**
      * Represents the current state of the map.
@@ -162,15 +163,13 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         setLayout(new BorderLayout());
         cardLayout = new CardLayout();
 
-        // Add the legend toolbar.
-        add(getLegendToolBar(), BorderLayout.NORTH);
-        // Add the legend container.
-        add(getLegendContainer(), BorderLayout.CENTER);
+        // Add the layer tag and the dialog panel to the EAST side.
+        add(eastSide(), BorderLayout.CENTER);
 
-        // Add panels
-        styleWrapper = addStylePanel(style);
+        // Initialize all panels.
+        styleWrapper = addAllPanels(style);
 
-        // Initialize a new legend tree and add it.
+        // Initialize a new legend tree and add it to the WEST side.
         legendTree = new LegendTree(this);
         add(legendTree, BorderLayout.WEST);
 
@@ -179,45 +178,82 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
     }
 
     /**
+     * Puts the layer tag and the dialog panel in a new {@link JPanel}.
+     *
+     * @return The layer tag and the dialog panel in a new {@link JPanel}
+     */
+    private JPanel eastSide() {
+        // Add the layer tag and the dialog panel to the EAST side.
+        JPanel right = new JPanel(new BorderLayout());
+        // Add the layer tag.
+        right.add(getLayerTag(), BorderLayout.NORTH);
+        // Add a separator.
+        JSeparator hRule = new JSeparator();
+        hRule.setMinimumSize(hRule.getSize());
+        right.add(hRule, BorderLayout.CENTER);
+        // Add the dialog panel.
+        dialog = new JPanel(cardLayout);
+        dialog.setPreferredSize(new Dimension(600, 650));
+        addEmptyDialog();
+        right.add(dialog, BorderLayout.SOUTH);
+        return right;
+    }
+
+    /**
      * Creates a new legend toolbar containing just the name of the layer.
      *
      * @return A new legend toolbar containing just the name of the layer
      */
-    private JToolBar getLegendToolBar() {
-        JToolBar toolBar = new JToolBar();
-        toolBar.add(new JLabel("<html><b> " + I18N.tr("Layer")
-                               + "</b>: " + layer.getName()));
-        toolBar.setFloatable(false);
-        return toolBar;
+    private JLabel getLayerTag() {
+        JLabel layerTag = new JLabel(
+                "<html><b>"
+                + I18N.tr("Editing layer")
+                + "</b>: " + layer.getName());
+        layerTag.setHorizontalAlignment(JLabel.CENTER);
+        // TODO: Set the size a better way? This is to align with the
+        // toolbar on the west side.
+        Dimension size = new Dimension(layerTag.getWidth(), 22);
+        layerTag.setMinimumSize(size);
+        layerTag.setPreferredSize(size);
+        return layerTag;
     }
 
     /**
-     * Creates a new container to hold a dialog for creating legends; initially
-     * holds just a label asking the user to add or select a legend.
-     *
-     * @return A new container holding a dialog for creating legends
+     * Adds the empty dialog to the card layout.
      */
-    private JPanel getLegendContainer() {
-        container = new JPanel(cardLayout);
-        container.setPreferredSize(new Dimension(600, 650));
+    private void addEmptyDialog() {
         JPanel textHolder = new JPanel(new BorderLayout());
         JLabel text = new JLabel(I18N.tr("Add or select a legend."));
         text.setHorizontalAlignment(SwingConstants.CENTER);
         textHolder.add(text, BorderLayout.CENTER);
-        container.add(NO_LEGEND_ID, textHolder);
-        return container;
+        dialog.add(NO_LEGEND_ID, textHolder);
     }
 
     /**
-     * Adds the style panel and returns the corresponding {@link StyleWrapper}.
+     * Adds the style, rule and symbol panels for the given style and returns
+     * the corresponding {@link StyleWrapper}.
      *
      * @param style Style
      *
      * @return The {@link StyleWrapper} corresponding to the style panel
+     *
+     * @see #addRuleAndSymbolPanels(org.orbisgis.core.renderer.se.Style)
      */
-    private StyleWrapper addStylePanel(Style style) {
+    private StyleWrapper addAllPanels(Style style) {
+        // Get a style wrapper based on this style and the previous list
+        // of rule wrappers constructed in addRuleAndSymbolPanels.
         StyleWrapper sw = new StyleWrapper(style,
-                                           addRulePanels(style));
+                                           addRuleAndSymbolPanels(style));
+        addStylePanel(sw);
+        return sw;
+    }
+
+    /**
+     * Adds the style panel attached to the given {@link StyleWrapper}.
+     *
+     * @param sw StyleWrapper
+     */
+    private void addStylePanel(StyleWrapper sw) {
         PnlStyle stylePanel = sw.getPanel();
         stylePanel.setId(createNewID());
         stylePanel.addPropertyChangeListener(
@@ -225,46 +261,56 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                                     "onNodeNameChange", ""));
         JScrollPane jsp = new JScrollPane(stylePanel.getComponent());
         jsp.setBorder(new LineBorder(Color.GREEN, 2));
-        container.add(stylePanel.getId(), jsp);
-        return sw;
+        dialog.add(stylePanel.getId(), jsp);
     }
 
     /**
-     * Adds the rule panels for the rules attached to the given style and
-     * returns a list of the corresponding {@link RuleWrapper}s.
+     * Adds the rule and symbol panels for the rules and symbols attached to the
+     * given style and returns a list of the corresponding {@link RuleWrapper}s.
      *
      * @param style Style
      *
      * @return A list of {@link RuleWrapper}s corresponding to the newly added
      *         rule panels.
+     *
+     * @see #addSymbolPanels(org.orbisgis.core.renderer.se.Rule)
      */
-    private List<RuleWrapper> addRulePanels(Style style) {
+    private List<RuleWrapper> addRuleAndSymbolPanels(Style style) {
         List<Rule> rules = style.getRules();
         List<RuleWrapper> ruleWrapperList = new LinkedList<RuleWrapper>();
         for (int i = 0; i < rules.size(); i++) {
             // Get the rule.
             Rule rule = rules.get(i);
             // Get a new RuleWrapper based on this rule and the list of
-            // symbol panels constructed in the previous loop.
+            // symbol panels constructed in addSymbolPanels.
             RuleWrapper ruleWrapper = new RuleWrapper(rule,
                                                       addSymbolPanels(rule));
-            // Get the panel associated to this RuleWrapper, set its id,
-            // initialize it and add a listener for when its node name changes.
-            PnlRule rulePanel = (PnlRule) ruleWrapper.getPanel();
-            rulePanel.setId(createNewID());
-            rulePanel.initialize(this);
-            rulePanel.addPropertyChangeListener(
-                    EventHandler.create(PropertyChangeListener.class, this,
-                                        "onNodeNameChange", ""));
-            // Add the rule wrapper panel to the container after putting it in
-            // a new JScrollPane.
-            JScrollPane jsp = new JScrollPane(rulePanel.getComponent());
-            jsp.setBorder(new LineBorder(Color.BLUE, 2));
-            container.add(rulePanel.getId(), jsp);
+            addRulePanel(ruleWrapper);
             // Add the rule wrapper panel to the list of rule wrapper panels.
             ruleWrapperList.add(ruleWrapper);
         }
         return ruleWrapperList;
+    }
+
+    /**
+     * Adds the rule panel attached to the given {@link RuleWrapper}.
+     *
+     * @param ruleWrapper RuleWrapper
+     */
+    private void addRulePanel(RuleWrapper ruleWrapper) {
+        // Get the panel associated to this RuleWrapper, set its id,
+        // initialize it and add a listener for when its node name changes.
+        PnlRule rulePanel = (PnlRule) ruleWrapper.getPanel();
+        rulePanel.setId(createNewID());
+        rulePanel.initialize(this);
+        rulePanel.addPropertyChangeListener(
+                EventHandler.create(PropertyChangeListener.class, this,
+                                    "onNodeNameChange", ""));
+        // Add the rule wrapper panel to the container after putting it in
+        // a new JScrollPane.
+        JScrollPane jsp = new JScrollPane(rulePanel.getComponent());
+        jsp.setBorder(new LineBorder(Color.BLUE, 2));
+        dialog.add(rulePanel.getId(), jsp);
     }
 
     /**
@@ -276,25 +322,37 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
      * @return A list of {@link ILegendPanel}s corresponding to the newly added
      *         symbol panels.
      */
-    // TODO: There is no property change listener here?
     private List<ILegendPanel> addSymbolPanels(Rule rule) {
         List<ILegendPanel> symbolPanelList = new LinkedList<ILegendPanel>();
-        // For each symbol in this rule, add its panel to the container.
+        // For each symbol in this rule, add its symbol panel to the list of
+        // symbol panels.
         for (Symbolizer symb : rule.getCompositeSymbolizer().
                 getSymbolizerList()) {
-            // Get this symbolizer's panel and give it a new id.
-            ILegendPanel symbPanel =
-                    associatePanel(LegendFactory.getLegend(symb));
-            symbPanel.setId(createNewID());
-            // Add the symbol panel to the container after putting it in a 
-            // new JScrollPane.
-            JScrollPane jsp = new JScrollPane(symbPanel.getComponent());
-            jsp.setBorder(new LineBorder(Color.RED, 2));
-            container.add(symbPanel.getId(), jsp);
-            // Add the symbol panel to the list of symbol panels
-            symbolPanelList.add(symbPanel);
+            symbolPanelList.add(addSymbolPanel(symb));
         }
         return symbolPanelList;
+    }
+
+    /**
+     * Adds the symbol panel attached to the given {@link Symbolizer} and
+     * returns the panel.
+     *
+     * @param symb Symbolizer
+     *
+     * @return The newly generated symbol panel
+     */
+    // TODO: No property change listener on symbol panels?
+    private ILegendPanel addSymbolPanel(Symbolizer symb) {
+        // Get this symbolizer's panel and give it a new id.
+        ILegendPanel symbPanel =
+                associatePanel(LegendFactory.getLegend(symb));
+        symbPanel.setId(createNewID());
+        // Add the symbol panel to the container after putting it in a
+        // new JScrollPane.
+        JScrollPane jsp = new JScrollPane(symbPanel.getComponent());
+        jsp.setBorder(new LineBorder(Color.RED, 2));
+        dialog.add(symbPanel.getId(), jsp);
+        return symbPanel;
     }
 
     /**
@@ -316,9 +374,9 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
     protected void showDialogForCurrentlySelectedLegend() {
         ISELegendPanel selected = legendTree.getSelectedPanel();
         if (selected != null) {
-            cardLayout.show(container, selected.getId());
+            cardLayout.show(dialog, selected.getId());
         } else {
-            cardLayout.show(container, NO_LEGEND_ID);
+            cardLayout.show(dialog, NO_LEGEND_ID);
         }
     }
 
@@ -380,7 +438,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         panel.initialize(this);
         panel.setId(createNewID());
         JScrollPane jsp = new JScrollPane(panel.getComponent());
-        container.add(panel.getId(), jsp);
+        dialog.add(panel.getId(), jsp);
         showDialogForCurrentlySelectedLegend();
     }
 
@@ -463,13 +521,13 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
     @Override
     public String getTitle() {
         // TODO: No usages. Why simple style edition?
-        return I18N.tr("Simple style edition");
+        return I18N.tr("Simple Style Editor");
     }
 
     @Override
     public String validateInput() {
         if (!legendTree.hasLegend()) {
-            return I18N.tr("You must create almost one legend");
+            return I18N.tr("You must create at least one legend");
         }
         List<String> errors = styleWrapper.validateInput();
         StringBuilder sb = new StringBuilder();
