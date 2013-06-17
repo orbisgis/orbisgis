@@ -23,6 +23,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.util.TreeSet;
 
 /**
  * @author Alexis Guéganno
@@ -243,6 +244,77 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters> exte
         prev.setSymbol(getFallbackSymbolizer());
         updateTable();
     }
+
+
+    /**
+     * We take the fallback configuration and copy it for each key, changing the colour. The colour management is
+     * made thanks to {@link #getColouredParameters(org.orbisgis.legend.thematic.LineParameters, java.awt.Color)}.
+     * @param set A set of keys we use as a basis.
+     * @param pm The progress monitor that can be used to stop the process.
+     * @param start the starting color for the gradient
+     * @param end the ending color for the gradient
+     * @return A fresh unique value analysis.
+     */
+    public final MappedLegend<K,U> createColouredClassification(TreeSet<K> set, org.orbisgis.progress.ProgressMonitor pm,
+                                                                       Color start, Color end) {
+        U lp = ((MappedLegend<K,U>)getLegend()).getFallbackParameters();
+        MappedLegend<K,U> newRL = getEmptyAnalysis();
+        newRL.setFallbackParameters(lp);
+        int size = set.size();
+        int redStart = start.getRed();
+        int greenStart = start.getGreen();
+        int blueStart = start.getBlue();
+        int alphaStart = start.getAlpha();
+        double redThreshold;
+        double greenThreshold;
+        double blueThreshold;
+        double alphaThreshold;
+        if(size <= 1){
+            redThreshold = 0;
+            greenThreshold = 0;
+            blueThreshold = 0;
+            alphaThreshold = 0;
+        } else {
+            redThreshold = ((double)(redStart-end.getRed()))/(size-1);
+            greenThreshold = ((double)(greenStart-end.getGreen()))/(size-1);
+            blueThreshold = ((double)(blueStart-end.getBlue()))/(size-1);
+            alphaThreshold = ((double)(alphaStart-end.getAlpha()))/(size-1);
+        }
+        double m = size == 0 ? 0 : 50.0/(double)size;
+        int i=0;
+        int n = 0;
+        pm.progressTo(50);
+        pm.startTask(CREATE_CLASSIF , 100);
+        for(K s : set){
+            Color newCol = new Color(redStart-(int)(redThreshold*i),
+                    greenStart-(int)(i*greenThreshold),
+                    blueStart-(int)(i*blueThreshold),
+                    alphaStart-(int)(i*alphaThreshold));
+            U value = getColouredParameters(lp, newCol);
+            newRL.put(s, value);
+            if(i*m>n){
+                n++;
+                pm.progressTo(50*i/size);
+            }
+            if(pm.isCancelled()){
+                pm.endTask();
+                return null;
+            }
+            i++;
+        }
+        pm.endTask();
+        pm.progressTo(100);
+        return newRL;
+    }
+
+    /**
+     * Gets a unique symbol configuration whose only difference with {@code fallback} is one of its color set to {@code
+     * c}.
+     * @param fallback The original configuration
+     * @param c The new colour
+     * @return A new configuration.
+     */
+    public abstract U getColouredParameters(U fallback, Color c);
 
     @Override
     public void setId(String newId) {

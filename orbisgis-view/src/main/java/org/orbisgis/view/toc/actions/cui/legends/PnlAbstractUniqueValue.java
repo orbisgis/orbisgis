@@ -33,7 +33,6 @@ import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
@@ -42,7 +41,6 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.background.*;
 import org.orbisgis.view.joblist.JobListItem;
-import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelUniqueValue;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorConfigurationPanel;
 import org.xnap.commons.i18n.I18n;
@@ -72,15 +70,6 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
     protected final static String JOB_NAME = "recodeSelectDistinct";
 
     /**
-     * Gets a unique symbol configuration whose only difference with {@code fallback} is one of its color set to {@code
-     * c}.
-     * @param fallback The original configuration
-     * @param c The new colour
-     * @return A new configuration.
-     */
-    public abstract U getColouredParameters(U fallback, Color c);
-
-    /**
      * We take the fallback configuration and copy it for each key.
      * @param set A set of keys we use as a basis.
      * @param pm The progress monitor that can be used to stop the process.
@@ -88,7 +77,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
      */
     public AbstractRecodedLegend<U> createConstantClassification(TreeSet<String> set, ProgressMonitor pm) {
         U lp = ((MappedLegend<String,U>)getLegend()).getFallbackParameters();
-        AbstractRecodedLegend newRL = (AbstractRecodedLegend) getEmptyAnalysis();
+        AbstractRecodedLegend<U> newRL = (AbstractRecodedLegend<U>) getEmptyAnalysis();
         newRL.setFallbackParameters(lp);
         int size = set.size();
         double m = size == 0 ? 0 : 90.0/(double)size;
@@ -113,69 +102,6 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
         pm.progressTo(100);
         return newRL;
     }
-
-
-    /**
-     * We take the fallback configuration and copy it for each key, changing the colour. The colour management is
-     * made thanks to {@link #getColouredParameters(org.orbisgis.legend.thematic.LineParameters, java.awt.Color)}.
-     * @param set A set of keys we use as a basis.
-     * @param pm The progress monitor that can be used to stop the process.
-     * @param start the starting color for the gradient
-     * @param end the ending color for the gradient
-     * @return A fresh unique value analysis.
-     */
-    public final AbstractRecodedLegend<U> createColouredClassification(TreeSet<String> set, ProgressMonitor pm,
-                                                                       Color start, Color end) {
-        U lp = ((MappedLegend<String,U>)getLegend()).getFallbackParameters();
-        AbstractRecodedLegend<U> newRL = (AbstractRecodedLegend<U>)getEmptyAnalysis();
-        newRL.setFallbackParameters(lp);
-        int size = set.size();
-        int redStart = start.getRed();
-        int greenStart = start.getGreen();
-        int blueStart = start.getBlue();
-        int alphaStart = start.getAlpha();
-        double redThreshold;
-        double greenThreshold;
-        double blueThreshold;
-        double alphaThreshold;
-        if(size <= 1){
-            redThreshold = 0;
-            greenThreshold = 0;
-            blueThreshold = 0;
-            alphaThreshold = 0;
-        } else {
-            redThreshold = ((double)(redStart-end.getRed()))/(size-1);
-            greenThreshold = ((double)(greenStart-end.getGreen()))/(size-1);
-            blueThreshold = ((double)(blueStart-end.getBlue()))/(size-1);
-            alphaThreshold = ((double)(alphaStart-end.getAlpha()))/(size-1);
-        }
-        double m = size == 0 ? 0 : 50.0/(double)size;
-        int i=0;
-        int n = 0;
-        pm.progressTo(50);
-        pm.startTask(CREATE_CLASSIF , 100);
-        for(String s : set){
-            Color newCol = new Color(redStart-(int)(redThreshold*i),
-                        greenStart-(int)(i*greenThreshold),
-                        blueStart-(int)(i*blueThreshold),
-                        alphaStart-(int)(i*alphaThreshold));
-            U value = getColouredParameters(lp, newCol);
-            newRL.put(s, value);
-            if(i*m>n){
-                n++;
-                pm.progressTo(50*i/size);
-            }
-            if(pm.isCancelled()){
-                pm.endTask();
-                return null;
-            }
-            i++;
-        }
-        pm.endTask();
-        pm.progressTo(100);
-        return newRL;
-    }
-
     /**
      * Disables the colour configuration.
      */
@@ -313,7 +239,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
                 if(colorConfig.isEnabled() && result.size() > 0){
                     Color start = colorConfig.getStartColor();
                     Color end = colorConfig.getEndCol();
-                    rl = createColouredClassification(result, pm, start, end);
+                    rl = (AbstractRecodedLegend<U>) createColouredClassification(result, pm, start, end);
                 } else {
                     rl = createConstantClassification(result, pm);
                 }

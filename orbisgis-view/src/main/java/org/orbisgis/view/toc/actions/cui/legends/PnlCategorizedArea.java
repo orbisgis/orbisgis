@@ -90,39 +90,57 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     }
 
     @Override
+    public AreaParameters getColouredParameters(AreaParameters f, Color c) {
+        return new AreaParameters(f.getLineColor(), f.getLineOpacity(),f.getLineWidth(),f.getLineDash(),c,f.getFillOpacity());
+    }
+
+    @Override
     public void initializeLegendFields() {
         this.removeAll();
         JPanel glob = new JPanel();
         GridBagLayout grid = new GridBagLayout();
         glob.setLayout(grid);
+        int i = 0;
         //Field chooser
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = i;
+        i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getFieldLine(), gbc);
         //Fallback symbol
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = i;
+        i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getFallback(), gbc);
         //UOM
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = i;
+        i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getUOMCombo(),gbc);
+        //Enable Stroke
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = i;
+        i++;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        glob.add(getEnableStrokeCheckBox(), gbc);
         //Classification generator
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = i;
+        i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getEnableStrokeCheckBox(), gbc);
+        glob.add(getCreateClassificationPanel(),gbc);
         //Table for the recoded configurations
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = i;
+        i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getTablePanel(), gbc);
         this.add(glob);

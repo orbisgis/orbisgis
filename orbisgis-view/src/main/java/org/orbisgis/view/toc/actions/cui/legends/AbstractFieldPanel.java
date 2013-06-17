@@ -68,11 +68,12 @@ public abstract class AbstractFieldPanel extends JPanel {
     public final static int FILLED_LABEL_HEIGHT = 20;
 
     private ContainerItemProperties[] strokeUoms;
+
     /**
      * Initialize a {@code JComboBo} whose values are set according to the
      * not spatial fields of {@code ds}.
-     * @param ds
-     * @return
+     * @param ds The original DataSource
+     * @return A JComboBox.
      */
     public JComboBox getFieldCombo(DataSource ds){
         JComboBox combo = new JComboBox();
@@ -95,8 +96,8 @@ public abstract class AbstractFieldPanel extends JPanel {
     /**
      * Initialize a {@code JComboBo} whose values are set according to the
      * numeric fields of {@code ds}.
-     * @param ds
-     * @return
+     * @param ds The original DataSource
+     * @return A JComboBox.
      */
     public JComboBox getNumericFieldCombo(DataSource ds){
         JComboBox combo = new JComboBox();
@@ -137,8 +138,8 @@ public abstract class AbstractFieldPanel extends JPanel {
     /**
      * Recursively enables or disables all the components contained in the
      * containers of {@code comps}.
-     * @param enable
-     * @param comp
+     * @param enable Tell if the underlying components should be active or not
+     * @param comp The root component.
      */
     protected void setFieldState(boolean enable, Component comp){
         comp.setEnabled(enable);
@@ -153,7 +154,7 @@ public abstract class AbstractFieldPanel extends JPanel {
     /**
      * This method will let the user choose a color that will be set as the
      * background of the source of the event.
-     * @param e
+     * @param e The input event.
      */
     public void chooseFillColor(MouseEvent e) {
         Component source = (Component)e.getSource();
@@ -199,7 +200,7 @@ public abstract class AbstractFieldPanel extends JPanel {
      * Gets the value contained in the {@code Uom} enum with their
      * internationalized representation in a {@code
      * ContainerItemProperties} array.
-     * @return
+     * @return Uoms in an array of containers.
      */
     public ContainerItemProperties[] getUomProperties(){
         Uom[] us = Uom.values();
@@ -213,9 +214,9 @@ public abstract class AbstractFieldPanel extends JPanel {
     }
 
     /**
-     * Sets the underlying graphic to use the ith element of the combobox
-     * as its well-known name. Used when changing the combobox selection.
-     * @param index
+     * Sets the underlying graphic to use the ith element of the ComboBox
+     * as its well-known name. Used when changing the ComboBox selection.
+     * @param index The index of the unit of measure.
      */
     public void updateLUComboBox(int index){
         ((StrokeUom)getLegend()).setStrokeUom(Uom.fromString(strokeUoms[index].getKey()));

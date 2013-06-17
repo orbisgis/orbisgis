@@ -226,7 +226,9 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                         lineCheckBox = new JCheckBox("");
                         ActionListener acl = EventHandler.create(ActionListener.class, this, "onClickLineCheckBox");
                         lineCheckBox.addActionListener(acl);
-                        jp.add(lineCheckBox);
+                        JPanel temp = new JPanel();
+                        temp.add(lineCheckBox);
+                        jp.add(temp);
                         //We must check the CheckBox according to leg, not to legend.
                         //legend is here mainly to let us fill safely all our
                         //parameters.

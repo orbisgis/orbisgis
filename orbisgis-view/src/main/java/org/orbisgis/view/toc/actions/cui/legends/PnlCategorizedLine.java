@@ -85,33 +85,50 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
     }
 
     @Override
+    public LineParameters getColouredParameters(LineParameters lp, Color newCol){
+        return new LineParameters(newCol, lp.getLineOpacity(), lp.getLineWidth(), lp.getLineDash());
+    }
+
+    @Override
     public void initializeLegendFields() {
         this.removeAll();
         JPanel glob = new JPanel();
         GridBagLayout grid = new GridBagLayout();
         glob.setLayout(grid);
+        int i = 0;
         //Field chooser
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = i;
+        i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getFieldLine(), gbc);
         //Fallback symbol
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = i;
+        i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getFallback(), gbc);
         //UOM
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = i;
+        i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getUOMCombo(),gbc);
-        //Table for the recoded configurations
+        //Classification generator
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = i;
+        i++;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        glob.add(getCreateClassificationPanel(),gbc);
+        //Table for the categorized configurations
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = i;
+        i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getTablePanel(), gbc);
         this.add(glob);

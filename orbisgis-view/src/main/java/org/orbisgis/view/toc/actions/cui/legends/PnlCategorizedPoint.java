@@ -94,6 +94,13 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     }
 
     @Override
+    public PointParameters getColouredParameters(PointParameters f, Color c) {
+        return new PointParameters(f.getLineColor(), f.getLineOpacity(),f.getLineWidth(),f.getLineDash(),
+                c,f.getFillOpacity(),
+                f.getWidth(), f.getHeight(), f.getWkn());
+    }
+
+    @Override
     public void initializeLegendFields() {
         this.removeAll();
         JPanel glob = new JPanel();
@@ -135,6 +142,13 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(pnlOnVertex(),gbc);
+        //Classification generator
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = i;
+        i++;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        glob.add(getCreateClassificationPanel(),gbc);
         //Classification generator
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
