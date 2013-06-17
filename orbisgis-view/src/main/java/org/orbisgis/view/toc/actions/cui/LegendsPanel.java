@@ -43,7 +43,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import org.gdms.data.types.Type;
@@ -356,45 +355,6 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
     }
 
     /**
-     * Updates the name of the selected element when it changes.
-     *
-     * @param pce The original event
-     */
-    public void onNodeNameChange(PropertyChangeEvent pce) {
-        if (pce.getPropertyName().equals(PnlRule.NAME_PROPERTY)) {
-            legendTree.selectedNameChanged();
-        }
-    }
-
-    /**
-     * Retrieves the currently selected legend in the tree and shows the
-     * corresponding dialog in the card layout; shows the empty panel if no
-     * legend is selected.
-     */
-    protected void showDialogForCurrentlySelectedLegend() {
-        ISELegendPanel selected = legendTree.getSelectedPanel();
-        if (selected != null) {
-            cardLayout.show(dialog, selected.getId());
-        } else {
-            cardLayout.show(dialog, NO_LEGEND_ID);
-        }
-    }
-
-    /**
-     * Creates a new unique ID for retrieving panels in the card layout.
-     *
-     * @return A new unique ID
-     */
-    public static String createNewID() {
-        String name = "gdms" + System.currentTimeMillis();
-        while (name.equals(lastUID)) {
-            name = "" + System.currentTimeMillis();
-        }
-        lastUID = name;
-        return name;
-    }
-
-    /**
      * Associates a panel to the given legend. This panel is cloned from one of
      * the available panels.
      *
@@ -424,6 +384,46 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         }
         // If none were found, then return a new NoPanel.
         return new NoPanel(legend);
+    }
+
+    /**
+     * Creates a new unique ID for retrieving panels in the card layout.
+     *
+     * @return A new unique ID
+     */
+    public static String createNewID() {
+        String name = "gdms" + System.currentTimeMillis();
+        while (name.equals(lastUID)) {
+            name = "" + System.currentTimeMillis();
+        }
+        lastUID = name;
+        return name;
+    }
+
+    /**
+     * Retrieves the currently selected legend in the tree and shows the
+     * corresponding dialog in the card layout; shows the empty panel if no
+     * legend is selected.
+     */
+    protected void showDialogForCurrentlySelectedLegend() {
+        ISELegendPanel selected = legendTree.getSelectedPanel();
+        if (selected != null) {
+            cardLayout.show(dialog, selected.getId());
+        } else {
+            cardLayout.show(dialog, NO_LEGEND_ID);
+        }
+    }
+
+    // *******************     EventHandler methods     **********************
+    /**
+     * Updates the name of the selected element when it changes.
+     *
+     * @param pce The original event
+     */
+    public void onNodeNameChange(PropertyChangeEvent pce) {
+        if (pce.getPropertyName().equals(PnlRule.NAME_PROPERTY)) {
+            legendTree.selectedNameChanged();
+        }
     }
 
     /**
