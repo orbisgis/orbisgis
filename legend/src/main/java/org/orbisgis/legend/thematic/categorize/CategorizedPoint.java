@@ -353,11 +353,16 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
             dashStroke = null;
         } else if (!strokeEnabled && enable){
             PenStroke ps = new PenStroke();
+            String fieldName = getLookupFieldName();
             mg.setStroke(ps);
             colorStroke = new CategorizedColor(((SolidFill)ps.getFill()).getColor());
             opacityStroke = new CategorizedReal(((SolidFill)ps.getFill()).getOpacity());
             widthStroke = new CategorizedReal(ps.getWidth());
             dashStroke = new CategorizedString(ps.getDashArray());
+            colorStroke.setLookupFieldName(fieldName);
+            opacityStroke.setLookupFieldName(fieldName);
+            widthStroke.setLookupFieldName(fieldName);
+            dashStroke.setLookupFieldName(fieldName);
             feedStrokeListeners();
         }
         strokeEnabled = enable;
@@ -408,7 +413,7 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
 
     /**
      * Returns true if the symbol will be drawn on the vertices of the symbol.
-     * @return
+     * @return true if the symbol must be drawn on the geomztry vertices.
      */
     public boolean isOnVertex(){
         return symbolizer.isOnVertex();
@@ -434,7 +439,7 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
 
     /**
      * Gets the unit of measure used to size the associated {@code Stroke}.
-     * @return
+     * @return The Unit of measure of the symbol's dimensions.
      */
     public Uom getSymbolUom(){
         MarkGraphic mg = (MarkGraphic) symbolizer.getGraphicCollection().getChildren().get(0);
@@ -443,7 +448,7 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
 
     /**
      * Sets the unit of measure used to size the associated {@code Stroke}.
-     * @param u
+     * @param u The new unit of measure for the symbol's dimensions
      */
     public void setSymbolUom(Uom u){
         MarkGraphic mg = (MarkGraphic) symbolizer.getGraphicCollection().getChildren().get(0);

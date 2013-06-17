@@ -288,11 +288,16 @@ public class CategorizedArea extends AbstractCategorizedLegend<AreaParameters> i
             symbolizer.setStroke(null);
         } else if (!strokeEnabled && enable){
             PenStroke ps = new PenStroke();
+            String fieldName = getLookupFieldName();
             symbolizer.setStroke(ps);
             colorStroke = new CategorizedColor(((SolidFill)ps.getFill()).getColor());
             opacityStroke = new CategorizedReal(((SolidFill)ps.getFill()).getOpacity());
             widthStroke = new CategorizedReal(ps.getWidth());
             dashStroke = new CategorizedString(ps.getDashArray());
+            colorStroke.setLookupFieldName(fieldName);
+            opacityStroke.setLookupFieldName(fieldName);
+            widthStroke.setLookupFieldName(fieldName);
+            dashStroke.setLookupFieldName(fieldName);
             feedStrokeListeners();
         }
         strokeEnabled = enable;
