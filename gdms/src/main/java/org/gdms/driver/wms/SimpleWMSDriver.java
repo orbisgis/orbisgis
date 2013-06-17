@@ -75,8 +75,8 @@ import org.gdms.sql.function.spatial.geometry.crs.ST_Transform;
 /**
  * A driver that accesses a WMS stream.
  *
- * This can be used to open and access a source described by a {@link org.gdms.data.stream.WMSStreamSource
- * } whose StreamType is "wms".
+ * This can be used to open and access a source described by a
+ * {@link org.gdms.data.stream.WMSStreamSource} whose StreamType is "wms".
  *
  * @author Antoine Gourlay
  * @author Vincent Dépériers
@@ -141,7 +141,6 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
 
     @Override
     public void close() throws DriverException {
-//                wmsClient.close();
         wmsClient = null;
     }
 
@@ -200,15 +199,13 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
     }
 
     /**
-     * Gets the boundary box of the layer with the srs and the layer name.
+     * Gets the bounding box of the layer with the srs and the layer.
      *
-     * @param layerName
      * @param layer
      * @param srs
      * @return
      */
     private BoundingBox getLayerBoundingBox(MapLayer layer, String srs) throws DriverException {
-//                MapLayer wmsLayer = find(layerName, layer);
         // Obtain the bbox at current level
         BoundingBox bbox = layer.getBoundingBox(srs);
         // Some wrong bbox to not have null pointer exceptions

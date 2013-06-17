@@ -46,8 +46,8 @@ import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
 /**
- * Re-project a geometry from a CRS to new CRS. Only authority codes are
- * allowed, like "EPSG:4326" or "IGNF:WGS84".
+ * Project a geometry from one CRS to another. 
+ * Only authority codes are allowed, like "EPSG:4326" or "IGNF:WGS84".
  */
 public final class ST_Transform extends AbstractScalarSpatialFunction {
 
@@ -97,7 +97,7 @@ public final class ST_Transform extends AbstractScalarSpatialFunction {
 
     @Override
     public String getDescription() {
-        return "Re-project a geometry from a CRS to a new CRS.  EPSG, IGNF and ESRI code allowed."
+        return "Project a geometry from one CRS to another.  EPSG, IGNF and ESRI code allowed."
                 + " The default source CRS is the internal one of the input geometry.";
     }
 
@@ -108,15 +108,15 @@ public final class ST_Transform extends AbstractScalarSpatialFunction {
 
     @Override
     public String getSqlOrder() {
-        return "SELECT ST_Transform(the_geom,  targetCRSCode [or 'EPSG:4326']) from myTable";
+        return "SELECT ST_Transform(the_geom,  targetCRSCode | 'EPSG:4326') from myTable";
     }
 
     @Override
     public FunctionSignature[] getFunctionSignatures() {
         return new FunctionSignature[]{
-            new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY,
+            new BasicFunctionSignature(Type.GEOMETRY, ScalarArgument.GEOMETRY,
             ScalarArgument.STRING),
-            new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY,
+            new BasicFunctionSignature(Type.GEOMETRY, ScalarArgument.GEOMETRY,
             ScalarArgument.INT)
         };
     }

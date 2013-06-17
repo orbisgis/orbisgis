@@ -56,7 +56,6 @@ public class ST_SRID extends AbstractScalarSpatialFunction {
     @Override
     public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
         final CoordinateReferenceSystem crs = args[0].getCRS();
-
         if (crs == null) {
             return ValueFactory.createNullValue();
         } else {
@@ -89,7 +88,7 @@ public class ST_SRID extends AbstractScalarSpatialFunction {
     @Override
     public FunctionSignature[] getFunctionSignatures() {
         return new FunctionSignature[]{
-            new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY)
+            new BasicFunctionSignature(Type.STRING, ScalarArgument.GEOMETRY)
         };
     }
 }

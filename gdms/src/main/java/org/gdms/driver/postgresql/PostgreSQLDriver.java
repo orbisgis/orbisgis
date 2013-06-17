@@ -37,7 +37,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTWriter;
 import java.sql.*;
 import java.util.*;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.cts.crs.CRSException;
 import org.cts.crs.CoordinateReferenceSystem;
@@ -175,7 +174,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                     try {
                                         crs = DataSourceFactory.getCRSFactory().getCRS("EPSG:" + srid);
                                     } catch (CRSException ex) {
-                                        java.util.logging.Logger.getLogger(PostgreSQLDriver.class.getName()).log(Level.SEVERE, null, ex);
+                                        LOG.warn("Cannot create the coordinate reference system", ex);                                       
                                     }
                                         
                                 }

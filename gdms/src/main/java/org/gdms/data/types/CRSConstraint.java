@@ -34,7 +34,6 @@ package org.gdms.data.types;
 import org.cts.crs.CoordinateReferenceSystem;
 import org.cts.parser.prj.PrjWriter;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.crs.SpatialReferenceSystem;
 import org.gdms.data.values.Value;
 
 /**
@@ -45,10 +44,21 @@ public final class CRSConstraint extends AbstractConstraint {
 
     private CoordinateReferenceSystem coordinateReferenceSystem;
 
+    /**
+     * Build a CRS constraint using a {@code CoordinateReferenceSystem}
+     *
+     * @param constraintValue
+     */
     public CRSConstraint(CoordinateReferenceSystem constraintValue) {
         coordinateReferenceSystem = constraintValue;
     }
 
+    /**
+     * Build a CRS constraint base on the bynary representtion of a
+     * {@code CoordinateReferenceSystem}
+     *
+     * @param constraintValue
+     */
     public CRSConstraint(byte[] constraintBytes) {
         coordinateReferenceSystem = DataSourceFactory.getCRSFactory().createFromPrj(new String(constraintBytes));
     }
@@ -56,7 +66,7 @@ public final class CRSConstraint extends AbstractConstraint {
     /**
      * For use only as a sample in ConstraintFactory.
      */
-    CRSConstraint() {
+    public CRSConstraint() {
     }
 
     @Override
@@ -89,6 +99,10 @@ public final class CRSConstraint extends AbstractConstraint {
         return Constraint.CONSTRAINT_TYPE_CRS;
     }
 
+    /**
+     * Return the {@code CoordinateReferenceSystem} used by this contraint
+     * @return 
+     */
     public CoordinateReferenceSystem getCRS() {
         return coordinateReferenceSystem;
     }

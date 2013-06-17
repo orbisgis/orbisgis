@@ -47,7 +47,8 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
 /**
  * Sets the internal CRS of a geometry using an EPSG code or a authority + code
- * ie : ST_SetSRID(the_geom, 4326) or ST_SetSRID(the_geom, 'EPSG:4326');
+ * ie : ST_SetSRID(the_geom, 4326) or ST_SetSRID(the_geom, 'EPSG:4326'); More
+ * information at http://spatialreference.org/
  *
  * Note that this has nothing to do with the CRS constraint on a table column.
  *
@@ -55,30 +56,25 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
  */
 public class ST_SetSRID extends AbstractScalarSpatialFunction {
 
-    private CoordinateReferenceSystem crs;
-
     @Override
     public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
-        if (crs == null) {
-            String epsgCode = null;
-            if (args[1].getType() == Type.INT) {
-                int code = args[1].getAsInt();
-                if (code == -1) {
-                    throw new FunctionException("-1 is an invalid SRID");
-                } else {
-                    epsgCode = "EPSG:" + code;
-                }
+        String epsgCode = null;
+        if (args[1].getType() == Type.INT) {
+            int code = args[1].getAsInt();
+            if (code == -1) {
+                throw new FunctionException("-1 is an invalid SRID");
             } else {
-                epsgCode = args[1].getAsString();
+                epsgCode = "EPSG:" + code;
             }
-            try {
-                crs = DataSourceFactory.getCRSFactory().getCRS(epsgCode);
-            } catch (CRSException ex) {
-                throw new FunctionException("Cannot find an authority for " + epsgCode, ex);
-            }
+        } else {
+            epsgCode = args[1].getAsString();
         }
-
-        return ValueFactory.createValue(args[0].getAsGeometry(), crs);
+        try {
+            CoordinateReferenceSystem crs = DataSourceFactory.getCRSFactory().getCRS(epsgCode);
+            return ValueFactory.createValue(args[0].getAsGeometry(), crs);
+        } catch (CRSException ex) {
+            throw new FunctionException("Cannot find an authority for " + epsgCode, ex);
+        }
     }
 
     @Override
@@ -93,14 +89,14 @@ public class ST_SetSRID extends AbstractScalarSpatialFunction {
 
     @Override
     public String getSqlOrder() {
-        return "SELECT ST_SetSRID(the_geom, 4326 or 'EPSG:4326') FROM table;";
+        return "SELECT ST_SetSRID(the_geom, 4326 | 'EPSG:4326') FROM table;";
     }
 
     @Override
     public FunctionSignature[] getFunctionSignatures() {
         return new FunctionSignature[]{
-            new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY,
-            ScalarArgument.INT), new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY,
+            new BasicFunctionSignature(Type.GEOMETRY, ScalarArgument.GEOMETRY,
+            ScalarArgument.INT), new BasicFunctionSignature(Type.GEOMETRY, ScalarArgument.GEOMETRY,
             ScalarArgument.STRING)};
     }
 }

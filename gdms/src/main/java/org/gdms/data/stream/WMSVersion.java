@@ -32,11 +32,9 @@
 package org.gdms.data.stream;
 
 /**
- *
+ * This class is used to list the supported WMS version.
  * @author ebocher
  */
-
-
 public enum WMSVersion {
     
     VERSION_1_3_0,VERSION_1_1_1,VERSION_1_1_0,VERSION_1_0_0;
