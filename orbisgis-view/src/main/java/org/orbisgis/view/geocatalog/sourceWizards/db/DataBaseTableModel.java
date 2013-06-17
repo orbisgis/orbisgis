@@ -43,7 +43,8 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- *
+ * This class is used to populate an {@code AbstractTableModel} with 
+ * the metadata available on a datasource selected in the GeoCatalog.
  * @author Erwan Bocher
  * @author Alexis Guéganno
  */
@@ -52,6 +53,14 @@ public class DataBaseTableModel extends AbstractTableModel {
     private static final Logger LOGGER = Logger.getLogger(DataBaseTableModel.class);
     private static final I18n I18N = I18nFactory.getI18n(DataBaseTableModel.class);
     private final String[] sourceNames;
+    //Status -> the status of the datasource (exported, in error)
+    //Source name -> the name of the datasource available in the geocatalog
+    //Table name -> the name of the datasource exported in the database
+    //Schema -> the name of schema in the database
+    //Input field and output field -> the name of the default geometry field.
+    //Input CRS -> The name of the input CRS is the table is spatial
+    //Output EPSG -> The EPSG code used to export the table
+    //Export -> A boolean value to choose if the datasource must be (or not) exported
     private static final String[] COLUMN_NAMES = new String[]{"Status", "Source name", "Table name", "Schema",
         "Input field", "Output field", "Input CRS", "Output EPSG", "Export"};
     private ArrayList<DataBaseRow> data = new ArrayList<DataBaseRow>();
@@ -59,8 +68,7 @@ public class DataBaseTableModel extends AbstractTableModel {
 
     /**
      * Build a new {@code DataBaseTableModel} using the {@code Source} instances
-     * registered in {@code sourceManager} with names {@code
-     * sourceNames}.
+     * registered in {@code sourceManager} with names {@code sourceNames}.
      *
      * @param sourceManager
      * @param sourceNames
@@ -73,7 +81,7 @@ public class DataBaseTableModel extends AbstractTableModel {
 
     /**
      * Update the status of the all rows to allow cell edition. This update is
-     * done when a connection is openned.
+     * done when a connection is opened.
      *
      * @param isEditable
      */
@@ -83,8 +91,7 @@ public class DataBaseTableModel extends AbstractTableModel {
 
     /**
      * Create the panel to display the list of tables. Displayed tables are the
-     * ones that are neither spatial, nor system tables, and the vectorial
-     * tables.
+     * ones that are neither raster and nor system tables.     * 
      *
      * @param sourceManager The {@code SourceManager} used to retrieve sources.
      */
