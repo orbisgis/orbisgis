@@ -84,23 +84,6 @@ public class CoreTest {
                 }
         }
 
-        private String getStateString(int i) {
-                switch (i) {
-                        case Bundle.ACTIVE:
-                                return "Active   ";
-                        case Bundle.INSTALLED:
-                                return "Installed";
-                        case Bundle.RESOLVED:
-                                return "Resolved ";
-                        case Bundle.STARTING:
-                                return "Starting ";
-                        case Bundle.STOPPING:
-                                return "Stopping ";
-                        default:
-                                return "Unknown  ";
-                }
-        }
-
         /**
          * This runnable is just to wait the execution of other runnables
          */

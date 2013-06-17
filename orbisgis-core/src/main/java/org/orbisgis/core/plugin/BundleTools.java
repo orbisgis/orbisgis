@@ -96,6 +96,29 @@ public class BundleTools {
         }
         return null;
     }
+
+    /**
+     * String version of bundle state index
+     * @param i Bundle state like {@link Bundle#ACTIVE}
+     * @return Bundle state string version
+     */
+    public static String getStateString(int i) {
+        switch (i) {
+            case Bundle.ACTIVE:
+                return "Active   ";
+            case Bundle.INSTALLED:
+                return "Installed";
+            case Bundle.RESOLVED:
+                return "Resolved ";
+            case Bundle.STARTING:
+                return "Starting ";
+            case Bundle.STOPPING:
+                return "Stopping ";
+            default:
+                return "Unknown  ";
+        }
+    }
+
     /**
      * Register in the host bundle the provided list of bundle reference
      * @param hostBundle Host BundleContext
@@ -148,6 +171,7 @@ public class BundleTools {
         // List bundles in the /bundle subdirectory
         File bundleFolder = new File(BUNDLE_DIRECTORY);
         if(!bundleFolder.exists()) {
+            LOGGER.warn("The bundle folder does not exists :\n"+bundleFolder.getAbsolutePath());
             return;
         }
         File[] files = bundleFolder.listFiles();

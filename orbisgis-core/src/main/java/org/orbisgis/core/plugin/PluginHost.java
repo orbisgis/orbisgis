@@ -30,6 +30,7 @@ package org.orbisgis.core.plugin;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 import org.apache.log4j.Logger;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -53,6 +55,7 @@ import org.osgi.framework.launch.FrameworkFactory;
 public class PluginHost {
     private Framework framework;
     private final static int STOP_TIMEOUT = 15000;
+    private final static int BUNDLE_STATE_CHECK_INTERVAL = 100;
     private static final Logger LOGGER = Logger.getLogger(PluginHost.class);
     private File pluginCacheFolder;
     private List<PackageDeclaration> packageList = new ArrayList<PackageDeclaration>();
@@ -191,5 +194,41 @@ public class PluginHost {
             throw new IllegalStateException("FrameworkFactory service could not be created.");
         }
         return it.next().newFramework(frameworkConfig);        
+    }
+
+    /**
+     * @param timeout Ms, wait this time max
+     * @return True if the state is stable.
+     */
+    public boolean waitForBundlesStableState(int timeout) {
+        long begin = System.currentTimeMillis();
+        while(!isBundleStateStable()) {
+            if(System.currentTimeMillis() > begin + timeout) {
+                return isBundleStateStable();
+            } else {
+                try {
+                    Thread.sleep(BUNDLE_STATE_CHECK_INTERVAL);
+                } catch (InterruptedException e) {
+                    return isBundleStateStable();
+                }
+            }
+        }
+        return isBundleStateStable();
+    }
+
+    private boolean isBundleStateStable() {
+        Set<Integer> unStableStates = new HashSet<Integer>(Arrays.asList(new Integer[]{
+                Bundle.SIGNERS_ALL,
+                Bundle.SIGNERS_TRUSTED,
+                Bundle.START_ACTIVATION_POLICY,
+                Bundle.STARTING,
+                Bundle.STOP_TRANSIENT,
+                Bundle.STOPPING}));
+        for (Bundle bundle : getHostBundleContext().getBundles()) {
+            if(unStableStates.contains(bundle.getState())) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -28,13 +28,13 @@
  */
 package org.orbisgis.core.beanshell;
 
-import java.awt.GraphicsEnvironment;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 import org.junit.Test;
 
 /**
@@ -42,6 +42,23 @@ import org.junit.Test;
  * @author Erwan Bocher
  */
 public class BeanShellScriptTest {
+        private static final String[] DEFAULT_ARGS = new String[] {"",
+                BeanshellScript.ARG_APPFOLDER,"orbisgis",
+                BeanshellScript.ARG_WORKSPACE,"workspace",
+                BeanshellScript.ARG_DEBUG};
+        private static String[] mainParams(String scriptPath) {
+            return mainParams(scriptPath,new String[0]);
+        }
+        private static String[] mainParams(String scriptPath, String... additionnalArgs) {
+            String[] args = Arrays.copyOf(DEFAULT_ARGS, DEFAULT_ARGS.length + additionnalArgs.length);
+            args[0] = scriptPath;
+            int i=DEFAULT_ARGS.length;
+            for(String param : additionnalArgs) {
+                args[i++] = param;
+            }
+            return args;
+        }
+
 
         @Test
         public void testNullFileScript() throws Exception {
@@ -73,7 +90,7 @@ public class BeanShellScriptTest {
                 PrintStream ps = new PrintStream(baos);
                 PrintStream psbak = System.out;
                 System.setOut(ps);
-                BeanshellScript.main(new String[]{ "youhou", "src/test/resources/beanshell/helloWorld.bsh"});
+                BeanshellScript.main(new String[]{ "youhou", "../src/test/resources/beanshell/helloWorld.bsh"});
                 String out = baos.toString();
                 assertTrue(out.equals(BeanshellScript.getHelp()));
                 System.setOut(psbak);
@@ -81,7 +98,7 @@ public class BeanShellScriptTest {
 
         @Test
         public void testSimpleFileScript() throws Exception {
-                BeanshellScript.main(new String[]{"src/test/resources/beanshell/helloWorld.bsh"});
+                BeanshellScript.main(mainParams("../src/test/resources/beanshell/helloWorld.bsh"));
                 assertTrue(true);
         }
 // TODO test with jdbc sources
@@ -101,7 +118,7 @@ public class BeanShellScriptTest {
         
         @Test
         public void testSeveralArguments() throws Exception {
-                BeanshellScript.main(new String[]{"src/test/resources/beanshell/testSeveralArguments.bsh", "orbis","1"});
+                BeanshellScript.main(mainParams("../src/test/resources/beanshell/testSeveralArguments.bsh", "orbis","1"));
                 assertTrue(true);
         }
 }

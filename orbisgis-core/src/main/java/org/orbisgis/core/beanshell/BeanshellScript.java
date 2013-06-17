@@ -40,7 +40,10 @@ import java.util.Map;
 
 import org.orbisgis.core.context.main.MainContext;
 import org.orbisgis.core.plugin.BundleReference;
+import org.orbisgis.core.plugin.BundleTools;
+import org.orbisgis.core.plugin.PluginHost;
 import org.orbisgis.core.workspace.CoreWorkspace;
+import org.osgi.framework.Bundle;
 
 /**
  *
@@ -48,8 +51,9 @@ import org.orbisgis.core.workspace.CoreWorkspace;
  */
 public final class BeanshellScript {
         static MainContext mainContext;
-        private static final String ARG_USERNAME = "-user";
-        private static final String ARG_PASSWORD = "-pwd";
+        public static final String ARG_WORKSPACE = "-wks";
+        public static final String ARG_APPFOLDER = "-af";
+        public static final String ARG_DEBUG = "debug";
 
         /**
          * Entry point.
@@ -69,26 +73,46 @@ public final class BeanshellScript {
          * This class is used to load a datasourcefactory
          */
         public static void servicesRegister(Map<String,String> parameters) throws IllegalArgumentException {
-                mainContext = new MainContext(false);
-                // Read user default workspace, or use predefined one
-                CoreWorkspace coreWorkspace = mainContext.getCoreWorkspace();
-                File defaultWorkspace = coreWorkspace.readDefaultWorkspacePath();
-                if(defaultWorkspace==null) {
-                    List<File> workspacesPath = coreWorkspace.readKnownWorkspacesPath();
-                    if(!workspacesPath.isEmpty()) {
-                        defaultWorkspace = workspacesPath.get(0);
+                CoreWorkspace coreWorkspace = new CoreWorkspace();
+                if(parameters.containsKey(ARG_APPFOLDER)) {
+                    coreWorkspace.setApplicationFolder(new File(parameters.get(ARG_APPFOLDER)).getAbsolutePath());
+                }
+                if(parameters.containsKey(ARG_WORKSPACE)) {
+                    coreWorkspace.setWorkspaceFolder(new File(parameters.get(ARG_WORKSPACE)).getAbsolutePath());
+                } else {
+                    File defaultWorkspace = coreWorkspace.readDefaultWorkspacePath();
+                    if(defaultWorkspace==null) {
+                        List<File> workspacesPath = coreWorkspace.readKnownWorkspacesPath();
+                        if(!workspacesPath.isEmpty()) {
+                            coreWorkspace.setWorkspaceFolder(workspacesPath.get(0).getAbsolutePath());
+                        }
                     }
                 }
-                if(defaultWorkspace!=null) {
-                    coreWorkspace.setWorkspaceFolder(defaultWorkspace.getAbsolutePath());
-                    // Launch OSGi
-                    mainContext.startBundleHost(new BundleReference[0]);
-                    // Init BDD
-                    try {
-                        mainContext.initDataBase("","");
-                    } catch (SQLException ex) {
-                        throw new IllegalArgumentException("Cannot connect to the database",ex);
+                // Create workspace folder if it does no exists
+                File workspace = new File(coreWorkspace.getWorkspaceFolder());
+                if(!workspace.exists()) {
+                    if(!workspace.mkdirs()) {
+                        throw new IllegalArgumentException("Could not create workspace folder, check disk space and rights");
                     }
+                }
+                mainContext = new MainContext(parameters.containsKey(ARG_DEBUG),coreWorkspace,true);
+                // Read user default workspace, or use predefined one
+                // Launch OSGi
+                mainContext.startBundleHost(new BundleReference[0]);
+                // Show active bundles
+                if(parameters.containsKey(ARG_DEBUG)) {
+                    for (Bundle bundle : mainContext.getPluginHost().getHostBundleContext().getBundles()) {
+                        System.out.println(
+                                "[" + bundle.getBundleId() + "]\t"
+                                        + BundleTools.getStateString(bundle.getState())
+                                        + bundle.getSymbolicName());
+                    }
+                }
+                // Init BDD
+                try {
+                    mainContext.initDataBase("","");
+                } catch (SQLException ex) {
+                    throw new IllegalArgumentException("Cannot connect to the database "+ex.getLocalizedMessage(),ex);
                 }
         }
 
@@ -158,7 +182,12 @@ public final class BeanshellScript {
          * Get the help associated to this executable.
          */
         public static String getHelp() {
-                return "Beanshell script arguments. The first argument must be  a path to the script file.\n";
+                return "Beanshell script arguments. The first argument must be  a path to the script file.\n" +
+                        "orbisshell.sh scriptpath [options]\n" +
+                        "Options :\n" +
+                        "\t"+ARG_WORKSPACE+" path\tWorkspace folder\n" +
+                        "\t"+ARG_APPFOLDER+" path\tApplication folder\n" +
+                        "\t"+ARG_DEBUG+"\t\tDebug mode\n";
         }
 
         private BeanshellScript() {
