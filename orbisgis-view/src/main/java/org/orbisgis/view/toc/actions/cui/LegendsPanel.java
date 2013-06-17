@@ -95,7 +95,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
     /**
      * Dialog panel.
      */
-    private JPanel dialog;
+    private JPanel dialogContainer;
     // **********     INITIALIZATION VARIABLES     **************
     /**
      * Represents the current state of the map.
@@ -164,9 +164,13 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
         this.layer = layer;
 
-        // Set the layout and initialize the card layout.
+        // Set the layout.
         setLayout(new BorderLayout());
+
+        // Initialize the dialog container.
         cardLayout = new CardLayout();
+        dialogContainer = new JPanel(cardLayout);
+        dialogContainer.setPreferredSize(new Dimension(600, 650));
 
         // Add the layer tag and the dialog panel to the EAST side.
         add(eastSide(), BorderLayout.CENTER);
@@ -177,9 +181,6 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         // Initialize a new legend tree and add it to the WEST side.
         legendTree = new LegendTree(this);
         add(legendTree, BorderLayout.WEST);
-
-        // Refresh the display.
-//        cardLayout.show(dialog, NO_LEGEND_ID);
     }
 
     /**
@@ -241,11 +242,9 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         JSeparator hRule = new JSeparator();
         hRule.setMinimumSize(hRule.getSize());
         right.add(hRule, BorderLayout.CENTER);
-        // Add the dialog panel.
-        dialog = new JPanel(cardLayout);
-        dialog.setPreferredSize(new Dimension(600, 650));
+        // Add the empty dialog and the dialog container.
         addEmptyDialog();
-        right.add(dialog, BorderLayout.SOUTH);
+        right.add(dialogContainer, BorderLayout.SOUTH);
         return right;
     }
 
@@ -276,7 +275,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         JLabel text = new JLabel(I18N.tr("Add or select a legend."));
         text.setHorizontalAlignment(SwingConstants.CENTER);
         textHolder.add(text, BorderLayout.CENTER);
-        dialog.add(NO_LEGEND_ID, textHolder);
+        dialogContainer.add(NO_LEGEND_ID, textHolder);
     }
 
     /**
@@ -311,7 +310,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                                     "onNodeNameChange", ""));
         JScrollPane jsp = new JScrollPane(stylePanel.getComponent());
         jsp.setBorder(new LineBorder(Color.GREEN, 2));
-        dialog.add(stylePanel.getId(), jsp);
+        dialogContainer.add(stylePanel.getId(), jsp);
     }
 
     /**
@@ -360,7 +359,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         // a new JScrollPane.
         JScrollPane jsp = new JScrollPane(rulePanel.getComponent());
         jsp.setBorder(new LineBorder(Color.BLUE, 2));
-        dialog.add(rulePanel.getId(), jsp);
+        dialogContainer.add(rulePanel.getId(), jsp);
     }
 
     /**
@@ -401,7 +400,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         // new JScrollPane.
         JScrollPane jsp = new JScrollPane(symbPanel.getComponent());
         jsp.setBorder(new LineBorder(Color.RED, 2));
-        dialog.add(symbPanel.getId(), jsp);
+        dialogContainer.add(symbPanel.getId(), jsp);
         return symbPanel;
     }
 
@@ -459,9 +458,9 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
     protected void showDialogForCurrentlySelectedLegend() {
         ISELegendPanel selected = legendTree.getSelectedPanel();
         if (selected != null) {
-            cardLayout.show(dialog, selected.getId());
+            cardLayout.show(dialogContainer, selected.getId());
         } else {
-            cardLayout.show(dialog, NO_LEGEND_ID);
+            cardLayout.show(dialogContainer, NO_LEGEND_ID);
         }
     }
 
@@ -489,7 +488,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         panel.initialize(this);
         panel.setId(createNewID());
         JScrollPane jsp = new JScrollPane(panel.getComponent());
-        dialog.add(panel.getId(), jsp);
+        dialogContainer.add(panel.getId(), jsp);
         showDialogForCurrentlySelectedLegend();
     }
 
