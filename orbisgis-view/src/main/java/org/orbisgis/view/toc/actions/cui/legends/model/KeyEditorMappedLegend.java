@@ -47,6 +47,7 @@ public abstract class KeyEditorMappedLegend<K,U extends LineParameters> extends 
         if(e.getActionCommand().equals(EDIT)){
             U lp = rl.get(val);
             K k = getNotUsedKey(val);
+            rl.remove(val);
             rl.put(k, lp);
             fireEditingStopped();
         }
