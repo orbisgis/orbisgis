@@ -67,7 +67,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * A panel embedding a JTree representing the legend structure (as well as some
  * buttons to manage it).
  *
- * @author Alexis Guéganno, Adam Gouge
+ * @author Alexis Guéganno
+ * @author Adam Gouge
  */
 public class LegendTree extends JPanel {
 
@@ -114,7 +115,6 @@ public class LegendTree extends JPanel {
         //We want an editable tree
         tree.setEditable(true);
         initButtons();
-        setPreferredSize(new Dimension(300, 200));
         this.setLayout(new BorderLayout());
         this.add(toolBar, BorderLayout.PAGE_START);
         JScrollPane scrollPane = new JScrollPane(tree);

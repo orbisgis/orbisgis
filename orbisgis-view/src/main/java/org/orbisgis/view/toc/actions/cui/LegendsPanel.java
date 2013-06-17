@@ -32,6 +32,8 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -79,7 +81,9 @@ import org.xnap.commons.i18n.I18nFactory;
  * It is currently the dialog that is displayed when the user clicks on "Simple
  * style edition".
  *
- * @author Alexis Guéganno, Adam Gouge, others
+ * @author Alexis Guéganno
+ * @author Adam Gouge
+ * @author others
  */
 public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
@@ -165,7 +169,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         this.layer = layer;
 
         // Set the layout.
-        setLayout(new BorderLayout());
+        setLayout(new GridBagLayout());
 
         // Initialize the dialog container.
         cardLayout = new CardLayout();
@@ -173,14 +177,39 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         dialogContainer.setPreferredSize(new Dimension(600, 650));
 
         // Add the layer tag and the dialog panel to the EAST side.
-        add(eastSide(), BorderLayout.CENTER);
+        GridBagConstraints c1 = new GridBagConstraints();
+        c1.gridx = 1;
+        c1.gridy = 0;
+        c1.fill = GridBagConstraints.BOTH;
+        c1.gridwidth = 2;
+        c1.weightx = 1.0;
+        c1.weighty = 0.01;
+        add(getLayerTag(), c1);
+
+        // Add the empty dialog and the dialog container.
+        addEmptyDialog();
+        GridBagConstraints c2 = new GridBagConstraints();
+        c2.gridx = 1;
+        c2.gridy = 1;
+        c2.fill = GridBagConstraints.BOTH;
+        c2.gridwidth = 2;
+        c2.weightx = 1.0;
+        c2.weighty = 1.0;
+        add(dialogContainer, c2);
 
         // Initialize all panels.
         styleWrapper = addAllPanels(style);
 
         // Initialize a new legend tree and add it to the WEST side.
         legendTree = new LegendTree(this);
-        add(legendTree, BorderLayout.WEST);
+        GridBagConstraints c3 = new GridBagConstraints();
+        c3.gridx = 0;
+        c3.gridy = 0;
+        c3.fill = GridBagConstraints.BOTH;
+        c3.gridheight = 2;
+        c3.weightx = 1.0 / 3;
+        c3.weighty = 1.0;
+        add(legendTree, c3);
     }
 
     /**
@@ -229,31 +258,14 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
     }
 
     /**
-     * Puts the layer tag and the dialog panel in a new {@link JPanel}.
+     * Puts the layer tag and a separator in a new {@link JPanel}.
      *
-     * @return The layer tag and the dialog panel in a new {@link JPanel}
+     * @return The layer tag and a separator in a new {@link JPanel}
      */
-    private JPanel eastSide() {
+    private JPanel getLayerTag() {
         // Add the layer tag and the dialog panel to the EAST side.
         JPanel right = new JPanel(new BorderLayout());
         // Add the layer tag.
-        right.add(getLayerTag(), BorderLayout.NORTH);
-        // Add a separator.
-        JSeparator hRule = new JSeparator();
-        hRule.setMinimumSize(hRule.getSize());
-        right.add(hRule, BorderLayout.CENTER);
-        // Add the empty dialog and the dialog container.
-        addEmptyDialog();
-        right.add(dialogContainer, BorderLayout.SOUTH);
-        return right;
-    }
-
-    /**
-     * Creates a new legend toolbar containing just the name of the layer.
-     *
-     * @return A new legend toolbar containing just the name of the layer
-     */
-    private JLabel getLayerTag() {
         JLabel layerTag = new JLabel(
                 "<html><b>"
                 + I18N.tr("Editing layer")
@@ -264,7 +276,12 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         Dimension size = new Dimension(layerTag.getWidth(), 22);
         layerTag.setMinimumSize(size);
         layerTag.setPreferredSize(size);
-        return layerTag;
+        right.add(layerTag, BorderLayout.NORTH);
+        // Add a separator.
+        JSeparator hRule = new JSeparator();
+        hRule.setMinimumSize(hRule.getSize());
+        right.add(hRule, BorderLayout.CENTER);
+        return right;
     }
 
     /**
