@@ -46,9 +46,10 @@ import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
 /**
- * Sets the internal CRS of a geometry using an EPSG code or a authority + code
- * ie : ST_SetSRID(the_geom, 4326) or ST_SetSRID(the_geom, 'EPSG:4326'); More
- * information at http://spatialreference.org/
+ * Sets the internal CRS of a geometry using an EPSG code (integer) 
+ * or a string "authority:code"
+ * ie : ST_SetSRID(the_geom, 4326) or ST_SetSRID(the_geom, 'EPSG:4326'); 
+ * More information at http://spatialreference.org/
  *
  * Note that this has nothing to do with the CRS constraint on a table column.
  *
