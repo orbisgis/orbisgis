@@ -136,7 +136,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         if(colorConfig == null){
             colorConfig = new ColorConfigurationPanel();
         }
-        jtf = new JTextField(classNumber.toString());
+        jtf = new JTextField(classNumber.toString(),3);
         ActionListener textListener = EventHandler.create(ActionListener.class, this, "updateFieldContent");
         jtf.addActionListener(textListener);
         JComboBox<String> methods = new JComboBox<String>(new String[]{"Equal Intervals"});
