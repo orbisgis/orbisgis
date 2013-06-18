@@ -23,11 +23,12 @@
                 <module>bundles/orbisgis-omanager</module>
                 <module>bundles/orbisgis-omanager-plugin</module>
                 <!-- <module>orbisgis-view</module> -->
-                <!-- <module>orbisgis-dist</module> -->
+                <module>orbisgis-dist</module>
         </modules>
         <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <netbeans.hint.license>OrbisGIS</netbeans.hint.license>
+                <default-main-class>org.orbisgis.core.beanshell.BeanshellScript</default-main-class>
                 <!-- Common Dependencies version -->
                 <log4j-version>1.2.16</log4j-version>
                 <commons-io-version>1.3.2</commons-io-version>
@@ -36,6 +37,7 @@
                 <spatial-utilities-version>1.0-SNAPSHOT</spatial-utilities-version>
                 <h2-version>1.0-SNAPSHOT</h2-version>
                 <h2-spatial-version>1.0.2-SNAPSHOT</h2-spatial-version>
+                <orbisgis-core-version>4.1-SNAPSHOT</orbisgis-core-version>
         </properties>
         <scm>
                 <connection>scm:git:https://github.com/irstv/orbisgis.git</connection>

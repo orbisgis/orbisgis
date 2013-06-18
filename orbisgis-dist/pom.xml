@@ -15,6 +15,14 @@
         <build>
                 <plugins>
                         <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <version>2.14</version>
+                            <configuration>
+                                <workingDirectory>target/</workingDirectory>
+                            </configuration>
+                        </plugin>
+                        <plugin>
                                 <groupId>org.codehaus.mojo</groupId>
                                 <artifactId>exec-maven-plugin</artifactId>
                                 <version>1.2.1</version>
@@ -25,7 +33,7 @@
                                         <arguments>
                                                 <argument>-classpath</argument>
                                                 <classpath />
-                                                <argument>org.orbisgis.view.main.Main</argument>
+                                                <argument>${default-main-class}</argument>
                                         </arguments>
                                 </configuration>
                         </plugin>
@@ -36,7 +44,7 @@
                             <configuration>
                                 <archive>
                                     <manifest>
-                                        <mainClass>org.orbisgis.view.main.Main</mainClass>
+                                        <mainClass>${default-main-class}</mainClass>
                                         <addClasspath>true</addClasspath>
                                         <classpathPrefix>bin/</classpathPrefix>
                                         <!-- <classpathLayoutType>repository</classpathLayoutType> -->
@@ -83,7 +91,7 @@
                                 <configuration>
                                         <excludeTransitive>false</excludeTransitive>
                                         <jnlp>
-                                                <mainClass>org.orbisgis.view.main.Main</mainClass>
+                                                <mainClass>${default-main-class}</mainClass>
                                                 <outputFile>monomap.jnlp</outputFile>
                                         </jnlp>
                                         <sign>
@@ -117,8 +125,8 @@
         <dependencies>
                 <dependency>
                         <groupId>org.orbisgis</groupId>
-                        <artifactId>orbisgis-view</artifactId>
-                        <version>4.0-SNAPSHOT</version>
+                        <artifactId>orbisgis-core</artifactId>
+                        <version>${orbisgis-core-version}</version>
                 </dependency>
                 <dependency>
                   <groupId>org.apache.felix</groupId>
@@ -144,6 +152,12 @@
                     <version>1.0</version>
                     <scope>provided</scope>
                 </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>orbisgis-view-api</artifactId>
+                <version>4.0-SNAPSHOT</version>
+                <scope>provided</scope>
+            </dependency>
                 <dependency>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>org.osgi.service.obr</artifactId>

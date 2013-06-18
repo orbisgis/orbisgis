@@ -123,7 +123,23 @@ public class BeanShellScriptTest {
                 System.setOut(psbak);
             }
         }
-// TODO test with jdbc sources
+
+        @Test
+        public void testSpatialDataSourceFileScript() throws Exception {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PrintStream ps = new PrintStream(baos);
+            PrintStream psbak = System.out;
+            System.setOut(ps);
+            try {
+                BeanshellScript.main(mainParams("../src/test/resources/beanshell/spatialDbProcessing.bsh"));
+                String out = baos.toString();
+                assertEquals("POLYGON ((59 18, 67 18, 67 13, 59 13, 59 18))\n",out);
+            } finally {
+                System.setOut(psbak);
+            }
+        }
+
+// TODO
 //        @Test
 //        public void testMapDisplayScript() throws Exception {
 //                assumeTrue(!GraphicsEnvironment.isHeadless());

@@ -43,6 +43,7 @@ import org.orbisgis.core.plugin.BundleReference;
 import org.orbisgis.core.plugin.BundleTools;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 /**
@@ -101,20 +102,7 @@ public final class BeanshellScript {
                 mainContext.startBundleHost(new BundleReference[0]);
                 // Show active bundles
                 if(parameters.containsKey(ARG_DEBUG)) {
-                    for (Bundle bundle : mainContext.getPluginHost().getHostBundleContext().getBundles()) {
-                        System.out.println(
-                                "[" + bundle.getBundleId() + "]\t"
-                                        + BundleTools.getStateString(bundle.getState())
-                                        + bundle.getSymbolicName());
-                        // List services
-                        ServiceReference[] serviceReferences = bundle.getRegisteredServices();
-                        if(serviceReferences!=null) {
-                            for(ServiceReference service : serviceReferences) {
-                                System.out.println(
-                                        "\t"+service.toString());
-                            }
-                        }
-                    }
+                    printActiveBundles(mainContext.getPluginHost().getHostBundleContext());
                 }
                 // Init BDD
                 try {
@@ -124,6 +112,26 @@ public final class BeanshellScript {
                 }
         }
 
+        /**
+         * Show the list of active bundles and their services.
+         * @param context Active bundle context
+         */
+        public static void printActiveBundles(BundleContext context) {
+            for (Bundle bundle : context.getBundles()) {
+                System.out.println(
+                        "[" + bundle.getBundleId() + "]\t"
+                                + BundleTools.getStateString(bundle.getState())
+                                + bundle.getSymbolicName());
+                // List services
+                ServiceReference[] serviceReferences = bundle.getRegisteredServices();
+                if(serviceReferences!=null) {
+                    for(ServiceReference service : serviceReferences) {
+                        System.out.println(
+                                "\t"+service.toString());
+                    }
+                }
+            }
+        }
         /**
          *
          * @param offset Read args from this index

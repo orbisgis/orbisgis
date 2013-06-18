@@ -28,23 +28,22 @@
  */
 package org.orbisgis.dist.main;
 
-import java.awt.GraphicsEnvironment;
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.SwingUtilities;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.orbisgis.core.beanshell.BeanshellScript;
+import org.orbisgis.core.context.main.MainContext;
+import org.orbisgis.core.plugin.BundleReference;
 import org.orbisgis.core.workspace.CoreWorkspace;
-import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.view.main.Core;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
         
 /**
  * Unit Tests of org.orbisgis.view.main.Core.
  */
 public class CoreTest {
-    private static Core instance;
+    private static MainContext instance;
 
         /**
          * Test of startup method, of class Core.
@@ -55,14 +54,12 @@ public class CoreTest {
         @BeforeClass
         public static void setUp() throws Exception {
                 System.out.println("startup");
-                if (!GraphicsEnvironment.isHeadless()) {
-                        CoreWorkspace coreWorkspace = new CoreWorkspace();
-                        coreWorkspace.setWorkspaceFolder("target/workspace");
-                        coreWorkspace.setApplicationFolder("target/app_folder");
-                        instance = new Core(coreWorkspace, true, new NullProgressMonitor());
-                        instance.startup(new NullProgressMonitor());
-                        SwingUtilities.invokeAndWait(new DummyThread());
-                }
+                CoreWorkspace coreWorkspace = new CoreWorkspace();
+                coreWorkspace.setWorkspaceFolder("workspace");
+                coreWorkspace.setApplicationFolder("app_folder");
+                instance = new MainContext(true,coreWorkspace,true);
+                instance.startBundleHost(new BundleReference[0]);
+                instance.initDataBase("","");
         }
 
         /**
@@ -70,18 +67,10 @@ public class CoreTest {
          */
         @Test
         public void testBuiltInBundleActivation() throws Exception {
-                if (GraphicsEnvironment.isHeadless()) {
-                        return;
-                }
-                BundleContext hostBundle = instance.getPluginFramework().getHostBundleContext();
-                System.out.println("Built-In bundle list :");
-                System.out.println("ID\tState\tBundle name");
-                for (Bundle bundle : hostBundle.getBundles()) {
-                        System.out.println(
-                                "[" + bundle.getBundleId() + "]\t"                                
-                                + getStateString(bundle.getState())
-                                + bundle.getSymbolicName());
-                }
+            BundleContext hostBundle = instance.getPluginHost().getHostBundleContext();
+            System.out.println("Built-In bundle list :");
+            System.out.println("ID\tState\tBundle name");
+            BeanshellScript.printActiveBundles(hostBundle);
         }
 
         /**
@@ -99,11 +88,9 @@ public class CoreTest {
          */
         @AfterClass
         public static void tearDown() throws Exception {
-                if (!GraphicsEnvironment.isHeadless()) {
-                        SwingUtilities.invokeAndWait(new DummyThread());
-                        System.out.println("dispose");
-                        instance.dispose();
-                        instance = null;
-                }
+            SwingUtilities.invokeAndWait(new DummyThread());
+            System.out.println("dispose");
+            instance.dispose();
+            instance = null;
         }
 }
