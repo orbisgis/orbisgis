@@ -183,7 +183,9 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         if(thresholds == null || !thresholds.getFieldName().equals(name)){
             thresholds = computeStats(getFieldName());
         }
-        SortedSet<Double> set = thresholds.getEqualIntervals(classNumber);
+        ContainerItemProperties selectedItem = (ContainerItemProperties) methodCombo.getSelectedItem();
+        CategorizeMethod cm = CategorizeMethod.valueOf(selectedItem.getKey());
+        SortedSet<Double> set = thresholds.getThresholds(cm,classNumber);
         if(!set.isEmpty()){
             MappedLegend<Double,U> cl = createColouredClassification(
                     set,
@@ -230,6 +232,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         switch(cm){
             case EQUAL_INTERVAL : return true;
             case MANUAL : return true;
+            case STANDARD_DEVIATION: return true;
             default : return false;
         }
     }
