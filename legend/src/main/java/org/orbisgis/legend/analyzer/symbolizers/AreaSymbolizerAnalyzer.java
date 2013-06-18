@@ -34,6 +34,7 @@ import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.thematic.categorize.CategorizedArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 import org.orbisgis.legend.thematic.recode.RecodedArea;
 
@@ -73,7 +74,7 @@ public class AreaSymbolizerAnalyzer extends SymbolizerTypeAnalyzer {
                     if (p instanceof Recode) {
                         return new RecodedArea(symbolizer);
                     } else if (p instanceof Categorize) {
-                        throw new UnsupportedOperationException("Not yet !");
+                        return new CategorizedArea(symbolizer);
                     }
                 }
             } else {

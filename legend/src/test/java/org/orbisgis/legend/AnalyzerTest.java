@@ -63,6 +63,11 @@ public abstract class AnalyzerTest {
         public static final String NESTED = "src/test/resources/org/orbisgis/legend/nestedCategorize.se";
         public static final String COLOR_CATEGORIZE = "src/test/resources/org/orbisgis/legend/colorCategorize.se";
         public static final String DENSITY_FILL = "src/test/resources/org/orbisgis/legend/density_hatch_classif.se";
+        public static final String CATEGORIZED_LINE = "src/test/resources/org/orbisgis/legend/doubleCatLine.se";
+        public static final String CATEGORIZED_AREA = "src/test/resources/org/orbisgis/legend/categorizedArea.se";
+        public static final String CATEGORIZED_POINT = "src/test/resources/org/orbisgis/legend/categorizedPoint.se";
+        public static final String CATEGORIZED_POINT_NO_STROKE = "src/test/resources/org/orbisgis/legend/categorizedPointNoStroke.se";
+        public static final String CATEGORIZED_AREA_NO_STROKE = "src/test/resources/org/orbisgis/legend/categorizedAreaNoStroke.se";
 
         public Style getStyle(String path) throws Exception {
             Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();

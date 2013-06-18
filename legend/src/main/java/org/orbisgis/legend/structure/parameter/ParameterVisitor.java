@@ -32,5 +32,5 @@ package org.orbisgis.legend.structure.parameter;
  * Marker interface that will be useful to make distinction between recodes and categorize
  * @author alexis
  */
-public interface ParameterVisitor<T> {
+public interface ParameterVisitor {
 }

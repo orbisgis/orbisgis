@@ -35,6 +35,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.analyzer.symbolizers.AreaSymbolizerAnalyzer;
+import org.orbisgis.legend.thematic.categorize.CategorizedArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 
 import java.awt.*;
@@ -47,9 +48,6 @@ import static org.junit.Assert.fail;
  * @author Alexis Guéganno
  */
 public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
-
-    private String constant = "src/test/resources/org/orbisgis/legend/constantArea.se";
-    private String categorize = "src/test/resources/org/orbisgis/legend/colorCategorize.se";
 
     @Test
     public void testConstantConstructor() throws Exception {
@@ -193,11 +191,26 @@ public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(usa.getStrokeUom() == Uom.PX);
     }
 
+    @Test
+    public void testFindCategorizedArea() throws Exception {
+        Style st = getStyle(CATEGORIZED_AREA);
+        AreaSymbolizer as = (AreaSymbolizer) st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        assertTrue(new AreaSymbolizerAnalyzer(as).getLegend() instanceof CategorizedArea);
+    }
+
+    @Test
+    public void testFindCategorizedAreaNoStroke() throws Exception {
+        Style st = getStyle(CATEGORIZED_AREA_NO_STROKE);
+        AreaSymbolizer as = (AreaSymbolizer) st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        assertTrue(new AreaSymbolizerAnalyzer(as).getLegend() instanceof CategorizedArea);
+    }
+
     private AreaSymbolizer getChoroSymbolizer() throws Exception {
-        Style st = getStyle(categorize);
+        Style st = getStyle(COLOR_CATEGORIZE);
         return (AreaSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
     }
     private AreaSymbolizer getConstantSymbolizer() throws Exception {
+        String constant = "src/test/resources/org/orbisgis/legend/constantArea.se";
         Style st = getStyle(constant);
         return (AreaSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
     }
