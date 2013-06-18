@@ -178,7 +178,6 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
                 // Since it's an abstract class, we have to guess effective type
                 // by checking the first class value type, which always exists.
                 SeParameter classValue = categorize.get(0);
-                //System.out.println("BTN ADD!!!");
                 if (classValue instanceof RealParameter) {
                     categorize.put(new RealLiteral(1000.0), new RealLiteral(10.0));
                 } else if (classValue instanceof ColorParameter) {
@@ -192,8 +191,6 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
         // classes
         for (int i = 0; i < categorize.getNumClasses(); i++) {
             SeParameter classValue = categorize.get(i);
-
-            //System.out.println("CLASS VALUE IS " + classValue + " for class " + i);
             if (classValue instanceof RealParameter) {
                 values.add(new MetaRealValue(controller, this, (RealParameter) classValue, i));
             } else if (classValue instanceof ColorParameter) {
@@ -321,12 +318,8 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
             values.add(i, new MetaColor(controller, this, (ColorParameter) categorize.get(i), i));
             literalChanged();
         } else if (classValue instanceof StringParameter) {
-            System.out.println("ADD META " + i);
-            System.out.println("   total was: " + values.size());
             values.add(i, new MetaStringValue(controller, this, (StringParameter) categorize.get(i), i));
         }
-
-        //System.out.println("Add threshold: " + (i - 1));
         thresholds.add(i - 1, new MetaRealThreshold(controller, this, categorize.getThreshold(i - 1), i));
 
         controller.structureChanged(this);
@@ -375,15 +368,12 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
             try {
                 g2.setColor(Color.black);
                 g2.setStroke(new BasicStroke(3f));
-
-                //System.out.println("LiteralChanged");
                 for (LegendUIAbstractMetaPanel v : values) {
                     drawColorOnColorSpace(g2, v.getCurrentComponent(), colorSpace);
                 }
                 drawColorOnColorSpace(g2, fallbackPanel, colorSpace);
 
             } catch (ParameterException ex) {
-                //System.out.println("Exeption" + ex);
             }
             DisplayJAI dj = new DisplayJAI(colorSpace);
             right.add(dj);
@@ -490,14 +480,12 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
 
         public MetaColor(LegendUIController controller, LegendUIComponent parent, ColorParameter value, int i) {
             super("color value", controller, parent, value, false);
-            //System.out.println("NEw meta color => i is " + i + " color is " + value.toString());
             this.i = i;
             init();
         }
 
         @Override
         public void colorChanged(ColorParameter newColor) {
-            //System.out.println("Fire change class value :" + i + " (" + newColor);
 
             if (newColor instanceof ColorLiteral) {
                 ((ColorLiteral) newColor).register((LiteralListener) parent);
