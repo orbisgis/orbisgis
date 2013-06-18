@@ -68,10 +68,10 @@ public class ActionEdition extends AbstractAction {
      */
     public final void updateLabelAndIcon() {
         if(editable.isEditing()) {
-            putValue(NAME, i18N.tr("Lock edition"));
+            putValue(NAME, i18N.tr("Stop editing"));
             putValue(SMALL_ICON, OrbisGISIcon.getIcon("edition/unlock"));
         } else {
-            putValue(NAME, i18N.tr("Unlock edition"));
+            putValue(NAME, i18N.tr("Start editing"));
             putValue(SMALL_ICON, OrbisGISIcon.getIcon("edition/lock"));
         }
     }
