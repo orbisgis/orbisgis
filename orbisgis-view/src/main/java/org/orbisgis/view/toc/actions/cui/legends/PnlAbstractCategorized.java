@@ -17,6 +17,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusListener;
 import java.beans.EventHandler;
 import java.util.*;
 
@@ -138,7 +139,9 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         }
         jtf = new JTextField(classNumber.toString(),3);
         ActionListener textListener = EventHandler.create(ActionListener.class, this, "updateFieldContent");
+        FocusListener focusListener = EventHandler.create(FocusListener.class, this, "updateFieldContent");
         jtf.addActionListener(textListener);
+        jtf.addFocusListener(focusListener);
         JComboBox<String> methods = new JComboBox<String>(new String[]{"Equal Intervals"});
         JPanel btnPanel = new JPanel();
         createCl.setActionCommand("click");
