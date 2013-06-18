@@ -73,6 +73,7 @@ public class CRSFunctionTest extends TestBase {
 
     @Test
     public void testGetSetCRSOntheFly2() throws Exception {
+        dsf.executeSQL("CREATE TABLE init AS SELECT * FROM ST_RandomGeometry('point', 10);");
         DataSource ds = dsf.getDataSourceFromSQL("SELECT ST_SRID(ST_SetSRID(the_geom, 'EPSG:27572')) from init;");
         ds.open();
         for (int i = 0; i < ds.getRowCount(); i++) {

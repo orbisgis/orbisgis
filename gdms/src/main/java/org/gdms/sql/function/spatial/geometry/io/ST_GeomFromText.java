@@ -60,14 +60,14 @@ public final class ST_GeomFromText extends AbstractScalarSpatialFunction {
         } else {
             final Geometry geom;
             try {
-                geom = reader.read(args[0].getAsString());
+                geom = reader.read(args[0].toString());
             } catch (ParseException e) {
                 throw new FunctionException("Cannot parse the WKT.", e);
             }
 
             if (args.length > 1 && !args[1].isNull()) {
                 try {
-                    String crsStr = args[1].getAsString();
+                    String crsStr = args[1].toString();
                     CoordinateReferenceSystem crs = DataSourceFactory.getCRSFactory().getCRS("EPSG:" + crsStr);
                     return ValueFactory.createValue(geom, crs);
                 } catch (CRSException ex) {

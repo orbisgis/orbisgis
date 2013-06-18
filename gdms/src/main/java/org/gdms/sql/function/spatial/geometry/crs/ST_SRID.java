@@ -59,8 +59,9 @@ public class ST_SRID extends AbstractScalarSpatialFunction {
         if (crs == null) {
             return ValueFactory.createNullValue();
         } else {
-            String identifiers = crs.getName();
-            return ValueFactory.createValue(identifiers);
+            String authorityName = crs.getAuthorityName();
+            String authorityKey= crs.getAuthorityKey();
+            return ValueFactory.createValue(authorityName+":"+authorityKey);
         }
 
     }
