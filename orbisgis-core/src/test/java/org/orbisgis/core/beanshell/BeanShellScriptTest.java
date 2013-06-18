@@ -44,8 +44,7 @@ import org.junit.Test;
 public class BeanShellScriptTest {
         private static final String[] DEFAULT_ARGS = new String[] {"",
                 BeanshellScript.ARG_APPFOLDER,"orbisgis",
-                BeanshellScript.ARG_WORKSPACE,"workspace",
-                BeanshellScript.ARG_DEBUG};
+                BeanshellScript.ARG_WORKSPACE,"workspace"};
         private static String[] mainParams(String scriptPath) {
             return mainParams(scriptPath,new String[0]);
         }
@@ -66,10 +65,13 @@ public class BeanShellScriptTest {
                 PrintStream ps = new PrintStream(baos);
                 PrintStream psbak = System.err;
                 System.setErr(ps);
-                BeanshellScript.main(new String[]{""});
-                String err = baos.toString();
-                assertEquals("The second parameter must be not null.\n",err);
-                System.setErr(psbak);
+                try {
+                    BeanshellScript.main(new String[]{""});
+                    String err = baos.toString();
+                    assertEquals("The second parameter must be not null.\n",err);
+                } finally {
+                    System.setErr(psbak);
+                }
         }
 
         @Test
@@ -78,10 +80,13 @@ public class BeanShellScriptTest {
                 PrintStream ps = new PrintStream(baos);
                 PrintStream psbak = System.out;
                 System.setOut(ps);
-                BeanshellScript.main(new String[]{});
-                String out = baos.toString();
-                assertTrue(out.equals(BeanshellScript.getHelp()));
-                System.setOut(psbak);
+                try {
+                    BeanshellScript.main(new String[]{});
+                    String out = baos.toString();
+                    assertTrue(out.equals(BeanshellScript.getHelp()));
+                } finally {
+                    System.setOut(psbak);
+                }
         }
 
         @Test
@@ -90,16 +95,33 @@ public class BeanShellScriptTest {
                 PrintStream ps = new PrintStream(baos);
                 PrintStream psbak = System.out;
                 System.setOut(ps);
+            try {
                 BeanshellScript.main(new String[]{ "youhou", "../src/test/resources/beanshell/helloWorld.bsh"});
                 String out = baos.toString();
                 assertTrue(out.equals(BeanshellScript.getHelp()));
+            } finally {
                 System.setOut(psbak);
+            }
         }
 
         @Test
         public void testSimpleFileScript() throws Exception {
                 BeanshellScript.main(mainParams("../src/test/resources/beanshell/helloWorld.bsh"));
-                assertTrue(true);
+        }
+
+        @Test
+        public void testDataSourceFileScript() throws Exception {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PrintStream ps = new PrintStream(baos);
+            PrintStream psbak = System.out;
+            System.setOut(ps);
+            try {
+                BeanshellScript.main(mainParams("../src/test/resources/beanshell/basicDbProcessing.bsh"));
+                String out = baos.toString();
+                assertEquals("rincevent\n",out);
+            } finally {
+                System.setOut(psbak);
+            }
         }
 // TODO test with jdbc sources
 //        @Test

@@ -1,0 +1,26 @@
+
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.ResultSet;
+
+public class basicDbProcessing {
+    public static void run(DataSource dataSource) throws SQLException {
+        Connection connection = dataSource.getConnection();
+        try {
+            Statement st = connection.createStatement();
+            st.execute("create table bshTest(id integer, value VARCHAR(50));");
+            st.execute("insert into bshTest values (0, 'rincevent')");
+            ResultSet rs = st.executeQuery("select * from bshTest");
+            rs.next();
+            print(rs.getString(2));
+            rs.close();
+            st.execute("drop table bshTest");
+        } finally {
+            connection.close();
+        }
+    }
+}
+basicDbProcessing.run(bsh.dataSource);
