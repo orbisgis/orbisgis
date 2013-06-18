@@ -85,7 +85,7 @@ import org.orbisgis.view.map.jobs.ZoomToSelection;
 import org.orbisgis.view.table.TableEditableElement;
 import org.orbisgis.view.toc.actions.*;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
-import org.orbisgis.view.toc.actions.cui.LegendsPanel;
+import org.orbisgis.view.toc.actions.cui.SimpleStyleEditor;
 import org.orbisgis.view.toc.ext.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -1044,7 +1044,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                             layer.getDataSource().getSpatialFieldIndex());
                                     Style copy = new Style(jest, layer);
                                     
-                                    LegendsPanel pan = new LegendsPanel(mt, typ, layer, copy);
+                                    SimpleStyleEditor pan = new SimpleStyleEditor(mt, typ, layer, copy);
                                     if (UIFactory.showDialog(pan)) {
                                             try {
                                                     layer.setStyle(index, pan.getStyleWrapper().getStyle());

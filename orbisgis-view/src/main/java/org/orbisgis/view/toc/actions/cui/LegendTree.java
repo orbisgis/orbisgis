@@ -74,17 +74,17 @@ public class LegendTree extends JPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(LegendTree.class);
     private JTree tree;
-    private LegendsPanel legendsPanel;
+    private SimpleStyleEditor simpleStyleEditor;
     private JToolBar toolBar;
     private JButton jButtonMenuDel;
     private JButton jButtonMenuDown;
     private JButton jButtonMenuRename;
     private JButton jButtonMenuUp;
 
-    public LegendTree(final LegendsPanel legendsPan) {
-        legendsPanel = legendsPan;
+    public LegendTree(final SimpleStyleEditor simpleStyleEditor) {
+        this.simpleStyleEditor = simpleStyleEditor;
 
-        StyleWrapper style = legendsPanel.getStyleWrapper();
+        StyleWrapper style = simpleStyleEditor.getStyleWrapper();
         //We create our tree
         tree = new JTree();
         //We don't want to display the root.
@@ -107,9 +107,9 @@ public class LegendTree extends JPanel {
         TreeSelectionListener tsl = EventHandler.create(
                 TreeSelectionListener.class, this, "refreshIcons");
         tree.addTreeSelectionListener(tsl);
-        //We refresh the CardLayout of the associated LegendsPanel
+        //We refresh the CardLayout of the associated SimpleStyleEditor
         TreeSelectionListener select = EventHandler.create(
-                TreeSelectionListener.class, legendsPanel, "legendSelected");
+                TreeSelectionListener.class, simpleStyleEditor, "legendSelected");
         tree.addTreeSelectionListener(select);
         expandAll(tree);
         //We want an editable tree
@@ -137,12 +137,12 @@ public class LegendTree extends JPanel {
             tree.setSelectionPath(null);
             tm.removeElement(rw, select);
             //We refresh the legend container
-            legendsPanel.showDialogForCurrentlySelectedLegend();
+            simpleStyleEditor.showDialogForCurrentlySelectedLegend();
             //We refresh the icons
         } else if (select instanceof RuleWrapper) {
             tree.setSelectionPath(null);
             tm.removeElement(tm.getRoot(), select);
-            legendsPanel.showDialogForCurrentlySelectedLegend();
+            simpleStyleEditor.showDialogForCurrentlySelectedLegend();
         }
         refreshIcons();
     }
@@ -272,7 +272,7 @@ public class LegendTree extends JPanel {
                 max = 0;
                 index = 0;
             } else if (last instanceof RuleWrapper) {
-                StyleWrapper sw = legendsPanel.getStyleWrapper();
+                StyleWrapper sw = simpleStyleEditor.getStyleWrapper();
                 index = sw.indexOf((RuleWrapper) last);
                 max = sw.getSize() - 1;
             } else if (last instanceof ILegendPanel) {
@@ -370,14 +370,14 @@ public class LegendTree extends JPanel {
      * be added in the case there is none.
      */
     private void addLegend() {
-        StyleWrapper sw = legendsPanel.getStyleWrapper();
+        StyleWrapper sw = simpleStyleEditor.getStyleWrapper();
         ArrayList<String> paneNames = new ArrayList<String>();
         ArrayList<ILegendPanel> ids = new ArrayList<ILegendPanel>();
-        ILegendPanel[] legends = legendsPanel.getAvailableLegends();
+        ILegendPanel[] legends = simpleStyleEditor.getAvailableLegends();
         for (int i = 0; i < legends.length; i++) {
             ILegendPanel legendPanelUI = legends[i];
             if (legendPanelUI.acceptsGeometryType(
-                    legendsPanel.getGeometryType())) {
+                    simpleStyleEditor.getGeometryType())) {
                 paneNames.add(legendPanelUI.getLegend().getLegendTypeName());
                 ids.add(legendPanelUI);
             }
@@ -392,7 +392,7 @@ public class LegendTree extends JPanel {
             Legend leg = ilp.copyLegend();
             ILegendPanel copy = (ILegendPanel) ilp.newInstance();
             copy.setLegend(leg);
-            copy.setGeometryType(legendsPanel.getGeometryType());
+            copy.setGeometryType(simpleStyleEditor.getGeometryType());
             //We retrieve the rw where we will add it.
             RuleWrapper currentrw = getSelectedRule();
             if (currentrw == null) {
@@ -408,7 +408,7 @@ public class LegendTree extends JPanel {
             ILegendPanel sl = getSelectedLegend();
             LegendTreeModel tm = (LegendTreeModel) tree.getModel();
             tm.addElement(currentrw, copy, sl);
-            legendsPanel.legendAdded(copy);
+            simpleStyleEditor.legendAdded(copy);
         }
     }
 
@@ -464,17 +464,17 @@ public class LegendTree extends JPanel {
             RuleWrapper cur = getSelectedRule();
             LegendTreeModel tm = (LegendTreeModel) tree.getModel();
             //We need to link our new RuleWrapper with the layer we are editing.
-            Style style = legendsPanel.getStyleWrapper().getStyle();
+            Style style = simpleStyleEditor.getStyleWrapper().getStyle();
             Rule temp = new Rule(style.getLayer());
             temp.setName(s);
             Legend leg = LegendFactory.getLegend(
                     temp.getCompositeSymbolizer().getSymbolizerList().get(0));
-            ILegendPanel ilp = legendsPanel.associatePanel(leg);
+            ILegendPanel ilp = simpleStyleEditor.associatePanel(leg);
             List<ILegendPanel> list = new ArrayList<ILegendPanel>();
             list.add(ilp);
             RuleWrapper nrw = new RuleWrapper(temp, list);
             tm.addElement(tm.getRoot(), nrw, cur);
-            legendsPanel.legendAdded(nrw.getPanel());
+            simpleStyleEditor.legendAdded(nrw.getPanel());
         }
     }
 

@@ -85,7 +85,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Adam Gouge
  * @author others
  */
-public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
+public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext {
 
     /**
      * Tree to display legends.
@@ -142,7 +142,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
     /**
      * Translator.
      */
-    private static final I18n I18N = I18nFactory.getI18n(LegendsPanel.class);
+    private static final I18n I18N = I18nFactory.getI18n(SimpleStyleEditor.class);
 
     /**
      * Constructor
@@ -152,7 +152,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
      * @param layer Layer
      * @param style Style
      */
-    public LegendsPanel(MapTransform mt,
+    public SimpleStyleEditor(MapTransform mt,
                         Type type,
                         ILayer layer,
                         Style style) {
