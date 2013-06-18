@@ -1,5 +1,6 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
@@ -12,6 +13,7 @@ import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelInterval;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorConfigurationPanel;
+import org.orbisgis.view.toc.actions.cui.legends.stats.Thresholds;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -30,6 +32,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     private static final I18n I18N = I18nFactory.getI18n(PnlAbstractCategorized.class);
     private Integer classNumber;
     private ColorConfigurationPanel colorConfig;
+    private Thresholds thresholds;
     /**
      * The default number of classes in a classification.
      */
@@ -87,36 +90,20 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         return I18N.tr("Interval classification");
     }
 
-    /**
-     * Gets the minimum and maximum of the associated DataSource in the column whose name is {@code fieldName}.
-     * @param fieldName The field name
-     * @return The min and max in a Set. If something went wrong, the Set will contain {@link Double#POSITIVE_INFINITY}
-     * and {@link Double#NEGATIVE_INFINITY}.
-     */
-    public List<Double> computeExtrema(String fieldName){
+    private Thresholds computeStats(String fieldName){
+        DescriptiveStatistics stats = new DescriptiveStatistics();
         DataSource ds = getDataSource();
-        double min = Double.POSITIVE_INFINITY;
-        double max = Double.NEGATIVE_INFINITY;
         try {
             int fieldIndex = ds.getMetadata().getFieldIndex(fieldName);
             long rowCount = ds.getRowCount();
             for(long i=0; i<rowCount; i++){
-                Value val = ds.getFieldValue(i, fieldIndex);
-                Double d = val.getAsDouble();
-                if(d<min){
-                    min = d;
-                }
-                if(d>max){
-                    max =d;
-                }
+                Value val = ds.getFieldValue(i,fieldIndex);
+                stats.addValue(val.getAsDouble());
             }
         } catch (DriverException e) {
             LOGGER.warn(I18N.tr("The application has ended unexpectedly"));
         }
-        List<Double> ret = new ArrayList<Double>();
-        ret.add(min);
-        ret.add(max);
-        return ret;
+        return new Thresholds(stats,fieldName);
     }
 
     /**
@@ -163,11 +150,14 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
      * This method is called by EventHandler when clicking on the button dedicated to classification creation.
      */
     public void onComputeClassification(){
-        List<Double> doubles = computeExtrema(getFieldName());
-        TreeSet<Double> thresholds = getThresholds(doubles);
-        if(!thresholds.isEmpty()){
+        String name = getFieldName();
+        if(thresholds == null || !thresholds.getFieldName().equals(name)){
+            thresholds = computeStats(getFieldName());
+        }
+        SortedSet<Double> set = thresholds.getEqualIntervals(classNumber);
+        if(!set.isEmpty()){
             MappedLegend<Double,U> cl = createColouredClassification(
-                    thresholds,
+                    set,
                     new NullProgressMonitor(),
                     colorConfig.getStartColor(),
                     colorConfig.getEndCol());
@@ -175,26 +165,6 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
             cl.setName(getLegend().getName());
             setLegend(cl);
         }
-    }
-
-    /**
-     * Gets the thresholds. Simple method, will be replaced when stats will be used.
-     * @param extrema
-     * @return
-     */
-    private TreeSet<Double> getThresholds(List<Double> extrema){
-        Double d1 = extrema.get(0);
-        Double d2 = extrema.get(1);
-        Double min = d1 < d2 ? d1 : d2;
-        Double max = d1 > d2 ? d1 : d2;
-        TreeSet<Double> ret = new TreeSet<Double>();
-        if(min < Double.POSITIVE_INFINITY && max > Double.NEGATIVE_INFINITY){
-            Double step = (max - min) / classNumber;
-            for(int i = 0; i<classNumber;i++){
-                ret.add(min+step*i);
-            }
-        }
-        return ret;
     }
 
     /**

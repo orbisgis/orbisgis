@@ -23,7 +23,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
-import java.util.TreeSet;
+import java.util.SortedSet;
 
 /**
  * @author Alexis Guéganno
@@ -255,7 +255,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters> exte
      * @param end the ending color for the gradient
      * @return A fresh unique value analysis.
      */
-    public final MappedLegend<K,U> createColouredClassification(TreeSet<K> set, org.orbisgis.progress.ProgressMonitor pm,
+    public final MappedLegend<K,U> createColouredClassification(SortedSet<K> set, org.orbisgis.progress.ProgressMonitor pm,
                                                                        Color start, Color end) {
         U lp = ((MappedLegend<K,U>)getLegend()).getFallbackParameters();
         MappedLegend<K,U> newRL = getEmptyAnalysis();
