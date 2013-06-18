@@ -28,6 +28,8 @@
  */
 package org.orbisgis.legend.structure.categorize;
 
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
@@ -37,13 +39,16 @@ import org.orbisgis.core.renderer.se.parameter.string.Categorize2String;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This class embeds a StringParameter that can be either a literal or a categorize. It is presented as a categorize
  * whatever the inner parameter is really. The main goal is to provide a transparent way to manage complex interval
  * classification without much pain while keeping the SE models simple.
  * @author Alexis Guéganno
  */
-public class CategorizedString extends CategorizedLegend{
+public class CategorizedString extends CategorizedLegend<String>{
     private StringParameter parameter = new StringLiteral();
 
     /**
@@ -109,12 +114,7 @@ public class CategorizedString extends CategorizedLegend{
         }
     }
 
-    /**
-     * Gets the String value associated to the key d. If d is not a valid key in the underlying mapping, this method
-     * returns null.
-     * @param d The key whose associated value is wanted
-     * @return The value associated to {@code d} or null if {@code d} is not a valid key.
-     */
+    @Override
     public String get(Double d){
         if(parameter instanceof StringLiteral){
             return Double.isInfinite(d) && d < 0 ? ((StringLiteral) parameter).getValue(null) : null;
@@ -128,11 +128,7 @@ public class CategorizedString extends CategorizedLegend{
         }
     }
 
-    /**
-     * Put the couple (d,v) in this categorization.
-     * @param d The key
-     * @param v The value
-     */
+    @Override
     public void put(Double d, String v){
         if(d == null || v == null){
             throw new NullPointerException("Null values are not allowed in this mapping.");
@@ -148,6 +144,7 @@ public class CategorizedString extends CategorizedLegend{
                             new RealAttribute(getField()));
                     c2s.put(new RealLiteral(d),new StringLiteral(v));
                     parameter = c2s;
+                    fireTypeChanged();
                 } catch (ParameterException pe){
                     throw new IllegalStateException("We've failed at retrieved the value of a literal. " +
                             "Something is going really wrong here.");
@@ -158,12 +155,7 @@ public class CategorizedString extends CategorizedLegend{
         }
     }
 
-    /**
-     * Removes the mapping associated to d, if it exists and if it does not let the mapping empty.
-     * @param d The threshold we want to remove.
-     * @return  The value of the removed mapping, if any.
-     * @throws IllegalStateException if, for whatever reason, one the key of the mapping appears not to be a literal.
-     */
+    @Override
     public String remove(Double d){
         if(d==null){
             throw new NullPointerException("The input threshold must not be null");
@@ -191,5 +183,25 @@ public class CategorizedString extends CategorizedLegend{
         }
     }
 
+
+    @Override
+    public String getFromLower(Double d){
+        if(d==null){
+            throw new NullPointerException("The input threshold must not be null");
+        }
+        if(parameter instanceof StringLiteral){
+            return ((StringLiteral) parameter).getValue(null);
+        } else {
+            String col = get(d);
+            if(col == null){
+                Categorize2String c2s = (Categorize2String) parameter;
+                Map<String,Value> inp = new HashMap<String, Value>();
+                inp.put(getField(), ValueFactory.createValue(d));
+                return c2s.getValue(inp);
+            } else {
+                return col;
+            }
+        }
+    }
 
 }

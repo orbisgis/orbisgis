@@ -165,6 +165,12 @@ public class CategorizedColorTest {
 
     }
 
+    @Test
+    public void testGetFromLower() throws Exception {
+        CategorizedColor cs = new CategorizedColor(getCategorize2Color());
+        assertTrue(cs.getFromLower(25.0).equals(Color.decode("#332133")));
+    }
+
 
     public class DummyTypeListener implements TypeListener {
         public int count = 0;

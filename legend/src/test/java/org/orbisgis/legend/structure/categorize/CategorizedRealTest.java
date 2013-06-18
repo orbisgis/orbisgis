@@ -159,6 +159,12 @@ public class CategorizedRealTest {
 
     }
 
+    @Test
+    public void testGetFromLower() throws Exception {
+        CategorizedReal cs = new CategorizedReal(getCategorize2Real());
+        assertTrue(cs.getFromLower(25.0).equals(24.0));
+    }
+
 
     public class DummyTypeListener implements TypeListener {
         public int count = 0;
