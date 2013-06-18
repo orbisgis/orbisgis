@@ -29,7 +29,6 @@ package org.orbisgis.view.toc.actions.cui;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -46,7 +45,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
 import org.gdms.data.types.Type;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
@@ -326,7 +324,6 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
                 EventHandler.create(PropertyChangeListener.class, this,
                                     "onNodeNameChange", ""));
         JScrollPane jsp = new JScrollPane(stylePanel.getComponent());
-        jsp.setBorder(new LineBorder(Color.GREEN, 2));
         dialogContainer.add(stylePanel.getId(), jsp);
     }
 
@@ -375,7 +372,6 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
         // Add the rule wrapper panel to the container after putting it in
         // a new JScrollPane.
         JScrollPane jsp = new JScrollPane(rulePanel.getComponent());
-        jsp.setBorder(new LineBorder(Color.BLUE, 2));
         dialogContainer.add(rulePanel.getId(), jsp);
     }
 
@@ -416,7 +412,6 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
         // Add the symbol panel to the container after putting it in a
         // new JScrollPane.
         JScrollPane jsp = new JScrollPane(symbPanel.getComponent());
-        jsp.setBorder(new LineBorder(Color.RED, 2));
         dialogContainer.add(symbPanel.getId(), jsp);
         return symbPanel;
     }
