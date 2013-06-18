@@ -27,12 +27,9 @@
  */
 package org.orbisgis.view.toc.actions.cui;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -42,6 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
@@ -139,6 +137,10 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      */
     private static final I18n I18N = I18nFactory.
             getI18n(SimpleStyleEditor.class);
+    /**
+     * Scroll increment (To fix slow scrolling).
+     */
+    private static final int INCREMENT = 16;
 
     /**
      * Constructor
@@ -307,8 +309,22 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
         stylePanel.addPropertyChangeListener(
                 EventHandler.create(PropertyChangeListener.class, this,
                                     "onNodeNameChange", ""));
-        JScrollPane jsp = new JScrollPane(stylePanel.getComponent());
-        dialogContainer.add(stylePanel.getId(), jsp);
+        dialogContainer.add(stylePanel.getId(), getJScrollPane(stylePanel));
+    }
+
+    /**
+     * Gets a new {@link JScrollPane} on the given panel, setting the scroll
+     * increments appropriately.
+     *
+     * @param panel Panel
+     *
+     * @return A new {@link JScrollPane} on the given panel
+     */
+    private JScrollPane getJScrollPane(ISELegendPanel panel) {
+        JScrollPane jsp = new JScrollPane(panel.getComponent());
+        jsp.getHorizontalScrollBar().setUnitIncrement(INCREMENT);
+        jsp.getVerticalScrollBar().setUnitIncrement(INCREMENT);
+        return jsp;
     }
 
     /**
@@ -355,8 +371,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
                                     "onNodeNameChange", ""));
         // Add the rule wrapper panel to the container after putting it in
         // a new JScrollPane.
-        JScrollPane jsp = new JScrollPane(rulePanel.getComponent());
-        dialogContainer.add(rulePanel.getId(), jsp);
+        dialogContainer.add(rulePanel.getId(), getJScrollPane(rulePanel));
     }
 
     /**
@@ -395,8 +410,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
         symbPanel.setId(createNewID());
         // Add the symbol panel to the container after putting it in a
         // new JScrollPane.
-        JScrollPane jsp = new JScrollPane(symbPanel.getComponent());
-        dialogContainer.add(symbPanel.getId(), jsp);
+        dialogContainer.add(symbPanel.getId(), getJScrollPane(symbPanel));
         return symbPanel;
     }
 
@@ -483,8 +497,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
     public void legendAdded(ISELegendPanel panel) {
         panel.initialize(this);
         panel.setId(createNewID());
-        JScrollPane jsp = new JScrollPane(panel.getComponent());
-        dialogContainer.add(panel.getId(), jsp);
+        dialogContainer.add(panel.getId(), getJScrollPane(panel));
         showDialogForCurrentlySelectedLegend();
     }
 
