@@ -82,16 +82,16 @@ public class IOSpatialFunctionTest extends FunctionTest {
                 
                 assertNotNull(ret.getCRS());
                 
-                assertTrue(ret.getCRS().getCode().equals("4326"));
+                assertTrue(ret.getCRS().getCode().equals("EPSG:4326"));
                 
                 ret = st.evaluate(dsf, new Value[] { ValueFactory.createValue(wkt),
                                  ValueFactory.createValue(4326)});
                 
                 assertNotNull(ret.getCRS());
-                assertTrue(ret.getCRS().getCode().equals("4326"));                
+                assertTrue(ret.getCRS().getCode().equals("EPSG:4326"));                
                 ret = st.evaluate(dsf, new Value[] { ValueFactory.createValue(wkt),
                                  ValueFactory.createValue(4326)});
                 
                 assertNotNull(ret.getCRS());
-                assertTrue(ret.getCRS().getCode().equals("4326"));        }
+                assertTrue(ret.getCRS().getCode().equals("EPSG:4326"));        }
 }
