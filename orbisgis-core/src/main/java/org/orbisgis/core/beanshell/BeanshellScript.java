@@ -43,6 +43,7 @@ import org.orbisgis.core.plugin.BundleReference;
 import org.orbisgis.core.plugin.BundleTools;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceReference;
 
 /**
  *
@@ -105,16 +106,21 @@ public final class BeanshellScript {
                                 "[" + bundle.getBundleId() + "]\t"
                                         + BundleTools.getStateString(bundle.getState())
                                         + bundle.getSymbolicName());
+                        // List services
+                        ServiceReference[] serviceReferences = bundle.getRegisteredServices();
+                        if(serviceReferences!=null) {
+                            for(ServiceReference service : serviceReferences) {
+                                System.out.println(
+                                        "\t"+service.toString());
+                            }
+                        }
                     }
                 }
                 // Init BDD
                 try {
-                    Thread.sleep(1000);
                     mainContext.initDataBase("","");
                 } catch (SQLException ex) {
                     throw new IllegalArgumentException("Cannot connect to the database "+ex.getLocalizedMessage(),ex);
-                } catch (InterruptedException e) {
-                    //
                 }
         }
 

@@ -207,25 +207,25 @@
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
                     <version>${h2-version}</version>
-                    <scope>test</scope>
+                    <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.h2gis</groupId>
                     <artifactId>h2spatial-ext</artifactId>
                     <version>1.0-SNAPSHOT</version>
-                    <scope>test</scope>
+                    <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.h2gis</groupId>
                     <artifactId>h2spatial</artifactId>
-                    <version>1.0.1</version>
-                    <scope>test</scope>
+                    <version>${h2-spatial-version}</version>
+                    <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.h2gis</groupId>
                     <artifactId>h2spatial-api</artifactId>
                     <version>1.0.1</version>
-                    <scope>test</scope>
+                    <scope>provided</scope>
                 </dependency>
             </dependencies>
         <pluginRepositories>
