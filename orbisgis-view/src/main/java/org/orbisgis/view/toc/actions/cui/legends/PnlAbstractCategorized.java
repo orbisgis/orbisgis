@@ -7,10 +7,13 @@ import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.renderer.se.parameter.Categorize;
+import static org.orbisgis.core.renderer.se.parameter.Categorize.CategorizeMethod;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelInterval;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorConfigurationPanel;
 import org.orbisgis.view.toc.actions.cui.legends.stats.Thresholds;
@@ -38,6 +41,8 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
      */
     public static final Integer DEFAULT_CLASS_NUMBER = 5;
     private JTextField jtf;
+    private JButton createCl;
+    private JComboBox<ContainerItemProperties> methodCombo;
 
     /**
      * Initialize a {@code JComboBo} whose values are set according to the
@@ -117,7 +122,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         JPanel sec = new JPanel();
         JLabel numbLab = new JLabel(I18N.tr("Classes:"));
         JLabel clLab = new JLabel(I18N.tr("Method:"));
-        JButton createCl = new JButton(I18N.tr("Create Classification"));
+        createCl = new JButton(I18N.tr("Create Classification"));
         if(classNumber == null){
             classNumber = DEFAULT_CLASS_NUMBER;
         }
@@ -129,7 +134,6 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         FocusListener focusListener = EventHandler.create(FocusListener.class, this, "updateFieldContent");
         jtf.addActionListener(textListener);
         jtf.addFocusListener(focusListener);
-        JComboBox<String> methods = new JComboBox<String>(new String[]{"Equal Intervals"});
         JPanel btnPanel = new JPanel();
         createCl.setActionCommand("click");
         btnPanel.add(createCl);
@@ -139,11 +143,36 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         sec.add(numbLab);
         sec.add(jtf);
         sec.add(clLab);
-        sec.add(methods);
+        sec.add(getMethodCombo());
         sec.add(btnPanel);
         ret.add(colorConfig);
         ret.add(sec);
         return ret;
+    }
+
+    /**
+     * Gets the JComboBox used to select the classification method.
+     * @return The JComboBox.
+     */
+    public JComboBox<ContainerItemProperties> getMethodCombo(){
+        if(methodCombo == null){
+            ContainerItemProperties[] categorizeMethods = getCategorizeMethods();
+            methodCombo = new JComboBox<ContainerItemProperties>(categorizeMethods);
+            ActionListener acl = EventHandler.create(ActionListener.class, this, "methodChanged");
+            methodCombo.addActionListener(acl);
+            methodCombo.setSelectedItem(CategorizeMethod.MANUAL.toString());
+            methodChanged();
+        }
+        return methodCombo;
+    }
+
+    /**
+     * The selected classification has changed. Called by EventHandler.
+     */
+    public void methodChanged(){
+        ContainerItemProperties selectedItem = (ContainerItemProperties) methodCombo.getSelectedItem();
+        boolean b = CategorizeMethod.valueOf(selectedItem.getKey()).equals(CategorizeMethod.MANUAL);
+        createCl.setEnabled(!b);
     }
 
     /**
@@ -176,6 +205,32 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
             classNumber = Integer.valueOf(jtf.getText());
         } catch(NumberFormatException nfe){
             jtf.setText(classNumber.toString());
+        }
+    }
+
+    /**
+     * Gets the value contained in the {@code Methods} enum with their
+     * internationalized representation in a {@code
+     * ContainerItemProperties} array.
+     * @return {@link Categorize.CategorizeMethod} in an array of containers.
+     */
+    public ContainerItemProperties[] getCategorizeMethods(){
+        CategorizeMethod[] us = CategorizeMethod.values();
+        ArrayList<ContainerItemProperties> temp = new ArrayList<ContainerItemProperties>();
+        for (CategorizeMethod u : us) {
+            if (isSupported(u)) {
+                ContainerItemProperties cip = new ContainerItemProperties(u.name(), u.toLocalizedString());
+                temp.add(cip);
+            }
+        }
+        return temp.toArray(new ContainerItemProperties[temp.size()]);
+    }
+
+    private boolean isSupported(CategorizeMethod cm){
+        switch(cm){
+            case EQUAL_INTERVAL : return true;
+            case MANUAL : return true;
+            default : return false;
         }
     }
 }
