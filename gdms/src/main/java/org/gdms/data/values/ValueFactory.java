@@ -41,12 +41,12 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 import org.apache.log4j.Logger;
+import org.cts.crs.CoordinateReferenceSystem;
 import org.gdms.data.stream.GeoStream;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.grap.model.GeoRaster;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Factory to create {@link Value} instances from basic types.

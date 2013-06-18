@@ -37,12 +37,12 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 import java.util.ArrayList;
 import java.util.List;
+import org.cts.crs.CoordinateReferenceSystem;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.spatial.geometry.AbstractAggregateSpatialFunction;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Compute the union of current and all previous geometries

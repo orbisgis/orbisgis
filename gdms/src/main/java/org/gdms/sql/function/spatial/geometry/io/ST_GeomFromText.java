@@ -1,11 +1,10 @@
 /**
- * The GDMS library (Generic Datasource Management System)
- * is a middleware dedicated to the management of various kinds of
- * data-sources such as spatial vectorial data or alphanumeric. Based
- * on the JTS library and conform to the OGC simple feature access
- * specifications, it provides a complete and robust API to manipulate
- * in a SQL way remote DBMS (PostgreSQL, H2...) or flat files (.shp,
- * .csv...).
+ * The GDMS library (Generic Datasource Management System) is a middleware
+ * dedicated to the management of various kinds of data-sources such as spatial
+ * vectorial data or alphanumeric. Based on the JTS library and conform to the
+ * OGC simple feature access specifications, it provides a complete and robust
+ * API to manipulate in a SQL way remote DBMS (PostgreSQL, H2...) or flat files
+ * (.shp, .csv...).
  *
  * Gdms is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
@@ -28,16 +27,15 @@
  *
  * For more information, please consult: <http://www.orbisgis.org/>
  *
- * or contact directly:
- * info@orbisgis.org
+ * or contact directly: info@orbisgis.org
  */
 package org.gdms.sql.function.spatial.geometry.io;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.cts.crs.CRSException;
+import org.cts.crs.CoordinateReferenceSystem;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -47,75 +45,70 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
-import org.geotools.referencing.CRS;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Convert a WKT string value into a geometry value
  */
 public final class ST_GeomFromText extends AbstractScalarSpatialFunction {
 
-        private static WKTReader reader = new WKTReader();
+    private static WKTReader reader = new WKTReader();
 
-        @Override
-        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
-                if (args[0].isNull()) {
-                        return ValueFactory.createNullValue();
-                } else {
-                        final Geometry geom;
-                        try {
-                                geom = reader.read(args[0].toString());
-                        } catch (ParseException e) {
-                                throw new FunctionException("Cannot parse the WKT.", e);
-                        }
-                        
-                        if (args.length > 1 && !args[1].isNull()) {
-                                try {
-                                        String crsStr = args[1].toString();
-                                        CoordinateReferenceSystem crs = CRS.decode("EPSG:"+crsStr);
-                                        return ValueFactory.createValue(geom, crs);
-                                } catch (NoSuchAuthorityCodeException ex) {
-                                         throw  new FunctionException("No such authority code", ex);
-                                } catch (FactoryException ex) {
-                                        throw  new FunctionException("Cannot find a factory", ex);
-                                }
-                        } else {
-                                return ValueFactory.createValue(geom);
-                        }
+    @Override
+    public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
+        if (args[0].isNull()) {
+            return ValueFactory.createNullValue();
+        } else {
+            final Geometry geom;
+            try {
+                geom = reader.read(args[0].toString());
+            } catch (ParseException e) {
+                throw new FunctionException("Cannot parse the WKT.", e);
+            }
+
+            if (args.length > 1 && !args[1].isNull()) {
+                try {
+                    String crsStr = args[1].toString();
+                    CoordinateReferenceSystem crs = DataSourceFactory.getCRSFactory().getCRS("EPSG:" + crsStr);
+                    return ValueFactory.createValue(geom, crs);
+                } catch (CRSException ex) {
+                    throw new FunctionException("No such authority code", ex);
                 }
-        }
 
-        @Override
-        public String getName() {
-                return "ST_GeomFromText";
+            } else {
+                return ValueFactory.createValue(geom);
+            }
         }
+    }
 
-        @Override
-        public int getType(int[] types) {
-                return Type.GEOMETRY;
-        }
+    @Override
+    public String getName() {
+        return "ST_GeomFromText";
+    }
 
-        @Override
-        public String getDescription() {
-                return "Convert a WKT string value into a geometry value";
-        }
+    @Override
+    public int getType(int[] types) {
+        return Type.GEOMETRY;
+    }
 
-        @Override
-        public String getSqlOrder() {
-                return "select ST_GeomFromText(myField) from myTable;";
-        }
+    @Override
+    public String getDescription() {
+        return "Convert a WKT string value into a geometry value";
+    }
 
-        @Override
-        public FunctionSignature[] getFunctionSignatures() {
-                return new FunctionSignature[]{
-                                new BasicFunctionSignature(getType(null),
-                                ScalarArgument.STRING),
-                                new BasicFunctionSignature(getType(null),
-                                ScalarArgument.STRING, ScalarArgument.STRING),
-                                new BasicFunctionSignature(getType(null),
-                                ScalarArgument.STRING, ScalarArgument.INT)
-                        };
-        }
+    @Override
+    public String getSqlOrder() {
+        return "select ST_GeomFromText(myField) from myTable;";
+    }
+
+    @Override
+    public FunctionSignature[] getFunctionSignatures() {
+        return new FunctionSignature[]{
+            new BasicFunctionSignature(getType(null),
+            ScalarArgument.STRING),
+            new BasicFunctionSignature(getType(null),
+            ScalarArgument.STRING, ScalarArgument.STRING),
+            new BasicFunctionSignature(getType(null),
+            ScalarArgument.STRING, ScalarArgument.INT)
+        };
+    }
 }
