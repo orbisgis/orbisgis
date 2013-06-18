@@ -40,6 +40,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealFunction;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.thematic.categorize.CategorizedPoint;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
 import org.orbisgis.legend.thematic.recode.RecodedPoint;
@@ -85,7 +86,7 @@ public class PointSymbolizerAnalyzer extends SymbolizerTypeAnalyzer {
                             if(p instanceof Recode){
                                     return new RecodedPoint(sym);
                             } else if(p instanceof Categorize){
-                                    throw new UnsupportedOperationException("Not yet !");
+                                return new CategorizedPoint(sym);
                             } else if(p instanceof RealParameter && validateInterpolateForProportionalPoint((RealParameter) p)){
                                     //We need to analyze the ViewBox and its Interpolate instance(s)
                                     return new ProportionalPoint(sym);

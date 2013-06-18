@@ -28,9 +28,7 @@
  */
 package org.orbisgis.legend.structure.categorize;
 
-import org.orbisgis.core.renderer.se.parameter.Categorize;
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
-import org.orbisgis.core.renderer.se.parameter.ValueReference;
+import org.orbisgis.core.renderer.se.parameter.*;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.legend.structure.parameter.AbstractAttributeLegend;
@@ -40,11 +38,13 @@ import org.orbisgis.legend.structure.recode.type.TypeListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author alexis
  */
-public abstract class CategorizedLegend extends AbstractAttributeLegend implements ParameterLegend {
+public abstract class CategorizedLegend<U> extends AbstractAttributeLegend implements ParameterLegend {
 
     protected String field = "";
     private List<TypeListener> listeners = new ArrayList<TypeListener>();
@@ -87,21 +87,78 @@ public abstract class CategorizedLegend extends AbstractAttributeLegend implemen
         }
     }
 
-  /**
-   * Adds a listener that will be notified when {@link CategorizedLegend#   fireTypeChanged} is called.
-   * @param l The listener that will be added.
-   */
-  public void addListener(TypeListener l){
-      listeners.add(l);
-  }
+    /**
+     * Gets the U value associated to the key d. If d is not a valid key in the underlying mapping, this method
+     * returns null.
+     * @param d The key whose associated value is wanted
+     * @return The value associated to {@code d} or null if {@code d} is not a valid key.
+     */
+    public abstract U get(Double d);
 
-  /**
-   * Notifies that the actual type of the inner {@code SeParameter} has changed.
-   */
-  public void fireTypeChanged(){
-      TypeEvent te = new TypeEvent(this);
-      for(TypeListener tl : listeners){
-          tl.typeChanged(te);
-      }
-  }
+    /**
+     * Removes the mapping associated to d, if it exists and if it does not let the mapping empty.
+     * @param d The threshold we want to remove.
+     * @return  The value of the removed mapping, if any.
+     * @throws IllegalStateException if, for whatever reason, one the key of the mapping appears not to be a literal.
+     */
+    public abstract U remove(Double d);
+
+    /**
+     * Put the couple (d,v) in this categorization.
+     * @param d The key
+     * @param val The value
+     */
+    public abstract void put(Double d, U val);
+
+    /**
+     * Gets the value associated to d, if any, or to the lower threshold.
+     * @return The value associated to d in the mapping, if d is one of its keys. Otherwise, the returned value
+     * can be expressed as max( k in keys where k < d).
+     */
+    public abstract U getFromLower(Double d);
+
+    public Set<Double> getKeys(){
+        SeParameter c = getParameter();
+        TreeSet<Double> ret = new TreeSet<Double>();
+        if(c instanceof Literal){
+            ret.add(Double.NEGATIVE_INFINITY);
+        } else {
+            Categorize cat = (Categorize) c;
+            int num = ((Categorize) c).getNumClasses();
+            for(int i = 0; i<num; i++){
+                try {
+                    ret.add(cat.getThreshold(i).getValue(null));
+                } catch (ParameterException e) {
+                    throw new IllegalStateException("We should need additional values to retrieve our thresholds.");
+                }
+            }
+        }
+        return ret;
+    }
+
+    /**
+    * Adds a listener that will be notified when {@link CategorizedLegend#   fireTypeChanged} is called.
+    * @param l The listener that will be added.
+    */
+    public void addListener(TypeListener l){
+        listeners.add(l);
+    }
+
+    /**
+    * Notifies that the actual type of the inner {@code SeParameter} has changed.
+    */
+    public void fireTypeChanged(){
+          TypeEvent te = new TypeEvent(this);
+          for(TypeListener tl : listeners){
+              tl.typeChanged(te);
+          }
+    }
+
+    /**
+     * Implementation of the visitor pattern.
+     * @param cpv The external visitor.
+     */
+    public void acceptVisitor(CategorizedParameterVisitor cpv){
+        cpv.visit(this);
+    }
 }

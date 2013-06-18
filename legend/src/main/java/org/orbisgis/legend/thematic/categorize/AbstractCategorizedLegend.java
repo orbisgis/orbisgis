@@ -28,11 +28,68 @@
  */
 package org.orbisgis.legend.thematic.categorize;
 
+import org.orbisgis.legend.structure.categorize.CategorizedLegend;
+import org.orbisgis.legend.structure.categorize.CategorizedParameterVisitor;
+import org.orbisgis.legend.structure.parameter.ParameterVisitor;
 import org.orbisgis.legend.thematic.SymbolParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedSet;
 
 /**
  * @author alexis
  */
 public abstract class AbstractCategorizedLegend <U extends SymbolParameters> extends MappedLegend<Double,U> {
+
+    /**
+     * Gets all the legends that are used to configure this Categorized symbol
+     * @return A list of CategorizedLegend instances.
+     */
+    public abstract List<CategorizedLegend> getCategorizedLegend();
+
+
+    @Override
+    public void applyGlobalVisitor(ParameterVisitor pv){
+        applyGlobalVisitor((CategorizedParameterVisitor)pv);
+    }
+
+    /**
+     * Apply the given visitor on all the inner CategorizedLegend instances.
+     * @param cpv The input visitor.
+     */
+    public void applyGlobalVisitor(CategorizedParameterVisitor cpv){
+        for(CategorizedLegend rl : getCategorizedLegend()){
+            rl.acceptVisitor(cpv);
+        }
+
+    }
+
+    /**
+     * Gets the lowest threshold strictly greater than {@code input} in this mapping.
+     * @param input The input value
+     * @return The lowest threshold strictly greater than {@code input} or {@code Double.POSITIVE_INFINITY}.
+     */
+    public Double getNextThreshold(Double input){
+        SortedSet<Double> keys = keySet();
+        Iterator<Double> it = keys.iterator();
+        while(it.hasNext()){
+            Double v = it.next();
+            if(v>input){
+                return v;
+            }
+        }
+        return Double.POSITIVE_INFINITY;
+    }
+
+    /**
+     * Gets a key not already used in the analysis.
+     * @return max(keySet()) + 1
+     */
+    public Double getNotUsedKey() {
+        SortedSet<Double> keys = keySet();
+        Double max = keys.last();
+        return max + 1.0;
+    }
 }

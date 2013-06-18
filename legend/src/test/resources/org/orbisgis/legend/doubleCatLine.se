@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:fes="http://www.opengis.net/fes/2.1" xmlns:ns4="http://www.w3.org/1999/xlink">
+	<Rule>
+		<LineSymbolizer>
+			<Name>Fond</Name>
+			<PenStroke>
+				<SolidFill>
+					<Color>
+						<Categorize fallbackValue="#111111">
+							<LookupValue>
+								<fes:ValueReference>IRMOY98</fes:ValueReference>
+							</LookupValue>
+							<Value>#113355</Value>
+							<Threshold>70000</Threshold>
+							<Value>#dd66ee</Value>
+							<Threshold>100000</Threshold>
+							<Value>#ffaa99</Value>
+						</Categorize>
+					</Color>
+					<Opacity>0.75</Opacity>
+				</SolidFill>
+				<Width>
+					<Categorize fallbackValue="1">
+						<LookupValue>
+							<fes:ValueReference>IRMOY98</fes:ValueReference>
+						</LookupValue>
+						<Value>.5</Value>
+						<Threshold>70000</Threshold>
+						<Value>1</Value>
+						<Threshold>80000</Threshold>
+						<Value>1.25</Value>
+						<Threshold>100000</Threshold>
+						<Value>1.5</Value>
+					</Categorize>
+				</Width>
+				<DashArray>2 2</DashArray>
+			</PenStroke>
+		</LineSymbolizer>
+	</Rule>
+</Style>

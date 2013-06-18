@@ -83,25 +83,6 @@ public class RecodedPenStroke implements RecodedLegendStructure {
             dashLegend.addListener(tlZ);
         }
 
-        public RecodedPenStroke(PenStroke stroke,
-                        RecodedSolidFillLegend fillLegend,
-                        RecodedReal widthLegend,
-                        RecodedString dashLegend) {
-                this.stroke = stroke;
-                this.fillLegend = fillLegend;
-                this.widthLegend = widthLegend;
-                this.dashLegend = dashLegend;
-                TypeListener tl = new TypeListener() {
-                    @Override
-                    public void typeChanged(TypeEvent te) {
-                        replaceWidth(te.getSource().getParameter());
-                    }
-                };
-                widthLegend.addListener(tl);
-                TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceDash", "getSource.getParameter");
-                dashLegend.addListener(tlZ);
-        }
-
         /**
          * Replace the {@code StringParameter} embedded in the inner PenStroke with {@code sp}. This method is called
          * when a type change occurs in the associated {@link RecodedString} happens.

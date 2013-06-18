@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:fes="http://www.opengis.net/fes/2.1" xmlns:ns4="http://www.w3.org/1999/xlink">
+	<Rule>
+		<AreaSymbolizer>
+			<Name>Fond</Name>
+			<SolidFill>
+				<Color>
+					<Categorize fallbackValue="#111111">
+						<LookupValue>
+							<fes:ValueReference>IRMOY98</fes:ValueReference>
+						</LookupValue>
+						<Value>#113355</Value>
+						<Threshold>70000</Threshold>
+						<Value>#dd66ee</Value>
+						<Threshold>100000</Threshold>
+						<Value>#ffaa99</Value>
+					</Categorize>
+				</Color>
+				<Opacity>.5</Opacity>
+			</SolidFill>
+			<PenStroke>
+				<SolidFill>
+					<Color>
+						<Categorize fallbackValue="#111111">
+							<LookupValue>
+								<fes:ValueReference>IRMOY98</fes:ValueReference>
+							</LookupValue>
+							<Value>#223344</Value>
+							<Threshold>70000</Threshold>
+							<Value>#dd77ee</Value>
+							<Threshold>110000</Threshold>
+							<Value>#ffaa00</Value>
+						</Categorize>
+					</Color>
+					<Opacity>.2</Opacity>
+				</SolidFill>
+				<Width>
+					<Categorize fallbackValue="1">
+						<LookupValue>
+							<fes:ValueReference>IRMOY98</fes:ValueReference>
+						</LookupValue>
+						<Value>2</Value>
+						<Threshold>75000</Threshold>
+						<Value>7</Value>
+						<Threshold>100000</Threshold>
+						<Value>10</Value>
+					</Categorize>
+				</Width>
+				<DashArray>
+					<Categorize fallbackValue="1 1">
+						<LookupValue>
+							<fes:ValueReference>IRMOY98</fes:ValueReference>
+						</LookupValue>
+						<Value>1 2 1</Value>
+						<Threshold>70000</Threshold>
+						<Value>1 3 1 2 5</Value>
+						<Threshold>75000</Threshold>
+						<Value>1 6 8 1</Value>
+						<Threshold>100000</Threshold>
+						<Value>5 5</Value>
+					</Categorize>
+				</DashArray>
+			</PenStroke>
+		</AreaSymbolizer>
+	</Rule>
+</Style>
