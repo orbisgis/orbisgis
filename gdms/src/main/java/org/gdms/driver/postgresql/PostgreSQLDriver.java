@@ -37,8 +37,10 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTWriter;
 import java.sql.*;
 import java.util.*;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
+import org.cts.crs.CRSException;
+import org.cts.crs.CoordinateReferenceSystem;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.*;
@@ -48,10 +50,6 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.jdbc.*;
 import org.gdms.source.SourceManager;
-import org.geotools.referencing.CRS;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.postgis.jts.JtsBinaryParser;
 import org.postgresql.PGConnection;
 
@@ -173,13 +171,12 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                 // -1 means no value for postgis < 2.0
                                 // 0 means no value for postgis >= 2.0
                                 if (srid != -1 && srid != 0) {
-                                        try {
-                                                crs = CRS.decode("EPSG:" + srid);
-                                        } catch (NoSuchAuthorityCodeException ex) {
-                                                 throw new DriverException("Cannot find the authority for the coordinate reference system: " + srid, ex);
-                                        } catch (FactoryException ex) {
-                                                throw new DriverException("Cannot find a factory for EPSG:" + srid, ex);
-                                        }
+                                    try {
+                                        crs = DataSourceFactory.getCRSFactory().getCRS("EPSG:" + srid);
+                                    } catch (CRSException ex) {
+                                        LOG.warn("Cannot create the coordinate reference system", ex);                                       
+                                    }
+                                        
                                 }
                                 geometryFields.add(geomFieldName);
                                 geometryTypes.put(geomFieldName, res.getString("type"));

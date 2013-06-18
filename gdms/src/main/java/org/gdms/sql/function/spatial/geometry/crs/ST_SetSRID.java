@@ -33,6 +33,8 @@
  */
 package org.gdms.sql.function.spatial.geometry.crs;
 
+import org.cts.crs.CRSException;
+import org.cts.crs.CoordinateReferenceSystem;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -42,14 +44,12 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
-import org.geotools.referencing.CRS;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
- * Sets the internal CRS of a geometry using an EPSG code or a authority + code
- * ie : ST_SetSRID(the_geom, 4326) or ST_SetSRID(the_geom, 'EPSG:4326');
+ * Sets the internal CRS of a geometry using an EPSG code (integer) 
+ * or a string "authority:code"
+ * ie : ST_SetSRID(the_geom, 4326) or ST_SetSRID(the_geom, 'EPSG:4326'); 
+ * More information at http://spatialreference.org/
  *
  * Note that this has nothing to do with the CRS constraint on a table column.
  *
@@ -57,54 +57,47 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class ST_SetSRID extends AbstractScalarSpatialFunction {
 
-        private CoordinateReferenceSystem crs;
-
-        @Override
-        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
-                if (crs == null) {
-                        String epsgCode = null;
-                        if (args[1].getType() == Type.INT) {
-                                int code = args[1].getAsInt();
-                                if (code == -1) {
-                                        throw new FunctionException("-1 is an invalid SRID");
-                                } else {
-                                      epsgCode = "EPSG:"+code ;
-                                }
-                        } else {
-                                epsgCode = args[1].getAsString();
-                        }
-                        try {                                
-                                crs = CRS.decode(epsgCode);
-                        } catch (NoSuchAuthorityCodeException ex) {
-                                throw new FunctionException("Cannot find an authority for " + epsgCode, ex);
-                        } catch (FactoryException ex) {
-                                throw new FunctionException("Cannot find a factory for " + epsgCode, ex);
-                        }
-                }
-
-                return ValueFactory.createValue(args[0].getAsGeometry(), crs);
+    @Override
+    public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
+        String epsgCode = null;
+        if (args[1].getType() == Type.INT) {
+            int code = args[1].getAsInt();
+            if (code == -1) {
+                throw new FunctionException("-1 is an invalid SRID");
+            } else {
+                epsgCode = "EPSG:" + code;
+            }
+        } else {
+            epsgCode = args[1].getAsString();
         }
-
-        @Override
-        public String getDescription() {
-                return "Sets the internal CRS of a geometry without reprojecting it.";
+        try {
+            CoordinateReferenceSystem crs = DataSourceFactory.getCRSFactory().getCRS(epsgCode);
+            return ValueFactory.createValue(args[0].getAsGeometry(), crs);
+        } catch (CRSException ex) {
+            throw new FunctionException("Cannot find an authority for " + epsgCode, ex);
         }
+    }
 
-        @Override
-        public String getName() {
-                return "ST_SetSRID";
-        }
+    @Override
+    public String getDescription() {
+        return "Sets the internal CRS of a geometry without reprojecting it.";
+    }
 
-        @Override
-        public String getSqlOrder() {
-                return "SELECT ST_SetSRID(the_geom, 4326 or 'EPSG:4326') FROM table;";
-        }
+    @Override
+    public String getName() {
+        return "ST_SetSRID";
+    }
 
-        @Override
-        public FunctionSignature[] getFunctionSignatures() {
-                return new FunctionSignature[]{
-                                new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY,
-                                ScalarArgument.INT),new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY,
-                                ScalarArgument.STRING)};
-        }
+    @Override
+    public String getSqlOrder() {
+        return "SELECT ST_SetSRID(the_geom, 4326 | 'EPSG:4326') FROM table;";
+    }
+
+    @Override
+    public FunctionSignature[] getFunctionSignatures() {
+        return new FunctionSignature[]{
+            new BasicFunctionSignature(Type.GEOMETRY, ScalarArgument.GEOMETRY,
+            ScalarArgument.INT), new BasicFunctionSignature(Type.GEOMETRY, ScalarArgument.GEOMETRY,
+            ScalarArgument.STRING)};
+    }
 }

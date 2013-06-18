@@ -1,11 +1,10 @@
 /**
- * The GDMS library (Generic Datasource Management System)
- * is a middleware dedicated to the management of various kinds of
- * data-sources such as spatial vectorial data or alphanumeric. Based
- * on the JTS library and conform to the OGC simple feature access
- * specifications, it provides a complete and robust API to manipulate
- * in a SQL way remote DBMS (PostgreSQL, H2...) or flat files (.shp,
- * .csv...).
+ * The GDMS library (Generic Datasource Management System) is a middleware
+ * dedicated to the management of various kinds of data-sources such as spatial
+ * vectorial data or alphanumeric. Based on the JTS library and conform to the
+ * OGC simple feature access specifications, it provides a complete and robust
+ * API to manipulate in a SQL way remote DBMS (PostgreSQL, H2...) or flat files
+ * (.shp, .csv...).
  *
  * Gdms is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
@@ -28,21 +27,14 @@
  *
  * For more information, please consult: <http://www.orbisgis.org/>
  *
- * or contact directly:
- * info@orbisgis.org
+ * or contact directly: info@orbisgis.org
  */
 package org.gdms.data.types;
 
-
-
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.gdms.data.crs.SpatialReferenceSystem;
+import org.cts.crs.CoordinateReferenceSystem;
+import org.cts.parser.prj.PrjWriter;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
 
 /**
  * Indicates that the field is part of the primary key.
@@ -50,58 +42,68 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public final class CRSConstraint extends AbstractConstraint {
 
-        private CoordinateReferenceSystem coordinateReferenceSystem;
+    private CoordinateReferenceSystem coordinateReferenceSystem;
 
-        public CRSConstraint(CoordinateReferenceSystem constraintValue) {
-                coordinateReferenceSystem = constraintValue;
-        }
+    /**
+     * Build a CRS constraint using a {@code CoordinateReferenceSystem}
+     *
+     * @param constraintValue
+     */
+    public CRSConstraint(CoordinateReferenceSystem constraintValue) {
+        coordinateReferenceSystem = constraintValue;
+    }
 
-        public CRSConstraint(byte[] constraintBytes) {       
-                try {
-                        coordinateReferenceSystem =  SpatialReferenceSystem.parse(new String(constraintBytes))  ;
-                } catch (FactoryException ex) {
-                        throw new RuntimeException("Cannot create the CRS", ex);
-                }                
-        }        
-        
-        
-        /**
-         * For use only as a sample in ConstraintFactory.
-         */
-        CRSConstraint() {
-        }
+    /**
+     * Build a CRS constraint base on the bynary representtion of a
+     * {@code CoordinateReferenceSystem}
+     *
+     * @param constraintValue
+     */
+    public CRSConstraint(byte[] constraintBytes) {
+        coordinateReferenceSystem = DataSourceFactory.getCRSFactory().createFromPrj(new String(constraintBytes));
+    }
 
-        @Override
-        public int getConstraintCode() {
-                return Constraint.CRS;
-        }
+    /**
+     * For use only as a sample in ConstraintFactory.
+     */
+    public CRSConstraint() {
+    }
 
-        @Override
-        public boolean allowsFieldRemoval() {
-                return true;
-        }
+    @Override
+    public int getConstraintCode() {
+        return Constraint.CRS;
+    }
 
-        @Override
-        public String check(Value value) {
-                return null;
-        }
+    @Override
+    public boolean allowsFieldRemoval() {
+        return true;
+    }
 
-        @Override
-        public String getConstraintValue() {
-                return coordinateReferenceSystem.toString();
-        }
+    @Override
+    public String check(Value value) {
+        return null;
+    }
 
-        @Override
-        public byte[] getBytes() {
-                return coordinateReferenceSystem.toWKT().getBytes();
-        }
+    @Override
+    public String getConstraintValue() {
+        return coordinateReferenceSystem.toString();
+    }
 
-        @Override
-        public int getType() {
-                return Constraint.CONSTRAINT_TYPE_CRS;
-        }
+    @Override
+    public byte[] getBytes() {
+        return PrjWriter.crsToWKT(coordinateReferenceSystem).getBytes();
+    }
 
-        public CoordinateReferenceSystem getCRS() {
-                return coordinateReferenceSystem;
-        }
+    @Override
+    public int getType() {
+        return Constraint.CONSTRAINT_TYPE_CRS;
+    }
+
+    /**
+     * Return the {@code CoordinateReferenceSystem} used by this contraint
+     * @return 
+     */
+    public CoordinateReferenceSystem getCRS() {
+        return coordinateReferenceSystem;
+    }
 }

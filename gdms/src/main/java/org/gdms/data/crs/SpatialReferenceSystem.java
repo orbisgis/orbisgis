@@ -31,18 +31,20 @@
  */
 package org.gdms.data.crs;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;
-import java.io.*;
-import org.gdms.data.values.GeometryValue;
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
+import com.vividsolutions.jts.geom.util.GeometryTransformer;
+import java.util.List;
+import org.cts.CoordinateOperation;
+import org.cts.IllegalCoordinateException;
+import org.cts.crs.CRSException;
+import org.cts.crs.GeodeticCRS;
+import org.cts.op.CoordinateOperationFactory;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.geotools.geometry.jts.JTS;
-import org.geotools.referencing.CRS;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 
 /**
  *
@@ -51,98 +53,81 @@ import org.opengis.referencing.operation.TransformException;
  */
 public class SpatialReferenceSystem {
 
-        private MathTransform mathTransform;
-        private CoordinateReferenceSystem targetCRS;
+    private GeodeticCRS targetCRS;
+    private CoordinateOperation coordinateOperation;
 
-        public SpatialReferenceSystem(String sourceCRS, String targetCRS) throws NoSuchAuthorityCodeException, FactoryException {
-                init(CRS.decode(sourceCRS), CRS.decode(targetCRS));
+    public SpatialReferenceSystem(String sourceCRS, String targetCRS) throws CRSException {
+        init((GeodeticCRS) DataSourceFactory.getCRSFactory().getCRS(sourceCRS), (GeodeticCRS) DataSourceFactory.getCRSFactory().getCRS(targetCRS));
+    }
+
+    public SpatialReferenceSystem(int sourceCRS, int targetCRS) throws CRSException {
+        init((GeodeticCRS) DataSourceFactory.getCRSFactory().getCRS("EPSG:" + sourceCRS), (GeodeticCRS) DataSourceFactory.getCRSFactory().getCRS("EPSG:" + targetCRS));
+    }
+
+    public SpatialReferenceSystem(GeodeticCRS sourceCRS, GeodeticCRS targetCRS) {
+        init(sourceCRS, targetCRS);
+    }
+
+    private void init(GeodeticCRS sourceCRS, GeodeticCRS targetCRS) {
+        this.targetCRS = targetCRS;
+        if ((sourceCRS != null) || (targetCRS != null)) {
+            List<CoordinateOperation> ops = CoordinateOperationFactory
+                    .createCoordinateOperations(sourceCRS, targetCRS);
+            if (!ops.isEmpty()) {
+                coordinateOperation = ops.get(0);
+            } else {
+                throw new RuntimeException("Cannot find a coordinate operation for"
+                        + "this transformation.");
+            }
+        } else {
+            throw new RuntimeException("The source or target coordinate "
+                    + "reference system cannot be null.");
         }
 
-        public SpatialReferenceSystem(int sourceCRS, int targetCRS) throws NoSuchAuthorityCodeException, FactoryException {
-                init(CRS.decode("EPSG:" + sourceCRS), CRS.decode("EPSG:" + targetCRS));
-        }
+    }
 
-        public SpatialReferenceSystem(CoordinateReferenceSystem sourceCRS, CoordinateReferenceSystem targetCRS) {
-                init(sourceCRS, targetCRS);
-        }
+    public CoordinateOperation getCoordinateOperationSequence() {
+        return coordinateOperation;
+    }
 
-        private void init(CoordinateReferenceSystem sourceCRS, CoordinateReferenceSystem targetCRS) {
-                this.targetCRS = targetCRS;
-                if ((sourceCRS != null) && (targetCRS != null)) {
+    public Value transform(Geometry geom) {
+        Geometry g = getGeometryTransformer().transform(geom);
+        return ValueFactory.createValue(g, targetCRS);
+    }
+
+    public GeometryTransformer getGeometryTransformer() {
+        GeometryTransformer gt = null;
+        if (gt == null) {
+            gt = new GeometryTransformer() {
+                @Override
+                protected CoordinateSequence transformCoordinates(
+                        CoordinateSequence cs, Geometry geom) {
+                    Coordinate[] cc = geom.getCoordinates();
+                    CoordinateSequence newcs = new CoordinateArraySequence(cc);
+                    for (int i = 0; i < cc.length; i++) {
+                        Coordinate c = cc[i];
                         try {
-                                mathTransform = CRS.findMathTransform(sourceCRS, targetCRS,
-                                        true);
-                        } catch (FactoryException ex) {
-                                throw new IllegalArgumentException("Cannot find transformation.", ex);
+                            if(Double.isNaN(c.z)){
+                                c.z=0;
+                            }                            
+                            double[] xyz = coordinateOperation
+                                    .transform(new double[]{c.x, c.y, c.z});
+                            newcs.setOrdinate(i, 0, xyz[0]);
+                            newcs.setOrdinate(i, 1, xyz[1]);
+                            if (xyz.length > 2) {
+                                newcs.setOrdinate(i, 2, xyz[2]);
+                            } else {
+                                newcs.setOrdinate(i, 2, Double.NaN);
+                            }
+                        } catch (IllegalCoordinateException ice) {
+                            ice.printStackTrace();
                         }
-                } else {
-                        throw new IllegalArgumentException("Source and target CRS cannot be null.");
+                    }
+                    return newcs;
                 }
-
+            };
         }
 
-        public MathTransform getMathTransform() {
-                return mathTransform;
-        }
-
-        public GeometryValue transform(GeometryValue geom) throws MismatchedDimensionException, TransformException {
-                Geometry g = JTS.transform(geom.getAsGeometry(), mathTransform);
-                return ValueFactory.createValue(g, targetCRS);
-        }
-
-        /**
-         * Creates a {@link CoordinateReferenceSystem} defined by an OGC WKT
-         * String (PRJ).
-         *
-         * @param stream
-         * @return a {@link CoordinateReferenceSystem}
-         * @throws UnsupportedParameterException if a PROJ.4 parameter is not
-         * supported
-         * @throws IOException
-         * @throws InvalidValueException if a parameter value is invalid
-         */
-        public static CoordinateReferenceSystem createFromPrj(InputStream stream) throws IOException, FactoryException {
-                BufferedReader r = new BufferedReader(new InputStreamReader(stream));
-                StringBuilder b = new StringBuilder();
-                while (r.ready()) {
-                        b.append(r.readLine());
-                }
-                return CRS.parseWKT(b.toString());
-        }
-
-        /**
-         * Creates a {@link CoordinateReferenceSystem} defined by an OGC WKT
-         * String (PRJ).
-         *
-         * @param file
-         * @return a {@link CoordinateReferenceSystem}
-         * @throws UnsupportedParameterException if a PROJ.4 parameter is not
-         * supported
-         * @throws IOException if there is a problem reading the file
-         * @throws InvalidValueException if a parameter value is invalid
-         */
-        public static CoordinateReferenceSystem createFromPrj(File file) throws IOException, FactoryException {
-                InputStream i = null;
-                CoordinateReferenceSystem crs;
-                try {
-                        i = new FileInputStream(file);
-                        crs = createFromPrj(i);
-                } finally {
-                        if (i != null) {
-                                i.close();
-                        }
-                }
-
-                return crs;
-        }
-        
-        /**
-         * 
-         * @param wkt
-         * @return
-         * @throws FactoryException 
-         */
-        public static CoordinateReferenceSystem parse(String wkt) throws FactoryException{
-                return CRS.parseWKT(wkt);               
-        }
+        return gt;
+    }
 }

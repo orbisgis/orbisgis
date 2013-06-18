@@ -39,11 +39,11 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Iterator;
+import org.cts.crs.CoordinateReferenceSystem;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A readable set of data. DataSet gives access to a set of rows of {@link Value} objects, grouped

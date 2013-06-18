@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.cts.crs.CoordinateReferenceSystem;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.crs.SpatialReferenceSystem;
 import org.gdms.data.schema.*;
@@ -50,8 +51,6 @@ import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.geometryUtils.GeometryClean;
 import org.gdms.source.SourceManager;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
@@ -161,7 +160,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
 
                         File prj = FileUtils.getFileWithExtension(file, "prj");
                         if (prj != null && prj.exists()) {
-                                crs = SpatialReferenceSystem.createFromPrj(prj);
+                                crs = DataSourceFactory.getCRSFactory().createFromPrj(prj);
                                 if (crs != null) {
                                         CRSConstraint cc = new CRSConstraint(crs);
                                         constraints = new Constraint[]{dc, cc};
@@ -176,9 +175,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         metadata.addField(0, "the_geom", gtype, constraints);
                         metadata.addAll(driver.getMetadata());
 
-                } catch (FactoryException e) {
-                        throw new DriverException(e);                
-                } catch (IOException e) {
+                }  catch (IOException e) {
                         throw new DriverException(e);
                 } catch (ShapefileException e) {
                         throw new DriverException(e);
