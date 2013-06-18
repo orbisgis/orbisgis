@@ -34,6 +34,7 @@ public class Thresholds {
         switch(method){
             case EQUAL_INTERVAL: return getEqualIntervals(classNumber);
             case STANDARD_DEVIATION: return getMeanStandardDev(classNumber);
+            case QUANTILES: return getQuantiles(classNumber);
             default: throw new UnsupportedOperationException("This method is not supported");
         }
     }
@@ -70,6 +71,24 @@ public class Thresholds {
         } else {
             return getMeanStandardDevOdd(classNumber);
         }
+    }
+
+    /**
+     * Retrieve the thresholds for a quantile classification. The first threshold is the minimum value of the input set.
+     * Thresholds are computed using the percentile computation capabilities of Apache commons-math.
+     * @param classNumber The number of classes.
+     * @return The thresholds.
+     */
+    public SortedSet<Double> getQuantiles(int classNumber){
+        Double step = 100/((double)classNumber+1.0);
+        TreeSet<Double> ret = new TreeSet<Double>();
+        Double min = stats.getMin();
+        ret.add(min);
+        for(int i=1; i<=classNumber; i++){
+            double p = min + i*step;
+            ret.add(stats.getPercentile(p));
+        }
+        return ret;
     }
 
     /**

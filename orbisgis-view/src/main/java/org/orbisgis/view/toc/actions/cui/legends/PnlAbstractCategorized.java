@@ -233,6 +233,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
             case EQUAL_INTERVAL : return true;
             case MANUAL : return true;
             case STANDARD_DEVIATION: return true;
+            case QUANTILES: return true;
             default : return false;
         }
     }
