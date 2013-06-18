@@ -44,6 +44,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 import org.gdms.data.types.Type;
 import org.orbisgis.core.layerModel.ILayer;
@@ -136,7 +137,8 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
     /**
      * Translator.
      */
-    private static final I18n I18N = I18nFactory.getI18n(SimpleStyleEditor.class);
+    private static final I18n I18N = I18nFactory.
+            getI18n(SimpleStyleEditor.class);
 
     /**
      * Constructor
@@ -147,63 +149,49 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      * @param style Style
      */
     public SimpleStyleEditor(MapTransform mt,
-                        Type type,
-                        ILayer layer,
-                        Style style) {
+                             Type type,
+                             ILayer layer,
+                             Style style) {
+        // Set the layout.
+        super(new BorderLayout());
 
-        // Initialize the first four paramters.
+        // Recover the first three paramters.
         this.mt = mt;
         this.type = type;
+        this.layer = layer;
+
+        // Get the geometry type and available legends.
         this.geometryType = (type == null)
                 ? SimpleGeometryType.ALL
                 : SimpleGeometryType.getSimpleType(type);
-
         this.availableLegends = getAvailableLegendPanels();
 
-        this.layer = layer;
-
-        // Set the layout.
-        setLayout(new GridBagLayout());
-
-        // Initialize the dialog container.
+        // Initialize the dialog container, adding the empty dialog.
         cardLayout = new CardLayout();
         dialogContainer = new JPanel(cardLayout);
         dialogContainer.setPreferredSize(new Dimension(600, 650));
-
-        // Add the layer tag and the dialog panel to the EAST side.
-        GridBagConstraints c1 = new GridBagConstraints();
-        c1.gridx = 1;
-        c1.gridy = 0;
-        c1.fill = GridBagConstraints.BOTH;
-        c1.gridwidth = 2;
-        c1.weightx = 1.0;
-        c1.weighty = 0.01;
-        add(getLayerTag(), c1);
-
-        // Add the empty dialog and the dialog container.
         addEmptyDialog();
-        GridBagConstraints c2 = new GridBagConstraints();
-        c2.gridx = 1;
-        c2.gridy = 1;
-        c2.fill = GridBagConstraints.BOTH;
-        c2.gridwidth = 2;
-        c2.weightx = 1.0;
-        c2.weighty = 1.0;
-        add(dialogContainer, c2);
+        // Prepare the right hand side, consisting of the layer tag
+        // above the dialog.
+        JPanel rightHandSide = new JPanel(new BorderLayout());
+        rightHandSide.add(getLayerTag(), BorderLayout.NORTH);
+        rightHandSide.add(dialogContainer, BorderLayout.CENTER);
 
-        // Initialize all panels.
+        // Add all panels.
         styleWrapper = addAllPanels(style);
 
-        // Initialize a new legend tree and add it to the WEST side.
+        // Initialize the legend tree.
         legendTree = new LegendTree(this);
-        GridBagConstraints c3 = new GridBagConstraints();
-        c3.gridx = 0;
-        c3.gridy = 0;
-        c3.fill = GridBagConstraints.BOTH;
-        c3.gridheight = 2;
-        c3.weightx = 1.0 / 3;
-        c3.weighty = 1.0;
-        add(legendTree, c3);
+
+        // Put everything inside a split pane.
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                                              legendTree, rightHandSide);
+        splitPane.setOneTouchExpandable(true);
+        splitPane.setDividerLocation(200);
+        Dimension minimumSize = new Dimension(100, 50);
+        legendTree.setMinimumSize(minimumSize);
+        dialogContainer.setMinimumSize(minimumSize);
+        add(splitPane, BorderLayout.CENTER);
     }
 
     /**
