@@ -73,11 +73,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * This {@link JPanel} contains all the needed information to build a user
- * interface for editing legends.
- *
- * It is currently the dialog that is displayed when the user clicks on "Simple
- * style edition".
+ * The Simple Style Editor user interface.
  *
  * @author Alexis Guéganno
  * @author Adam Gouge
