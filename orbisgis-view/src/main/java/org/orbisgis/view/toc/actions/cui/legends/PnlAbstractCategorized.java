@@ -16,6 +16,8 @@ import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelInterval;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorConfigurationPanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;
+import org.orbisgis.view.toc.actions.cui.legends.panels.ColorSchemeListCellRenderer;
 import org.orbisgis.view.toc.actions.cui.legends.stats.Thresholds;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -139,13 +141,16 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         btnPanel.add(createCl);
         ActionListener btn = EventHandler.create(ActionListener.class, this, "onComputeClassification");
         createCl.addActionListener(btn);
-
+        List<String> schemeNames = ColorScheme.rangeColorSchemeNames();
+        JComboBox schemes = new JComboBox(schemeNames.toArray(new String[schemeNames.size()]));
+        schemes.setRenderer(new ColorSchemeListCellRenderer());
         sec.add(numbLab);
         sec.add(jtf);
         sec.add(clLab);
         sec.add(getMethodCombo());
         sec.add(btnPanel);
         ret.add(colorConfig);
+        ret.add(schemes);
         ret.add(sec);
         return ret;
     }
