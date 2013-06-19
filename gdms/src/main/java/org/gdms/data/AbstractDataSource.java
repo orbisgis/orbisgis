@@ -39,6 +39,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.cts.crs.CoordinateReferenceSystem;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.stream.GeoStream;
@@ -49,7 +50,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Contains the DataSource methods that are executed by calling other DataSource

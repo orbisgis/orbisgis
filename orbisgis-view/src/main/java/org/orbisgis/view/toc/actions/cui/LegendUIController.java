@@ -262,7 +262,6 @@ public final class LegendUIController {
 	}
 
 	private void structureChanged(LegendUIComponent focusOn, boolean updateUI) {
-		//System.out.println("Structure Changed !");
 		//Thread.dumpStack();
 
 
@@ -273,7 +272,6 @@ public final class LegendUIController {
             topPanel.mountComponentForChildren();
 
 		} else {
-			System.out.println("Not able to found a root panel !");
 		}
 
 		if (mainPanel != null) {
@@ -294,7 +292,6 @@ public final class LegendUIController {
 		while (it.hasNext()) {
 			LegendUIComponent next = it.next();
 			if (next.isInlinedAndNotNull()) {
-				System.out.println ("   queue child" + next);
 				childrenQueue.add(next);
 			}
 		}
@@ -308,8 +305,6 @@ public final class LegendUIController {
 		while (!childrenQueue.isEmpty()) {
 
 			LegendUIComponent child = childrenQueue.remove(0);
-
-			System.out.println ("   Process" + child);
 
 			child.extractFromParent();
 
@@ -339,7 +334,6 @@ public final class LegendUIController {
 				LegendUIComponent next = it.next();
 				if (next.isInlinedAndNotNull()) {
 					childrenQueue.add(next);
-					System.out.println ("     Queue.." + next);
 				}
 			}
 
@@ -372,7 +366,6 @@ public final class LegendUIController {
 					LegendUIComponent child = findChildToDetach(current);
 
 					if (child != null) {
-						System.out.println (" Nest: " + child);
 						// Now queue the two panel
 						child.extractFromParent();
 						mainQueue.add(current);

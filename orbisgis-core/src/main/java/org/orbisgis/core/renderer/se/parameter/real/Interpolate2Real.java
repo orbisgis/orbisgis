@@ -98,7 +98,7 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
          * <code>fid</code> in <code>sds</code>. The resulting value is obtained by
          * using the value from the <code>DataSet</code>, the 
          * interpolation points and the interpolation method.
-         * @param ds
+         * @param sds
          * @param fid The index where to search in the original source.
          * @return
          * The interpolated <code>Double</code> value.
@@ -144,8 +144,7 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
          * stored in {@code map}.
          * The resulting value is obtained by using the value from the  {@code
          * DataSet}, the interpolation points and the interpolation method.
-         * @param ds
-         * @param fid The index where to search in the original source.
+         * @param map
          * @return
          * The interpolated <code>Double</code> value.
          */
@@ -189,7 +188,7 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
          * Set the default value to be returned if an input can't be processed.
          * Once set, the <code>RealParameterContext</code> of <code>l</code> is set
          * to the one of this <code>Interpolate2Real</code> instance.
-         * @param fallbackValue 
+         * @param l
          */
         @Override
         public void setFallbackValue(RealLiteral l) {

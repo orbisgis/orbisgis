@@ -29,7 +29,6 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
@@ -43,14 +42,14 @@ import org.orbisgis.legend.thematic.recode.RecodedPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.common.ContainerItemProperties;
-import org.orbisgis.view.background.BackgroundListener;
-import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.background.DefaultJobId;
-import org.orbisgis.view.background.JobId;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
-import org.orbisgis.view.toc.actions.cui.legends.model.*;
+import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorRecodedPoint;
+import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorUniqueValue;
+import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorRecodedPoint;
+import org.orbisgis.view.toc.actions.cui.legends.model.TableModelRecodedPoint;
+import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -58,7 +57,6 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -76,7 +74,6 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     private CanvasSE fallbackPreview;
     private JComboBox fieldCombo;
     private JCheckBox strokeBox;
-    private BackgroundListener background;
     private ContainerItemProperties[] uoms;
 
     @Override
@@ -128,7 +125,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         i++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getCreateClassificationPanel(), gbc);
-        //Classification generator
+        //Enable Stroke
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = i;
@@ -347,22 +344,9 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         return "";
     }
 
-    /**
-     * Called to build a classification from the given data source and field. Makes a SELECT DISTINCT field FROM ds;
-     * and feeds the legend that has been cleared prior to that.
-     */
-    public void onCreateClassification(ActionEvent e){
-        if(e.getActionCommand().equals("click")){
-            String fieldName = fieldCombo.getSelectedItem().toString();
-            SelectDistinctJob selectDistinct = new SelectDistinctJob(fieldName);
-            BackgroundManager bm = Services.getService(BackgroundManager.class);
-            JobId jid = new DefaultJobId(JOB_NAME);
-            if(background == null){
-                background = new OperationListener();
-                bm.addBackgroundListener(background);
-            }
-            bm.nonBlockingBackgroundOperation(jid, selectDistinct);
-        }
+    @Override
+    public String getFieldName(){
+        return fieldCombo.getSelectedItem().toString();
     }
 
     /**
@@ -392,13 +376,10 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     }
 
     private JPanel getUOMCombo(){
-        JPanel pan = new JPanel();
-        JComboBox jcb = getLineUomCombo(((RecodedPoint)getLegend()));
+        UomCombo jcb = getLineUomCombo(((RecodedPoint) getLegend()));
         ActionListener aclUom = EventHandler.create(ActionListener.class, this, "updatePreview", "source");
         jcb.addActionListener(aclUom);
-        pan.add(new JLabel(I18N.tr("Unit of measure - width :")));
-        pan.add(jcb);
-        return pan;
+        return jcb;
     }
 
     /**
@@ -406,30 +387,15 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
      * @return The JComboBox with a JLabel in a JPanel.
      */
     private JPanel getSymbolUOMCombo(){
-        JPanel pan = new JPanel();
-        JComboBox jcb = getPointUomCombo();
-        pan.add(new JLabel(I18N.tr("Unit of measure - size :")));
-        pan.add(jcb);
-        return pan;
-    }
-
-
-    /**
-     * ComboBox to configure the unit of measure used to draw th stroke.
-     * @return A JComboBox the user can use to set the unit of measure of the symbol's dimensions.
-     */
-    private JComboBox getPointUomCombo(){
-        uoms= getUomProperties();
-        String[] values = new String[uoms.length];
-        for (int i = 0; i < values.length; i++) {
-                values[i] = I18N.tr(uoms[i].toString());
-        }
-        final JComboBox jcc = new JComboBox(values);
+        uoms = getUomProperties();
+        UomCombo puc = new UomCombo(((RecodedPoint)getLegend()).getSymbolUom(),
+                uoms,
+                I18N.tr("Unit of measure - size :"));
         ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex");
-        jcc.addActionListener(acl2);
-        jcc.setSelectedItem(((RecodedPoint)getLegend()).getSymbolUom().toString().toUpperCase());
-        return jcc;
+        puc.addActionListener(acl2);
+        return puc;
     }
+
     /**
      * Sets the underlying graphic to use the ith element of the combo box
      * as its uom. Used when changing the combo box selection.

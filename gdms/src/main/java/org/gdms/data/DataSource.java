@@ -38,6 +38,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Iterator;
+import org.cts.crs.CoordinateReferenceSystem;
 import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
@@ -53,7 +54,6 @@ import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
 import org.grap.model.GeoRaster;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A data source currently registered in Gdms. A DataSource is the object needed to manipulate some data

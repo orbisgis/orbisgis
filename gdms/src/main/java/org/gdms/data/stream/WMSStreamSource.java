@@ -33,7 +33,6 @@
  */
 package org.gdms.data.stream;
 
-import org.geotools.util.Version;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -73,7 +72,7 @@ import java.util.Set;
  * @author Vincent Dépériers
  * @author Alexis Guéganno
  */
-public class WMSStreamSource implements Serializable {
+public final class WMSStreamSource implements Serializable {
         private static final int DEFAULT_PORT = 80;
         private static final long serialVersionUID = 144456789L;
         public static final String SERVICE_NAME = "wms";
@@ -82,7 +81,7 @@ public class WMSStreamSource implements Serializable {
         /** Image type ex:image/png */
         public static final String OUTPUTFORMAT_PARAMETER = "format";
         /** CRS replace SRS from this version */
-        public static final Version CRS_BEGINNING_VERSION = new Version("1.3.0");
+        public static final WMSVersion CRS_BEGINNING_VERSION = WMSVersion.fromString("1.3.0");
         /** Coordinate reference system ex:EPSG:27572 Version &gt;= 1.3.0 */
         public static final String CRS_PARAMETER = "crs"; // Version >= 1.3.0
         /** Spatial reference system ex:EPSG:27572 Version &lt; 1.3.0 */
@@ -131,7 +130,7 @@ public class WMSStreamSource implements Serializable {
         private String host;
         private int port;
         private String path="";
-        private Version version;
+        private WMSVersion version;
         private Map<String,String> wmsParameters = new HashMap<String, String>();
         private Map<String,String> otherParameters = new HashMap<String, String>();
 
@@ -179,7 +178,7 @@ public class WMSStreamSource implements Serializable {
                 wmsParameters.put(LAYER_PARAMETER,layerName);
                 wmsParameters.put(SERVICE_PARAMETER,service);
                 wmsParameters.put(OUTPUTFORMAT_PARAMETER,imageFormat);
-                if(this.version.compareTo(CRS_BEGINNING_VERSION)<0) {
+                if(this.version.equals(WMSVersion.VERSION_1_3_0)) {
                     wmsParameters.put(SRS_PARAMETER,crs);
                 } else {
                     wmsParameters.put(CRS_PARAMETER,crs);
@@ -192,7 +191,7 @@ public class WMSStreamSource implements Serializable {
          */
         public void setVersion(String version) {
             wmsParameters.put(VERSION_PARAMETER,version);
-            this.version = new Version(version);
+            this.version = WMSVersion.fromString(version);
         }
 
         /**
@@ -270,12 +269,12 @@ public class WMSStreamSource implements Serializable {
          * @return
          */
         private String getQuery() {
-            if(version.compareTo(CRS_BEGINNING_VERSION)<0) {
-                return URIUtility.getConcatenatedParameters(
-                        wmsParameters, SERVICE_PARAMETER, LAYER_PARAMETER, SRS_PARAMETER, VERSION_PARAMETER, OUTPUTFORMAT_PARAMETER);
-            } else {
+            if(version.equals(WMSVersion.VERSION_1_3_0)) {
                 return URIUtility.getConcatenatedParameters(
                         wmsParameters, SERVICE_PARAMETER, LAYER_PARAMETER, CRS_PARAMETER, VERSION_PARAMETER, OUTPUTFORMAT_PARAMETER);
+            } else {
+                return URIUtility.getConcatenatedParameters(
+                        wmsParameters, SERVICE_PARAMETER, LAYER_PARAMETER, SRS_PARAMETER, VERSION_PARAMETER, OUTPUTFORMAT_PARAMETER);
             }
         }
 
@@ -412,10 +411,10 @@ public class WMSStreamSource implements Serializable {
                 return getReferenceSystem();
         }
         private String getReferenceSystem() {
-            if(version.compareTo(CRS_BEGINNING_VERSION)<0) {
-                return wmsParameters.get(SRS_PARAMETER);
-            } else {
+            if(version.equals(WMSVersion.VERSION_1_3_0)) {
                 return wmsParameters.get(CRS_PARAMETER);
+            } else {
+                return wmsParameters.get(SRS_PARAMETER);
             }
         }
         /**

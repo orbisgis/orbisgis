@@ -42,7 +42,7 @@ import javax.swing.*;
 public class LegendListRenderer implements ListCellRenderer {
 
 	private LegendListRenderPanel ourJPanel = null;
-	private LegendsPanel legendsPanel;
+	private SimpleStyleEditor editor;
 
 	private static final Color DESELECTED = Color.white;
 
@@ -51,10 +51,10 @@ public class LegendListRenderer implements ListCellRenderer {
         /**
          * Build a new {@code ListCellRenderer} dedicated to the rendering of
          * {@code Legend} elements and affiliated.
-         * @param legendsPanel
+         * @param editor
          */
-	public LegendListRenderer(LegendsPanel legendsPanel) {
-		this.legendsPanel = legendsPanel;
+	public LegendListRenderer(SimpleStyleEditor editor) {
+		this.editor = editor;
 	}
 
 	@Override
@@ -107,7 +107,7 @@ public class LegendListRenderer implements ListCellRenderer {
 				boolean isSelected, boolean cellHasFocus) {
 			jCheckBox.setVisible(true);
 
-//			if (legendsPanel.getLegends()[legendIndex].isVisible()) {
+//			if (editor.getLegends()[legendIndex].isVisible()) {
 				jCheckBox.setSelected(true);
 //			} else {
 //				jCheckBox.setSelected(false);

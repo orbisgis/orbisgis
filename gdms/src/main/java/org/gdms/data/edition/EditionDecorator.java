@@ -955,7 +955,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
         public void isCommiting(String name, Object source) throws DriverException {
                 if (isModified() && name.equals(getName()) && (source != this)) {
                         throw new DriverException("Cannot commit the source. "
-                                + "Another edition already in process");
+                                + "Already editing in another process.");
                 }
         }
 

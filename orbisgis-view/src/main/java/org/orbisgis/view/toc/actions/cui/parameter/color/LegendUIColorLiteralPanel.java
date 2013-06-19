@@ -69,7 +69,6 @@ public abstract class LegendUIColorLiteralPanel extends LegendUIComponent implem
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
-				System.out.println("Picker !");
 
 				ColorPicker pick = new ColorPicker(color.getColor(null, -1));
 

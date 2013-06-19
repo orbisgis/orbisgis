@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:fes="http://www.opengis.net/fes/2.1" xmlns:ns4="http://www.w3.org/1999/xlink">
+	<Rule>
+		<PointSymbolizer>
+			<Name>Fond</Name>
+			<MarkGraphic>
+				<WellKnownName>
+					<Categorize fallbackValue="CIRCLE">
+						<LookupValue>
+							<fes:ValueReference>IRMOY98</fes:ValueReference>
+						</LookupValue>
+						<Value>SQUARE</Value>
+						<Threshold>70000</Threshold>
+						<Value>STAR</Value>
+						<Threshold>100000</Threshold>
+						<Value>CROSS</Value>
+					</Categorize>
+				</WellKnownName>
+				<ViewBox>
+					<Width>
+						<Categorize fallbackValue="5">
+							<LookupValue>
+								<fes:ValueReference>IRMOY98</fes:ValueReference>
+							</LookupValue>
+							<Value>6</Value>
+							<Threshold>70000</Threshold>
+							<Value>7</Value>
+							<Threshold>100000</Threshold>
+							<Value>8</Value>
+						</Categorize>
+					</Width>
+					<Height>5</Height>
+				</ViewBox>
+				<SolidFill>
+					<Color>
+						<Categorize fallbackValue="#111111">
+							<LookupValue>
+								<fes:ValueReference>IRMOY98</fes:ValueReference>
+							</LookupValue>
+							<Value>#113355</Value>
+							<Threshold>70000</Threshold>
+							<Value>#dd66ee</Value>
+							<Threshold>100000</Threshold>
+							<Value>#ffaa99</Value>
+						</Categorize>
+					</Color>
+					<Opacity>.5</Opacity>
+				</SolidFill>
+			</MarkGraphic>
+		</PointSymbolizer>
+	</Rule>
+</Style>

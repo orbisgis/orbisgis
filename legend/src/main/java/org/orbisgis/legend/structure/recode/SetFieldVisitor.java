@@ -28,11 +28,14 @@
  */
 package org.orbisgis.legend.structure.recode;
 
+import org.orbisgis.legend.structure.categorize.CategorizedLegend;
+import org.orbisgis.legend.structure.categorize.CategorizedParameterVisitor;
+
 /**
  * Sets the field name of the visited RecodedLegend to the name given at instanciation time.
  * @author alexis
  */
-public class SetFieldVisitor implements RecodedParameterVisitor {
+public class SetFieldVisitor implements RecodedParameterVisitor, CategorizedParameterVisitor{
 
     private String name;
 
@@ -47,6 +50,11 @@ public class SetFieldVisitor implements RecodedParameterVisitor {
 
     @Override
     public void visit(RecodedLegend legend) {
+        legend.setField(name);
+    }
+
+    @Override
+    public void visit(CategorizedLegend legend) {
         legend.setField(name);
     }
 }

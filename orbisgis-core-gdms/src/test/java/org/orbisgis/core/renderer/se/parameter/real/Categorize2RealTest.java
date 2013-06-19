@@ -54,14 +54,14 @@ public class Categorize2RealTest extends AbstractTest {
         @Test
         public void testFromJAXB() throws Exception {
                 Categorize2Real c2r = getCategorize();
-                assertTrue(c2r.getClassValue(0).getValue(null, 0) == 0.3);
-                assertTrue(c2r.getClassValue(1).getValue(null, 0) == 0.4);
-                assertTrue(c2r.getClassValue(2).getValue(null, 0) == 0.45);
-                assertTrue(c2r.getClassValue(3).getValue(null, 0) == 0.5);
-                assertTrue(c2r.getClassValue(4).getValue(null, 0) == 0.55);
-                assertTrue(c2r.getClassValue(5).getValue(null, 0) == 0.6);
-                assertTrue(c2r.getClassValue(6).getValue(null, 0) == 0.7);
-                assertTrue(c2r.getClassValue(7).getValue(null, 0) == 0.8);
+                assertTrue(c2r.get(0).getValue(null, 0) == 0.3);
+                assertTrue(c2r.get(1).getValue(null, 0) == 0.4);
+                assertTrue(c2r.get(2).getValue(null, 0) == 0.45);
+                assertTrue(c2r.get(3).getValue(null, 0) == 0.5);
+                assertTrue(c2r.get(4).getValue(null, 0) == 0.55);
+                assertTrue(c2r.get(5).getValue(null, 0) == 0.6);
+                assertTrue(c2r.get(6).getValue(null, 0) == 0.7);
+                assertTrue(c2r.get(7).getValue(null, 0) == 0.8);
         }
 
         @Test

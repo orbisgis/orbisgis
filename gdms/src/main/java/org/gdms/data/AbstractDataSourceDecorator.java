@@ -34,6 +34,7 @@
 package org.gdms.data;
 
 import java.util.Iterator;
+import org.cts.crs.CoordinateReferenceSystem;
 import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
@@ -45,7 +46,6 @@ import org.gdms.driver.DataSet;
 import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A base class for any DataSource decorator.

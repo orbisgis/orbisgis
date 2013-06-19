@@ -76,16 +76,4 @@ public abstract class AbstractRecodedLegend<U extends SymbolParameters> extends 
         }
         return s;
     }
-
-    /**
-     * Sets the fallback configuration according to the one given in argument.
-     * @param fallback The new basis for the fallback configuration.
-     */
-    public abstract void setFallbackParameters(U fallback);
-
-    /**
-     * Gets the configuration used to draw features we can't get a value for in the map in the style .
-     * @return
-     */
-    public abstract U getFallbackParameters();
 }

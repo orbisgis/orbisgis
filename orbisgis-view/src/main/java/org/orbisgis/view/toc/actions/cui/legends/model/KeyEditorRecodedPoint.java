@@ -49,7 +49,7 @@ public class KeyEditorRecodedPoint extends KeyEditorUniqueValue<PointParameters>
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         setVal((String) value);
-        AbstractRecodedLegend<PointParameters> uv = ((TableModelRecodedPoint) table.getModel()).getUniqueValue();
+        AbstractRecodedLegend<PointParameters> uv = (AbstractRecodedLegend<PointParameters>) ((TableModelRecodedPoint) table.getModel()).getMappedLegend();
         setLegend(uv);
         getField().setText(getVal());
         return getField();

@@ -63,8 +63,6 @@ public class LegendUISymbolizerLevelPanel extends LegendUIAbstractPanel {
 		}
 
 		int max = Math.max(sum, maxLevel);
-
-		System.out.println ("Bornes: " + ((double)sum));
 		for (Rule r : rules){
 			List<Symbolizer> ss = r.getCompositeSymbolizer().getSymbolizerList();
 			for (Symbolizer s: ss){

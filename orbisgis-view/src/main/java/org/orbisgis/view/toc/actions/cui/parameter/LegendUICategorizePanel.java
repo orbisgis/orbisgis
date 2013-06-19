@@ -177,23 +177,20 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
             public void actionPerformed(ActionEvent e) {
                 // Since it's an abstract class, we have to guess effective type
                 // by checking the first class value type, which always exists.
-                SeParameter classValue = categorize.getClassValue(0);
-                //System.out.println("BTN ADD!!!");
+                SeParameter classValue = categorize.get(0);
                 if (classValue instanceof RealParameter) {
-                    categorize.addClass(new RealLiteral(1000.0), new RealLiteral(10.0));
+                    categorize.put(new RealLiteral(1000.0), new RealLiteral(10.0));
                 } else if (classValue instanceof ColorParameter) {
-                    categorize.addClass(new RealLiteral(1000.0), new ColorLiteral());
+                    categorize.put(new RealLiteral(1000.0), new ColorLiteral());
                 } else if (classValue instanceof StringParameter) {
-                    categorize.addClass(new RealLiteral(1000.0), new StringLiteral(""));
+                    categorize.put(new RealLiteral(1000.0), new StringLiteral(""));
                 }
             }
         });
 
         // classes
         for (int i = 0; i < categorize.getNumClasses(); i++) {
-            SeParameter classValue = categorize.getClassValue(i);
-
-            //System.out.println("CLASS VALUE IS " + classValue + " for class " + i);
+            SeParameter classValue = categorize.get(i);
             if (classValue instanceof RealParameter) {
                 values.add(new MetaRealValue(controller, this, (RealParameter) classValue, i));
             } else if (classValue instanceof ColorParameter) {
@@ -203,7 +200,7 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
             }
 
             if (i < categorize.getNumClasses() - 1) {
-                thresholds.add(new MetaRealThreshold(controller, this, categorize.getClassThreshold(i), i));
+                thresholds.add(new MetaRealThreshold(controller, this, categorize.getThreshold(i), i));
             }
         }
         literalChanged();
@@ -292,8 +289,9 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
     }
 
     @Override
-    public void classRemoved(int i) {
-        values.remove(i);
+    public void classRemoved(RealLiteral lit) {
+        int i = thresholds.indexOf(lit);
+        values.remove(lit);
 
         int ti = i - 1;
 
@@ -311,34 +309,20 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
     }
 
     @Override
-    public void classAdded(int i) {
-        SeParameter classValue = categorize.getClassValue(i);
+    public void classAdded(RealLiteral lit) {
+        int i = thresholds.indexOf(lit);
+        SeParameter classValue = categorize.get(lit);
         if (classValue instanceof RealParameter) {
-            values.add(i, new MetaRealValue(controller, this, (RealParameter) categorize.getClassValue(i), i));
+            values.add(i, new MetaRealValue(controller, this, (RealParameter) categorize.get(i), i));
         } else if (classValue instanceof ColorParameter) {
-            values.add(i, new MetaColor(controller, this, (ColorParameter) categorize.getClassValue(i), i));
+            values.add(i, new MetaColor(controller, this, (ColorParameter) categorize.get(i), i));
             literalChanged();
         } else if (classValue instanceof StringParameter) {
-            System.out.println("ADD META " + i);
-            System.out.println("   total was: " + values.size());
-            values.add(i, new MetaStringValue(controller, this, (StringParameter) categorize.getClassValue(i), i));
+            values.add(i, new MetaStringValue(controller, this, (StringParameter) categorize.get(i), i));
         }
-
-        //System.out.println("Add threshold: " + (i - 1));
-        thresholds.add(i - 1, new MetaRealThreshold(controller, this, categorize.getClassThreshold(i - 1), i));
+        thresholds.add(i - 1, new MetaRealThreshold(controller, this, categorize.getThreshold(i - 1), i));
 
         controller.structureChanged(this);
-    }
-
-    @Override
-    public void classMoved(int i, int j) {
-        //System.out.println("Moving ! " + i + " to " + j);
-        if (i < thresholds.size()) {
-            MetaRealThreshold c = thresholds.remove(i);
-            thresholds.add(j, c);
-        }
-        LegendUIAbstractMetaPanel c = values.remove(i);
-        values.add(j, c);
     }
 
     private void drawColorOnColorSpace(Graphics2D g2, LegendUIComponent comp,
@@ -365,7 +349,7 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
 
         // classes
         for (int i = 0; i < categorize.getNumClasses() - 1; i++) {
-            thresholds.add(new MetaRealThreshold(controller, this, categorize.getClassThreshold(i), i));
+            thresholds.add(new MetaRealThreshold(controller, this, categorize.getThreshold(i), i));
         }
         controller.structureChanged(this);
     }
@@ -384,15 +368,12 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
             try {
                 g2.setColor(Color.black);
                 g2.setStroke(new BasicStroke(3f));
-
-                //System.out.println("LiteralChanged");
                 for (LegendUIAbstractMetaPanel v : values) {
                     drawColorOnColorSpace(g2, v.getCurrentComponent(), colorSpace);
                 }
                 drawColorOnColorSpace(g2, fallbackPanel, colorSpace);
 
             } catch (ParameterException ex) {
-                //System.out.println("Exeption" + ex);
             }
             DisplayJAI dj = new DisplayJAI(colorSpace);
             right.add(dj);
@@ -448,7 +429,7 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
 
         @Override
         public void realChanged(RealParameter newReal) {
-            ((Categorize2Real) categorize).setClassValue(i, newReal);
+            ((Categorize2Real) categorize).setValue(i, newReal);
         }
 
         private void setIndex(int i) {
@@ -468,7 +449,7 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
 
         @Override
         public void stringChanged(StringParameter newString) {
-            categorize.setClassValue(i, newString);
+            categorize.setValue(i, newString);
         }
     }
 
@@ -484,7 +465,7 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
 
         @Override
         public void realChanged(RealParameter newReal) {
-            categorize.setClassThreshold(i, (RealLiteral)newReal);
+            categorize.setThreshold(i, (RealLiteral) newReal);
             fireChange();
         }
 
@@ -499,20 +480,18 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
 
         public MetaColor(LegendUIController controller, LegendUIComponent parent, ColorParameter value, int i) {
             super("color value", controller, parent, value, false);
-            //System.out.println("NEw meta color => i is " + i + " color is " + value.toString());
             this.i = i;
             init();
         }
 
         @Override
         public void colorChanged(ColorParameter newColor) {
-            //System.out.println("Fire change class value :" + i + " (" + newColor);
 
             if (newColor instanceof ColorLiteral) {
                 ((ColorLiteral) newColor).register((LiteralListener) parent);
             }
 
-            categorize.setClassValue(i, newColor);
+            categorize.setValue(i, newColor);
         }
 
         private void setIndex(int i) {
@@ -530,7 +509,7 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (categorize.removeClass(i)) {
+            if (categorize.remove(i)) {
                 fireChange();
             }
         }
