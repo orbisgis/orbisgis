@@ -409,9 +409,14 @@ public class LegendTree extends JPanel {
             LegendTreeModel tm = (LegendTreeModel) tree.getModel();
             tm.addElement(currentrw, copy, sl);
             // Automatically select the newly added legend in the tree.
-            tree.setSelectionPath(tree.getSelectionPath()
-                    .getParentPath()
-                    .pathByAddingChild(copy));
+            TreePath selectionPath = tree.getSelectionPath();
+            TreePath parent;
+            if(selectionPath.getLastPathComponent() instanceof RuleWrapper){
+                parent = selectionPath;
+            } else {
+                parent = selectionPath.getParentPath();;
+            }
+            tree.setSelectionPath(parent.pathByAddingChild(copy));
             simpleStyleEditor.legendAdded(copy);
         }
     }
