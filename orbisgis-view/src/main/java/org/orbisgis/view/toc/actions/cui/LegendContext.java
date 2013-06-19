@@ -65,13 +65,6 @@ public interface LegendContext {
 	boolean isPolygon();
 
 	/**
-	 * Gets the constraint of the field which legend is being edited
-	 * 
-	 * @return
-	 */
-	GeometryTypeConstraint getGeometryTypeConstraint();
-
-	/**
 	 * Gets the layer which legend is being edited
 	 * 
 	 * @return
