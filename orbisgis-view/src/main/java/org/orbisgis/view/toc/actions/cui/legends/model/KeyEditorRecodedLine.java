@@ -52,7 +52,8 @@ public class KeyEditorRecodedLine extends KeyEditorUniqueValue<LineParameters> {
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         setVal((String) value);
-        AbstractRecodedLegend<LineParameters> uv = ((TableModelRecodedLine) table.getModel()).getUniqueValue();
+        AbstractRecodedLegend<LineParameters> uv = (AbstractRecodedLegend<LineParameters>)
+                ((TableModelRecodedLine) table.getModel()).getMappedLegend();
         setLegend(uv);
         getField().setText(getVal());
         return getField();

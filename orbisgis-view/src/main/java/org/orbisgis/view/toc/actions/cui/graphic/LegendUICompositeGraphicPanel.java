@@ -199,8 +199,6 @@ public class LegendUICompositeGraphicPanel extends LegendUIComponent {
                         g = new AxisChart();
                     }
 
-                    System.out.println("NEW GRAPHIC IS : " + g);
-
                     gc.addGraphic(g);
                     DefaultListModel model = (DefaultListModel) list.getModel();
                     model.addElement(g);

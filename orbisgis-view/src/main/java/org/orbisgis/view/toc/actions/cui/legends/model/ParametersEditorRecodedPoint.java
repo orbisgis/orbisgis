@@ -40,7 +40,7 @@ import java.awt.event.ActionEvent;
 /**
  * @author alexis
  */
-public class ParametersEditorRecodedPoint extends ParametersEditorUniqueValue<PointParameters> {
+public class ParametersEditorRecodedPoint extends ParametersEditorMappedLegend<String, PointParameters> {
 
     /**
      * Editors for a LineParameters stored in a JTable. We'll open a dedicated dialog
@@ -52,7 +52,7 @@ public class ParametersEditorRecodedPoint extends ParametersEditorUniqueValue<Po
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().equals(EDIT)){
-            RecodedPoint rl = (RecodedPoint) getUniqueValue();
+            RecodedPoint rl = (RecodedPoint) getMappedLegend();
             String key = (String) getCellEditorValue();
             PointParameters lp = rl.get(key);
             UniqueSymbolPoint usl = new UniqueSymbolPoint(lp);

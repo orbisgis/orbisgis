@@ -101,7 +101,6 @@ public class LegendUIRulePanel extends JPanel {
 
 			@Override
 			protected void valueChanged(int choice) {
-				System.out.println ("Value: " + choice);
 				if (choice == -1)
 					return;
 

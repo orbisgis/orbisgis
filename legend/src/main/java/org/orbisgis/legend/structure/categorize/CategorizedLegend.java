@@ -63,6 +63,16 @@ public abstract class CategorizedLegend<U> extends AbstractAttributeLegend imple
         return null;
     }
 
+    @Override
+    public String getLookupFieldName() {
+        return getParameter() instanceof Categorize ? getValueReference().getColumnName() : field;
+    }
+
+    @Override
+    public void setLookupFieldName(String name) {
+        setField(name);
+    }
+
     /**
      * Gets the name of the field on which the analysis is performed.
      * @return The name of the analyzed field.

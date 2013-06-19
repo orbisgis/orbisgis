@@ -28,43 +28,46 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.model;
 
-import org.orbisgis.legend.thematic.LineParameters;
-import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
-import org.orbisgis.legend.thematic.recode.RecodedLine;
+import org.orbisgis.legend.thematic.AreaParameters;
+import org.orbisgis.legend.thematic.categorize.CategorizedArea;
+import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
+import org.orbisgis.legend.thematic.recode.RecodedArea;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueLineSE;
+import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueAreaSE;
 
 import java.awt.event.ActionEvent;
 
 /**
- * This editor is used to change the values stored in a Map of type RecodedLine. It will let the user handle a
- * LineParameters instance in a dedicated UI, similar to the one used for unique symbols.
+ * This editor is used to change the values stored in a Map of type CategorizedArea. It will let the user handle a
+ * AreaParameters instance in a dedicated UI, similar to the one used for unique symbols.
  * @author alexis
  */
-public class ParametersEditorRecodedLine extends ParametersEditorMappedLegend<String, LineParameters> {
+public class ParametersEditorCategorizedArea extends ParametersEditorMappedLegend<Double, AreaParameters> {
 
     /**
      * Editors for a LineParameters stored in a JTable. We'll open a dedicated dialog
      */
-    public ParametersEditorRecodedLine(){
+    public ParametersEditorCategorizedArea(){
         super();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().equals(EDIT)){
-            RecodedLine rl = (RecodedLine) getMappedLegend();
-            LineParameters lp = rl.get(getCellEditorValue());
-            UniqueSymbolLine usl = new UniqueSymbolLine(lp);
-            PnlUniqueLineSE pls = new PnlUniqueLineSE(false);
+            CategorizedArea ca = (CategorizedArea) getMappedLegend();
+            Double key = (Double) getCellEditorValue();
+            AreaParameters lp = ca.get(key);
+            UniqueSymbolArea usl = new UniqueSymbolArea(lp);
+            PnlUniqueAreaSE pls = new PnlUniqueAreaSE(false,ca.isStrokeEnabled(), false);
             pls.setLegend(usl);
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
-                LineParameters edited = usl.getLineParameters();
-                rl.put((String)getCellEditorValue(), edited);
+                AreaParameters edited = usl.getAreaParameters();
+                ca.put((Double) getCellEditorValue(), edited);
                 fireEditingStopped();
             }
             fireEditingCanceled();
         }
     }
 }
+

@@ -29,32 +29,33 @@
 package org.orbisgis.view.toc.actions.cui.legends.model;
 
 import org.orbisgis.legend.thematic.LineParameters;
+import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.table.AbstractTableModel;
-import java.util.Iterator;
-import java.util.SortedSet;
-
 /**
  * Table model for recoded lines.
- * @author alexis
+ * @author Alexis Guéganno
  */
-public abstract class TableModelUniqueValue<U extends LineParameters> extends AbstractTableModel{
-    private final static I18n I18N = I18nFactory.getI18n(TableModelUniqueValue.class);
+public abstract class TableModelUniqueValue<U extends LineParameters> extends AbstractLegendTableModel<String, U>{
 
     private AbstractRecodedLegend<U> recodedLine;
-    private final static int COLUMN_COUNT = 2;
     public final static int KEY_COLUMN = 1;
     public final static int PREVIEW_COLUMN = 0;
+    private final static I18n I18N = I18nFactory.getI18n(TableModelInterval.class);
 
     /**
      * Builds a new {@code TableModelUniqueValue} linker to {@code rl}.
-     * @param rl
+     * @param rl The input unique value analysis.
      */
     public TableModelUniqueValue(AbstractRecodedLegend<U> rl){
         recodedLine = rl;
+    }
+
+    @Override
+    public MappedLegend<String, U> getMappedLegend() {
+        return recodedLine;
     }
 
     @Override
@@ -67,55 +68,4 @@ public abstract class TableModelUniqueValue<U extends LineParameters> extends Ab
         throw new IndexOutOfBoundsException("We did not found a column at index "+col+" !");
     }
 
-    @Override
-    public int getRowCount() {
-        return recodedLine.size();
-    }
-
-    @Override
-    public int getColumnCount() {
-        return COLUMN_COUNT;
-    }
-
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        if(columnIndex == KEY_COLUMN) {
-            return getKeyAt(rowIndex);
-        } else if(columnIndex == PREVIEW_COLUMN){
-            return getPreviewAt(rowIndex);
-        }
-        throw new IndexOutOfBoundsException("We did not found a column at index "+columnIndex+" !");
-    }
-
-    /**
-     * Gets the associated unique value.
-     * @return   The associated unique value.
-     */
-    public AbstractRecodedLegend<U>getUniqueValue(){
-        return recodedLine;
-    }
-
-    @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex){
-        return true;
-    }
-
-    private String getPreviewAt(int rowIndex) {
-        return getKeyAt(rowIndex);
-    }
-
-    private String getKeyAt(int rowIndex){
-        SortedSet<String> ts = recodedLine.keySet();
-        Iterator<String> it = ts.iterator();
-        int i=0;
-        while(it.hasNext()){
-            if(i==rowIndex){
-                return it.next();
-            } else {
-                it.next();
-                i++;
-            }
-        }
-        throw new IndexOutOfBoundsException("We did not found a key at index "+rowIndex+" !");
-    }
 }

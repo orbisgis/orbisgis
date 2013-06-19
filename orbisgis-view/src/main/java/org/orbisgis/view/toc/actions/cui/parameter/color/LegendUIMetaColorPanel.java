@@ -70,7 +70,6 @@ public abstract class LegendUIMetaColorPanel extends LegendUIAbstractMetaPanel {
 
 	@Override
 	protected final LegendUIComponent getCompForClass(Class newClass) {
-        System.out.println ("Youpi: " + newClass);
 		if (newClass == ColorLiteral.class) {
 			ColorLiteral literal;
 			if (color instanceof ColorLiteral) {

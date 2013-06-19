@@ -2,6 +2,7 @@ package org.orbisgis.legend.thematic.categorize;
 
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
@@ -16,6 +17,7 @@ import org.orbisgis.legend.structure.categorize.CategorizedString;
 import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 import org.orbisgis.legend.thematic.AreaParameters;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -26,7 +28,7 @@ import java.util.List;
  * of literal or categorized parameters.
  * @author Alexis Guéganno
  */
-public class CategorizedArea extends AbstractCategorizedLegend<AreaParameters> {
+public class CategorizedArea extends AbstractCategorizedLegend<AreaParameters> implements StrokeUom{
 
     private CategorizedColor colorFill;
     private CategorizedReal opacityFill;
@@ -36,6 +38,13 @@ public class CategorizedArea extends AbstractCategorizedLegend<AreaParameters> {
     private CategorizedReal widthStroke = null;
     private boolean strokeEnabled = false;
     private AreaSymbolizer symbolizer;
+
+    /**
+     * Builds a new, empty, {@code CategorizedArea}.
+     */
+    public CategorizedArea(){
+        this(new AreaSymbolizer());
+    }
 
     /**
      * Build a new CategorizedArea from the given AreaSymbolizer. This one must have been built with a SolidFill and a
@@ -149,7 +158,7 @@ public class CategorizedArea extends AbstractCategorizedLegend<AreaParameters> {
 
     @Override
     public String getLegendTypeName() {
-        return "Categorized Area";
+        return "Interval Classification - Area";
     }
 
     @Override
@@ -279,13 +288,33 @@ public class CategorizedArea extends AbstractCategorizedLegend<AreaParameters> {
             symbolizer.setStroke(null);
         } else if (!strokeEnabled && enable){
             PenStroke ps = new PenStroke();
+            String fieldName = getLookupFieldName();
             symbolizer.setStroke(ps);
             colorStroke = new CategorizedColor(((SolidFill)ps.getFill()).getColor());
             opacityStroke = new CategorizedReal(((SolidFill)ps.getFill()).getOpacity());
             widthStroke = new CategorizedReal(ps.getWidth());
             dashStroke = new CategorizedString(ps.getDashArray());
+            colorStroke.setLookupFieldName(fieldName);
+            opacityStroke.setLookupFieldName(fieldName);
+            widthStroke.setLookupFieldName(fieldName);
+            dashStroke.setLookupFieldName(fieldName);
             feedStrokeListeners();
         }
         strokeEnabled = enable;
+    }
+
+    @Override
+    public Uom getStrokeUom() {
+        return symbolizer.getUom();
+    }
+
+    @Override
+    public void setStrokeUom(Uom u) {
+        symbolizer.setUom(u);
+    }
+
+    @Override
+    public String getLegendTypeId(){
+        return "org.orbisgis.legend.thematic.categorize.CategorizedArea";
     }
 }
