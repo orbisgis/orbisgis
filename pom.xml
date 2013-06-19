@@ -37,6 +37,7 @@
                 <spatial-utilities-version>1.0-SNAPSHOT</spatial-utilities-version>
                 <h2-version>1.0-SNAPSHOT</h2-version>
                 <h2-spatial-version>1.0.2-SNAPSHOT</h2-spatial-version>
+                <h2-spatial-api-version>1.0.1</h2-spatial-api-version>
                 <orbisgis-core-version>4.1-SNAPSHOT</orbisgis-core-version>
         </properties>
         <scm>
