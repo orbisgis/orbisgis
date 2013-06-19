@@ -42,6 +42,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import ij.process.ImageProcessor;
 import org.apache.log4j.Logger;
+import org.cts.crs.CoordinateReferenceSystem;
 import org.grap.model.GeoRaster;
 import org.orbisgis.progress.ProgressMonitor;
 
@@ -63,7 +64,6 @@ import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
 import org.gdms.sql.function.table.TableDefinition;
 import org.gdms.sql.function.table.TableFunctionSignature;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public final class ST_RasterToPoints extends AbstractTableFunction {
 

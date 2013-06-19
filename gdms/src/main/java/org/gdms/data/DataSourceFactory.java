@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import org.apache.log4j.Logger;
+import org.cts.CRSFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.edition.EditionDecorator;
@@ -130,6 +131,7 @@ public final class DataSourceFactory {
         private GdmsProperties properties = new GdmsProperties(defaultProperties);
         private static final GdmsProperties defaultProperties;
         private static final String BNUMBER;
+        private static final CRSFactory cRSFactory;
 
         static {
                 defaultProperties = new GdmsProperties();
@@ -153,8 +155,11 @@ public final class DataSourceFactory {
                         LOG.warn("Failed to load a property file.", ex);
                 }
                 
-                BNUMBER = bNum;
+                BNUMBER = bNum;                
+                //Load the CRSFactory that manages CoordinateReferenceSystem tools.
+                cRSFactory = new CRSFactory();
         }
+    
 
         /**
          * Creates a new {@code DataSourceFactory} with a <tt>sourceInfoDir</tt>
@@ -788,11 +793,8 @@ public final class DataSourceFactory {
 
                 if (pluginDir != null) {
                         plugInManager = new PlugInManager(new File(pluginDir), this);
-                }
+                }              
                 
-                //Used to reverse  the lon/lat order
-                System.setProperty("org.geotools.referencing.forceXY", "true"); 
-
         }
 
         /**
@@ -990,5 +992,13 @@ public final class DataSourceFactory {
          */
         public static GdmsProperties getDefaultProperties() {
                 return defaultProperties;
+        }
+        
+        /**
+         * Get the CRSFactory to manage Coordinate Reference System.
+         * @return 
+         */
+        public static CRSFactory getCRSFactory(){            
+            return cRSFactory;
         }
 }

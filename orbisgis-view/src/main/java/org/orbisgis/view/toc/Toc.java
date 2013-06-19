@@ -85,9 +85,7 @@ import org.orbisgis.view.map.jobs.ZoomToSelection;
 import org.orbisgis.view.table.TableEditableElement;
 import org.orbisgis.view.toc.actions.*;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
-import org.orbisgis.view.toc.actions.cui.LegendsPanel;
-import org.orbisgis.view.toc.actions.cui.legend.EPLegendHelper;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.view.toc.actions.cui.SimpleStyleEditor;
 import org.orbisgis.view.toc.ext.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -197,13 +195,13 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         .setLogicalGroup(TocActionFactory.G_ATTRIBUTES));
             // DataSource Drawing Actions
             popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_EDIT_GEOMETRY,
-                    I18N.tr("Switch to edition mode"), I18N.tr("The geometry edition toolbar will update this layer data source."),
+                    I18N.tr("Start editing"), I18N.tr("The edit geometry toolbar will update this layer's data source."),
                     OrbisGISIcon.getIcon("pencil"),
                     EventHandler.create(ActionListener.class,this, "onMenuSetActiveLayer"),null)
                         .setEnabledOnNotActiveLayer(true)
                         .setSingleSelection(true));
             popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_STOP_EDIT_GEOMETRY,
-                    I18N.tr("Stop edition mode"), I18N.tr("Close the geometry edition toolbar."),
+                    I18N.tr("Stop editing"), I18N.tr("Close the edit geometry toolbar."),
                     OrbisGISIcon.getIcon("stop"),
                     EventHandler.create(ActionListener.class,this, "onMenuUnsetActiveLayer"),null)
                         .setEnabledOnActiveLayer(true)
@@ -234,11 +232,11 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         .setLogicalGroup(TocActionFactory.G_REMOVE));
             // Style actions
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_SIMPLE_EDITION,
-                    I18N.tr("Simple style edition"), I18N.tr("Open the simple editor for SE styles"),
+                    I18N.tr("Simple style editor"), I18N.tr("Open the simple editor for SE styles"),
                     OrbisGISIcon.getIcon("pencil"),
                     EventHandler.create(ActionListener.class, this, "onSimpleEditor"),null).setOnSingleStyleSelection(true));
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_ADVANCED_EDITION,
-                    I18N.tr("Advanced style edition"), I18N.tr("Open the advanced editor for SE styles"),
+                    I18N.tr("Advanced style editor"), I18N.tr("Open the advanced editor for SE styles"),
                     OrbisGISIcon.getIcon("pencil"),
                     EventHandler.create(ActionListener.class, this, "onAdvancedEditor"),null).setOnSingleStyleSelection(true));
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_REMOVE_STYLE,
@@ -259,7 +257,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 }
         }
         /**
-         * User select the Start/Stop edition of a layer geometries
+         * The user starts or stops editing a layer's geometries
          */
         public void onMenuSetActiveLayer() {
             if(mapContext!=null) {
@@ -293,7 +291,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         }
 
         /**
-         * User select Cancel modifications on layer node
+         * The user cancels modifications on layer node
          */
         public void onMenuSyncDataSource() {
             int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
@@ -317,7 +315,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
             }
         }
         /**
-         * User select the Start/Stop edition of a layer geometries
+         * The user starts or stops editing a layer's geometries
          */
         public void onMenuUnsetActiveLayer() {
             if(mapContext!=null) {
@@ -1035,17 +1033,18 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                 Layer layer = (Layer) style.getLayer();
                                  if(isStyleAllowed(layer)){
                                     int index = layer.indexOf(style);
-                                    Type typ = layer.getDataSource().getMetadata().getFieldType(
-                                            layer.getDataSource().getSpatialFieldIndex());
+                                    
                                     //In order to be able to cancel all of our modifications,
                                     //we produce a copy of our style.
                                     MapEditor editor = mapElement.getMapEditor();
-                                    MapTransform mt = editor.getMapControl().getMapTransform();
                                     JAXBElement<StyleType> jest = style.getJAXBElement();
-                                    LegendsPanel pan = new LegendsPanel();
+                                    
+                                    MapTransform mt = editor.getMapControl().getMapTransform();
+                                    Type typ = layer.getDataSource().getMetadata().getFieldType(
+                                            layer.getDataSource().getSpatialFieldIndex());
                                     Style copy = new Style(jest, layer);
-                                    ILegendPanel[] legends = EPLegendHelper.getLegendPanels(pan);
-                                    pan.init(mt, typ, copy, legends, layer);
+                                    
+                                    SimpleStyleEditor pan = new SimpleStyleEditor(mt, typ, layer, copy);
                                     if (UIFactory.showDialog(pan)) {
                                             try {
                                                     layer.setStyle(index, pan.getStyleWrapper().getStyle());

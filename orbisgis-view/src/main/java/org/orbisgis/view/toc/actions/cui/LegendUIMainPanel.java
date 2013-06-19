@@ -165,7 +165,7 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 
 	@Override
 	public String getTitle() {
-		return I18N.tr("Advanced style edition");
+		return I18N.tr("Advanced Style Editor");
 	}
 
 	@Override

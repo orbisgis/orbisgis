@@ -41,7 +41,7 @@ import java.text.ParseException;
 import java.util.Locale;
 import javax.swing.*;
 import org.apache.log4j.Logger;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.cts.crs.CoordinateReferenceSystem;
 import org.orbisgis.core.events.OGVetoableChangeSupport;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.statusbar.StatusBar;

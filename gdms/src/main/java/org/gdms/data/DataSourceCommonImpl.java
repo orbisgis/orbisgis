@@ -47,7 +47,7 @@ import org.gdms.driver.DriverException;
 public abstract class DataSourceCommonImpl extends AbstractDataSource {
 
         private static final String NOT_SUPPORTED_UNDOABLE = "Not supported. Try to obtain the DataSource with the DataSourceFactory.UNDOABLE constant";
-        private static final String NO_EDITION = "The DataSource wasn't retrieved with edition capabilities";
+        private static final String NO_EDITION = "The DataSource is not editable.";
         protected DataSourceFactory dsf;
 
         @Override

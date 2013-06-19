@@ -1,33 +1,20 @@
 OrbisGIS
-=====
+=======
 
-OrbisGIS is a GIS application dedicated to scientific spatial simulation.
-This cross-platform GIS is developed at French IRSTV institute and is able to
-manipulate and create vector and raster spatial information. 
+OrbisGIS is a cross-platform open-source Geographic Information System (GIS) created by research and for research. It is developed by the French IRSTV institute and licensed under GPLv3 (read the full license [here](https://github.com/irstv/orbisgis/blob/master/Licenses/license-GPL.txt)). OrbisGIS proposes new methods and techniques to model, represent, process and share spatial data (both vector and raster), making it easy to monitor geographical territories and manage their evolution.
 
-For general information, please consult http://www.orbisgis.org/.
+For general information, visit our [website](http://www.orbisgis.org). Feel free to [contact us](http://www.orbisgis.org/contact/) or use the [mailing list](http://orbisgis.3871844.n2.nabble.com/).
 
-For developer-related information, have a look at [OrbisGIS's GitHub Wiki](https://github.com/irstv/orbisgis/wiki).
+Developers, check out our [GitHub Wiki](https://github.com/irstv/orbisgis/wiki).
 
-Licenses
------
+### Quick build instructions
 
-OrbisGIS in under the GPLv3 license. See [Licenses/license-GPL.txt](https://github.com/irstv/orbisgis/blob/master/Licenses/license-GPL.txt) for more information.
-
-
-Quick Build instruction
-------
-
-OrbisGIS uses the Maven build system. 
-
- * To launch a full build (including tests):
-
+OrbisGIS uses Maven. To launch a full build (including tests), run the following command:
 ```
 mvn clean install
 ```
- * To run OrbisGIS from Maven:
-
+To run OrbisGIS using Maven:
 ```
-cd orbisgis-dist\
+cd orbisgis-dist
 mvn exec:exec
 ```

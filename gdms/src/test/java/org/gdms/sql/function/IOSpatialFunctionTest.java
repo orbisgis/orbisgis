@@ -48,7 +48,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import org.opengis.referencing.crs.SingleCRS;
 
 public class IOSpatialFunctionTest extends FunctionTest {
 
@@ -83,16 +82,16 @@ public class IOSpatialFunctionTest extends FunctionTest {
                 
                 assertNotNull(ret.getCRS());
                 
-                assertTrue(ret.getCRS().getIdentifiers().toString().contains("EPSG:4326"));
+                assertTrue(ret.getCRS().getCode().equals("EPSG:4326"));
                 
                 ret = st.evaluate(dsf, new Value[] { ValueFactory.createValue(wkt),
                                  ValueFactory.createValue(4326)});
                 
                 assertNotNull(ret.getCRS());
-                assertTrue(ret.getCRS().getIdentifiers().toString().contains("EPSG:4326"));                
+                assertTrue(ret.getCRS().getCode().equals("EPSG:4326"));                
                 ret = st.evaluate(dsf, new Value[] { ValueFactory.createValue(wkt),
                                  ValueFactory.createValue(4326)});
                 
                 assertNotNull(ret.getCRS());
-                assertTrue(ret.getCRS().getIdentifiers().toString().contains("EPSG:4326"));        }
+                assertTrue(ret.getCRS().getCode().equals("EPSG:4326"));        }
 }
