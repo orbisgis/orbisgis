@@ -42,7 +42,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     public static final Integer DEFAULT_CLASS_NUMBER = 5;
     private JTextField jtf;
     private JButton createCl;
-    private JComboBox<ContainerItemProperties> methodCombo;
+    private JComboBox methodCombo;
 
     /**
      * Initialize a {@code JComboBo} whose values are set according to the
@@ -154,10 +154,10 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
      * Gets the JComboBox used to select the classification method.
      * @return The JComboBox.
      */
-    public JComboBox<ContainerItemProperties> getMethodCombo(){
+    public JComboBox getMethodCombo(){
         if(methodCombo == null){
             ContainerItemProperties[] categorizeMethods = getCategorizeMethods();
-            methodCombo = new JComboBox<ContainerItemProperties>(categorizeMethods);
+            methodCombo = new JComboBox(categorizeMethods);
             ActionListener acl = EventHandler.create(ActionListener.class, this, "methodChanged");
             methodCombo.addActionListener(acl);
             methodCombo.setSelectedItem(CategorizeMethod.MANUAL.toString());
