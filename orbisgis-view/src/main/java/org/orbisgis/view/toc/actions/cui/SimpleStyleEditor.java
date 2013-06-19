@@ -56,16 +56,7 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
-import org.orbisgis.view.toc.actions.cui.legends.PnlProportionalLineSE;
-import org.orbisgis.view.toc.actions.cui.legends.PnlProportionalPointSE;
-import org.orbisgis.view.toc.actions.cui.legends.PnlRecodedArea;
-import org.orbisgis.view.toc.actions.cui.legends.PnlRecodedLine;
-import org.orbisgis.view.toc.actions.cui.legends.PnlRecodedPoint;
-import org.orbisgis.view.toc.actions.cui.legends.PnlRule;
-import org.orbisgis.view.toc.actions.cui.legends.PnlStyle;
-import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueAreaSE;
-import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueLineSE;
-import org.orbisgis.view.toc.actions.cui.legends.PnlUniquePointSE;
+import org.orbisgis.view.toc.actions.cui.legends.*;
 import org.orbisgis.view.toc.wrapper.RuleWrapper;
 import org.orbisgis.view.toc.wrapper.StyleWrapper;
 import org.xnap.commons.i18n.I18n;
@@ -237,6 +228,18 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
         ILegendPanel uniquePoint = new PnlRecodedPoint();
         uniquePoint.initialize(this);
         legends.add(uniquePoint);
+        //Line Interval
+        ILegendPanel lineInterval = new PnlCategorizedLine();
+        lineInterval.initialize(this);
+        legends.add(lineInterval);
+        //Area Interval
+        ILegendPanel areaInterval = new PnlCategorizedArea();
+        areaInterval.initialize(this);
+        legends.add(areaInterval);
+        //Point Interval
+        ILegendPanel pointInterval = new PnlCategorizedPoint();
+        pointInterval.initialize(this);
+        legends.add(pointInterval);
 
         return legends.toArray(new ILegendPanel[legends.size()]);
     }
@@ -579,7 +582,6 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
 
     @Override
     public String getTitle() {
-        // TODO: No usages. Why simple style edition?
         return I18N.tr("Simple Style Editor");
     }
 

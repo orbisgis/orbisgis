@@ -161,8 +161,8 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
             ActionListener acl = EventHandler.create(ActionListener.class, this, "methodChanged");
             methodCombo.addActionListener(acl);
             methodCombo.setSelectedItem(CategorizeMethod.MANUAL.toString());
-            methodChanged();
         }
+        methodChanged();
         return methodCombo;
     }
 
@@ -172,7 +172,9 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     public void methodChanged(){
         ContainerItemProperties selectedItem = (ContainerItemProperties) methodCombo.getSelectedItem();
         boolean b = CategorizeMethod.valueOf(selectedItem.getKey()).equals(CategorizeMethod.MANUAL);
-        createCl.setEnabled(!b);
+        if(createCl != null){
+            createCl.setEnabled(!b);
+        }
     }
 
     /**
