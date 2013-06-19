@@ -286,13 +286,13 @@ public interface ILayer {
 	boolean isStream() throws DriverException;
 
 	/**
-	 * Returns a {@link DataSource} to access the source of this layer
+	 * Returns a table reference to access the source of this layer
 	 * 
 	 * @return A DataSource or null if this layer is not backed
 	 *         up by a DataSource (Layer collections and WMS
 	 *         layers, for example)
 	 */
-	DataSource getDataSource();
+	String getDataSource();
 
         /**
          * Gets the {@code List} of SE styles that are used to define the
@@ -351,10 +351,10 @@ public interface ILayer {
 	 * is just a shortcut for getDataSource().getRaster(0)
 	 * 
 	 * @return
-	 * @throws DriverException
+	 * @throws LayerException
 	 * @throws UnsupportedOperationException
 	 */
-	GeoRaster getRaster() throws DriverException, UnsupportedOperationException;
+	GeoRaster getRaster() throws LayerException, UnsupportedOperationException;
 
 	/**
 	 * Gets an array of the selected rows
@@ -378,9 +378,9 @@ public interface ILayer {
          * Gets the list of all the {@code Rule} embedded in the {@code Style}
          * associated to this {@code ILayer}.
          * @return
-         * @throws DriverException
+         * @throws LayerException
          */
-	List<Rule> getRenderingRule() throws DriverException;
+	List<Rule> getRenderingRule() throws LayerException;
 
         /**
          * Removes s from the styles associated to this layer.
