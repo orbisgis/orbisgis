@@ -29,8 +29,8 @@
 package org.orbisgis.view.toc.actions.cui.legends.model;
 
 import org.orbisgis.legend.thematic.LineParameters;
+import org.orbisgis.legend.thematic.categorize.CategorizedLine;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
-import org.orbisgis.legend.thematic.recode.RecodedLine;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueLineSE;
@@ -38,30 +38,30 @@ import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueLineSE;
 import java.awt.event.ActionEvent;
 
 /**
- * This editor is used to change the values stored in a Map of type RecodedLine. It will let the user handle a
+ * This editor is used to change the values stored in a Map of type CategorizedLine. It will let the user handle a
  * LineParameters instance in a dedicated UI, similar to the one used for unique symbols.
  * @author alexis
  */
-public class ParametersEditorRecodedLine extends ParametersEditorMappedLegend<String, LineParameters> {
+public class ParametersEditorCategorizedLine extends ParametersEditorMappedLegend<Double, LineParameters> {
 
     /**
      * Editors for a LineParameters stored in a JTable. We'll open a dedicated dialog
      */
-    public ParametersEditorRecodedLine(){
+    public ParametersEditorCategorizedLine(){
         super();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().equals(EDIT)){
-            RecodedLine rl = (RecodedLine) getMappedLegend();
-            LineParameters lp = rl.get(getCellEditorValue());
+            CategorizedLine cl = (CategorizedLine) getMappedLegend();
+            LineParameters lp = cl.get(getCellEditorValue());
             UniqueSymbolLine usl = new UniqueSymbolLine(lp);
             PnlUniqueLineSE pls = new PnlUniqueLineSE(false);
             pls.setLegend(usl);
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 LineParameters edited = usl.getLineParameters();
-                rl.put((String)getCellEditorValue(), edited);
+                cl.put((Double) getCellEditorValue(), edited);
                 fireEditingStopped();
             }
             fireEditingCanceled();

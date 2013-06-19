@@ -46,6 +46,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
+
+import org.apache.log4j.Logger;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
@@ -60,6 +62,7 @@ import org.orbisgis.core.renderer.se.TextSymbolizer;
  * @author Maxence Laurent
  */
 public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, LegendUIComponentListener {
+    private static final Logger LOGGER = Logger.getLogger(LegendUITOCPanel.class);
 
 	private final LegendUIController controller;
 	private JTree sTree;
@@ -161,12 +164,9 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 			DefaultTreeModel treeModel = new DefaultTreeModel(root);
 
 			LegendUIComponent comp;
-			//System.out.println ("Refresh Tree");
 
 			while (stack.size() > 0) {
 				comp = stack.remove(0);
-
-				//System.out.println ("  Process -> " + comp);
 
 				// Does this comp requieres a new entry point in the tree ?
 				// two cases : top element or nested element
@@ -212,7 +212,6 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 
 					// And add it in the tree model
 					parent.add(newNode);
-					//System.out.println ("Add " + comp + " to the tree :" + parent);
 					comp.register(this);
 				}
 				// Stack children
@@ -221,7 +220,6 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 					LegendUIComponent next = it.next();
 					if (!next.isNullComponent){
 						stack.add(0, next);
-						//System.out.println ("   PutInQueue -> " + next);
 					}
 				}
 			}
@@ -257,7 +255,7 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) sTree.getLastSelectedPathComponent();
 
 		if (node == null) {
-			System.out.println("Selection is empty !"); // TODO !!
+			LOGGER.info("Selection is empty !"); // TODO !!
 		} else {
 			Object userObject = node.getUserObject();
 

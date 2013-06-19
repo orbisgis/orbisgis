@@ -2,6 +2,7 @@ package org.orbisgis.legend.thematic.categorize;
 
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -15,6 +16,7 @@ import org.orbisgis.legend.structure.categorize.CategorizedString;
 import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 import org.orbisgis.legend.thematic.LineParameters;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -25,13 +27,20 @@ import java.util.List;
  * of literal or categorized parameters.
  * @author Alexis Guéganno
  */
-public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> {
+public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> implements StrokeUom{
 
     private LineSymbolizer symbolizer;
     private CategorizedColor color;
     private CategorizedReal opacity;
     private CategorizedReal width;
     private CategorizedString dash;
+
+    /**
+     * Builds a new, empty, {@code CategorizedLine}.
+     */
+    public CategorizedLine(){
+        this(new LineSymbolizer());
+    }
 
     /**
      * Build a new CategorizedLine from the given LineSymbolizer. This one must have been built with a PenStroke
@@ -127,7 +136,7 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> {
 
     @Override
     public String getLegendTypeName() {
-        return "Categorized Line";
+        return "Interval Classification - Line";
     }
 
     @Override
@@ -183,5 +192,28 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> {
         width.remove(d);
         dash.remove(d);
         return ret;
+    }
+
+    /**
+     * Gets the Uom used for the inner Stroke.
+     * @return The unit of measure used to compute the width of the stroke.
+     */
+    @Override
+    public Uom getStrokeUom(){
+        return symbolizer.getStroke().getUom();
+    }
+
+    /**
+     * Gets the Uom used for the inner Stroke.
+     * @param u The unit of measure used to compute the width of the stroke.
+     */
+    @Override
+    public void setStrokeUom(Uom u){
+        symbolizer.getStroke().setUom(u);
+    }
+
+    @Override
+    public String getLegendTypeId(){
+        return "org.orbisgis.legend.thematic.categorize.CategorizedLine";
     }
 }

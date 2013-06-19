@@ -4,12 +4,12 @@ import net.opengis.se._2_0.core.ParameterValueType;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
@@ -24,6 +24,7 @@ import org.orbisgis.legend.structure.categorize.CategorizedString;
 import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 import org.orbisgis.legend.thematic.PointParameters;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -34,7 +35,7 @@ import java.util.List;
  * of literal or categorized parameters.
  * @author Alexis Guéganno
  */
-public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters> {
+public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters> implements StrokeUom {
 
     private CategorizedColor colorFill;
     private CategorizedReal opacityFill;
@@ -47,6 +48,14 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
     private CategorizedString wkn;
     private boolean strokeEnabled = false;
     private PointSymbolizer symbolizer;
+
+    /**
+     * Builds a new, empty, {@code CategorizedPoint}.
+     */
+    public CategorizedPoint(){
+        this(new PointSymbolizer());
+    }
+
 
     /**
      * Build a new CategorizedPoint from the given PointSymbolizer. This one must have been built with a SolidFill and a 
@@ -219,7 +228,7 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
 
     @Override
     public String getLegendTypeName() {
-        return "Categorized Point";
+        return "Interval Classification - Point";
     }
 
     @Override
@@ -344,11 +353,16 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
             dashStroke = null;
         } else if (!strokeEnabled && enable){
             PenStroke ps = new PenStroke();
+            String fieldName = getLookupFieldName();
             mg.setStroke(ps);
             colorStroke = new CategorizedColor(((SolidFill)ps.getFill()).getColor());
             opacityStroke = new CategorizedReal(((SolidFill)ps.getFill()).getOpacity());
             widthStroke = new CategorizedReal(ps.getWidth());
             dashStroke = new CategorizedString(ps.getDashArray());
+            colorStroke.setLookupFieldName(fieldName);
+            opacityStroke.setLookupFieldName(fieldName);
+            widthStroke.setLookupFieldName(fieldName);
+            dashStroke.setLookupFieldName(fieldName);
             feedStrokeListeners();
         }
         strokeEnabled = enable;
@@ -381,5 +395,68 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
                 widthSymbol.getFallbackValue(),
                 heightSymbol.getFallbackValue(),
                 wkn.getFallbackValue());
+    }
+
+    /**
+     * Sets that symbols must be drawn on vertices or on centroid.
+     */
+    public void setOnVertex(){
+        symbolizer.setOnVertex(true);
+    }
+
+    /**
+     * Sets that symbols must be drawn on vertices or on centroid.
+     */
+    public void setOnCentroid(){
+        symbolizer.setOnVertex(false);
+    }
+
+    /**
+     * Returns true if the symbol will be drawn on the vertices of the symbol.
+     * @return true if the symbol must be drawn on the geomztry vertices.
+     */
+    public boolean isOnVertex(){
+        return symbolizer.isOnVertex();
+    }
+
+    @Override
+    public Uom getStrokeUom() {
+        Stroke stroke = ((MarkGraphic) symbolizer.getGraphicCollection().getGraphic(0)).getStroke();
+        if(stroke != null){
+            return stroke.getUom();
+        } else {
+            return symbolizer.getUom();
+        }
+    }
+
+    @Override
+    public void setStrokeUom(Uom u) {
+        Stroke stroke = ((MarkGraphic) symbolizer.getGraphicCollection().getGraphic(0)).getStroke();
+        if(stroke != null){
+            symbolizer.setUom(u);
+        }
+    }
+
+    /**
+     * Gets the unit of measure used to size the associated {@code Stroke}.
+     * @return The Unit of measure of the symbol's dimensions.
+     */
+    public Uom getSymbolUom(){
+        MarkGraphic mg = (MarkGraphic) symbolizer.getGraphicCollection().getChildren().get(0);
+        return mg.getUom();
+    }
+
+    /**
+     * Sets the unit of measure used to size the associated {@code Stroke}.
+     * @param u The new unit of measure for the symbol's dimensions
+     */
+    public void setSymbolUom(Uom u){
+        MarkGraphic mg = (MarkGraphic) symbolizer.getGraphicCollection().getChildren().get(0);
+        mg.setUom(u);
+    }
+
+    @Override
+    public String getLegendTypeId(){
+        return "org.orbisgis.legend.thematic.categorize.CategorizedPoint";
     }
 }

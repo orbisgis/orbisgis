@@ -143,7 +143,8 @@ public final class CompositeSymbolizer extends AbstractSymbolizerNode implements
          * @param s
          */
         public void setSymbolizer(int i, Symbolizer s){
-                symbolizers.set(i, s);
+            s.setParent(this);
+            symbolizers.set(i, s);
         }
 
         /**

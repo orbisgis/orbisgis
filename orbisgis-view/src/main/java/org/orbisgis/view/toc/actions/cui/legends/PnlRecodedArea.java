@@ -48,6 +48,7 @@ import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.model.*;
+import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -81,9 +82,6 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     private String id;
     private CanvasSE fallbackPreview;
     private JComboBox fieldCombo;
-    private final static String JOB_NAME = "recodeSelectDistinct";
-    private SelectDistinctJob selectDistinct;
-    private BackgroundListener background;
     private JCheckBox strokeBox;
 
     @Override
@@ -110,6 +108,11 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     @Override
     public String validateInput() {
         return "";
+    }
+
+    @Override
+    public String getFieldName(){
+        return fieldCombo.getSelectedItem().toString();
     }
 
     /**
@@ -297,31 +300,10 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     }
 
     private JPanel getUOMCombo(){
-        JPanel pan = new JPanel();
-        JComboBox jcb = getLineUomCombo(((RecodedArea)getLegend()));
+        UomCombo jcb = getLineUomCombo(((RecodedArea) getLegend()));
         ActionListener aclUom = EventHandler.create(ActionListener.class, this, "updatePreview", "source");
         jcb.addActionListener(aclUom);
-        pan.add(new JLabel(I18N.tr("Unit of measure :")));
-        pan.add(jcb);
-        return pan;
-    }
-
-    /**
-     * Called to build a classification from the given data source and field. Makes a SELECT DISTINCT field FROM ds;
-     * and feeds the legend that has been cleared prior to that.
-     */
-    public void onCreateClassification(ActionEvent e){
-        if(e.getActionCommand().equals("click")){
-            String fieldName = fieldCombo.getSelectedItem().toString();
-            selectDistinct = new SelectDistinctJob(fieldName);
-            BackgroundManager bm = Services.getService(BackgroundManager.class);
-            JobId jid = new DefaultJobId(JOB_NAME);
-            if(background == null){
-                background = new OperationListener();
-                bm.addBackgroundListener(background);
-            }
-            bm.nonBlockingBackgroundOperation(jid, selectDistinct);
-        }
+        return jcb;
     }
 
     /**

@@ -60,6 +60,7 @@ import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -73,7 +74,6 @@ public class PnlProportionalLineSE extends PnlUniqueSymbolSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlProportionalLineSE.class);
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlProportionalLineSE.class);
         private DataSource ds;
-        private JComboBox lineUom;
         private JPanel lineColor;
         private JPanel lineOpacity;
         private JPanel lineDash;
@@ -195,7 +195,7 @@ public class PnlProportionalLineSE extends PnlUniqueSymbolSE {
                 GridLayout grid = new GridLayout(7,2);
                 grid.setVgap(5);
                 jp.setLayout(grid);
-                lineUom = getLineUomCombo(legend);
+                UomCombo lineUom = getLineUomCombo(legend);
                 CanvasSE prev = getPreview();
                 ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 lineUom.addActionListener(acl);

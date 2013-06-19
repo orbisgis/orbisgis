@@ -175,13 +175,9 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 	 */
 	public LegendUIComponent getScopeParent() {
 		LegendUIComponent current = this;
-
-		System.out.println("Get Scope Parent for : " + current);
 		while (current != null && !current.isNested() && !current.isTopElement()) {
 			current = current.parent;
-			System.out.println("  -> Current : " + current);
 		}
-		System.out.println("  Parent is " + current);
 
 		return current;
 	}
@@ -285,7 +281,6 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 		}
 
 		if (this.parent == null) {
-			System.out.println("I'm a lonly orpan: " + this);
 		}
 	}
 
@@ -322,7 +317,6 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 
 	public void register(LegendUIComponentListener l) {
 		if (!listeners.contains(l)) {
-			System.out.println(l + " is now listen to " + this);
 			listeners.add(l);
 		}
 	}
@@ -363,16 +357,12 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 		Iterator<LegendUIComponent> it = this.getChildrenIterator();
 		while (it.hasNext()) {
 			LegendUIComponent child = it.next();
-
-            System.out.print (" -> " + child);
 			// Child is not null => create its interface
 			if (!child.isNull()) {
-                System.out.println (" is not null");
 				child.mountComponentForChildren();
 				child.mountComponent();
 			} else {
 				// Child is null => in the list of unused parameters
-                System.out.println (" is null");
 				nullList.add(child);
 			}
 		}
