@@ -85,7 +85,7 @@ public class Thresholds {
         Double min = stats.getMin();
         ret.add(min);
         for(int i=1; i<=classNumber; i++){
-            double p = min + i*step;
+            double p = i*step;
             ret.add(stats.getPercentile(p));
         }
         return ret;
