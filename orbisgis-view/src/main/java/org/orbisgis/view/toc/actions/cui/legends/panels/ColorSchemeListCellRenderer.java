@@ -33,7 +33,6 @@ package org.orbisgis.view.toc.actions.cui.legends.panels;
 import java.awt.*;
 import javax.swing.*;
 
-import org.orbisgis.view.components.renderers.IconCellRendererUtility;
 import org.orbisgis.view.components.renderers.ListLaFRenderer;
 
 /**
