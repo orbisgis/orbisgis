@@ -37,6 +37,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.view.components.renderers.IconCellRendererUtility;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
@@ -64,61 +65,6 @@ public class TocRenderer extends TocAbstractRenderer {
         public void setMapContext(MapContext mapContext) {
             this.mapContext = mapContext;
         }
-
-    private void copyComponentStyle(JComponent source, JComponent destination) {
-                destination.setOpaque(source.isOpaque());
-                destination.setBackground(source.getBackground());
-                destination.setForeground(source.getForeground());
-                destination.setBorder(source.getBorder());
-        }
-        private static ImageIcon mergeIcons(ImageIcon bottom,ImageIcon top) {
-            if(bottom==null) {
-                return top;
-            }
-            if(top==null) {
-                return bottom;
-            }
-            BufferedImage image = new BufferedImage(Math.max(bottom.getIconWidth(),top.getIconWidth()),
-                    Math.max(bottom.getIconHeight(),top.getIconHeight()), BufferedImage.TYPE_INT_ARGB);
-            Graphics g = image.getGraphics();
-            g.drawImage(bottom.getImage(),0,0,null);
-            g.drawImage(top.getImage(), 0, 0, null);
-            return new ImageIcon(image);
-        }
-        /**
-         * Draw the component at the left of the provided icon
-         * @param component
-         * @param icon
-         * @return 
-         */
-        private static Icon mergeComponentAndIcon(JComponent component,Icon icon) {
-                Dimension compSize = component.getPreferredSize();
-                component.setSize(compSize);                
-                int compWidth = compSize.width;
-                int compHeight =  compSize.height;
-                int iconY = 0;
-                if(icon!=null) {
-                        compWidth += icon.getIconWidth();
-                        //Set vertical icon alignement to center
-                        if(compHeight>icon.getIconHeight()) {
-                                iconY = (int)Math.ceil((compHeight - icon.getIconHeight()) / 2);
-                        } else {
-                                compHeight = icon.getIconHeight();
-                        }
-                }
-                //Create an icon that is the copound of the checkbox with the row icon
-                if(compWidth<=0 || compHeight<=0) {
-                        return null;
-                }
-                BufferedImage image = new BufferedImage(compWidth, compHeight, BufferedImage.TYPE_INT_ARGB);
-                CellRendererPane pane = new CellRendererPane();
-                pane.add(component);
-                pane.paintComponent(image.createGraphics(), component, pane, component.getBounds());    
-                if(icon!=null) {
-                        icon.paintIcon(pane, image.getGraphics(), component.getPreferredSize().width, iconY);
-                }
-                return new ImageIcon(image);
-        }
         
 	@Override
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
@@ -137,14 +83,16 @@ public class TocRenderer extends TocAbstractRenderer {
                                         ROW_EMPTY_BORDER_SIZE,
                                         ROW_EMPTY_BORDER_SIZE));
                                 JCheckBox checkBox = new JCheckBox();
-                                copyComponentStyle(rendererComponent,checkBox);
+                                IconCellRendererUtility.copyComponentStyle(rendererComponent,checkBox);
                                 if (value instanceof TocTreeNodeLayer) {
                                         ILayer layerNode = ((TocTreeNodeLayer) value).getLayer();
                                         ImageIcon nodeIcon = TocAbstractRenderer.getLayerIcon(layerNode);
                                         if(mapContext!=null && layerNode.equals(mapContext.getActiveLayer())) {
-                                            nodeIcon = mergeIcons(nodeIcon, OrbisGISIcon.getIcon("edition/layer_edit"));
+                                            nodeIcon = IconCellRendererUtility.mergeIcons
+                                                    (nodeIcon, OrbisGISIcon.getIcon("edition/layer_edit"));
                                         } else if(layerNode.getDataSource()!=null && layerNode.getDataSource().isModified()) {
-                                            nodeIcon = mergeIcons(nodeIcon, OrbisGISIcon.getIcon("edition/layer_modify"));
+                                            nodeIcon = IconCellRendererUtility.mergeIcons
+                                                    (nodeIcon, OrbisGISIcon.getIcon("edition/layer_modify"));
                                         }
                                         rendererComponent.setIcon(nodeIcon);
                                         String nodeLabel = layerNode.getName();
@@ -167,7 +115,9 @@ public class TocRenderer extends TocAbstractRenderer {
                                 panel.add(rendererComponent,BorderLayout.CENTER);
                                 panel.doLayout();
                                 checkBoxRect= new Rectangle(0, 0, checkBox.getPreferredSize().width, checkBox.getPreferredSize().height);
-                                rendererComponent.setIcon(mergeComponentAndIcon(checkBox,rendererComponent.getIcon()));
+                                rendererComponent.setIcon(
+                                        IconCellRendererUtility.mergeComponentAndIcon(
+                                                checkBox,rendererComponent.getIcon()));
                         } catch (DriverException ex) {
                                 UILOGGER.error(ex);
                         } catch (IOException ex) {
