@@ -31,10 +31,10 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 import java.awt.*;
-import java.util.Collection;
-import java.util.Iterator;
-
 import javax.swing.*;
+
+import org.orbisgis.view.components.renderers.IconCellRendererUtility;
+import org.orbisgis.view.components.renderers.ListLaFRenderer;
 
 /**
  * This dedicated ListCellRenderer intends to ease the embedding of ColorSchemes in list and combo box.</p>
@@ -43,26 +43,13 @@ import javax.swing.*;
  * @author Alexis Guéganno
  */
 public class ColorSchemeListCellRenderer
-        extends JPanel
-        implements ListCellRenderer {
-
-    private JLabel colorPanel1 = new JLabel();
-    private JLabel colorPanel2 = new JLabel();
-    private JLabel colorPanel3 = new JLabel();
-    private JLabel colorPanel4 = new JLabel();
-    private JLabel colorPanel5 = new JLabel();
-    private GridBagLayout gridBagLayout1 = new GridBagLayout();
-    private JLabel label = new JLabel();
+        extends ListLaFRenderer {
 
     /**
      * Builds a new renderer.
      */
-    public ColorSchemeListCellRenderer() {
-        try {
-            jbInit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public ColorSchemeListCellRenderer(JList list) {
+        super(list);
     }
 
     @Override
@@ -73,117 +60,18 @@ public class ColorSchemeListCellRenderer
             boolean isSelected,
             boolean cellHasFocus) {
         String name = (String) value;
-        JPanel pan;
-        if(isSelected){
-            pan = new ColorSchemeListCell(name, isSelected, list.getSelectionForeground(), list.getSelectionBackground());
-        } else {
-            pan = new ColorSchemeListCell(name, isSelected, list.getForeground(), list.getBackground());
+        Component cellRenderer = lookAndFeelRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        if (cellRenderer instanceof JLabel) {
+            JLabel lab = (JLabel) cellRenderer;
+            ColorSchemeListCell pan;
+            if(isSelected){
+                pan = new ColorSchemeListCell(name, list.getSelectionBackground());
+            } else {
+                pan = new ColorSchemeListCell(name, list.getBackground());
+            }
+            lab.setIcon(pan.getIcon());
         }
-        return pan;
-    }
-
-    /**
-     * Gets the ColorScheme whose name is {@code name}
-     * @param name The name of the ColorScheme.
-     * @return The ColorScheme
-     */
-    protected ColorScheme colorScheme(String name) {
-        return ColorScheme.create(name);
-    }
-
-    /**
-     * Sets the foreground and background colors of the given JLabel to {@code fillColor}.
-     * @param colorPanel The JLabel we want to color.
-     * @param fillColor The Color.
-     */
-    private void color(JLabel colorPanel, Color fillColor) {
-        colorPanel.setSize(new Dimension(8,8));
-        colorPanel.setOpaque(true);
-        colorPanel.setBackground(fillColor);
-        colorPanel.setForeground(fillColor);
-    }
-
-    /**
-     * Initializes the CellRenderer.
-     * @throws Exception
-     */
-    private void jbInit() throws Exception {
-        this.setLayout(gridBagLayout1);
-        label.setText("jLabel1");
-        this.add(
-                colorPanel1,
-                new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-                        ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 2, 0, 0), 0, 0));
-        this.add(
-                colorPanel2,
-                new GridBagConstraints(
-                        1,
-                        0,
-                        1,
-                        1,
-                        0.0,
-                        0.0,
-                        GridBagConstraints.CENTER,
-                        GridBagConstraints.NONE,
-                        new Insets(0, 0, 0, 0),
-                        0,
-                        0));
-        this.add(
-                colorPanel3,
-                new GridBagConstraints(
-                        2,
-                        0,
-                        1,
-                        1,
-                        0.0,
-                        0.0,
-                        GridBagConstraints.CENTER,
-                        GridBagConstraints.NONE,
-                        new Insets(0, 0, 0, 0),
-                        0,
-                        0));
-        this.add(
-                colorPanel4,
-                new GridBagConstraints(
-                        3,
-                        0,
-                        1,
-                        1,
-                        0.0,
-                        0.0,
-                        GridBagConstraints.CENTER,
-                        GridBagConstraints.NONE,
-                        new Insets(0, 0, 0, 0),
-                        0,
-                        0));
-        this.add(
-                colorPanel5,
-                new GridBagConstraints(
-                        4,
-                        0,
-                        1,
-                        1,
-                        0.0,
-                        0.0,
-                        GridBagConstraints.CENTER,
-                        GridBagConstraints.NONE,
-                        new Insets(0, 0, 0, 0),
-                        0,
-                        0));
-        this.add(
-                label,
-                new GridBagConstraints(5, 0, 1, 1, 1.0, 0.0
-                        ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 2, 0, 0), 0, 0));
-    }
-
-    /**
-     * Workaround for bug 4238829 in the Java bug database:
-     * "JComboBox containing JPanel fails to display selected item at creation time"
-     */
-    @Override
-    public void setBounds(int x, int y, int w, int h) {
-        super.setBounds(x, y, w, h);
-        validate();
+        return cellRenderer;
     }
 
 }

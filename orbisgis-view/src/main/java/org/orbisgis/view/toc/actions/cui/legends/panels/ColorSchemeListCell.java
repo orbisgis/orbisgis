@@ -2,48 +2,66 @@ package org.orbisgis.view.toc.actions.cui.legends.panels;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.Iterator;
 
 /**
+ * Builds an Icon with a subset of a given palette.
  * @author Alexis Guéganno
  */
-public class ColorSchemeListCell
-        extends JPanel {
-
-    private JLabel colorPanel1 = new JLabel();
-    private JLabel colorPanel2 = new JLabel();
-    private JLabel colorPanel3 = new JLabel();
-    private JLabel colorPanel4 = new JLabel();
-    private JLabel colorPanel5 = new JLabel();
-    private GridBagLayout gridBagLayout1 = new GridBagLayout();
-    private JLabel label = new JLabel();
+public class ColorSchemeListCell {
+    private BufferedImage result;
+    private String label;
 
     /**
-     *
-     * @param name
-     * @param isSelected
-     * @param fg
-     * @param bg
+     * Builds a new ColorSchemeListCell that will retrieve colours from the palette name
+     * {@code name}. {@code bg} will be used as the background color of the generated
+     * Icon.
+     * @param name The palette's name
+     * @param bg The background color
      */
-    public ColorSchemeListCell(String name, boolean isSelected, Color fg, Color bg) {
+    public ColorSchemeListCell(String name, Color bg) {
         try {
             Collection<Color> colors = colorScheme(name).getColors();
+            result = new BufferedImage(80,16,BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2 = result.createGraphics();
+            g2.setBackground(bg);
+            g2.setPaint(bg);
+            g2.fillRect(0,0,80,16);
             Iterator i = colorScheme(name).getSubset(5).iterator();
-            label.setText("(" + colors.size() + ") " +  name);
-            color(colorPanel1, (Color) i.next());
-            color(colorPanel2, (Color) i.next());
-            color(colorPanel3, (Color) i.next());
-            color(colorPanel4, (Color) i.next());
-            color(colorPanel5, (Color) i.next());
-            label.setForeground(fg);
-            label.setBackground(bg);
-            setForeground(fg);
-            setBackground(bg);
-            jbInit();
+            label = "(" + colors.size() + ") " +  name;
+            drawAt(0,(Color) i.next(), g2);
+            drawAt(1,(Color) i.next(), g2);
+            drawAt(2,(Color) i.next(), g2);
+            drawAt(3,(Color) i.next(), g2);
+            drawAt(4,(Color) i.next(), g2);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Draws a black bordered rectangle of color c with g2 at "ith" position
+     * in the inner image.
+     * @param i The index
+     * @param c The color of the fill
+     * @param g2 The graphics of the image
+     */
+    private void drawAt(int i, Color c, Graphics2D g2){
+        g2.setPaint(c);
+        g2.setBackground(c);
+        g2.fillRect(i*16,0,16,16);
+        g2.setPaint(Color.BLACK);
+        g2.drawRect(i*16,0, i<4 ? 16 : 15,15);
+    }
+
+    /**
+     * Gets the generated ImageIcon
+     * @return The icon
+     */
+    public ImageIcon getIcon(){
+        return new ImageIcon(result);
     }
 
     /**
@@ -56,98 +74,11 @@ public class ColorSchemeListCell
     }
 
     /**
-     * Sets the foreground and background colors of the given JLabel to {@code fillColor}.
-     * @param colorPanel The JLabel we want to color.
-     * @param fillColor The Color.
+     * Gets the label that should be used with the palette.
+     * @return The label.
      */
-    private void color(JLabel colorPanel, Color fillColor) {
-        colorPanel.setSize(new Dimension(8,8));
-        colorPanel.setOpaque(true);
-        colorPanel.setBackground(fillColor);
-        colorPanel.setForeground(fillColor);
-    }
-
-    /**
-     * Initializes the CellRenderer.
-     * @throws Exception
-     */
-    private void jbInit() throws Exception {
-        this.setLayout(gridBagLayout1);
-        label.setText("jLabel1");
-        this.add(
-                colorPanel1,
-                new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-                        ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 2, 0, 0), 0, 0));
-        this.add(
-                colorPanel2,
-                new GridBagConstraints(
-                        1,
-                        0,
-                        1,
-                        1,
-                        0.0,
-                        0.0,
-                        GridBagConstraints.CENTER,
-                        GridBagConstraints.NONE,
-                        new Insets(0, 0, 0, 0),
-                        0,
-                        0));
-        this.add(
-                colorPanel3,
-                new GridBagConstraints(
-                        2,
-                        0,
-                        1,
-                        1,
-                        0.0,
-                        0.0,
-                        GridBagConstraints.CENTER,
-                        GridBagConstraints.NONE,
-                        new Insets(0, 0, 0, 0),
-                        0,
-                        0));
-        this.add(
-                colorPanel4,
-                new GridBagConstraints(
-                        3,
-                        0,
-                        1,
-                        1,
-                        0.0,
-                        0.0,
-                        GridBagConstraints.CENTER,
-                        GridBagConstraints.NONE,
-                        new Insets(0, 0, 0, 0),
-                        0,
-                        0));
-        this.add(
-                colorPanel5,
-                new GridBagConstraints(
-                        4,
-                        0,
-                        1,
-                        1,
-                        0.0,
-                        0.0,
-                        GridBagConstraints.CENTER,
-                        GridBagConstraints.NONE,
-                        new Insets(0, 0, 0, 0),
-                        0,
-                        0));
-        this.add(
-                label,
-                new GridBagConstraints(5, 0, 1, 1, 1.0, 0.0
-                        ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 2, 0, 0), 0, 0));
-    }
-
-    /**
-     * Workaround for bug 4238829 in the Java bug database:
-     * "JComboBox containing JPanel fails to display selected item at creation time"
-     */
-    @Override
-    public void setBounds(int x, int y, int w, int h) {
-        super.setBounds(x, y, w, h);
-        validate();
+    public String getLabel(){
+        return label;
     }
 
 }

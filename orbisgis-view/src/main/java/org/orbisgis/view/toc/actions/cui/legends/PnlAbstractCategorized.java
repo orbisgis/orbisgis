@@ -17,16 +17,19 @@ import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelInterval;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorConfigurationPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;
+import org.orbisgis.view.toc.actions.cui.legends.panels.ColorSchemeListCell;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorSchemeListCellRenderer;
 import org.orbisgis.view.toc.actions.cui.legends.stats.Thresholds;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
 import java.beans.EventHandler;
 import java.util.*;
+import java.util.List;
 
 /**
  * Common base for all the panels used to configure the interval classifications.
@@ -143,7 +146,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         createCl.addActionListener(btn);
         List<String> schemeNames = ColorScheme.rangeColorSchemeNames();
         JComboBox schemes = new JComboBox(schemeNames.toArray(new String[schemeNames.size()]));
-        schemes.setRenderer(new ColorSchemeListCellRenderer());
+        schemes.setRenderer(new ColorSchemeListCellRenderer(new JList()));
         sec.add(numbLab);
         sec.add(jtf);
         sec.add(clLab);
