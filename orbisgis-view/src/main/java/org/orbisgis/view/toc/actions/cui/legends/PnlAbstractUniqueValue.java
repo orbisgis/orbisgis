@@ -37,6 +37,7 @@ import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.background.*;
@@ -106,14 +107,14 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
      * Disables the colour configuration.
      */
     public void onFromFallback(){
-        setFieldState(false,colorConfig);
+        ComponentUtil.setFieldState(false,colorConfig);
     }
 
     /**
      * Enables the colour configuration.
      */
     public void onComputed(){
-        setFieldState(true, colorConfig);
+        ComponentUtil.setFieldState(true, colorConfig);
     }
 
     /**

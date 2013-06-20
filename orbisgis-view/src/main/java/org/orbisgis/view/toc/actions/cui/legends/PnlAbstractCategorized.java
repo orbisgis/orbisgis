@@ -144,16 +144,12 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         btnPanel.add(createCl);
         ActionListener btn = EventHandler.create(ActionListener.class, this, "onComputeClassification");
         createCl.addActionListener(btn);
-        List<String> schemeNames = ColorScheme.rangeColorSchemeNames();
-        JComboBox schemes = new JComboBox(schemeNames.toArray(new String[schemeNames.size()]));
-        schemes.setRenderer(new ColorSchemeListCellRenderer(new JList()));
         sec.add(numbLab);
         sec.add(jtf);
         sec.add(clLab);
         sec.add(getMethodCombo());
         sec.add(btnPanel);
         ret.add(colorConfig);
-        ret.add(schemes);
         ret.add(sec);
         return ret;
     }

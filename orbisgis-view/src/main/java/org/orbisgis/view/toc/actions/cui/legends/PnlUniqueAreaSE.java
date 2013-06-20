@@ -38,6 +38,7 @@ import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
+import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
@@ -193,7 +194,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 gbc.gridy = 0;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 JPanel p1 = getLineBlock(uniqueArea.getPenStroke(), I18N.tr("Line configuration"));
-                setFieldState(displayStroke, p1);
+            ComponentUtil.setFieldState(displayStroke, p1);
                 glob.add(p1, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;
@@ -291,7 +292,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         }
 
         private void setAreaFieldsState(boolean state){
-                setFieldState(state, fill);
-                setFieldState(state, fillOpacity);
+                ComponentUtil.setFieldState(state, fill);
+                ComponentUtil.setFieldState(state, fillOpacity);
         }
 }
