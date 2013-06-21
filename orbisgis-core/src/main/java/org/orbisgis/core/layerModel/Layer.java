@@ -29,33 +29,33 @@
 package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.DataSource;
-import org.gdms.data.edition.EditionEvent;
-import org.gdms.data.edition.EditionListener;
-import org.gdms.data.edition.MultipleEditionEvent;
-import org.gdms.data.schema.Metadata;
-import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.sputilities.SFSUtilities;
+
+import javax.sql.DataSource;
 
 public class Layer extends BeanLayer {        
-	private DataSource dataSource;
+	private String dataSource;
 	private RefreshSelectionEditionListener editionListener;
 
-	public Layer(String name, DataSource ds) {
+	public Layer(String name, String tableRef) {
 		super(name);
-		this.dataSource = ds;
+		this.dataSource = tableRef;
 		editionListener = new RefreshSelectionEditionListener();
 	}
 
     @Override
-	public DataSource getDataSource() {
+	public String getDataSource() {
 		return dataSource;
 	}
 
@@ -127,7 +127,7 @@ public class Layer extends BeanLayer {
 		}
 	}
 
-	private int getFieldIndexForLegend(String fieldName) throws DriverException {
+	private int getFieldIndexForLegend(String fieldName) throws LayerException {
 		int sfi = dataSource.getFieldIndexByName(fieldName);
 		if (sfi == -1) {
 			throw new IllegalArgumentException(I18N.tr("The field {0} is not found",fieldName));
@@ -136,32 +136,45 @@ public class Layer extends BeanLayer {
 	}
 
     @Override
-	public boolean isRaster() throws DriverException {
-		return dataSource.isRaster();
+	public boolean isRaster() throws LayerException {
+		return false;
 	}
 
     @Override
-	public boolean isVectorial() throws DriverException {
-		return dataSource.isVectorial();
+	public boolean isVectorial() throws LayerException {
+        DataSource dataSource = Services.getService(DataSource.class);
+        if(dataSource==null || getDataSource()==null) {
+            throw new LayerException("This layer is not opened");
+        }
+        try {
+            Connection connection = dataSource.getConnection();
+            try {
+                return !SFSUtilities.getGeometryFields(connection,SFSUtilities.splitCatalogSchemaTableName(getDataSource())).isEmpty();
+            } finally {
+                connection.close();
+            }
+        } catch (SQLException ex) {
+            throw new LayerException(I18N.tr("Error while fetching source MetaData"));
+        }
 	}
 
         @Override
         public boolean isSerializable() {
-                return dataSource != null && dataSource.getSource().isWellKnownName();
+                return dataSource != null;
         }
 
 
     @Override
-	public GeoRaster getRaster() throws DriverException {
+	public GeoRaster getRaster() throws LayerException {
 		if (!isRaster()) {
 			throw new UnsupportedOperationException(
 					I18N.tr("This layer is not a raster"));
 		}
-		return getDataSource().getRaster(0);
+		return null;
 	}
 
 	@Override
-	public List<Rule> getRenderingRule() throws DriverException {
+	public List<Rule> getRenderingRule() throws LayerException {
                 List<Style> styles = getStyles();
                 ArrayList<Rule> ret = new ArrayList<Rule>();
                 for(Style s : styles){
@@ -170,29 +183,6 @@ public class Layer extends BeanLayer {
                         }
                 }
 		return ret;
-	}
-
-	private class RefreshSelectionEditionListener implements EditionListener {
-
-                @Override
-		public void multipleModification(MultipleEditionEvent e) {
-			EditionEvent[] events = e.getEvents();
-                        for(EditionEvent event : events) {
-                                selection.remove((int)event.getRowIndex());
-                        }
-                        fireSelectionChanged();
-		}
-
-                @Override
-		public void singleModification(EditionEvent e) {
-			if (e.getType() == EditionEvent.DELETE) {
-				selection.remove((int)e.getRowIndex());
-                                fireSelectionChanged();
-			} else if (e.getType() == EditionEvent.RESYNC) {
-				setSelection(new IntegerUnion());
-			}
-
-		}
 	}
 
 	private void fireSelectionChanged() {
@@ -208,7 +198,7 @@ public class Layer extends BeanLayer {
 	}
 
 	@Override
-	public boolean isStream() throws DriverException {
-		return dataSource.isStream();
+	public boolean isStream() throws LayerException {
+		return false;
 	}
 }

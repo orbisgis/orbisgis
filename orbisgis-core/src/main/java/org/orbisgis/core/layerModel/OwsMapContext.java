@@ -33,6 +33,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -40,6 +43,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -54,16 +58,6 @@ import net.opengis.ows_context.ResourceListType;
 import net.opengis.ows_context.StyleType;
 import net.opengis.ows_context.URLType;
 import org.apache.log4j.Logger;
-import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SourceAlreadyExistsException;
-import org.gdms.driver.DriverException;
-import org.gdms.source.SourceEvent;
-import org.gdms.source.SourceListener;
-import org.gdms.source.SourceManager;
-import org.gdms.source.SourceRemovalEvent;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
@@ -75,7 +69,7 @@ import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.core.renderer.se.common.LocalizedText;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.utils.FileUtils;
+import org.orbisgis.sputilities.SFSUtilities;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -91,7 +85,6 @@ public final class OwsMapContext extends BeanMapContext {
         private static final Logger LOGGER = Logger.getLogger(OwsMapContext.class);
         private ArrayList<MapContextListener> listeners = new ArrayList<MapContextListener>();
         private OpenerListener openerListener;
-        private LayerRemovalSourceListener sourceListener;
         private boolean open = false;
         private OWSContextType jaxbMapContext = null; //Persistent form of the MapContext
         private long idTime;
@@ -101,7 +94,6 @@ public final class OwsMapContext extends BeanMapContext {
          */
         public OwsMapContext() {
                 openerListener = new OpenerListener();
-                sourceListener = new LayerRemovalSourceListener();
                 setRootLayer(createLayerCollection("root"));
 
                 //Create an empty map context
@@ -110,37 +102,33 @@ public final class OwsMapContext extends BeanMapContext {
         }
 
         @Override
-        public ILayer createLayer(String layerName, DataSource sds) throws LayerException {
-            int type = sds.getSource().getType();
+        public ILayer createLayer(String layerName, String tableRef) throws LayerException {
 
-            boolean hasSpatialData = true;
-            if ((type & SourceManager.VECTORIAL) == 0 && (type & SourceManager.STREAM) == 0
-                    && (type & SourceManager.SQL) == SourceManager.SQL) {
-                int sfi;
+            // Get DataSource
+            DataSource dataSource = Services.getService(DataSource.class);
+            if(dataSource!=null) {
                 try {
-                    sds.open();
-                    sfi = sds.getSpatialFieldIndex();
+                    Connection connection = dataSource.getConnection();
                     try {
-                        sds.close();
-                    } catch (AlreadyClosedException e) {
-                        // ignore
-                        LOGGER.debug(I18N.tr("Cannot close the data source"), e);
+                        List<String> geoFields = SFSUtilities.getGeometryFields(connection,SFSUtilities.splitCatalogSchemaTableName(tableRef));
+                        if (!geoFields.isEmpty()) {
+                            return new Layer(layerName, tableRef);
+                        } else {
+                            throw new LayerException(I18N.tr("The source contains no spatial info"));
+                        }
+                    } finally {
+                        connection.close();
                     }
-                    hasSpatialData = (sfi != -1);
-                } catch (DriverException e) {
-                    throw new LayerException(I18N.tr("Cannot check source contents"), e);
+                } catch (SQLException ex) {
+                    throw new LayerException("Cannot retrieve spatial metadata",ex);
                 }
             }
-            if (hasSpatialData) {
-                return new Layer(layerName, sds);
-            } else {
-                throw new LayerException(I18N.tr("The source contains no spatial info"));
-            }
+            throw new LayerException("Cannot retrieve table metadata");
         }
 
         @Override
-        public ILayer createLayer(DataSource sds) throws LayerException {
-                return createLayer(sds.getName(), sds);
+        public ILayer createLayer(String tableRef) throws LayerException {
+                return createLayer(SFSUtilities.splitCatalogSchemaTableName(tableRef).getTable(), tableRef);
         }
 
         @Override
@@ -481,23 +469,16 @@ public final class OwsMapContext extends BeanMapContext {
                         }
                 }
                 layerModel.removeLayerListenerRecursively(openerListener);
-
-                // Remove Listener source removal
-                DataManager dm = Services.getService(DataManager.class);
-                dm.getSourceManager().removeSourceListener(sourceListener);
-
                 this.open = false;
-
-
         }
 
         /**
          * Register a layer DataURL from an URI
-         *
+         * @return Table reference
          */
-        private DataSource registerLayerResource(URI resourceUri) throws NoSuchTableException, DataSourceCreationException {
+        private String registerLayerResource(URI resourceUri) throws SQLException {
                 DataManager dm = Services.getService(DataManager.class);
-                return dm.getDataSource(resourceUri);
+                return dm.registerDataSource(resourceUri);
         }
 
         /**
@@ -515,7 +496,7 @@ public final class OwsMapContext extends BeanMapContext {
                         //it corresponding to a leaf layer
                         //We need to read the data declaration and create the layer
                         URLType dataUrl = lt.getDataURL();
-                        DataSource layerSource = null;
+                        String layerSource = null;
                         if (dataUrl != null) {
                                 OnlineResourceType resType = dataUrl.getOnlineResource();
                                 if (resType != null) {
@@ -531,6 +512,7 @@ public final class OwsMapContext extends BeanMapContext {
                         }
                         if (layerSource != null) {
                                 try {
+                                        //Get table name
                                         ILayer leafLayer = createLayer(layerSource);
                                         leafLayer.setDescription(new Description(lt));
                                         leafLayer.setVisible(!lt.isHidden());
@@ -637,57 +619,11 @@ public final class OwsMapContext extends BeanMapContext {
                 
                 loadOwsContext();
                 jaxbMapContext = null;
-
-
-                // Listen source removal events
-                DataManager dm = Services.getService(DataManager.class);
-                dm.getSourceManager().addSourceListener(sourceListener);
         }
 
         @Override
         public boolean isOpen() {
                 return open;
-        }
-
-        private final class LayerRemovalSourceListener implements SourceListener {
-
-                @Override
-                public void sourceRemoved(final SourceRemovalEvent e) {
-                        LayerCollection.processLayersLeaves(layerModel,
-                                new DeleteLayerFromResourceAction(e));
-                }
-
-                @Override
-                public void sourceNameChanged(SourceEvent e) {
-                }
-
-                @Override
-                public void sourceAdded(SourceEvent e) {
-                }
-        }
-
-        private final class DeleteLayerFromResourceAction implements
-                org.orbisgis.core.layerModel.ILayerAction {
-
-                private ArrayList<String> resourceNames = new ArrayList<String>();
-
-                private DeleteLayerFromResourceAction(SourceRemovalEvent e) {
-                        String[] aliases = e.getNames();
-                        resourceNames.addAll(Arrays.asList(aliases));
-                        resourceNames.add(e.getName());
-                }
-
-                @Override
-                public void action(ILayer layer) {
-                        String layerName = layer.getName();
-                        if (resourceNames.contains(layerName)) {
-                                try {
-                                        layer.getParent().remove(layer);
-                                } catch (LayerException e) {
-                                        LOGGER.error(I18N.tr("Cannot associate layer {0}, this layer must be removed manually", layer.getName()), e);
-                                }
-                        }
-                }
         }
 
         /*

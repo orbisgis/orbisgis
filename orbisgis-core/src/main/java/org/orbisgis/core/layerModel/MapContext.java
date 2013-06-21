@@ -32,7 +32,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import java.beans.PropertyChangeListener;
 import java.io.InputStream;
 import java.io.OutputStream;
-import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.common.Description;
@@ -105,19 +104,19 @@ public interface MapContext {
 
         /**
          * Return a new layer corresponding to the provided data source
-         * @param sds Spatial data source
+         * @param tableRef Spatial data source name
          * @return A new layer linked with this data source
          * @throws LayerException The creation of the layer fail
          */
-        public ILayer createLayer(DataSource sds) throws LayerException;
+        public ILayer createLayer(String tableRef) throws LayerException;
         /**
          * Return a new layer corresponding to the provided data source
          * @param layerName Layer name with the default Locale
-         * @param sds Spatial data source
+         * @param tableRef Spatial data source
          * @return A new layer linked with this data source
          * @throws LayerException The creation of the layer fail
          */
-        public ILayer createLayer(String layerName, DataSource sds) throws LayerException;
+        public ILayer createLayer(String layerName, String tableRef) throws LayerException;
 
         /**
          * Return a new layer group
@@ -204,7 +203,7 @@ public interface MapContext {
 	 * Sets the selected styles. If the specified layers are not in the map
 	 * context they are removed from selection.
 	 *
-	 * @param selectedLayers
+	 * @param selectedStyles
 	 * @throws IllegalStateException
 	 *             If the map is closed
 	 */

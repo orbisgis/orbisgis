@@ -28,117 +28,44 @@
  */
 package org.orbisgis.core;
 
-import java.io.File;
+import javax.sql.RowSet;
 import java.net.URI;
+import java.sql.SQLException;
+import java.sql.Statement;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.indexes.IndexManager;
-import org.gdms.source.SourceManager;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.LayerException;
-
+/**
+ * DataManager has been created in order to minimize the usage of JDBC transaction when the ResultSet is
+ * frequently read or updated. It can also manage a local modification history, in order to listen modifications.
+ */
 public interface DataManager {
     /**
      * Free DataManager instance resources
      */
     void dispose();
-	/**
-	 * Gets the DataSourceFactory of the system
-	 * 
-	 * @return
-	 */
-	DataSourceFactory getDataSourceFactory();
-
-	/**
-	 * Gets the manager of all the registered data sources
-	 * 
-	 * @return
-	 */
-	SourceManager getSourceManager();
-
-	/**
-	 * Gets the index manager of the system
-	 * 
-	 * @return
-	 */
-	IndexManager getIndexManager();
 
     /**
-     * The method return a unique instance of editable DataSource for a given source name.
-     * Do not forget to call {@link org.gdms.data.DataSource#open()} and {@link org.gdms.data.DataSource#close()} when no longer used.
-     * {@link DataSourceFactory#getDataSource(String)} always create a new DataSource instance for each call.
-     * This method has been created in order to see the impact of edition before the {@link org.gdms.data.DataSource#commit()} method is called.
-     * @param sourceName Source name, must exists.
-     * @return DataSource instance
-     * @throws NoSuchTableException if there is no source with that name
-     * @throws DataSourceCreationException if the DataSource could not be created
+     * Return the result set corresponding to the content of a table or view.
+     * @param sourceName Table reference (can include schema and/or database)
+     * @return RowSet implementation.
+     * @throws SQLException If the table does not exists
      */
-    DataSource getDataSource(String sourceName) throws NoSuchTableException, DataSourceCreationException;
+    RowSet getDataSource(String sourceName) throws SQLException;
 
     /**
-     * The method return a unique instance of DataSource for a given source path
-     * @param uri Source file path
-     * @return  DataSource instance
-     * @throws NoSuchTableException if there is no source with that name
-     * @throws DataSourceCreationException if the DataSource could not be created
+     * Return the result set corresponding to the result of a statement.
+     * This function never return the same ResultSet for the same statement.
+     * @param statement Query method statement
+     * @return RowSet implementation.
+     * @throws SQLException Error while executing the statement.
      */
-    DataSource getDataSource(URI uri) throws NoSuchTableException, DataSourceCreationException;
-	/**
-	 * Creates a layer on the source which name is equal to the specified name
-	 * 
-	 * @param sourceName
-	 * @return
-	 * @throws LayerException
-	 *             if the layer could not be created
-     * @deprecated Use {@link org.orbisgis.core.layerModel.MapContext#createLayer(org.gdms.data.DataSource)}
-	 */
-	ILayer createLayer(String sourceName) throws LayerException;
+    RowSet getDataSource(Statement statement) throws SQLException;
 
-	/**
-	 * Creates a layer that accesses the specified DataSource. The DataSource
-	 * must have been obtained from the DataSourceFactory accessible by this
-	 * interface
-	 * 
-	 * @param dataSource
-	 * @return
-	 * @throws LayerException
-	 *             If the layer cannot be created
-     * @deprecated Use {@link org.orbisgis.core.layerModel.MapContext#createLayer(org.gdms.data.DataSource)}
-	 */
-	ILayer createLayer(DataSource dataSource) throws LayerException;
-
-	/**
-	 * Creates a layer collection with the specified name
-     * @deprecated Use {@link org.orbisgis.core.layerModel.MapContext#createLayer(org.gdms.data.DataSource)}
-	 */
-	ILayer createLayerCollection(String layerName);
-
-	/**
-	 * Creates a layer on the specified file with the specified name. The file
-	 * is added as a source in the source manager
-	 * 
-	 * @param name
-	 * @param file
-	 * @return
-	 * @throws LayerException
-	 *             If the layer could not be created
-     * @deprecated Use {@link org.orbisgis.core.layerModel.MapContext#createLayer(org.gdms.data.DataSource)}
-	 */
-	ILayer createLayer(String name, File file) throws LayerException;
-
-	/**
-	 * Creates a layer on the specified file with a random name. The file is
-	 * added as a source in the source manager
-	 * 
-	 * @param file
-	 * @return
-	 * @throws LayerException
-	 *             If the layer could not be created
-     * @deprecated Use {@link org.orbisgis.core.layerModel.MapContext#createLayer(org.gdms.data.DataSource)}
-	 */
-	ILayer createLayer(File file) throws LayerException;
-
+    /**
+     * This method use the URI in order to upload or link a data source.
+     * It can take time if the data has to be uploaded.
+     * @param uri Source path
+     * @return Table reference (can include schema and/or database)
+     * @throws SQLException Error while transaction with JDBC
+     */
+    String registerDataSource(URI uri) throws SQLException;
 }

@@ -33,9 +33,6 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Set;
 import net.opengis.ows_context.LayerType;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.Type;
-import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
@@ -245,45 +242,45 @@ public interface ILayer {
 	 * Gets all the raster layers in the tree under this layer
 	 * 
 	 * @return
-	 * @throws DriverException
+	 * @throws LayerException
 	 */
-	ILayer[] getRasterLayers() throws DriverException;
+	ILayer[] getRasterLayers() throws LayerException;
 
 	/**
 	 * Gets all the vectorial layers in the tree under this layer
 	 * 
 	 * @return
-	 * @throws DriverException
+	 * @throws LayerException
 	 */
-	ILayer[] getVectorLayers() throws DriverException;
+	ILayer[] getVectorLayers() throws LayerException;
 
 	/**
 	 * Returns true if the default spatial field of this layer is of type
-	 * {@link Type}.RASTER. Return false if the layer is a collection of layers
+     * RASTER. Return false if the layer is a collection of layers
 	 * or it doesn't contain any spatial field
 	 * 
 	 * @return
-	 * @throws DriverException
+	 * @throws LayerException
 	 */
-	boolean isRaster() throws DriverException;
+	boolean isRaster() throws LayerException;
 
 	/**
 	 * Returns true if the default spatial field of this layer is of type
-	 * {@link Type}.GEOMETRY. Return false if the layer is a collection of
+	 * GEOMETRY. Return false if the layer is a collection of
 	 * layers or it doesn't contain any spatial field
 	 * 
 	 * @return
-	 * @throws DriverException
+	 * @throws LayerException
 	 */
-	boolean isVectorial() throws DriverException;
+	boolean isVectorial() throws LayerException;
 
 	/**
 	 * Returns true if this layer represents a Stream source.
 	 * 
          * @return
-         * @throws DriverException  
+         * @throws LayerException
 	 */
-	boolean isStream() throws DriverException;
+	boolean isStream() throws LayerException;
 
 	/**
 	 * Returns a table reference to access the source of this layer
