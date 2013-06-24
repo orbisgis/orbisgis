@@ -464,6 +464,13 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
     }
 
     /**
+     * Shows the dialog for the given legend in the card layout.
+     */
+    protected void showDialogForLegend(ISELegendPanel selected) {
+        cardLayout.show(dialogContainer, selected.getId());
+    }
+
+    /**
      * Retrieves the currently selected legend in the tree and shows the
      * corresponding dialog in the card layout; shows the empty panel if no
      * legend is selected.
