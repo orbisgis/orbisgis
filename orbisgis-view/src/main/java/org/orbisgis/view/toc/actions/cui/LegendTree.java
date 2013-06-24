@@ -342,6 +342,7 @@ public class LegendTree extends JPanel {
         ActionListener aladd = EventHandler.create(
                 ActionListener.class, this, "addElement");
         jButtonMenuAdd.addActionListener(aladd);
+        jButtonMenuAdd.setFocusPainted(false);
         toolBar.add(jButtonMenuAdd);
 
         jButtonMenuDel = new JButton();
