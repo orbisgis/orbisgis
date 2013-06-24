@@ -174,8 +174,8 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
         // Put everything inside a split pane.
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                                               legendTree, dialogContainer);
-        splitPane.setOneTouchExpandable(true);
-        splitPane.setDividerLocation(200);
+        // Should be just wide enough for "Interval classification - Point"
+        splitPane.setDividerLocation(260);
         Dimension minimumSize = new Dimension(100, 50);
         legendTree.setMinimumSize(minimumSize);
         dialogContainer.setMinimumSize(minimumSize);
