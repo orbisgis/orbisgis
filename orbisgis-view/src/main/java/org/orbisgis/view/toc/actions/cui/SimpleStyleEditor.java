@@ -164,11 +164,6 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
         dialogContainer = new JPanel(cardLayout);
         dialogContainer.setPreferredSize(new Dimension(600, 650));
         addEmptyDialog();
-        // Prepare the right hand side, consisting of the layer tag
-        // above the dialog.
-        JPanel rightHandSide = new JPanel(new BorderLayout());
-        rightHandSide.add(getLayerTag(), BorderLayout.NORTH);
-        rightHandSide.add(dialogContainer, BorderLayout.CENTER);
 
         // Add all panels.
         styleWrapper = addAllPanels(style);
@@ -178,9 +173,9 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
 
         // Put everything inside a split pane.
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                                              legendTree, rightHandSide);
-        splitPane.setOneTouchExpandable(true);
-        splitPane.setDividerLocation(200);
+                                              legendTree, dialogContainer);
+        // Should be just wide enough for "Interval classification - Point"
+        splitPane.setDividerLocation(260);
         Dimension minimumSize = new Dimension(100, 50);
         legendTree.setMinimumSize(minimumSize);
         dialogContainer.setMinimumSize(minimumSize);
@@ -242,33 +237,6 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
         legends.add(pointInterval);
 
         return legends.toArray(new ILegendPanel[legends.size()]);
-    }
-
-    /**
-     * Puts the layer tag and a separator in a new {@link JPanel}.
-     *
-     * @return The layer tag and a separator in a new {@link JPanel}
-     */
-    private JPanel getLayerTag() {
-        // Add the layer tag and the dialog panel to the EAST side.
-        JPanel right = new JPanel(new BorderLayout());
-        // Add the layer tag.
-        JLabel layerTag = new JLabel(
-                "<html><b>"
-                + I18N.tr("Editing layer")
-                + "</b>: " + layer.getName());
-        layerTag.setHorizontalAlignment(JLabel.CENTER);
-        // TODO: Set the size a better way? This is to align with the
-        // toolbar on the west side.
-        Dimension size = new Dimension(layerTag.getWidth(), 22);
-        layerTag.setMinimumSize(size);
-        layerTag.setPreferredSize(size);
-        right.add(layerTag, BorderLayout.NORTH);
-        // Add a separator.
-        JSeparator hRule = new JSeparator();
-        hRule.setMinimumSize(hRule.getSize());
-        right.add(hRule, BorderLayout.CENTER);
-        return right;
     }
 
     /**
@@ -464,6 +432,13 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
     }
 
     /**
+     * Shows the dialog for the given legend in the card layout.
+     */
+    protected void showDialogForLegend(ISELegendPanel selected) {
+        cardLayout.show(dialogContainer, selected.getId());
+    }
+
+    /**
      * Retrieves the currently selected legend in the tree and shows the
      * corresponding dialog in the card layout; shows the empty panel if no
      * legend is selected.
@@ -582,7 +557,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
 
     @Override
     public String getTitle() {
-        return I18N.tr("Simple Style Editor");
+        return I18N.tr("Simple Style Editor - " + layer.getName());
     }
 
     @Override
