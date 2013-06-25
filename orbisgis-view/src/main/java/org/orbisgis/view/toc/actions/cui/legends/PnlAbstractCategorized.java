@@ -193,11 +193,11 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         CategorizeMethod cm = CategorizeMethod.valueOf(selectedItem.getKey());
         SortedSet<Double> set = thresholds.getThresholds(cm,classNumber);
         if(!set.isEmpty()){
+            ColorScheme sc = colorConfig.getColorScheme();
             MappedLegend<Double,U> cl = createColouredClassification(
                     set,
                     new NullProgressMonitor(),
-                    colorConfig.getStartColor(),
-                    colorConfig.getEndCol());
+                    sc);
             cl.setLookupFieldName(((MappedLegend)getLegend()).getLookupFieldName());
             cl.setName(getLegend().getName());
             setLegend(cl);
