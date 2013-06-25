@@ -38,17 +38,28 @@ public class ColorConfigurationPanel extends JPanel {
     public ColorConfigurationPanel(){
         super();
         JPanel intOne = new JPanel();
-        GridLayout gl = new GridLayout(2,2);
-        intOne.setLayout(gl);
+        GridBagLayout gbl = new GridBagLayout();
+        intOne.setLayout(gbl);
         grad = getGradientPanel();
-//        grad.setAlignmentY(.5f);
         pal = getPalettesPanel();
-//        pal.setAlignmentY(.5f);
         initButtons();
-        intOne.add(bGrad);
-        intOne.add(grad);
-        intOne.add(bPal);
-        intOne.add(pal);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        intOne.add(bGrad,gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        intOne.add(grad,gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        intOne.add(bPal,gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        intOne.add(pal,gbc);
         this.add(intOne);
     }
 
