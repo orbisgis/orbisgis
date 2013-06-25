@@ -81,8 +81,8 @@ public class LegendTree extends JPanel {
     private JButton jButtonMenuRename;
     private JButton jButtonMenuUp;
 
-    public LegendTree(final SimpleStyleEditor simpleStyleEditor) {
-        this.simpleStyleEditor = simpleStyleEditor;
+    public LegendTree(final SimpleStyleEditor simpleEditor) {
+        simpleStyleEditor = simpleEditor;
 
         StyleWrapper style = simpleStyleEditor.getStyleWrapper();
         //We create our tree
@@ -103,6 +103,7 @@ public class LegendTree extends JPanel {
         //We want to select only one element at a time.
         tree.getSelectionModel().setSelectionMode(
                 TreeSelectionModel.SINGLE_TREE_SELECTION);
+        selectAndShowFirstLegend(style);
         //We refresh icons when the selection changes.
         TreeSelectionListener tsl = EventHandler.create(
                 TreeSelectionListener.class, this, "refreshIcons");
@@ -248,7 +249,6 @@ public class LegendTree extends JPanel {
             }
         }
         return null;
-
     }
 
     /**
@@ -342,6 +342,7 @@ public class LegendTree extends JPanel {
         ActionListener aladd = EventHandler.create(
                 ActionListener.class, this, "addElement");
         jButtonMenuAdd.addActionListener(aladd);
+        jButtonMenuAdd.setFocusPainted(false);
         toolBar.add(jButtonMenuAdd);
 
         jButtonMenuDel = new JButton();
@@ -506,6 +507,23 @@ public class LegendTree extends JPanel {
 
     private void refreshModel() {
         ((LegendTreeModel) tree.getModel()).refresh();
+    }
+
+    /**
+     * Selects the first legend attached to the given style in this
+     * {@link LegendTree} and displays it in the Simple Style Editor's card
+     * layout.
+     *
+     * @param style Style
+     */
+    private void selectAndShowFirstLegend(StyleWrapper style) {
+        RuleWrapper firstRW = style.getRuleWrapper(0);
+        ILegendPanel firstPanel = firstRW.getLegend(0);
+        TreePath tp = new TreePath(style)
+                .pathByAddingChild(firstRW)
+                .pathByAddingChild(firstPanel);
+        tree.setSelectionPath(tp);
+        simpleStyleEditor.showDialogForLegend(firstPanel);
     }
 
     /**
