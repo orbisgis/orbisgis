@@ -80,11 +80,11 @@ public class Thresholds {
      * @return The thresholds.
      */
     public SortedSet<Double> getQuantiles(int classNumber){
-        Double step = 100/((double)classNumber+1.0);
+        Double step = 100/((double)classNumber);
         TreeSet<Double> ret = new TreeSet<Double>();
         Double min = stats.getMin();
         ret.add(min);
-        for(int i=1; i<=classNumber; i++){
+        for(int i=1; i<classNumber; i++){
             double p = i*step;
             ret.add(stats.getPercentile(p));
         }
