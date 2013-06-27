@@ -136,22 +136,6 @@ public abstract class AbstractFieldPanel extends JPanel {
     }
 
     /**
-     * Recursively enables or disables all the components contained in the
-     * containers of {@code comps}.
-     * @param enable Tell if the underlying components should be active or not
-     * @param comp The root component.
-     */
-    protected void setFieldState(boolean enable, Component comp){
-        comp.setEnabled(enable);
-        if(comp instanceof Container){
-            Component[] comps = ((Container)comp).getComponents();
-            for(Component c: comps){
-                setFieldState(enable, c);
-            }
-        }
-    }
-
-    /**
      * This method will let the user choose a color that will be set as the
      * background of the source of the event.
      * @param e The input event.
