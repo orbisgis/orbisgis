@@ -5,7 +5,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
- * Utility class to manage icons and components, and put them in icons.
+ * This utility class intends to merge icons and components and put them
+ * in a final icon. The main goal is to be able to bypass a swing bug that
+ * prevents us to use complex components in some cell renderers.
  * @author Nicolas Fortin
  * @author Alexis Guéganno
  */

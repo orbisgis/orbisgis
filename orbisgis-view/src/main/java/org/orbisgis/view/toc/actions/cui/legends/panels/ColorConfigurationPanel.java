@@ -119,7 +119,7 @@ public class ColorConfigurationPanel extends JPanel {
     }
 
     /**
-     * Initialized the buttons used to configure how coloured classification must be generated.
+     * Initializes the buttons used to configure how coloured classification must be generated.
      */
     private void  initButtons(){
         bGrad = new JRadioButton("");

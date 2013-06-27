@@ -28,7 +28,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Base class for the analysis that rely on a "table", ie value and interval classifications. It provides some
+ * Base class for the analysis that relies on a "table", ie value and interval classifications. It provides some
  * useful methods related to colour generation and JTable management, and a framework used by the inheritors.
  * @author Alexis Guéganno
  */
