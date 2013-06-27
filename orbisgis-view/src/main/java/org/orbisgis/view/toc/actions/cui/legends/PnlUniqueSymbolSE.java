@@ -140,7 +140,7 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
          * @return A {@code JTextField}
          */
         public JTextField getDashArrayField(final ConstantColorAndDashesPSLegend cps){
-                final JTextField jrf = new JTextField();
+                final JTextField jrf = new JTextField("", 8);
                 jrf.setText(cps.getDashArray());
                 jrf.setHorizontalAlignment(JFormattedTextField.RIGHT);
                 jrf.addActionListener(new ActionListener() {
