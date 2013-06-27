@@ -81,6 +81,12 @@ public class ColorConfigurationPanel extends JPanel {
         return lblFill;
     }
 
+    /**
+     * Builds and return the panel used for the simple gradient computation. It contains
+     * two labels whose color can be changed to define the start and end colour of the
+     * gradient, and two other labels describing them.
+     * @return The labels in a JPanel.
+     */
     private JPanel getGradientPanel(){
         JPanel ret = new JPanel();
         JPanel start = new JPanel();
@@ -99,6 +105,10 @@ public class ColorConfigurationPanel extends JPanel {
         return ret;
     }
 
+    /**
+     * Gets the panel containing the palette configuration.
+     * @return The JPanel that contains the combo where we put the palettes.
+     */
     private JPanel getPalettesPanel(){
         java.util.List<String> schemeNames = ColorScheme.rangeColorSchemeNames();
         schemes = new JComboBox(schemeNames.toArray(new String[schemeNames.size()]));

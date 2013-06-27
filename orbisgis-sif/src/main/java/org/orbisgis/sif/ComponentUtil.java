@@ -3,6 +3,7 @@ package org.orbisgis.sif;
 import java.awt.*;
 
 /**
+ * This class intends to gather methods that are useful to handle swing components.
  * @author Alexis Guéganno
  */
 public class ComponentUtil {

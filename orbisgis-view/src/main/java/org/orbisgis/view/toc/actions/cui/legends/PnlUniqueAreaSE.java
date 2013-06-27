@@ -53,7 +53,7 @@ import java.beans.EventHandler;
 import java.net.URL;
 
 /**
- *
+ * This panel is used to configure a unique symbol configuration for an area symbolizer.
  * @author Alexis Guéganno
  */
 public class PnlUniqueAreaSE extends PnlUniqueLineSE {

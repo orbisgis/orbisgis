@@ -69,6 +69,9 @@ public class ColorScheme {
         return new ColorScheme(name, nameToColorsMap().get(name));
     }
 
+    /**
+     * Fills the inner collections using the dedicated resource file.
+     */
     private static void load() {
         try {
             rangeColorSchemeNames = new ArrayList<String>();
@@ -92,6 +95,11 @@ public class ColorScheme {
             Assert.shouldNeverReachHere(e.toString());
         }
     }
+
+    /**
+     * Parses the given String and adds the results in the collections.
+     * @param line The line to be parsed.
+     */
     private static void add(String line) {
         StringTokenizer tokenizer = new StringTokenizer(line, ",");
         String name = tokenizer.nextToken();
@@ -105,6 +113,12 @@ public class ColorScheme {
         }
         nameToColorsMap().put(name, list);
     }
+
+    /**
+     * retrieve the [Name -> List&lt;Color&gt;] mapping statically stored. If not already instanciated, it will
+     * be created.
+     * @return The color scheme mapping
+     */
     private static Map<String,List<Color>> nameToColorsMap() {
         if (nameToColorsMap == null) {
             load();
@@ -201,6 +215,11 @@ public class ColorScheme {
         return name;
     }
 
+    /**
+     * Gets a subset of the palette, selecting {@code num} colours in the given palette.
+     * @param num The desired number of colours
+     * @return The colours in a List.
+     */
     public List<Color> getSubset(int num){
         List<Color> destination = new ArrayList<Color>();
 
