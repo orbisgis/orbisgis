@@ -39,11 +39,8 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
-import javax.swing.JPanel;
+import javax.swing.*;
+
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
@@ -75,8 +72,8 @@ public class PnlProportionalLineSE extends PnlUniqueSymbolSE {
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlProportionalLineSE.class);
         private DataSource ds;
         private JPanel lineColor;
-        private JPanel lineOpacity;
-        private JPanel lineDash;
+        private JSpinner lineOpacity;
+        private JFormattedTextField lineDash;
 
         @Override
         public Legend getLegend() {

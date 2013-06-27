@@ -41,6 +41,7 @@ public class UomCombo extends JPanel {
             values[i] = I18N.tr(units[i].toString());
         }
         jcc = new JComboBox(values);
+        ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         jcc.setSelectedItem(uom.toString().toUpperCase());
         return jcc;
     }

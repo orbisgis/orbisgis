@@ -58,7 +58,7 @@ import java.net.URL;
 public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueAreaSE.class);
         private JPanel fill;
-        private JPanel fillOpacity;
+        private JSpinner fillOpacity;
         private JCheckBox areaCheckBox;
         private ConstantSolidFillLegend solidFillMemory;
 
@@ -222,38 +222,41 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 if(getPreview() == null && getLegend() != null){
                         initPreview();
                 }
-                ConstantSolidFill fl = fillLegend instanceof ConstantSolidFillLegend ? fillLegend : solidFillMemory;
-                JPanel glob = new JPanel();
-                glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
+
                 JPanel jp = new JPanel();
-                int db = displayBoxes ? 1 : 0;
-                GridLayout grid = new GridLayout(2+db,3);
-                grid.setVgap(5);
+                GridLayout grid = new GridLayout(
+                        0, 2, HGAP, VGAP);
                 jp.setLayout(grid);
+                jp.setBorder(BorderFactory.createTitledBorder(title));
+
+                ConstantSolidFill fl =
+                        (fillLegend instanceof ConstantSolidFillLegend)
+                        ? fillLegend : solidFillMemory;
                 if(displayBoxes){
-                    //The JCheckBox that can be used to enable/disable the fill conf.
-                    jp.add(buildText(I18N.tr("Enable fill : ")));
-                    areaCheckBox = new JCheckBox("");
-                    ActionListener acl = EventHandler.create(ActionListener.class, this, "onClickAreaCheckBox");
-                    areaCheckBox.addActionListener(acl);
+                    // The JCheckBox that can be used to enable/disable the
+                    // fill conf.
+                    areaCheckBox = new JCheckBox(I18N.tr("Enable"));
+                    areaCheckBox.addActionListener(
+                            EventHandler.create(ActionListener.class, this, "onClickAreaCheckBox"));
                     jp.add(areaCheckBox);
-                    //We must check the CheckBox according to leg, not to legend.
-                    //legend is here mainly to let us fill safely all our
-                    //parameters.
+                    // We must check the CheckBox according to leg, not to legend.
+                    // legend is here mainly to let us fill safely all our
+                    // parameters.
                     areaCheckBox.setSelected(fillLegend instanceof ConstantSolidFillLegend);
+                } else {
+                    // Just add blank space
+                    jp.add(Box.createGlue());
                 }
-                //Color
+
+                // Color
                 fill = getColorField(fl);
-                jp.add(buildText(I18N.tr("Fill color :")));
                 jp.add(fill);
-                //Opacity
+                // Opacity
                 fillOpacity = getLineOpacitySpinner(fl);
-                jp.add(buildText(I18N.tr("Fill opacity :")));
+                jp.add(buildText(I18N.tr("Opacity")));
                 jp.add(fillOpacity);
-                //We add a canvas to display a preview.
-                glob.add(jp);
-                glob.setBorder(BorderFactory.createTitledBorder(title));
-                return glob;
+
+                return jp;
         }
 
         /**

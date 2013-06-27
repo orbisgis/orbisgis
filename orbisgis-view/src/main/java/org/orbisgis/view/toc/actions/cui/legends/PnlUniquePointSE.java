@@ -42,7 +42,6 @@ import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
-import org.orbisgis.sif.components.JNumericSpinner;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -193,32 +192,43 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         private void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel();
-                GridBagLayout grid = new GridBagLayout();
-                glob.setLayout(grid);
+                glob.setLayout(new GridBagLayout());
+
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 0;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
-                JPanel p1 = getLineBlock(uniquePoint.getPenStroke(), I18N.tr("Line configuration"));
-                glob.add(p1, gbc);
+                gbc.anchor = GridBagConstraints.PAGE_START;
+                glob.add(getLineBlock(uniquePoint.getPenStroke(),
+                        I18N.tr("Border settings")), gbc);
+
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 1;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
-                gbc.insets = new Insets(5, 0, 5, 0);
-                JPanel p2 = getAreaBlock(uniquePoint.getFillLegend(), I18N.tr("Fill configuration"));
-                glob.add(p2, gbc);
+                gbc.anchor = GridBagConstraints.PAGE_START;
+                glob.add(getAreaBlock(uniquePoint.getFillLegend(),
+                                      I18N.tr("Fill settings")), gbc);
+
                 gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 2;
+                gbc.gridx = 1;
+                gbc.gridy = 0;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
-                gbc.insets = new Insets(5, 0, 5, 0);
-                JPanel p3 = getPointBlock(uniquePoint, I18N.tr("Mark configuration"));
-                glob.add(p3, gbc);
+                gbc.anchor = GridBagConstraints.PAGE_START;
+                glob.add(getPointBlock(uniquePoint,
+                                       I18N.tr("Mark settings")), gbc);
+
                 gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 3;
-                glob.add(getPreview(), gbc);
+                gbc.gridx = 1;
+                gbc.gridy = 1;
+                gbc.fill = GridBagConstraints.HORIZONTAL;
+                gbc.anchor = GridBagConstraints.PAGE_START;
+                JPanel previewPanel = new JPanel();
+                previewPanel.setBorder(
+                        BorderFactory.createTitledBorder(I18N.tr("Preview")));
+                previewPanel.add(getPreview());
+                glob.add(previewPanel, gbc);
+
                 this.add(glob);
         }
 
@@ -233,39 +243,35 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 if(getPreview() == null && getLegend() != null){
                         initPreview();
                 }
-                JPanel glob = new JPanel();
-                glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
+
                 JPanel jp = new JPanel();
-                boolean withUom = isUomEnabled();
-                boolean canBeOnV = geometryType != SimpleGeometryType.POINT && withUom;
-                int onV = canBeOnV ? 1 : 0;
-                int wu = withUom ? 1 : 0;
-                GridLayout grid = new GridLayout(3+wu+onV,2);
-                grid.setVgap(5);
+                GridLayout grid = new GridLayout(
+                        0, 2, HGAP, VGAP);
                 jp.setLayout(grid);
-                //If geometryType != POINT, we must let the user choose if he
-                //wants to draw symbols on centroid or on vertices.
-                if(canBeOnV){
+                jp.setBorder(BorderFactory.createTitledBorder(title));
+
+                if(isUomEnabled()){
+                    // If geometryType != POINT, we must let the user choose if
+                    // he wants to draw symbols on centroid or on vertices.
+                    if (geometryType != SimpleGeometryType.POINT) {
                         addPointOnVertices(point, jp);
-                }
-                //Uom
-                if(withUom){
-                    jp.add(buildText(I18N.tr("Unit of measure :")));
+                    }
+                    // Unit of measure
+                    jp.add(buildText(I18N.tr("Unit of measure")));
                     jp.add(getPointUomCombo());
                 }
-                //Combo box
-                jp.add(buildText(I18N.tr("Symbol form :")));
+
+                // Well-known name
+                jp.add(buildText(I18N.tr("Symbol")));
                 jp.add(getWKNCombo(point));
-                //Mark width
-                jp.add(buildText(I18N.tr("Mark width :")));
+                // Mark width
+                jp.add(buildText(I18N.tr("Width")));
                 jp.add(getMarkWidth(point));
-                //Mark height
-                jp.add(buildText(I18N.tr("Mark height :")));
+                // Mark height
+                jp.add(buildText(I18N.tr("Height")));
                 jp.add(getMarkHeight(point));
-                glob.add(jp);
-                //We add a canvas to display a preview.
-                glob.setBorder(BorderFactory.createTitledBorder(title));
-                return glob;
+
+                return jp;
         }
 
         /**
@@ -274,16 +280,17 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * @return
          */
 
-        private JPanel getMarkWidth(UniqueSymbolPoint point){
-                CanvasSE prev = getPreview();
-                final JNumericSpinner jns = new JNumericSpinner(4, Integer.MIN_VALUE, Integer.MAX_VALUE, SPIN_STEP);
-                ChangeListener cl = EventHandler.create(ChangeListener.class, point, "viewBoxWidth", "source.value");
-                jns.addChangeListener(cl);
-                jns.setValue(point.getViewBoxWidth() == null? point.getViewBoxHeight() : point.getViewBoxWidth());
-                jns.setMaximumSize(new Dimension(60,30));
-                jns.setPreferredSize(new Dimension(60,30));
-                ChangeListener cl2 = EventHandler.create(ChangeListener.class, prev, "imageChanged");
-                jns.addChangeListener(cl2);
+        private JSpinner getMarkWidth(UniqueSymbolPoint point){
+                double initialValue = (point.getViewBoxWidth() == null)
+                        ? point.getViewBoxHeight()
+                        : point.getViewBoxWidth();
+                SpinnerNumberModel model = new SpinnerNumberModel(
+                        initialValue, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPIN_STEP);
+                final JSpinner jns = new JSpinner(model);
+                jns.addChangeListener(
+                        EventHandler.create(ChangeListener.class, point, "viewBoxWidth", "source.value"));
+                jns.addChangeListener(
+                        EventHandler.create(ChangeListener.class, getPreview(), "imageChanged"));
                 return jns;
         }
 
@@ -292,16 +299,17 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * @param point
          * @return
          */
-        private JPanel getMarkHeight(UniqueSymbolPoint point){
-                CanvasSE prev = getPreview();
-                final JNumericSpinner jns = new JNumericSpinner(4, Integer.MIN_VALUE, Integer.MAX_VALUE, SPIN_STEP);
-                ChangeListener cl = EventHandler.create(ChangeListener.class, point, "viewBoxHeight", "source.value");
-                jns.addChangeListener(cl);
-                jns.setValue(point.getViewBoxHeight() == null? point.getViewBoxWidth() : point.getViewBoxHeight());
-                jns.setMaximumSize(new Dimension(60,30));
-                jns.setPreferredSize(new Dimension(60,30));
-                ChangeListener cl2 = EventHandler.create(ChangeListener.class, prev, "imageChanged");
-                jns.addChangeListener(cl2);
+        private JSpinner getMarkHeight(UniqueSymbolPoint point){
+                double initialValue = (point.getViewBoxHeight() == null)
+                        ? point.getViewBoxWidth()
+                        : point.getViewBoxHeight();
+                SpinnerNumberModel model = new SpinnerNumberModel(
+                        initialValue, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPIN_STEP);
+                final JSpinner jns = new JSpinner(model);
+                jns.addChangeListener(
+                        EventHandler.create(ChangeListener.class, point, "viewBoxHeight", "source.value"));
+                jns.addChangeListener(
+                        EventHandler.create(ChangeListener.class, getPreview(), "imageChanged"));
                 return jns;
         }
 
@@ -318,6 +326,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                         values[i] = wkns[i].getLabel();
                 }
                 final JComboBox jcc = new JComboBox(values);
+                ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
                 ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateWKNComboBox", "source.selectedIndex");
                 jcc.addActionListener(acl2);
@@ -380,12 +389,13 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          */
         protected JComboBox getPointUomCombo(){
                 CanvasSE prev = getPreview();
-                uoms= getUomProperties();
+                uoms = getUomProperties();
                 String[] values = new String[uoms.length];
                 for (int i = 0; i < values.length; i++) {
                         values[i] = I18N.tr(uoms[i].toString());
                 }
                 final JComboBox jcc = new JComboBox(values);
+                ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
                 ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex");
                 jcc.addActionListener(acl2);
