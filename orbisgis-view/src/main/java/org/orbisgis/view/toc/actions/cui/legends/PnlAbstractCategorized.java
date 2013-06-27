@@ -167,7 +167,6 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
             comboModel.addElement(vals[i]);
         }
         numberCombo.setSelectedIndex(real);
-        System.out.println("Newly selected: "+numberCombo.getSelectedItem());
         numberCombo.invalidate();
     }
 

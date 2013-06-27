@@ -31,16 +31,15 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
-import java.awt.Color;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.*;
-
 import com.vividsolutions.jts.util.Assert;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
+
+import java.awt.*;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.*;
+import java.util.List;
 
 /**
  * The colour schemes were taken from the following sources:
@@ -73,26 +72,19 @@ public class ColorScheme {
      * Fills the inner collections using the dedicated resource file.
      */
     private static void load() {
-        try {
-            rangeColorSchemeNames = new ArrayList<String>();
-            discreteColorSchemeNames = new ArrayList<String>();
-            nameToColorsMap = new HashMap<String,List<Color>>();
-            URL input = ColorScheme.class.getResource("ColorScheme.txt");
-            try {
-                File f = new File(input.toURI());
-                LineIterator lineIterator = FileUtils.lineIterator(f);
-                try{
-                    while(lineIterator.hasNext()){
-                        String line = lineIterator.next();
-                        add(line);
-                    }
-                }  finally {
-                    LineIterator.closeQuietly(lineIterator);
-                }
-            } catch (URISyntaxException e) {
+        rangeColorSchemeNames = new ArrayList<String>();
+        discreteColorSchemeNames = new ArrayList<String>();
+        nameToColorsMap = new HashMap<String,List<Color>>();
+        InputStream stream = ColorScheme.class.getResourceAsStream("ColorScheme.txt");
+        InputStreamReader br = new InputStreamReader(stream);
+        LineIterator lineIterator = IOUtils.lineIterator(br);
+        try{
+            while(lineIterator.hasNext()){
+                String line = lineIterator.next();
+                add(line);
             }
-        } catch (IOException e) {
-            Assert.shouldNeverReachHere(e.toString());
+        }  finally {
+            LineIterator.closeQuietly(lineIterator);
         }
     }
 
