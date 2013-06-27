@@ -376,7 +376,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
 
         @Override
         public String getTitle() {
-            return I18N.tr("Stroke and Fill Configuration");
+            return I18N.tr("Stroke and " + PnlUniqueAreaSE.FILL_SETTINGS);
         }
 
         @Override
@@ -395,14 +395,14 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
             gbc.gridy = i;
             gbc.fill = GridBagConstraints.HORIZONTAL;
             i++;
-            JPanel p1 = getLineBlock(usp.getPenStroke(), I18N.tr("Line configuration"));
+            JPanel p1 = getLineBlock(usp.getPenStroke(), LINE_SETTINGS);
             glob.add(p1, gbc);
             gbc = new GridBagConstraints();
             gbc.gridx = 0;
             gbc.gridy = i;
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.insets = new Insets(5, 0, 5, 0);
-            JPanel p2 = getAreaBlock(usp.getFillLegend(), I18N.tr("Fill configuration"));
+            JPanel p2 = getAreaBlock(usp.getFillLegend(), PnlUniqueAreaSE.FILL_SETTINGS);
             glob.add(p2, gbc);
             return glob;
         }

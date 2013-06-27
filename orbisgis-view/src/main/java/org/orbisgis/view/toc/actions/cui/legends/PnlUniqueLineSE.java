@@ -70,6 +70,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private JComboBox uOMBox;
         private JTextField lineDash;
         private ContainerItemProperties[] uoms;
+        public static final String LINE_SETTINGS = I18N.tr("Line settings");
         /**
          * Here we can put all the Legend instances we want... but they have to
          * be unique symbol (ie constant) Legends.
@@ -174,7 +175,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         @Override
         public String getTitle() {
-                return "Unique symbol for lines.";
+                return "Unique symbol for lines";
         }
 
         @Override
@@ -316,7 +317,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 0;
-                JPanel p1 = getLineBlock(uniqueLine.getPenStroke(), "Line configuration");
+                JPanel p1 = getLineBlock(uniqueLine.getPenStroke(), LINE_SETTINGS);
                 glob.add(p1, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;

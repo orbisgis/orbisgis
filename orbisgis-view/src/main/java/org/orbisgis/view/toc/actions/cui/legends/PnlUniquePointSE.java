@@ -180,7 +180,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
 
         @Override
         public String getTitle() {
-                return "Unique symbol for points.";
+                return "Unique symbol for points";
         }
         
 
@@ -208,7 +208,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.anchor = GridBagConstraints.PAGE_START;
                 glob.add(getAreaBlock(uniquePoint.getFillLegend(),
-                                      I18N.tr("Fill settings")), gbc);
+                                      PnlUniqueAreaSE.FILL_SETTINGS), gbc);
 
                 gbc = new GridBagConstraints();
                 gbc.gridx = 1;
@@ -245,8 +245,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 }
 
                 JPanel jp = new JPanel();
-                GridLayout grid = new GridLayout(
-                        0, 2, HGAP, VGAP);
+                GridLayout grid = new GridLayout(0, 2, HGAP, VGAP);
                 jp.setLayout(grid);
                 jp.setBorder(BorderFactory.createTitledBorder(title));
 

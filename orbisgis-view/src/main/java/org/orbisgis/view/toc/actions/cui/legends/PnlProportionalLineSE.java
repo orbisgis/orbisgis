@@ -167,7 +167,7 @@ public class PnlProportionalLineSE extends PnlUniqueSymbolSE {
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 0;
-                JPanel p1 = getLineBlock("Line configuration");
+                JPanel p1 = getLineBlock(PnlUniqueLineSE.LINE_SETTINGS);
                 glob.add(p1, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;

@@ -62,6 +62,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         private JSpinner fillOpacity;
         private JCheckBox areaCheckBox;
         private ConstantSolidFillLegend solidFillMemory;
+        public static final String FILL_SETTINGS = I18N.tr("Fill settings");
 
         /**
          * Here we can put all the Legend instances we want... but they have to
@@ -174,7 +175,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
 
         @Override
         public String getTitle() {
-                return "Unique symbol for lines.";
+                return "Unique symbol for lines";
         }        
 
         @Override
@@ -193,8 +194,8 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 gbc.gridx = 0;
                 gbc.gridy = 0;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
-                JPanel p1 = getLineBlock(uniqueArea.getPenStroke(), I18N.tr("Line configuration"));
-            ComponentUtil.setFieldState(displayStroke, p1);
+                JPanel p1 = getLineBlock(uniqueArea.getPenStroke(), LINE_SETTINGS);
+                ComponentUtil.setFieldState(displayStroke, p1);
                 glob.add(p1, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;
@@ -202,7 +203,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.insets = new Insets(5, 0, 5, 0);
                 ConstantSolidFill leg = uniqueArea.getFillLegend();
-                JPanel p2 = getAreaBlock(leg, I18N.tr("Fill configuration"));
+                JPanel p2 = getAreaBlock(leg, FILL_SETTINGS);
                 setAreaFieldsState(leg instanceof ConstantSolidFillLegend);
                 glob.add(p2, gbc);
                 gbc = new GridBagConstraints();
