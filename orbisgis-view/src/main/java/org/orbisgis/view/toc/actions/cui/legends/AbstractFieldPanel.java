@@ -56,16 +56,24 @@ import java.beans.EventHandler;
  * @author alexis
  */
 public abstract class AbstractFieldPanel extends JPanel {
+    /**
+     * Horizontal gap between cells in a GridBagLayout.
+     */
+    public static final int HGAP = 10;
+    /**
+     * Vertical gap between cells in a GridBagLayout.
+     */
+    public static final int VGAP = 3;
     private static final Logger LOGGER = Logger.getLogger("gui."+AbstractFieldPanel.class);
     private static final I18n I18N = I18nFactory.getI18n(AbstractFieldPanel.class);
     /**
      * Width used for the rectangles that displays the color parameters of the symbols.
      */
-    public final static int FILLED_LABEL_WIDTH = 40;
+    public final static int FILLED_LABEL_WIDTH = 55;
     /**
      * Height used for the rectangles that displays the color parameters of the symbols.
      */
-    public final static int FILLED_LABEL_HEIGHT = 20;
+    public final static int FILLED_LABEL_HEIGHT = 15;
 
     private ContainerItemProperties[] strokeUoms;
 
@@ -130,8 +138,9 @@ public abstract class AbstractFieldPanel extends JPanel {
         lblFill.setPreferredSize(new Dimension(FILLED_LABEL_WIDTH, FILLED_LABEL_HEIGHT));
         lblFill.setMaximumSize(new Dimension(FILLED_LABEL_WIDTH, FILLED_LABEL_HEIGHT));
         lblFill.setOpaque(true);
-        MouseListener ma = EventHandler.create(MouseListener.class, this, "chooseFillColor", "", "mouseClicked");
-        lblFill.addMouseListener(ma);
+        lblFill.setHorizontalAlignment(JLabel.LEFT);
+        lblFill.addMouseListener(
+                EventHandler.create(MouseListener.class, this, "chooseFillColor", "", "mouseClicked"));
         return lblFill;
     }
 

@@ -119,8 +119,6 @@ public class LegendTree extends JPanel {
         this.setLayout(new BorderLayout());
         this.add(toolBar, BorderLayout.PAGE_START);
         JScrollPane scrollPane = new JScrollPane(tree);
-        scrollPane.getViewport().setViewSize(new Dimension(200, 200));
-        scrollPane.getViewport().setExtentSize(new Dimension(200, 200));
         this.add(scrollPane, BorderLayout.CENTER);
         refreshIcons();
     }
