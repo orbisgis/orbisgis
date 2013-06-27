@@ -37,12 +37,14 @@ import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.background.*;
 import org.orbisgis.view.joblist.JobListItem;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelUniqueValue;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorConfigurationPanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -54,6 +56,7 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.TreeSet;
 
 /**
@@ -106,14 +109,14 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
      * Disables the colour configuration.
      */
     public void onFromFallback(){
-        setFieldState(false,colorConfig);
+        ComponentUtil.setFieldState(false,colorConfig);
     }
 
     /**
      * Enables the colour configuration.
      */
     public void onComputed(){
-        setFieldState(true, colorConfig);
+        ComponentUtil.setFieldState(true, colorConfig);
     }
 
     /**
@@ -237,9 +240,8 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
             if(result != null){
                 AbstractRecodedLegend<U> rl;
                 if(colorConfig.isEnabled() && result.size() > 0){
-                    Color start = colorConfig.getStartColor();
-                    Color end = colorConfig.getEndCol();
-                    rl = (AbstractRecodedLegend<U>) createColouredClassification(result, pm, start, end);
+                    ColorScheme sc = colorConfig.getColorScheme();
+                    rl = (AbstractRecodedLegend<U>) createColouredClassification(result, pm, sc);
                 } else {
                     rl = createConstantClassification(result, pm);
                 }

@@ -26,7 +26,7 @@
                 <dependency>
                         <groupId>org.orbisgis</groupId>
                         <artifactId>orbisgis-core-monomap</artifactId>
-                        <version>4.0-SNAPSHOT</version>
+                        <version>${orbisgis-core-version}</version>
                 </dependency>
         </dependencies>
         <build>

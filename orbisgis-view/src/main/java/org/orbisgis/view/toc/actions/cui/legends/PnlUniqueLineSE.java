@@ -37,6 +37,7 @@ import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolLine;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
+import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
@@ -264,15 +265,15 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          * @param enable
          */
         public void setLineFieldsState(boolean enable){
-                setFieldState(enable, lineWidth);
-                setFieldState(enable, lineColor);
-                setFieldState(enable, lineOpacity);
-                setFieldState(enable, lineDash);
-                if (displayUom) {
-                    if (uOMBox != null) {
-                        setFieldState(enable,uOMBox);
-                    }
+            ComponentUtil.setFieldState(enable,lineWidth);
+            ComponentUtil.setFieldState(enable, lineColor);
+            ComponentUtil.setFieldState(enable,lineOpacity);
+            ComponentUtil.setFieldState(enable,lineDash);
+            if (displayUom) {
+                if (uOMBox != null) {
+                    ComponentUtil.setFieldState(enable,uOMBox);
                 }
+            }
         }
 
         /**
