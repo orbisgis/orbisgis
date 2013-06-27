@@ -11,6 +11,7 @@ import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.model.PreviewCellRenderer;
+import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -23,12 +24,16 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
-import java.util.SortedSet;
+import java.util.*;
+import java.util.List;
 
 /**
+ * Base class for the analysis that relies on a "table", ie value and interval classifications. It provides some
+ * useful methods related to colour generation and JTable management, and a framework used by the inheritors.
  * @author Alexis Guéganno
  */
-public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters> extends AbstractFieldPanel implements ILegendPanel, ActionListener {
+public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
+        extends AbstractFieldPanel implements ILegendPanel, ActionListener {
     public static final String FALLBACK = "Fallback";
     public static final String CREATE_CLASSIF = "Create classification";
     public static final Logger LOGGER = Logger.getLogger(PnlAbstractTableAnalysis.class);
@@ -249,48 +254,56 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters> exte
     /**
      * We take the fallback configuration and copy it for each key, changing the colour. The colour management is
      * made thanks to {@link #getColouredParameters(org.orbisgis.legend.thematic.LineParameters, java.awt.Color)}.
+     * The base colours are found in the given color scheme. We will put the colors from it. If there are more
+     * elements in the input set than in the ColorScheme, we compute colours from the one in the colour scheme.
+     * To achieve this goal, we make linear interpolations in the RGB space.
      * @param set A set of keys we use as a basis.
      * @param pm The progress monitor that can be used to stop the process.
-     * @param start the starting color for the gradient
-     * @param end the ending color for the gradient
+     * @param scheme the input palette
      * @return A fresh unique value analysis.
      */
-    public final MappedLegend<K,U> createColouredClassification(SortedSet<K> set, org.orbisgis.progress.ProgressMonitor pm,
-                                                                       Color start, Color end) {
-        U lp = ((MappedLegend<K,U>)getLegend()).getFallbackParameters();
-        MappedLegend<K,U> newRL = getEmptyAnalysis();
-        newRL.setFallbackParameters(lp);
-        int size = set.size();
-        int redStart = start.getRed();
-        int greenStart = start.getGreen();
-        int blueStart = start.getBlue();
-        int alphaStart = start.getAlpha();
-        double redThreshold;
-        double greenThreshold;
-        double blueThreshold;
-        double alphaThreshold;
-        if(size <= 1){
-            redThreshold = 0;
-            greenThreshold = 0;
-            blueThreshold = 0;
-            alphaThreshold = 0;
+    public final MappedLegend<K,U> createColouredClassification(SortedSet<K> set,
+                                                                org.orbisgis.progress.ProgressMonitor pm,
+                                                                       ColorScheme scheme) {
+
+        int expected = set.size();
+        int included = scheme.getColors().size();
+        List<Color> colors;
+        if(expected <= included ){
+            colors = scheme.getSubset(expected);
         } else {
-            redThreshold = ((double)(redStart-end.getRed()))/(size-1);
-            greenThreshold = ((double)(greenStart-end.getGreen()))/(size-1);
-            blueThreshold = ((double)(blueStart-end.getBlue()))/(size-1);
-            alphaThreshold = ((double)(alphaStart-end.getAlpha()))/(size-1);
+            List<Color> known = scheme.getColors();
+            colors = new ArrayList<Color>();
+            int others = expected - included;
+            int intervals = included - 1;
+            int div = others / intervals;
+            int remain = others  - intervals * div;
+            for(int i = 0; i<intervals; i++){
+                int ins = remain > 0 ? div +1 : div;
+                remain --;
+                Color start = known.get(i);
+                Color end = known.get(i+1);
+                List<Color> temp = getColorList(ins,start, end);
+                colors.add(known.get(i));
+                colors.addAll(temp);
+            }
+            colors.add(known.get(known.size()-1));
         }
+        int size = set.size();
         double m = size == 0 ? 0 : 50.0/(double)size;
         int i=0;
         int n = 0;
         pm.progressTo(50);
         pm.startTask(CREATE_CLASSIF , 100);
+        U lp = ((MappedLegend<K,U>)getLegend()).getFallbackParameters();
+        MappedLegend<K,U> newRL = getEmptyAnalysis();
+        newRL.setFallbackParameters(lp);
+        if(set.size() != colors.size()){
+            throw new IllegalStateException("Wrong state");
+        }
+        Iterator<Color> it = colors.iterator();
         for(K s : set){
-            Color newCol = new Color(redStart-(int)(redThreshold*i),
-                    greenStart-(int)(i*greenThreshold),
-                    blueStart-(int)(i*blueThreshold),
-                    alphaStart-(int)(i*alphaThreshold));
-            U value = getColouredParameters(lp, newCol);
+            U value = getColouredParameters(lp, it.next());
             newRL.put(s, value);
             if(i*m>n){
                 n++;
@@ -305,6 +318,48 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters> exte
         pm.endTask();
         pm.progressTo(100);
         return newRL;
+    }
+
+    /**
+     * Retrieve a list of colours that are on the start-end line in the RGB space. Note that the input colours
+     * are not included in the returned list.
+     * @param num The number of colours we want
+     * @param start The starting colour
+     * @param end The ending colour
+     * @return The list of computed colours
+     */
+    public List<Color> getColorList(int num, Color start, Color end){
+        int actual = num+2;
+        List<Color> ret = new ArrayList<Color>();
+        int redStart = start.getRed();
+        int greenStart = start.getGreen();
+        int blueStart = start.getBlue();
+        int alphaStart = start.getAlpha();
+        double redThreshold;
+        double greenThreshold;
+        double blueThreshold;
+        double alphaThreshold;
+        if(actual <= 1){
+            redThreshold = 0;
+            greenThreshold = 0;
+            blueThreshold = 0;
+            alphaThreshold = 0;
+        } else {
+            redThreshold = ((double)(redStart-end.getRed()))/(actual+1);
+            greenThreshold = ((double)(greenStart-end.getGreen()))/(actual+1);
+            blueThreshold = ((double)(blueStart-end.getBlue()))/(actual+1);
+            alphaThreshold = ((double)(alphaStart-end.getAlpha()))/(actual+1);
+        }
+        for(int j=0; j<actual; j++){
+            Color newCol = new Color(redStart-(int)(redThreshold*j),
+                    greenStart-(int)(j*greenThreshold),
+                    blueStart-(int)(j*blueThreshold),
+                    alphaStart-(int)(j*alphaThreshold));
+            ret.add(newCol);
+        }
+        ret.remove(0);
+        ret.remove(ret.size()-1);
+        return ret;
     }
 
     /**
