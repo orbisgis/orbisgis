@@ -139,9 +139,8 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
          *      The parameter we want to configure with our panel
          * @return A {@code JTextField}
          */
-        public JFormattedTextField getDashArrayField(final ConstantColorAndDashesPSLegend cps){
-                final JFormattedTextField jrf =
-                        new JFormattedTextField(NumberFormat.getNumberInstance());
+        public JTextField getDashArrayField(final ConstantColorAndDashesPSLegend cps){
+                final JTextField jrf = new JTextField();
                 jrf.setText(cps.getDashArray());
                 jrf.setHorizontalAlignment(JFormattedTextField.RIGHT);
                 jrf.addActionListener(new ActionListener() {

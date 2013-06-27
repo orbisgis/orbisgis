@@ -73,7 +73,7 @@ public class PnlProportionalLineSE extends PnlUniqueSymbolSE {
         private DataSource ds;
         private JPanel lineColor;
         private JSpinner lineOpacity;
-        private JFormattedTextField lineDash;
+        private JTextField lineDash;
 
         @Override
         public Legend getLegend() {

@@ -68,7 +68,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private JPanel lineColor;
         private JSpinner lineOpacity;
         private JComboBox uOMBox;
-        private JFormattedTextField lineDash;
+        private JTextField lineDash;
         private ContainerItemProperties[] uoms;
         /**
          * Here we can put all the Legend instances we want... but they have to
