@@ -43,10 +43,6 @@ import org.gdms.source.SourceManager;
 import org.junit.After;
 import org.junit.Before;
 import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.core.map.export.DefaultMapExportManager;
-import org.orbisgis.core.map.export.MapExportManager;
-import org.orbisgis.core.map.export.RectanglesScale;
-import org.orbisgis.core.map.export.SingleLineScale;
 
 public abstract class AbstractTest {
 
@@ -58,7 +54,6 @@ public abstract class AbstractTest {
                 failErrorManager = new FailErrorManager();
                 consoleAppender = initConsoleLogger();
                 Logger.getRootLogger().addAppender(failErrorManager);
-                installExportServices();
         }
         
         @After
@@ -76,15 +71,8 @@ public abstract class AbstractTest {
                 new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN));
                 root.addAppender(appender);
                 return appender;
-        }
-        
-	private void installExportServices() {
-		DefaultMapExportManager mem = new DefaultMapExportManager();
-		Services.registerService(MapExportManager.class,
-				"Manages the export of MapContexts to different formats.", mem);
-		mem.registerScale(SingleLineScale.class);
-		mem.registerScale(RectanglesScale.class);
-	}
+        }        
+	
         
         public static void registerDataManager(DataSourceFactory dsf) {
                 // Installation of the service

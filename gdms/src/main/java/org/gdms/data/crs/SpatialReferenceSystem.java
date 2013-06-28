@@ -37,11 +37,12 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import com.vividsolutions.jts.geom.util.GeometryTransformer;
 import java.util.List;
-import org.cts.CoordinateOperation;
 import org.cts.IllegalCoordinateException;
 import org.cts.crs.CRSException;
 import org.cts.crs.GeodeticCRS;
+import org.cts.op.CoordinateOperation;
 import org.cts.op.CoordinateOperationFactory;
+import org.cts.registry.RegistryException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -56,11 +57,11 @@ public class SpatialReferenceSystem {
     private GeodeticCRS targetCRS;
     private CoordinateOperation coordinateOperation;
 
-    public SpatialReferenceSystem(String sourceCRS, String targetCRS) throws CRSException {
+    public SpatialReferenceSystem(String sourceCRS, String targetCRS) throws CRSException, RegistryException {
         init((GeodeticCRS) DataSourceFactory.getCRSFactory().getCRS(sourceCRS), (GeodeticCRS) DataSourceFactory.getCRSFactory().getCRS(targetCRS));
     }
 
-    public SpatialReferenceSystem(int sourceCRS, int targetCRS) throws CRSException {
+    public SpatialReferenceSystem(int sourceCRS, int targetCRS) throws CRSException, RegistryException {
         init((GeodeticCRS) DataSourceFactory.getCRSFactory().getCRS("EPSG:" + sourceCRS), (GeodeticCRS) DataSourceFactory.getCRSFactory().getCRS("EPSG:" + targetCRS));
     }
 
