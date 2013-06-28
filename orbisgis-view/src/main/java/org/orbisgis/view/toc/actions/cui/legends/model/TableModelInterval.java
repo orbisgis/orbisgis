@@ -66,7 +66,10 @@ public class TableModelInterval<U extends LineParameters> extends AbstractLegend
                 sb.append("-").append(Character.toString('\u221e')) ;
             }else {
                 sb.append("[");
-                sb.append(formatter.format(d));
+                String numS = Math.abs(d) < 1.0 ?
+                        Double.toString(KeyCellRenderer.getRounded(d,DIGITS_NUMBER)):
+                        formatter.format(d);
+                sb.append(numS);
             }
             sb.append("; ");
             if(tail.size() == 1){
@@ -75,7 +78,11 @@ public class TableModelInterval<U extends LineParameters> extends AbstractLegend
                 Iterator<Double> it = tail.iterator();
                 //next is d, we want the one next to d.
                 it.next();
-                sb.append(formatter.format(it.next()));
+                Double nd = it.next();
+                String numS = Math.abs(nd) < 1.0 ?
+                        Double.toString(KeyCellRenderer.getRounded(nd,DIGITS_NUMBER)):
+                        formatter.format(nd);
+                sb.append(numS);
             }
             sb.append("[");
             return sb.toString();

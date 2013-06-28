@@ -9,6 +9,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 /**
+ * Renderer for keys of a MappedLegend.
  * @author Alexis Guéganno
  */
 public class KeyCellRenderer extends TableLaFCellRenderer {
@@ -32,11 +33,46 @@ public class KeyCellRenderer extends TableLaFCellRenderer {
 
 
     @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        JLabel lab = (JLabel)lookAndFeelRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+    public Component getTableCellRendererComponent(JTable table,
+                                                   Object value,
+                                                   boolean isSelected,
+                                                   boolean hasFocus,
+                                                   int row,
+                                                   int column) {
+        JLabel lab = (JLabel)
+                lookAndFeelRenderer.getTableCellRendererComponent(
+                        table,
+                        value,
+                        isSelected,
+                        hasFocus,
+                        row,
+                        column);
         if(value instanceof Double){
-            lab.setText(formatter.format(value));
+            Double d = (Double) value;
+            if(Math.abs(d) < 1.0){
+                lab.setText(Double.toString(getRounded(d, TableModelInterval.DIGITS_NUMBER)));
+            } else {
+                lab.setText(formatter.format(value));
+            }
         }
         return lab;
+    }
+
+    /**
+     * Get an approximation of d that keeps n significant digits.
+     * @param d The input number
+     * @param n The number of significant digits we want.
+     * @return The rounded value.
+     */
+    public static double getRounded(double d, int n){
+        if(d == 0.0) {
+             return 0.0;
+        }
+        final double powBase = Math.ceil(Math.log10(d < 0 ? -d: d));
+        final int power = n - (int) powBase;
+        final double magnitude = Math.pow(10, power);
+        final long shifted = Math.round(d*magnitude);
+        return shifted/magnitude;
+
     }
 }
