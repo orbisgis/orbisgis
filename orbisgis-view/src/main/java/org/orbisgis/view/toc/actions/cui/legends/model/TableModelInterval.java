@@ -6,7 +6,9 @@ import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import java.text.NumberFormat;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.SortedSet;
 
 /**
@@ -14,10 +16,29 @@ import java.util.SortedSet;
  * @author Alexis Guéganno
  */
 public class TableModelInterval<U extends LineParameters> extends AbstractLegendTableModel<Double,U> {
+    /**
+     * The column for intervals
+     */
     public static final int INTERVAL_COLUMN = 2;
+    /**
+     * The number of digits we want to display
+     */
+    public static final int DIGITS_NUMBER = 4;
     private static final int TABLE_COLUMN_COUNT = 3;
     private AbstractCategorizedLegend<U> cat;
     private final static I18n I18N = I18nFactory.getI18n(TableModelInterval.class);
+    private NumberFormat formatter;
+
+    /**
+     * Builds a new TableModelInterval model linked to the given legend
+     * @param rl The input interval classification
+     */
+    public TableModelInterval(AbstractCategorizedLegend<U > rl){
+        cat = rl;
+        formatter = NumberFormat.getInstance(Locale.getDefault());
+        formatter.setGroupingUsed(false);
+        formatter.setMaximumFractionDigits(DIGITS_NUMBER);
+    }
 
     @Override
     public int getColumnCount() {
@@ -40,20 +61,21 @@ public class TableModelInterval<U extends LineParameters> extends AbstractLegend
             Double d = getKeyAt(rowIndex);
             SortedSet<Double> tail = ts.tailSet(d);
             StringBuilder sb = new StringBuilder();
-            sb.append("[");
             if(Double.isInfinite(d)){
+                sb.append("]");
                 sb.append("-").append(Character.toString('\u221e')) ;
             }else {
-                sb.append(d);
+                sb.append("[");
+                sb.append(formatter.format(d));
             }
-            sb.append(";");
+            sb.append("; ");
             if(tail.size() == 1){
                 sb.append("+").append(Character.toString('\u221e'));
             } else {
                 Iterator<Double> it = tail.iterator();
                 //next is d, we want the one next to d.
                 it.next();
-                sb.append(+it.next());
+                sb.append(formatter.format(it.next()));
             }
             sb.append("[");
             return sb.toString();
@@ -71,13 +93,6 @@ public class TableModelInterval<U extends LineParameters> extends AbstractLegend
             return I18N.tr("Label");
         }
         throw new IndexOutOfBoundsException("We did not found a column at index "+col+" !");
-    }
-    /**
-     * Builds a new {@code TableModelInterval} linker to {@code rl}.
-     * @param cl The input categorized analysis.
-     */
-    public TableModelInterval(AbstractCategorizedLegend<U> cl){
-        cat = cl;
     }
 
     @Override
