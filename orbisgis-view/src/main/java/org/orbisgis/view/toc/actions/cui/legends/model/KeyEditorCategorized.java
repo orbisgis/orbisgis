@@ -29,7 +29,7 @@ public abstract class KeyEditorCategorized<U extends LineParameters> extends Key
     protected Double getNotUsedKey(Double prev){
         try{
             Double d = Double.valueOf(getField().getText());
-            return ((AbstractCategorizedLegend)getLegend()).getNotUsedKey(d);
+            return d.equals(prev) ? prev :((AbstractCategorizedLegend)getLegend()).getNotUsedKey(d);
         } catch (NumberFormatException nfe){
             return prev;
         }
@@ -39,6 +39,7 @@ public abstract class KeyEditorCategorized<U extends LineParameters> extends Key
      * Gets the associated JFormattedTextField
      * @return The associated JFormattedTextField
      */
+    @Override
     public JFormattedTextField getField(){
         return numberField;
     }
