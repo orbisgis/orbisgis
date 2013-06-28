@@ -37,6 +37,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ij.ImagePlus;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.cts.crs.CRSException;
 
 public final class ConstraintFactory {
 
@@ -64,15 +67,19 @@ public final class ConstraintFactory {
                         new DefaultStringConstraint(""));
         }
 
-        public static Constraint createConstraint(int type, byte[] constraintBytes) {
+        public static Constraint createConstraint(int type, byte[] constraintBytes) throws IllegalArgumentException{
                 Constraint c;
                 switch (type) {
                         case Constraint.AUTO_INCREMENT:
                                 c = new AutoIncrementConstraint();
                                 break;
-                        case Constraint.CRS:
-                                c = new CRSConstraint(constraintBytes);
-                                break;
+                     case Constraint.CRS:
+                        try {
+                            c = new CRSConstraint(constraintBytes);
+                            break;
+                        } catch (CRSException ex) {
+                           throw new IllegalArgumentException(ex);
+                        }   
                         case Constraint.GEOMETRY_TYPE:
                                 c = new GeometryTypeConstraint(constraintBytes);
                                 break;

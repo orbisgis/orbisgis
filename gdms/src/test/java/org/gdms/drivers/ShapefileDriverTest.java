@@ -62,8 +62,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.cts.crs.CoordinateReferenceSystem;
+import org.gdms.data.types.CRSConstraint;
 
 import static org.junit.Assert.*;
+import org.orbisgis.utils.FileUtils;
 
 public class ShapefileDriverTest extends TestBase {
 
@@ -481,4 +484,23 @@ public class ShapefileDriverTest extends TestBase {
                 assertTrue(sfh.getShapeType().id == ShapeType.POLYGON.id);
                 sql.close();
         }
+        
+        @Test
+        public void testCreatePrj() throws Exception {
+                CoordinateReferenceSystem crs = DataSourceFactory.getCRSFactory().getCRS("EPSG:27572");
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(
+                        new String[]{"geom"}, new Type[]{TypeFactory.createType(Type.GEOMETRY, new CRSConstraint(crs))});                
+                omd.addValues(new Value[]{ValueFactory.createValue(new GeometryFactory().createPoint(new Coordinate(
+                            2, 2, 2)))});
+                DataSource ds = dsf.getDataSource(omd, "main");
+
+                File shpFile = getTempFile(".shp");
+                sm.register("shp", shpFile);
+                dsf.saveContents("shp", ds);
+                
+                File prj = FileUtils.getFileWithExtension(shpFile, "prj");                
+                assertNotNull(prj);
+                
+        }
+        
 }

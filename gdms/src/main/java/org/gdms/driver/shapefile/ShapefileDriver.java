@@ -38,10 +38,12 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
+import org.cts.crs.CRSException;
 import org.cts.crs.CoordinateReferenceSystem;
+import org.cts.parser.prj.PrjWriter;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.crs.SpatialReferenceSystem;
 import org.gdms.data.schema.*;
 import org.gdms.data.types.*;
 import org.gdms.data.values.Value;
@@ -60,7 +62,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
         private static final GeometryFactory GF = new GeometryFactory();
         private Envelope envelope;
         private DBFDriver dbfDriver;
-        private DataSet driver;
+        private DataSet dataSet;
         private ShapefileReader reader;
         private IndexFile shxFile;
         private DataSourceFactory dataSourceFactory;
@@ -121,7 +123,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         dbfDriver.open();
 
                         // registering DataSet
-                        driver = dbfDriver.getTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                        dataSet = dbfDriver.getTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
 
                         Constraint dc;
                         //We can force the type of the data in the GDMS table according to the type
@@ -173,7 +175,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
 
                         metadata.clear();
                         metadata.addField(0, "the_geom", gtype, constraints);
-                        metadata.addAll(driver.getMetadata());
+                        metadata.addAll(dataSet.getMetadata());
 
                 }  catch (IOException e) {
                         throw new DriverException(e);
@@ -181,7 +183,9 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         throw new DriverException(e);
                 } catch (InvalidTypeException e) {
                         throw new DriverException(e);
-                }
+                } catch (CRSException e) {
+                    throw new DriverException(e);
+            }
         }
 
         @Override
@@ -308,14 +312,43 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         ShapeType shapeType = getShapeType(geomType, dimension);
                         writer.writeHeaders(new Envelope(0, 0, 0, 0), shapeType, 0, 100);
                         writer.close();
-
-                        // writeprj(replaceExtension(new File(path), ".prj"), metadata);
+                        writeprj(replaceExtension(new File(path), ".prj"), metadata);
                 } catch (FileNotFoundException e) {
                         throw new DriverException(e);
                 } catch (IOException e) {
                         throw new DriverException(e);
                 }
         }
+        
+        
+       /**
+     * Write a CRS as a WKT representation in a file
+     *
+     * @param path
+     * @param crs
+     * @throws DriverException
+     */
+    private void writeprj(File file, Metadata metadata) throws
+            DriverException {
+        int fieldIndex = MetadataUtilities.getSpatialFieldIndex(metadata);
+        if(fieldIndex!=-1){
+        Constraint[] c = metadata.getFieldType(fieldIndex).getConstraints(Constraint.CRS);
+        if (c.length != 0) {
+            crs = ((CRSConstraint) c[0]).getCRS();
+        }
+        if (crs != null) {
+            String prj = PrjWriter.crsToWKT(crs);
+            try {
+                FileUtils.setContents(file, prj);
+            } catch (IOException ex) {
+                throw new DriverException("Cannot write the prj", ex);
+            }
+        }
+        }
+    }
+	  
+	 
+	
 
         /**
          * We try to retrieve the type of the geometry recorded in metadata.
@@ -516,7 +549,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         }
                         pm.progressTo(rowCount);
                         writer.close();
-//                        writeprj(replaceExtension(file, ".prj"), metadata);
+                        writeprj(replaceExtension(file, ".prj"), dataSource.getMetadata());
                 } catch (FileNotFoundException e) {
                         throw new DriverException(e);
                 } catch (IOException e) {
@@ -689,7 +722,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                 Geometry shape = reader.geomAt(offset);
                                 return (null == shape) ? null : ValueFactory.createValue(shape, crs);
                         } else {
-                                return driver.getFieldValue(rowIndex, fieldId - 1);
+                                return dataSet.getFieldValue(rowIndex, fieldId - 1);
                         }
                 } catch (IOException e) {
                         throw new DriverException(e);
