@@ -61,14 +61,16 @@ import java.net.URL;
  * @author Alexis Guéganno
  */
 public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
-        private static final I18n I18N = I18nFactory.getI18n(PnlUniqueLineSE.class);
+    private static final I18n I18N = I18nFactory.getI18n(PnlUniqueLineSE.class);
         private ConstantPenStrokeLegend penStrokeMemory;
         private JCheckBox lineCheckBox;
-        private JPanel lineWidth;
+        private JSpinner lineWidth;
         private JPanel lineColor;
-        private JPanel lineOpacity;
-        private JPanel lineDash;
+        private JSpinner lineOpacity;
+        private JComboBox uOMBox;
+        private JTextField lineDash;
         private ContainerItemProperties[] uoms;
+        public static final String LINE_SETTINGS = I18N.tr("Line settings");
         /**
          * Here we can put all the Legend instances we want... but they have to
          * be unique symbol (ie constant) Legends.
@@ -173,7 +175,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         @Override
         public String getTitle() {
-                return "Unique symbol for lines.";
+                return "Unique symbol for lines";
         }
 
         @Override
@@ -206,59 +208,57 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                         initPreview();
                 }
                 ConstantPenStroke legend = leg instanceof ConstantPenStrokeLegend ? leg : penStrokeMemory;
-                int ilo = isLineOptional() ? 1 : 0;
-                int du = displayUom ? 1 : 0;
-                JPanel glob = new JPanel();
-                glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
+
                 JPanel jp = new JPanel();
-                GridLayout grid = new GridLayout(4+du+ilo,2);
-                grid.setVgap(5);
+                GridLayout grid = new GridLayout(
+                        0, 2, HGAP, VGAP);
                 jp.setLayout(grid);
+                jp.setBorder(BorderFactory.createTitledBorder(title));
+
                 UomCombo lineUom = getLineUomCombo((StrokeUom) getLegend());
                 CanvasSE prev = getPreview();
                 ActionListener aclUom = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 lineUom.addActionListener(aclUom);
-                lineWidth = getLineWidthSpinner(legend);
-                lineColor = getColorField(legend.getFillLegend());
-                lineOpacity = getLineOpacitySpinner(legend.getFillLegend());
-                lineDash = getDashArrayField((ConstantColorAndDashesPSLegend)legend);
+
                 if(isLineOptional()){
-                        jp.add(buildText(I18N.tr("Enable line : ")));
-                        lineCheckBox = new JCheckBox("");
-                        ActionListener acl = EventHandler.create(ActionListener.class, this, "onClickLineCheckBox");
-                        lineCheckBox.addActionListener(acl);
-                        JPanel temp = new JPanel();
-                        temp.add(lineCheckBox);
-                        jp.add(temp);
-                        //We must check the CheckBox according to leg, not to legend.
-                        //legend is here mainly to let us fill safely all our
-                        //parameters.
+                        lineCheckBox = new JCheckBox(I18N.tr("Enable"));
+                        lineCheckBox.addActionListener(
+                                EventHandler.create(ActionListener.class, this, "onClickLineCheckBox"));
+                        jp.add(lineCheckBox);
+                        // We must check the CheckBox according to leg, not to legend.
+                        // legend is here mainly to let us fill safely all our
+                        // parameters.
                         lineCheckBox.setSelected(leg instanceof ConstantPenStrokeLegend);
+                } else {
+                        // Just add blank space
+                        jp.add(Box.createGlue());
                 }
-                //Uom
-                if(displayUom){
-                    jp.add(buildText(I18N.tr("Unit of measure :")));
-                    jp.add(lineUom.getCombo());
-                }
-                //Width
-                jp.add(buildText(I18N.tr("Line width :")));
-                jp.add(lineWidth);
-                //Color
-                jp.add(buildText(I18N.tr("Line color :")));
+                // Line color
+                lineColor = getColorField(legend.getFillLegend());
                 jp.add(lineColor);
-                //Transparency
-                jp.add(buildText(I18N.tr("Line opacity :")));
-                jp.add(lineOpacity);
-                //Dash array
-                jp.add(buildText(I18N.tr("Dash array :")));
-                jp.add(lineDash);
-                glob.add(jp);
-                //We add a canvas to display a preview.
-                glob.setBorder(BorderFactory.createTitledBorder(title));
-                if(isLineOptional()){
-                        setLineFieldsState(leg instanceof ConstantPenStrokeLegend);
+
+                // Unit of measure
+                if(displayUom){
+                    jp.add(buildText(I18N.tr("Unit of measure")));
+                    uOMBox = lineUom.getCombo();
+                    jp.add(uOMBox);
                 }
-                return glob;
+                // Line width
+                jp.add(buildText(I18N.tr("Width")));
+                lineWidth = getLineWidthSpinner(legend);
+                jp.add(lineWidth);
+                // Line opacity
+                jp.add(buildText(I18N.tr("Opacity")));
+                lineOpacity = getLineOpacitySpinner(legend.getFillLegend());
+                jp.add(lineOpacity);
+                // Dash array
+                jp.add(buildText(I18N.tr("Dash array")));
+                lineDash = getDashArrayField((ConstantColorAndDashesPSLegend)legend);
+                jp.add(lineDash);
+                if(isLineOptional()){
+                    setLineFieldsState(leg instanceof ConstantPenStrokeLegend);
+                }
+                return jp;
         }
 
         /**
@@ -270,6 +270,11 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
             ComponentUtil.setFieldState(enable, lineColor);
             ComponentUtil.setFieldState(enable,lineOpacity);
             ComponentUtil.setFieldState(enable,lineDash);
+            if (displayUom) {
+                if (uOMBox != null) {
+                    ComponentUtil.setFieldState(enable,uOMBox);
+                }
+            }
         }
 
         /**
@@ -312,7 +317,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 0;
-                JPanel p1 = getLineBlock(uniqueLine.getPenStroke(), "Line configuration");
+                JPanel p1 = getLineBlock(uniqueLine.getPenStroke(), LINE_SETTINGS);
                 glob.add(p1, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;
