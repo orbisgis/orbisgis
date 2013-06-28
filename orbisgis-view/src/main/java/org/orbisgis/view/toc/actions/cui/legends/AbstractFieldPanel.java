@@ -78,6 +78,19 @@ public abstract class AbstractFieldPanel extends JPanel {
     private ContainerItemProperties[] strokeUoms;
 
     /**
+     * Build a {@code JLabel} from {@code name} with x-alignment set to
+     * {@code SwingConstants.RIGHT}.
+     *
+     * @param name Text
+     * @return Right-aligned JLabel with the given name.
+     */
+    public JLabel buildText(String name){
+        JLabel c1 = new JLabel(name);
+        c1.setHorizontalAlignment(SwingConstants.RIGHT);
+        return c1;
+    }
+
+    /**
      * Initialize a {@code JComboBo} whose values are set according to the
      * not spatial fields of {@code ds}.
      * @param ds The original DataSource

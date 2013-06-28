@@ -81,6 +81,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
             }
             jcc.addActionListener(acl2);
             updateField((String) jcc.getSelectedItem());
+            ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
             return jcc;
         } else {
             return new JComboBox();

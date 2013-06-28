@@ -1,5 +1,6 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import net.miginfocom.swing.MigLayout;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
@@ -36,7 +37,6 @@ import static org.orbisgis.core.renderer.se.parameter.Categorize.CategorizeMetho
 public abstract class PnlAbstractCategorized<U extends LineParameters> extends PnlAbstractTableAnalysis<Double,U> {
     public static final Logger LOGGER = Logger.getLogger(PnlAbstractCategorized.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlAbstractCategorized.class);
-    private Integer classNumber;
     private ColorConfigurationPanel colorConfig;
     private Thresholds thresholds;
     public final static Integer[] THRESHOLDS_NUMBER = new Integer[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
@@ -122,36 +122,35 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
      * @return The panel gathering the graphic elements that can be used to create the classification.
      */
     public JPanel getCreateClassificationPanel(){
-        JPanel ret = new JPanel();
-        BoxLayout bl = new BoxLayout(ret, BoxLayout.PAGE_AXIS);
-        ret.setLayout(bl);
-        JPanel sec = new JPanel();
-        JLabel numbLab = new JLabel(I18N.tr("Classes:"));
-        JLabel clLab = new JLabel(I18N.tr("Method:"));
-        createCl = new JButton(I18N.tr("Create"));
-        if(classNumber == null){
-            classNumber = DEFAULT_CLASS_NUMBER;
+
+        if(numberCombo == null){
+            numberCombo = new JComboBox(getThresholdsNumber());
+            ((JLabel)numberCombo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         }
+        comboModel = (DefaultComboBoxModel) numberCombo.getModel();
+
+        JPanel inner = new JPanel(
+                new MigLayout("wrap 2", "[align r][align l]"));
+
+        inner.add(new JLabel(I18N.tr("Method")));
+        inner.add(getMethodCombo(), "growx");
+        inner.add(new JLabel(I18N.tr("Classes")));
+        inner.add(numberCombo, "split 2");
+        createCl = new JButton(I18N.tr("Create"));
+        createCl.setActionCommand("click");
+        createCl.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onComputeClassification"));
+        inner.add(createCl, "gapleft push");
+
+        JPanel outside = new JPanel(new MigLayout("wrap 1"));
+        outside.setBorder(BorderFactory.createTitledBorder(
+                I18N.tr("Classification settings")));
         if(colorConfig == null){
             colorConfig = new ColorConfigurationPanel();
         }
-        if(numberCombo == null){
-            numberCombo = new JComboBox(getThresholdsNumber());
-        }
-        comboModel = (DefaultComboBoxModel) numberCombo.getModel();
-        JPanel btnPanel = new JPanel();
-        createCl.setActionCommand("click");
-        btnPanel.add(createCl);
-        ActionListener btn = EventHandler.create(ActionListener.class, this, "onComputeClassification");
-        createCl.addActionListener(btn);
-        sec.add(numbLab);
-        sec.add(numberCombo);
-        sec.add(clLab);
-        sec.add(getMethodCombo());
-        sec.add(btnPanel);
-        ret.add(colorConfig);
-        ret.add(sec);
-        return ret;
+        outside.add(colorConfig);
+        outside.add(inner);
+        return outside;
     }
 
     /**
@@ -178,9 +177,10 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         if(methodCombo == null){
             ContainerItemProperties[] categorizeMethods = getCategorizeMethods();
             methodCombo = new JComboBox(categorizeMethods);
-            ActionListener acl = EventHandler.create(ActionListener.class, this, "methodChanged");
-            methodCombo.addActionListener(acl);
-            methodCombo.setSelectedItem(CategorizeMethod.MANUAL.toString());
+            methodCombo.addActionListener(
+                    EventHandler.create(ActionListener.class, this, "methodChanged"));
+            ((JLabel)methodCombo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
+            methodCombo.setSelectedItem(CategorizeMethod.QUANTILES.toString());
         }
         methodChanged();
         return methodCombo;

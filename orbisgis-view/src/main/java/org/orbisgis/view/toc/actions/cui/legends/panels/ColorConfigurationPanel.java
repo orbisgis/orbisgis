@@ -1,5 +1,6 @@
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
+import net.miginfocom.swing.MigLayout;
 import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.ColorPicker;
@@ -37,29 +38,14 @@ public class ColorConfigurationPanel extends JPanel {
      */
     public ColorConfigurationPanel(){
         super();
-        JPanel intOne = new JPanel();
-        GridBagLayout gbl = new GridBagLayout();
-        intOne.setLayout(gbl);
+        JPanel intOne = new JPanel(new MigLayout("wrap 2"));
         grad = getGradientPanel();
         pal = getPalettesPanel();
         initButtons();
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        intOne.add(bGrad,gbc);
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        intOne.add(grad,gbc);
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        intOne.add(bPal,gbc);
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        intOne.add(pal,gbc);
+        intOne.add(bGrad, "align left");
+        intOne.add(grad, "align left");
+        intOne.add(bPal, "split 2, span 2");
+        intOne.add(pal, "span 2");
         this.add(intOne);
     }
 
@@ -88,21 +74,14 @@ public class ColorConfigurationPanel extends JPanel {
      * @return The labels in a JPanel.
      */
     private JPanel getGradientPanel(){
-        JPanel ret = new JPanel();
-        JPanel start = new JPanel();
-        start.add(new JLabel(I18N.tr("Gradient - Start :")));
+        JPanel gp = new JPanel(new MigLayout());
+        gp.add(new JLabel(I18N.tr("Gradient ")));
         startCol = getFilledLabel(Color.BLUE);
-        start.add(startCol);
-        ret.add(start);
-        //The end colour
-        JPanel end = new JPanel();
-        end.add(new JLabel(I18N.tr("End :")));
+        gp.add(startCol);
+        gp.add(new JLabel(I18N.tr(" to ")));
         endCol = getFilledLabel(Color.RED);
-        end.add(endCol);
-        ret.add(end);
-        //We add this to the global panel
-        ret.setAlignmentX((float) .5);
-        return ret;
+        gp.add(endCol);
+        return gp;
     }
 
     /**
@@ -122,16 +101,16 @@ public class ColorConfigurationPanel extends JPanel {
      * Initializes the buttons used to configure how coloured classification must be generated.
      */
     private void  initButtons(){
-        bGrad = new JRadioButton("");
+        bGrad = new JRadioButton(I18N.tr(""));
         bPal = new JRadioButton("");
+        bGrad.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onClickGrad"));
+        bPal.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onClickPal"));
+        bPal.setSelected(true);
         ButtonGroup bg = new ButtonGroup();
         bg.add(bGrad);
         bg.add(bPal);
-        ActionListener actionRefV = EventHandler.create(ActionListener.class, this, "onClickGrad");
-        ActionListener actionRefC= EventHandler.create(ActionListener.class, this, "onClickPal");
-        bGrad.addActionListener(actionRefV);
-        bPal.addActionListener(actionRefC);
-        bPal.setSelected(true);
         onClickPal();
     }
 
