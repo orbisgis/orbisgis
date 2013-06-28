@@ -499,8 +499,7 @@ public class ShapefileDriverTest extends TestBase {
                 dsf.saveContents("shp", ds);
                 
                 File prj = FileUtils.getFileWithExtension(shpFile, "prj");                
-                assertNotNull(prj);
-                
+                assertNotNull(prj);                
         }
         
 }

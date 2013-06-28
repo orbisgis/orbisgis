@@ -38,7 +38,6 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.cts.crs.CRSException;
 import org.cts.crs.CoordinateReferenceSystem;
@@ -321,7 +320,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
         }
         
         
-       /**
+     /**
      * Write a CRS as a WKT representation in a file
      *
      * @param path
