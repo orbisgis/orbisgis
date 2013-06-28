@@ -54,6 +54,7 @@ import org.osgi.framework.launch.FrameworkFactory;
  */
 public class PluginHost {
     private FunctionTracker functionTracker; // Track Gdms Function Services
+    private DriverTracker driverTracker; //Track Gdms Driver Services
     private Framework framework;
     private final static int STOP_TIMEOUT = 15000;
     private static final Logger LOGGER = Logger.getLogger(PluginHost.class);
@@ -158,10 +159,15 @@ public class PluginHost {
             //Track GDMS Function services
             functionTracker =  new FunctionTracker(framework.getBundleContext(),
             Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager());
-            functionTracker.open();            
+            functionTracker.open();
+            //Track GDMS Driver services
+            driverTracker = new DriverTracker(framework.getBundleContext(),
+                    Services.getService(DataManager.class).getDataSourceFactory().getSourceManager().getDriverManager());
+            driverTracker.open();
     }
     private void closeTrackers() {
             functionTracker.close();
+            driverTracker.close();
     }
     /**
      * Stop the host Framework, and wait that all bundles are stopped
