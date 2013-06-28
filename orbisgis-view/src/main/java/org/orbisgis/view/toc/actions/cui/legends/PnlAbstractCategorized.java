@@ -133,7 +133,9 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
             classNumber = DEFAULT_CLASS_NUMBER;
         }
         if(colorConfig == null){
-            colorConfig = new ColorConfigurationPanel();
+            ArrayList<String> names = new ArrayList<String>(ColorScheme.rangeColorSchemeNames());
+            names.addAll(ColorScheme.discreteColorSchemeNames());
+            colorConfig = new ColorConfigurationPanel(names);
         }
         if(numberCombo == null){
             numberCombo = new JComboBox(getThresholdsNumber());
