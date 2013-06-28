@@ -90,6 +90,8 @@ public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbo
             if(gr instanceof MarkGraphic){
                 markGraphic = new ConstantWKNLegend((MarkGraphic)gr);
             }
+            setViewBoxHeight(getViewBoxHeight());
+            setViewBoxWidth(getViewBoxWidth());
         } else {
             throw new IllegalArgumentException("We can't analyze symbolizers with"
                     + "graphic collections.");
