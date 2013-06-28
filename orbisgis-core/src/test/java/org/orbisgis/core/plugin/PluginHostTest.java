@@ -29,6 +29,9 @@
 package org.orbisgis.core.plugin;
 
 import java.io.File;
+
+import org.gdms.driver.Driver;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
 import static org.junit.Assert.assertFalse;
@@ -37,6 +40,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.DataManager;
+import org.orbisgis.core.plugin.gdms.DummyDriver;
 import org.orbisgis.core.plugin.gdms.DummyScalarFunction;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
@@ -58,28 +62,53 @@ public class PluginHostTest extends AbstractTest {
         host.start();
         return host;
     }
+
+    @Test
+    public void installGDMSDriverService() throws Exception {
+        DataManager dataManager = getDataManager();
+        DriverManager dm = dataManager.getDataSourceFactory().getSourceManager().getDriverManager();
+        DummyDriver dd = new DummyDriver();
+        PluginHost host = startHost();
+        try {
+            // Register dummy sql function service
+            ServiceRegistration<Driver> serv = host.getHostBundleContext()
+                    .registerService(Driver.class, dd,null);
+            assertTrue(dm.isDriverFileSupported(new File("ut.utest")));
+
+            //The bundle normally unregister the service, but there is no bundle in this unit test
+            serv.unregister();
+        } finally {
+            //end plugin host
+            host.stop();
+        }
+        //test if the function has been successfully removed
+        assertFalse(dm.isDriverFileSupported(new File("ut.utest")));
+    }
+
     /**
      * Unit test of gdms function tracker
      * @throws Exception 
      */
     @Test
     public void installGDMSFunctionService() throws Exception {
-        PluginHost host = startHost();
-        
-        // Register dummy sql function service
-        ServiceRegistration<Function> serv = host.getHostBundleContext()
-               .registerService(Function.class, new DummyScalarFunction(),null);
-        
-        // check if the function is registered        
         DataManager dataManager = getDataManager();
         assertNotNull(dataManager);
-        FunctionManager manager = dataManager.getDataSourceFactory().getFunctionManager();  
-        assertTrue(manager.contains("dummy"));
-        //The bundle normally unregister the service, but there is no bundle in this unit test
-        serv.unregister();
-        //end plugin host
-        host.stop();
-        
+        FunctionManager manager = dataManager.getDataSourceFactory().getFunctionManager();
+        PluginHost host = startHost();
+        try {
+            // Register dummy sql function service
+            ServiceRegistration<Function> serv = host.getHostBundleContext()
+                   .registerService(Function.class, new DummyScalarFunction(), null);
+
+            // check if the function is registered
+            assertTrue(manager.contains("dummy"));
+            //The bundle normally unregister the service, but there is no bundle in this unit test
+            serv.unregister();
+            //end plugin host
+        } finally {
+            host.stop();
+
+        }
         //test if the function has been successfully removed
         assertFalse(manager.contains("dummy"));
     }
@@ -94,19 +123,22 @@ public class PluginHostTest extends AbstractTest {
         assertNotNull(dataManager);
         FunctionManager manager = dataManager.getDataSourceFactory().getFunctionManager();        
         PluginHost host = startHost();
-        File bundlePath = new File("target/bundle/plugin-1.0.jar");
-        System.out.println("Install plugin :"+bundlePath.getAbsolutePath());
-        assertTrue(bundlePath.exists());
-        // Install the external package
-        Bundle plugin = host.getHostBundleContext().installBundle("file:"+bundlePath.getAbsolutePath());
-        // start it
-        plugin.start();
-        // test if function exists
-        assertTrue(manager.contains("dummy"));
-        
-        host.getHostBundleContext().getBundle().stop();
-        //end plugin host
-        host.stop();
+        try {
+            File bundlePath = new File("target/bundle/plugin-1.0.jar");
+            System.out.println("Install plugin :"+bundlePath.getAbsolutePath());
+            assertTrue(bundlePath.exists());
+            // Install the external package
+            Bundle plugin = host.getHostBundleContext().installBundle("file:"+bundlePath.getAbsolutePath());
+            // start it
+            plugin.start();
+            // test if function exists
+            assertTrue(manager.contains("dummy"));
+
+            host.getHostBundleContext().getBundle().stop();
+        } finally {
+            //end plugin host
+            host.stop();
+        }
         
         //test if the function has been successfully removed
         assertFalse(manager.contains("dummy"));

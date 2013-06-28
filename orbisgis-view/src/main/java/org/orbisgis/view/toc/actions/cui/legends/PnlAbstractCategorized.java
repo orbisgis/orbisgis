@@ -122,7 +122,6 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
      * @return The panel gathering the graphic elements that can be used to create the classification.
      */
     public JPanel getCreateClassificationPanel(){
-
         if(numberCombo == null){
             numberCombo = new JComboBox(getThresholdsNumber());
             ((JLabel)numberCombo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
@@ -146,7 +145,9 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         outside.setBorder(BorderFactory.createTitledBorder(
                 I18N.tr("Classification settings")));
         if(colorConfig == null){
-            colorConfig = new ColorConfigurationPanel();
+            ArrayList<String> names = new ArrayList<String>(ColorScheme.rangeColorSchemeNames());
+            names.addAll(ColorScheme.discreteColorSchemeNames());
+            colorConfig = new ColorConfigurationPanel(names);
         }
         outside.add(colorConfig);
         outside.add(inner);

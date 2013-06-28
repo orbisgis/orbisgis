@@ -31,6 +31,9 @@
  */
 package org.gdms.data.types;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.cts.crs.CRSException;
 import org.cts.crs.CoordinateReferenceSystem;
 import org.cts.parser.prj.PrjWriter;
 import org.gdms.data.DataSourceFactory;
@@ -59,8 +62,8 @@ public final class CRSConstraint extends AbstractConstraint {
      *
      * @param constraintValue
      */
-    public CRSConstraint(byte[] constraintBytes) {
-        coordinateReferenceSystem = DataSourceFactory.getCRSFactory().createFromPrj(new String(constraintBytes));
+    public CRSConstraint(byte[] constraintBytes) throws CRSException {
+            coordinateReferenceSystem = DataSourceFactory.getCRSFactory().createFromPrj(new String(constraintBytes));      
     }
 
     /**

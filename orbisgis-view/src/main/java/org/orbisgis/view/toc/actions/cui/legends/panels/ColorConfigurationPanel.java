@@ -31,14 +31,24 @@ public class ColorConfigurationPanel extends JPanel {
     private JRadioButton bGrad;
     private JRadioButton bPal;
     private JComboBox schemes;
+    private List<String> names;
 
     /**
      * Builds a panel with two filled labels whose colour can be changed. It is then possible to retrieve the colour
      * of both.
+     * @param names the list of names that shall be used to build the combo box of palettes. They will be
+     *              used to retrieve the associated ColorScheme instances. If null is given, the concatenation
+     *              of the range and then discrete ColorScheme names will be built.
      */
-    public ColorConfigurationPanel(){
+    public ColorConfigurationPanel(List<String> names){
         super();
         JPanel intOne = new JPanel(new MigLayout("wrap 2"));
+        if(names == null){
+            this.names = new ArrayList<String>(ColorScheme.rangeColorSchemeNames());
+            this.names.addAll(ColorScheme.discreteColorSchemeNames());
+        } else {
+            this.names = new ArrayList<String>(names);
+        }
         grad = getGradientPanel();
         pal = getPalettesPanel();
         initButtons();
@@ -89,8 +99,7 @@ public class ColorConfigurationPanel extends JPanel {
      * @return The JPanel that contains the combo where we put the palettes.
      */
     private JPanel getPalettesPanel(){
-        java.util.List<String> schemeNames = ColorScheme.rangeColorSchemeNames();
-        schemes = new JComboBox(schemeNames.toArray(new String[schemeNames.size()]));
+        schemes = new JComboBox(names.toArray(new String[names.size()]));
         schemes.setRenderer(new ColorSchemeListCellRenderer(new JList()));
         JPanel schemesPan = new JPanel();
         schemesPan.add(schemes);

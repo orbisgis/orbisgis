@@ -40,6 +40,12 @@ import java.io.InputStream;
 import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.cts.CRSFactory;
+import org.cts.registry.EPSGRegistry;
+import org.cts.registry.ESRIRegistry;
+import org.cts.registry.IGNFRegistry;
+import org.cts.registry.Nad27Registry;
+import org.cts.registry.Nad83Registry;
+import org.cts.registry.RegistryManager;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.edition.EditionDecorator;
@@ -158,6 +164,13 @@ public final class DataSourceFactory {
                 BNUMBER = bNum;                
                 //Load the CRSFactory that manages CoordinateReferenceSystem tools.
                 cRSFactory = new CRSFactory();
+                //Load the registries
+                RegistryManager registryManager = cRSFactory.getRegistryManager();        
+                registryManager.addRegistry(new IGNFRegistry());
+                registryManager.addRegistry(new EPSGRegistry());
+                registryManager.addRegistry(new ESRIRegistry());
+                registryManager.addRegistry(new Nad27Registry());
+                registryManager.addRegistry(new Nad83Registry()); 
         }
     
 

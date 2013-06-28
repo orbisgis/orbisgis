@@ -77,6 +77,7 @@ public class StrokeTest {
             assertTrue(res == 9);
     }
 
+    //@Test
     public void experimentGraphic() throws IOException, ParameterException, InvalidStyle {
         JFrame frame = new JFrame();
         frame.setTitle("StrokeTest");

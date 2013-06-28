@@ -55,6 +55,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.TreeSet;
@@ -148,7 +149,9 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
         ret.add(btnPnl);
         //We build the panel used to configure the color before creating the classification.
         if(colorConfig == null){
-            colorConfig = new ColorConfigurationPanel();
+            ArrayList<String> names = new ArrayList<String>(ColorScheme.discreteColorSchemeNames());
+            names.addAll(ColorScheme.rangeColorSchemeNames());
+            colorConfig = new ColorConfigurationPanel(names);
         }
         ret.add(colorConfig);
         //We still need a button to configure all of that

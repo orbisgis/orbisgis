@@ -10,6 +10,7 @@ import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.view.toc.actions.cui.legends.model.KeyCellRenderer;
 import org.orbisgis.view.toc.actions.cui.legends.model.PreviewCellRenderer;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;
 import org.xnap.commons.i18n.I18n;
@@ -183,7 +184,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
         previews.setWidth(previewWidth);
         previews.setMinWidth(previewWidth);
         previews.setMaxWidth(previewWidth);
-        previews.setCellRenderer(new PreviewCellRenderer(table, getPreviewClass(), ((MappedLegend<K, U>) getLegend())));
+        previews.setCellRenderer(new PreviewCellRenderer(table, getPreviewClass(), (MappedLegend<K, U>) getLegend()));
         previews.setCellEditor(getParametersCellEditor());
         //We put a default editor on the keys.
         TableColumn keys = table.getColumnModel().getColumn(getKeyColumn());
@@ -191,6 +192,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
         CellEditorListener cel = EventHandler.create(CellEditorListener.class, model, "fireTableDataChanged", null, "editingStopped");
         ker.addCellEditorListener(cel);
         keys.setCellEditor(ker);
+        keys.setCellRenderer(new KeyCellRenderer(table, getPreviewClass(), (MappedLegend<K,U>)getLegend()));
         JScrollPane jsp = new JScrollPane(table);
         // Set the viewport to view 6 rows with a width of 400 pixels.
         int rowHeight = table.getRowHeight();
