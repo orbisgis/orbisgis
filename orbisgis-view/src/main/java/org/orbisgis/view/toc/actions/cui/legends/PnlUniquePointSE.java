@@ -40,6 +40,7 @@ import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
+import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
@@ -199,8 +200,11 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 gbc.gridy = 0;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.anchor = GridBagConstraints.PAGE_START;
-                glob.add(getLineBlock(uniquePoint.getPenStroke(),
-                        I18N.tr("Border settings")), gbc);
+                JPanel lb = getLineBlock(uniquePoint.getPenStroke(),
+                        I18N.tr("Border settings"));
+                ComponentUtil.setFieldState(isStrokeEnabled(), lb);
+
+                glob.add(lb, gbc);
 
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;
