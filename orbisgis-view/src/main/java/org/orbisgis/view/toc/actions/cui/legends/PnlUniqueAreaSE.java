@@ -285,6 +285,14 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         }
 
         /**
+         * If true, the stroke parameters shown by the UI must be enabled. They are disabled otherwise.
+         * @return If the stroke parameters can be edited
+         */
+        protected boolean isStrokeEnabled(){
+            return displayStroke;
+        }
+
+        /**
          * In order to improve the user experience, it may be interesting to
          * store the {@code ConstantSolidFillLegend} as a field before removing
          * it. This way, we will be able to use it back directly... unless the
