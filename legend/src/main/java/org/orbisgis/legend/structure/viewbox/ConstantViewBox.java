@@ -108,8 +108,9 @@ public class ConstantViewBox extends DefaultViewBox {
         public void setHeight(Double d) {
             if(d==null){
                 if(getWidth() != null){
-                    setHeightLegend(null);
-                    getViewBox().setHeight(null);
+                    RealLiteral rl = new RealLiteral(getWidth());
+                    setHeightLegend(new RealLiteralLegend(rl));
+                    getViewBox().setHeight(rl);
                 } else {
                     throw new IllegalArgumentException("you're not supposed to"
                             + "set both height and width of a viewbox to null.");
@@ -138,8 +139,9 @@ public class ConstantViewBox extends DefaultViewBox {
         public void setWidth(Double d) {
             if(d==null){
                 if(getHeight() != null){
-                    setWidthLegend(null);
-                    getViewBox().setWidth(null);
+                    RealLiteral rl = new RealLiteral(getHeight());
+                    setWidthLegend(new RealLiteralLegend(rl));
+                    getViewBox().setWidth(rl);
                 } else {
                     throw new IllegalArgumentException("you're not supposed to"
                             + "set both height and width of a viewbox to null.");
