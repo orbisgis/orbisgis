@@ -182,7 +182,10 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
             methodCombo.addActionListener(
                     EventHandler.create(ActionListener.class, this, "methodChanged"));
             ((JLabel)methodCombo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-            methodCombo.setSelectedItem(CategorizeMethod.MANUAL.toString());
+            // Select something other than "Manual"
+            if (methodCombo.getItemCount() > 0) {
+                methodCombo.setSelectedIndex(1);
+            }
         }
         methodChanged();
         return methodCombo;

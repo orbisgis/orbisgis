@@ -29,11 +29,11 @@
 package org.orbisgis.sif.common;
 
 /**
- * Generic list item that store a key with the value shown
+ * Generic list item that stores a key with the value shown.
  * 
  * This class is created thanks to the NetBeans user interface.
  * Use the "Add property" NetBeans function to add properties easily.
- * See documentation related to java.beans management systems
+ * See documentation related to java.beans management systems.
  * 
  */
 public class ContainerItemProperties extends ContainerItem<String>  {
