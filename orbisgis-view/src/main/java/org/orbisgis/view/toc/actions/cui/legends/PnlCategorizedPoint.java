@@ -126,7 +126,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         //Field chooser
 //        jp.add(buildText(I18N.tr("Field")));
         fieldCombo = getFieldComboBox();
-        jp.add(getFieldComboBox(), "span 2, align center");
+        jp.add(getFieldComboBox(), "span 2, align center, width 200!");
 
         //UOM
         jp.add(buildText(I18N.tr("Border width unit")));

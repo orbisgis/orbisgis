@@ -5,6 +5,7 @@ import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.ColorPicker;
 import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueSymbolSE;
+import org.orbisgis.view.toc.actions.cui.legends.WideComboBox;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -24,7 +25,7 @@ import java.util.List;
  */
 public class ColorConfigurationPanel extends JPanel {
     private static final I18n I18N = I18nFactory.getI18n(ColorConfigurationPanel.class);
-    private JPanel pal;
+    private JComboBox pal;
     private JPanel grad;
     private JLabel endCol;
     private JLabel startCol;
@@ -42,7 +43,7 @@ public class ColorConfigurationPanel extends JPanel {
      */
     public ColorConfigurationPanel(List<String> names){
         super();
-        JPanel intOne = new JPanel(new MigLayout("wrap 2"));
+        JPanel intOne = new JPanel(new MigLayout("wrap 2", "[align l][align c]"));
         if(names == null){
             this.names = new ArrayList<String>(ColorScheme.rangeColorSchemeNames());
             this.names.addAll(ColorScheme.discreteColorSchemeNames());
@@ -52,10 +53,10 @@ public class ColorConfigurationPanel extends JPanel {
         grad = getGradientPanel();
         pal = getPalettesPanel();
         initButtons();
-        intOne.add(bGrad, "align left");
-        intOne.add(grad, "align left");
-        intOne.add(bPal, "split 2, span 2");
-        intOne.add(pal, "span 2");
+        intOne.add(bGrad);
+        intOne.add(grad);
+        intOne.add(bPal);
+        intOne.add(pal, "width 115!");
         this.add(intOne);
     }
 
@@ -98,12 +99,10 @@ public class ColorConfigurationPanel extends JPanel {
      * Gets the panel containing the palette configuration.
      * @return The JPanel that contains the combo where we put the palettes.
      */
-    private JPanel getPalettesPanel(){
-        schemes = new JComboBox(names.toArray(new String[names.size()]));
+    private JComboBox getPalettesPanel(){
+        schemes = new WideComboBox(names.toArray(new String[names.size()]));
         schemes.setRenderer(new ColorSchemeListCellRenderer(new JList()));
-        JPanel schemesPan = new JPanel();
-        schemesPan.add(schemes);
-        return schemesPan;
+        return schemes;
     }
 
     /**

@@ -132,7 +132,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
                 new MigLayout("wrap 2", "[align r][align l]"));
 
         inner.add(new JLabel(I18N.tr("Method")));
-        inner.add(getMethodCombo(), "growx");
+        inner.add(getMethodCombo(), "width ::130");
         inner.add(new JLabel(I18N.tr("Classes")));
         inner.add(numberCombo, "split 2");
         createCl = new JButton(I18N.tr("Create"));
@@ -141,7 +141,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
                 EventHandler.create(ActionListener.class, this, "onComputeClassification"));
         inner.add(createCl, "gapleft push");
 
-        JPanel outside = new JPanel(new MigLayout("wrap 1"));
+        JPanel outside = new JPanel(new MigLayout("wrap 1", "[align c]"));
         outside.setBorder(BorderFactory.createTitledBorder(
                 I18N.tr("Classification settings")));
         if(colorConfig == null){
@@ -149,8 +149,9 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
             names.addAll(ColorScheme.discreteColorSchemeNames());
             colorConfig = new ColorConfigurationPanel(names);
         }
-        outside.add(colorConfig);
-        outside.add(inner);
+        outside.add(new JLabel(I18N.tr("Color scheme")), "align l");
+        outside.add(colorConfig, "growx");
+        outside.add(inner, "growx");
         return outside;
     }
 
@@ -177,11 +178,11 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     public JComboBox getMethodCombo(){
         if(methodCombo == null){
             ContainerItemProperties[] categorizeMethods = getCategorizeMethods();
-            methodCombo = new JComboBox(categorizeMethods);
+            methodCombo = new WideComboBox(categorizeMethods);
             methodCombo.addActionListener(
                     EventHandler.create(ActionListener.class, this, "methodChanged"));
             ((JLabel)methodCombo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-            methodCombo.setSelectedItem(CategorizeMethod.QUANTILES.toString());
+            methodCombo.setSelectedItem(CategorizeMethod.MANUAL.toString());
         }
         methodChanged();
         return methodCombo;
