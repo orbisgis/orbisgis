@@ -968,7 +968,13 @@ public final class DefaultSourceManager implements SourceManager {
                                 String name = xmlSrc.getName();
                                 ExtendedSource newSource = new ExtendedSource(dsf, sources,
                                         name, true, baseDir, null, null);
-                                register(name, newSource);
+                                try {
+                                    register(name, newSource);
+                                } catch (Exception ex) {
+                                    // Error occur while loading this source
+                                    // Skip this source in order to not crash OrbisGIS
+                                    LOG.error("Could not load the table "+name,ex);
+                                }
                         }
                 } catch (JAXBException e) {
                         throw new InitializationException(e);
