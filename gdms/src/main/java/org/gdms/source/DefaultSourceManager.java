@@ -67,6 +67,7 @@ import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.asc.AscDriver;
 import org.gdms.driver.csv.CSVDriver;
 import org.gdms.driver.dbf.DBFDriver;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.dxf.DXFDriver;
 import org.gdms.driver.gdms.GdmsDriver;
@@ -523,6 +524,9 @@ public final class DefaultSourceManager implements SourceManager {
                 nameSource.put(name, src);
                 try {
                         addToSchema(name, src);
+
+                } catch (DriverLoadException ex) {
+                        LOG.error("Failed to add " + name + " to Gdms schema.", ex);
                 } catch (DriverException ex) {
                         LOG.error("Failed to add " + name + " to Gdms schema.", ex);
                 }
@@ -968,13 +972,8 @@ public final class DefaultSourceManager implements SourceManager {
                                 String name = xmlSrc.getName();
                                 ExtendedSource newSource = new ExtendedSource(dsf, sources,
                                         name, true, baseDir, null, null);
-                                try {
-                                    register(name, newSource);
-                                } catch (Exception ex) {
-                                    // Error occur while loading this source
-                                    // Skip this source in order to not crash OrbisGIS
-                                    LOG.error("Could not load the table "+name,ex);
-                                }
+
+                                register(name, newSource);
                         }
                 } catch (JAXBException e) {
                         throw new InitializationException(e);
