@@ -173,7 +173,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         jp.setBorder(BorderFactory.createTitledBorder(I18N.tr("General settings")));
 
         //Field chooser
-        jp.add(new JLabel(I18N.tr("Field")));
+        jp.add(new JLabel("<html><b>" + I18N.tr("Field") + "</b></html>"));
         fieldCombo = getFieldComboBox();
         // Set the field combo box to a max width of 90 pixels
         // and grow the others.
