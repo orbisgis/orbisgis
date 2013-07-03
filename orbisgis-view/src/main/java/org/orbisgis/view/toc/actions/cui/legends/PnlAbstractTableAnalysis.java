@@ -1,6 +1,5 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.layerModel.ILayer;
@@ -8,6 +7,7 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;

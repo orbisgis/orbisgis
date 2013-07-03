@@ -14,6 +14,7 @@ import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.sif.common.ContainerItemProperties;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelInterval;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorConfigurationPanel;

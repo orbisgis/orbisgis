@@ -39,6 +39,7 @@ import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.ColorPicker;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;

@@ -26,11 +26,10 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends;
+package org.orbisgis.sif.components;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Vector;
 
 /**
  * A JComboBox whose popup is wide enough. Code taken from Santhosh Kumar's blog
@@ -40,22 +39,23 @@ import java.util.Vector;
  */
 public class WideComboBox extends JComboBox {
 
+    private boolean layingOut = false;
+
+    /**
+     * Constructs an empty {@code WideComboBox}.
+     */
     public WideComboBox() {
+        super();
     }
 
+    /**
+     * Constructs a {@code WideComboBox} containing the given items.
+     *
+     * @param items Items to put in the combo box.
+     */
     public WideComboBox(final Object items[]) {
         super(items);
     }
-
-    public WideComboBox(Vector items) {
-        super(items);
-    }
-
-    public WideComboBox(ComboBoxModel aModel) {
-        super(aModel);
-    }
-
-    private boolean layingOut = false;
 
     @Override
     public void doLayout() {
