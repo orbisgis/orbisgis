@@ -163,8 +163,8 @@ public final class PointLabel extends Label {
         double deltaY = 0;
 
         Rectangle2D bounds = getLabel().getBounds(g2, map, mt);
-        x = shp.getBounds2D().getCenterX() + bounds.getWidth() / 2;
-        y = shp.getBounds2D().getCenterY() - bounds.getHeight() / 2;
+        x = shp.getBounds2D().getCenterX() - bounds.getWidth() / 2;
+        y = shp.getBounds2D().getCenterY() + bounds.getHeight() / 2;
 
         if (this.exclusionZone != null) {
             if (this.exclusionZone instanceof ExclusionRadius) {
