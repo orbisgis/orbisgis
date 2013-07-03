@@ -39,20 +39,15 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * UI for "Interval classification - Point".
+ *
  * @author Alexis Guéganno
  */
 public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlCategorizedPoint.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlCategorizedPoint.class);
-    private CanvasSE fallbackPreview;
-    private JComboBox fieldCombo;
     private JCheckBox strokeBox;
     private ContainerItemProperties[] uoms;
-
-    @Override
-    public CanvasSE getPreview() {
-        return fallbackPreview;
-    }
 
     /**
      * This methods is called by EventHandler when the user clicks on the fall back's preview. It opens an UI that lets
@@ -102,62 +97,28 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     }
 
     @Override
-    public void initializeLegendFields() {
-        this.removeAll();
-
-        JPanel glob = new JPanel(new MigLayout());
-
-        //Fallback symbol
-        glob.add(getSettingsPanel(), "cell 0 0");
-
-        //Classification generator
-        glob.add(getCreateClassificationPanel(), "cell 1 0");
-
-        //Table for the recoded configurations
-        glob.add(getTablePanel(), "cell 0 1, span 2 1, growx");
-        this.add(glob);
-        this.revalidate();
-    }
-
-    private JPanel getSettingsPanel() {
-        JPanel jp = new JPanel(new MigLayout("wrap 2", "[align right][grow]"));
-        jp.setBorder(BorderFactory.createTitledBorder(I18N.tr("General settings")));
-
-        //Field chooser
-//        jp.add(buildText(I18N.tr("Field")));
-        fieldCombo = getFieldComboBox();
-        jp.add(getFieldComboBox(), "span 2, align center, width 200!");
-
-        //UOM
-        jp.add(buildText(I18N.tr("Border width unit")));
-        jp.add(getUOMComboBox(), "growx");
-
+    protected void beforeFallbackSymbol(JPanel genSettings) {
         //UOM - symbol size
-        jp.add(buildText(I18N.tr("Size unit")));
-        jp.add(getSymbolUOMComboBox());
+        genSettings.add(buildText(I18N.tr("Size unit")));
+        genSettings.add(getSymbolUOMComboBox());
 
         // On vertex? On centroid?
-        jp.add(pnlOnVertex(), "span 2, align center");
+        genSettings.add(pnlOnVertex(), "span 2, align center");
 
         // Enable stroke?
-        jp.add(getEnableStrokeCheckBox(), "span 2, align center");
-
-        // Fallback symbol
-        jp.add(getFallback(), "span 2, align center");
-        jp.add(buildText(I18N.tr("Fallback symbol")), "span 2, align center");
-
-        return jp;
+        genSettings.add(getEnableStrokeCheckBox(), "span 2, align center");
     }
 
     /**
-     * Gets the panel used to set if the stroke will be drawable or not.
-     * @return The configuration panel for the stroke use.
+     * Gets the checkbox used to set if the border will be drawn.
+     *
+     * @return The enable border checkbox.
      */
-    public JCheckBox getEnableStrokeCheckBox(){
-        strokeBox = new JCheckBox(I18N.tr("Enable border"));
-        CategorizedPoint ra = (CategorizedPoint) getLegend();
-        strokeBox.setSelected(ra.isStrokeEnabled());
-        strokeBox.addActionListener(EventHandler.create(ActionListener.class, this, "onEnableStroke"));
+    private JCheckBox getEnableStrokeCheckBox(){
+        strokeBox = new JCheckBox(ENABLE_BORDER);
+        strokeBox.setSelected(((CategorizedPoint) getLegend()).isStrokeEnabled());
+        strokeBox.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onEnableStroke"));
         return strokeBox;
     }
 
@@ -254,11 +215,6 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         return "";
     }
 
-    @Override
-    public String getFieldName(){
-        return fieldCombo.getSelectedItem().toString();
-    }
-
     /**
      * Action done when the checkbox used to activate the stroke is pressed.
      */
@@ -270,17 +226,8 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         model.fireTableDataChanged();
     }
 
-    /**
-     * Builds the panel used to display and configure the fallback symbol
-     *
-     * @return The Panel where the fallback configuration is displayed.
-     */
-    private CanvasSE getFallback() {
-        initPreview();
-        return fallbackPreview;
-    }
-
-    private JComboBox getUOMComboBox(){
+    @Override
+    protected JComboBox getUOMComboBox(){
         UomCombo jcb = getLineUomCombo(((CategorizedPoint) getLegend()));
         jcb.addActionListener(
                 EventHandler.create(ActionListener.class, this, "updatePreview", "source"));

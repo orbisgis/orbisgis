@@ -14,6 +14,7 @@ import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.sif.common.ContainerItemProperties;
+import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelInterval;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorConfigurationPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;
@@ -41,14 +42,38 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     private Thresholds thresholds;
     public final static Integer[] THRESHOLDS_NUMBER = new Integer[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
     public final Integer[] THRESHOLDS_SQUARE = new Integer[]{2,4,8,16};
+    protected CanvasSE fallbackPreview;
+    protected JComboBox fieldCombo;
+    protected static final String ENABLE_BORDER = I18N.tr("Enable border");
+
     /**
      * The default number of classes in a classification.
      */
     public static final Integer DEFAULT_CLASS_NUMBER = 5;
-    private JComboBox numberCombo;
+    private JComboBox<Integer> numberCombo;
     private JButton createCl;
     private JComboBox methodCombo;
     private DefaultComboBoxModel comboModel;
+
+    @Override
+    public CanvasSE getPreview() {
+        return fallbackPreview;
+    }
+
+    /**
+     * Builds the panel used to display and configure the fallback symbol
+     *
+     * @return The Panel where the fallback configuration is displayed.
+     */
+    protected CanvasSE getFallback() {
+        initPreview();
+        return fallbackPreview;
+    }
+
+    @Override
+    public String getFieldName() {
+        return fieldCombo.getSelectedItem().toString();
+    }
 
     /**
      * Initialize a {@code JComboBo} whose values are set according to the
@@ -118,12 +143,76 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     }
 
     /**
+     * Initialize the panels.
+     */
+    @Override
+    public void initializeLegendFields() {
+        this.removeAll();
+
+        JPanel glob = new JPanel(new MigLayout());
+
+        //Fallback symbol
+        glob.add(getSettingsPanel(), "cell 0 0");
+
+        //Classification generator
+        glob.add(getCreateClassificationPanel(), "cell 1 0");
+
+        //Table for the recoded configurations
+        glob.add(getTablePanel(), "cell 0 1, span 2 1, growx");
+        this.add(glob);
+        this.revalidate();
+    }
+
+    /**
+     * Initialize and return the settings panel.
+     *
+     * @return Settings panel
+     */
+    protected JPanel getSettingsPanel() {
+        JPanel jp = new JPanel(new MigLayout("wrap 2", "[align right][grow]"));
+        jp.setBorder(BorderFactory.createTitledBorder(I18N.tr("General settings")));
+
+        //Field chooser
+    //        jp.add(buildText(I18N.tr("Field")));
+        fieldCombo = getFieldComboBox();
+        jp.add(fieldCombo, "span 2, align center, width 200!");
+
+        //UOM
+        jp.add(buildText(I18N.tr("Border width unit")));
+        jp.add(getUOMComboBox(), "growx");
+
+        beforeFallbackSymbol(jp);
+
+        // Fallback symbol
+        jp.add(getFallback(), "span 2, align center");
+        jp.add(buildText(I18N.tr("Fallback symbol")), "span 2, align center");
+
+        return jp;
+    }
+
+    /**
+     * Add any necessary components in the general settings panel
+     * before the fallback symbol.
+     *
+     * @param genSettings The general settings panel
+     */
+    protected abstract void beforeFallbackSymbol(JPanel genSettings);
+
+    /**
+     * Create and return a combobox for the border width unit,
+     * adding an appropriate action listener to update the preview.
+     *
+     * @return A combobox for the border width unit
+     */
+    protected abstract JComboBox getUOMComboBox();
+
+    /**
      * Retrieve the panel that gathers all the components needed to create the classification.
      * @return The panel gathering the graphic elements that can be used to create the classification.
      */
     public JPanel getCreateClassificationPanel(){
         if(numberCombo == null){
-            numberCombo = new JComboBox(getThresholdsNumber());
+            numberCombo = new JComboBox<Integer>(getThresholdsNumber());
             ((JLabel)numberCombo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         }
         comboModel = (DefaultComboBoxModel) numberCombo.getModel();
