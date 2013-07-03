@@ -162,7 +162,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
         // Initialize the dialog container, adding the empty dialog.
         cardLayout = new CardLayout();
         dialogContainer = new JPanel(cardLayout);
-        dialogContainer.setPreferredSize(new Dimension(600, 370));
+        dialogContainer.setPreferredSize(new Dimension(640, 385));
         addEmptyDialog();
 
         // Add all panels.

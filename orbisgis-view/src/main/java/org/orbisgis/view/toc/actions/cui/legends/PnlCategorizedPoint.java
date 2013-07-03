@@ -99,8 +99,8 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     @Override
     protected void beforeFallbackSymbol(JPanel genSettings) {
         //UOM - symbol size
-        genSettings.add(buildText(I18N.tr("Size unit")));
-        genSettings.add(getSymbolUOMComboBox());
+        genSettings.add(new JLabel(I18N.tr("Size unit")));
+        genSettings.add(getSymbolUOMComboBox(), "growx");
 
         // On vertex? On centroid?
         genSettings.add(pnlOnVertex(), "span 2, align center");

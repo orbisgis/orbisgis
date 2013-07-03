@@ -91,13 +91,13 @@ public abstract class AbstractFieldPanel extends JPanel {
     }
 
     /**
-     * Initialize a {@code JComboBo} whose values are set according to the
+     * Initialize a {@code JComboBox} whose values are set according to the
      * not spatial fields of {@code ds}.
      * @param ds The original DataSource
      * @return A JComboBox.
      */
-    public JComboBox getFieldCombo(DataSource ds){
-        JComboBox combo = new JComboBox();
+    public WideComboBox getFieldCombo(DataSource ds){
+        WideComboBox combo = new WideComboBox();
         if(ds != null){
             try {
                 Metadata md = ds.getMetadata();

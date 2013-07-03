@@ -43,7 +43,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     public final static Integer[] THRESHOLDS_NUMBER = new Integer[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
     public final Integer[] THRESHOLDS_SQUARE = new Integer[]{2,4,8,16};
     protected CanvasSE fallbackPreview;
-    protected JComboBox fieldCombo;
+    protected WideComboBox fieldCombo;
     protected static final String ENABLE_BORDER = I18N.tr("Enable border");
 
     /**
@@ -82,8 +82,8 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
      * @return The combo box used to manage the studied field.
      */
     @Override
-    public JComboBox getFieldCombo(DataSource ds){
-        JComboBox combo = new JComboBox();
+    public WideComboBox getFieldCombo(DataSource ds){
+        WideComboBox combo = new WideComboBox();
         if(ds != null){
             try {
                 Metadata md = ds.getMetadata();
@@ -169,23 +169,25 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
      * @return Settings panel
      */
     protected JPanel getSettingsPanel() {
-        JPanel jp = new JPanel(new MigLayout("wrap 2", "[align right][grow]"));
+        JPanel jp = new JPanel(new MigLayout("wrap 2", "[align r][align l]"));
         jp.setBorder(BorderFactory.createTitledBorder(I18N.tr("General settings")));
 
         //Field chooser
-    //        jp.add(buildText(I18N.tr("Field")));
+        jp.add(new JLabel(I18N.tr("Field")));
         fieldCombo = getFieldComboBox();
-        jp.add(fieldCombo, "span 2, align center, width 200!");
+        // Set the field combo box to a max width of 90 pixels
+        // and grow the others.
+        jp.add(fieldCombo, "width ::90");
 
         //UOM
-        jp.add(buildText(I18N.tr("Border width unit")));
+        jp.add(new JLabel(I18N.tr("Border width unit")));
         jp.add(getUOMComboBox(), "growx");
 
         beforeFallbackSymbol(jp);
 
         // Fallback symbol
         jp.add(getFallback(), "span 2, align center");
-        jp.add(buildText(I18N.tr("Fallback symbol")), "span 2, align center");
+        jp.add(new JLabel(I18N.tr("Fallback symbol")), "span 2, align center");
 
         return jp;
     }
@@ -228,6 +230,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         createCl.setActionCommand("click");
         createCl.addActionListener(
                 EventHandler.create(ActionListener.class, this, "onComputeClassification"));
+        createCl.setEnabled(false);
         inner.add(createCl, "gapleft push");
 
         JPanel outside = new JPanel(new MigLayout("wrap 1", "[align c]"));
@@ -271,10 +274,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
             methodCombo.addActionListener(
                     EventHandler.create(ActionListener.class, this, "methodChanged"));
             ((JLabel)methodCombo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-            // Select something other than "Manual"
-            if (methodCombo.getItemCount() > 0) {
-                methodCombo.setSelectedIndex(1);
-            }
+            methodCombo.setSelectedItem(CategorizeMethod.MANUAL.toString());
         }
         methodChanged();
         return methodCombo;
