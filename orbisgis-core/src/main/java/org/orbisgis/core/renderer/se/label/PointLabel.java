@@ -75,13 +75,13 @@ public final class PointLabel extends Label {
         super();
         rotation = new RealLiteral(0.0);
         setVerticalAlign(VerticalAlignment.TOP);
-        setHorizontalAlign(HorizontalAlignment.RIGHT);
+        setHorizontalAlign(HorizontalAlignment.CENTER);
     }
 
 
     /**
      * Creates a new {@code PointLabel} from a {@code PointLabelType} instance.
-     * @param plt
+     * @param plt The input JaXB type
      * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
      */
     public PointLabel(PointLabelType plt) throws InvalidStyle {
@@ -97,7 +97,7 @@ public final class PointLabel extends Label {
 
     /**
      * Creates a new {@code PointLabel} from a {@code JAXBElement} instance.
-     * @param plt
+     * @param pl The input JaXB type.
      * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
      */
     PointLabel(JAXBElement<PointLabelType> pl) throws InvalidStyle {
@@ -118,7 +118,7 @@ public final class PointLabel extends Label {
 
     /**
      * Set the exclusion zone defined for this {@code PointLabel}.
-     * @param exclusionZone 
+     * @param exclusionZone The new exclusion zone
      */
     public void setExclusionZone(ExclusionZone exclusionZone) {
         this.exclusionZone = exclusionZone;
@@ -140,7 +140,7 @@ public final class PointLabel extends Label {
 
     /**
      * Set the rotation that must be applied to this {@code PointLabel} before rendering.
-     * @param rotation 
+     * @param rotation The new rotation to be used.
      */
     public void setRotation(RealParameter rotation) {
         this.rotation = rotation;
@@ -163,8 +163,8 @@ public final class PointLabel extends Label {
         double deltaY = 0;
 
         Rectangle2D bounds = getLabel().getBounds(g2, map, mt);
-        x = shp.getBounds2D().getCenterX() + bounds.getWidth() / 2;
-        y = shp.getBounds2D().getCenterY() - bounds.getHeight() / 2;
+        x = shp.getBounds2D().getCenterX() + getHorizontalDisplacement(bounds);
+        y = shp.getBounds2D().getCenterY() + bounds.getHeight() / 2;
 
         if (this.exclusionZone != null) {
             if (this.exclusionZone instanceof ExclusionRadius) {
@@ -183,7 +183,22 @@ public final class PointLabel extends Label {
 
         AffineTransform at = AffineTransform.getTranslateInstance(x + deltaX, y + deltaY);
 
-        getLabel().draw(g2, map, selected, mt, at, perm);
+        getLabel().draw(g2, map, selected, mt, at, perm, this.getVerticalAlign());
+    }
+
+    /**
+     * Gets the horizontal displacement to the given bounds according to the currently configured
+     * HorizontalAlignment.
+     * @param bounds The bounds of the text to be drawn
+     * @return The displacement.
+     */
+    private double getHorizontalDisplacement(Rectangle2D bounds){
+        HorizontalAlignment ha = getHorizontalAlign();
+        switch(ha){
+            case CENTER: return -bounds.getWidth()/2.0;
+            case LEFT: return -bounds.getWidth();
+            default: return 0.0;
+        }
     }
 
 
@@ -196,7 +211,7 @@ public final class PointLabel extends Label {
 
     /**
      * Get a JAXB representation of this element.
-     * @return 
+     * @return This object as a PointLabelType instance.
      */
     public PointLabelType getJAXBType() {
         PointLabelType pl = new PointLabelType();
