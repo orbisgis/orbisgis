@@ -55,6 +55,7 @@ import org.orbisgis.legend.thematic.factory.LegendFactory;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.view.toc.actions.cui.legend.ILegendPanelFactory;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.*;
 import org.orbisgis.view.toc.wrapper.RuleWrapper;
@@ -90,7 +91,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      */
     private MapTransform mt;
     /**
-     * The type of the {@link DataSource} of the legend's layer currently being
+     * The type of the DataSource of the legend's layer currently being
      * modified.
      */
     private Type type;
@@ -157,7 +158,6 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
         this.geometryType = (type == null)
                 ? SimpleGeometryType.ALL
                 : SimpleGeometryType.getSimpleType(type);
-        this.availableLegends = getAvailableLegendPanels();
 
         // Initialize the dialog container, adding the empty dialog.
         cardLayout = new CardLayout();
@@ -187,6 +187,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      *
      * @return Array of available legend panels
      */
+    // TODO: Remove this!
     private ILegendPanel[] getAvailableLegendPanels() {
 
         ArrayList<ILegendPanel> legends = new ArrayList<ILegendPanel>();
@@ -373,16 +374,20 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      *
      * @return The newly generated symbol panel
      */
-    // TODO: No property change listener on symbol panels?
     private ILegendPanel addSymbolPanel(Symbolizer symb) {
-        // Get this symbolizer's panel and give it a new id.
-        ILegendPanel symbPanel =
-                associatePanel(LegendFactory.getLegend(symb));
-        symbPanel.setId(createNewID());
+        // Get the legend corresponding to this symbolizer.
+        Legend legend = LegendFactory.getLegend(symb);
+        // Initialize a panel for this legend.
+        ILegendPanel panel = ILegendPanelFactory.getILegendPanel(legend);
+        panel.initialize(this);
+        // Set the legend to be edited to the given legend
+        panel.setLegend(legend);
+        // Give it a new id.
+        panel.setId(createNewID());
         // Add the symbol panel to the container after putting it in a
         // new JScrollPane.
-        dialogContainer.add(symbPanel.getId(), getJScrollPane(symbPanel));
-        return symbPanel;
+        dialogContainer.add(panel.getId(), getJScrollPane(panel));
+        return panel;
     }
 
     /**
@@ -514,7 +519,12 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      *
      * @return The available legends
      */
+    // TODO: Remove this! It is very slow. Used only in constructing a
+    // LegendUIChooser in LegendTree.
     public ILegendPanel[] getAvailableLegends() {
+        if (availableLegends == null) {
+            availableLegends = getAvailableLegendPanels();
+        }
         return availableLegends;
     }
 

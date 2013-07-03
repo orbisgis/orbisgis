@@ -56,6 +56,7 @@ import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.orbisgis.view.components.renderers.TreeLaFRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.view.toc.actions.cui.legend.ILegendPanelFactory;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.LegendTreeModel;
 import org.orbisgis.view.toc.wrapper.RuleWrapper;
@@ -372,6 +373,15 @@ public class LegendTree extends JPanel {
         StyleWrapper sw = simpleStyleEditor.getStyleWrapper();
         ArrayList<String> paneNames = new ArrayList<String>();
         ArrayList<ILegendPanel> ids = new ArrayList<ILegendPanel>();
+
+        // Go through the available legend panels.
+        // For each one that accepts the same geometry type as the associated
+        // Simple Style Editor's geometry type, add it to the ids list
+        // and add its "legend type name" to the names list.
+        // TODO: Instead of initializing all possible panels, find a way to
+        // associate possible panels according to the Simple Style Editor's
+        // geometry type (or better yet, the layer's geometry type).
+        // Put this in ILegendPanelFactory?
         ILegendPanel[] legends = simpleStyleEditor.getAvailableLegends();
         for (int i = 0; i < legends.length; i++) {
             ILegendPanel legendPanelUI = legends[i];
@@ -381,6 +391,10 @@ public class LegendTree extends JPanel {
                 ids.add(legendPanelUI);
             }
         }
+
+        // TODO: Edit LegendUIChooser to be more efficient in the way
+        // it produces legend panels. Maybe we don't need to pass already
+        // initialized panels to the constructor?
         LegendUIChooser legendPicker = new LegendUIChooser(
                 paneNames.toArray(new String[paneNames.size()]),
                 ids.toArray(new ILegendPanel[ids.size()]));
@@ -477,7 +491,11 @@ public class LegendTree extends JPanel {
             temp.setName(s);
             Legend leg = LegendFactory.getLegend(
                     temp.getCompositeSymbolizer().getSymbolizerList().get(0));
-            ILegendPanel ilp = simpleStyleEditor.associatePanel(leg);
+            // Initialize a panel for this legend.
+            ILegendPanel ilp = ILegendPanelFactory.getILegendPanel(leg);
+            ilp.initialize((LegendContext) simpleStyleEditor);
+            // Set the legend to be edited to the given legend
+            ilp.setLegend(leg);
             List<ILegendPanel> list = new ArrayList<ILegendPanel>();
             list.add(ilp);
             RuleWrapper nrw = new RuleWrapper(temp, list);
