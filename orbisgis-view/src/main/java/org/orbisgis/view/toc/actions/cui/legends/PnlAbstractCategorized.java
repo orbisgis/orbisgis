@@ -51,7 +51,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
      * The default number of classes in a classification.
      */
     public static final Integer DEFAULT_CLASS_NUMBER = 5;
-    private JComboBox<Integer> numberCombo;
+    private JComboBox numberCombo;
     private JButton createCl;
     private JComboBox methodCombo;
     private DefaultComboBoxModel comboModel;
@@ -215,7 +215,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
      */
     public JPanel getCreateClassificationPanel(){
         if(numberCombo == null){
-            numberCombo = new JComboBox<Integer>(getThresholdsNumber());
+            numberCombo = new JComboBox(getThresholdsNumber());
             ((JLabel)numberCombo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         }
         comboModel = (DefaultComboBoxModel) numberCombo.getModel();
