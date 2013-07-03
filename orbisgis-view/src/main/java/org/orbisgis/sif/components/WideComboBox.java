@@ -26,23 +26,53 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.sif.common;
+package org.orbisgis.sif.components;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
- * Generic list item that stores a key with the value shown.
- * 
- * This class is created thanks to the NetBeans user interface.
- * Use the "Add property" NetBeans function to add properties easily.
- * See documentation related to java.beans management systems.
- * 
+ * A JComboBox whose popup is wide enough. Code taken from Santhosh Kumar's blog
+ * (<a href="http://www.jroller.com/santhosh/entry/make_jcombobox_popup_wide_enough">article</a>).
+ * He made this workaround after looking at
+ * <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4618607">this bug</a>
  */
-public class ContainerItemProperties extends ContainerItem<String>  {
+public class WideComboBox extends JComboBox {
+
+    private boolean layingOut = false;
+
     /**
-     * Constructor
-     * @param key Key value
-     * @param label Localised item label
+     * Constructs an empty {@code WideComboBox}.
      */
-    public ContainerItemProperties(String key, String label) {
-        super(key, label);
+    public WideComboBox() {
+        super();
+    }
+
+    /**
+     * Constructs a {@code WideComboBox} containing the given items.
+     *
+     * @param items Items to put in the combo box.
+     */
+    public WideComboBox(final Object items[]) {
+        super(items);
+    }
+
+    @Override
+    public void doLayout() {
+        try {
+            layingOut = true;
+            super.doLayout();
+        } finally {
+            layingOut = false;
+        }
+    }
+
+    @Override
+    public Dimension getSize() {
+        Dimension dim = super.getSize();
+        if (!layingOut) {
+            dim.width = Math.max(dim.width, getPreferredSize().width);
+        }
+        return dim;
     }
 }

@@ -39,6 +39,7 @@ import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.ColorPicker;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
@@ -78,13 +79,26 @@ public abstract class AbstractFieldPanel extends JPanel {
     private ContainerItemProperties[] strokeUoms;
 
     /**
-     * Initialize a {@code JComboBo} whose values are set according to the
+     * Build a {@code JLabel} from {@code name} with x-alignment set to
+     * {@code SwingConstants.RIGHT}.
+     *
+     * @param name Text
+     * @return Right-aligned JLabel with the given name.
+     */
+    public JLabel buildText(String name){
+        JLabel c1 = new JLabel(name);
+        c1.setHorizontalAlignment(SwingConstants.RIGHT);
+        return c1;
+    }
+
+    /**
+     * Initialize a {@code JComboBox} whose values are set according to the
      * not spatial fields of {@code ds}.
      * @param ds The original DataSource
      * @return A JComboBox.
      */
-    public JComboBox getFieldCombo(DataSource ds){
-        JComboBox combo = new JComboBox();
+    public WideComboBox getFieldCombo(DataSource ds){
+        WideComboBox combo = new WideComboBox();
         if(ds != null){
             try {
                 Metadata md = ds.getMetadata();

@@ -69,6 +69,14 @@ public class ColorSchemeListCellRenderer
                 pan = new ColorSchemeListCell(name, list.getBackground());
             }
             lab.setIcon(pan.getIcon());
+            // Put the palette's source in the tooltip.
+            if (name.contains("(") && name.contains(")")) {
+                String[] s = name.split("\\(");
+                String shortName = s[0].trim();
+                String paletteSource = s[1].split("\\)")[0].trim();
+                lab.setText(shortName);
+                lab.setToolTipText(paletteSource);
+            }
         }
         return cellRenderer;
     }
