@@ -183,7 +183,7 @@ public final class PointLabel extends Label {
 
         AffineTransform at = AffineTransform.getTranslateInstance(x + deltaX, y + deltaY);
 
-        getLabel().draw(g2, map, selected, mt, at, perm);
+        getLabel().draw(g2, map, selected, mt, at, perm, this.getVerticalAlign());
     }
 
     /**
