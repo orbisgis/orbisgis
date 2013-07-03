@@ -1,9 +1,11 @@
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
+import net.miginfocom.swing.MigLayout;
 import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.ColorPicker;
 import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueSymbolSE;
+import org.orbisgis.sif.components.WideComboBox;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -23,7 +25,7 @@ import java.util.List;
  */
 public class ColorConfigurationPanel extends JPanel {
     private static final I18n I18N = I18nFactory.getI18n(ColorConfigurationPanel.class);
-    private JPanel pal;
+    private JComboBox pal;
     private JPanel grad;
     private JLabel endCol;
     private JLabel startCol;
@@ -41,35 +43,20 @@ public class ColorConfigurationPanel extends JPanel {
      */
     public ColorConfigurationPanel(List<String> names){
         super();
+        JPanel intOne = new JPanel(new MigLayout("wrap 2", "[align l][align c]"));
         if(names == null){
             this.names = new ArrayList<String>(ColorScheme.rangeColorSchemeNames());
             this.names.addAll(ColorScheme.discreteColorSchemeNames());
         } else {
             this.names = new ArrayList<String>(names);
         }
-        JPanel intOne = new JPanel();
-        GridBagLayout gbl = new GridBagLayout();
-        intOne.setLayout(gbl);
         grad = getGradientPanel();
         pal = getPalettesPanel();
         initButtons();
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        intOne.add(bGrad,gbc);
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        intOne.add(grad,gbc);
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        intOne.add(bPal,gbc);
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        intOne.add(pal,gbc);
+        intOne.add(bGrad);
+        intOne.add(grad);
+        intOne.add(bPal);
+        intOne.add(pal, "width 115!");
         this.add(intOne);
     }
 
@@ -98,33 +85,24 @@ public class ColorConfigurationPanel extends JPanel {
      * @return The labels in a JPanel.
      */
     private JPanel getGradientPanel(){
-        JPanel ret = new JPanel();
-        JPanel start = new JPanel();
-        start.add(new JLabel(I18N.tr("Gradient - Start :")));
+        JPanel gp = new JPanel(new MigLayout());
+        gp.add(new JLabel(I18N.tr("Gradient ")));
         startCol = getFilledLabel(Color.BLUE);
-        start.add(startCol);
-        ret.add(start);
-        //The end colour
-        JPanel end = new JPanel();
-        end.add(new JLabel(I18N.tr("End :")));
+        gp.add(startCol);
+        gp.add(new JLabel(I18N.tr(" to ")));
         endCol = getFilledLabel(Color.RED);
-        end.add(endCol);
-        ret.add(end);
-        //We add this to the global panel
-        ret.setAlignmentX((float) .5);
-        return ret;
+        gp.add(endCol);
+        return gp;
     }
 
     /**
      * Gets the panel containing the palette configuration.
      * @return The JPanel that contains the combo where we put the palettes.
      */
-    private JPanel getPalettesPanel(){
-        schemes = new JComboBox(names.toArray(new String[names.size()]));
+    private JComboBox getPalettesPanel(){
+        schemes = new WideComboBox(names.toArray(new String[names.size()]));
         schemes.setRenderer(new ColorSchemeListCellRenderer(new JList()));
-        JPanel schemesPan = new JPanel();
-        schemesPan.add(schemes);
-        return schemesPan;
+        return schemes;
     }
 
     /**
@@ -133,14 +111,14 @@ public class ColorConfigurationPanel extends JPanel {
     private void  initButtons(){
         bGrad = new JRadioButton("");
         bPal = new JRadioButton("");
+        bGrad.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onClickGrad"));
+        bPal.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onClickPal"));
+        bPal.setSelected(true);
         ButtonGroup bg = new ButtonGroup();
         bg.add(bGrad);
         bg.add(bPal);
-        ActionListener actionRefV = EventHandler.create(ActionListener.class, this, "onClickGrad");
-        ActionListener actionRefC= EventHandler.create(ActionListener.class, this, "onClickPal");
-        bGrad.addActionListener(actionRefV);
-        bPal.addActionListener(actionRefC);
-        bPal.setSelected(true);
         onClickPal();
     }
 

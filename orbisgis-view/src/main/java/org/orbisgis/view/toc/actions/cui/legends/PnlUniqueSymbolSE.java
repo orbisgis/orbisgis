@@ -85,18 +85,6 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
         }
 
         /**
-         * Build a {@code JLabel} from {@code name} with x-alignment set to
-         * {@code Component.LEFT_ALIGNMENT}.
-         * @param name
-         * @return
-         */
-        public JLabel buildText(String name){
-                JLabel c1 = new JLabel(name);
-                c1.setHorizontalAlignment(SwingConstants.RIGHT);
-                return c1;
-        }
-
-        /**
          * Retrieve a spinner with the wanted listener.
          *
          * @param cps The stroke that will be configured with the spinner.

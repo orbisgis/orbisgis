@@ -7,6 +7,7 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
@@ -71,9 +72,9 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
      *
      * @return  A ComboBox linked to the underlying MappedLegend that configures the analysis field.
      */
-    public JComboBox getFieldComboBox() {
+    public WideComboBox getFieldComboBox() {
         if (ds != null) {
-            JComboBox jcc = getFieldCombo(ds);
+            WideComboBox jcc = getFieldCombo(ds);
             ActionListener acl2 = EventHandler.create(ActionListener.class,
                     this, "updateField", "source.selectedItem");
             String field = legend.getLookupFieldName();
@@ -82,9 +83,10 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
             }
             jcc.addActionListener(acl2);
             updateField((String) jcc.getSelectedItem());
+            ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
             return jcc;
         } else {
-            return new JComboBox();
+            return new WideComboBox();
         }
     }
 

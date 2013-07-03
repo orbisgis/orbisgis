@@ -1,5 +1,6 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
@@ -34,18 +35,13 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Panel for "Interval classification - Line".
+ *
  * @author Alexis Guéganno
  */
 public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlCategorizedLine.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlCategorizedLine.class);
-    private CanvasSE fallbackPreview;
-    private JComboBox fieldCombo;
-
-    @Override
-    public CanvasSE getPreview() {
-        return fallbackPreview;
-    }
 
     /**
      * This methods is called by EventHandler when the user clicks on the fall back's preview. It opens an UI that lets
@@ -64,7 +60,7 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
     private LineParameters editCanvas(CanvasSE cse){
         LineParameters lps = ((CategorizedLine)getLegend()).getFallbackParameters();
         UniqueSymbolLine usl = new UniqueSymbolLine(lps);
-        usl.setStrokeUom(((CategorizedLine)getLegend()).getStrokeUom());
+        usl.setStrokeUom(((CategorizedLine) getLegend()).getStrokeUom());
         PnlUniqueLineSE pls = new PnlUniqueLineSE(false);
         pls.setLegend(usl);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
@@ -90,49 +86,8 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
     }
 
     @Override
-    public void initializeLegendFields() {
-        this.removeAll();
-        JPanel glob = new JPanel();
-        GridBagLayout grid = new GridBagLayout();
-        glob.setLayout(grid);
-        int i = 0;
-        //Field chooser
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getFieldLine(), gbc);
-        //Fallback symbol
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getFallback(), gbc);
-        //UOM
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getUOMCombo(),gbc);
-        //Classification generator
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getCreateClassificationPanel(),gbc);
-        //Table for the categorized configurations
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getTablePanel(), gbc);
-        this.add(glob);
-        this.revalidate();
+    protected void beforeFallbackSymbol(JPanel genSettings) {
+        // Empty on purpose.
     }
 
     @Override
@@ -227,11 +182,6 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
         return "";
     }
 
-    @Override
-    public String getFieldName(){
-        return fieldCombo.getSelectedItem().toString();
-    }
-
     /**
      * Build the panel used to select the classification field.
      *
@@ -245,23 +195,11 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
         return jp;
     }
 
-    /**
-     * Builds the panel used to display and configure the fallback symbol
-     *
-     * @return The Panel where the fallback configuration is displayed.
-     */
-    private JPanel getFallback() {
-        JPanel jp = new JPanel();
-        jp.add(new JLabel(I18N.tr("Fallback Symbol")));
-        initPreview();
-        jp.add(fallbackPreview);
-        return jp;
-    }
-
-    private JPanel getUOMCombo(){
+    @Override
+    protected JComboBox getUOMComboBox(){
         UomCombo jcb = getLineUomCombo(((CategorizedLine) getLegend()));
-        ActionListener aclUom = EventHandler.create(ActionListener.class, this, "updatePreview", "source");
-        jcb.addActionListener(aclUom);
-        return jcb;
+        jcb.addActionListener(
+                EventHandler.create(ActionListener.class, this, "updatePreview", "source"));
+        return jcb.getCombo();
     }
 }
