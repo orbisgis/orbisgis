@@ -18,6 +18,8 @@ import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -38,6 +40,8 @@ public class CategorizedArea extends AbstractCategorizedLegend<AreaParameters> i
     private CategorizedReal widthStroke = null;
     private boolean strokeEnabled = false;
     private AreaSymbolizer symbolizer;
+    private static final I18n I18N = I18nFactory.getI18n(CategorizedLine.class);
+    public static final String NAME = I18N.tr("Interval Classification - Area");
 
     /**
      * Builds a new, empty, {@code CategorizedArea}.
@@ -158,7 +162,7 @@ public class CategorizedArea extends AbstractCategorizedLegend<AreaParameters> i
 
     @Override
     public String getLegendTypeName() {
-        return "Interval Classification - Area";
+        return NAME;
     }
 
     @Override

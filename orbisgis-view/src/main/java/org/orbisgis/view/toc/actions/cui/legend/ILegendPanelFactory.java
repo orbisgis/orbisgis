@@ -45,7 +45,6 @@ import org.orbisgis.view.toc.actions.cui.legends.*;
 /**
  * A helper class to associate an {@link ILegendPanel} to a {@link Legend}.
  */
-// TODO: Maybe just add a method to the Legend class?
 public class ILegendPanelFactory {
 
     /**
@@ -55,31 +54,42 @@ public class ILegendPanelFactory {
      * @return Associated ILegendPanel
      */
     public static ILegendPanel getILegendPanel(Legend legend) {
-        if (legend instanceof UniqueSymbolPoint) {
+        return getILegendPanel(legend.getLegendTypeName());
+    }
+
+    /**
+     * Return a new ILegendPanel instance associated to the Legend with the
+     * given name.
+     *
+     * @param legendName Legend name
+     * @return Associated ILegendPanel
+     */
+    public static ILegendPanel getILegendPanel(String legendName) {
+        if (legendName.equals(UniqueSymbolPoint.NAME)) {
             return new PnlUniquePointSE();
-        } else if (legend instanceof UniqueSymbolLine) {
+        } else if (legendName.equals(UniqueSymbolLine.NAME)) {
             return new PnlUniqueLineSE();
-        } else if (legend instanceof UniqueSymbolArea) {
+        } else if (legendName.equals(UniqueSymbolArea.NAME)) {
             return new PnlUniqueAreaSE();
-        } else if (legend instanceof ProportionalPoint) {
+        } else if (legendName.equals(ProportionalPoint.NAME)) {
             return new PnlProportionalPointSE();
-        } else if (legend instanceof ProportionalLine) {
+        } else if (legendName.equals(ProportionalLine.NAME)) {
             return new PnlProportionalLineSE();
-        } else if (legend instanceof RecodedPoint) {
+        } else if (legendName.equals(RecodedPoint.NAME)) {
             return new PnlRecodedPoint();
-        } else if (legend instanceof RecodedLine) {
+        } else if (legendName.equals(RecodedLine.NAME)) {
             return new PnlRecodedLine();
-        } else if (legend instanceof RecodedArea) {
+        } else if (legendName.equals(RecodedArea.NAME)) {
             return new PnlRecodedArea();
-        } else if (legend instanceof CategorizedPoint) {
+        } else if (legendName.equals(CategorizedPoint.NAME)) {
             return new PnlCategorizedPoint();
-        } else if (legend instanceof CategorizedLine) {
+        } else if (legendName.equals(CategorizedLine.NAME)) {
             return new PnlCategorizedLine();
-        } else if (legend instanceof CategorizedArea) {
+        } else if (legendName.equals(CategorizedArea.NAME)) {
             return new PnlCategorizedArea();
         } else {
             throw new UnsupportedOperationException("No available " +
-                    "ILegendPanel for this Legend.");
+                    "ILegendPanel for legend" + legendName + ".");
         }
     }
 }

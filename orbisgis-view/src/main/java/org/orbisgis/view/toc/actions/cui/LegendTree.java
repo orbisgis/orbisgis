@@ -29,7 +29,6 @@ package org.orbisgis.view.toc.actions.cui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
@@ -370,67 +369,39 @@ public class LegendTree extends JPanel {
      * be added in the case there is none.
      */
     private void addLegend() {
-        StyleWrapper sw = simpleStyleEditor.getStyleWrapper();
-        ArrayList<String> paneNames = new ArrayList<String>();
-        ArrayList<ILegendPanel> ids = new ArrayList<ILegendPanel>();
-
-        // Go through the available legend panels.
-        // For each one that accepts the same geometry type as the associated
-        // Simple Style Editor's geometry type, add it to the ids list
-        // and add its "legend type name" to the names list.
-        // TODO: Instead of initializing all possible panels, find a way to
-        // associate possible panels according to the Simple Style Editor's
-        // geometry type (or better yet, the layer's geometry type).
-        // Put this in ILegendPanelFactory?
-        ILegendPanel[] legends = simpleStyleEditor.getAvailableLegends();
-        for (int i = 0; i < legends.length; i++) {
-            ILegendPanel legendPanelUI = legends[i];
-            if (legendPanelUI.acceptsGeometryType(
-                    simpleStyleEditor.getGeometryType())) {
-                paneNames.add(legendPanelUI.getLegend().getLegendTypeName());
-                ids.add(legendPanelUI);
-            }
-        }
-
-        // TODO: Edit LegendUIChooser to be more efficient in the way
-        // it produces legend panels. Maybe we don't need to pass already
-        // initialized panels to the constructor?
-        LegendUIChooser legendPicker = new LegendUIChooser(
-                paneNames.toArray(new String[paneNames.size()]),
-                ids.toArray(new ILegendPanel[ids.size()]));
+        LegendUIChooser legendPicker = new LegendUIChooser(simpleStyleEditor);
 
         if (UIFactory.showDialog(legendPicker)) {
-            //We retrieve the legend we want to add
-            ILegendPanel ilp = (ILegendPanel) legendPicker.getSelected();
-            Legend leg = ilp.copyLegend();
-            ILegendPanel copy = (ILegendPanel) ilp.newInstance();
-            copy.setLegend(leg);
-            copy.setGeometryType(simpleStyleEditor.getGeometryType());
-            //We retrieve the rw where we will add it.
+            // Recover the panel that was selected when the user clicked OK.
+            ILegendPanel ilp = legendPicker.getSelectedPanel();
+
+            // Get the currently selected RuleWrapper, or the last one in this
+            // style if none is currently selected.
             RuleWrapper currentrw = getSelectedRule();
+            StyleWrapper sw = simpleStyleEditor.getStyleWrapper();
             if (currentrw == null) {
                 if (sw.getSize() == 0) {
                     addRule();
                 }
                 currentrw = sw.getRuleWrapper(sw.getSize() - 1);
             }
-            Symbolizer sym = leg.getSymbolizer();
-            sym.setName(getUniqueName(ilp.getLegend().getLegendTypeName(),
-                                      currentrw.getRule(), 0));
-            //We retrieve the index where to put it.
-            ILegendPanel sl = getSelectedLegend();
-            LegendTreeModel tm = (LegendTreeModel) tree.getModel();
-            tm.addElement(currentrw, copy, sl);
+
+            // Add the Legend to the LegendTree.
+            ((LegendTreeModel) tree.getModel())
+                    .addElement(currentrw, ilp, ilp.getLegend());
+
             // Automatically select the newly added legend in the tree.
             TreePath selectionPath = tree.getSelectionPath();
             TreePath parent;
             if(selectionPath.getLastPathComponent() instanceof RuleWrapper){
                 parent = selectionPath;
             } else {
-                parent = selectionPath.getParentPath();;
+                parent = selectionPath.getParentPath();
             }
-            tree.setSelectionPath(parent.pathByAddingChild(copy));
-            simpleStyleEditor.legendAdded(copy);
+            tree.setSelectionPath(parent.pathByAddingChild(ilp));
+
+            // Notify the SimpleStyleEditor that a Legend has been added.
+            simpleStyleEditor.legendAdded(ilp);
         }
     }
 

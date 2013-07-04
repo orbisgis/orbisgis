@@ -17,6 +17,8 @@ import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -34,6 +36,8 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> i
     private CategorizedReal opacity;
     private CategorizedReal width;
     private CategorizedString dash;
+    private static final I18n I18N = I18nFactory.getI18n(CategorizedLine.class);
+    public static final String NAME = I18N.tr("Interval Classification - Line");
 
     /**
      * Builds a new, empty, {@code CategorizedLine}.
@@ -136,7 +140,7 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> i
 
     @Override
     public String getLegendTypeName() {
-        return "Interval Classification - Line";
+        return NAME;
     }
 
     @Override
