@@ -32,6 +32,7 @@ import java.awt.Component;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 
 /**
+ * Root interface for UI panels in the SimpleStyleEditor.
  *
  * @author Alexis Guéganno
  */
@@ -63,18 +64,18 @@ public interface ISELegendPanel {
 	 */
 	ISELegendPanel newInstance();
 
-        /**
-         * Gets the identifier of this panel.
-         * @return
-         */
-        String getId();
+    /**
+     * Gets the identifier of this panel.
+     * @return
+     */
+    String getId();
 
-        /**
-         * Associates an identifier to this panel. Particularly useful if we
-         * want to put this panel in a {@code CardLayout}.
-         * @param newId
-         */
-        void setId(String newId);
+    /**
+     * Associates an identifier to this panel. Particularly useful if we
+     * want to put this panel in a {@code CardLayout}.
+     * @param newId
+     */
+    void setId(String newId);
 
 	/**
 	 * @return {@code null} if the status of the edited legend is ok. An error message

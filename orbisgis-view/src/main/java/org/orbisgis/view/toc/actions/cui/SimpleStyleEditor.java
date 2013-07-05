@@ -55,6 +55,7 @@ import org.orbisgis.legend.thematic.factory.LegendFactory;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.view.toc.actions.cui.legend.ILegendPanelFactory;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.*;
 import org.orbisgis.view.toc.wrapper.RuleWrapper;
@@ -90,7 +91,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      */
     private MapTransform mt;
     /**
-     * The type of the {@link DataSource} of the legend's layer currently being
+     * The type of the DataSource of the legend's layer currently being
      * modified.
      */
     private Type type;
@@ -107,12 +108,6 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      * {@link StyleWrapper} for the {@link Style}s of the layer we are editing.
      */
     private StyleWrapper styleWrapper;
-    /**
-     * Inner list of available legends.
-     *
-     * Used to determine whether a given {@link Legend} can be edited or not.
-     */
-    private ILegendPanel[] availableLegends;
     // **********     IDS     **************
     /**
      * Id for the {@link CardLayout} panel to be shown when there is no legend.
@@ -157,7 +152,6 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
         this.geometryType = (type == null)
                 ? SimpleGeometryType.ALL
                 : SimpleGeometryType.getSimpleType(type);
-        this.availableLegends = getAvailableLegendPanels();
 
         // Initialize the dialog container, adding the empty dialog.
         cardLayout = new CardLayout();
@@ -180,63 +174,6 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
         legendTree.setMinimumSize(minimumSize);
         dialogContainer.setMinimumSize(minimumSize);
         add(splitPane, BorderLayout.CENTER);
-    }
-
-    /**
-     * Creates an array of all available legend panels.
-     *
-     * @return Array of available legend panels
-     */
-    private ILegendPanel[] getAvailableLegendPanels() {
-
-        ArrayList<ILegendPanel> legends = new ArrayList<ILegendPanel>();
-
-        // UniqueLine
-        ILegendPanel pnlUniqueLine = new PnlUniqueLineSE();
-        pnlUniqueLine.initialize(this);
-        legends.add(pnlUniqueLine);
-        // UniquePoint
-        ILegendPanel pnlUniquePoint = new PnlUniquePointSE();
-        pnlUniquePoint.initialize(this);
-        legends.add(pnlUniquePoint);
-        // UniqueArea
-        ILegendPanel pnlUniqueArea = new PnlUniqueAreaSE();
-        pnlUniqueArea.initialize(this);
-        legends.add(pnlUniqueArea);
-        // ProportionalPoint
-        ILegendPanel proportionalPoint = new PnlProportionalPointSE();
-        proportionalPoint.initialize(this);
-        legends.add(proportionalPoint);
-        // ProportionalLine
-        ILegendPanel proportionalLine = new PnlProportionalLineSE();
-        proportionalLine.initialize(this);
-        legends.add(proportionalLine);
-        // Line Unique Value
-        ILegendPanel uniqueLine = new PnlRecodedLine();
-        uniqueLine.initialize(this);
-        legends.add(uniqueLine);
-        // Area Unique Value
-        ILegendPanel uniqueArea = new PnlRecodedArea();
-        uniqueArea.initialize(this);
-        legends.add(uniqueArea);
-        // Point Unique Value
-        ILegendPanel uniquePoint = new PnlRecodedPoint();
-        uniquePoint.initialize(this);
-        legends.add(uniquePoint);
-        //Line Interval
-        ILegendPanel lineInterval = new PnlCategorizedLine();
-        lineInterval.initialize(this);
-        legends.add(lineInterval);
-        //Area Interval
-        ILegendPanel areaInterval = new PnlCategorizedArea();
-        areaInterval.initialize(this);
-        legends.add(areaInterval);
-        //Point Interval
-        ILegendPanel pointInterval = new PnlCategorizedPoint();
-        pointInterval.initialize(this);
-        legends.add(pointInterval);
-
-        return legends.toArray(new ILegendPanel[legends.size()]);
     }
 
     /**
@@ -373,48 +310,20 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      *
      * @return The newly generated symbol panel
      */
-    // TODO: No property change listener on symbol panels?
     private ILegendPanel addSymbolPanel(Symbolizer symb) {
-        // Get this symbolizer's panel and give it a new id.
-        ILegendPanel symbPanel =
-                associatePanel(LegendFactory.getLegend(symb));
-        symbPanel.setId(createNewID());
+        // Get the legend corresponding to this symbolizer.
+        Legend legend = LegendFactory.getLegend(symb);
+        // Initialize a panel for this legend.
+        ILegendPanel panel = ILegendPanelFactory.getILegendPanel(legend);
+        panel.initialize(this);
+        // Set the legend to be edited to the given legend
+        panel.setLegend(legend);
+        // Give it a new id.
+        panel.setId(createNewID());
         // Add the symbol panel to the container after putting it in a
         // new JScrollPane.
-        dialogContainer.add(symbPanel.getId(), getJScrollPane(symbPanel));
-        return symbPanel;
-    }
-
-    /**
-     * Associates a panel to the given legend. This panel is cloned from one of
-     * the available panels.
-     *
-     * @param legend The legend for which we want a panel
-     *
-     * @return A newly cloned panel associated to the given legend, or a new
-     *         {@link NoPanel} if none are available
-     */
-    // TODO: This finds the first available legend panel. Is it guaranteed
-    // to be unique?
-    public ILegendPanel associatePanel(Legend legend) {
-        for (ILegendPanel avail : availableLegends) {
-            // If the type of the given legend matches the type of 
-            // an available legend panel ...
-            if (legend.getLegendTypeId().equals(
-                    avail.getLegend().getLegendTypeId())) {
-                // Create a new instance of the available legend panel, 
-                // initializing it with the LegendContext methods implemented
-                // in this class.
-                ILegendPanel ilp = (ILegendPanel) avail.newInstance();
-                ilp.initialize(this);
-                // Set the legend to be edited to the given legend
-                ilp.setLegend(legend);
-                // And return it
-                return ilp;
-            }
-        }
-        // If none were found, then return a new NoPanel.
-        return new NoPanel(legend);
+        dialogContainer.add(panel.getId(), getJScrollPane(panel));
+        return panel;
     }
 
     /**
@@ -507,15 +416,6 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      */
     public StyleWrapper getStyleWrapper() {
         return styleWrapper;
-    }
-
-    /**
-     * Gets the available legends.
-     *
-     * @return The available legends
-     */
-    public ILegendPanel[] getAvailableLegends() {
-        return availableLegends;
     }
 
     // ******************     LegendContext methods     **********************

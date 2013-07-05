@@ -39,6 +39,8 @@ import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * A {@code ProportionalPoint} is a {@link ConstantFormPoint} whose {@code
@@ -49,6 +51,8 @@ import org.orbisgis.legend.thematic.uom.StrokeUom;
 public class ProportionalPoint extends ConstantFormPoint implements IUniqueSymbolArea, StrokeUom {
 
     private ProportionalWKNLegend markGraphic;
+    private static final I18n I18N = I18nFactory.getI18n(ProportionalPoint.class);
+    public static final String NAME = I18N.tr("Proportional Point");
 
     /**
      * Builds a new {@code ProportionalPoint}. It has default {@code MarkGraphic}
@@ -233,7 +237,7 @@ public class ProportionalPoint extends ConstantFormPoint implements IUniqueSymbo
 
     @Override
     public String getLegendTypeName() {
-        return "Proportional Point";
+        return NAME;
     }
 
     @Override

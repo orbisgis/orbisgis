@@ -40,6 +40,8 @@ import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -56,6 +58,8 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
     private AreaSymbolizer areaSymbolizer;
     private final RecodedSolidFillLegend fill;
     private RecodedPenStroke ps;
+    private static final I18n I18N = I18nFactory.getI18n(RecodedArea.class);
+    public static final String NAME = I18N.tr("Value Classification - Area");
 
     /**
      * Default constructor : builds an empty classification based on the default {@link AreaSymbolizer}.
@@ -103,7 +107,7 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
 
     @Override
     public String getLegendTypeName() {
-        return "Value Classification - Area";
+        return NAME;
     }
 
     /**

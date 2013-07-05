@@ -51,6 +51,8 @@ import org.orbisgis.legend.structure.recode.type.TypeListener;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -70,6 +72,8 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters> impleme
     private RecodedString wkn;
     private RecodedReal width;
     private RecodedReal height;
+    private static final I18n I18N = I18nFactory.getI18n(RecodedPoint.class);
+    public static final String NAME = I18N.tr("Value Classification - Point");
 
     /**
      * Default constructor : builds an empty classification based on the default {@link org.orbisgis.core.renderer.se.PointSymbolizer}.
@@ -201,7 +205,7 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters> impleme
 
     @Override
     public String getLegendTypeName() {
-        return "Value Classification - Point";
+        return NAME;
     }
 
     /**

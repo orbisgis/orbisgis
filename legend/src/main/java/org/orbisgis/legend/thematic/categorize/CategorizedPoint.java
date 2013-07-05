@@ -25,6 +25,8 @@ import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -48,6 +50,8 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
     private CategorizedString wkn;
     private boolean strokeEnabled = false;
     private PointSymbolizer symbolizer;
+    private static final I18n I18N = I18nFactory.getI18n(CategorizedPoint.class);
+    public static final String NAME = I18N.tr("Interval Classification - Point");
 
     /**
      * Builds a new, empty, {@code CategorizedPoint}.
@@ -228,7 +232,7 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
 
     @Override
     public String getLegendTypeName() {
-        return "Interval Classification - Point";
+        return NAME;
     }
 
     @Override
