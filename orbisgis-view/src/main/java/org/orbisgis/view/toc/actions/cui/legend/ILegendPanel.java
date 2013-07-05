@@ -31,11 +31,12 @@ package org.orbisgis.view.toc.actions.cui.legend;
 import org.orbisgis.legend.Legend;
 
 /**
- * 
+ * Interface for Legend UI panels in the SimpleStyleEditor.
+ *
  * @author David Ortega
  * @author Alexis Guéganno
  */
-public interface ILegendPanel  extends ISELegendPanel {
+public interface ILegendPanel extends ISELegendPanel {
 
 	/**
 	 * It will return the Legend created by all the variables in the panel.
@@ -51,12 +52,12 @@ public interface ILegendPanel  extends ISELegendPanel {
 	 */
 	void setLegend(Legend legend);
 
-        /**
-         * Sets the type of the geometry field of the data that must be
-         * represented.
-         * @param type
-         */
-        void setGeometryType(int type);
+    /**
+     * Sets the type of the geometry field of the data that must be
+     * represented.
+     * @param type
+     */
+    void setGeometryType(int type);
 
 	/**
 	 * Returns true if this legend can be applied to the specified geometry
@@ -69,10 +70,10 @@ public interface ILegendPanel  extends ISELegendPanel {
 	 */
 	boolean acceptsGeometryType(int geometryType);
 
-        /**
-         * Copy the {@code Legend} instance associated to this 
-         * {@code ILegendPanel}. It is faster than copying the whole panel.
-         * @return 
-         */
-        Legend copyLegend();
+    /**
+     * Copy the {@code Legend} instance associated to this
+     * {@code ILegendPanel}. It is faster than copying the whole panel.
+     * @return
+     */
+    Legend copyLegend();
 }

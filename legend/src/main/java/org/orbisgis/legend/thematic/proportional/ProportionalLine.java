@@ -36,6 +36,8 @@ import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * A {@code ProportionalLine} represents a {@code LineSymbolizer} containing a
@@ -47,6 +49,8 @@ import org.orbisgis.legend.thematic.uom.StrokeUom;
 public class ProportionalLine extends ConstantColorAndDashesLine implements Legend, StrokeUom {
 
     private ProportionalStrokeLegend strokeLegend;
+    private static final I18n I18N = I18nFactory.getI18n(ProportionalLine.class);
+    public static final String NAME = I18N.tr("Proportional Line");
 
     public ProportionalLine(){
             super(new LineSymbolizer());
@@ -171,7 +175,7 @@ public class ProportionalLine extends ConstantColorAndDashesLine implements Lege
 
     @Override
     public String getLegendTypeName() {
-        return "Proportional Line";
+        return NAME;
     }
 
     @Override

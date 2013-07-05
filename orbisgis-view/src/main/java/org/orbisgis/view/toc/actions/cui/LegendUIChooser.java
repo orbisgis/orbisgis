@@ -28,10 +28,26 @@
 package org.orbisgis.view.toc.actions.cui;
 
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
+import org.gdms.data.types.Type;
+import org.gdms.driver.DriverException;
+import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.legend.thematic.categorize.CategorizedArea;
+import org.orbisgis.legend.thematic.categorize.CategorizedLine;
+import org.orbisgis.legend.thematic.categorize.CategorizedPoint;
+import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
+import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
+import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
+import org.orbisgis.legend.thematic.proportional.ProportionalLine;
+import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
+import org.orbisgis.legend.thematic.recode.RecodedArea;
+import org.orbisgis.legend.thematic.recode.RecodedLine;
+import org.orbisgis.legend.thematic.recode.RecodedPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.Toc;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.view.toc.actions.cui.legend.ILegendPanelFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -41,62 +57,133 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
- * Display a UI with the name of all supported legends and their coresponding
- * representation.
+ * Displays a UI with a list of the legends supported by the layer being
+ * edited in the SimpleStyleEditor and a preview of each legend.
  *
- * @author ebocher
+ * @author Erwan Bocher
+ * @author Adam Gouge
  */
 public class LegendUIChooser implements UIPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(Toc.class);
     private static final Logger LOGGER = Logger.getLogger(LegendUIChooser.class);
-    private final String[] names;
-    private final ILegendPanel[] ids;
-    private JPanel mainPanel;
+
+    /**
+     * SimpleStyleEditor.
+     */
+    private SimpleStyleEditor editor;
+    /**
+     * Possible Legend names.
+     */
+    private String[] names;
+    /**
+     * The list of analyses in the UI.
+     */
     private JList lst;
+    /**
+     * The UI.
+     */
+    private JPanel mainPanel;
+    /**
+     * Illustration of the analysis in the UI.
+     */
     private JLabel imageLabel;
 
     /**
-     * Set the names for supported legends and their UIPanels
+     * Construct a {@link LegendUIChooser} for the layer being edited
+     * in the given {@link SimpleStyleEditor} instance.
      *
-     * @param names
-     * @param ids
+     * @param editor SimpleStyleEditor
      */
-    public LegendUIChooser(String[] names, ILegendPanel[] ids) {
-        this.names = Arrays.copyOf(names, names.length);
-        this.ids = Arrays.copyOf(ids, ids.length);
-        init();
+    public LegendUIChooser(SimpleStyleEditor editor) {
+        this.editor = editor;
+        initNamesList(editor.getStyleWrapper().getStyle().getLayer());
+        initUI();
     }
 
     /**
-     * Create the UI
+     * Populates the names array with the names of legends that can be applied
+     * to the given layer.
+     *
+     * @param layer Layer
      */
-    private void init() {
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
-        lst = new JList();
+    private void initNamesList(ILayer layer) {
+        // Recover the geometry type of this ILayer.
+        DataSource ds = layer.getDataSource();
+        Type geomType = null;
+        try {
+            geomType = ds.getMetadata().getFieldType(ds.getSpatialFieldIndex());
+        } catch (DriverException e) {
+            LOGGER.warn("Could not determine the specific geometry type for " +
+                    "this layer.");
+        }
+        // If it could not be determined, assume all simple geometries.
+        // Otherwise, convert to a simple geometry.
+        int simpleGeomType = (geomType == null)
+            ? SimpleGeometryType.ALL
+            : SimpleGeometryType.getSimpleType(geomType);
+        // Fill the names array.
+        ArrayList<String> typeNames = new ArrayList<String>();
+        final int lineOrPolygon =
+                SimpleGeometryType.LINE| SimpleGeometryType.POLYGON;
+        if ((simpleGeomType & SimpleGeometryType.ALL) != 0) {
+            typeNames.add(UniqueSymbolPoint.NAME);
+            if ((simpleGeomType & lineOrPolygon) != 0) {
+                typeNames.add(UniqueSymbolLine.NAME);
+            }
+            if ((simpleGeomType & SimpleGeometryType.POLYGON) != 0) {
+                typeNames.add(UniqueSymbolArea.NAME);
+            }
+            typeNames.add(RecodedPoint.NAME);
+            if ((simpleGeomType & lineOrPolygon) != 0) {
+                typeNames.add(RecodedLine.NAME);
+            }
+            if ((simpleGeomType & SimpleGeometryType.POLYGON) != 0) {
+                typeNames.add(RecodedArea.NAME);
+            }
+            typeNames.add(ProportionalPoint.NAME);
+            if ((simpleGeomType & lineOrPolygon) != 0) {
+                typeNames.add(ProportionalLine.NAME);
+            }
+            typeNames.add(CategorizedPoint.NAME);
+            if ((simpleGeomType & lineOrPolygon) != 0) {
+                typeNames.add(CategorizedLine.NAME);
+            }
+            if ((simpleGeomType & SimpleGeometryType.POLYGON) != 0) {
+                typeNames.add(CategorizedArea.NAME);
+            }
+        }
+        names = typeNames.toArray(new String[typeNames.size()]);
+    }
+
+    /**
+     * Builds the UI.
+     */
+    private void initUI() {
+        // Initialize the JList
         DefaultListModel model = new DefaultListModel();
         for (int i = 0; i < names.length; i++) {
             model.addElement(names[i]);
         }
-        lst.setModel(model);
+        lst = new JList(model);
+        // Add a selection listener
         lst.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         lst.addListSelectionListener(
-                new ListSelectionListener() {
-                    @Override
-                    public void valueChanged(ListSelectionEvent lse) {
-                            onThumbnailChange(lse);
-                    }
-                });
-
-        lst.setSelectedIndex(0);
+            new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent lse) {
+                    onThumbnailChange(lse);
+                }
+            });
+        lst.setSelectedIndex(0); // calls onThumbnailChange(lse)
+        // Add components.
+        mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(new JScrollPane(lst), BorderLayout.WEST);
-        mainPanel.add(imageLabel, BorderLayout.EAST);
+        mainPanel.add(imageLabel, BorderLayout.CENTER);
     }
-    
+
     /**
      * Change the thumbnail according the type of legend.
      */
@@ -107,53 +194,54 @@ public class LegendUIChooser implements UIPanel {
         imageLabel.setIcon(getThumbnail());
     }
 
-    @Override
-    public String getTitle() {
-        return I18N.tr("Legend selection");
-    }
-
-    @Override
-    public String validateInput() {
-        if (lst.getSelectedIndex() == -1) {
-            return UIFactory.getI18n().tr("A legend must be selected.");
-        }
-        return null;
-    }
-
-    @Override
-    public Component getComponent() {
-        return mainPanel;
-    }
-    
     /**
      * Create the thumbnail image
      *
      * @return
      */
     public ImageIcon getThumbnail() {
-        ILegendPanel legendPanel = (ILegendPanel) getSelected();
-        String legendId = legendPanel.getLegend().getLegendTypeId();
-        if (legendId.equals("org.orbisgis.legend.thematic.proportional.ProportionalPoint")) {
-            return createImageIcon("thumbnail_proportionnal_point.png");
-        } else if (legendId.equals("org.orbisgis.legend.thematic.proportional.ProportionalLine")) {
-            return createImageIcon("thumbnail_proportionnal_line.png");
-        } else if (legendId.equals("org.orbisgis.legend.thematic.constant.UniqueSymbolPoint")) {
+        String legendName = names[lst.getSelectedIndex()];
+        if (legendName.equals(UniqueSymbolPoint.NAME)) {
             return createImageIcon("thumbnail_unique_point.png");
-        } else if (legendId.equals("org.orbisgis.legend.thematic.constant.UniqueSymbolLine")) {
+        } else if (legendName.equals(UniqueSymbolLine.NAME)) {
             return createImageIcon("thumbnail_unique_line.png");
-        } else if (legendId.equals("org.orbisgis.legend.thematic.constant.UniqueSymbolArea")) {
+        } else if (legendName.equals(UniqueSymbolArea.NAME)) {
             return createImageIcon("thumbnail_unique_area.png");
-        } else if (legendId.equals("org.orbisgis.legend.thematic.recode.RecodedLine")) {
-            return createImageIcon("thumbnail_recoded_line.png");
-        } else if (legendId.equals("org.orbisgis.legend.thematic.recode.RecodedArea")) {
-            return createImageIcon("thumbnail_recoded_area.png");
-        } else if (legendId.equals("org.orbisgis.legend.thematic.recode.RecodedPoint")) {
+        } else if (legendName.equals(ProportionalPoint.NAME)) {
+            return createImageIcon("thumbnail_proportionnal_point.png");
+        } else if (legendName.equals(ProportionalLine.NAME)) {
+            return createImageIcon("thumbnail_proportionnal_line.png");
+        } else if (legendName.equals(RecodedPoint.NAME)) {
             return createImageIcon("thumbnail_recoded_point.png");
+        } else if (legendName.equals(RecodedLine.NAME)) {
+            return createImageIcon("thumbnail_recoded_line.png");
+        } else if (legendName.equals(RecodedArea.NAME)) {
+            return createImageIcon("thumbnail_recoded_area.png");
+        } else if (legendName.equals(CategorizedPoint.NAME)) {
+            return createImageIcon("thumbnail_interval_point.png");
+        } else if (legendName.equals(CategorizedLine.NAME)) {
+            return createImageIcon("thumbnail_interval_line.png");
+        } else if (legendName.equals(CategorizedArea.NAME)) {
+            return createImageIcon("thumbnail_interval_area.png");
         } else {
             return createImageIcon("thumbnail_not_found.png");
         }
     }
-    
+
+    /**
+     * Returns a new {@link ILegendPanel} corresponding to the legend selected
+     * in the JList, initialized according to the local {@link LegendContext}.
+     *
+     * @return Panel corresponding to selected legend, initialized appropriately.
+     */
+    public ILegendPanel getSelectedPanel() {
+        String selectedLegendTypeName = names[lst.getSelectedIndex()];
+        ILegendPanel panel =
+                ILegendPanelFactory.getILegendPanel(selectedLegendTypeName);
+        panel.initialize(editor);
+        return panel;
+    }
+
     /**
      * Returns an ImageIcon, or null if the path was invalid.
      */
@@ -167,26 +255,28 @@ public class LegendUIChooser implements UIPanel {
         }
     }
 
-    public Object getSelected() {
-        return ids[lst.getSelectedIndex()];
-    }
-
-    public int getSelectedIndex() {
-        return lst.getSelectedIndex();
-    }
-
-    public Object[] getSelectedElements() {
-        ArrayList<Object> ret = new ArrayList<Object>();
-        int[] indexes = lst.getSelectedIndices();
-        for (int index : indexes) {
-            ret.add(ids[index]);
-        }
-
-        return ret.toArray();
-    }
+    // *********************** UI Panel methods ******************************
 
     @Override
     public URL getIconURL() {
         return UIFactory.getDefaultIcon();
+    }
+
+    @Override
+    public String getTitle() {
+        return I18N.tr("Select Legend");
+    }
+
+    @Override
+    public String validateInput() {
+        if (lst.getSelectedIndex() == -1) {
+            return UIFactory.getI18n().tr("You must select a legend.");
+        }
+        return null;
+    }
+
+    @Override
+    public Component getComponent() {
+        return mainPanel;
     }
 }
