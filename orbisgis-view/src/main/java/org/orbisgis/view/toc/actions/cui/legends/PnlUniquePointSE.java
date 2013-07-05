@@ -252,7 +252,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         }
 
         /**
-         * JNumericSpinner embedded in a JPanel to configure the width of the symbol
+         * JSpinner to configure the width of the symbol
          * @param point
          * @return
          */
@@ -272,7 +272,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         }
 
         /**
-         * JNumericSpinner embedded in a JPane to configure the height of the symbol
+         * JSpinner to configure the height of the symbol
          * @param point
          * @return
          */

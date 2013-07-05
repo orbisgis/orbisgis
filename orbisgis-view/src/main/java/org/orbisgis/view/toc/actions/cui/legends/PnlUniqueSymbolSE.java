@@ -28,14 +28,12 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.sif.components.JNumericSpinner;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
@@ -43,12 +41,9 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
-import javax.swing.text.DefaultFormatterFactory;
-import java.awt.*;
 import java.awt.event.*;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import java.text.NumberFormat;
 
 /**
  * This class proposes some methods that will be common to all the panels built
@@ -102,11 +97,10 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
         }
 
         /**
-         * Retrieve a spinner with the wanted listener.
+         * Creates and configures a line width {@link JSpinner}.
          *
          * @param cps The stroke that will be configured with the spinner.
-         * @return
-         *      The wanted {@code JNumericSpinner}.
+         * @return The wanted {@code JSpinner}.
          */
         public JSpinner getLineWidthSpinner(final ConstantPenStroke cps){
                 SpinnerNumberModel model = new SpinnerNumberModel(
