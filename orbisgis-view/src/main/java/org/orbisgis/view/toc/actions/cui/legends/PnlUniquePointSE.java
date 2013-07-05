@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
@@ -43,6 +44,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -192,46 +194,20 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
 
         private void initializeLegendFields() {
                 this.removeAll();
-                JPanel glob = new JPanel();
-                glob.setLayout(new GridBagLayout());
+                JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
-                GridBagConstraints gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                gbc.anchor = GridBagConstraints.PAGE_START;
                 JPanel lb = getLineBlock(uniquePoint.getPenStroke(),
-                        I18N.tr("Border settings"));
+                                         BORDER_SETTINGS);
                 ComponentUtil.setFieldState(isStrokeEnabled(), lb);
+                glob.add(lb);
 
-                glob.add(lb, gbc);
-
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 1;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                gbc.anchor = GridBagConstraints.PAGE_START;
-                glob.add(getAreaBlock(uniquePoint.getFillLegend(),
-                                      PnlUniqueAreaSE.FILL_SETTINGS), gbc);
-
-                gbc = new GridBagConstraints();
-                gbc.gridx = 1;
-                gbc.gridy = 0;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                gbc.anchor = GridBagConstraints.PAGE_START;
                 glob.add(getPointBlock(uniquePoint,
-                                       I18N.tr("Mark settings")), gbc);
+                                       I18N.tr("Mark settings")));
 
-                gbc = new GridBagConstraints();
-                gbc.gridx = 1;
-                gbc.gridy = 1;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                gbc.anchor = GridBagConstraints.PAGE_START;
-                JPanel previewPanel = new JPanel();
-                previewPanel.setBorder(
-                        BorderFactory.createTitledBorder(I18N.tr("Preview")));
-                previewPanel.add(getPreview());
-                glob.add(previewPanel, gbc);
+                glob.add(getAreaBlock(uniquePoint.getFillLegend(),
+                        PnlUniqueAreaSE.FILL_SETTINGS));
+
+                glob.add(getPreviewPanel(), "growx");
 
                 this.add(glob);
         }
@@ -248,9 +224,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                         initPreview();
                 }
 
-                JPanel jp = new JPanel();
-                GridLayout grid = new GridLayout(0, 2, HGAP, VGAP);
-                jp.setLayout(grid);
+                JPanel jp = new JPanel(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
                 jp.setBorder(BorderFactory.createTitledBorder(title));
 
                 if(isUomEnabled()){
@@ -260,25 +234,25 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                         addPointOnVertices(point, jp);
                     }
                     // Unit of measure
-                    jp.add(buildText(I18N.tr("Unit of measure")));
-                    jp.add(getPointUomCombo());
+                    jp.add(new JLabel(I18N.tr("Unit of measure")));
+                    jp.add(getPointUomCombo(), "growx");
                 }
 
                 // Well-known name
-                jp.add(buildText(I18N.tr("Symbol")));
-                jp.add(getWKNCombo(point));
+                jp.add(new JLabel(I18N.tr("Symbol")));
+                jp.add(getWKNCombo(point), "width 90!");
                 // Mark width
-                jp.add(buildText(I18N.tr("Width")));
-                jp.add(getMarkWidth(point));
+                jp.add(new JLabel(I18N.tr("Width")));
+                jp.add(getMarkWidth(point), "growx");
                 // Mark height
-                jp.add(buildText(I18N.tr("Height")));
-                jp.add(getMarkHeight(point));
+                jp.add(new JLabel(I18N.tr("Height")));
+                jp.add(getMarkHeight(point), "growx");
 
                 return jp;
         }
 
         /**
-         * JNumericSpinner embedded in a JPanel to configure the width of the symbol
+         * JSpinner to configure the width of the symbol
          * @param point
          * @return
          */
@@ -298,7 +272,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         }
 
         /**
-         * JNumericSpinner embedded in a JPane to configure the height of the symbol
+         * JSpinner to configure the height of the symbol
          * @param point
          * @return
          */
@@ -321,14 +295,14 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * @param point
          * @return
          */
-        public JComboBox getWKNCombo(ConstantFormPoint point){
+        public WideComboBox getWKNCombo(ConstantFormPoint point){
                 CanvasSE prev = getPreview();
                 wkns = getWknProperties();
                 String[] values = new String[wkns.length];
                 for (int i = 0; i < values.length; i++) {
                         values[i] = wkns[i].getLabel();
                 }
-                final JComboBox jcc = new JComboBox(values);
+                final WideComboBox jcc = new WideComboBox(values);
                 ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
                 ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateWKNComboBox", "source.selectedIndex");
@@ -372,8 +346,8 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 bCentroid.addActionListener(actionRef);
                 bVertex.setSelected(((PointSymbolizer)point.getSymbolizer()).isOnVertex());
                 bCentroid.setSelected(!((PointSymbolizer)point.getSymbolizer()).isOnVertex());
-                jp.add(bVertex);
-                jp.add(bCentroid);
+                jp.add(bVertex, "split 2, span 2");
+                jp.add(bCentroid, "gapleft push");
         }
 
         /**

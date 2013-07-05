@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
@@ -71,6 +72,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private JTextField lineDash;
         private ContainerItemProperties[] uoms;
         public static final String LINE_SETTINGS = I18N.tr("Line settings");
+        public static final String BORDER_SETTINGS = I18N.tr("Border settings");
         /**
          * Here we can put all the Legend instances we want... but they have to
          * be unique symbol (ie constant) Legends.
@@ -209,10 +211,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 }
                 ConstantPenStroke legend = leg instanceof ConstantPenStrokeLegend ? leg : penStrokeMemory;
 
-                JPanel jp = new JPanel();
-                GridLayout grid = new GridLayout(
-                        0, 2, HGAP, VGAP);
-                jp.setLayout(grid);
+                JPanel jp = new JPanel(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
                 jp.setBorder(BorderFactory.createTitledBorder(title));
 
                 UomCombo lineUom = getLineUomCombo((StrokeUom) getLegend());
@@ -224,7 +223,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                         lineCheckBox = new JCheckBox(I18N.tr("Enable"));
                         lineCheckBox.addActionListener(
                                 EventHandler.create(ActionListener.class, this, "onClickLineCheckBox"));
-                        jp.add(lineCheckBox);
+                        jp.add(lineCheckBox, "align l");
                         // We must check the CheckBox according to leg, not to legend.
                         // legend is here mainly to let us fill safely all our
                         // parameters.
@@ -239,22 +238,23 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
                 // Unit of measure
                 if(displayUom){
-                    jp.add(buildText(I18N.tr("Unit of measure")));
+                    JLabel uom = new JLabel(I18N.tr("Unit of measure"));
+                    jp.add(uom);
                     uOMBox = lineUom.getCombo();
-                    jp.add(uOMBox);
+                    jp.add(uOMBox, "growx");
                 }
                 // Line width
-                jp.add(buildText(I18N.tr("Width")));
+                jp.add(new JLabel(I18N.tr("Width")));
                 lineWidth = getLineWidthSpinner(legend);
-                jp.add(lineWidth);
+                jp.add(lineWidth, "growx");
                 // Line opacity
-                jp.add(buildText(I18N.tr("Opacity")));
+                jp.add(new JLabel(I18N.tr("Opacity")));
                 lineOpacity = getLineOpacitySpinner(legend.getFillLegend());
-                jp.add(lineOpacity);
+                jp.add(lineOpacity, "growx");
                 // Dash array
-                jp.add(buildText(I18N.tr("Dash array")));
+                jp.add(new JLabel(I18N.tr("Dash array")));
                 lineDash = getDashArrayField((ConstantColorAndDashesPSLegend)legend);
-                jp.add(lineDash);
+                jp.add(lineDash, "growx");
                 if(isLineOptional()){
                     setLineFieldsState(leg instanceof ConstantPenStrokeLegend);
                 }
@@ -311,18 +311,9 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         private void initializeLegendFields() {
                 this.removeAll();
-                JPanel glob = new JPanel();
-                GridBagLayout grid = new GridBagLayout();
-                glob.setLayout(grid);
-                GridBagConstraints gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                JPanel p1 = getLineBlock(uniqueLine.getPenStroke(), LINE_SETTINGS);
-                glob.add(p1, gbc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 1;
-                glob.add(getPreview(), gbc);
+                JPanel glob = new JPanel(new MigLayout());
+                glob.add(getLineBlock(uniqueLine.getPenStroke(), LINE_SETTINGS));
+                glob.add(getPreviewPanel(), "width 250!");
                 this.add(glob);
         }
 }
