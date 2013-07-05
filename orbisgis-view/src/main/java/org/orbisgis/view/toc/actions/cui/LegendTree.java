@@ -386,9 +386,15 @@ public class LegendTree extends JPanel {
                 currentrw = sw.getRuleWrapper(sw.getSize() - 1);
             }
 
-            // Add the Legend to the LegendTree.
+            // Set the Legend's name.
+            Legend legend = ilp.getLegend();
+            legend.getSymbolizer().setName(
+                getUniqueName(legend.getLegendTypeName(),
+                              currentrw.getRule(), 0));
+
+            // Add the panel to the LegendTree.
             ((LegendTreeModel) tree.getModel())
-                    .addElement(currentrw, ilp, ilp.getLegend());
+                    .addElement(currentrw, ilp, getSelectedLegend());
 
             // Automatically select the newly added legend in the tree.
             TreePath selectionPath = tree.getSelectionPath();
