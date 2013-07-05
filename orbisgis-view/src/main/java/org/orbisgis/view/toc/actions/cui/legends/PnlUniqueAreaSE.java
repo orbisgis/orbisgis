@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
@@ -187,29 +188,18 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
 
         private void initializeLegendFields() {
                 this.removeAll();
-                JPanel glob = new JPanel();
-                GridBagLayout grid = new GridBagLayout();
-                glob.setLayout(grid);
-                GridBagConstraints gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                JPanel p1 = getLineBlock(uniqueArea.getPenStroke(), LINE_SETTINGS);
+                JPanel glob = new JPanel(new MigLayout());
+
+                JPanel p1 = getLineBlock(uniqueArea.getPenStroke(), BORDER_SETTINGS);
                 ComponentUtil.setFieldState(displayStroke, p1);
-                glob.add(p1, gbc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 1;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                gbc.insets = new Insets(5, 0, 5, 0);
+                glob.add(p1, "cell 0 0, span 1 2, aligny top");
+
                 ConstantSolidFill leg = uniqueArea.getFillLegend();
                 JPanel p2 = getAreaBlock(leg, FILL_SETTINGS);
                 setAreaFieldsState(leg instanceof ConstantSolidFillLegend);
-                glob.add(p2, gbc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 2;
-                glob.add(getPreview(), gbc);
+                glob.add(p2, "cell 1 0, growx");
+
+                glob.add(getPreviewPanel(), "cell 1 1, growx");
                 this.add(glob);
         }
 
@@ -225,10 +215,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                         initPreview();
                 }
 
-                JPanel jp = new JPanel();
-                GridLayout grid = new GridLayout(
-                        0, 2, HGAP, VGAP);
-                jp.setLayout(grid);
+                JPanel jp = new JPanel(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
                 jp.setBorder(BorderFactory.createTitledBorder(title));
 
                 ConstantSolidFill fl =
@@ -240,7 +227,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                     areaCheckBox = new JCheckBox(I18N.tr("Enable"));
                     areaCheckBox.addActionListener(
                             EventHandler.create(ActionListener.class, this, "onClickAreaCheckBox"));
-                    jp.add(areaCheckBox);
+                    jp.add(areaCheckBox, "align l");
                     // We must check the CheckBox according to leg, not to legend.
                     // legend is here mainly to let us fill safely all our
                     // parameters.
@@ -256,7 +243,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 // Opacity
                 fillOpacity = getLineOpacitySpinner(fl);
                 jp.add(buildText(I18N.tr("Opacity")));
-                jp.add(fillOpacity);
+                jp.add(fillOpacity, "growx");
 
                 return jp;
         }

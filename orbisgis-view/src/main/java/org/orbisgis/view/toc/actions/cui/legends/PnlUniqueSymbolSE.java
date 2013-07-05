@@ -34,7 +34,6 @@ import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.sif.components.JNumericSpinner;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
@@ -42,12 +41,9 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
-import javax.swing.text.DefaultFormatterFactory;
-import java.awt.*;
 import java.awt.event.*;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import java.text.NumberFormat;
 
 /**
  * This class proposes some methods that will be common to all the panels built
@@ -57,7 +53,8 @@ import java.text.NumberFormat;
 public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements ILegendPanel, UIPanel {
 
         public static final double SPIN_STEP = 0.1;
-
+        protected static final String COLUMN_CONSTRAINTS =
+                "[align r, 110::][align c, 95::]";
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlUniqueSymbolSE.class);
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueSymbolSE.class);
         private String id;
@@ -76,20 +73,34 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
         }
 
         /**
-         * Gets the {@code CanvasSe} instance used to display a preview of
+         * Gets the {@code CanvasSE} instance used to display a preview of
+         * the current symbol in a bordered JPanel.
+         *
+         * @return Preview of the symbol in a bordered JPanel.
+         */
+        public JPanel getPreviewPanel(){
+                JPanel previewPanel = new JPanel();
+                previewPanel.setBorder(
+                        BorderFactory.createTitledBorder(I18N.tr("Preview")));
+                previewPanel.add(preview);
+                return previewPanel;
+        }
+
+        /**
+         * Gets the {@code CanvasSE} instance used to display a preview of
          * the current symbol.
-         * @return
+         *
+         * @return Preview of the symbol.
          */
         public CanvasSE getPreview(){
                 return preview;
         }
 
         /**
-         * Retrieve a spinner with the wanted listener.
+         * Creates and configures a line width {@link JSpinner}.
          *
          * @param cps The stroke that will be configured with the spinner.
-         * @return
-         *      The wanted {@code JNumericSpinner}.
+         * @return The wanted {@code JSpinner}.
          */
         public JSpinner getLineWidthSpinner(final ConstantPenStroke cps){
                 SpinnerNumberModel model = new SpinnerNumberModel(
@@ -128,7 +139,7 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
          * @return A {@code JTextField}
          */
         public JTextField getDashArrayField(final ConstantColorAndDashesPSLegend cps){
-                final JTextField jrf = new JTextField("", 8);
+                final JTextField jrf = new JTextField();
                 jrf.setText(cps.getDashArray());
                 jrf.setHorizontalAlignment(JFormattedTextField.RIGHT);
                 jrf.addActionListener(new ActionListener() {
@@ -138,11 +149,12 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
                     }
                 });
                 jrf.addFocusListener(new FocusAdapter() {
-                    @Override public void focusLost(FocusEvent e) {
-                        JTextField jtf = (JTextField)e.getSource();
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        JTextField jtf = (JTextField) e.getSource();
                         String tmp = jtf.getText();
                         cps.setDashArray(tmp);
-                        if(!tmp.equals(cps.getDashArray())){
+                        if (!tmp.equals(cps.getDashArray())) {
                             LOGGER.warn(I18N.tr("Could not validate your input."));
                             jtf.setText(cps.getDashArray());
                         }
