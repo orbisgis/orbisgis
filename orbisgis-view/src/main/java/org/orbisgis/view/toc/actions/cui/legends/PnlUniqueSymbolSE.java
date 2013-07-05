@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
@@ -57,7 +58,8 @@ import java.text.NumberFormat;
 public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements ILegendPanel, UIPanel {
 
         public static final double SPIN_STEP = 0.1;
-
+        protected static final String COLUMN_CONSTRAINTS =
+                "[align r, 110::][align c, 95::]";
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlUniqueSymbolSE.class);
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueSymbolSE.class);
         private String id;
@@ -76,9 +78,24 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
         }
 
         /**
-         * Gets the {@code CanvasSe} instance used to display a preview of
+         * Gets the {@code CanvasSE} instance used to display a preview of
+         * the current symbol in a bordered JPanel.
+         *
+         * @return Preview of the symbol in a bordered JPanel.
+         */
+        public JPanel getPreviewPanel(){
+                JPanel previewPanel = new JPanel();
+                previewPanel.setBorder(
+                        BorderFactory.createTitledBorder(I18N.tr("Preview")));
+                previewPanel.add(preview);
+                return previewPanel;
+        }
+
+        /**
+         * Gets the {@code CanvasSE} instance used to display a preview of
          * the current symbol.
-         * @return
+         *
+         * @return Preview of the symbol.
          */
         public CanvasSE getPreview(){
                 return preview;
@@ -128,7 +145,7 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
          * @return A {@code JTextField}
          */
         public JTextField getDashArrayField(final ConstantColorAndDashesPSLegend cps){
-                final JTextField jrf = new JTextField("", 8);
+                final JTextField jrf = new JTextField();
                 jrf.setText(cps.getDashArray());
                 jrf.setHorizontalAlignment(JFormattedTextField.RIGHT);
                 jrf.addActionListener(new ActionListener() {
@@ -138,11 +155,12 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
                     }
                 });
                 jrf.addFocusListener(new FocusAdapter() {
-                    @Override public void focusLost(FocusEvent e) {
-                        JTextField jtf = (JTextField)e.getSource();
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        JTextField jtf = (JTextField) e.getSource();
                         String tmp = jtf.getText();
                         cps.setDashArray(tmp);
-                        if(!tmp.equals(cps.getDashArray())){
+                        if (!tmp.equals(cps.getDashArray())) {
                             LOGGER.warn(I18N.tr("Could not validate your input."));
                             jtf.setText(cps.getDashArray());
                         }
