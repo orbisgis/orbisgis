@@ -59,10 +59,11 @@ import java.net.URL;
 import java.util.ArrayList;
 
 /**
- * Display a UI with the name of all supported legends and their corresponding
- * representation.
+ * Displays a UI with a list of the legends supported by the layer being
+ * edited in the SimpleStyleEditor and a preview of each legend.
  *
- * @author ebocher
+ * @author Erwan Bocher
+ * @author Adam Gouge
  */
 public class LegendUIChooser implements UIPanel {
 
@@ -94,7 +95,7 @@ public class LegendUIChooser implements UIPanel {
      * Construct a {@link LegendUIChooser} for the layer being edited
      * in the given {@link SimpleStyleEditor} instance.
      *
-     * @param editor SimpleStyleEditor.
+     * @param editor SimpleStyleEditor
      */
     public LegendUIChooser(SimpleStyleEditor editor) {
         this.editor = editor;
@@ -109,18 +110,24 @@ public class LegendUIChooser implements UIPanel {
      * @param layer Layer
      */
     private void initNamesList(ILayer layer) {
-        // Recover the SimpleGeometryType of this ILayer.
+        // Recover the geometry type of this ILayer.
         DataSource ds = layer.getDataSource();
         Type geomType = null;
         try {
             geomType = ds.getMetadata().getFieldType(ds.getSpatialFieldIndex());
         } catch (DriverException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            LOGGER.warn("Could not determine the specific geometry type for " +
+                    "this layer.");
         }
-        int simpleGeomType = SimpleGeometryType.getSimpleType(geomType);
+        // If it could not be determined, assume all simple geometries.
+        // Otherwise, convert to a simple geometry.
+        int simpleGeomType = (geomType == null)
+            ? SimpleGeometryType.ALL
+            : SimpleGeometryType.getSimpleType(geomType);
         // Fill the names array.
         ArrayList<String> typeNames = new ArrayList<String>();
-        final int lineOrPolygon = SimpleGeometryType.LINE | SimpleGeometryType.POLYGON;
+        final int lineOrPolygon =
+                SimpleGeometryType.LINE| SimpleGeometryType.POLYGON;
         if ((simpleGeomType & SimpleGeometryType.ALL) != 0) {
             typeNames.add(UniqueSymbolPoint.NAME);
             if ((simpleGeomType & lineOrPolygon) != 0) {
