@@ -363,6 +363,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
             case MANUAL : return true;
             case STANDARD_DEVIATION: return true;
             case QUANTILES: return true;
+            case BOXED_MEANS: return true;
             default : return false;
         }
     }
