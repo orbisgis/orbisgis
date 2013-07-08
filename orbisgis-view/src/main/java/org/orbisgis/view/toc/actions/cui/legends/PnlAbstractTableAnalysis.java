@@ -128,7 +128,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
             legend.put(key, lp);
             updateTable();
         } else if (e.getActionCommand().equals(REMOVE)){
-            int col = getJTable().getSelectedColumn();
+            int col = getKeyColumn();
             int row = getJTable().getSelectedRow();
             if(col>=0 && row >= 0){
                 K key = (K)getJTable().getValueAt(row, col);
