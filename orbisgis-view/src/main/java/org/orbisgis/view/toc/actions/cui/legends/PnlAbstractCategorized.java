@@ -219,6 +219,11 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
             ((JLabel)numberCombo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         }
         comboModel = (DefaultComboBoxModel) numberCombo.getModel();
+        createCl = new JButton(I18N.tr("Create"));
+        createCl.setActionCommand("click");
+        createCl.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onComputeClassification"));
+        createCl.setEnabled(false);
 
         JPanel inner = new JPanel(
                 new MigLayout("wrap 2", "[align r][align l]"));
@@ -227,11 +232,6 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         inner.add(getMethodCombo(), "width ::130");
         inner.add(new JLabel(I18N.tr("Classes")));
         inner.add(numberCombo, "split 2");
-        createCl = new JButton(I18N.tr("Create"));
-        createCl.setActionCommand("click");
-        createCl.addActionListener(
-                EventHandler.create(ActionListener.class, this, "onComputeClassification"));
-        createCl.setEnabled(false);
         inner.add(createCl, "gapleft push");
 
         JPanel outside = new JPanel(new MigLayout("wrap 1", "[align c]"));
