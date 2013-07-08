@@ -3,6 +3,7 @@ package org.orbisgis.view.toc.actions.cui.legends.stats;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 
+import java.util.Arrays;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -35,6 +36,7 @@ public class Thresholds {
             case EQUAL_INTERVAL: return getEqualIntervals(classNumber);
             case STANDARD_DEVIATION: return getMeanStandardDev(classNumber);
             case QUANTILES: return getQuantiles(classNumber);
+            case BOXED_MEANS: return getBoxedMeans(classNumber);
             default: throw new UnsupportedOperationException("This method is not supported");
         }
     }
@@ -89,6 +91,42 @@ public class Thresholds {
             ret.add(stats.getPercentile(p));
         }
         return ret;
+    }
+
+    /**
+     * Gets a boxed means analysis using the provided data. If {@code classNumber} is not a power of two,
+     * the greatest power of two that is lower than it will be used.
+     * @param classNumber The number of classes
+     * @return The thresholds
+     */
+    public SortedSet<Double> getBoxedMeans(int classNumber){
+        SortedSet<Double> ret = new TreeSet<Double>();
+        ret.add(stats.getMin());
+        int levels = classNumber == 0 ? 0 : 32 - Integer.numberOfLeadingZeros(classNumber) -1;
+        computeBoxedMeans(stats, ret, levels-1);
+        return ret;
+    }
+
+    /**
+     * This method :
+     * - Feeds the given SortedSet with the mean of the given statistics.
+     * - Calls itself recursively on the two subset obtained by dividing the set around its mean, if lev > 0.
+     * @param inpStat The input statistics
+     * @param toFeed The SortedSet we want to feed
+     * @param lev The remaining number of levels we have to process.
+     */
+    private void computeBoxedMeans(DescriptiveStatistics inpStat, SortedSet<Double> toFeed, int lev){
+        double[] input = inpStat.getSortedValues();
+        double mean = inpStat.getMean();
+        toFeed.add(mean);
+        if(lev > 0){
+            int i = Arrays.binarySearch(input, mean);
+            int ind = i < 0 ? -i-1 : i;
+            double[] first = Arrays.copyOf(input, ind);
+            double[] tail = Arrays.copyOfRange(input, ind, input.length);
+            computeBoxedMeans(new DescriptiveStatistics(first), toFeed, lev-1);
+            computeBoxedMeans(new DescriptiveStatistics(tail), toFeed, lev-1);
+        }
     }
 
     /**
