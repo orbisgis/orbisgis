@@ -247,15 +247,15 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                     jp.add(uOMBox, COMBO_BOX_CONSTRAINTS);
                 }
                 // Line width
-                jp.add(new JLabel(I18N.tr("Width")));
+                jp.add(new JLabel(WIDTH));
                 lineWidth = getLineWidthSpinner(legend);
                 jp.add(lineWidth, "growx");
                 // Line opacity
-                jp.add(new JLabel(I18N.tr("Opacity")));
+                jp.add(new JLabel(OPACITY));
                 lineOpacity = getLineOpacitySpinner(legend.getFillLegend());
                 jp.add(lineOpacity, "growx");
                 // Dash array
-                jp.add(new JLabel(I18N.tr("Dash array")));
+                jp.add(new JLabel(DASH_ARRAY));
                 lineDash = getDashArrayField((ConstantColorAndDashesPSLegend)legend);
                 jp.add(lineDash, "growx");
                 if(isLineOptional()){

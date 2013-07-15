@@ -242,7 +242,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 jp.add(fill);
                 // Opacity
                 fillOpacity = getLineOpacitySpinner(fl);
-                jp.add(buildText(I18N.tr("Opacity")));
+                jp.add(new JLabel(OPACITY));
                 jp.add(fillOpacity, "growx");
 
                 return jp;

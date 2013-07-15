@@ -239,13 +239,13 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 }
 
                 // Well-known name
-                jp.add(new JLabel(I18N.tr("Symbol")));
+                jp.add(new JLabel(SYMBOL));
                 jp.add(getWKNCombo(point), COMBO_BOX_CONSTRAINTS);
                 // Mark width
-                jp.add(new JLabel(I18N.tr("Width")));
+                jp.add(new JLabel(WIDTH));
                 jp.add(getMarkWidth(point), "growx");
                 // Mark height
-                jp.add(new JLabel(I18N.tr("Height")));
+                jp.add(new JLabel(HEIGHT));
                 jp.add(getMarkHeight(point), "growx");
 
                 return jp;

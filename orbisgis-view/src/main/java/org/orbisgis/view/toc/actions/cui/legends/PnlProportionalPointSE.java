@@ -71,8 +71,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This panel is used to configure proportional points as defined in the legend
- * library.
+ * UI for "Proportional Point".
+ *
  * @author Alexis Guéganno
  */
 public class PnlProportionalPointSE extends PnlUniquePointSE {
@@ -255,7 +255,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 jp.add(new JLabel(UNIT_OF_MEASURE));
                 jp.add(getPointUomCombo(), COMBO_BOX_CONSTRAINTS);
                 // Symbol
-                jp.add(new JLabel(I18N.tr("Symbol")));
+                jp.add(new JLabel(SYMBOL));
                 jp.add(getWKNCombo(prop), COMBO_BOX_CONSTRAINTS);
                 // Max size
                 jp.add(new JLabel(I18N.tr("Max. size")));

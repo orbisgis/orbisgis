@@ -67,9 +67,9 @@ public abstract class SymbolizerLegend implements Legend {
                 getSymbolizer().getRule().setMaxScaleDenom(scale);
         }
 
-	@Override
-	public String getLegendTypeId(){
-		return "org.orbisgis.legend.thematic.SymbolizerLegend";
-	}
+        @Override
+        public String getLegendTypeId(){
+            return "org.orbisgis.legend.thematic.SymbolizerLegend";
+        }
 
 }

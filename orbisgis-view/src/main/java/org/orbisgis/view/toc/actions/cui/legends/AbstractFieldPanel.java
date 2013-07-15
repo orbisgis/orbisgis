@@ -76,28 +76,20 @@ public abstract class AbstractFieldPanel extends JPanel {
      */
     public final static int FILLED_LABEL_HEIGHT = 15;
     protected static final String UNIT_OF_MEASURE = I18N.tr("Unit of measure");
+    protected static final String OPACITY = I18N.tr("Opacity");
+    protected static final String WIDTH = I18N.tr("Width");
+    protected static final String HEIGHT = I18N.tr("Height");
+    protected static final String SYMBOL = I18N.tr("Symbol");
+    protected static final String DASH_ARRAY = I18N.tr("Dash array");
     protected static final String ON_VERTEX = I18N.tr("On vertex");
     protected static final String ON_CENTROID = I18N.tr("On centroid");
     protected static final String FIELD = "<html><b>" + I18N.tr("Field") + "</b></html>";
     protected static final int SECOND_COL_WIDTH = 95;
     protected static final String COLUMN_CONSTRAINTS =
-            "[align r, 110!][align c, " + SECOND_COL_WIDTH + "!]";
+            "[align r, 110::][align c, " + SECOND_COL_WIDTH + "!]";
     protected static final String COMBO_BOX_CONSTRAINTS =
             "width " + SECOND_COL_WIDTH + "!";
     private ContainerItemProperties[] strokeUoms;
-
-    /**
-     * Build a {@code JLabel} from {@code name} with x-alignment set to
-     * {@code SwingConstants.RIGHT}.
-     *
-     * @param name Text
-     * @return Right-aligned JLabel with the given name.
-     */
-    public JLabel buildText(String name){
-        JLabel c1 = new JLabel(name);
-        c1.setHorizontalAlignment(SwingConstants.RIGHT);
-        return c1;
-    }
 
     /**
      * Initialize a {@code JComboBox} whose values are set according to the
