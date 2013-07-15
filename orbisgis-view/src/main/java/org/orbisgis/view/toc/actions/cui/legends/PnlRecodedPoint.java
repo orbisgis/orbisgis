@@ -184,23 +184,28 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
      * @return The panel with the radio buttons.
      */
     private JPanel pnlOnVertex(){
-        JPanel jp = new JPanel();
         RecodedPoint point = (RecodedPoint) getLegend();
-        JRadioButton bVertex = new JRadioButton(I18N.tr("On vertex"));
-        JRadioButton bCentroid = new JRadioButton(I18N.tr("On centroid"));
+
+        JRadioButton bVertex = new JRadioButton(ON_VERTEX);
+        bVertex.addActionListener(
+                EventHandler.create(ActionListener.class, point, "setOnVertex"));
+        bVertex.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onClickVertex"));
+        boolean onVertex = ((PointSymbolizer)point.getSymbolizer()).isOnVertex();
+        bVertex.setSelected(onVertex);
+
+        JRadioButton bCentroid = new JRadioButton(ON_CENTROID);
+        bCentroid.addActionListener(
+                EventHandler.create(ActionListener.class, point, "setOnCentroid"));
+        bCentroid.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onClickCentroid"));
+        bCentroid.setSelected(!onVertex);
+
         ButtonGroup bg = new ButtonGroup();
         bg.add(bVertex);
         bg.add(bCentroid);
-        ActionListener actionV = EventHandler.create(ActionListener.class, point, "setOnVertex");
-        ActionListener actionC = EventHandler.create(ActionListener.class, point, "setOnCentroid");
-        ActionListener actionRefV = EventHandler.create(ActionListener.class, this, "onClickVertex");
-        ActionListener actionRefC= EventHandler.create(ActionListener.class, this, "onClickCentroid");
-        bVertex.addActionListener(actionV);
-        bVertex.addActionListener(actionRefV);
-        bCentroid.addActionListener(actionC);
-        bCentroid.addActionListener(actionRefC);
-        bVertex.setSelected(((PointSymbolizer)point.getSymbolizer()).isOnVertex());
-        bCentroid.setSelected(!((PointSymbolizer)point.getSymbolizer()).isOnVertex());
+
+        JPanel jp = new JPanel();
         jp.add(bVertex);
         jp.add(bCentroid);
         return jp;
@@ -390,7 +395,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         uoms = getUomProperties();
         UomCombo puc = new UomCombo(((RecodedPoint)getLegend()).getSymbolUom(),
                 uoms,
-                I18N.tr("Unit of measure - size :"));
+                I18N.tr(UNIT_OF_MEASURE + " - size :"));
         ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex");
         puc.addActionListener(acl2);
         return puc;

@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
@@ -49,6 +50,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -79,7 +81,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlProportionalPointSE.class);
         private ProportionalPoint proportionalPoint;
         private DataSource ds;
-        private JComboBox fieldCombo;
+        private WideComboBox fieldCombo;
         MouseListener l;
 
         @Override
@@ -178,37 +180,22 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
 
         private void initializeLegendFields() {
                 this.removeAll();
-                JPanel glob = new JPanel();
-                GridBagLayout grid = new GridBagLayout();
-                glob.setLayout(grid);
-                int i = 0;
-                GridBagConstraints gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = i;
-                i++;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                initFieldCombo();
-                JPanel pane = new JPanel();
-                pane.add(fieldCombo);
-                glob.add(pane, gbc);
-                gbc.gridx = 0;
-                gbc.gridy = i;
-                i++;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                gbc.insets = new Insets(5, 0, 5, 0);
-                JPanel p3 = getProportionalBlock(proportionalPoint, I18N.tr("Mark configuration"));
-                glob.add(p3, gbc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = i;
+                JPanel glob = new JPanel(new MigLayout());
+
+                glob.add(getProportionalBlock(proportionalPoint,
+                                              MARK_SETTINGS));
+                // PREVIEW
                 CanvasSE prev = getPreview();
-                //The preview is created only once while the other panels are created twice, currently. Adds a locally
-                //stored listener to avoid having it twice because of this double call of initializeLegendFields.
+
+                // The preview is created only once while the other panels are
+                // created twice, currently. Adds a locally stored listener to
+                // avoid having it twice because of this double call of
+                // initializeLegendFields.
                 if(l == null || prev.getMouseListeners().length == 0){
                     l = EventHandler.create(MouseListener.class, this, "onClickOnPreview", "", "mouseClicked");
                     prev.addMouseListener(l);
                 }
-                glob.add(prev, gbc);
+                glob.add(getPreviewPanel(), PREVIEW_PANEL_CONSTRAINTS);
                 this.add(glob);
         }
 
@@ -256,71 +243,66 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
          * @return The JPanel containing the fields that sets the symbol min and max size.
          */
         public JPanel getProportionalBlock(ProportionalPoint prop, String title){
-                JPanel glob = new JPanel();
-                glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
-                JPanel jp = new JPanel();
-                boolean canBeOnV = getGeometryType() != SimpleGeometryType.POINT;
-                int onV = canBeOnV ? 1 : 0;
-                GridLayout grid = new GridLayout(4+onV,2);
-                grid.setVgap(5);
-                jp.setLayout(grid);
-                //If geometryType != POINT, we must let the user choose if he
-                //wants to draw symbols on centroid or on vertices.
+
+                JPanel jp = new JPanel(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
+                jp.setBorder(BorderFactory.createTitledBorder(title));
+
+                // Field
+                initFieldCombo();
+                jp.add(new JLabel(FIELD));
+                jp.add(fieldCombo, COMBO_BOX_CONSTRAINTS);
+                // Unit of measure
+                jp.add(new JLabel(UNIT_OF_MEASURE));
+                jp.add(getPointUomCombo(), COMBO_BOX_CONSTRAINTS);
+                // Symbol
+                jp.add(new JLabel(I18N.tr("Symbol")));
+                jp.add(getWKNCombo(prop), COMBO_BOX_CONSTRAINTS);
+                // Max size
+                jp.add(new JLabel(I18N.tr("Max. size")));
+                jp.add(getSecondConf(prop), "growx");
+                // Min size
+                jp.add(new JLabel(I18N.tr("Min. size")));
+                jp.add(getFirstConf(prop), "growx");
+                // If geometryType != POINT, we must let the user choose if he
+                // wants to draw symbols on centroid or on vertices.
                 if(getGeometryType() != SimpleGeometryType.POINT){
-                        addPointOnVertices(prop, jp);
+                    addPointOnVertices(prop, jp);
                 }
-                //Uom
-                jp.add(buildText(I18N.tr("Unit of measure :")));
-                jp.add(getPointUomCombo());
-                //Combo box
-                jp.add(buildText(I18N.tr("Symbol form :")));
-                jp.add(getWKNCombo(prop));
-                //Max size
-                jp.add(buildText(I18N.tr("Max. size :")));
-                jp.add(getSecondConf(prop));
-                glob.add(jp);
-                //Min size
-                jp.add(buildText(I18N.tr("Min. size :")));
-                jp.add(getFirstConf(prop));
-                glob.add(jp);
-                //We add a canvas to display a preview.
-                glob.setBorder(BorderFactory.createTitledBorder(title));
-                return glob;
+                return jp;
         }
 
-        private JPanel getSecondConf(ProportionalPoint prop){
+        private JFormattedTextField getSecondConf(ProportionalPoint prop){
                 CanvasSE prev = getPreview();
-                JPanel ret = new JPanel();
                 JFormattedTextField jftf = new JFormattedTextField(new DecimalFormat());
-                jftf.setColumns(8);
                 try {
                         jftf.setValue(prop.getSecondValue());
                 } catch (ParameterException ex) {
                         LOGGER.error(I18N.tr("Can't retrieve the maximum value of"
                                 + " the symbol"), ex);
                 }
-                PropertyChangeListener al = EventHandler.create(PropertyChangeListener.class, prop, "secondValue", "source.value");
-                jftf.addPropertyChangeListener("value", al);
-                PropertyChangeListener al2 = EventHandler.create(PropertyChangeListener.class, prev, "imageChanged");
-                jftf.addPropertyChangeListener("value", al2);
-                ret.add(jftf);
-                return ret;
+                jftf.addPropertyChangeListener(
+                        "value",
+                        EventHandler.create(PropertyChangeListener.class, prop, "secondValue", "source.value"));
+                jftf.addPropertyChangeListener(
+                        "value",
+                        EventHandler.create(PropertyChangeListener.class, prev, "imageChanged"));
+                jftf.setHorizontalAlignment(SwingConstants.RIGHT);
+                return jftf;
         }
 
-        private JPanel getFirstConf(ProportionalPoint prop){
-                JPanel ret = new JPanel();
+        private JFormattedTextField getFirstConf(ProportionalPoint prop){
                 JFormattedTextField jftf = new JFormattedTextField(new DecimalFormat());
-                jftf.setColumns(8);
                 try {
                         jftf.setValue(prop.getFirstValue());
                 } catch (ParameterException ex) {
                         LOGGER.error(I18N.tr("Can't retrieve the minimum value of"
                                 + " the symbol"), ex);
                 }
-                PropertyChangeListener al = EventHandler.create(PropertyChangeListener.class, prop, "firstValue", "source.value");
-                jftf.addPropertyChangeListener("value", al);
-                ret.add(jftf);
-                return ret;
+                jftf.addPropertyChangeListener(
+                        "value",
+                        EventHandler.create(PropertyChangeListener.class, prop, "firstValue", "source.value"));
+                jftf.setHorizontalAlignment(SwingConstants.RIGHT);
+                return jftf;
         }
 
         private void initFieldCombo(){
@@ -334,8 +316,9 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                         }
                         fieldCombo.addActionListener(acl2);
                         updateField((String)fieldCombo.getSelectedItem());
+                        ((JLabel)fieldCombo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
                 } else {
-                        fieldCombo = new JComboBox();
+                        fieldCombo = new WideComboBox();
                 }
         }
 

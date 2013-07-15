@@ -57,6 +57,10 @@ public class WideComboBox extends JComboBox {
         super(items);
     }
 
+    public WideComboBox(ComboBoxModel aModel) {
+        super(aModel);
+    }
+
     @Override
     public void doLayout() {
         try {

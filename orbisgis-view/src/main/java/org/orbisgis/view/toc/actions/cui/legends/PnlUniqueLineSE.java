@@ -41,6 +41,7 @@ import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -54,6 +55,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
+import java.util.Vector;
 
 /**
  * {@code JPanel} that ca nbe used to configure simple constant {@code
@@ -73,6 +75,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private ContainerItemProperties[] uoms;
         public static final String LINE_SETTINGS = I18N.tr("Line settings");
         public static final String BORDER_SETTINGS = I18N.tr("Border settings");
+        public static final String MARK_SETTINGS = I18N.tr("Mark settings");
         /**
          * Here we can put all the Legend instances we want... but they have to
          * be unique symbol (ie constant) Legends.
@@ -238,10 +241,10 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
                 // Unit of measure
                 if(displayUom){
-                    JLabel uom = new JLabel(I18N.tr("Unit of measure"));
+                    JLabel uom = new JLabel(UNIT_OF_MEASURE);
                     jp.add(uom);
                     uOMBox = lineUom.getCombo();
-                    jp.add(uOMBox, "growx");
+                    jp.add(uOMBox, COMBO_BOX_CONSTRAINTS);
                 }
                 // Line width
                 jp.add(new JLabel(I18N.tr("Width")));
@@ -313,7 +316,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
                 glob.add(getLineBlock(uniqueLine.getPenStroke(), LINE_SETTINGS));
-                glob.add(getPreviewPanel(), "width 250!");
+                glob.add(getPreviewPanel(), PREVIEW_PANEL_CONSTRAINTS);
                 this.add(glob);
         }
 }

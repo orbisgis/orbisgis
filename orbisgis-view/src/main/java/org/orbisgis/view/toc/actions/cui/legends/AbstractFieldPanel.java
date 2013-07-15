@@ -75,7 +75,15 @@ public abstract class AbstractFieldPanel extends JPanel {
      * Height used for the rectangles that displays the color parameters of the symbols.
      */
     public final static int FILLED_LABEL_HEIGHT = 15;
-
+    protected static final String UNIT_OF_MEASURE = I18N.tr("Unit of measure");
+    protected static final String ON_VERTEX = I18N.tr("On vertex");
+    protected static final String ON_CENTROID = I18N.tr("On centroid");
+    protected static final String FIELD = "<html><b>" + I18N.tr("Field") + "</b></html>";
+    protected static final int SECOND_COL_WIDTH = 95;
+    protected static final String COLUMN_CONSTRAINTS =
+            "[align r, 110!][align c, " + SECOND_COL_WIDTH + "!]";
+    protected static final String COMBO_BOX_CONSTRAINTS =
+            "width " + SECOND_COL_WIDTH + "!";
     private ContainerItemProperties[] strokeUoms;
 
     /**
@@ -118,11 +126,12 @@ public abstract class AbstractFieldPanel extends JPanel {
     /**
      * Initialize a {@code JComboBo} whose values are set according to the
      * numeric fields of {@code ds}.
+     *
      * @param ds The original DataSource
      * @return A JComboBox.
      */
-    public JComboBox getNumericFieldCombo(DataSource ds){
-        JComboBox combo = new JComboBox();
+    public WideComboBox getNumericFieldCombo(DataSource ds){
+        WideComboBox combo = new WideComboBox();
         if(ds != null){
             try {
                 Metadata md = ds.getMetadata();
@@ -185,7 +194,7 @@ public abstract class AbstractFieldPanel extends JPanel {
         strokeUoms = getUomProperties();
         UomCombo puc = new UomCombo(input.getStrokeUom(),
                 strokeUoms,
-                I18N.tr("Unit of measure - stroke width :"));
+                I18N.tr(UNIT_OF_MEASURE + " - stroke width :"));
         ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateLUComboBox", "source.selectedIndex");
         puc.addActionListener(acl2);
         return puc;

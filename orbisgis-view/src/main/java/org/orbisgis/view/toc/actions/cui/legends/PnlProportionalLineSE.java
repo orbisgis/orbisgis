@@ -53,6 +53,7 @@ import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -203,7 +204,7 @@ public class PnlProportionalLineSE extends PnlUniqueSymbolSE {
                 jp.add(buildText(I18N.tr("Field Name :")));
                 jp.add(getFieldComboBox());
                 //Uom
-                jp.add(buildText(I18N.tr("Unit of measure :")));
+                jp.add(buildText(UNIT_OF_MEASURE));
                 jp.add(lineUom);
                 //Width
                 jp.add(buildText(I18N.tr("Max width :")));
@@ -265,9 +266,9 @@ public class PnlProportionalLineSE extends PnlUniqueSymbolSE {
          * analysis.
          * @return The combo box we can use to choose the text.
          */
-        private JComboBox getFieldComboBox(){
+        private WideComboBox getFieldComboBox(){
                 if(ds != null){
-                        JComboBox jcc = getNumericFieldCombo(ds);
+                        WideComboBox jcc = getNumericFieldCombo(ds);
                         ActionListener acl2 = EventHandler.create(ActionListener.class,
                                 this, "updateField", "source.selectedItem");
                         String field = legend.getLookupFieldName();
@@ -276,9 +277,10 @@ public class PnlProportionalLineSE extends PnlUniqueSymbolSE {
                         }
                         jcc.addActionListener(acl2);
                         updateField((String)jcc.getSelectedItem());
+                        ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
                         return jcc;
                 } else {
-                        return new JComboBox();
+                        return new WideComboBox();
                 }
         }
 
