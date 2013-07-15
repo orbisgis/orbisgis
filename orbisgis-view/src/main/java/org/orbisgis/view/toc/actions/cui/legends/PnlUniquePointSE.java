@@ -331,21 +331,20 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * @param jp
          */
         public void addPointOnVertices(ConstantFormPoint point, JPanel jp){
-            CanvasSE prev = getPreview();
-
-            ActionListener actionRef = EventHandler.create(ActionListener.class, prev, "imageChanged");
 
             JRadioButton bVertex = new JRadioButton(ON_VERTEX);
             bVertex.addActionListener(
                     EventHandler.create(ActionListener.class, point, "setOnVertex"));
-            bVertex.addActionListener(actionRef);
+            bVertex.addActionListener(
+                    EventHandler.create(ActionListener.class, this, "onClickVertex"));
             boolean onVertex = ((PointSymbolizer)point.getSymbolizer()).isOnVertex();
             bVertex.setSelected(onVertex);
 
             JRadioButton bCentroid = new JRadioButton(ON_CENTROID);
             bCentroid.addActionListener(
                     EventHandler.create(ActionListener.class, point, "setOnCentroid"));
-            bCentroid.addActionListener(actionRef);
+            bCentroid.addActionListener(
+                    EventHandler.create(ActionListener.class, this, "onClickCentroid"));
             bCentroid.setSelected(!onVertex);
 
             ButtonGroup bg = new ButtonGroup();
@@ -354,6 +353,30 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
 
             jp.add(bVertex, "split 2, span 2, align c");
             jp.add(bCentroid);
+        }
+
+        /**
+         * called when the user wants to put the points on the vertices of the geometry.
+         */
+        public void onClickVertex(){
+            changeOnVertex(true);
+        }
+
+        /**
+         * called when the user wants to put the points on the centroid of the geometry.
+         */
+        public void onClickCentroid(){
+            changeOnVertex(false);
+        }
+
+        /**
+         * called when the user wants to put the points on the vertices or ont the centroid of the geometry.
+         * @param b If true, the points are set on the vertices.
+         */
+        private void changeOnVertex(boolean b){
+            CanvasSE prev = getPreview();
+            ((PointSymbolizer)prev.getSymbol()).setOnVertex(b);
+            prev.imageChanged();
         }
 
         /**
