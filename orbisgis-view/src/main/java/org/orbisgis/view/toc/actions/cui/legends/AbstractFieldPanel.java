@@ -57,14 +57,7 @@ import java.beans.EventHandler;
  * @author alexis
  */
 public abstract class AbstractFieldPanel extends JPanel {
-    /**
-     * Horizontal gap between cells in a GridBagLayout.
-     */
-    public static final int HGAP = 10;
-    /**
-     * Vertical gap between cells in a GridBagLayout.
-     */
-    public static final int VGAP = 3;
+
     private static final Logger LOGGER = Logger.getLogger("gui."+AbstractFieldPanel.class);
     private static final I18n I18N = I18nFactory.getI18n(AbstractFieldPanel.class);
     /**
@@ -84,9 +77,18 @@ public abstract class AbstractFieldPanel extends JPanel {
     protected static final String ON_VERTEX = I18N.tr("On vertex");
     protected static final String ON_CENTROID = I18N.tr("On centroid");
     protected static final String FIELD = "<html><b>" + I18N.tr("Field") + "</b></html>";
+    /**
+     * Width of the second column in pixels.
+     */
     protected static final int SECOND_COL_WIDTH = 95;
+    /**
+     * MigLayout constraints for sizing consistency.
+     */
     protected static final String COLUMN_CONSTRAINTS =
             "[align r, 110::][align c, " + SECOND_COL_WIDTH + "!]";
+    /**
+     * Constraints for ComboBoxes for sizing consistency.
+     */
     protected static final String COMBO_BOX_CONSTRAINTS =
             "width " + SECOND_COL_WIDTH + "!";
     private ContainerItemProperties[] strokeUoms;
@@ -116,11 +118,11 @@ public abstract class AbstractFieldPanel extends JPanel {
     }
 
     /**
-     * Initialize a {@code JComboBo} whose values are set according to the
+     * Initializes a {@code WideComboBox} whose values are set according to the
      * numeric fields of {@code ds}.
      *
      * @param ds The original DataSource
-     * @return A JComboBox.
+     * @return WideComboBox
      */
     public WideComboBox getNumericFieldCombo(DataSource ds){
         WideComboBox combo = new WideComboBox();

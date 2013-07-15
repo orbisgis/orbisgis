@@ -57,6 +57,13 @@ public class WideComboBox extends JComboBox {
         super(items);
     }
 
+    /**
+     * Constructs a {@code WideComboBox} that takes its items from an
+     * existing {@code ComboBoxModel}.
+     *
+     * @param aModel the <code>ComboBoxModel</code> that provides the
+     *               displayed list of items
+     */
     public WideComboBox(ComboBoxModel aModel) {
         super(aModel);
     }
