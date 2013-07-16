@@ -76,7 +76,7 @@ public abstract class AbstractFieldPanel extends JPanel {
     protected static final String DASH_ARRAY = I18n.marktr("Dash array");
     protected static final String ON_VERTEX = I18n.marktr("On vertex");
     protected static final String ON_CENTROID = I18n.marktr("On centroid");
-    protected static final String FIELD = "<html><b>" + I18n.marktr("Field") + "</b></html>";
+    protected static final String FIELD = I18n.marktr("<html><b>Field</b></html>");
     /**
      * Width of the second column in pixels.
      */
