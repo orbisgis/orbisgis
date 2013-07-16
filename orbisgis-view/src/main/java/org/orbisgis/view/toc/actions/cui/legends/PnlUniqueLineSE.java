@@ -41,6 +41,7 @@ import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -54,6 +55,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
+import java.util.Vector;
 
 /**
  * {@code JPanel} that ca nbe used to configure simple constant {@code
@@ -71,8 +73,9 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private JComboBox uOMBox;
         private JTextField lineDash;
         private ContainerItemProperties[] uoms;
-        public static final String LINE_SETTINGS = I18N.tr("Line settings");
-        public static final String BORDER_SETTINGS = I18N.tr("Border settings");
+        public static final String LINE_SETTINGS = I18n.marktr("Line settings");
+        public static final String BORDER_SETTINGS = I18n.marktr("Border settings");
+        public static final String MARK_SETTINGS = I18n.marktr("Mark settings");
         /**
          * Here we can put all the Legend instances we want... but they have to
          * be unique symbol (ie constant) Legends.
@@ -238,21 +241,21 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
                 // Unit of measure
                 if(displayUom){
-                    JLabel uom = new JLabel(I18N.tr("Unit of measure"));
+                    JLabel uom = new JLabel(I18N.tr(UNIT_OF_MEASURE));
                     jp.add(uom);
                     uOMBox = lineUom.getCombo();
-                    jp.add(uOMBox, "growx");
+                    jp.add(uOMBox, COMBO_BOX_CONSTRAINTS);
                 }
                 // Line width
-                jp.add(new JLabel(I18N.tr("Width")));
+                jp.add(new JLabel(I18N.tr(WIDTH)));
                 lineWidth = getLineWidthSpinner(legend);
                 jp.add(lineWidth, "growx");
                 // Line opacity
-                jp.add(new JLabel(I18N.tr("Opacity")));
+                jp.add(new JLabel(I18N.tr(OPACITY)));
                 lineOpacity = getLineOpacitySpinner(legend.getFillLegend());
                 jp.add(lineOpacity, "growx");
                 // Dash array
-                jp.add(new JLabel(I18N.tr("Dash array")));
+                jp.add(new JLabel(I18N.tr(DASH_ARRAY)));
                 lineDash = getDashArrayField((ConstantColorAndDashesPSLegend)legend);
                 jp.add(lineDash, "growx");
                 if(isLineOptional()){
@@ -312,8 +315,9 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
-                glob.add(getLineBlock(uniqueLine.getPenStroke(), LINE_SETTINGS));
-                glob.add(getPreviewPanel(), "width 250!");
+                glob.add(getLineBlock(uniqueLine.getPenStroke(),
+                                      I18N.tr(LINE_SETTINGS)));
+                glob.add(getPreviewPanel(), PREVIEW_PANEL_CONSTRAINTS);
                 this.add(glob);
         }
 }

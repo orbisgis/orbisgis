@@ -1,6 +1,5 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
@@ -100,7 +99,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     protected void beforeFallbackSymbol(JPanel genSettings) {
         //UOM - symbol size
         genSettings.add(new JLabel(I18N.tr("Size unit")));
-        genSettings.add(getSymbolUOMComboBox(), "growx");
+        genSettings.add(getSymbolUOMComboBox(), COMBO_BOX_CONSTRAINTS);
 
         // On vertex? On centroid?
         genSettings.add(pnlOnVertex(), "span 2, align center");
@@ -115,7 +114,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
      * @return The enable border checkbox.
      */
     private JCheckBox getEnableStrokeCheckBox(){
-        strokeBox = new JCheckBox(ENABLE_BORDER);
+        strokeBox = new JCheckBox(I18N.tr(ENABLE_BORDER));
         strokeBox.setSelected(((CategorizedPoint) getLegend()).isStrokeEnabled());
         strokeBox.addActionListener(
                 EventHandler.create(ActionListener.class, this, "onEnableStroke"));
@@ -242,7 +241,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         uoms = getUomProperties();
         UomCombo puc = new UomCombo(((CategorizedPoint)getLegend()).getSymbolUom(),
                 uoms,
-                I18N.tr("Unit of measure - size :"));
+                I18N.tr("Symbol size unit"));
         puc.addActionListener(
                 EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex"));
         return puc.getCombo();
@@ -266,23 +265,28 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
      * @return The panel with the radio buttons.
      */
     private JPanel pnlOnVertex(){
-        JPanel jp = new JPanel();
         CategorizedPoint point = (CategorizedPoint) getLegend();
-        JRadioButton bVertex = new JRadioButton(I18N.tr("On vertex"));
-        JRadioButton bCentroid = new JRadioButton(I18N.tr("On centroid"));
+
+        JRadioButton bVertex = new JRadioButton(I18N.tr(ON_VERTEX));
+        bVertex.addActionListener(
+                EventHandler.create(ActionListener.class, point, "setOnVertex"));
+        bVertex.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onClickVertex"));
+        boolean onVertex = ((PointSymbolizer)point.getSymbolizer()).isOnVertex();
+        bVertex.setSelected(onVertex);
+
+        JRadioButton bCentroid = new JRadioButton(I18N.tr(ON_CENTROID));
+        bCentroid.addActionListener(
+                EventHandler.create(ActionListener.class, point, "setOnCentroid"));
+        bCentroid.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onClickCentroid"));
+        bCentroid.setSelected(!onVertex);
+
         ButtonGroup bg = new ButtonGroup();
         bg.add(bVertex);
         bg.add(bCentroid);
-        ActionListener actionV = EventHandler.create(ActionListener.class, point, "setOnVertex");
-        ActionListener actionC = EventHandler.create(ActionListener.class, point, "setOnCentroid");
-        ActionListener actionRefV = EventHandler.create(ActionListener.class, this, "onClickVertex");
-        ActionListener actionRefC= EventHandler.create(ActionListener.class, this, "onClickCentroid");
-        bVertex.addActionListener(actionV);
-        bVertex.addActionListener(actionRefV);
-        bCentroid.addActionListener(actionC);
-        bCentroid.addActionListener(actionRefC);
-        bVertex.setSelected(((PointSymbolizer)point.getSymbolizer()).isOnVertex());
-        bCentroid.setSelected(!((PointSymbolizer)point.getSymbolizer()).isOnVertex());
+
+        JPanel jp = new JPanel();
         jp.add(bVertex);
         jp.add(bCentroid);
         return jp;

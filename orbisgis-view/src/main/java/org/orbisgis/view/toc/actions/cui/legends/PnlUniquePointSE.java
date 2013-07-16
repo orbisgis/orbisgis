@@ -197,15 +197,15 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
                 JPanel lb = getLineBlock(uniquePoint.getPenStroke(),
-                                         BORDER_SETTINGS);
+                                         I18N.tr(BORDER_SETTINGS));
                 ComponentUtil.setFieldState(isStrokeEnabled(), lb);
                 glob.add(lb);
 
                 glob.add(getPointBlock(uniquePoint,
-                                       I18N.tr("Mark settings")));
+                                       I18N.tr(MARK_SETTINGS)));
 
                 glob.add(getAreaBlock(uniquePoint.getFillLegend(),
-                        PnlUniqueAreaSE.FILL_SETTINGS));
+                                      I18N.tr(PnlUniqueAreaSE.FILL_SETTINGS)));
 
                 glob.add(getPreviewPanel(), "growx");
 
@@ -234,18 +234,18 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                         addPointOnVertices(point, jp);
                     }
                     // Unit of measure
-                    jp.add(new JLabel(I18N.tr("Unit of measure")));
-                    jp.add(getPointUomCombo(), "growx");
+                    jp.add(new JLabel(I18N.tr(UNIT_OF_MEASURE)));
+                    jp.add(getPointUomCombo(), COMBO_BOX_CONSTRAINTS);
                 }
 
                 // Well-known name
-                jp.add(new JLabel(I18N.tr("Symbol")));
-                jp.add(getWKNCombo(point), "width 90!");
+                jp.add(new JLabel(I18N.tr(SYMBOL)));
+                jp.add(getWKNCombo(point), COMBO_BOX_CONSTRAINTS);
                 // Mark width
-                jp.add(new JLabel(I18N.tr("Width")));
+                jp.add(new JLabel(I18N.tr(WIDTH)));
                 jp.add(getMarkWidth(point), "growx");
                 // Mark height
-                jp.add(new JLabel(I18N.tr("Height")));
+                jp.add(new JLabel(I18N.tr(HEIGHT)));
                 jp.add(getMarkHeight(point), "growx");
 
                 return jp;
@@ -331,23 +331,52 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * @param jp
          */
         public void addPointOnVertices(ConstantFormPoint point, JPanel jp){
-                CanvasSE prev = getPreview();
-                JRadioButton bVertex = new JRadioButton(I18N.tr("On vertex"));
-                JRadioButton bCentroid = new JRadioButton(I18N.tr("On centroid"));
-                ButtonGroup bg = new ButtonGroup();
-                bg.add(bVertex);
-                bg.add(bCentroid);
-                ActionListener actionV = EventHandler.create(ActionListener.class, point, "setOnVertex");
-                ActionListener actionC = EventHandler.create(ActionListener.class, point, "setOnCentroid");
-                ActionListener actionRef = EventHandler.create(ActionListener.class, prev, "imageChanged");
-                bVertex.addActionListener(actionV);
-                bVertex.addActionListener(actionRef);
-                bCentroid.addActionListener(actionC);
-                bCentroid.addActionListener(actionRef);
-                bVertex.setSelected(((PointSymbolizer)point.getSymbolizer()).isOnVertex());
-                bCentroid.setSelected(!((PointSymbolizer)point.getSymbolizer()).isOnVertex());
-                jp.add(bVertex, "split 2, span 2");
-                jp.add(bCentroid, "gapleft push");
+
+            JRadioButton bVertex = new JRadioButton(I18N.tr(ON_VERTEX));
+            bVertex.addActionListener(
+                    EventHandler.create(ActionListener.class, point, "setOnVertex"));
+            bVertex.addActionListener(
+                    EventHandler.create(ActionListener.class, this, "onClickVertex"));
+            boolean onVertex = ((PointSymbolizer)point.getSymbolizer()).isOnVertex();
+            bVertex.setSelected(onVertex);
+
+            JRadioButton bCentroid = new JRadioButton(I18N.tr(ON_CENTROID));
+            bCentroid.addActionListener(
+                    EventHandler.create(ActionListener.class, point, "setOnCentroid"));
+            bCentroid.addActionListener(
+                    EventHandler.create(ActionListener.class, this, "onClickCentroid"));
+            bCentroid.setSelected(!onVertex);
+
+            ButtonGroup bg = new ButtonGroup();
+            bg.add(bVertex);
+            bg.add(bCentroid);
+
+            jp.add(bVertex, "split 2, span 2, align c");
+            jp.add(bCentroid);
+        }
+
+        /**
+         * called when the user wants to put the points on the vertices of the geometry.
+         */
+        public void onClickVertex(){
+            changeOnVertex(true);
+        }
+
+        /**
+         * called when the user wants to put the points on the centroid of the geometry.
+         */
+        public void onClickCentroid(){
+            changeOnVertex(false);
+        }
+
+        /**
+         * called when the user wants to put the points on the vertices or ont the centroid of the geometry.
+         * @param b If true, the points are set on the vertices.
+         */
+        private void changeOnVertex(boolean b){
+            CanvasSE prev = getPreview();
+            ((PointSymbolizer)prev.getSymbol()).setOnVertex(b);
+            prev.imageChanged();
         }
 
         /**
@@ -364,14 +393,14 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * ComboBox to configure the unit of measure used to draw th stroke.
          * @return
          */
-        protected JComboBox getPointUomCombo(){
+        protected WideComboBox getPointUomCombo(){
                 CanvasSE prev = getPreview();
                 uoms = getUomProperties();
                 String[] values = new String[uoms.length];
                 for (int i = 0; i < values.length; i++) {
                         values[i] = I18N.tr(uoms[i].toString());
                 }
-                final JComboBox jcc = new JComboBox(values);
+                final WideComboBox jcc = new WideComboBox(values);
                 ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
                 ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex");

@@ -57,15 +57,8 @@ import java.beans.EventHandler;
  * @author alexis
  */
 public abstract class AbstractFieldPanel extends JPanel {
-    /**
-     * Horizontal gap between cells in a GridBagLayout.
-     */
-    public static final int HGAP = 10;
-    /**
-     * Vertical gap between cells in a GridBagLayout.
-     */
-    public static final int VGAP = 3;
-    private static final Logger LOGGER = Logger.getLogger("gui."+AbstractFieldPanel.class);
+
+    private static final Logger LOGGER = Logger.getLogger("gui." + AbstractFieldPanel.class);
     private static final I18n I18N = I18nFactory.getI18n(AbstractFieldPanel.class);
     /**
      * Width used for the rectangles that displays the color parameters of the symbols.
@@ -75,21 +68,30 @@ public abstract class AbstractFieldPanel extends JPanel {
      * Height used for the rectangles that displays the color parameters of the symbols.
      */
     public final static int FILLED_LABEL_HEIGHT = 15;
-
-    private ContainerItemProperties[] strokeUoms;
-
+    protected static final String UNIT_OF_MEASURE = I18n.marktr("Unit of measure");
+    protected static final String OPACITY = I18n.marktr("Opacity");
+    protected static final String WIDTH = I18n.marktr("Width");
+    protected static final String HEIGHT = I18n.marktr("Height");
+    protected static final String SYMBOL = I18n.marktr("Symbol");
+    protected static final String DASH_ARRAY = I18n.marktr("Dash array");
+    protected static final String ON_VERTEX = I18n.marktr("On vertex");
+    protected static final String ON_CENTROID = I18n.marktr("On centroid");
+    protected static final String FIELD = I18n.marktr("<html><b>Field</b></html>");
     /**
-     * Build a {@code JLabel} from {@code name} with x-alignment set to
-     * {@code SwingConstants.RIGHT}.
-     *
-     * @param name Text
-     * @return Right-aligned JLabel with the given name.
+     * Width of the second column in pixels.
      */
-    public JLabel buildText(String name){
-        JLabel c1 = new JLabel(name);
-        c1.setHorizontalAlignment(SwingConstants.RIGHT);
-        return c1;
-    }
+    protected static final int SECOND_COL_WIDTH = 95;
+    /**
+     * MigLayout constraints for sizing consistency.
+     */
+    protected static final String COLUMN_CONSTRAINTS =
+            "[align r, 110::][align c, " + SECOND_COL_WIDTH + "!]";
+    /**
+     * Constraints for ComboBoxes for sizing consistency.
+     */
+    protected static final String COMBO_BOX_CONSTRAINTS =
+            "width " + SECOND_COL_WIDTH + "!";
+    private ContainerItemProperties[] strokeUoms;
 
     /**
      * Initialize a {@code JComboBox} whose values are set according to the
@@ -116,13 +118,14 @@ public abstract class AbstractFieldPanel extends JPanel {
     }
 
     /**
-     * Initialize a {@code JComboBo} whose values are set according to the
+     * Initializes a {@code WideComboBox} whose values are set according to the
      * numeric fields of {@code ds}.
+     *
      * @param ds The original DataSource
-     * @return A JComboBox.
+     * @return WideComboBox
      */
-    public JComboBox getNumericFieldCombo(DataSource ds){
-        JComboBox combo = new JComboBox();
+    public WideComboBox getNumericFieldCombo(DataSource ds){
+        WideComboBox combo = new WideComboBox();
         if(ds != null){
             try {
                 Metadata md = ds.getMetadata();
@@ -183,9 +186,11 @@ public abstract class AbstractFieldPanel extends JPanel {
      */
     public UomCombo getLineUomCombo(StrokeUom input){
         strokeUoms = getUomProperties();
+        // Note: the title is not used in the UI since we extract
+        // the ComboBox.
         UomCombo puc = new UomCombo(input.getStrokeUom(),
                 strokeUoms,
-                I18N.tr("Unit of measure - stroke width :"));
+                I18N.tr("Line width unit"));
         ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateLUComboBox", "source.selectedIndex");
         puc.addActionListener(acl2);
         return puc;
