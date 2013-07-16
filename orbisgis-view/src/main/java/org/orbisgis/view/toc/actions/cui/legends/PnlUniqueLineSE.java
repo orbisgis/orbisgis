@@ -41,7 +41,6 @@ import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
-import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -55,9 +54,10 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
-import java.util.Vector;
 
 /**
+ * "Unique Symbol - Line" UI.
+ *
  * {@code JPanel} that ca nbe used to configure simple constant {@code
  * LineSymbolizer} instances that have been recognized as unique symbols made
  * justof one simple {@code PenStroke}.
@@ -239,9 +239,9 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 lineColor = getColorField(legend.getFillLegend());
                 jp.add(lineColor);
 
-                // Unit of measure
+                // Unit of measure - line width
                 if(displayUom){
-                    JLabel uom = new JLabel(I18N.tr(UNIT_OF_MEASURE));
+                    JLabel uom = new JLabel(I18N.tr(LINE_WIDTH_UNIT));
                     jp.add(uom);
                     uOMBox = lineUom.getCombo();
                     jp.add(uOMBox, COMBO_BOX_CONSTRAINTS);
@@ -317,7 +317,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 JPanel glob = new JPanel(new MigLayout());
                 glob.add(getLineBlock(uniqueLine.getPenStroke(),
                                       I18N.tr(LINE_SETTINGS)));
-                glob.add(getPreviewPanel(), PREVIEW_PANEL_CONSTRAINTS);
+                glob.add(getPreviewPanel());
                 this.add(glob);
         }
 }

@@ -71,7 +71,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * UI for "Proportional Point".
+ * "Proportional Point" UI.
  *
  * @author Alexis Guéganno
  */
@@ -195,7 +195,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                     l = EventHandler.create(MouseListener.class, this, "onClickOnPreview", "", "mouseClicked");
                     prev.addMouseListener(l);
                 }
-                glob.add(getPreviewPanel(), PREVIEW_PANEL_CONSTRAINTS);
+                glob.add(getPreviewPanel());
                 this.add(glob);
         }
 
@@ -251,8 +251,8 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 initFieldCombo();
                 jp.add(new JLabel(I18N.tr(FIELD)));
                 jp.add(fieldCombo, COMBO_BOX_CONSTRAINTS);
-                // Unit of measure
-                jp.add(new JLabel(I18N.tr(UNIT_OF_MEASURE)));
+                // Unit of measure - symbol size
+                jp.add(new JLabel(I18N.tr(SYMBOL_SIZE_UNIT)));
                 jp.add(getPointUomCombo(), COMBO_BOX_CONSTRAINTS);
                 // Symbol
                 jp.add(new JLabel(I18N.tr(SYMBOL)));
@@ -359,7 +359,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
 
         @Override
         public String getTitle() {
-            return I18N.tr("Stroke and " + PnlUniqueAreaSE.FILL_SETTINGS);
+            return I18N.tr("Stroke and fill settings");
         }
 
         @Override
@@ -387,7 +387,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.insets = new Insets(5, 0, 5, 0);
             JPanel p2 = getAreaBlock(usp.getFillLegend(),
-                                     I18N.tr(PnlUniqueAreaSE.FILL_SETTINGS));
+                                     I18N.tr(FILL_SETTINGS));
             glob.add(p2, gbc);
             return glob;
         }

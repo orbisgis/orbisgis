@@ -47,6 +47,8 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 
 /**
+ * Base class for "Unique Symbol" UIs.
+ *
  * This class proposes some methods that will be common to all the panels built
  * for unique symbols.
  * @author Alexis Guéganno
@@ -58,7 +60,6 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueSymbolSE.class);
         private String id;
         private CanvasSE preview;
-        protected static final String PREVIEW_PANEL_CONSTRAINTS = "width 250!";
 
         /**
          * Rebuild the {@code CanvasSe} instance used to display a preview of
@@ -79,10 +80,11 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
          * @return Preview of the symbol in a bordered JPanel.
          */
         public JPanel getPreviewPanel(){
-                JPanel previewPanel = new JPanel();
+                JPanel previewPanel = new JPanel(
+                        new MigLayout("wrap 1", "[" + FIXED_WIDTH + "]"));
                 previewPanel.setBorder(
                         BorderFactory.createTitledBorder(I18N.tr("Preview")));
-                previewPanel.add(preview);
+                previewPanel.add(preview, "align c");
                 return previewPanel;
         }
 

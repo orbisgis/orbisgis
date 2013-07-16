@@ -60,6 +60,7 @@ import java.beans.EventHandler;
 import java.net.URL;
 
 /**
+ * "Unique Symbol - Point" UI.
  *
  * @author Alexis Guéganno
  */
@@ -205,7 +206,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                                        I18N.tr(MARK_SETTINGS)));
 
                 glob.add(getAreaBlock(uniquePoint.getFillLegend(),
-                                      I18N.tr(PnlUniqueAreaSE.FILL_SETTINGS)));
+                                      I18N.tr(FILL_SETTINGS)));
 
                 glob.add(getPreviewPanel(), "growx");
 
@@ -233,8 +234,8 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                     if (geometryType != SimpleGeometryType.POINT) {
                         addPointOnVertices(point, jp);
                     }
-                    // Unit of measure
-                    jp.add(new JLabel(I18N.tr(UNIT_OF_MEASURE)));
+                    // Unit of measure - symbol size
+                    jp.add(new JLabel(I18N.tr(SYMBOL_SIZE_UNIT)));
                     jp.add(getPointUomCombo(), COMBO_BOX_CONSTRAINTS);
                 }
 

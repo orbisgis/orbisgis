@@ -1,6 +1,5 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
@@ -35,7 +34,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Panel for "Interval classification - Line".
+ * "Interval classification - Line" UI.
  *
  * @author Alexis Guéganno
  */

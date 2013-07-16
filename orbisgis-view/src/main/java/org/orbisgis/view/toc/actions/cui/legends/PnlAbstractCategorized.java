@@ -15,7 +15,6 @@ import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.WideComboBox;
-import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelInterval;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorConfigurationPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;
@@ -33,7 +32,8 @@ import java.util.SortedSet;
 import static org.orbisgis.core.renderer.se.parameter.Categorize.CategorizeMethod;
 
 /**
- * Common base for all the panels used to configure the interval classifications.
+ * Base class for Interval Classification UIs.
+ *
  * @author Alexis Guéganno
  */
 public abstract class PnlAbstractCategorized<U extends LineParameters> extends PnlAbstractTableAnalysis<Double,U> {
@@ -43,33 +43,10 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     private Thresholds thresholds;
     public final static Integer[] THRESHOLDS_NUMBER = new Integer[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
     public final Integer[] THRESHOLDS_SQUARE = new Integer[]{2,4,8,16};
-    protected CanvasSE fallbackPreview;
-    protected WideComboBox fieldCombo;
-    protected static final String ENABLE_BORDER = I18n.marktr("Enable border");
     private JComboBox numberCombo;
     private JButton createCl;
     private JComboBox methodCombo;
     private DefaultComboBoxModel comboModel;
-
-    @Override
-    public CanvasSE getPreview() {
-        return fallbackPreview;
-    }
-
-    /**
-     * Builds the panel used to display and configure the fallback symbol
-     *
-     * @return The Panel where the fallback configuration is displayed.
-     */
-    protected CanvasSE getFallback() {
-        initPreview();
-        return fallbackPreview;
-    }
-
-    @Override
-    public String getFieldName() {
-        return fieldCombo.getSelectedItem().toString();
-    }
 
     /**
      * Initialize a {@code JComboBo} whose values are set according to the
@@ -139,70 +116,6 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     }
 
     /**
-     * Initialize the panels.
-     */
-    @Override
-    public void initializeLegendFields() {
-        this.removeAll();
-
-        JPanel glob = new JPanel(new MigLayout());
-
-        //Fallback symbol
-        glob.add(getSettingsPanel(), "cell 0 0");
-
-        //Classification generator
-        glob.add(getCreateClassificationPanel(), "cell 1 0");
-
-        //Table for the recoded configurations
-        glob.add(getTablePanel(), "cell 0 1, span 2 1, growx");
-        this.add(glob);
-        this.revalidate();
-    }
-
-    /**
-     * Initialize and return the settings panel.
-     *
-     * @return Settings panel
-     */
-    protected JPanel getSettingsPanel() {
-        JPanel jp = new JPanel(new MigLayout("wrap 2", "[align r][align l]"));
-        jp.setBorder(BorderFactory.createTitledBorder(I18N.tr("General settings")));
-
-        // Field
-        jp.add(new JLabel(I18N.tr(FIELD)));
-        fieldCombo = getFieldComboBox();
-        jp.add(fieldCombo, COMBO_BOX_CONSTRAINTS);
-
-        // Unit of measure
-        jp.add(new JLabel(I18N.tr("Line width unit")));
-        jp.add(getUOMComboBox(), COMBO_BOX_CONSTRAINTS);
-
-        beforeFallbackSymbol(jp);
-
-        // Fallback symbol
-        jp.add(getFallback(), "span 2, align center");
-        jp.add(new JLabel(I18N.tr("Fallback symbol")), "span 2, align center");
-
-        return jp;
-    }
-
-    /**
-     * Add any necessary components in the general settings panel
-     * before the fallback symbol.
-     *
-     * @param genSettings The general settings panel
-     */
-    protected abstract void beforeFallbackSymbol(JPanel genSettings);
-
-    /**
-     * Create and return a combobox for the border width unit,
-     * adding an appropriate action listener to update the preview.
-     *
-     * @return A combobox for the border width unit
-     */
-    protected abstract JComboBox getUOMComboBox();
-
-    /**
      * Retrieve the panel that gathers all the components needed to create the classification.
      * @return The panel gathering the graphic elements that can be used to create the classification.
      */
@@ -227,15 +140,15 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         inner.add(numberCombo, "split 2");
         inner.add(createCl, "gapleft push");
 
-        JPanel outside = new JPanel(new MigLayout("wrap 1", "[align c]"));
+        JPanel outside = new JPanel(new MigLayout("wrap 1", "[" + FIXED_WIDTH + ", align c]"));
         outside.setBorder(BorderFactory.createTitledBorder(
-                I18N.tr("Classification settings")));
+                I18N.tr(CLASSIFICATION_SETTINGS)));
         if(colorConfig == null){
             ArrayList<String> names = new ArrayList<String>(ColorScheme.rangeColorSchemeNames());
             names.addAll(ColorScheme.discreteColorSchemeNames());
             colorConfig = new ColorConfigurationPanel(names);
         }
-        outside.add(new JLabel(I18N.tr("Color scheme")), "align l");
+        outside.add(new JLabel(I18N.tr("Color scheme:")), "align l");
         outside.add(colorConfig, "growx");
         outside.add(inner, "growx");
         return outside;

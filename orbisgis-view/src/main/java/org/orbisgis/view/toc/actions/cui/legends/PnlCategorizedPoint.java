@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * UI for "Interval classification - Point".
+ * "Interval classification - Point" UI.
  *
  * @author Alexis Guéganno
  */
@@ -97,8 +97,8 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
 
     @Override
     protected void beforeFallbackSymbol(JPanel genSettings) {
-        //UOM - symbol size
-        genSettings.add(new JLabel(I18N.tr("Size unit")));
+        // UOM - symbol size
+        genSettings.add(new JLabel(I18N.tr(SYMBOL_SIZE_UNIT)));
         genSettings.add(getSymbolUOMComboBox(), COMBO_BOX_CONSTRAINTS);
 
         // On vertex? On centroid?
@@ -179,9 +179,20 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
      */
     @Override
     public Symbolizer getFallbackSymbolizer(){
-        UniqueSymbolPoint usl = new UniqueSymbolPoint(((CategorizedPoint)getLegend()).getFallbackParameters());
-        usl.setStrokeUom(((CategorizedPoint) getLegend()).getStrokeUom());
-        return usl.getSymbolizer();
+        return getFallBackLegend().getSymbolizer();
+    }
+
+    private UniqueSymbolPoint getFallBackLegend(){
+        CategorizedPoint leg = (CategorizedPoint)getLegend();
+        UniqueSymbolPoint usl = new UniqueSymbolPoint(leg.getFallbackParameters());
+        usl.setStrokeUom(leg.getStrokeUom());
+        usl.setSymbolUom(leg.getSymbolUom());
+        if(leg.isOnVertex()){
+            usl.setOnVertex();
+        } else {
+            usl.setOnCentroid();
+        }
+        return usl;
     }
 
     @Override
@@ -241,7 +252,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         uoms = getUomProperties();
         UomCombo puc = new UomCombo(((CategorizedPoint)getLegend()).getSymbolUom(),
                 uoms,
-                I18N.tr("Symbol size unit"));
+                I18N.tr(SYMBOL_SIZE_UNIT));
         puc.addActionListener(
                 EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex"));
         return puc.getCombo();
