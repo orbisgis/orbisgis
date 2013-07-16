@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.*;
 
+import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
@@ -53,19 +54,22 @@ import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
+ * UI for "Proportional Line".
  *
  * @author Alexis Guéganno
  */
-public class PnlProportionalLineSE extends PnlUniqueSymbolSE {
+public class PnlProportionalLineSE extends PnlUniqueLineSE {
 
         private ProportionalLine legend;
         private static final I18n I18N = I18nFactory.getI18n(PnlProportionalLineSE.class);
@@ -140,7 +144,7 @@ public class PnlProportionalLineSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        public ISELegendPanel newInstance() {
+        public ILegendPanel newInstance() {
                 return new PnlProportionalLineSE();
         }
 
@@ -161,103 +165,90 @@ public class PnlProportionalLineSE extends PnlUniqueSymbolSE {
 
         private void initializeLegendFields() {
                 this.removeAll();
-                JPanel glob = new JPanel();
-                GridBagLayout grid = new GridBagLayout();
-                glob.setLayout(grid);
-                GridBagConstraints gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                JPanel p1 = getLineBlock(PnlUniqueLineSE.LINE_SETTINGS);
-                glob.add(p1, gbc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 1;
-                glob.add(getPreview(), gbc);
+                JPanel glob = new JPanel(new MigLayout());
+                glob.add(getLineBlock());
+                glob.add(getPreviewPanel(), PREVIEW_PANEL_CONSTRAINTS);
                 this.add(glob);
         }
 
         /**
          * Gets a panel containing all the fields to edit a unique line.
-         * @param title
          * @return
          */
-        public JPanel getLineBlock(String title){
+        public JPanel getLineBlock(){
                 if(getPreview() == null && getLegend() != null){
                         initPreview();
                 }
+
                 ProportionalStrokeLegend strokeLeg = (ProportionalStrokeLegend) legend.getStrokeLegend();
-                JPanel glob = new JPanel();
-                glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
-                JPanel jp = new JPanel();
-                GridLayout grid = new GridLayout(7,2);
-                grid.setVgap(5);
-                jp.setLayout(grid);
-                UomCombo lineUom = getLineUomCombo(legend);
-                CanvasSE prev = getPreview();
-                ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
-                lineUom.addActionListener(acl);
-                lineColor = getColorField((ConstantSolidFill)strokeLeg.getFillAnalysis());
-                lineOpacity = getLineOpacitySpinner((ConstantSolidFill)strokeLeg.getFillAnalysis());
-                lineDash = getDashArrayField(strokeLeg);
-                //Field
-                jp.add(buildText(I18N.tr("Field Name :")));
-                jp.add(getFieldComboBox());
-                //Uom
-                jp.add(buildText(I18N.tr("Unit of measure :")));
-                jp.add(lineUom);
-                //Width
-                jp.add(buildText(I18N.tr("Max width :")));
-                jp.add(getSecondConf(legend));
-                jp.add(buildText(I18N.tr("Min width :")));
-                jp.add(getFirstConf(legend));
+                ConstantSolidFill csf = (ConstantSolidFill)strokeLeg.getFillAnalysis();
+
+                JPanel jp = new JPanel(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
+
+                // Field
+                jp.add(new JLabel(I18N.tr(FIELD)));
+                jp.add(getFieldComboBox(), COMBO_BOX_CONSTRAINTS);
                 //Color
-                jp.add(buildText(I18N.tr("Line color :")));
+                jp.add(new JLabel(I18N.tr("Color")));
+                lineColor = getColorField(csf);
                 jp.add(lineColor);
-                //Transparency
-                jp.add(buildText(I18N.tr("Line opacity :")));
-                jp.add(lineOpacity);
-                //Dash array
-                jp.add(buildText(I18N.tr("Dash array :")));
-                jp.add(lineDash);
-                glob.add(jp);
-                //We add a canvas to display a preview.
-                glob.setBorder(BorderFactory.createTitledBorder(title));
-                return glob;
+                // Unit of Measure
+                jp.add(new JLabel(I18N.tr(UNIT_OF_MEASURE)));
+                UomCombo lineUom = getLineUomCombo(legend);
+                lineUom.addActionListener(
+                        EventHandler.create(ActionListener.class, getPreview(), "imageChanged"));
+                jp.add(lineUom.getCombo(), COMBO_BOX_CONSTRAINTS);
+                // Max width
+                jp.add(new JLabel(I18N.tr("Max width")));
+                jp.add(getSecondConf(legend), "growx");
+                // Min width
+                jp.add(new JLabel(I18N.tr("Min width")));
+                jp.add(getFirstConf(legend), "growx");
+                // Opacity
+                jp.add(new JLabel(I18N.tr(OPACITY)));
+                lineOpacity = getLineOpacitySpinner(csf);
+                jp.add(lineOpacity, "growx");
+                // Dash array
+                jp.add(new JLabel(I18N.tr(DASH_ARRAY)));
+                lineDash = getDashArrayField(strokeLeg);
+                jp.add(lineDash, "growx");
+                jp.setBorder(BorderFactory.createTitledBorder(
+                        I18N.tr(PnlUniqueLineSE.LINE_SETTINGS)));
+                return jp;
         }
 
-        private JPanel getSecondConf(ProportionalLine prop){
+        private JFormattedTextField getSecondConf(ProportionalLine prop){
                 CanvasSE prev = getPreview();
-                JPanel ret = new JPanel();
-                JFormattedTextField formatted = new JFormattedTextField(new DecimalFormat());
-                formatted.setColumns(8);
+                JFormattedTextField jftf = new JFormattedTextField(new DecimalFormat());
                 try {
-                        formatted.setValue(prop.getSecondValue());
+                        jftf.setValue(prop.getSecondValue());
                 } catch (ParameterException ex) {
                         LOGGER.error(I18N.tr("Can't retrieve the maximum value of"
                                 + " the symbol"), ex);
                 }
-                PropertyChangeListener al = EventHandler.create(PropertyChangeListener.class, prop, "secondValue", "source.value");
-                formatted.addPropertyChangeListener("value", al);
-                PropertyChangeListener al2 = EventHandler.create(PropertyChangeListener.class, prev, "imageChanged");
-                formatted.addPropertyChangeListener("value", al2);
-                ret.add(formatted);
-                return ret;
+                jftf.addPropertyChangeListener(
+                        "value",
+                        EventHandler.create(PropertyChangeListener.class, prop, "secondValue", "source.value"));
+                jftf.addPropertyChangeListener(
+                        "value",
+                        EventHandler.create(PropertyChangeListener.class, prev, "imageChanged"));
+                jftf.setHorizontalAlignment(SwingConstants.RIGHT);
+                return jftf;
         }
 
-        private JPanel getFirstConf(ProportionalLine prop){
-                JPanel ret = new JPanel();
+        private JFormattedTextField getFirstConf(ProportionalLine prop){
                 JFormattedTextField jftf = new JFormattedTextField(new DecimalFormat());
-                jftf.setColumns(8);
                 try {
                         jftf.setValue(prop.getFirstValue());
                 } catch (ParameterException ex) {
                         LOGGER.error(I18N.tr("Can't retrieve the minimum value of"
                                 + " the symbol"), ex);
                 }
-                PropertyChangeListener al = EventHandler.create(PropertyChangeListener.class, prop, "firstValue", "source.value");
-                jftf.addPropertyChangeListener("value", al);
-                ret.add(jftf);
-                return ret;
+                jftf.addPropertyChangeListener(
+                        "value",
+                        EventHandler.create(PropertyChangeListener.class, prop, "firstValue", "source.value"));
+                jftf.setHorizontalAlignment(SwingConstants.RIGHT);
+                return jftf;
         }
 
         /**
@@ -265,9 +256,9 @@ public class PnlProportionalLineSE extends PnlUniqueSymbolSE {
          * analysis.
          * @return The combo box we can use to choose the text.
          */
-        private JComboBox getFieldComboBox(){
+        private WideComboBox getFieldComboBox(){
                 if(ds != null){
-                        JComboBox jcc = getNumericFieldCombo(ds);
+                        WideComboBox jcc = getNumericFieldCombo(ds);
                         ActionListener acl2 = EventHandler.create(ActionListener.class,
                                 this, "updateField", "source.selectedItem");
                         String field = legend.getLookupFieldName();
@@ -276,9 +267,10 @@ public class PnlProportionalLineSE extends PnlUniqueSymbolSE {
                         }
                         jcc.addActionListener(acl2);
                         updateField((String)jcc.getSelectedItem());
+                        ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
                         return jcc;
                 } else {
-                        return new JComboBox();
+                        return new WideComboBox();
                 }
         }
 

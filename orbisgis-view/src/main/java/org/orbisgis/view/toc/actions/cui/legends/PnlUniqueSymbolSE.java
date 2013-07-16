@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
@@ -53,12 +54,11 @@ import java.beans.PropertyChangeListener;
 public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements ILegendPanel, UIPanel {
 
         public static final double SPIN_STEP = 0.1;
-        protected static final String COLUMN_CONSTRAINTS =
-                "[align r, 110::][align c, 95::]";
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlUniqueSymbolSE.class);
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueSymbolSE.class);
         private String id;
         private CanvasSE preview;
+        protected static final String PREVIEW_PANEL_CONSTRAINTS = "width 250!";
 
         /**
          * Rebuild the {@code CanvasSe} instance used to display a preview of
@@ -67,7 +67,7 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
         public void initPreview(){
                 Legend leg = getLegend();
                 if(leg != null){
-                        preview= new CanvasSE(leg.getSymbolizer());
+                        preview = new CanvasSE(leg.getSymbolizer());
                         preview.imageChanged();
                 }
         }
