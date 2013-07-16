@@ -197,15 +197,15 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
                 JPanel lb = getLineBlock(uniquePoint.getPenStroke(),
-                                         BORDER_SETTINGS);
+                                         I18n.marktr(BORDER_SETTINGS));
                 ComponentUtil.setFieldState(isStrokeEnabled(), lb);
                 glob.add(lb);
 
                 glob.add(getPointBlock(uniquePoint,
-                                       MARK_SETTINGS));
+                                       I18n.marktr(MARK_SETTINGS)));
 
                 glob.add(getAreaBlock(uniquePoint.getFillLegend(),
-                        PnlUniqueAreaSE.FILL_SETTINGS));
+                                      I18n.marktr(PnlUniqueAreaSE.FILL_SETTINGS)));
 
                 glob.add(getPreviewPanel(), "growx");
 
@@ -234,18 +234,18 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                         addPointOnVertices(point, jp);
                     }
                     // Unit of measure
-                    jp.add(new JLabel(UNIT_OF_MEASURE));
+                    jp.add(new JLabel(I18N.tr(UNIT_OF_MEASURE)));
                     jp.add(getPointUomCombo(), COMBO_BOX_CONSTRAINTS);
                 }
 
                 // Well-known name
-                jp.add(new JLabel(SYMBOL));
+                jp.add(new JLabel(I18N.tr(SYMBOL)));
                 jp.add(getWKNCombo(point), COMBO_BOX_CONSTRAINTS);
                 // Mark width
-                jp.add(new JLabel(WIDTH));
+                jp.add(new JLabel(I18N.tr(WIDTH)));
                 jp.add(getMarkWidth(point), "growx");
                 // Mark height
-                jp.add(new JLabel(HEIGHT));
+                jp.add(new JLabel(I18N.tr(HEIGHT)));
                 jp.add(getMarkHeight(point), "growx");
 
                 return jp;
@@ -332,7 +332,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          */
         public void addPointOnVertices(ConstantFormPoint point, JPanel jp){
 
-            JRadioButton bVertex = new JRadioButton(ON_VERTEX);
+            JRadioButton bVertex = new JRadioButton(I18N.tr(ON_VERTEX));
             bVertex.addActionListener(
                     EventHandler.create(ActionListener.class, point, "setOnVertex"));
             bVertex.addActionListener(
@@ -340,7 +340,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
             boolean onVertex = ((PointSymbolizer)point.getSymbolizer()).isOnVertex();
             bVertex.setSelected(onVertex);
 
-            JRadioButton bCentroid = new JRadioButton(ON_CENTROID);
+            JRadioButton bCentroid = new JRadioButton(I18N.tr(ON_CENTROID));
             bCentroid.addActionListener(
                     EventHandler.create(ActionListener.class, point, "setOnCentroid"));
             bCentroid.addActionListener(

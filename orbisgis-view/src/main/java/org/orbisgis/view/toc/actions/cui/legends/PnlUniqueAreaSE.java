@@ -63,7 +63,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         private JSpinner fillOpacity;
         private JCheckBox areaCheckBox;
         private ConstantSolidFillLegend solidFillMemory;
-        public static final String FILL_SETTINGS = I18N.tr("Fill settings");
+        public static final String FILL_SETTINGS = I18n.marktr("Fill settings");
 
         /**
          * Here we can put all the Legend instances we want... but they have to
@@ -190,12 +190,13 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
 
-                JPanel p1 = getLineBlock(uniqueArea.getPenStroke(), BORDER_SETTINGS);
+                JPanel p1 = getLineBlock(uniqueArea.getPenStroke(),
+                                         I18n.marktr(BORDER_SETTINGS));
                 ComponentUtil.setFieldState(displayStroke, p1);
                 glob.add(p1, "cell 0 0, span 1 2, aligny top");
 
                 ConstantSolidFill leg = uniqueArea.getFillLegend();
-                JPanel p2 = getAreaBlock(leg, FILL_SETTINGS);
+                JPanel p2 = getAreaBlock(leg, I18n.marktr(FILL_SETTINGS));
                 setAreaFieldsState(leg instanceof ConstantSolidFillLegend);
                 glob.add(p2, "cell 1 0, growx");
 
@@ -242,7 +243,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 jp.add(fill);
                 // Opacity
                 fillOpacity = getLineOpacitySpinner(fl);
-                jp.add(new JLabel(OPACITY));
+                jp.add(new JLabel(I18N.tr(OPACITY)));
                 jp.add(fillOpacity, "growx");
 
                 return jp;

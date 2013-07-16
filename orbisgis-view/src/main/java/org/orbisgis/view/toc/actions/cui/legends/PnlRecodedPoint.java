@@ -186,7 +186,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     private JPanel pnlOnVertex(){
         RecodedPoint point = (RecodedPoint) getLegend();
 
-        JRadioButton bVertex = new JRadioButton(ON_VERTEX);
+        JRadioButton bVertex = new JRadioButton(I18N.tr(ON_VERTEX));
         bVertex.addActionListener(
                 EventHandler.create(ActionListener.class, point, "setOnVertex"));
         bVertex.addActionListener(
@@ -194,7 +194,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         boolean onVertex = ((PointSymbolizer)point.getSymbolizer()).isOnVertex();
         bVertex.setSelected(onVertex);
 
-        JRadioButton bCentroid = new JRadioButton(ON_CENTROID);
+        JRadioButton bCentroid = new JRadioButton(I18N.tr(ON_CENTROID));
         bCentroid.addActionListener(
                 EventHandler.create(ActionListener.class, point, "setOnCentroid"));
         bCentroid.addActionListener(
@@ -393,9 +393,11 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
      */
     private JPanel getSymbolUOMCombo(){
         uoms = getUomProperties();
+        // Note: The text here is never used since in practice we just extract
+        // the ComboBox.
         UomCombo puc = new UomCombo(((RecodedPoint)getLegend()).getSymbolUom(),
                 uoms,
-                I18N.tr(UNIT_OF_MEASURE + " - size :"));
+                I18N.tr("Symbol size unit"));
         ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex");
         puc.addActionListener(acl2);
         return puc;

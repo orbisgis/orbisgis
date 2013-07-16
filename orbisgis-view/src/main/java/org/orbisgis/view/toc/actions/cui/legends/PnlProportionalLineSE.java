@@ -186,14 +186,14 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
                 JPanel jp = new JPanel(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
 
                 // Field
-                jp.add(new JLabel(FIELD));
+                jp.add(new JLabel(I18N.tr(FIELD)));
                 jp.add(getFieldComboBox(), COMBO_BOX_CONSTRAINTS);
                 //Color
                 jp.add(new JLabel(I18N.tr("Color")));
                 lineColor = getColorField(csf);
                 jp.add(lineColor);
                 // Unit of Measure
-                jp.add(new JLabel(UNIT_OF_MEASURE));
+                jp.add(new JLabel(I18N.tr(UNIT_OF_MEASURE)));
                 UomCombo lineUom = getLineUomCombo(legend);
                 lineUom.addActionListener(
                         EventHandler.create(ActionListener.class, getPreview(), "imageChanged"));
@@ -205,14 +205,15 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
                 jp.add(new JLabel(I18N.tr("Min width")));
                 jp.add(getFirstConf(legend), "growx");
                 // Opacity
-                jp.add(new JLabel(OPACITY));
+                jp.add(new JLabel(I18N.tr(OPACITY)));
                 lineOpacity = getLineOpacitySpinner(csf);
                 jp.add(lineOpacity, "growx");
                 // Dash array
-                jp.add(new JLabel(DASH_ARRAY));
+                jp.add(new JLabel(I18N.tr(DASH_ARRAY)));
                 lineDash = getDashArrayField(strokeLeg);
                 jp.add(lineDash, "growx");
-                jp.setBorder(BorderFactory.createTitledBorder(PnlUniqueLineSE.LINE_SETTINGS));
+                jp.setBorder(BorderFactory.createTitledBorder(
+                        I18n.marktr(PnlUniqueLineSE.LINE_SETTINGS)));
                 return jp;
         }
 

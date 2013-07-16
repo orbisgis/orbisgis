@@ -1,6 +1,5 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
@@ -115,7 +114,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
      * @return The enable border checkbox.
      */
     private JCheckBox getEnableStrokeCheckBox(){
-        strokeBox = new JCheckBox(ENABLE_BORDER);
+        strokeBox = new JCheckBox(I18n.marktr(ENABLE_BORDER));
         strokeBox.setSelected(((CategorizedPoint) getLegend()).isStrokeEnabled());
         strokeBox.addActionListener(
                 EventHandler.create(ActionListener.class, this, "onEnableStroke"));
@@ -242,7 +241,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         uoms = getUomProperties();
         UomCombo puc = new UomCombo(((CategorizedPoint)getLegend()).getSymbolUom(),
                 uoms,
-                I18N.tr(UNIT_OF_MEASURE + " - size :"));
+                I18N.tr("Symbol size unit"));
         puc.addActionListener(
                 EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex"));
         return puc.getCombo();
@@ -268,7 +267,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     private JPanel pnlOnVertex(){
         CategorizedPoint point = (CategorizedPoint) getLegend();
 
-        JRadioButton bVertex = new JRadioButton(ON_VERTEX);
+        JRadioButton bVertex = new JRadioButton(I18N.tr(ON_VERTEX));
         bVertex.addActionListener(
                 EventHandler.create(ActionListener.class, point, "setOnVertex"));
         bVertex.addActionListener(
@@ -276,7 +275,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         boolean onVertex = ((PointSymbolizer)point.getSymbolizer()).isOnVertex();
         bVertex.setSelected(onVertex);
 
-        JRadioButton bCentroid = new JRadioButton(ON_CENTROID);
+        JRadioButton bCentroid = new JRadioButton(I18N.tr(ON_CENTROID));
         bCentroid.addActionListener(
                 EventHandler.create(ActionListener.class, point, "setOnCentroid"));
         bCentroid.addActionListener(

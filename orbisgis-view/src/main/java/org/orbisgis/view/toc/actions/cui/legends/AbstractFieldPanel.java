@@ -58,7 +58,7 @@ import java.beans.EventHandler;
  */
 public abstract class AbstractFieldPanel extends JPanel {
 
-    private static final Logger LOGGER = Logger.getLogger("gui."+AbstractFieldPanel.class);
+    private static final Logger LOGGER = Logger.getLogger("gui." + AbstractFieldPanel.class);
     private static final I18n I18N = I18nFactory.getI18n(AbstractFieldPanel.class);
     /**
      * Width used for the rectangles that displays the color parameters of the symbols.
@@ -68,15 +68,15 @@ public abstract class AbstractFieldPanel extends JPanel {
      * Height used for the rectangles that displays the color parameters of the symbols.
      */
     public final static int FILLED_LABEL_HEIGHT = 15;
-    protected static final String UNIT_OF_MEASURE = I18N.tr("Unit of measure");
-    protected static final String OPACITY = I18N.tr("Opacity");
-    protected static final String WIDTH = I18N.tr("Width");
-    protected static final String HEIGHT = I18N.tr("Height");
-    protected static final String SYMBOL = I18N.tr("Symbol");
-    protected static final String DASH_ARRAY = I18N.tr("Dash array");
-    protected static final String ON_VERTEX = I18N.tr("On vertex");
-    protected static final String ON_CENTROID = I18N.tr("On centroid");
-    protected static final String FIELD = "<html><b>" + I18N.tr("Field") + "</b></html>";
+    protected static final String UNIT_OF_MEASURE = I18n.marktr("Unit of measure");
+    protected static final String OPACITY = I18n.marktr("Opacity");
+    protected static final String WIDTH = I18n.marktr("Width");
+    protected static final String HEIGHT = I18n.marktr("Height");
+    protected static final String SYMBOL = I18n.marktr("Symbol");
+    protected static final String DASH_ARRAY = I18n.marktr("Dash array");
+    protected static final String ON_VERTEX = I18n.marktr("On vertex");
+    protected static final String ON_CENTROID = I18n.marktr("On centroid");
+    protected static final String FIELD = "<html><b>" + I18n.marktr("Field") + "</b></html>";
     /**
      * Width of the second column in pixels.
      */
@@ -186,9 +186,11 @@ public abstract class AbstractFieldPanel extends JPanel {
      */
     public UomCombo getLineUomCombo(StrokeUom input){
         strokeUoms = getUomProperties();
+        // Note: the title is not used in the UI since we extract
+        // the ComboBox.
         UomCombo puc = new UomCombo(input.getStrokeUom(),
                 strokeUoms,
-                I18N.tr(UNIT_OF_MEASURE + " - stroke width :"));
+                I18N.tr("Line width unit"));
         ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateLUComboBox", "source.selectedIndex");
         puc.addActionListener(acl2);
         return puc;

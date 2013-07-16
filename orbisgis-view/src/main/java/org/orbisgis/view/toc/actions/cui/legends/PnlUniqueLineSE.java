@@ -73,9 +73,9 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private JComboBox uOMBox;
         private JTextField lineDash;
         private ContainerItemProperties[] uoms;
-        public static final String LINE_SETTINGS = I18N.tr("Line settings");
-        public static final String BORDER_SETTINGS = I18N.tr("Border settings");
-        public static final String MARK_SETTINGS = I18N.tr("Mark settings");
+        public static final String LINE_SETTINGS = I18n.marktr("Line settings");
+        public static final String BORDER_SETTINGS = I18n.marktr("Border settings");
+        public static final String MARK_SETTINGS = I18n.marktr("Mark settings");
         /**
          * Here we can put all the Legend instances we want... but they have to
          * be unique symbol (ie constant) Legends.
@@ -241,21 +241,21 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
                 // Unit of measure
                 if(displayUom){
-                    JLabel uom = new JLabel(UNIT_OF_MEASURE);
+                    JLabel uom = new JLabel(I18N.tr(UNIT_OF_MEASURE));
                     jp.add(uom);
                     uOMBox = lineUom.getCombo();
                     jp.add(uOMBox, COMBO_BOX_CONSTRAINTS);
                 }
                 // Line width
-                jp.add(new JLabel(WIDTH));
+                jp.add(new JLabel(I18N.tr(WIDTH)));
                 lineWidth = getLineWidthSpinner(legend);
                 jp.add(lineWidth, "growx");
                 // Line opacity
-                jp.add(new JLabel(OPACITY));
+                jp.add(new JLabel(I18N.tr(OPACITY)));
                 lineOpacity = getLineOpacitySpinner(legend.getFillLegend());
                 jp.add(lineOpacity, "growx");
                 // Dash array
-                jp.add(new JLabel(DASH_ARRAY));
+                jp.add(new JLabel(I18N.tr(DASH_ARRAY)));
                 lineDash = getDashArrayField((ConstantColorAndDashesPSLegend)legend);
                 jp.add(lineDash, "growx");
                 if(isLineOptional()){
@@ -315,7 +315,8 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
-                glob.add(getLineBlock(uniqueLine.getPenStroke(), LINE_SETTINGS));
+                glob.add(getLineBlock(uniqueLine.getPenStroke(),
+                                      I18n.marktr(LINE_SETTINGS)));
                 glob.add(getPreviewPanel(), PREVIEW_PANEL_CONSTRAINTS);
                 this.add(glob);
         }

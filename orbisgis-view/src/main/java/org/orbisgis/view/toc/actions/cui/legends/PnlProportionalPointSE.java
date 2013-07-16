@@ -183,7 +183,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 JPanel glob = new JPanel(new MigLayout());
 
                 glob.add(getProportionalBlock(proportionalPoint,
-                                              MARK_SETTINGS));
+                                              I18n.marktr(MARK_SETTINGS)));
                 // PREVIEW
                 CanvasSE prev = getPreview();
 
@@ -249,13 +249,13 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
 
                 // Field
                 initFieldCombo();
-                jp.add(new JLabel(FIELD));
+                jp.add(new JLabel(I18N.tr(FIELD)));
                 jp.add(fieldCombo, COMBO_BOX_CONSTRAINTS);
                 // Unit of measure
-                jp.add(new JLabel(UNIT_OF_MEASURE));
+                jp.add(new JLabel(I18N.tr(UNIT_OF_MEASURE)));
                 jp.add(getPointUomCombo(), COMBO_BOX_CONSTRAINTS);
                 // Symbol
-                jp.add(new JLabel(SYMBOL));
+                jp.add(new JLabel(I18N.tr(SYMBOL)));
                 jp.add(getWKNCombo(prop), COMBO_BOX_CONSTRAINTS);
                 // Max size
                 jp.add(new JLabel(I18N.tr("Max. size")));
@@ -378,14 +378,16 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
             gbc.gridy = i;
             gbc.fill = GridBagConstraints.HORIZONTAL;
             i++;
-            JPanel p1 = getLineBlock(usp.getPenStroke(), LINE_SETTINGS);
+            JPanel p1 = getLineBlock(usp.getPenStroke(),
+                                     I18n.marktr(LINE_SETTINGS));
             glob.add(p1, gbc);
             gbc = new GridBagConstraints();
             gbc.gridx = 0;
             gbc.gridy = i;
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.insets = new Insets(5, 0, 5, 0);
-            JPanel p2 = getAreaBlock(usp.getFillLegend(), PnlUniqueAreaSE.FILL_SETTINGS);
+            JPanel p2 = getAreaBlock(usp.getFillLegend(),
+                                     I18n.marktr(PnlUniqueAreaSE.FILL_SETTINGS));
             glob.add(p2, gbc);
             return glob;
         }
