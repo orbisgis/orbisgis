@@ -197,15 +197,15 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
                 JPanel lb = getLineBlock(uniquePoint.getPenStroke(),
-                                         I18n.marktr(BORDER_SETTINGS));
+                                         I18N.tr(BORDER_SETTINGS));
                 ComponentUtil.setFieldState(isStrokeEnabled(), lb);
                 glob.add(lb);
 
                 glob.add(getPointBlock(uniquePoint,
-                                       I18n.marktr(MARK_SETTINGS)));
+                                       I18N.tr(MARK_SETTINGS)));
 
                 glob.add(getAreaBlock(uniquePoint.getFillLegend(),
-                                      I18n.marktr(PnlUniqueAreaSE.FILL_SETTINGS)));
+                                      I18N.tr(PnlUniqueAreaSE.FILL_SETTINGS)));
 
                 glob.add(getPreviewPanel(), "growx");
 

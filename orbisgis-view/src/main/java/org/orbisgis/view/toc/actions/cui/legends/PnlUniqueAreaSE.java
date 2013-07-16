@@ -191,12 +191,12 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 JPanel glob = new JPanel(new MigLayout());
 
                 JPanel p1 = getLineBlock(uniqueArea.getPenStroke(),
-                                         I18n.marktr(BORDER_SETTINGS));
+                                         I18N.tr(BORDER_SETTINGS));
                 ComponentUtil.setFieldState(displayStroke, p1);
                 glob.add(p1, "cell 0 0, span 1 2, aligny top");
 
                 ConstantSolidFill leg = uniqueArea.getFillLegend();
-                JPanel p2 = getAreaBlock(leg, I18n.marktr(FILL_SETTINGS));
+                JPanel p2 = getAreaBlock(leg, I18N.tr(FILL_SETTINGS));
                 setAreaFieldsState(leg instanceof ConstantSolidFillLegend);
                 glob.add(p2, "cell 1 0, growx");
 

@@ -114,7 +114,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
      * @return The enable border checkbox.
      */
     private JCheckBox getEnableStrokeCheckBox(){
-        strokeBox = new JCheckBox(I18n.marktr(ENABLE_BORDER));
+        strokeBox = new JCheckBox(I18N.tr(ENABLE_BORDER));
         strokeBox.setSelected(((CategorizedPoint) getLegend()).isStrokeEnabled());
         strokeBox.addActionListener(
                 EventHandler.create(ActionListener.class, this, "onEnableStroke"));

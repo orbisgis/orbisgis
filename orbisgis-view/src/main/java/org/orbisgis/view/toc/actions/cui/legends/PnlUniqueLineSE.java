@@ -316,7 +316,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
                 glob.add(getLineBlock(uniqueLine.getPenStroke(),
-                                      I18n.marktr(LINE_SETTINGS)));
+                                      I18N.tr(LINE_SETTINGS)));
                 glob.add(getPreviewPanel(), PREVIEW_PANEL_CONSTRAINTS);
                 this.add(glob);
         }

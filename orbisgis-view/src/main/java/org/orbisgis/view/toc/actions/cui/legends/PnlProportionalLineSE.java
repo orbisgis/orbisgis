@@ -213,7 +213,7 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
                 lineDash = getDashArrayField(strokeLeg);
                 jp.add(lineDash, "growx");
                 jp.setBorder(BorderFactory.createTitledBorder(
-                        I18n.marktr(PnlUniqueLineSE.LINE_SETTINGS)));
+                        I18N.tr(PnlUniqueLineSE.LINE_SETTINGS)));
                 return jp;
         }
 

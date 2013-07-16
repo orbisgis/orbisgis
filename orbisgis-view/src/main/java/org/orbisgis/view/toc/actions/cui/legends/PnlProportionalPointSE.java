@@ -183,7 +183,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 JPanel glob = new JPanel(new MigLayout());
 
                 glob.add(getProportionalBlock(proportionalPoint,
-                                              I18n.marktr(MARK_SETTINGS)));
+                                              I18N.tr(MARK_SETTINGS)));
                 // PREVIEW
                 CanvasSE prev = getPreview();
 
@@ -379,7 +379,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
             gbc.fill = GridBagConstraints.HORIZONTAL;
             i++;
             JPanel p1 = getLineBlock(usp.getPenStroke(),
-                                     I18n.marktr(LINE_SETTINGS));
+                                     I18N.tr(LINE_SETTINGS));
             glob.add(p1, gbc);
             gbc = new GridBagConstraints();
             gbc.gridx = 0;
@@ -387,7 +387,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.insets = new Insets(5, 0, 5, 0);
             JPanel p2 = getAreaBlock(usp.getFillLegend(),
-                                     I18n.marktr(PnlUniqueAreaSE.FILL_SETTINGS));
+                                     I18N.tr(PnlUniqueAreaSE.FILL_SETTINGS));
             glob.add(p2, gbc);
             return glob;
         }
