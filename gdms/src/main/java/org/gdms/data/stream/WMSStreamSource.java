@@ -73,7 +73,10 @@ import java.util.Set;
  * @author Alexis Guéganno
  */
 public final class WMSStreamSource implements Serializable {
-        private static final int DEFAULT_PORT = 80;
+        /**
+         * Default HTTP port : 80
+         */
+        public static final int DEFAULT_PORT = 80;
         private static final long serialVersionUID = 144456789L;
         public static final String SERVICE_NAME = "wms";
         /** Layers name */

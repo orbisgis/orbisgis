@@ -113,6 +113,9 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
             sb.append(streamSource.getScheme());
             sb.append("://");
             sb.append(streamSource.getHost());
+            if(streamSource.getPort() != WMSStreamSource.DEFAULT_PORT ){
+                sb.append(":").append(streamSource.getPort());
+            }
             sb.append(streamSource.getPath());
             sb.append("?");
             Map<String, String> others = streamSource.getOthersQueryMap();
