@@ -74,11 +74,11 @@ public abstract class AbstractFieldPanel extends JPanel {
     protected static final String HEIGHT = I18n.marktr("Height");
     protected static final String SYMBOL = I18n.marktr("Symbol");
     protected static final String DASH_ARRAY = I18n.marktr("Dash array");
-    protected static final String ON_VERTEX = I18n.marktr("On vertex");
-    protected static final String ON_CENTROID = I18n.marktr("On centroid");
     protected static final String FIELD = I18n.marktr("<html><b>Field</b></html>");
     protected static final String LINE_WIDTH_UNIT = I18n.marktr("Line width unit");
     protected static final String SYMBOL_SIZE_UNIT = I18n.marktr("Symbol size unit");
+    protected static final String PLACE_SYMBOL_ON = I18n.marktr(
+            "<html><p style=\"text-align:right\">Place symbol<br>on</p></html>");
 
     /**
      * Width of the second column in pixels.
@@ -88,7 +88,8 @@ public abstract class AbstractFieldPanel extends JPanel {
      * MigLayout constraints for sizing consistency.
      */
     protected static final String COLUMN_CONSTRAINTS =
-            "[align r, 110::][align c, " + SECOND_COL_WIDTH + "!]";
+            "[align r, 110::][align l, "
+            + SECOND_COL_WIDTH + ":" + SECOND_COL_WIDTH + ":]";
     /**
      * Fixed width for panels that need it.
      */

@@ -266,7 +266,8 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 // If geometryType != POINT, we must let the user choose if he
                 // wants to draw symbols on centroid or on vertices.
                 if(getGeometryType() != SimpleGeometryType.POINT){
-                    addPointOnVertices(prop, jp);
+                    jp.add(new JLabel(I18N.tr(PLACE_SYMBOL_ON)), "span 1 2");
+                    jp.add(OnVertexHelper.pnlOnVertex(this, prop, I18N), "span 1 2");
                 }
                 return jp;
         }
