@@ -1,5 +1,6 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.layerModel.ILayer;
@@ -30,8 +31,10 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Base class for the analysis that relies on a "table", ie value and interval classifications. It provides some
- * useful methods related to colour generation and JTable management, and a framework used by the inheritors.
+ * Base class for the analysis that relies on a "table", i.e., Value and
+ * Interval Classifications. Provides some useful methods related to color
+ * generation and JTable management, and a framework used by its inheritors.
+ *
  * @author Alexis Guéganno
  */
 public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
@@ -48,6 +51,10 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     private DataSource ds;
     private JTable table;
     private String id;
+    protected CanvasSE fallbackPreview;
+    protected WideComboBox fieldCombo;
+    protected static final String ENABLE_BORDER = I18n.marktr("Enable border");
+    protected static final String CLASSIFICATION_SETTINGS = I18n.marktr("Classification settings");
 
     @Override
     public void initialize(LegendContext lc) {
@@ -65,6 +72,14 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     protected void setLegendImpl(MappedLegend<K,U> leg){
         this.legend =  leg;
     }
+
+    /**
+     * Create and return a combobox for the border width unit,
+     * adding an appropriate action listener to update the preview.
+     *
+     * @return A combobox for the border width unit
+     */
+    protected abstract JComboBox getUOMComboBox();
 
     /**
      * Creates and fill the combo box that will be used to compute the
@@ -244,7 +259,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     }
 
     /**
-     * Update the inner CanvasSE. It updates its symbolizer and forced the image to be redrawn.
+     * Update the inner CanvasSE. It updates its symbolizer and forces the image to be redrawn.
      */
     public final void updatePreview(Object source){
         JComboBox jcb = (JComboBox) source;
@@ -380,6 +395,14 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
         id = newId;
     }
 
+    @Override
+    public CanvasSE getPreview() {
+        if (fallbackPreview == null) {
+            initPreview();
+        }
+        return fallbackPreview;
+    }
+
     /**
      * Init the preview of the fallback symbol.
      */
@@ -388,7 +411,63 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     /**
      * Initialize the panels.
      */
-    public abstract void initializeLegendFields();
+    public void initializeLegendFields() {
+        this.removeAll();
+
+        JPanel glob = new JPanel(new MigLayout("wrap 2"));
+
+        //Fallback symbol
+        glob.add(getSettingsPanel());
+
+        //Classification generator
+        glob.add(getCreateClassificationPanel());
+
+        //Table for the recoded configurations
+        glob.add(getTablePanel(), "span 2, growx");
+        this.add(glob);
+        this.revalidate();
+    }
+
+    /**
+     * Initialize and return the settings panel.
+     *
+     * @return Settings panel
+     */
+    protected JPanel getSettingsPanel() {
+        JPanel jp = new JPanel(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
+        jp.setBorder(BorderFactory.createTitledBorder(I18N.tr("General settings")));
+
+        // Field chooser
+        jp.add(new JLabel(FIELD));
+        fieldCombo = getFieldComboBox();
+        jp.add(fieldCombo, COMBO_BOX_CONSTRAINTS);
+
+        // Unit of measure - line width
+        jp.add(new JLabel(I18N.tr(LINE_WIDTH_UNIT)));
+        jp.add(getUOMComboBox(), COMBO_BOX_CONSTRAINTS);
+
+        beforeFallbackSymbol(jp);
+
+        // Fallback symbol
+        jp.add(getPreview(), "span 2, align center");
+        jp.add(new JLabel(I18N.tr("Fallback symbol")), "span 2, align center");
+
+        return jp;
+    }
+
+    /**
+     * Add any necessary components in the general settings panel
+     * before the fallback symbol.
+     *
+     * @param genSettings The general settings panel
+     */
+    protected abstract void beforeFallbackSymbol(JPanel genSettings);
+
+    /**
+     * Gets the JPanel that gathers all the buttons and labels to create a classification from scratch;
+     * @return The JPanel used to create a classification from scratch.
+     */
+    public abstract JPanel getCreateClassificationPanel();
 
     /**
      * Gets an empty analysis that can be used ot build a panel equivalent to the caller.
@@ -448,5 +527,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
      * Gets the name of the field on which we will perform the analysis
      * @return The name of the field.
      */
-    public abstract String getFieldName();
+    public String getFieldName() {
+        return fieldCombo.getSelectedItem().toString();
+    }
 }

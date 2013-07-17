@@ -29,9 +29,6 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
 import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
@@ -59,13 +56,12 @@ import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
-import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * UI for "Proportional Line".
+ * "Proportional Line" UI.
  *
  * @author Alexis Guéganno
  */
@@ -167,7 +163,7 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
                 glob.add(getLineBlock());
-                glob.add(getPreviewPanel(), PREVIEW_PANEL_CONSTRAINTS);
+                glob.add(getPreviewPanel());
                 this.add(glob);
         }
 
@@ -188,12 +184,12 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
                 // Field
                 jp.add(new JLabel(I18N.tr(FIELD)));
                 jp.add(getFieldComboBox(), COMBO_BOX_CONSTRAINTS);
-                //Color
+                // Color
                 jp.add(new JLabel(I18N.tr("Color")));
                 lineColor = getColorField(csf);
                 jp.add(lineColor);
-                // Unit of Measure
-                jp.add(new JLabel(I18N.tr(UNIT_OF_MEASURE)));
+                // Unit of Measure - line width
+                jp.add(new JLabel(I18N.tr(LINE_WIDTH_UNIT)));
                 UomCombo lineUom = getLineUomCombo(legend);
                 lineUom.addActionListener(
                         EventHandler.create(ActionListener.class, getPreview(), "imageChanged"));
@@ -213,7 +209,7 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
                 lineDash = getDashArrayField(strokeLeg);
                 jp.add(lineDash, "growx");
                 jp.setBorder(BorderFactory.createTitledBorder(
-                        I18N.tr(PnlUniqueLineSE.LINE_SETTINGS)));
+                        I18N.tr(LINE_SETTINGS)));
                 return jp;
         }
 

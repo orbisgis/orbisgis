@@ -54,6 +54,8 @@ import java.beans.EventHandler;
 import java.net.URL;
 
 /**
+ * "Unique Symbol - Area" UI.
+ *
  * This panel is used to configure a unique symbol configuration for an area symbolizer.
  * @author Alexis Guéganno
  */
