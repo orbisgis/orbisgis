@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-07-18 14:58+0100\n"
-"PO-Revision-Date: 2013-07-18 14:58+0100\n"
+"PO-Revision-Date: 2013-07-18 15:33+0100\n"
 "Last-Translator: Adam Gouge <adam.gouge@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
@@ -703,7 +703,7 @@ msgstr ""
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:99
 msgid "Interval classification"
-msgstr "Classification par intervale"
+msgstr "Classification par intervalle"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:113
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:285
@@ -725,7 +725,7 @@ msgstr "Classes"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:151
 msgid "Color scheme:"
-msgstr "Agencement de couleurs:"
+msgstr "Palette de couleurs :"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:135
 msgid "Use the fallback color"
