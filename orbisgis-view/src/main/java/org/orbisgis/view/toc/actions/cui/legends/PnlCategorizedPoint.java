@@ -292,4 +292,18 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     public void onClickCentroid(){
         OnVertexHelper.changeOnVertex(this, false);
     }
+
+    @Override
+    protected void postProcess(MappedLegend ml){
+        if(ml instanceof CategorizedPoint){
+            CategorizedPoint inner = (CategorizedPoint) getLegend();
+            CategorizedPoint cp = (CategorizedPoint) ml;
+            if(inner.isOnVertex()){
+                cp.setOnVertex();
+            } else {
+                cp.setOnCentroid();
+            }
+            cp.setStrokeEnabled(inner.isStrokeEnabled());
+        }
+    }
 }

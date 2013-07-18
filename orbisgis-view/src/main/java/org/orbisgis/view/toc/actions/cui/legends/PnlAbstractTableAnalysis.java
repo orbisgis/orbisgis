@@ -336,7 +336,17 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
         }
         pm.endTask();
         pm.progressTo(100);
+        postProcess(newRL);
         return newRL;
+    }
+
+    /**
+     * Makes a postProcess operation on {@code ml} using the inner
+     * legend. Called after the classification creation. Does nothing
+     * by default.
+     * @param ml The legend we want to process.
+     */
+    protected void postProcess(MappedLegend<K, U> ml) {
     }
 
     /**

@@ -38,6 +38,7 @@ import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
+import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.orbisgis.legend.thematic.recode.RecodedPoint;
 import org.orbisgis.sif.UIFactory;
@@ -323,5 +324,19 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         ps.setOnVertex(ra.isOnVertex());
         getPreview().setSymbol(ps);
         updateTable();
+    }
+
+    @Override
+    protected void postProcess(MappedLegend ml){
+        if(ml instanceof RecodedPoint){
+            RecodedPoint inner = (RecodedPoint) getLegend();
+            RecodedPoint cp = (RecodedPoint) ml;
+            if(inner.isOnVertex()){
+                cp.setOnVertex();
+            } else {
+                cp.setOnCentroid();
+            }
+            cp.setStrokeEnabled(inner.isStrokeEnabled());
+        }
     }
 }

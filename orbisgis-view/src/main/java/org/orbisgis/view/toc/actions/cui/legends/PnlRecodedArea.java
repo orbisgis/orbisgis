@@ -35,6 +35,7 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
+import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.orbisgis.legend.thematic.recode.RecodedArea;
 import org.orbisgis.sif.UIFactory;
@@ -158,7 +159,7 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     @Override
     public Symbolizer getFallbackSymbolizer(){
         UniqueSymbolArea usl = new UniqueSymbolArea(((RecodedArea)getLegend()).getFallbackParameters());
-        usl.setStrokeUom(((RecodedArea)getLegend()).getStrokeUom());
+        usl.setStrokeUom(((RecodedArea) getLegend()).getStrokeUom());
         return usl.getSymbolizer();
     }
 
@@ -286,5 +287,14 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
         rl.setFallbackParameters(((RecodedArea)getLegend()).getFallbackParameters());
         rl.setLookupFieldName(((RecodedArea)getLegend()).getLookupFieldName());
         return rl;
+    }
+
+    @Override
+    protected void postProcess(MappedLegend ml){
+        if(ml instanceof RecodedArea){
+            RecodedArea inner = (RecodedArea) getLegend();
+            RecodedArea cp = (RecodedArea) ml;
+            cp.setStrokeEnabled(inner.isStrokeEnabled());
+        }
     }
 }

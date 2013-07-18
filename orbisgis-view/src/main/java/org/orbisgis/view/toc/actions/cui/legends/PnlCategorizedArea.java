@@ -230,4 +230,13 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
                 EventHandler.create(ActionListener.class, this, "updatePreview", "source"));
         return jcb.getCombo();
     }
+
+    @Override
+    protected void postProcess(MappedLegend ml){
+        if(ml instanceof CategorizedArea){
+            CategorizedArea inner = (CategorizedArea) getLegend();
+            CategorizedArea cp = (CategorizedArea) ml;
+            cp.setStrokeEnabled(inner.isStrokeEnabled());
+        }
+    }
 }
