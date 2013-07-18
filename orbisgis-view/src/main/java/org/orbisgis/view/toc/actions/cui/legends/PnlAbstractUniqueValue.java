@@ -31,6 +31,8 @@ package org.orbisgis.view.toc.actions.cui.legends;
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
@@ -57,6 +59,7 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.TreeSet;
 
@@ -83,6 +86,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
     public AbstractRecodedLegend<U> createConstantClassification(TreeSet<String> set, ProgressMonitor pm) {
         U lp = ((MappedLegend<String,U>)getLegend()).getFallbackParameters();
         AbstractRecodedLegend<U> newRL = (AbstractRecodedLegend<U>) getEmptyAnalysis();
+        newRL.setComparator(getComparator());
         newRL.setFallbackParameters(lp);
         int size = set.size();
         double m = size == 0 ? 0 : 90.0/(double)size;
@@ -106,6 +110,32 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
         pm.endTask();
         pm.progressTo(100);
         return newRL;
+    }
+
+    @Override
+    public Comparator<String> getComparator(){
+        String fieldName = getFieldName();
+        DataSource ds = getDataSource();
+        try {
+            Metadata metadata = ds.getMetadata();
+            Type type = metadata.getFieldType(metadata.getFieldIndex(fieldName));
+            switch(type.getTypeCode()){
+                case Type.BYTE:
+                case Type.DOUBLE:
+                case Type.FLOAT:
+                case Type.SHORT:
+                case Type.INT:
+                case Type.LONG:
+                    return new MappedLegend.NumComparator();
+                default :
+                    return null;
+                }
+
+
+        } catch (DriverException e) {
+            LOGGER.warn(I18N.tr("Can't build the analysis with an accurate comparator."),e);
+        }
+        return null;
     }
 
     /**
@@ -257,7 +287,8 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
          * @return The distinct values as String instances in a {@link HashSet} or null if the job has been cancelled.
          */
         public TreeSet<String> getValues(final ProgressMonitor pm){
-            TreeSet<String> ret = new TreeSet<String>();
+            Comparator<String> comparator = getComparator();
+            TreeSet<String> ret = comparator != null ? new TreeSet<String>(comparator) : new TreeSet<String>();
             try {
                 DataSource ds = getDataSource();
                 long rowCount=ds.getRowCount();
