@@ -230,9 +230,16 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
      * Action done when the checkbox used to activate the stroke is pressed.
      */
     public void onEnableStroke(){
-        CategorizedPoint ra = (CategorizedPoint) getLegend();
+        CategorizedPoint cp = (CategorizedPoint) getLegend();
+        CategorizedPoint ra = cp;
         ra.setStrokeEnabled(strokeBox.isSelected());
-        getPreview().setSymbol(new UniqueSymbolPoint(ra.getFallbackParameters()).getSymbolizer());
+        UniqueSymbolPoint usp = new UniqueSymbolPoint(ra.getFallbackParameters());
+        if(cp.isOnVertex()){
+            usp.setOnVertex();
+        } else {
+            usp.setOnCentroid();
+        }
+        getPreview().setSymbol(usp.getSymbolizer());
         TableModelInterval model = (TableModelInterval) getJTable().getModel();
         model.fireTableDataChanged();
     }
