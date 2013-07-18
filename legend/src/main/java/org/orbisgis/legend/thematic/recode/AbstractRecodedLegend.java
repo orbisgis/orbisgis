@@ -28,12 +28,15 @@
  */
 package org.orbisgis.legend.thematic.recode;
 
+import org.gdms.data.types.Type;
 import org.orbisgis.legend.structure.parameter.ParameterVisitor;
 import org.orbisgis.legend.structure.recode.RecodedLegend;
 import org.orbisgis.legend.structure.recode.RecodedLegendStructure;
 import org.orbisgis.legend.structure.recode.RecodedParameterVisitor;
 import org.orbisgis.legend.thematic.SymbolParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;
+
+import java.util.Comparator;
 
 /**
  * Common base for all the legends describing unique value analysis. It provides useful method to globally manage
@@ -75,5 +78,24 @@ public abstract class AbstractRecodedLegend<U extends SymbolParameters> extends 
             n++;
         }
         return s;
+    }
+
+    /**
+     * Gets a comparator well-suited for the given type
+     * @param t The input type
+     * @return The well-suited separator
+     */
+    public static Comparator<String> getComparator(Type t){
+        switch(t.getTypeCode()){
+            case Type.BYTE:
+            case Type.DOUBLE:
+            case Type.FLOAT:
+            case Type.SHORT:
+            case Type.INT:
+            case Type.LONG:
+                return new MappedLegend.NumComparator();
+            default :
+                return null;
+        }
     }
 }

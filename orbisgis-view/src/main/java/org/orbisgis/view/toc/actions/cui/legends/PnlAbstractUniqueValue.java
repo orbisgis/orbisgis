@@ -119,19 +119,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
         try {
             Metadata metadata = ds.getMetadata();
             Type type = metadata.getFieldType(metadata.getFieldIndex(fieldName));
-            switch(type.getTypeCode()){
-                case Type.BYTE:
-                case Type.DOUBLE:
-                case Type.FLOAT:
-                case Type.SHORT:
-                case Type.INT:
-                case Type.LONG:
-                    return new MappedLegend.NumComparator();
-                default :
-                    return null;
-                }
-
-
+            return AbstractRecodedLegend.getComparator(type);
         } catch (DriverException e) {
             LOGGER.warn(I18N.tr("Can't build the analysis with an accurate comparator."),e);
         }
