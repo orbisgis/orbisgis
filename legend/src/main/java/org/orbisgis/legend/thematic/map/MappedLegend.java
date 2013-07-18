@@ -275,8 +275,8 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
     public static class NumComparator implements Comparator<String> {
         @Override
         public int compare(String integer, String integer2) {
-            Double i1 = Double.valueOf(integer != null ? integer : "");
-            Double i2 = Double.valueOf(integer2 != null ? integer2 : "");
+            Double i1 = Double.valueOf(integer);
+            Double i2 = Double.valueOf(integer2);
             return i1.compareTo(i2);
         }
     }
