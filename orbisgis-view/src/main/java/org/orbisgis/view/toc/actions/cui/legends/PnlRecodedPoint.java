@@ -36,6 +36,7 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.PointParameters;
+import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.orbisgis.legend.thematic.recode.RecodedPoint;
@@ -65,82 +66,29 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * "Value classification - Point" UI.
+ *
  * @author alexis
  */
 public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     public static final Logger LOGGER = Logger.getLogger(PnlRecodedLine.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
     private String id;
-    private CanvasSE fallbackPreview;
-    private JComboBox fieldCombo;
     private JCheckBox strokeBox;
     private ContainerItemProperties[] uoms;
 
     @Override
-    public void initializeLegendFields() {
-        this.removeAll();
-        JPanel glob = new JPanel();
-        GridBagLayout grid = new GridBagLayout();
-        glob.setLayout(grid);
-        int i = 0;
-        //Field chooser
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getFieldLine(), gbc);
-        //Fallback symbol
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getFallback(), gbc);
-        //UOM
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getUOMCombo(),gbc);
-        //UOM - symbol size
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getSymbolUOMCombo(),gbc);
-        //on vertex ?
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(pnlOnVertex(),gbc);
-        //Classification generator
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getCreateClassificationPanel(), gbc);
-        //Enable Stroke
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getEnableStrokeCheckBox(), gbc);
-        //Table for the recoded configurations
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getTablePanel(), gbc);
-        this.add(glob);
-        this.revalidate();
+    protected void beforeFallbackSymbol(JPanel genSettings) {
+        // UOM - symbol size
+        genSettings.add(new JLabel(I18N.tr(SYMBOL_SIZE_UNIT)));
+        genSettings.add(getSymbolUOMComboBox(), COMBO_BOX_CONSTRAINTS);
+
+        // On vertex? On centroid?
+        genSettings.add(new JLabel(I18N.tr(PLACE_SYMBOL_ON)), "span 1 2");
+        genSettings.add(OnVertexHelper.pnlOnVertex(this, (SymbolizerLegend) getLegend(), I18N), "span 1 2");
+
+        // Enable stroke?
+        genSettings.add(getEnableStrokeCheckBox(), "span 2, align center");
     }
 
     @Override
@@ -154,6 +102,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         MouseListener l = EventHandler.create(MouseListener.class, this, "onEditFallback", "", "mouseClicked");
         fallbackPreview.addMouseListener(l);
     }
+
     public void onEditFallback(MouseEvent me){
         ((RecodedPoint)getLegend()).setFallbackParameters(editCanvas(fallbackPreview));
     }
@@ -180,60 +129,17 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     }
 
     /**
-     * Returns the panel used to configure if the symbol must be drawn on vertex or on centroid.
-     * @return The panel with the radio buttons.
-     */
-    private JPanel pnlOnVertex(){
-        RecodedPoint point = (RecodedPoint) getLegend();
-
-        JRadioButton bVertex = new JRadioButton(I18N.tr(ON_VERTEX));
-        bVertex.addActionListener(
-                EventHandler.create(ActionListener.class, point, "setOnVertex"));
-        bVertex.addActionListener(
-                EventHandler.create(ActionListener.class, this, "onClickVertex"));
-        boolean onVertex = ((PointSymbolizer)point.getSymbolizer()).isOnVertex();
-        bVertex.setSelected(onVertex);
-
-        JRadioButton bCentroid = new JRadioButton(I18N.tr(ON_CENTROID));
-        bCentroid.addActionListener(
-                EventHandler.create(ActionListener.class, point, "setOnCentroid"));
-        bCentroid.addActionListener(
-                EventHandler.create(ActionListener.class, this, "onClickCentroid"));
-        bCentroid.setSelected(!onVertex);
-
-        ButtonGroup bg = new ButtonGroup();
-        bg.add(bVertex);
-        bg.add(bCentroid);
-
-        JPanel jp = new JPanel();
-        jp.add(bVertex);
-        jp.add(bCentroid);
-        return jp;
-    }
-
-    /**
      * called when the user wants to put the points on the vertices of the geometry.
      */
     public void onClickVertex(){
-        changeOnVertex(true);
+        OnVertexHelper.changeOnVertex(this, true);
     }
 
     /**
      * called when the user wants to put the points on the centroid of the geometry.
      */
     public void onClickCentroid(){
-        changeOnVertex(false);
-    }
-
-    /**
-     * called when the user wants to put the points on the vertices or ont the centroid of the geometry.
-     * @param b If true, the points are set on the vertices.
-     */
-    private void changeOnVertex(boolean b){
-        CanvasSE prev = getPreview();
-        ((PointSymbolizer)prev.getSymbol()).setOnVertex(b);
-        prev.imageChanged();
-        updateTable();
+        OnVertexHelper.changeOnVertex(this, false);
     }
 
     @Override
@@ -253,7 +159,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         UniqueSymbolPoint usl = new UniqueSymbolPoint(leg.getFallbackParameters());
         usl.setStrokeUom(leg.getStrokeUom());
         usl.setSymbolUom(leg.getSymbolUom());
-        if(leg .isOnVertex()){
+        if(leg.isOnVertex()){
             usl.setOnVertex();
         } else {
             usl.setOnCentroid();
@@ -274,11 +180,6 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     @Override
     public KeyEditorUniqueValue<PointParameters> getKeyCellEditor() {
         return new KeyEditorRecodedPoint();
-    }
-
-    @Override
-    public CanvasSE getPreview() {
-        return fallbackPreview;
     }
 
     @Override
@@ -349,11 +250,6 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         return "";
     }
 
-    @Override
-    public String getFieldName(){
-        return fieldCombo.getSelectedItem().toString();
-    }
-
     /**
      * Build the panel used to select the classification field.
      *
@@ -367,40 +263,28 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         return jp;
     }
 
-    /**
-     * Builds the panel used to display and configure the fallback symbol
-     *
-     * @return The Panel where the fallback configuration is displayed.
-     */
-    private JPanel getFallback() {
-        JPanel jp = new JPanel();
-        jp.add(new JLabel(I18N.tr("Fallback Symbol")));
-        initPreview();
-        jp.add(fallbackPreview);
-        return jp;
-    }
-
-    private JPanel getUOMCombo(){
+    @Override
+    protected JComboBox getUOMComboBox(){
         UomCombo jcb = getLineUomCombo(((RecodedPoint) getLegend()));
-        ActionListener aclUom = EventHandler.create(ActionListener.class, this, "updatePreview", "source");
-        jcb.addActionListener(aclUom);
-        return jcb;
+        jcb.addActionListener(
+                EventHandler.create(ActionListener.class, this, "updatePreview", "source"));
+        return jcb.getCombo();
     }
 
     /**
      * A JPanel containing the combo returned bu getPointUomCombo
      * @return The JComboBox with a JLabel in a JPanel.
      */
-    private JPanel getSymbolUOMCombo(){
+    private JComboBox getSymbolUOMComboBox() {
         uoms = getUomProperties();
         // Note: The text here is never used since in practice we just extract
         // the ComboBox.
         UomCombo puc = new UomCombo(((RecodedPoint)getLegend()).getSymbolUom(),
                 uoms,
-                I18N.tr("Symbol size unit"));
-        ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex");
-        puc.addActionListener(acl2);
-        return puc;
+                I18N.tr(SYMBOL_SIZE_UNIT));
+        puc.addActionListener(
+                EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex"));
+        return puc.getCombo();
     }
 
     /**
@@ -417,18 +301,16 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     }
 
     /**
-     * Gets the panel used to set if the stroke will be drawable or not.
-     * @return The configuration panel for the stroke use.
+     * Gets the checkbox used to set if the border will be drawn.
+     *
+     * @return The enable border checkbox.
      */
-    public JPanel getEnableStrokeCheckBox(){
-        JPanel ret = new JPanel();
-        ret.add(new JLabel(I18N.tr("Enable Stroke:")));
-        strokeBox = new JCheckBox(I18N.tr(""));
-        RecodedPoint ra = (RecodedPoint) getLegend();
-        strokeBox.setSelected(ra.isStrokeEnabled());
-        strokeBox.addActionListener(EventHandler.create(ActionListener.class, this, "onEnableStroke"));
-        ret.add(strokeBox);
-        return ret;
+    private JCheckBox getEnableStrokeCheckBox(){
+        strokeBox = new JCheckBox(I18N.tr(ENABLE_BORDER));
+        strokeBox.setSelected(((RecodedPoint) getLegend()).isStrokeEnabled());
+        strokeBox.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onEnableStroke"));
+        return strokeBox;
     }
 
     /**

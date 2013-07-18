@@ -2,12 +2,12 @@ package org.orbisgis.view.toc.actions.cui.legends;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
-import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.PointParameters;
+import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
 import org.orbisgis.legend.thematic.categorize.CategorizedPoint;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * UI for "Interval classification - Point".
+ * "Interval classification - Point" UI.
  *
  * @author Alexis Guéganno
  */
@@ -97,15 +97,16 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
 
     @Override
     protected void beforeFallbackSymbol(JPanel genSettings) {
-        //UOM - symbol size
-        genSettings.add(new JLabel(I18N.tr("Size unit")));
+        // UOM - symbol size
+        genSettings.add(new JLabel(I18N.tr(SYMBOL_SIZE_UNIT)));
         genSettings.add(getSymbolUOMComboBox(), COMBO_BOX_CONSTRAINTS);
 
         // On vertex? On centroid?
-        genSettings.add(pnlOnVertex(), "span 2, align center");
+        genSettings.add(new JLabel(I18N.tr(PLACE_SYMBOL_ON)), "span 1 2");
+        genSettings.add(OnVertexHelper.pnlOnVertex(this, (SymbolizerLegend) getLegend(), I18N), "span 1 2");
 
         // Enable stroke?
-        genSettings.add(getEnableStrokeCheckBox(), "span 2, align center");
+        genSettings.add(getEnableStrokeCheckBox(), "span 2, align c");
     }
 
     /**
@@ -179,9 +180,20 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
      */
     @Override
     public Symbolizer getFallbackSymbolizer(){
-        UniqueSymbolPoint usl = new UniqueSymbolPoint(((CategorizedPoint)getLegend()).getFallbackParameters());
-        usl.setStrokeUom(((CategorizedPoint) getLegend()).getStrokeUom());
-        return usl.getSymbolizer();
+        return getFallBackLegend().getSymbolizer();
+    }
+
+    private UniqueSymbolPoint getFallBackLegend(){
+        CategorizedPoint leg = (CategorizedPoint)getLegend();
+        UniqueSymbolPoint usl = new UniqueSymbolPoint(leg.getFallbackParameters());
+        usl.setStrokeUom(leg.getStrokeUom());
+        usl.setSymbolUom(leg.getSymbolUom());
+        if(leg.isOnVertex()){
+            usl.setOnVertex();
+        } else {
+            usl.setOnCentroid();
+        }
+        return usl;
     }
 
     @Override
@@ -241,7 +253,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         uoms = getUomProperties();
         UomCombo puc = new UomCombo(((CategorizedPoint)getLegend()).getSymbolUom(),
                 uoms,
-                I18N.tr("Symbol size unit"));
+                I18N.tr(SYMBOL_SIZE_UNIT));
         puc.addActionListener(
                 EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex"));
         return puc.getCombo();
@@ -261,59 +273,16 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     }
 
     /**
-     * Returns the panel used to configure if the symbol must be drawn on vertex or on centroid.
-     * @return The panel with the radio buttons.
-     */
-    private JPanel pnlOnVertex(){
-        CategorizedPoint point = (CategorizedPoint) getLegend();
-
-        JRadioButton bVertex = new JRadioButton(I18N.tr(ON_VERTEX));
-        bVertex.addActionListener(
-                EventHandler.create(ActionListener.class, point, "setOnVertex"));
-        bVertex.addActionListener(
-                EventHandler.create(ActionListener.class, this, "onClickVertex"));
-        boolean onVertex = ((PointSymbolizer)point.getSymbolizer()).isOnVertex();
-        bVertex.setSelected(onVertex);
-
-        JRadioButton bCentroid = new JRadioButton(I18N.tr(ON_CENTROID));
-        bCentroid.addActionListener(
-                EventHandler.create(ActionListener.class, point, "setOnCentroid"));
-        bCentroid.addActionListener(
-                EventHandler.create(ActionListener.class, this, "onClickCentroid"));
-        bCentroid.setSelected(!onVertex);
-
-        ButtonGroup bg = new ButtonGroup();
-        bg.add(bVertex);
-        bg.add(bCentroid);
-
-        JPanel jp = new JPanel();
-        jp.add(bVertex);
-        jp.add(bCentroid);
-        return jp;
-    }
-
-    /**
      * called when the user wants to put the points on the vertices of the geometry.
      */
     public void onClickVertex(){
-        changeOnVertex(true);
+        OnVertexHelper.changeOnVertex(this, true);
     }
 
     /**
      * called when the user wants to put the points on the centroid of the geometry.
      */
     public void onClickCentroid(){
-        changeOnVertex(false);
-    }
-
-    /**
-     * called when the user wants to put the points on the vertices or ont the centroid of the geometry.
-     * @param b If true, the points are set on the vertices.
-     */
-    private void changeOnVertex(boolean b){
-        CanvasSE prev = getPreview();
-        ((PointSymbolizer)prev.getSymbol()).setOnVertex(b);
-        prev.imageChanged();
-        updateTable();
+        OnVertexHelper.changeOnVertex(this, false);
     }
 }

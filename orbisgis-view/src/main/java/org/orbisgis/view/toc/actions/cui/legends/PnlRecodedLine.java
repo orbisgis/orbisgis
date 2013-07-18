@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
@@ -62,6 +63,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * "Value classification - Line" UI.
+ *
  * <p></p>This panel must be used to manage all the parameters of a line symbolizer
  * which is configured thanks to a "simple" recoded PenStroke. All the parameters
  * of the PenStroke must be configured either with a Recode or a Literal, all
@@ -76,8 +79,6 @@ import java.util.Set;
 public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlRecodedLine.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
-    private CanvasSE fallbackPreview;
-    private JComboBox fieldCombo;
 
     @Override
     public Component getComponent() {
@@ -93,11 +94,6 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     @Override
     public String validateInput() {
         return "";
-    }
-
-    @Override
-    public String getFieldName(){
-        return fieldCombo.getSelectedItem().toString();
     }
 
     /**
@@ -138,7 +134,7 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     private JPanel getFieldLine() {
         JPanel jp = new JPanel();
         jp.add(new JLabel(I18N.tr("Classification field : ")));
-        fieldCombo =getFieldComboBox();
+        fieldCombo = getFieldComboBox();
         jp.add(fieldCombo);
         return jp;
     }
@@ -164,19 +160,6 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
         fallbackPreview.addMouseListener(l);
     }
 
-    /**
-     * Builds the panel used to display and configure the fallback symbol
-     *
-     * @return The Panel where the fallback configuration is displayed.
-     */
-    private JPanel getFallback() {
-        JPanel jp = new JPanel();
-        jp.add(new JLabel(I18N.tr("Fallback Symbol")));
-        initPreview();
-        jp.add(fallbackPreview);
-        return jp;
-    }
-
     @Override
     public RecodedLine getEmptyAnalysis(){
         return new RecodedLine();
@@ -197,54 +180,17 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
         return new KeyEditorRecodedLine();
     }
 
-    /**
-     * Here are made all the initializations. Look at the specialized methods to have more details.
-     */
     @Override
-    public void initializeLegendFields() {
-        this.removeAll();
-        JPanel glob = new JPanel();
-        GridBagLayout grid = new GridBagLayout();
-        glob.setLayout(grid);
-        //Field chooser
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getFieldLine(), gbc);
-        //Fallback symbol
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getFallback(), gbc);
-        //UOM
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getUOMCombo(),gbc);
-        //Classification generator
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getCreateClassificationPanel(), gbc);
-        //Table for the recoded configurations
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getTablePanel(), gbc);
-        this.add(glob);
-        this.revalidate();
+    protected void beforeFallbackSymbol(JPanel genSettings) {
+        // Empty on purpose
     }
 
-    private JPanel getUOMCombo(){
+    @Override
+    protected JComboBox getUOMComboBox() {
         UomCombo jcb = getLineUomCombo(((RecodedLine) getLegend()));
-        ActionListener aclUom = EventHandler.create(ActionListener.class, this, "updatePreview", "source");
-        jcb.addActionListener(aclUom);
-        return jcb;
+        jcb.addActionListener(
+                EventHandler.create(ActionListener.class, this, "updatePreview", "source"));
+        return jcb.getCombo();
     }
 
     @Override
@@ -274,11 +220,6 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
         rl.setFallbackParameters(leg.getFallbackParameters());
         rl.setLookupFieldName(leg.getLookupFieldName());
         return rl;
-    }
-
-    @Override
-    public CanvasSE getPreview() {
-        return fallbackPreview;
     }
 
     @Override

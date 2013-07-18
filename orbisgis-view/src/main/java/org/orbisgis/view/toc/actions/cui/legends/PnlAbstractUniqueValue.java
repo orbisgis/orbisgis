@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
@@ -57,11 +58,11 @@ import java.beans.EventHandler;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.TreeSet;
 
 /**
- * Methods shared by unique value analysis.
+ * Base class for Value Classification UIs.
+ *
  * @author alexis
  */
 public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends PnlAbstractTableAnalysis<String,U> {
@@ -69,7 +70,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
     public static final String CREATE_CLASSIF = "Create classification";
     public static final Logger LOGGER = Logger.getLogger(PnlAbstractUniqueValue.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlAbstractUniqueValue.class);
-    private ColorConfigurationPanel colorConfig;
+    private ColorConfigurationPanel colorConfigPanel;
     private BackgroundListener background;
     protected final static String JOB_NAME = "recodeSelectDistinct";
 
@@ -106,18 +107,19 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
         pm.progressTo(100);
         return newRL;
     }
+
     /**
      * Disables the colour configuration.
      */
     public void onFromFallback(){
-        ComponentUtil.setFieldState(false,colorConfig);
+        ComponentUtil.setFieldState(false, colorConfigPanel);
     }
 
     /**
      * Enables the colour configuration.
      */
     public void onComputed(){
-        ComponentUtil.setFieldState(true, colorConfig);
+        ComponentUtil.setFieldState(true, colorConfigPanel);
     }
 
     /**
@@ -125,52 +127,42 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
      * @return The JPanel used to create a classification from scratch.
      */
     public JPanel getCreateClassificationPanel() {
-        JPanel ret = new JPanel();
-        BoxLayout bl = new BoxLayout(ret, BoxLayout.Y_AXIS);
-        ret.setLayout(bl);
-        ret.setBorder(BorderFactory.createTitledBorder(I18N.tr("Generate")));
-        //The button Group
-        JPanel btnPnl = new JPanel();
-        BoxLayout btnLayout = new BoxLayout(btnPnl, BoxLayout.Y_AXIS);
-        btnPnl.setLayout(btnLayout);
-        ButtonGroup bg = new ButtonGroup();
-        JRadioButton fromFallback = new JRadioButton(I18N.tr("Colour from the fallback symbol"));
+        JPanel ret = new JPanel(new MigLayout("wrap 1", "[" + FIXED_WIDTH + "]"));
+        ret.setBorder(BorderFactory.createTitledBorder(
+                I18N.tr(CLASSIFICATION_SETTINGS)));
+
+        // Choose between fallback color and a color scheme
+        JRadioButton fromFallback = new JRadioButton(I18N.tr("Use the fallback color"));
         fromFallback.setActionCommand(FALLBACK);
-        JRadioButton computed = new JRadioButton(I18N.tr("Computed colour"));
+        fromFallback.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onFromFallback"));
+        JRadioButton computed = new JRadioButton(I18N.tr("Use a color scheme:"));
         computed.setActionCommand(COMPUTED);
+        computed.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onComputed"));
+        ButtonGroup bg = new ButtonGroup();
         bg.add(fromFallback);
         bg.add(computed);
         bg.setSelected(computed.getModel(), true);
-        fromFallback.setAlignmentX((float) 0);
-        computed.setAlignmentX((float)0);
-        btnPnl.add(fromFallback);
-        btnPnl.add(computed);
-        btnPnl.setAlignmentX((float).5);
-        ret.add(btnPnl);
-        //We build the panel used to configure the color before creating the classification.
-        if(colorConfig == null){
+        ret.add(fromFallback);
+        ret.add(computed);
+
+        // Color scheme panel
+        if(colorConfigPanel == null){
             ArrayList<String> names = new ArrayList<String>(ColorScheme.discreteColorSchemeNames());
             names.addAll(ColorScheme.rangeColorSchemeNames());
-            colorConfig = new ColorConfigurationPanel(names);
+            colorConfigPanel = new ColorConfigurationPanel(names);
         }
-        ret.add(colorConfig);
-        //We still need a button to configure all of that
-        JPanel btnPanel = new JPanel();
-        JButton createButton = new JButton(I18N.tr("Create Classification"));
+        ret.add(colorConfigPanel, "align c, growx");
+
+        // Create button
+        JButton createButton = new JButton(I18N.tr("Create"));
         createButton.setActionCommand("click");
-        btnPanel.add(createButton);
-        btnPanel.setAlignmentX((float).5);
-        ret.add(btnPanel);
-        //We still must feed all of that with listeners...
-        //Colours
-        ActionListener al1 = EventHandler.create(ActionListener.class, this, "onFromFallback");
-        ActionListener al2 = EventHandler.create(ActionListener.class, this, "onComputed");
-        fromFallback.addActionListener(al1);
-        computed.addActionListener(al2);
-        //Creation
-        ActionListener btn = EventHandler.create(ActionListener.class, this, "onCreateClassification","");
-        createButton.addActionListener(btn);
-        //We enable the color config by default
+        createButton.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onCreateClassification", ""));
+        ret.add(createButton, "align c");
+
+        // Enable the color config by default
         onComputed();
         return ret;
     }
@@ -242,8 +234,8 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
             result = getValues(pm);
             if(result != null){
                 AbstractRecodedLegend<U> rl;
-                if(colorConfig.isEnabled() && result.size() > 0){
-                    ColorScheme sc = colorConfig.getColorScheme();
+                if(colorConfigPanel.isEnabled() && result.size() > 0){
+                    ColorScheme sc = colorConfigPanel.getColorScheme();
                     rl = (AbstractRecodedLegend<U>) createColouredClassification(result, pm, sc);
                 } else {
                     rl = createConstantClassification(result, pm);

@@ -29,7 +29,6 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.WellKnownName;
@@ -60,6 +59,7 @@ import java.beans.EventHandler;
 import java.net.URL;
 
 /**
+ * "Unique Symbol - Point" UI.
  *
  * @author Alexis Guéganno
  */
@@ -205,7 +205,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                                        I18N.tr(MARK_SETTINGS)));
 
                 glob.add(getAreaBlock(uniquePoint.getFillLegend(),
-                                      I18N.tr(PnlUniqueAreaSE.FILL_SETTINGS)));
+                                      I18N.tr(FILL_SETTINGS)));
 
                 glob.add(getPreviewPanel(), "growx");
 
@@ -231,10 +231,11 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                     // If geometryType != POINT, we must let the user choose if
                     // he wants to draw symbols on centroid or on vertices.
                     if (geometryType != SimpleGeometryType.POINT) {
-                        addPointOnVertices(point, jp);
+                        jp.add(new JLabel(I18N.tr(PLACE_SYMBOL_ON)), "span 1 2");
+                        jp.add(OnVertexHelper.pnlOnVertex(this, point, I18N), "span 1 2");
                     }
-                    // Unit of measure
-                    jp.add(new JLabel(I18N.tr(UNIT_OF_MEASURE)));
+                    // Unit of measure - symbol size
+                    jp.add(new JLabel(I18N.tr(SYMBOL_SIZE_UNIT)));
                     jp.add(getPointUomCombo(), COMBO_BOX_CONSTRAINTS);
                 }
 
@@ -323,60 +324,19 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 }
                 return cips;
         }
-        /**
-         * If called, this method will add a {@code ButtonGroup} made of two
-         * {@code JRadioButton}s that will be used to choose if the symbols
-         * must be drawn on vertices or on the centroid of the input geometry.
-         * @param point
-         * @param jp
-         */
-        public void addPointOnVertices(ConstantFormPoint point, JPanel jp){
 
-            JRadioButton bVertex = new JRadioButton(I18N.tr(ON_VERTEX));
-            bVertex.addActionListener(
-                    EventHandler.create(ActionListener.class, point, "setOnVertex"));
-            bVertex.addActionListener(
-                    EventHandler.create(ActionListener.class, this, "onClickVertex"));
-            boolean onVertex = ((PointSymbolizer)point.getSymbolizer()).isOnVertex();
-            bVertex.setSelected(onVertex);
-
-            JRadioButton bCentroid = new JRadioButton(I18N.tr(ON_CENTROID));
-            bCentroid.addActionListener(
-                    EventHandler.create(ActionListener.class, point, "setOnCentroid"));
-            bCentroid.addActionListener(
-                    EventHandler.create(ActionListener.class, this, "onClickCentroid"));
-            bCentroid.setSelected(!onVertex);
-
-            ButtonGroup bg = new ButtonGroup();
-            bg.add(bVertex);
-            bg.add(bCentroid);
-
-            jp.add(bVertex, "split 2, span 2, align c");
-            jp.add(bCentroid);
-        }
-
-        /**
+    /**
          * called when the user wants to put the points on the vertices of the geometry.
          */
         public void onClickVertex(){
-            changeOnVertex(true);
+            OnVertexHelper.changeOnVertex(this, true);
         }
 
         /**
          * called when the user wants to put the points on the centroid of the geometry.
          */
         public void onClickCentroid(){
-            changeOnVertex(false);
-        }
-
-        /**
-         * called when the user wants to put the points on the vertices or ont the centroid of the geometry.
-         * @param b If true, the points are set on the vertices.
-         */
-        private void changeOnVertex(boolean b){
-            CanvasSE prev = getPreview();
-            ((PointSymbolizer)prev.getSymbol()).setOnVertex(b);
-            prev.imageChanged();
+            OnVertexHelper.changeOnVertex(this, false);
         }
 
         /**
