@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-18 13:55+0100\n"
-"PO-Revision-Date: 2013-07-18 14:00+0100\n"
+"POT-Creation-Date: 2013-07-18 14:58+0100\n"
+"PO-Revision-Date: 2013-07-18 14:58+0100\n"
 "Last-Translator: Adam Gouge <adam.gouge@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
@@ -474,6 +474,26 @@ msgstr "Éditeur de style simple - "
 #: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:466
 msgid "You must create at least one legend"
 msgstr "Vous devez créer au moins une légende"
+
+#: java/org/orbisgis/view/toc/actions/cui/LegendUIController.java:102
+#: java/org/orbisgis/view/toc/actions/cui/LegendUITOCPanel.java:120
+msgid "Area Symbolizer"
+msgstr "Symbole surfacique"
+
+#: java/org/orbisgis/view/toc/actions/cui/LegendUIController.java:105
+#: java/org/orbisgis/view/toc/actions/cui/LegendUITOCPanel.java:122
+msgid "Line Symbolizer"
+msgstr "Symbole linéaire"
+
+#: java/org/orbisgis/view/toc/actions/cui/LegendUIController.java:108
+#: java/org/orbisgis/view/toc/actions/cui/LegendUITOCPanel.java:124
+msgid "Point Symbolizer"
+msgstr "Symbole ponctuel"
+
+#: java/org/orbisgis/view/toc/actions/cui/LegendUIController.java:111
+#: java/org/orbisgis/view/toc/actions/cui/LegendUITOCPanel.java:126
+msgid "Text Symbolizer"
+msgstr "Symbole textuel"
 
 #: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:323
 msgid "Up"
