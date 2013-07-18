@@ -93,6 +93,17 @@ public class PnlRule extends JPanel  implements ISELegendPanel {
                                 "setTitle", "source.text", "focusLost"));
                 panel.add(txtName, "span 2, growx");
 
+                // Description
+                panel.add(new JLabel(I18N.tr("Description")));
+                txtDescription = new JTextArea("");
+                txtDescription.setRows(6);
+                txtDescription.setLineWrap(true);
+                txtDescription.setWrapStyleWord(true);
+                txtDescription.addFocusListener(
+                        EventHandler.create(FocusListener.class, this,
+                                "setDescription", "source.text", "focusLost"));
+                panel.add(new JScrollPane(txtDescription), "span 2, growx");
+
                 // Min scale
                 panel.add(new JLabel(I18N.tr("Min. scale")));
                 txtMinScale = new JTextField(getMinscale());
@@ -128,17 +139,6 @@ public class PnlRule extends JPanel  implements ISELegendPanel {
                         }
                 });
                 panel.add(btnCurrentScaleToMax);
-
-                // Description
-                panel.add(new JLabel(I18N.tr("Description")));
-                txtDescription = new JTextArea("");
-                txtDescription.setRows(6);
-                txtDescription.setLineWrap(true);
-                txtDescription.setWrapStyleWord(true);
-                txtDescription.addFocusListener(
-                        EventHandler.create(FocusListener.class, this,
-                                "setDescription", "source.text", "focusLost"));
-                panel.add(new JScrollPane(txtDescription), "span 2, growx");
 
                 this.add(panel);
                 return this;
