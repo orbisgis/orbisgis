@@ -90,7 +90,7 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
     }
 
     @Override
-    public MappedLegend<Double,LineParameters> getEmptyAnalysis() {
+    public CategorizedLine getEmptyAnalysis() {
         return new CategorizedLine();
     }
 

@@ -93,7 +93,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     }
 
     @Override
-    public AbstractRecodedLegend<PointParameters> getEmptyAnalysis() {
+    public RecodedPoint getEmptyAnalysis() {
         return new RecodedPoint();
     }
 
@@ -324,19 +324,5 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         ps.setOnVertex(ra.isOnVertex());
         getPreview().setSymbol(ps);
         updateTable();
-    }
-
-    @Override
-    protected void postProcess(MappedLegend ml){
-        if(ml instanceof RecodedPoint){
-            RecodedPoint inner = (RecodedPoint) getLegend();
-            RecodedPoint cp = (RecodedPoint) ml;
-            if(inner.isOnVertex()){
-                cp.setOnVertex();
-            } else {
-                cp.setOnCentroid();
-            }
-            cp.setStrokeEnabled(inner.isStrokeEnabled());
-        }
     }
 }

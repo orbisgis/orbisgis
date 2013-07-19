@@ -123,7 +123,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     }
 
     @Override
-    public MappedLegend<Double,PointParameters> getEmptyAnalysis() {
+    public CategorizedPoint getEmptyAnalysis() {
         return new CategorizedPoint();
     }
 
@@ -231,9 +231,8 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
      */
     public void onEnableStroke(){
         CategorizedPoint cp = (CategorizedPoint) getLegend();
-        CategorizedPoint ra = cp;
-        ra.setStrokeEnabled(strokeBox.isSelected());
-        UniqueSymbolPoint usp = new UniqueSymbolPoint(ra.getFallbackParameters());
+        cp.setStrokeEnabled(strokeBox.isSelected());
+        UniqueSymbolPoint usp = new UniqueSymbolPoint(cp.getFallbackParameters());
         if(cp.isOnVertex()){
             usp.setOnVertex();
         } else {
@@ -291,19 +290,5 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
      */
     public void onClickCentroid(){
         OnVertexHelper.changeOnVertex(this, false);
-    }
-
-    @Override
-    protected void postProcess(MappedLegend ml){
-        if(ml instanceof CategorizedPoint){
-            CategorizedPoint inner = (CategorizedPoint) getLegend();
-            CategorizedPoint cp = (CategorizedPoint) ml;
-            if(inner.isOnVertex()){
-                cp.setOnVertex();
-            } else {
-                cp.setOnCentroid();
-            }
-            cp.setStrokeEnabled(inner.isStrokeEnabled());
-        }
     }
 }
