@@ -32,6 +32,7 @@ import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
+import org.orbisgis.legend.thematic.uom.SymbolUom;
 
 /**
  * This class gathers methods that are common to thematic analysis where
@@ -39,7 +40,7 @@ import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
  * @author Alexis Guéganno
  */
 public abstract class ConstantFormPoint extends SymbolizerLegend
-    implements OnVertexOnCentroid {
+    implements OnVertexOnCentroid, SymbolUom {
 
     private PointSymbolizer pointSymbolizer;
 
@@ -126,18 +127,12 @@ public abstract class ConstantFormPoint extends SymbolizerLegend
             getMarkGraphic().setStrokeUom(u);
     }
 
-    /**
-     * Gets the unit of measure used to size the associated {@code Stroke}.
-     * @return
-     */
+    @Override
     public Uom getSymbolUom(){
             return getMarkGraphic().getSymbolUom();
     }
 
-    /**
-     * Sets the unit of measure used to size the associated {@code Stroke}.
-     * @param u
-     */
+    @Override
     public void setSymbolUom(Uom u){
             getMarkGraphic().setSymbolUom(u);
     }

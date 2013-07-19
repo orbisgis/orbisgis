@@ -27,6 +27,7 @@ import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.OnVertexOnCentroid;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
+import org.orbisgis.legend.thematic.uom.SymbolUom;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -40,7 +41,7 @@ import java.util.List;
  * @author Alexis Guéganno
  */
 public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
-        implements StrokeUom, EnablesStroke, OnVertexOnCentroid {
+        implements StrokeUom, SymbolUom, EnablesStroke, OnVertexOnCentroid {
 
     private CategorizedColor colorFill;
     private CategorizedReal opacityFill;
@@ -431,19 +432,13 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
         }
     }
 
-    /**
-     * Gets the unit of measure used to size the associated {@code Stroke}.
-     * @return The Unit of measure of the symbol's dimensions.
-     */
+    @Override
     public Uom getSymbolUom(){
         MarkGraphic mg = (MarkGraphic) symbolizer.getGraphicCollection().getChildren().get(0);
         return mg.getUom();
     }
 
-    /**
-     * Sets the unit of measure used to size the associated {@code Stroke}.
-     * @param u The new unit of measure for the symbol's dimensions
-     */
+    @Override
     public void setSymbolUom(Uom u){
         MarkGraphic mg = (MarkGraphic) symbolizer.getGraphicCollection().getChildren().get(0);
         mg.setUom(u);

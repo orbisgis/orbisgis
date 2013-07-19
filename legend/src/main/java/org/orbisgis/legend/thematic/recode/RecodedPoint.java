@@ -53,6 +53,7 @@ import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.OnVertexOnCentroid;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
+import org.orbisgis.legend.thematic.uom.SymbolUom;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -67,7 +68,7 @@ import java.util.Set;
  * @author Alexis Guéganno
  */
 public class RecodedPoint extends AbstractRecodedLegend<PointParameters>
-        implements StrokeUom, EnablesStroke, OnVertexOnCentroid {
+        implements StrokeUom, SymbolUom, EnablesStroke, OnVertexOnCentroid {
 
     private PointSymbolizer pointSymbolizer;
     private final RecodedSolidFillLegend fill;
@@ -478,19 +479,13 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters>
         return pointSymbolizer.isOnVertex();
     }
 
-    /**
-     * Gets the unit of measure used to size the associated {@code Stroke}.
-     * @return
-     */
+    @Override
     public Uom getSymbolUom(){
         MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getChildren().get(0);
         return mg.getUom();
     }
 
-    /**
-     * Sets the unit of measure used to size the associated {@code Stroke}.
-     * @param u
-     */
+    @Override
     public void setSymbolUom(Uom u){
         MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getChildren().get(0);
         mg.setUom(u);

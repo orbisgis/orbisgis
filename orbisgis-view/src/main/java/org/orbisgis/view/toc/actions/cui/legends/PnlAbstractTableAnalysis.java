@@ -5,13 +5,12 @@ import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.OnVertexOnCentroid;
-import org.orbisgis.legend.thematic.categorize.CategorizedLine;
 import org.orbisgis.legend.thematic.map.MappedLegend;
-import org.orbisgis.legend.thematic.recode.RecodedLine;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
+import org.orbisgis.legend.thematic.uom.SymbolUom;
 import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -31,8 +30,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * Base class for the analysis that relies on a "table", i.e., Value and
@@ -346,9 +347,12 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
 
     /**
      * Makes a postProcess operation on {@code ml} using the inner
-     * legend. If both are an instance of {@code OnVertexOnCentroid},
-     * then we use inner to set ml appropriately. The same is true if
-     * both are an instance of {@code EnablesStroke}.
+     * legend. We keep properties handled by the following interfaces :
+     * <ul><li>{@link OnVertexOnCentroid},</li>
+     * <li>{@link EnablesStroke}</li>
+     * <li>{@link StrokeUom}</li>
+     * <li>{@link SymbolUom}</li>
+     * </ul>
      *
      * @param ml The legend we want to process.
      */
@@ -366,6 +370,16 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
                 ml instanceof EnablesStroke) {
                 ((EnablesStroke) ml).setStrokeEnabled(
                         ((EnablesStroke) inner).isStrokeEnabled());
+        }
+        if(inner instanceof StrokeUom){
+            ((StrokeUom) ml).setStrokeUom(
+                    ((StrokeUom) inner).getStrokeUom());
+
+        }
+        if(inner instanceof SymbolUom){
+            ((SymbolUom) ml).setSymbolUom(
+                    ((SymbolUom) inner).getSymbolUom());
+
         }
     }
 
