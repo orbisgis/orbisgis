@@ -17,6 +17,7 @@ import org.orbisgis.legend.structure.categorize.CategorizedString;
 import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 import org.orbisgis.legend.thematic.AreaParameters;
+import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -30,7 +31,8 @@ import java.util.List;
  * of literal or categorized parameters.
  * @author Alexis Guéganno
  */
-public class CategorizedArea extends AbstractCategorizedLegend<AreaParameters> implements StrokeUom{
+public class CategorizedArea extends AbstractCategorizedLegend<AreaParameters>
+        implements StrokeUom, EnablesStroke {
 
     private CategorizedColor colorFill;
     private CategorizedReal opacityFill;
@@ -275,18 +277,12 @@ public class CategorizedArea extends AbstractCategorizedLegend<AreaParameters> i
                 opacityFill.getFallbackValue());
     }
 
-    /**
-     * Return true if there is a stroke defined in the underlying symbolizer.
-     * @return true if there is a stroke defined in the underlying symbolizer.
-     */
+    @Override
     public boolean isStrokeEnabled() {
         return strokeEnabled;
     }
 
-    /**
-     * Enables or disables the use of the stroke of the inner symbolizer.
-     * @param enable if true, the inner stroke will be enabled
-     */
+    @Override
     public void setStrokeEnabled(boolean enable) {
         if(strokeEnabled && !enable){
             symbolizer.setStroke(null);

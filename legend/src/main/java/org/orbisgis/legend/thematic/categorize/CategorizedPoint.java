@@ -23,6 +23,8 @@ import org.orbisgis.legend.structure.categorize.CategorizedReal;
 import org.orbisgis.legend.structure.categorize.CategorizedString;
 import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
+import org.orbisgis.legend.thematic.EnablesStroke;
+import org.orbisgis.legend.thematic.OnVertexOnCentroid;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.xnap.commons.i18n.I18n;
@@ -37,7 +39,8 @@ import java.util.List;
  * of literal or categorized parameters.
  * @author Alexis Guéganno
  */
-public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters> implements StrokeUom {
+public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
+        implements StrokeUom, EnablesStroke, OnVertexOnCentroid {
 
     private CategorizedColor colorFill;
     private CategorizedReal opacityFill;
@@ -335,18 +338,12 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
         }
     }
 
-    /**
-     * Return true if there is a stroke defined in the underlying symbolizer.
-     * @return true if there is a stroke defined in the underlying symbolizer.
-     */
+    @Override
     public boolean isStrokeEnabled() {
         return strokeEnabled;
     }
 
-    /**
-     * Enables or disables the use of the stroke of the inner symbolizer.
-     * @param enable if true, the inner stroke will be enabled
-     */
+    @Override
     public void setStrokeEnabled(boolean enable) {
         MarkGraphic mg = (MarkGraphic) symbolizer.getGraphicCollection().getGraphic(0);
         if(strokeEnabled && !enable){
@@ -401,24 +398,17 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
                 wkn.getFallbackValue());
     }
 
-    /**
-     * Sets that symbols must be drawn on vertices or on centroid.
-     */
+    @Override
     public void setOnVertex(){
         symbolizer.setOnVertex(true);
     }
 
-    /**
-     * Sets that symbols must be drawn on vertices or on centroid.
-     */
+    @Override
     public void setOnCentroid(){
         symbolizer.setOnVertex(false);
     }
 
-    /**
-     * Returns true if the symbol will be drawn on the vertices of the symbol.
-     * @return true if the symbol must be drawn on the geomztry vertices.
-     */
+    @Override
     public boolean isOnVertex(){
         return symbolizer.isOnVertex();
     }
