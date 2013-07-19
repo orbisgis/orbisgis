@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
@@ -215,7 +216,12 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     public void onEnableStroke(){
         RecodedArea ra = (RecodedArea) getLegend();
         ra.setStrokeEnabled(strokeBox.isSelected());
-        getPreview().setSymbol(new UniqueSymbolArea(ra.getFallbackParameters()).getSymbolizer());
+        UniqueSymbolArea usa = new UniqueSymbolArea(ra.getFallbackParameters());
+        if(ra.isStrokeEnabled()){
+            ra.setStrokeUom(Uom.fromString(strokeUoms[lineUom.getSelectedIndex()].getKey()));
+            usa.setStrokeUom(ra.getStrokeUom());
+        }
+        getPreview().setSymbol(usa.getSymbolizer());
         TableModelUniqueValue model = (TableModelUniqueValue) getJTable().getModel();
         model.fireTableDataChanged();
     }

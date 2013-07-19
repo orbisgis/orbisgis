@@ -58,6 +58,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     private String id;
     protected CanvasSE fallbackPreview;
     protected WideComboBox fieldCombo;
+    protected JComboBox lineUom;
     protected static final String ENABLE_BORDER = I18n.marktr("Enable border");
     protected static final String CLASSIFICATION_SETTINGS = I18n.marktr("Classification settings");
 
@@ -488,7 +489,8 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
 
         // Unit of measure - line width
         jp.add(new JLabel(I18N.tr(LINE_WIDTH_UNIT)));
-        jp.add(getUOMComboBox(), COMBO_BOX_CONSTRAINTS);
+        lineUom = getUOMComboBox();
+        jp.add(lineUom, COMBO_BOX_CONSTRAINTS);
 
         beforeFallbackSymbol(jp);
 

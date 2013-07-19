@@ -320,9 +320,18 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     public void onEnableStroke(){
         RecodedPoint ra = (RecodedPoint) getLegend();
         ra.setStrokeEnabled(strokeBox.isSelected());
-        PointSymbolizer ps = (PointSymbolizer) new UniqueSymbolPoint(ra.getFallbackParameters()).getSymbolizer();
-        ps.setOnVertex(ra.isOnVertex());
-        getPreview().setSymbol(ps);
+        UniqueSymbolPoint usp = new UniqueSymbolPoint(ra.getFallbackParameters());
+        if(ra.isOnVertex()){
+            usp.setOnVertex();
+        } else {
+            usp.setOnCentroid();
+        }
+        if(ra.isStrokeEnabled()){
+            ra.setStrokeUom(Uom.fromString(uoms[lineUom.getSelectedIndex()].getKey()));
+            usp.setStrokeUom(ra.getStrokeUom());
+        }
+        usp.setSymbolUom(ra.getSymbolUom());
+        getPreview().setSymbol(usp.getSymbolizer());
         updateTable();
     }
 }

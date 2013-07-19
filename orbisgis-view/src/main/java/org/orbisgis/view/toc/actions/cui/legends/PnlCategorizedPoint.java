@@ -238,6 +238,11 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         } else {
             usp.setOnCentroid();
         }
+        if(cp.isStrokeEnabled()){
+            cp.setStrokeUom(Uom.fromString(uoms[lineUom.getSelectedIndex()].getKey()));
+            usp.setStrokeUom(cp.getStrokeUom());
+        }
+        usp.setSymbolUom(cp.getSymbolUom());
         getPreview().setSymbol(usp.getSymbolizer());
         TableModelInterval model = (TableModelInterval) getJTable().getModel();
         model.fireTableDataChanged();
