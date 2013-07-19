@@ -438,7 +438,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
         jp.setBorder(BorderFactory.createTitledBorder(I18N.tr("General settings")));
 
         // Field chooser
-        jp.add(new JLabel(FIELD));
+        jp.add(new JLabel(I18N.tr(FIELD)));
         fieldCombo = getFieldComboBox();
         jp.add(fieldCombo, COMBO_BOX_CONSTRAINTS);
 

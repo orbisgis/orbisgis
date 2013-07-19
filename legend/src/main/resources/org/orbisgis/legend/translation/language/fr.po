@@ -1,0 +1,61 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrbisGIS 4.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-07-18 14:07+0200\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Adam Gouge <adam.gouge@ec-nantes.fr>\n"
+"Language-Team: OrbisGIS <info _at_ orbisgis.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 1.5.5\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: tr;trc;trnc;marktr;trn\n"
+"X-Poedit-Basepath: ../../../../../..\n"
+
+#: java/org/orbisgis/legend/thematic/constant/UniqueSymbolPoint.java:64
+msgid "Unique Symbol - Point"
+msgstr "Symbole unique - Point"
+
+#: java/org/orbisgis/legend/thematic/constant/UniqueSymbolLine.java:59
+msgid "Unique Symbol - Line"
+msgstr "Symbole unique - Ligne"
+
+#: java/org/orbisgis/legend/thematic/constant/UniqueSymbolArea.java:62
+msgid "Unique Symbol - Area"
+msgstr "Symbole unique - Aire"
+
+#: java/org/orbisgis/legend/thematic/categorize/CategorizedArea.java:44
+msgid "Interval Classification - Area"
+msgstr "Classification par intervalle - Aire"
+
+#: java/org/orbisgis/legend/thematic/categorize/CategorizedLine.java:40
+msgid "Interval Classification - Line"
+msgstr "Classification par intervalle - Ligne"
+
+#: java/org/orbisgis/legend/thematic/categorize/CategorizedPoint.java:54
+msgid "Interval Classification - Point"
+msgstr "Classification par intervalle - Point"
+
+#: java/org/orbisgis/legend/thematic/proportional/ProportionalLine.java:53
+msgid "Proportional Line"
+msgstr "Ligne proportionnelle"
+
+#: java/org/orbisgis/legend/thematic/proportional/ProportionalPoint.java:55
+msgid "Proportional Point"
+msgstr "Point proportionnel"
+
+#: java/org/orbisgis/legend/thematic/recode/RecodedPoint.java:76
+msgid "Value Classification - Point"
+msgstr "Classification de valeurs - Point"
+
+#: java/org/orbisgis/legend/thematic/recode/RecodedArea.java:62
+msgid "Value Classification - Area"
+msgstr "Classification de valeurs - Aire"
+
+#: java/org/orbisgis/legend/thematic/recode/RecodedLine.java:57
+msgid "Value Classification - Line"
+msgstr "Classification de valeurs - Ligne"
