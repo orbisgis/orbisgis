@@ -44,6 +44,8 @@ import java.util.*;
  */
 public abstract class MappedLegend<T,U extends SymbolParameters> extends SymbolizerLegend implements Map<T,U> {
 
+    private Comparator<T> comparator;
+
     /**
      * Apply the given visitor to all the Legend that are used in this {@code MappedLegend}.
      * @param rpv The visitor that will be used in each inner {@code MappedLegend}.
@@ -85,9 +87,14 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
      */
     @Override
     public SortedSet<T> keySet() {
-        KeysRetriever kr = new KeysRetriever();
+        KeysRetriever<T> kr;
+        if(comparator != null){
+            kr = new KeysRetriever(comparator);
+        } else {
+            kr = new KeysRetriever();
+        }
         applyGlobalVisitor(kr);
-        return (SortedSet<T>) kr.getKeys();
+        return kr.getKeys();
     }
 
     /**
@@ -124,6 +131,7 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
      * Gets a {@code Set} representation of the key-value mapping we have in this {@code MappedLegend}.
      * @return The mapping in a set of {@code Map.Entry}.
      */
+    @Override
     public Set<Map.Entry<T, U>> entrySet(){
         Set<T> keys = keySet();
         HashSet<Map.Entry<T,U>> out = new HashSet<Map.Entry<T,U>>();
@@ -137,6 +145,7 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
     /**
      * Removes all the entries in this classification.
      */
+    @Override
     public void clear() {
         Set<T> keys = keySet();
         for (T next : keys) {
@@ -185,6 +194,14 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
             out.add(get(s));
         }
         return out;
+    }
+
+    /**
+     * Sets the comparator we want to use for elements ordering.
+     * @param comp The comparator we want to use.
+     */
+    public void setComparator(Comparator<T> comp){
+        comparator = comp;
     }
 
     /**
@@ -248,6 +265,19 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
         @Override
         public int hashCode(){
             return (s==null   ? 0 : s.hashCode()) ^ (lp==null ? 0 : lp.hashCode());
+        }
+    }
+
+    /**
+     * This comparator intends to transform the input String instances
+     * to Double instances and to compare them thereafter. Use with care.
+     */
+    public static class NumComparator implements Comparator<String> {
+        @Override
+        public int compare(String integer, String integer2) {
+            Double i1 = Double.valueOf(integer);
+            Double i2 = Double.valueOf(integer2);
+            return i1.compareTo(i2);
         }
     }
 }

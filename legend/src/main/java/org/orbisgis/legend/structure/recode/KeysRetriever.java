@@ -32,6 +32,7 @@ import org.orbisgis.legend.structure.categorize.CategorizedLegend;
 import org.orbisgis.legend.structure.categorize.CategorizedParameterVisitor;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.TreeSet;
 
 /**
@@ -50,6 +51,14 @@ public class KeysRetriever<U> implements RecodedParameterVisitor, CategorizedPar
      */
     public KeysRetriever(){
         set = new TreeSet<U>();
+    }
+
+    /**
+     * Builds a new KeysRetriever instance whose inner sorted set is sorted using comp.
+     * @param comp The comparator we want to use.
+     */
+    public KeysRetriever(Comparator<U> comp){
+        set = comp == null ? new TreeSet<U>():new TreeSet<U>(comp);
     }
 
     @Override
