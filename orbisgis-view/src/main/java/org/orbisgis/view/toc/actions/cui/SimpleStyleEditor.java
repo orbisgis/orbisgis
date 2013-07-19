@@ -44,7 +44,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
+
+import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
@@ -52,6 +57,7 @@ import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.factory.LegendFactory;
+import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
@@ -127,6 +133,8 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      * Scroll increment (To fix slow scrolling).
      */
     private static final int INCREMENT = 16;
+
+    private static final Logger LOGGER = Logger.getLogger(SimpleStyleEditor.class);
 
     /**
      * Constructor
@@ -313,6 +321,18 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
     private ILegendPanel addSymbolPanel(Symbolizer symb) {
         // Get the legend corresponding to this symbolizer.
         Legend legend = LegendFactory.getLegend(symb);
+        if(legend instanceof AbstractRecodedLegend){
+            DataSource dataSource = layer.getDataSource();
+            AbstractRecodedLegend leg = (AbstractRecodedLegend) legend;
+            try {
+                Metadata metadata = dataSource.getMetadata();
+                String f = leg.getLookupFieldName();
+                int in = metadata.getFieldIndex(f);
+                leg.setComparator(AbstractRecodedLegend.getComparator(metadata.getFieldType(in)));
+            } catch (DriverException e) {
+                LOGGER.warn("Can't retrieve an accurate Comparator for this classification");
+            }
+        }
         // Initialize a panel for this legend.
         ILegendPanel panel = ILegendPanelFactory.getILegendPanel(legend);
         panel.initialize(this);
