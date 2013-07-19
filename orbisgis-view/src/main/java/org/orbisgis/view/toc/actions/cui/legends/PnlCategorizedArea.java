@@ -109,7 +109,7 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     }
 
     @Override
-    public MappedLegend<Double,AreaParameters> getEmptyAnalysis() {
+    public CategorizedArea getEmptyAnalysis() {
         return new CategorizedArea();
     }
 
@@ -229,19 +229,5 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
         jcb.addActionListener(
                 EventHandler.create(ActionListener.class, this, "updatePreview", "source"));
         return jcb.getCombo();
-    }
-
-    /**
-     * Retrieves the strokeEnabled property from the inner legend
-     * and apply it to ml.
-     * @param ml The legend we want to process.
-     */
-    @Override
-    protected void postProcess(MappedLegend ml){
-        if(ml instanceof CategorizedArea){
-            CategorizedArea inner = (CategorizedArea) getLegend();
-            CategorizedArea cp = (CategorizedArea) ml;
-            cp.setStrokeEnabled(inner.isStrokeEnabled());
-        }
     }
 }

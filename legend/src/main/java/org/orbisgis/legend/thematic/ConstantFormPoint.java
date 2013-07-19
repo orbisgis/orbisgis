@@ -38,7 +38,8 @@ import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
  * the {@code Stroke}, {@code Fill} and well-known name are constant.
  * @author Alexis Guéganno
  */
-public abstract class ConstantFormPoint extends SymbolizerLegend {
+public abstract class ConstantFormPoint extends SymbolizerLegend
+    implements OnVertexOnCentroid {
 
     private PointSymbolizer pointSymbolizer;
 
@@ -94,24 +95,17 @@ public abstract class ConstantFormPoint extends SymbolizerLegend {
         getMarkGraphic().setWellKnownName(str);
     }
 
-    /**
-     * Gets whether symbols must be drawn on vertices or on centroid.
-     * @return
-     */
+    @Override
     public boolean isOnVertex(){
             return pointSymbolizer.isOnVertex();
     }
 
-    /**
-     * Sets that symbols must be drawn on vertices or on centroid.
-     */
+    @Override
     public void setOnVertex(){
             pointSymbolizer.setOnVertex(true);
     }
 
-    /**
-     * Sets that symbols must be drawn on vertices or on centroid.
-     */
+    @Override
     public void setOnCentroid(){
             pointSymbolizer.setOnVertex(false);
     }

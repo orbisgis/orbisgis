@@ -6,8 +6,12 @@ import org.gdms.data.DataSource;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.LineParameters;
+import org.orbisgis.legend.thematic.OnVertexOnCentroid;
+import org.orbisgis.legend.thematic.categorize.CategorizedLine;
 import org.orbisgis.legend.thematic.map.MappedLegend;
+import org.orbisgis.legend.thematic.recode.RecodedLine;
 import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -131,7 +135,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     }
 
     @Override
-    public Legend getLegend() {
+    public MappedLegend<K,U> getLegend() {
         return legend;
     }
 
@@ -342,11 +346,27 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
 
     /**
      * Makes a postProcess operation on {@code ml} using the inner
-     * legend. Called after the classification creation. Does nothing
-     * by default.
+     * legend. If both are an instance of {@code OnVertexOnCentroid},
+     * then we use inner to set ml appropriately. The same is true if
+     * both are an instance of {@code EnablesStroke}.
+     *
      * @param ml The legend we want to process.
      */
     protected void postProcess(MappedLegend<K, U> ml) {
+        MappedLegend<K,U> inner = getLegend();
+        if (inner instanceof OnVertexOnCentroid &&
+                ml instanceof OnVertexOnCentroid) {
+                if (((OnVertexOnCentroid) inner).isOnVertex()) {
+                    ((OnVertexOnCentroid) ml).setOnVertex();
+                } else {
+                    ((OnVertexOnCentroid) ml).setOnCentroid();
+                }
+        }
+        if (inner instanceof EnablesStroke &&
+                ml instanceof EnablesStroke) {
+                ((EnablesStroke) ml).setStrokeEnabled(
+                        ((EnablesStroke) inner).isStrokeEnabled());
+        }
     }
 
     /**

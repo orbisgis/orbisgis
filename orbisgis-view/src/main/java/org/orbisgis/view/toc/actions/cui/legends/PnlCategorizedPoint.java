@@ -123,7 +123,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     }
 
     @Override
-    public MappedLegend<Double,PointParameters> getEmptyAnalysis() {
+    public CategorizedPoint getEmptyAnalysis() {
         return new CategorizedPoint();
     }
 
@@ -290,24 +290,5 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
      */
     public void onClickCentroid(){
         OnVertexHelper.changeOnVertex(this, false);
-    }
-
-    /**
-     * Retrieves the onVertex and strokeEnabled properties from the inner legend
-     * and apply them to ml.
-     * @param ml The legend we want to process.
-     */
-    @Override
-    protected void postProcess(MappedLegend ml){
-        if(ml instanceof CategorizedPoint){
-            CategorizedPoint inner = (CategorizedPoint) getLegend();
-            CategorizedPoint cp = (CategorizedPoint) ml;
-            if(inner.isOnVertex()){
-                cp.setOnVertex();
-            } else {
-                cp.setOnCentroid();
-            }
-            cp.setStrokeEnabled(inner.isStrokeEnabled());
-        }
     }
 }

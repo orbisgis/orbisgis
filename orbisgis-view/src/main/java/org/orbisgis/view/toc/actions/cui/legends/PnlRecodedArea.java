@@ -221,7 +221,7 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     }
 
     @Override
-    public AbstractRecodedLegend<AreaParameters> getEmptyAnalysis() {
+    public RecodedArea getEmptyAnalysis() {
         RecodedArea ra = new RecodedArea();
         RecodedArea old = (RecodedArea)getLegend();
         if(old != null){
@@ -287,19 +287,5 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
         rl.setFallbackParameters(((RecodedArea)getLegend()).getFallbackParameters());
         rl.setLookupFieldName(((RecodedArea)getLegend()).getLookupFieldName());
         return rl;
-    }
-
-    /**
-     * Retrieves the strokeEnabled property from the inner legend
-     * and apply it to ml.
-     * @param ml The legend we want to process.
-     */
-    @Override
-    protected void postProcess(MappedLegend ml){
-        if(ml instanceof RecodedArea){
-            RecodedArea inner = (RecodedArea) getLegend();
-            RecodedArea cp = (RecodedArea) ml;
-            cp.setStrokeEnabled(inner.isStrokeEnabled());
-        }
     }
 }

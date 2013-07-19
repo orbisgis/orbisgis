@@ -93,7 +93,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     }
 
     @Override
-    public AbstractRecodedLegend<PointParameters> getEmptyAnalysis() {
+    public RecodedPoint getEmptyAnalysis() {
         return new RecodedPoint();
     }
 
@@ -324,24 +324,5 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         ps.setOnVertex(ra.isOnVertex());
         getPreview().setSymbol(ps);
         updateTable();
-    }
-
-    /**
-     * Retrieves the onVertex and strokeEnabled properties from the inner legend
-     * and apply them to ml.
-     * @param ml The legend we want to process.
-     */
-    @Override
-    protected void postProcess(MappedLegend ml){
-        if(ml instanceof RecodedPoint){
-            RecodedPoint inner = (RecodedPoint) getLegend();
-            RecodedPoint cp = (RecodedPoint) ml;
-            if(inner.isOnVertex()){
-                cp.setOnVertex();
-            } else {
-                cp.setOnCentroid();
-            }
-            cp.setStrokeEnabled(inner.isStrokeEnabled());
-        }
     }
 }
