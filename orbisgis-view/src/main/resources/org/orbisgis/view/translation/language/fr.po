@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-18 14:58+0100\n"
-"PO-Revision-Date: 2013-07-18 15:33+0100\n"
+"POT-Creation-Date: 2013-07-19 10:41+0100\n"
+"PO-Revision-Date: 2013-07-19 10:56+0100\n"
 "Last-Translator: Adam Gouge <adam.gouge@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
@@ -468,8 +468,9 @@ msgid "Add or select a legend."
 msgstr "Ajouter ou sélectionner une légende."
 
 #: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:460
-msgid "Simple Style Editor - "
-msgstr "Éditeur de style simple - "
+#, java-format
+msgid "Simple Style Editor - {0}"
+msgstr "Éditeur de style simple - {0}"
 
 #: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:466
 msgid "You must create at least one legend"
@@ -555,7 +556,7 @@ msgstr "Éditeur de style avancé"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractTableAnalysis.java:56
 msgid "Enable border"
-msgstr "Activer la bordure"
+msgstr "Activer le contour"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractTableAnalysis.java:57
 msgid "Classification settings"
@@ -595,11 +596,11 @@ msgstr ""
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:76
 msgid "Line settings"
-msgstr "Configuration de la bordure"
+msgstr "Configuration du contour"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:77
 msgid "Border settings"
-msgstr "Configuration de la bordure"
+msgstr "Configuration du contour"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:78
 msgid "Mark settings"

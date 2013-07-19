@@ -457,7 +457,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
 
     @Override
     public String getTitle() {
-        return I18N.tr("Simple Style Editor - ") + layer.getName();
+        return I18N.tr("Simple Style Editor - {0}", layer.getName());
     }
 
     @Override

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: OrbisGis 4.0 Core\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-07-18 14:45+0100\n"
-"PO-Revision-Date: 2013-07-18 14:45+0100\n"
+"PO-Revision-Date: 2013-07-19 10:43+0100\n"
 "Last-Translator: Adam Gouge <adam.gouge@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
@@ -230,7 +230,7 @@ msgstr "Symbole ponctuel"
 
 #: java/org/orbisgis/core/renderer/se/AreaSymbolizer.java:85
 msgid "Area Symbolizer"
-msgstr "Symbole surfaçique"
+msgstr "Symbole surfacique"
 
 #: java/org/orbisgis/core/renderer/se/parameter/Recode.java:232
 #: java/org/orbisgis/core/renderer/se/parameter/Recode.java:255
