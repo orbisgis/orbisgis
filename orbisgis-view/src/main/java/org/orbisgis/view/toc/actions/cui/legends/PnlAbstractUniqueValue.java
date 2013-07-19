@@ -76,6 +76,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
     private ColorConfigurationPanel colorConfigPanel;
     private BackgroundListener background;
     protected final static String JOB_NAME = "recodeSelectDistinct";
+    private JPanel classifPanel;
 
     /**
      * We take the fallback configuration and copy it for each key.
@@ -147,45 +148,44 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
      * Gets the JPanel that gathers all the buttons and labels to create a classification from scratch;
      * @return The JPanel used to create a classification from scratch.
      */
+    @Override
     public JPanel getCreateClassificationPanel() {
-        JPanel ret = new JPanel(new MigLayout("wrap 1", "[" + FIXED_WIDTH + "]"));
-        ret.setBorder(BorderFactory.createTitledBorder(
-                I18N.tr(CLASSIFICATION_SETTINGS)));
+        if(classifPanel == null){
+            classifPanel = new JPanel(new MigLayout("wrap 1", "[" + FIXED_WIDTH + "]"));
+            classifPanel.setBorder(BorderFactory.createTitledBorder(
+                    I18N.tr(CLASSIFICATION_SETTINGS)));
 
-        // Choose between fallback color and a color scheme
-        JRadioButton fromFallback = new JRadioButton(I18N.tr("Use the fallback color"));
-        fromFallback.setActionCommand(FALLBACK);
-        fromFallback.addActionListener(
-                EventHandler.create(ActionListener.class, this, "onFromFallback"));
-        JRadioButton computed = new JRadioButton(I18N.tr("Use a color scheme:"));
-        computed.setActionCommand(COMPUTED);
-        computed.addActionListener(
-                EventHandler.create(ActionListener.class, this, "onComputed"));
-        ButtonGroup bg = new ButtonGroup();
-        bg.add(fromFallback);
-        bg.add(computed);
-        bg.setSelected(computed.getModel(), true);
-        ret.add(fromFallback);
-        ret.add(computed);
-
-        // Color scheme panel
-        if(colorConfigPanel == null){
+            // Choose between fallback color and a color scheme
+            JRadioButton fromFallback = new JRadioButton(I18N.tr("Use the fallback color"));
+            fromFallback.setActionCommand(FALLBACK);
+            fromFallback.addActionListener(
+                    EventHandler.create(ActionListener.class, this, "onFromFallback"));
+            JRadioButton computed = new JRadioButton(I18N.tr("Use a color scheme:"));
+            computed.setActionCommand(COMPUTED);
+            computed.addActionListener(
+                    EventHandler.create(ActionListener.class, this, "onComputed"));
+            ButtonGroup bg = new ButtonGroup();
+            bg.add(fromFallback);
+            bg.add(computed);
+            bg.setSelected(computed.getModel(), true);
+            classifPanel.add(fromFallback);
+            classifPanel.add(computed);
+            // Color scheme panel
             ArrayList<String> names = new ArrayList<String>(ColorScheme.discreteColorSchemeNames());
             names.addAll(ColorScheme.rangeColorSchemeNames());
             colorConfigPanel = new ColorConfigurationPanel(names);
+            classifPanel.add(colorConfigPanel, "align c, growx");
+            // Create button
+            JButton createButton = new JButton(I18N.tr("Create"));
+            createButton.setActionCommand("click");
+            createButton.addActionListener(
+                    EventHandler.create(ActionListener.class, this, "onCreateClassification", ""));
+            classifPanel.add(createButton, "align c");
+
+            // Enable the color config by default
+            onComputed();
         }
-        ret.add(colorConfigPanel, "align c, growx");
-
-        // Create button
-        JButton createButton = new JButton(I18N.tr("Create"));
-        createButton.setActionCommand("click");
-        createButton.addActionListener(
-                EventHandler.create(ActionListener.class, this, "onCreateClassification", ""));
-        ret.add(createButton, "align c");
-
-        // Enable the color config by default
-        onComputed();
-        return ret;
+        return classifPanel;
     }
 
     @Override
