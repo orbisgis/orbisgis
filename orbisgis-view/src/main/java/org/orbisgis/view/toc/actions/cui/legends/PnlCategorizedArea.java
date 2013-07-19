@@ -231,6 +231,11 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
         return jcb.getCombo();
     }
 
+    /**
+     * Retrieves the strokeEnabled property from the inner legend
+     * and apply it to ml.
+     * @param ml The legend we want to process.
+     */
     @Override
     protected void postProcess(MappedLegend ml){
         if(ml instanceof CategorizedArea){

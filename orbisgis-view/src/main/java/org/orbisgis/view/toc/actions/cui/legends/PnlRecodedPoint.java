@@ -326,6 +326,11 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         updateTable();
     }
 
+    /**
+     * Retrieves the onVertex and strokeEnabled properties from the inner legend
+     * and apply them to ml.
+     * @param ml The legend we want to process.
+     */
     @Override
     protected void postProcess(MappedLegend ml){
         if(ml instanceof RecodedPoint){

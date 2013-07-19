@@ -289,6 +289,11 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
         return rl;
     }
 
+    /**
+     * Retrieves the strokeEnabled property from the inner legend
+     * and apply it to ml.
+     * @param ml The legend we want to process.
+     */
     @Override
     protected void postProcess(MappedLegend ml){
         if(ml instanceof RecodedArea){

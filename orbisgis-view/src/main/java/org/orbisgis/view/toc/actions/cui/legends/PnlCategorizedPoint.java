@@ -231,9 +231,8 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
      */
     public void onEnableStroke(){
         CategorizedPoint cp = (CategorizedPoint) getLegend();
-        CategorizedPoint ra = cp;
-        ra.setStrokeEnabled(strokeBox.isSelected());
-        UniqueSymbolPoint usp = new UniqueSymbolPoint(ra.getFallbackParameters());
+        cp.setStrokeEnabled(strokeBox.isSelected());
+        UniqueSymbolPoint usp = new UniqueSymbolPoint(cp.getFallbackParameters());
         if(cp.isOnVertex()){
             usp.setOnVertex();
         } else {
@@ -293,6 +292,11 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         OnVertexHelper.changeOnVertex(this, false);
     }
 
+    /**
+     * Retrieves the onVertex and strokeEnabled properties from the inner legend
+     * and apply them to ml.
+     * @param ml The legend we want to process.
+     */
     @Override
     protected void postProcess(MappedLegend ml){
         if(ml instanceof CategorizedPoint){
