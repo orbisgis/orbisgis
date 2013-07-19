@@ -316,7 +316,6 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
         pm.startTask(CREATE_CLASSIF , 100);
         U lp = ((MappedLegend<K,U>)getLegend()).getFallbackParameters();
         MappedLegend<K,U> newRL = getEmptyAnalysis();
-        newRL.setComparator(getComparator());
         newRL.setFallbackParameters(lp);
         if(set.size() != colors.size()){
             throw new IllegalStateException("Wrong state");
@@ -530,13 +529,5 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
      */
     public String getFieldName() {
         return fieldCombo.getSelectedItem().toString();
-    }
-
-    /**
-     * Get the comparator to be used to retrieve the values sorted the best way.
-     * @return A comparator that can be used with the keys of the associated mapping.
-     */
-    public  Comparator<K> getComparator(){
-        return null;
     }
 }

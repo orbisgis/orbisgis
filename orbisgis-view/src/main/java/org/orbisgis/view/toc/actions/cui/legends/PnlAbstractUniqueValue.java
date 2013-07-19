@@ -112,7 +112,10 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
         return newRL;
     }
 
-    @Override
+    /**
+     * Get the comparator to be used to retrieve the values sorted the best way.
+     * @return A comparator that can be used with the keys of the associated mapping.
+     */
     public Comparator<String> getComparator(){
         String fieldName = getFieldName();
         DataSource ds = getDataSource();
@@ -255,6 +258,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
                 if(colorConfigPanel.isEnabled() && result.size() > 0){
                     ColorScheme sc = colorConfigPanel.getColorScheme();
                     rl = (AbstractRecodedLegend<U>) createColouredClassification(result, pm, sc);
+                    rl.setComparator(getComparator());
                 } else {
                     rl = createConstantClassification(result, pm);
                 }
