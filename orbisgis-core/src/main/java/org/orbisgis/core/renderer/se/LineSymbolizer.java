@@ -52,6 +52,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * A {@code LineSymbolizer} is used to style a {@code Stroke} along a linear 
@@ -71,15 +73,16 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 
         private RealParameter perpendicularOffset;
         private Stroke stroke;
+        private static final I18n I18N = I18nFactory.getI18n(LineSymbolizer.class);
 
         /**
-         * Instanciate a new default {@code LineSymbolizer}. It's named {@code 
-         * Line Symbolizer"}, is defined in {@link Uom#MM}, and is drawn using a 
+         * Instantiate a new default {@code LineSymbolizer}. It's named {@code
+         * Line Symbolizer"}, is defined in {@link Uom#MM}, and is drawn using a
          * default {@link PenStroke}
          */
         public LineSymbolizer() {
                 super();
-                this.name = "Line Symbolizer";
+                this.name = I18N.tr("Line Symbolizer");
                 setStroke(new PenStroke());
         }
 

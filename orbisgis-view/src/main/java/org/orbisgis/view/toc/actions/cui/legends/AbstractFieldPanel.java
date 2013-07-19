@@ -88,7 +88,7 @@ public abstract class AbstractFieldPanel extends JPanel {
      * MigLayout constraints for sizing consistency.
      */
     protected static final String COLUMN_CONSTRAINTS =
-            "[align r, 110::][align l, "
+            "[align r, 110::][align c, "
             + SECOND_COL_WIDTH + ":" + SECOND_COL_WIDTH + ":]";
     /**
      * Fixed width for panels that need it.

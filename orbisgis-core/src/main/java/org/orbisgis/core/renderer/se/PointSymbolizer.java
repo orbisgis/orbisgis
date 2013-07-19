@@ -90,7 +90,7 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
      */
     public PointSymbolizer() {
         super();
-        this.name = "Point symbolizer";
+        this.name = I18N.tr("Point Symbolizer");
         setGraphicCollection(new GraphicCollection());
         MarkGraphic mark = new MarkGraphic();
         graphic.addGraphic(mark);
