@@ -64,18 +64,14 @@ public abstract class AbstractOutsideFrame extends JDialog implements
          * @param ok
          */
         void exit(boolean ok) {
-                boolean closePanel = true;
-                if (ok) {
-                        closePanel = validateInput();
-
-                }
+                boolean closePanel = !ok || validateInput();
                 if (!closePanel) {
                         setVisible(true);
                 } else {
                         setVisible(false);
                         dispose();
                 }
-                accepted = ok;
+                accepted = ok && closePanel;
         }
 
         /**
