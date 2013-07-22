@@ -61,18 +61,22 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     protected JComboBox lineUom;
     protected static final String ENABLE_BORDER = I18n.marktr("Enable border");
     protected static final String CLASSIFICATION_SETTINGS = I18n.marktr("Classification settings");
+    private JPanel glob;
 
     @Override
     public void initialize(LegendContext lc) {
-        if (getLegend() == null) {
-            setLegend(getEmptyAnalysis());
-            initPreview();
-        }
+        initialize(lc, getEmptyAnalysis());
+    }
+
+    @Override
+    public void initialize(LegendContext lc, Legend l){
         setGeometryType(lc.getGeometryType());
         ILayer layer = lc.getLayer();
         if (layer != null && layer.getDataSource() != null) {
             setDataSource(layer.getDataSource());
         }
+        setLegend(l);
+        initPreview();
     }
 
     protected void setLegendImpl(MappedLegend<K,U> leg){

@@ -83,7 +83,11 @@ public class NoPanel implements ILegendPanel {
 
 	}
 
-	@Override
+    @Override
+    public void initialize(LegendContext lc, Legend leg) {
+    }
+
+    @Override
 	public String validateInput() {
 		return null;
 	}

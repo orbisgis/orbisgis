@@ -29,6 +29,7 @@
 package org.orbisgis.view.toc.actions.cui.legend;
 
 import org.orbisgis.legend.Legend;
+import org.orbisgis.view.toc.actions.cui.LegendContext;
 
 /**
  * Interface for Legend UI panels in the SimpleStyleEditor.
@@ -37,6 +38,15 @@ import org.orbisgis.legend.Legend;
  * @author Alexis Guéganno
  */
 public interface ILegendPanel extends ISELegendPanel {
+
+    /**
+     * Initialize this panel using the given context and legend. Both must
+     * be not null and {@code leg} must be acceptable by this panel
+     * @param lc The input context
+     * @param leg The input legend
+     * @throws IllegalArgumentException If the provided legend is not acceptable.
+     */
+    void initialize(LegendContext lc, Legend leg);
 
 	/**
 	 * It will return the Legend created by all the variables in the panel.

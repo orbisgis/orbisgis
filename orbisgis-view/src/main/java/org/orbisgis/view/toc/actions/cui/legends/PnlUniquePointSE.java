@@ -145,23 +145,23 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
 
         /**
          * Initialize the panel. This method is called just after the panel
-         * creation.</p> <p>WARNING : the panel will be empty after calling this
-         * method. Indeed, there won't be any {@code Legend} instance associated
-         * to it. Use the
-         * {@code setLegend} method to achieve this goal.
+         * creation.</p>
          *
          * @param lc LegendContext is useful to get some information about the
          * layer in edition.
          */
         @Override
         public void initialize(LegendContext lc) {
-                if (uniquePoint == null) {
-                        setLegend(new UniqueSymbolPoint());
-                }
-                setGeometryType(lc.getGeometryType());
+            initialize(lc, new UniqueSymbolPoint());
         }
 
         @Override
+        public void initialize(LegendContext lc, Legend leg) {
+            setGeometryType(lc.getGeometryType());
+            setLegend(leg);
+        }
+
+    @Override
         public boolean acceptsGeometryType(int geometryType) {
                 return (geometryType & SimpleGeometryType.ALL) != 0;
         }

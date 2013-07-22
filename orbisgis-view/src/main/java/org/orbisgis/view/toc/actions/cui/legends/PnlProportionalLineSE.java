@@ -128,18 +128,20 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
 
         @Override
         public void initialize(LegendContext lc) {
-                if (legend == null) {
-                        setLegend(new ProportionalLine());
-                }
-                setGeometryType(lc.getGeometryType());
-                ILayer layer = lc.getLayer();
-                if(layer != null){
-                        ds = layer.getDataSource();
-                }
-                initializeLegendFields();
+            initialize(lc, new ProportionalLine());
         }
 
         @Override
+        public void initialize(LegendContext lc, Legend leg) {
+            setGeometryType(lc.getGeometryType());
+            ILayer layer = lc.getLayer();
+            if(layer != null){
+                ds = layer.getDataSource();
+            }
+            setLegend(leg);
+        }
+
+    @Override
         public ILegendPanel newInstance() {
                 return new PnlProportionalLineSE();
         }

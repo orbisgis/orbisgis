@@ -140,19 +140,19 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
 
         /**
          * Initialize the panel. This method is called just after the panel
-         * creation.</p> <p>WARNING : the panel will be empty after calling this
-         * method. Indeed, there won't be any {@code Legend} instance associated
-         * to it. Use the
-         * {@code setLegend} method to achieve this goal.
+         * creation.
          *
          * @param lc LegendContext is useful to get some information about the
          * layer in edition.
          */
         @Override
         public void initialize(LegendContext lc) {
-                if (uniqueArea == null) {
-                        setLegend(new UniqueSymbolArea());
-                }
+            initialize(lc,new UniqueSymbolArea());
+        }
+
+        @Override
+        public void initialize(LegendContext lc, Legend leg) {
+            setLegend(leg);
         }
 
         @Override

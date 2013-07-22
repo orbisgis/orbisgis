@@ -97,7 +97,7 @@ public class RuleWrapper {
                 } else {
                         for (int i = 0; i < l.size(); i++) {
                                 if (l.get(i).getLegend().getSymbolizer() != ls.get(i)) {
-                                        throw new IllegalArgumentException("Symbolizers registered"
+                                        throw new IllegalArgumentException("Symbolizers registered "
                                                 + "in the rule and in the legend mismatch.");
                                 }
                         }

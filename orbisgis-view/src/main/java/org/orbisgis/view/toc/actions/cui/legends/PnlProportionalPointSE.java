@@ -122,25 +122,24 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
 
         /**
          * Initialize the panel. This method is called just after the panel
-         * creation.</p> <p>WARNING : the panel will be empty after calling this
-         * method. Indeed, there won't be any {@code Legend} instance associated
-         * to it. Use the
-         * {@code setLegend} method to achieve this goal.
+         * creation.
          *
          * @param lc LegendContext is useful to get some information about the
          * layer in edition.
          */
         @Override
         public void initialize(LegendContext lc) {
-                if (proportionalPoint == null) {
-                        setLegend(new ProportionalPoint());
-                }
-                setGeometryType(lc.getGeometryType());
+                initialize(lc,new ProportionalPoint());
+        }
+
+        @Override
+        public void initialize(LegendContext lc, Legend leg) {
                 ILayer layer = lc.getLayer();
                 if(layer != null){
                         ds = layer.getDataSource();
                 }
-                this.initializeLegendFields();
+                setGeometryType(lc.getGeometryType());
+                setLegend(leg);
         }
 
         @Override
