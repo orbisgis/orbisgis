@@ -14,7 +14,6 @@ import org.orbisgis.legend.thematic.uom.SymbolUom;
 import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyCellRenderer;
 import org.orbisgis.view.toc.actions.cui.legends.model.PreviewCellRenderer;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;
@@ -43,7 +42,7 @@ import java.util.SortedSet;
  * @author Alexis Guéganno
  */
 public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
-        extends AbstractFieldPanel implements ILegendPanel, ActionListener {
+        extends AbstractFieldPanel implements ActionListener {
     public static final String FALLBACK = "Fallback";
     public static final String CREATE_CLASSIF = "Create classification";
     public static final Logger LOGGER = Logger.getLogger(PnlAbstractTableAnalysis.class);

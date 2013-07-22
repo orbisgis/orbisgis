@@ -41,6 +41,7 @@ import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.ColorPicker;
 import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -56,7 +57,7 @@ import java.beans.EventHandler;
  * Some useful methods that will be available for all thematic panels.
  * @author alexis
  */
-public abstract class AbstractFieldPanel extends JPanel {
+public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel {
 
     private static final Logger LOGGER = Logger.getLogger("gui." + AbstractFieldPanel.class);
     private static final I18n I18N = I18nFactory.getI18n(AbstractFieldPanel.class);
