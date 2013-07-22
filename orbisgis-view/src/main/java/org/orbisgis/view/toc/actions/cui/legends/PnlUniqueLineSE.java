@@ -312,7 +312,8 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 penStrokeMemory = cpsl;
         }
 
-        private void initializeLegendFields() {
+        @Override
+        protected void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
                 glob.add(getLineBlock(uniqueLine.getPenStroke(),

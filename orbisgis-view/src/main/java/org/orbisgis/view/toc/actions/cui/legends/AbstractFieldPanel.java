@@ -102,6 +102,11 @@ public abstract class AbstractFieldPanel extends JPanel {
     protected ContainerItemProperties[] strokeUoms;
 
     /**
+     * Initialize and layout the UI.
+     */
+    protected abstract void initializeLegendFields();
+
+    /**
      * Initialize a {@code JComboBox} whose values are set according to the
      * not spatial fields of {@code ds}.
      * @param ds The original DataSource

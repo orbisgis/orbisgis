@@ -192,7 +192,8 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 return new UniqueSymbolPoint();
         }
 
-        private void initializeLegendFields() {
+        @Override
+        protected void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 

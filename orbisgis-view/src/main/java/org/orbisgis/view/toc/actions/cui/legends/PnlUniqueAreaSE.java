@@ -188,7 +188,8 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 return ret;
         }
 
-        private void initializeLegendFields() {
+        @Override
+        protected void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
 

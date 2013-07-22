@@ -178,7 +178,8 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 return "Proportional Points";
         }
 
-        private void initializeLegendFields() {
+        @Override
+        protected void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
 

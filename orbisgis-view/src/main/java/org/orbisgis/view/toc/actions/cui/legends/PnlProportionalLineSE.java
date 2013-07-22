@@ -159,7 +159,8 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
                 return "Proportional Line";
         }
 
-        private void initializeLegendFields() {
+        @Override
+        protected void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
                 glob.add(getLineBlock());

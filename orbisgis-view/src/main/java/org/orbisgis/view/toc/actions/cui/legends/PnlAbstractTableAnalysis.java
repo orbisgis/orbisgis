@@ -450,10 +450,8 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
      */
     public abstract void initPreview();
 
-    /**
-     * Initialize the panels.
-     */
-    public void initializeLegendFields() {
+    @Override
+    protected final void initializeLegendFields() {
         this.removeAll();
 
         JPanel glob = new JPanel(new MigLayout("wrap 2"));
