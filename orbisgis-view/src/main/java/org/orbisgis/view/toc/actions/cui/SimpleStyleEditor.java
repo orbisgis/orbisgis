@@ -279,7 +279,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
     private void addRulePanel(RuleWrapper ruleWrapper) {
         // Get the panel associated to this RuleWrapper, set its id,
         // initialize it and add a listener for when its node name changes.
-        PnlRule rulePanel = (PnlRule) ruleWrapper.getPanel();
+        PnlRule rulePanel = ruleWrapper.getPanel();
         rulePanel.setId(createNewID());
         rulePanel.initialize(this);
         rulePanel.addPropertyChangeListener(

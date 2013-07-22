@@ -233,7 +233,7 @@ public class RuleWrapper {
          *
          * @return
          */
-        public ISELegendPanel getPanel() {
+        public PnlRule getPanel() {
                 if (panel == null) {
                         createRulePanel();
                 }

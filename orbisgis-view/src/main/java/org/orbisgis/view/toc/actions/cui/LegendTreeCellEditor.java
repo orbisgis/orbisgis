@@ -84,7 +84,7 @@ public class LegendTreeCellEditor extends DefaultCellEditor {
         } else if(obj instanceof RuleWrapper){
             RuleWrapper sw = (RuleWrapper) obj;
             sw.getRule().setName(field.getText());
-            PnlRule pr = (PnlRule) sw.getPanel();
+            PnlRule pr = sw.getPanel();
             pr.setTextFieldContent(field.getText());
         } else if(obj  instanceof ILegendPanel){
             ILegendPanel ilp = (ILegendPanel) obj;

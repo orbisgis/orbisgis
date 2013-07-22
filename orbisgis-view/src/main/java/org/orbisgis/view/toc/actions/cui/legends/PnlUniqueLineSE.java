@@ -86,7 +86,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         /**
          * Default constructor. The UOM combo box is displayed.
          */
-        public PnlUniqueLineSE(){
+        public PnlUniqueLineSE() {
             this(true);
         }
 
@@ -97,7 +97,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         public PnlUniqueLineSE(boolean uom){
             super();
             this.displayUom = uom;
-
         }
 
         /**
