@@ -162,11 +162,6 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         }
 
         @Override
-        public ILegendPanel newInstance() {
-                return new PnlUniqueAreaSE();
-        }
-
-        @Override
         public String validateInput() {
                 return null;
         }

@@ -87,11 +87,6 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     }
 
     @Override
-    public ISELegendPanel newInstance() {
-        return new PnlRecodedArea();
-    }
-
-    @Override
     public String getId() {
         return id;
     }

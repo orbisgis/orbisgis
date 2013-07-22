@@ -150,11 +150,6 @@ public class PnlRule extends JPanel  implements ISELegendPanel {
         }
 
         @Override
-        public PnlRule newInstance() {
-                return new PnlRule();
-        }
-
-        @Override
         public String getId() {
                 return id;
         }

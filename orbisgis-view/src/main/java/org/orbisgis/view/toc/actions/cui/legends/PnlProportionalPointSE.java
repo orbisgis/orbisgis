@@ -153,11 +153,6 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
         }
 
         @Override
-        public ILegendPanel newInstance() {
-                return new PnlProportionalPointSE();
-        }
-
-        @Override
         public String validateInput() {
                 if(fieldCombo.getSelectedItem() != null){
                         return null;

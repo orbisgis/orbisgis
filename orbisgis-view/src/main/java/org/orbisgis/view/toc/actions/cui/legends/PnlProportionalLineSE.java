@@ -141,11 +141,6 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
             setLegend(leg);
         }
 
-    @Override
-        public ILegendPanel newInstance() {
-                return new PnlProportionalLineSE();
-        }
-
         @Override
         public String validateInput() {
                 return null;

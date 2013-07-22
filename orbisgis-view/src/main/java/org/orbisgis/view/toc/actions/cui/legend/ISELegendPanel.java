@@ -57,13 +57,6 @@ public interface ISELegendPanel {
 	 */
 	void initialize(LegendContext lc);
 
-	/**
-	 * Creates a new empty instance of this panel.
-	 *
-	 * @return
-	 */
-	ISELegendPanel newInstance();
-
     /**
      * Gets the identifier of this panel.
      * @return

@@ -65,11 +65,6 @@ public class NoPanel implements ILegendPanel {
 	}
 
 	@Override
-	public ILegendPanel newInstance() {
-		throw new RuntimeException(I18N.tr("bug !"));
-	}
-
-	@Override
 	public void setLegend(Legend legend) {
 		this.legend = legend;
 	}

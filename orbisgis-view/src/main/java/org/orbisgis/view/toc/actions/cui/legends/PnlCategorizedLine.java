@@ -172,11 +172,6 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
     }
 
     @Override
-    public ISELegendPanel newInstance() {
-        return new PnlCategorizedLine();
-    }
-
-    @Override
     public String validateInput() {
         return "";
     }

@@ -87,11 +87,6 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     }
 
     @Override
-    public ISELegendPanel newInstance() {
-        return new PnlRecodedLine();
-    }
-
-    @Override
     public String validateInput() {
         return "";
     }

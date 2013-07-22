@@ -161,14 +161,9 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
             setLegend(leg);
         }
 
-    @Override
+        @Override
         public boolean acceptsGeometryType(int geometryType) {
                 return (geometryType & SimpleGeometryType.ALL) != 0;
-        }
-
-        @Override
-        public ILegendPanel newInstance() {
-                return new PnlUniquePointSE();
         }
 
         @Override

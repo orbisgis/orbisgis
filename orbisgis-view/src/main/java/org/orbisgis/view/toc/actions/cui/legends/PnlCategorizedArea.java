@@ -191,11 +191,6 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     }
 
     @Override
-    public ISELegendPanel newInstance() {
-        return new PnlCategorizedArea();
-    }
-
-    @Override
     public String validateInput() {
         return "";
     }

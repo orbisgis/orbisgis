@@ -232,11 +232,6 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     }
 
     @Override
-    public ISELegendPanel newInstance() {
-        return new PnlRecodedPoint();
-    }
-
-    @Override
     public String getId() {
         return id;
     }

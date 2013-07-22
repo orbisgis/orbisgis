@@ -162,11 +162,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        public ILegendPanel newInstance() {
-                return new PnlUniqueLineSE();
-        }
-
-        @Override
         public String validateInput() {
                 return null;
         }

@@ -217,11 +217,6 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     }
 
     @Override
-    public ISELegendPanel newInstance() {
-        return new PnlCategorizedPoint();
-    }
-
-    @Override
     public String validateInput() {
         return "";
     }
