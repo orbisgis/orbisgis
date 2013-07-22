@@ -37,6 +37,8 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.PnlRule;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * A Rule can be associated to a list of {@code Legend} instances. If
@@ -46,6 +48,8 @@ import org.orbisgis.view.toc.actions.cui.legends.PnlRule;
  * @author Alexis Guéganno
  */
 public class RuleWrapper {
+
+        private static final I18n I18N = I18nFactory.getI18n(RuleWrapper.class);
 
         private Rule rule;
         private List<ILegendPanel> legends;
@@ -167,7 +171,7 @@ public class RuleWrapper {
         /**
          * Moves the ith registered {@code Legend} to position i-1.
          *
-         * @param rw
+         * @param i the index of the legend to be moved
          */
         public void moveLegendUp(int i) {
                 if (i > 0 && i < legends.size()) {
@@ -179,7 +183,7 @@ public class RuleWrapper {
         /**
          * Moves the ith registered {@code RuleWrapper} to position i+1.
          *
-         * @param rw
+         * @param i the index of the legend to be moved
          */
         public void moveLegendDown(int i) {
                 if (i >= 0 && i < legends.size() - 1) {
@@ -257,6 +261,12 @@ public class RuleWrapper {
                         String s = ilp.validateInput();
                         ll.add(s);
                 }
-                return ll;
+            Double max = rule.getMaxScaleDenom();
+            Double min = rule.getMinScaleDenom();
+            boolean err = max != null && min != null && min > max;
+            if(err){
+                ll.add(I18N.tr("Min scale greater than max scale in rule {0}.", rule.getName()));
+            }
+            return ll;
         }
 }
