@@ -233,10 +233,8 @@ public class RecodedLine extends AbstractRecodedLegend<LineParameters> {
             getLineDash().setFallbackValue(lps.getLineDash());
         }
 
-    @Override
-    public String getLegendTypeId() {
-        return "org.orbisgis.legend.thematic.recode.RecodedLine";
-    }
-        
-        
+        @Override
+        public String getLegendTypeId() {
+            return "org.orbisgis.legend.thematic.recode.RecodedLine";
+        }
 }

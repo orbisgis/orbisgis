@@ -111,18 +111,12 @@ public abstract class ConstantFormPoint extends SymbolizerLegend
             pointSymbolizer.setOnVertex(false);
     }
 
-    /**
-     * Gets the unit of measure used to draw the associated {@code Stroke}.
-     * @return
-     */
+    @Override
     public Uom getStrokeUom(){
             return getMarkGraphic().getStrokeUom();
     }
 
-    /**
-     * Sets the unit of measure used to draw the associated {@code Stroke}.
-     * @param u
-     */
+    @Override
     public void setStrokeUom(Uom u){
             getMarkGraphic().setStrokeUom(u);
     }

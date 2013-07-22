@@ -198,19 +198,11 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> {
         return ret;
     }
 
-    /**
-     * Gets the Uom used for the inner Stroke.
-     * @return The unit of measure used to compute the width of the stroke.
-     */
     @Override
     public Uom getStrokeUom(){
         return symbolizer.getStroke().getUom();
     }
 
-    /**
-     * Gets the Uom used for the inner Stroke.
-     * @param u The unit of measure used to compute the width of the stroke.
-     */
     @Override
     public void setStrokeUom(Uom u){
         symbolizer.getStroke().setUom(u);
