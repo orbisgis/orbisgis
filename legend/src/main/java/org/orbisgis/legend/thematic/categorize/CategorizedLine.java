@@ -29,7 +29,7 @@ import java.util.List;
  * of literal or categorized parameters.
  * @author Alexis Guéganno
  */
-public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> implements StrokeUom{
+public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> {
 
     private LineSymbolizer symbolizer;
     private CategorizedColor color;

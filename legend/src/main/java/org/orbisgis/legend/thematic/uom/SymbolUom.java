@@ -3,7 +3,7 @@ package org.orbisgis.legend.thematic.uom;
 import org.orbisgis.core.renderer.se.common.Uom;
 
 /**
- * This interface must be used on every legend that has and
+ * This interface must be used on every legend that has an
  * inner UOM used to configure the symbol's dimensions.
  * @author Alexis Guéganno
  */

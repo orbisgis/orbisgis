@@ -41,7 +41,7 @@ import java.util.List;
  * @author Alexis Guéganno
  */
 public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
-        implements StrokeUom, SymbolUom, EnablesStroke, OnVertexOnCentroid {
+        implements SymbolUom, EnablesStroke, OnVertexOnCentroid {
 
     private CategorizedColor colorFill;
     private CategorizedReal opacityFill;

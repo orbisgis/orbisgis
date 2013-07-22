@@ -32,7 +32,7 @@ import java.util.List;
  * @author Alexis Guéganno
  */
 public class CategorizedArea extends AbstractCategorizedLegend<AreaParameters>
-        implements StrokeUom, EnablesStroke {
+        implements EnablesStroke {
 
     private CategorizedColor colorFill;
     private CategorizedReal opacityFill;

@@ -68,7 +68,7 @@ import java.util.Set;
  * @author Alexis Guéganno
  */
 public class RecodedPoint extends AbstractRecodedLegend<PointParameters>
-        implements StrokeUom, SymbolUom, EnablesStroke, OnVertexOnCentroid {
+        implements SymbolUom, EnablesStroke, OnVertexOnCentroid {
 
     private PointSymbolizer pointSymbolizer;
     private final RecodedSolidFillLegend fill;

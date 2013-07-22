@@ -55,7 +55,7 @@ import java.util.Set;
  * @author Alexis Guéganno
  */
 public class RecodedArea extends AbstractRecodedLegend<AreaParameters>
-        implements StrokeUom, EnablesStroke {
+        implements EnablesStroke {
 
     private AreaSymbolizer areaSymbolizer;
     private final RecodedSolidFillLegend fill;
