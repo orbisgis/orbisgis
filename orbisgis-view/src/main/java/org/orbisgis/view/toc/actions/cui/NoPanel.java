@@ -35,10 +35,9 @@ import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-
 public class NoPanel implements ILegendPanel {
-    private static final I18n I18N = I18nFactory.getI18n(NoPanel.class);
 
+    private static final I18n I18N = I18nFactory.getI18n(NoPanel.class);
 	private Legend legend;
 
 	public NoPanel(Legend legend) {
@@ -52,7 +51,7 @@ public class NoPanel implements ILegendPanel {
 
 	@Override
 	public Component getComponent() {
-		return new JLabel(I18N.tr("No suitable editor for this legend"));
+		return new JLabel(I18N.tr("No suitable editor for a legend"));
 	}
 
 	@Override
@@ -60,22 +59,17 @@ public class NoPanel implements ILegendPanel {
 		return legend;
 	}
 
-	public String getLegendTypeName() {
-		throw new RuntimeException(I18N.tr("bug !"));
-	}
-
 	@Override
 	public void setLegend(Legend legend) {
 		this.legend = legend;
 	}
 
-        @Override
-        public void setGeometryType(int type) {
-        }
+    @Override
+    public void setGeometryType(int type) {
+    }
 
 	@Override
 	public void initialize(LegendContext lc) {
-
 	}
 
     @Override
@@ -87,17 +81,16 @@ public class NoPanel implements ILegendPanel {
 		return null;
 	}
 
-        @Override
-        public String getId(){
-                return "NoPanel";
-        }
-        @Override
-        public void setId(String id){
-        }
+    @Override
+    public String getId(){
+            return "NoPanel";
+    }
+    @Override
+    public void setId(String id){
+    }
 
-        @Override
-        public Legend copyLegend() {
-                return null;
-        }
-
+    @Override
+    public Legend copyLegend() {
+            return null;
+    }
 }

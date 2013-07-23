@@ -129,7 +129,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
          */
         @Override
         public void initialize(LegendContext lc) {
-                initialize(lc,new ProportionalPoint());
+                initialize(lc, new ProportionalPoint());
         }
 
         @Override

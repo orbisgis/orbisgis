@@ -328,8 +328,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
             }
         }
         // Initialize a panel for this legend.
-        ILegendPanel panel = ILegendPanelFactory.getILegendPanel(legend);
-        panel.initialize(this, legend);
+        ILegendPanel panel = ILegendPanelFactory.getILegendPanel(this, legend);
         // Give it a new id.
         panel.setId(createNewID());
         // Add the symbol panel to the container after putting it in a

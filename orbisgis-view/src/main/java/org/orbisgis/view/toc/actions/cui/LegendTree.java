@@ -44,7 +44,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.factory.LegendFactory;
@@ -467,10 +466,8 @@ public class LegendTree extends JPanel {
             Legend leg = LegendFactory.getLegend(
                     temp.getCompositeSymbolizer().getSymbolizerList().get(0));
             // Initialize a panel for this legend.
-            ILegendPanel ilp = ILegendPanelFactory.getILegendPanel(leg);
-            ilp.initialize((LegendContext) simpleStyleEditor);
-            // Set the legend to be edited to the given legend
-            ilp.setLegend(leg);
+            ILegendPanel ilp = ILegendPanelFactory.getILegendPanel(
+                    simpleStyleEditor, leg);
             List<ILegendPanel> list = new ArrayList<ILegendPanel>();
             list.add(ilp);
             RuleWrapper nrw = new RuleWrapper(simpleStyleEditor, temp, list);
