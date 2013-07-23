@@ -38,8 +38,9 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Cell editor dedicated to nodes of the tree hosted in the simple legend editor. It basically uses the UI of the
- * {@link DefaultCellEditor} for String.
+ * Cell editor dedicated to nodes of the tree hosted in the Simple Style Editor.
+ * It basically uses the UI of the {@link DefaultCellEditor} for String.
+ *
  * @author alexis
  */
 public class LegendTreeCellEditor extends DefaultCellEditor {
@@ -82,11 +83,11 @@ public class LegendTreeCellEditor extends DefaultCellEditor {
             PnlStyle pnl = sw.getPanel();
             pnl.setTextFieldContent(field.getText());
         } else if(obj instanceof RuleWrapper){
-            RuleWrapper sw = (RuleWrapper) obj;
-            sw.getRule().setName(field.getText());
-            PnlRule pr = sw.getPanel();
-            pr.setTextFieldContent(field.getText());
-        } else if(obj  instanceof ILegendPanel){
+            RuleWrapper rw = (RuleWrapper) obj;
+            rw.getRule().setName(field.getText());
+            PnlRule pnl = rw.getPanel();
+            pnl.setTextFieldContent(field.getText());
+        } else if(obj instanceof ILegendPanel){
             ILegendPanel ilp = (ILegendPanel) obj;
             ilp.getLegend().setName(field.getText());
         }

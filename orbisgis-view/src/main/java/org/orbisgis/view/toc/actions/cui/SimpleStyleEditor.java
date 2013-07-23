@@ -28,20 +28,15 @@
 package org.orbisgis.view.toc.actions.cui;
 
 import java.awt.*;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 
@@ -262,7 +257,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
             Rule rule = rules.get(i);
             // Get a new RuleWrapper based on this rule and the list of
             // symbol panels constructed in addSymbolPanels.
-            RuleWrapper ruleWrapper = new RuleWrapper(rule,
+            RuleWrapper ruleWrapper = new RuleWrapper(this, rule,
                                                       addSymbolPanels(rule));
             addRulePanel(ruleWrapper);
             // Add the rule wrapper panel to the list of rule wrapper panels.
@@ -281,7 +276,6 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
         // initialize it and add a listener for when its node name changes.
         PnlRule rulePanel = ruleWrapper.getPanel();
         rulePanel.setId(createNewID());
-        rulePanel.initialize(this);
         rulePanel.addPropertyChangeListener(
                 EventHandler.create(PropertyChangeListener.class, this,
                                     "onNodeNameChange", ""));
@@ -400,7 +394,9 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      */
     // TODO: Should this method be moved to LegendTree?
     public void legendAdded(ISELegendPanel panel) {
-        panel.initialize(this);
+        if (!(panel instanceof PnlRule)) {
+            panel.initialize(this);
+        }
         panel.setId(createNewID());
         dialogContainer.add(panel.getId(), getJScrollPane(panel));
         showDialogForCurrentlySelectedLegend();

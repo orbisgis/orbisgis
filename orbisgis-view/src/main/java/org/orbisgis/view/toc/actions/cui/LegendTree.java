@@ -460,11 +460,9 @@ public class LegendTree extends JPanel {
         });
         if (UIFactory.showDialog(mip)) {
             String s = mip.getInput("RuleName");
-            RuleWrapper cur = getSelectedRule();
             LegendTreeModel tm = (LegendTreeModel) tree.getModel();
             //We need to link our new RuleWrapper with the layer we are editing.
-            Style style = simpleStyleEditor.getStyleWrapper().getStyle();
-            Rule temp = new Rule(style.getLayer());
+            Rule temp = new Rule(simpleStyleEditor.getStyleWrapper().getStyle().getLayer());
             temp.setName(s);
             Legend leg = LegendFactory.getLegend(
                     temp.getCompositeSymbolizer().getSymbolizerList().get(0));
@@ -475,8 +473,8 @@ public class LegendTree extends JPanel {
             ilp.setLegend(leg);
             List<ILegendPanel> list = new ArrayList<ILegendPanel>();
             list.add(ilp);
-            RuleWrapper nrw = new RuleWrapper(temp, list);
-            tm.addElement(tm.getRoot(), nrw, cur);
+            RuleWrapper nrw = new RuleWrapper(simpleStyleEditor, temp, list);
+            tm.addElement(tm.getRoot(), nrw, getSelectedRule());
             simpleStyleEditor.legendAdded(nrw.getPanel());
         }
     }
