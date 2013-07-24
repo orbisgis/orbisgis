@@ -48,7 +48,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * MonovariateProportionalViewBox}.
  * @author Alexis Guéganno
  */
-public class ProportionalPoint extends ConstantFormPoint implements IUniqueSymbolArea, StrokeUom {
+public class ProportionalPoint extends ConstantFormPoint implements IUniqueSymbolArea {
 
     private ProportionalWKNLegend markGraphic;
     private static final I18n I18N = I18nFactory.getI18n(ProportionalPoint.class);

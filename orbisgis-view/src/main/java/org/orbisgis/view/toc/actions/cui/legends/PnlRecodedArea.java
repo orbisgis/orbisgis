@@ -32,9 +32,11 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
+import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.orbisgis.legend.thematic.recode.RecodedArea;
 import org.orbisgis.sif.UIFactory;
@@ -158,7 +160,7 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     @Override
     public Symbolizer getFallbackSymbolizer(){
         UniqueSymbolArea usl = new UniqueSymbolArea(((RecodedArea)getLegend()).getFallbackParameters());
-        usl.setStrokeUom(((RecodedArea)getLegend()).getStrokeUom());
+        usl.setStrokeUom(((RecodedArea) getLegend()).getStrokeUom());
         return usl.getSymbolizer();
     }
 
@@ -214,13 +216,18 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     public void onEnableStroke(){
         RecodedArea ra = (RecodedArea) getLegend();
         ra.setStrokeEnabled(strokeBox.isSelected());
-        getPreview().setSymbol(new UniqueSymbolArea(ra.getFallbackParameters()).getSymbolizer());
+        UniqueSymbolArea usa = new UniqueSymbolArea(ra.getFallbackParameters());
+        if(ra.isStrokeEnabled()){
+            ra.setStrokeUom(Uom.fromString(strokeUoms[lineUom.getSelectedIndex()].getKey()));
+            usa.setStrokeUom(ra.getStrokeUom());
+        }
+        getPreview().setSymbol(usa.getSymbolizer());
         TableModelUniqueValue model = (TableModelUniqueValue) getJTable().getModel();
         model.fireTableDataChanged();
     }
 
     @Override
-    public AbstractRecodedLegend<AreaParameters> getEmptyAnalysis() {
+    public RecodedArea getEmptyAnalysis() {
         RecodedArea ra = new RecodedArea();
         RecodedArea old = (RecodedArea)getLegend();
         if(old != null){

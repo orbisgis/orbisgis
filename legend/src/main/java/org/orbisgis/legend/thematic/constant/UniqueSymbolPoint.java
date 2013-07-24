@@ -57,7 +57,7 @@ import java.awt.*;
  * </ul>
  * @author Alexis Guéganno
  */
-public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbolArea, StrokeUom {
+public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbolArea {
 
     private ConstantWKNLegend markGraphic;
     private static final I18n I18N = I18nFactory.getI18n(UniqueSymbolPoint.class);

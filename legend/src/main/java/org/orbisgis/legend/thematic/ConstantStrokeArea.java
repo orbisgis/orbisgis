@@ -156,18 +156,12 @@ public abstract class ConstantStrokeArea extends SymbolizerLegend {
         strokeLegend.setDashArray(s);
     }
 
-    /**
-     * Gets the unit of measure used to draw the associated {@code Stroke}.
-     * @return
-     */
+    @Override
     public Uom getStrokeUom(){
             return getStrokeLegend().getStrokeUom();
     }
 
-    /**
-     * Sets the unit of measure used to draw the associated {@code Stroke}.
-     * @param u
-     */
+    @Override
     public void setStrokeUom(Uom u){
             getStrokeLegend().setStrokeUom(u);
     }

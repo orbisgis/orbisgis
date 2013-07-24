@@ -38,6 +38,7 @@ import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
+import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.orbisgis.legend.thematic.recode.RecodedPoint;
 import org.orbisgis.sif.UIFactory;
@@ -92,7 +93,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     }
 
     @Override
-    public AbstractRecodedLegend<PointParameters> getEmptyAnalysis() {
+    public RecodedPoint getEmptyAnalysis() {
         return new RecodedPoint();
     }
 
@@ -319,9 +320,18 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     public void onEnableStroke(){
         RecodedPoint ra = (RecodedPoint) getLegend();
         ra.setStrokeEnabled(strokeBox.isSelected());
-        PointSymbolizer ps = (PointSymbolizer) new UniqueSymbolPoint(ra.getFallbackParameters()).getSymbolizer();
-        ps.setOnVertex(ra.isOnVertex());
-        getPreview().setSymbol(ps);
+        UniqueSymbolPoint usp = new UniqueSymbolPoint(ra.getFallbackParameters());
+        if(ra.isOnVertex()){
+            usp.setOnVertex();
+        } else {
+            usp.setOnCentroid();
+        }
+        if(ra.isStrokeEnabled()){
+            ra.setStrokeUom(Uom.fromString(uoms[lineUom.getSelectedIndex()].getKey()));
+            usp.setStrokeUom(ra.getStrokeUom());
+        }
+        usp.setSymbolUom(ra.getSymbolUom());
+        getPreview().setSymbol(usp.getSymbolizer());
         updateTable();
     }
 }
