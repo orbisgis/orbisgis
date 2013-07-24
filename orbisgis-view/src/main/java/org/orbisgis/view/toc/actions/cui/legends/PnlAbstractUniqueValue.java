@@ -110,6 +110,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
         pm.progressTo(100);
         pm.endTask();
         pm.progressTo(100);
+        postProcess(newRL);
         return newRL;
     }
 
