@@ -52,7 +52,6 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     private MappedLegend<K,U> legend;
     private static final String ADD = "add";
     private static final String REMOVE = "remove";
-    private DataSource ds;
     private JTable table;
     private String id;
     protected CanvasSE fallbackPreview;
@@ -69,12 +68,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
 
     @Override
     public void initialize(LegendContext lc, Legend l){
-        setGeometryType(lc.getGeometryType());
-        ILayer layer = lc.getLayer();
-        if (layer != null && layer.getDataSource() != null) {
-            setDataSource(layer.getDataSource());
-        }
-        setLegend(l);
+        super.initialize(lc, l);
         initPreview();
     }
 
@@ -112,14 +106,6 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
         } else {
             return new WideComboBox();
         }
-    }
-
-    /**
-     * Sets the associated data source
-     * @param newDS the new {@link org.gdms.data.DataSource}.
-     */
-    protected void setDataSource(DataSource newDS){
-        ds = newDS;
     }
 
     /**
@@ -454,18 +440,18 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     public abstract void initPreview();
 
     @Override
-    protected final void initializeLegendFields() {
+    public final void initializeLegendFields() {
         this.removeAll();
 
         JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
-        //Fallback symbol
+        // Fallback symbol
         glob.add(getSettingsPanel());
 
         //Classification generator
         glob.add(getCreateClassificationPanel());
 
-        //Table for the recoded configurations
+        // Table
         glob.add(getTablePanel(), "span 2, growx");
         this.add(glob);
         this.revalidate();

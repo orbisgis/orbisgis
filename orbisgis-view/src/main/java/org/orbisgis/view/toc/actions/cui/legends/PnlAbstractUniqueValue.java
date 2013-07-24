@@ -45,6 +45,7 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.background.*;
 import org.orbisgis.view.joblist.JobListItem;
+import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelUniqueValue;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorConfigurationPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;

@@ -393,9 +393,6 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      */
     // TODO: Should this method be moved to LegendTree?
     public void legendAdded(ISELegendPanel panel) {
-        if (!(panel instanceof PnlRule)) {
-            panel.initialize(this);
-        }
         panel.setId(createNewID());
         dialogContainer.add(panel.getId(), getJScrollPane(panel));
         showDialogForCurrentlySelectedLegend();

@@ -48,8 +48,8 @@ public interface ISELegendPanel {
 	Component getComponent();
 
 	/**
-	 * Initialize the legend. This method is called just after the legend
-	 * creation.
+	 * Initializes the panel using the given {@code LegendContext}.
+     * This method is called just after the legend creation.
 	 *
 	 * @param lc LegendContext is useful to get some information about the
 	 *           layer in edition.

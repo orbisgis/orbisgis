@@ -17,7 +17,6 @@ import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorCategorizedPoint;
 import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorCategorizedPoint;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelCatPoint;
@@ -208,12 +207,6 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         ret.setFallbackParameters(cl.getFallbackParameters());
         ret.setLookupFieldName(cl.getLookupFieldName());
         return ret;
-    }
-
-    @Override
-    public Component getComponent() {
-        initializeLegendFields();
-        return this;
     }
 
     @Override

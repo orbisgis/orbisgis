@@ -40,6 +40,7 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.ColorPicker;
 import org.orbisgis.sif.components.WideComboBox;
+import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
@@ -100,12 +101,33 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
      */
     protected static final String COMBO_BOX_CONSTRAINTS =
             "width " + SECOND_COL_WIDTH + "!";
-    protected ContainerItemProperties[] strokeUoms;
+    private ContainerItemProperties[] strokeUoms;
+    /**
+     * DataSource associated to the layer attached to the LegendContext
+     * passed to {@link #initialize(LegendContext, Legend)}.
+     */
+    protected DataSource ds;
+
+    @Override
+    public Component getComponent() {
+        return this;
+    }
+
+    @Override
+    public void initialize(LegendContext lc, Legend leg) {
+        setDataSource(lc.getLayer().getDataSource());
+        setGeometryType(lc.getGeometryType());
+        setLegend(leg);
+    }
 
     /**
-     * Initialize and layout the UI.
+     * Sets the associated data source.
+     *
+     * @param newDS the new {@link org.gdms.data.DataSource}.
      */
-    protected abstract void initializeLegendFields();
+    protected void setDataSource(DataSource newDS){
+        ds = newDS;
+    }
 
     /**
      * Initialize a {@code JComboBox} whose values are set according to the

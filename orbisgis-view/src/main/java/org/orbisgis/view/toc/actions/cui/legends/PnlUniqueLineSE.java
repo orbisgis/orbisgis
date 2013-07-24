@@ -44,13 +44,11 @@ import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
@@ -92,6 +90,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         /**
          * Builds a new PnlUniqueLineSE choosing if we want to display the uom combo box.
+         *
          * @param uom if true, the uom combo box will be displayed.
          */
         public PnlUniqueLineSE(boolean uom){
@@ -105,11 +104,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          */
         protected boolean isUomEnabled(){
             return displayUom;
-        }
-
-        @Override
-        public Component getComponent() {
-                return this;
         }
 
         @Override
@@ -146,12 +140,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          */
         @Override
         public void initialize(LegendContext lc) {
-            initialize(lc,new UniqueSymbolLine());
-        }
-
-        @Override
-        public void initialize(LegendContext lc, Legend leg) {
-            setLegend(leg);
+            initialize(lc, new UniqueSymbolLine());
         }
 
         @Override
@@ -215,7 +204,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 ActionListener aclUom = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 lineUom.addActionListener(aclUom);
 
-                if(isLineOptional()){
+                if (isLineOptional()) {
                         lineCheckBox = new JCheckBox(I18N.tr("Enable"));
                         lineCheckBox.addActionListener(
                                 EventHandler.create(ActionListener.class, this, "onClickLineCheckBox"));
@@ -268,7 +257,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
             ComponentUtil.setFieldState(enable,lineDash);
             if (displayUom) {
                 if (uOMBox != null) {
-                    ComponentUtil.setFieldState(enable,uOMBox);
+                    ComponentUtil.setFieldState(enable, uOMBox);
                 }
             }
         }
@@ -306,7 +295,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        protected void initializeLegendFields() {
+        public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
                 glob.add(getLineBlock(uniqueLine.getPenStroke(),

@@ -43,12 +43,10 @@ import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
@@ -76,15 +74,17 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         private boolean displayBoxes;
 
         /**
-         * Default constructor. UOM will be displayed as well as the stroke configuration and the check boxes used to
-         * enable or disable stroke and fill configuration panels.
+         * Default constructor. UOM will be displayed as well as the stroke
+         * configuration and the check boxes used to enable or disable stroke
+         * and fill configuration panels.
          */
         public PnlUniqueAreaSE(){
-            this(true, true, true);
+            this(true);
         }
 
         /**
          * Constructor that is used to set if the UOM must be displayed or not.
+         *
          * @param uom If true, the uom will be displayed.
          */
         public PnlUniqueAreaSE(boolean uom){
@@ -93,20 +93,21 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
 
         /**
          * Builds the panel.
-         * @param uom If true, the combo used to configure the symbolizer UOM will be displayed.
-         * @param displayStroke If true, the panel used to configure the symbol's stroke will be enabled.
-         * @param displayBoxes If true,  the two boxes that are used to enable and disable the stroke and fill of
-         *                     the symbol will be displayed.
+         *
+         * @param uom           If true, the combo used to configure the
+         *                      symbolizer UOM will be displayed.
+         * @param displayStroke If true, the panel used to configure the
+         *                      symbol's stroke will be enabled.
+         * @param displayBoxes  If true,  the two boxes that are used to enable
+         *                      and disable the stroke and fill of the symbol
+         *                      will be displayed.
          */
-        public PnlUniqueAreaSE(boolean uom, boolean displayStroke, boolean displayBoxes){
+        public PnlUniqueAreaSE(boolean uom,
+                               boolean displayStroke,
+                               boolean displayBoxes){
             super(uom);
             this.displayStroke = displayStroke;
             this.displayBoxes = displayBoxes;
-        }
-
-        @Override
-        public Component getComponent() {
-                return this;
         }
 
         @Override
@@ -147,12 +148,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
          */
         @Override
         public void initialize(LegendContext lc) {
-            initialize(lc,new UniqueSymbolArea());
-        }
-
-        @Override
-        public void initialize(LegendContext lc, Legend leg) {
-            setLegend(leg);
+            initialize(lc, new UniqueSymbolArea());
         }
 
         @Override
@@ -184,7 +180,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         }
 
         @Override
-        protected void initializeLegendFields() {
+        public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
 

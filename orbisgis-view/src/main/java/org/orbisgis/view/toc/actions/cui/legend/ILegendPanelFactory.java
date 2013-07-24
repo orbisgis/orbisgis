@@ -72,7 +72,7 @@ public class ILegendPanelFactory {
      * @return Associated ILegendPanel
      */
     public static ILegendPanel getILegendPanel(LegendContext lc, String legendName) {
-        ILegendPanel ilp = null;
+        ILegendPanel ilp;
         if (legendName.equals(UniqueSymbolPoint.NAME)) {
             ilp = new PnlUniquePointSE();
         } else if (legendName.equals(UniqueSymbolLine.NAME)) {

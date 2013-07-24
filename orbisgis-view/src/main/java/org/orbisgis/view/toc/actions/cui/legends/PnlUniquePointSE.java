@@ -47,13 +47,11 @@ import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
-import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
@@ -76,28 +74,29 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         private ContainerItemProperties[] wkns;
 
         /**
-         * Default constructor. UOM will be displayed as well as the stroke configuration and the check boxes used to
-         * enable or disable stroke and fill configuration panels.
+         * Default constructor. UOM will be displayed as well as the stroke
+         * configuration and the check boxes used to enable or disable stroke
+         * and fill configuration panels.
          */
-        public PnlUniquePointSE(){
+        public PnlUniquePointSE() {
             this(true, true, true);
         }
 
         /**
          * Builds the panel.
-         * @param uomAndOnVertex If true, the combo used to configure the symbolizer UOM and the radio buttons used to
-         *                       decide if the symbol must be displayed on vertices or on centroid will be displayed.
-         * @param displayStroke If true, the panel used to configure the symbol's stroke will be enabled.
-         * @param displayBoxes If true,  the two boxes that are used to enable and disable the stroke and fill of
-         *                     the symbol will be displayed.
+         *
+         * @param uom           If true, the combo used to configure the
+         *                      symbolizer UOM will be displayed.
+         * @param displayStroke If true, the panel used to configure the
+         *                      symbol's stroke will be enabled.
+         * @param displayBoxes  If true,  the two boxes that are used to enable
+         *                      and disable the stroke and fill of the symbol
+         *                      will be displayed.
          */
-        public PnlUniquePointSE(boolean uomAndOnVertex, boolean displayStroke, boolean displayBoxes){
-            super(uomAndOnVertex,displayStroke,displayBoxes);
-        }
-
-        @Override
-        public Component getComponent() {
-                return this;
+        public PnlUniquePointSE(boolean uom,
+                                boolean displayStroke,
+                                boolean displayBoxes) {
+            super(uom, displayStroke, displayBoxes);
         }
 
         @Override
@@ -143,22 +142,9 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 return geometryType;
         }
 
-        /**
-         * Initialize the panel. This method is called just after the panel
-         * creation.</p>
-         *
-         * @param lc LegendContext is useful to get some information about the
-         * layer in edition.
-         */
         @Override
         public void initialize(LegendContext lc) {
             initialize(lc, new UniqueSymbolPoint());
-        }
-
-        @Override
-        public void initialize(LegendContext lc, Legend leg) {
-            setGeometryType(lc.getGeometryType());
-            setLegend(leg);
         }
 
         @Override
@@ -188,7 +174,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         }
 
         @Override
-        protected void initializeLegendFields() {
+        public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 

@@ -63,6 +63,11 @@ public interface ILegendPanel extends ISELegendPanel {
 	void setLegend(Legend legend);
 
     /**
+     * Initialize and layout the UI.
+     */
+    void initializeLegendFields();
+
+    /**
      * Sets the type of the geometry field of the data that must be
      * represented.
      * @param type

@@ -13,6 +13,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
@@ -182,12 +183,6 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
         ret.setFallbackParameters(cl.getFallbackParameters());
         ret.setLookupFieldName(cl.getLookupFieldName());
         return ret;
-    }
-
-    @Override
-    public Component getComponent() {
-        initializeLegendFields();
-        return this;
     }
 
     @Override

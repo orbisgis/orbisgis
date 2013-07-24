@@ -30,9 +30,7 @@ package org.orbisgis.view.toc.actions.cui.legends;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.classification.ClassificationUtils;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -54,7 +52,6 @@ import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -80,14 +77,8 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlProportionalPointSE.class);
         private static final I18n I18N = I18nFactory.getI18n(PnlProportionalPointSE.class);
         private ProportionalPoint proportionalPoint;
-        private DataSource ds;
         private WideComboBox fieldCombo;
         MouseListener l;
-
-        @Override
-        public Component getComponent() {
-                return this;
-        }
 
         @Override
         public Legend getLegend() {
@@ -133,16 +124,6 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
         }
 
         @Override
-        public void initialize(LegendContext lc, Legend leg) {
-                ILayer layer = lc.getLayer();
-                if(layer != null){
-                        ds = layer.getDataSource();
-                }
-                setGeometryType(lc.getGeometryType());
-                setLegend(leg);
-        }
-
-        @Override
         public Legend copyLegend(){
                 return new ProportionalPoint();
         }
@@ -173,7 +154,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
         }
 
         @Override
-        protected void initializeLegendFields() {
+        public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
 

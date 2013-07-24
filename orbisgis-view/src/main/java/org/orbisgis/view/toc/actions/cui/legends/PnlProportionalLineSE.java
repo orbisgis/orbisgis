@@ -70,7 +70,6 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
         private ProportionalLine legend;
         private static final I18n I18N = I18nFactory.getI18n(PnlProportionalLineSE.class);
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlProportionalLineSE.class);
-        private DataSource ds;
         private JPanel lineColor;
         private JSpinner lineOpacity;
         private JTextField lineDash;
@@ -122,23 +121,8 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
         }
 
         @Override
-        public Component getComponent() {
-                return this;
-        }
-
-        @Override
         public void initialize(LegendContext lc) {
             initialize(lc, new ProportionalLine());
-        }
-
-        @Override
-        public void initialize(LegendContext lc, Legend leg) {
-            setGeometryType(lc.getGeometryType());
-            ILayer layer = lc.getLayer();
-            if(layer != null){
-                ds = layer.getDataSource();
-            }
-            setLegend(leg);
         }
 
         @Override
@@ -157,7 +141,7 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
         }
 
         @Override
-        protected void initializeLegendFields() {
+        public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
                 glob.add(getLineBlock());

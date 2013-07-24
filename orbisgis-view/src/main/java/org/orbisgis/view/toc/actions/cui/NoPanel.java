@@ -65,6 +65,10 @@ public class NoPanel implements ILegendPanel {
 	}
 
     @Override
+    public void initializeLegendFields() {
+    }
+
+    @Override
     public void setGeometryType(int type) {
     }
 

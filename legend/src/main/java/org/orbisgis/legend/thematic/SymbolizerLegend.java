@@ -72,5 +72,4 @@ public abstract class SymbolizerLegend implements Legend, StrokeUom {
         public String getLegendTypeId(){
             return "org.orbisgis.legend.thematic.SymbolizerLegend";
         }
-
 }

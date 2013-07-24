@@ -14,7 +14,6 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorCategorizedLine;
 import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorCategorizedLine;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelCatLine;
@@ -163,12 +162,6 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
         ret.setFallbackParameters(cl.getFallbackParameters());
         ret.setLookupFieldName(cl.getLookupFieldName());
         return ret;
-    }
-
-    @Override
-    public Component getComponent() {
-        initializeLegendFields();
-        return this;
     }
 
     @Override

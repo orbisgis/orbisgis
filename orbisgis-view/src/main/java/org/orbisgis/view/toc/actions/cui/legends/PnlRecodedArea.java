@@ -43,7 +43,6 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.model.*;
 import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
@@ -79,12 +78,6 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     private static final I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
     private String id;
     private JCheckBox strokeBox;
-
-    @Override
-    public Component getComponent() {
-        initializeLegendFields();
-        return this;
-    }
 
     @Override
     public String getId() {
