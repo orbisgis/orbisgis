@@ -372,12 +372,9 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
                 ((EnablesStroke) ml).setStrokeEnabled(
                         ((EnablesStroke) inner).isStrokeEnabled());
         }
-        if(inner instanceof StrokeUom){
-            ((StrokeUom) ml).setStrokeUom(
-                    ((StrokeUom) inner).getStrokeUom());
-
-        }
-        if(inner instanceof SymbolUom){
+        ml.setStrokeUom(inner.getStrokeUom());
+        if (inner instanceof SymbolUom &&
+                ml instanceof SymbolUom) {
             ((SymbolUom) ml).setSymbolUom(
                     ((SymbolUom) inner).getSymbolUom());
 
