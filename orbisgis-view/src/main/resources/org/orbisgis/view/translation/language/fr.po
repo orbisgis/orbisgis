@@ -2,16 +2,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-19 10:41+0100\n"
-"PO-Revision-Date: 2013-07-19 10:56+0100\n"
-"Last-Translator: Adam Gouge <adam.gouge@ec-nantes.fr>\n"
+"POT-Creation-Date: 2013-07-19 16:36+0100\n"
+"PO-Revision-Date: 2013-07-22 09:57+0100\n"
+"Last-Translator: Alexis Guéganno <alexis.gueganno@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.5.4\n"
 "X-Poedit-KeywordsList: tr;trc;trnc;marktr;trn\n"
 "X-Poedit-Basepath: ../../../../../..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -463,16 +463,16 @@ msgstr "Aucun éditeur approprié pour cette légende"
 msgid "bug !"
 msgstr "Bug !"
 
-#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:184
+#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:192
 msgid "Add or select a legend."
 msgstr "Ajouter ou sélectionner une légende."
 
-#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:460
+#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:480
 #, java-format
 msgid "Simple Style Editor - {0}"
 msgstr "Éditeur de style simple - {0}"
 
-#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:466
+#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:486
 msgid "You must create at least one legend"
 msgstr "Vous devez créer au moins une légende"
 
@@ -707,12 +707,12 @@ msgid "Interval classification"
 msgstr "Classification par intervalle"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:113
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:285
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:308
 msgid "The application has ended unexpectedly"
 msgstr "L'application a fermé de manière inattendue"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:128
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:159
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:180
 msgid "Create"
 msgstr "Créer"
 
@@ -728,37 +728,41 @@ msgstr "Classes"
 msgid "Color scheme:"
 msgstr "Palette de couleurs :"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:135
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:127
+msgid "Can't build the analysis with an accurate comparator."
+msgstr "Aucun comparateur valable n'a pu être utilisé."
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:156
 msgid "Use the fallback color"
 msgstr "Couleur par défaut"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:139
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:160
 msgid "Use a color scheme:"
 msgstr "<html>Palette de couleurs :<html>"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:193
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:214
 msgid "Unique value classification"
 msgstr "Classification par valeur unique"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:264
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:287
 msgid "Retrieving classes"
 msgstr "Extraction des valeurs uniques"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:342
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:365
 msgid "Continue ?"
 msgstr "Continuer ?"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:355
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:378
 msgid "<html><p>The analysis seems to generate more than "
 msgstr "<html><p>L'analyse semble générer plus de"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:357
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:380
 msgid ""
 " different values...</p><p>Are you sure you want to continue ?</p></html>"
 msgstr ""
 " valeurs uniques.</p><p>Êtes-vous sûr de vouloir continuer ?</p></html>"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:383
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:406
 msgid "Operation in progress..."
 msgstr "Opération en cours ..."
 
@@ -840,6 +844,11 @@ msgstr "Dégradé de "
 msgid " to "
 msgstr "à"
 
+#: java/org/orbisgis/view/toc/wrapper/RuleWrapper.java:268
+#, java-format
+msgid "Min scale greater than max scale in rule {0}."
+msgstr "L''échelle minimum ne peut pas excéder l''échelle maximum (règle {0})."
+
 #: java/org/orbisgis/view/sqlconsole/SQLConsoleFactory.java:71
 msgid "Handles all Metadata-related caching for the SQLLanguageSupport class"
 msgstr ""
@@ -870,7 +879,7 @@ msgstr "Effacer"
 #: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:144
 #: java/org/orbisgis/view/beanshell/BshConsolePanel.java:227
 msgid "Erase the content of the editor"
-msgstr "Effacer le contenu de l'éditeur"
+msgstr "Effacer le contenu de l''éditeur"
 
 #: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:152
 #: java/org/orbisgis/view/beanshell/BshConsolePanel.java:250

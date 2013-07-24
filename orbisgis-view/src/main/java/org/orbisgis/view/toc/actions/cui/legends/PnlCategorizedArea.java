@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
@@ -109,7 +110,7 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     }
 
     @Override
-    public MappedLegend<Double,AreaParameters> getEmptyAnalysis() {
+    public CategorizedArea getEmptyAnalysis() {
         return new CategorizedArea();
     }
 
@@ -205,7 +206,13 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     public void onEnableStroke(){
         CategorizedArea ra = (CategorizedArea) getLegend();
         ra.setStrokeEnabled(strokeBox.isSelected());
-        getPreview().setSymbol(new UniqueSymbolArea(ra.getFallbackParameters()).getSymbolizer());
+        UniqueSymbolArea usa = new UniqueSymbolArea(ra.getFallbackParameters());
+        if(ra.isStrokeEnabled()){
+            ra.setStrokeUom(Uom.fromString(strokeUoms[lineUom.getSelectedIndex()].getKey()));
+            usa.setStrokeUom(ra.getStrokeUom());
+        }
+
+        getPreview().setSymbol(usa.getSymbolizer());
         TableModelInterval model = (TableModelInterval) getJTable().getModel();
         model.fireTableDataChanged();
     }

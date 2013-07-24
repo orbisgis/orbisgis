@@ -46,7 +46,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * raw value (i.e. we don't apply any mathematical function to the input values).
  * @author Alexis Guéganno
  */
-public class ProportionalLine extends ConstantColorAndDashesLine implements Legend, StrokeUom {
+public class ProportionalLine extends ConstantColorAndDashesLine {
 
     private ProportionalStrokeLegend strokeLegend;
     private static final I18n I18N = I18nFactory.getI18n(ProportionalLine.class);

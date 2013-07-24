@@ -49,7 +49,7 @@ import java.util.List;
  * {@code Recode} instances on a common field or of {@code Literal}.
  * @author Alexis Guéganno
  */
-public class RecodedLine extends AbstractRecodedLegend<LineParameters> implements StrokeUom {
+public class RecodedLine extends AbstractRecodedLegend<LineParameters> {
 
         private final LineSymbolizer ls;
         private final RecodedPenStroke ps;
@@ -233,10 +233,8 @@ public class RecodedLine extends AbstractRecodedLegend<LineParameters> implement
             getLineDash().setFallbackValue(lps.getLineDash());
         }
 
-    @Override
-    public String getLegendTypeId() {
-        return "org.orbisgis.legend.thematic.recode.RecodedLine";
-    }
-        
-        
+        @Override
+        public String getLegendTypeId() {
+            return "org.orbisgis.legend.thematic.recode.RecodedLine";
+        }
 }
