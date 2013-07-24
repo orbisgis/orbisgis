@@ -5,9 +5,12 @@ import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.LineParameters;
+import org.orbisgis.legend.thematic.OnVertexOnCentroid;
 import org.orbisgis.legend.thematic.map.MappedLegend;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
+import org.orbisgis.legend.thematic.uom.SymbolUom;
 import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -27,8 +30,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * Base class for the analysis that relies on a "table", i.e., Value and
@@ -53,6 +58,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     private String id;
     protected CanvasSE fallbackPreview;
     protected WideComboBox fieldCombo;
+    protected JComboBox lineUom;
     protected static final String ENABLE_BORDER = I18n.marktr("Enable border");
     protected static final String CLASSIFICATION_SETTINGS = I18n.marktr("Classification settings");
 
@@ -131,7 +137,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     }
 
     @Override
-    public Legend getLegend() {
+    public MappedLegend<K,U> getLegend() {
         return legend;
     }
 
@@ -336,7 +342,43 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
         }
         pm.endTask();
         pm.progressTo(100);
+        postProcess(newRL);
         return newRL;
+    }
+
+    /**
+     * Makes a postProcess operation on {@code ml} using the inner
+     * legend. We keep properties handled by the following interfaces :
+     * <ul><li>{@link OnVertexOnCentroid},</li>
+     * <li>{@link EnablesStroke}</li>
+     * <li>{@link StrokeUom}</li>
+     * <li>{@link SymbolUom}</li>
+     * </ul>
+     *
+     * @param ml The legend we want to process.
+     */
+    protected void postProcess(MappedLegend<K, U> ml) {
+        MappedLegend<K,U> inner = getLegend();
+        if (inner instanceof OnVertexOnCentroid &&
+                ml instanceof OnVertexOnCentroid) {
+                if (((OnVertexOnCentroid) inner).isOnVertex()) {
+                    ((OnVertexOnCentroid) ml).setOnVertex();
+                } else {
+                    ((OnVertexOnCentroid) ml).setOnCentroid();
+                }
+        }
+        if (inner instanceof EnablesStroke &&
+                ml instanceof EnablesStroke) {
+                ((EnablesStroke) ml).setStrokeEnabled(
+                        ((EnablesStroke) inner).isStrokeEnabled());
+        }
+        ml.setStrokeUom(inner.getStrokeUom());
+        if (inner instanceof SymbolUom &&
+                ml instanceof SymbolUom) {
+            ((SymbolUom) ml).setSymbolUom(
+                    ((SymbolUom) inner).getSymbolUom());
+
+        }
     }
 
     /**
@@ -444,7 +486,8 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
 
         // Unit of measure - line width
         jp.add(new JLabel(I18N.tr(LINE_WIDTH_UNIT)));
-        jp.add(getUOMComboBox(), COMBO_BOX_CONSTRAINTS);
+        lineUom = getUOMComboBox();
+        jp.add(lineUom, COMBO_BOX_CONSTRAINTS);
 
         beforeFallbackSymbol(jp);
 

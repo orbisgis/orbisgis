@@ -99,7 +99,7 @@ public abstract class AbstractFieldPanel extends JPanel {
      */
     protected static final String COMBO_BOX_CONSTRAINTS =
             "width " + SECOND_COL_WIDTH + "!";
-    private ContainerItemProperties[] strokeUoms;
+    protected ContainerItemProperties[] strokeUoms;
 
     /**
      * Initialize a {@code JComboBox} whose values are set according to the

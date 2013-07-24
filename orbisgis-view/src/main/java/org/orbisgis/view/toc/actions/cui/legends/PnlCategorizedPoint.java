@@ -123,7 +123,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     }
 
     @Override
-    public MappedLegend<Double,PointParameters> getEmptyAnalysis() {
+    public CategorizedPoint getEmptyAnalysis() {
         return new CategorizedPoint();
     }
 
@@ -230,9 +230,20 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
      * Action done when the checkbox used to activate the stroke is pressed.
      */
     public void onEnableStroke(){
-        CategorizedPoint ra = (CategorizedPoint) getLegend();
-        ra.setStrokeEnabled(strokeBox.isSelected());
-        getPreview().setSymbol(new UniqueSymbolPoint(ra.getFallbackParameters()).getSymbolizer());
+        CategorizedPoint cp = (CategorizedPoint) getLegend();
+        cp.setStrokeEnabled(strokeBox.isSelected());
+        UniqueSymbolPoint usp = new UniqueSymbolPoint(cp.getFallbackParameters());
+        if(cp.isOnVertex()){
+            usp.setOnVertex();
+        } else {
+            usp.setOnCentroid();
+        }
+        if(cp.isStrokeEnabled()){
+            cp.setStrokeUom(Uom.fromString(uoms[lineUom.getSelectedIndex()].getKey()));
+            usp.setStrokeUom(cp.getStrokeUom());
+        }
+        usp.setSymbolUom(cp.getSymbolUom());
+        getPreview().setSymbol(usp.getSymbolizer());
         TableModelInterval model = (TableModelInterval) getJTable().getModel();
         model.fireTableDataChanged();
     }

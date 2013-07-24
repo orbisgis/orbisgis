@@ -39,6 +39,7 @@ import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 import org.orbisgis.legend.thematic.AreaParameters;
+import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -53,7 +54,8 @@ import java.util.Set;
  * Wrapper for unique value classification that are made on AreaSymbolizer instances.
  * @author Alexis Guéganno
  */
-public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implements StrokeUom {
+public class RecodedArea extends AbstractRecodedLegend<AreaParameters>
+        implements EnablesStroke {
 
     private AreaSymbolizer areaSymbolizer;
     private final RecodedSolidFillLegend fill;
@@ -293,19 +295,12 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters> implement
         return "org.orbisgis.legend.thematic.recode.RecodedArea";
     }
 
-    /**
-     * Returns true if the stroke of the associated symbolizer.
-     * @return  true if the geometries can be stroked by the associated symbolizer, ie its inner {@code PenStroke} is
-     * not null.
-     */
+    @Override
     public boolean isStrokeEnabled(){
         return ps != null;
     }
 
-    /**
-     * Enables or disables the usage of a stroke for the drawn geometries.
-     * @param enable If true, the stroke will be drawn. If false, it won't be drawn.
-     */
+    @Override
     public void setStrokeEnabled(boolean enable){
         if(enable && ps ==null){
             PenStroke stroke = new PenStroke();
