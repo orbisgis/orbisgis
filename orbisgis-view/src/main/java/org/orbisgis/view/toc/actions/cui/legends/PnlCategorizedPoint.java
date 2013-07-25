@@ -132,7 +132,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     }
 
     @Override
-    public TableCellEditor getParametersCellEditor() {
+    public TableCellEditor getPreviewCellEditor() {
         return new ParametersEditorCategorizedPoint();
     }
 
@@ -232,7 +232,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         }
         usp.setSymbolUom(cp.getSymbolUom());
         getPreview().setSymbol(usp.getSymbolizer());
-        TableModelInterval model = (TableModelInterval) getJTable().getModel();
+        TableModelInterval model = (TableModelInterval) tablePanel.getJTable().getModel();
         model.fireTableDataChanged();
     }
 
@@ -268,7 +268,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         leg.setSymbolUom(Uom.fromString(uoms[index].getKey()));
         CanvasSE prev = getPreview();
         prev.setSymbol(getFallbackSymbolizer());
-        updateTable();
+        tablePanel.updateTable();
     }
 
     /**

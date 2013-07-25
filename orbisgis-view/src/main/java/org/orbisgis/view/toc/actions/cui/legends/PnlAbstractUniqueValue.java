@@ -201,12 +201,6 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
     }
 
     @Override
-    public String getNotUsedKey(){
-        AbstractRecodedLegend leg = (AbstractRecodedLegend) getLegend();
-        return leg.getNotUsedKey("newValue");
-    }
-
-    @Override
     public Class getPreviewClass() {
         return String.class;
     }
@@ -253,7 +247,6 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
 
         @Override
         public void run(ProgressMonitor pm) {
-            MappedLegend<String,U> legend = ((MappedLegend<String,U>)getLegend());
             result = getValues(pm);
             if(result != null){
                 AbstractRecodedLegend<U> rl;
@@ -265,6 +258,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
                     rl = createConstantClassification(result, pm);
                 }
                 if(rl != null){
+                    MappedLegend<String,U> legend = getLegend();
                     rl.setLookupFieldName(legend.getLookupFieldName());
                     rl.setName(legend.getName());
                     setLegend(rl);
@@ -464,8 +458,9 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
         @Override
         public void jobRemoved(Job job) {
             if(job.getId().is(new DefaultJobId(JOB_NAME))){
-                ((AbstractTableModel) getJTable().getModel()).fireTableDataChanged();
-                getJTable().invalidate();
+                JTable table = tablePanel.getJTable();
+                ((AbstractTableModel) table.getModel()).fireTableDataChanged();
+                table.invalidate();
             }
         }
 

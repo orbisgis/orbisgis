@@ -84,10 +84,13 @@ public abstract class AbstractCategorizedLegend <U extends SymbolParameters> ext
     }
 
     /**
-     * Gets a key not already used in the analysis. If the given key is not already in use, it is returned. Otherwise,
-     * a new one is created.
-     * @return {@code d} if it is not already used in this map, max(keySet())+1 if max(keySet())>-INF, 1.0 otherwise.
+     * Gets a key not already used in the analysis. If the given key is not
+     * already in use, it is returned. Otherwise, a new one is created.
+     *
+     * @return {@code d} if it is not already used in this map,
+     *         max(keySet())+1 if max(keySet())>-INF, 1.0 otherwise.
      */
+    @Override
     public Double getNotUsedKey(Double d) {
         SortedSet<Double> keys = keySet();
         if(!keys.contains(d)){

@@ -86,12 +86,6 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     }
 
     @Override
-    public Double getNotUsedKey(){
-        AbstractCategorizedLegend leg = (AbstractCategorizedLegend) getLegend();
-        return leg.getNotUsedKey((Double)leg.keySet().last());
-    }
-
-    @Override
     public Class getPreviewClass() {
         return Double.class;
     }

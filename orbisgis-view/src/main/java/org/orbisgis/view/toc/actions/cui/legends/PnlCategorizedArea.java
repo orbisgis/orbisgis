@@ -121,7 +121,7 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     }
 
     @Override
-    public TableCellEditor getParametersCellEditor() {
+    public TableCellEditor getPreviewCellEditor() {
         return new ParametersEditorCategorizedArea();
     }
 
@@ -203,7 +203,7 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
         }
 
         getPreview().setSymbol(usa.getSymbolizer());
-        TableModelInterval model = (TableModelInterval) getJTable().getModel();
+        TableModelInterval model = (TableModelInterval) tablePanel.getJTable().getModel();
         model.fireTableDataChanged();
     }
 

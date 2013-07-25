@@ -170,7 +170,7 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     }
 
     @Override
-    public TableCellEditor getParametersCellEditor(){
+    public TableCellEditor getPreviewCellEditor(){
         return new ParametersEditorRecodedArea();
     }
 
@@ -210,7 +210,7 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
             usa.setStrokeUom(ra.getStrokeUom());
         }
         getPreview().setSymbol(usa.getSymbolizer());
-        TableModelUniqueValue model = (TableModelUniqueValue) getJTable().getModel();
+        TableModelUniqueValue model = (TableModelUniqueValue) tablePanel.getJTable().getModel();
         model.fireTableDataChanged();
     }
 

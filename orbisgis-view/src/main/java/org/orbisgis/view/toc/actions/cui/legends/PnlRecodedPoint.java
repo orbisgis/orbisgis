@@ -173,7 +173,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     }
 
     @Override
-    public TableCellEditor getParametersCellEditor() {
+    public TableCellEditor getPreviewCellEditor() {
         return new ParametersEditorRecodedPoint();
     }
 
@@ -286,7 +286,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         leg.setSymbolUom(Uom.fromString(uoms[index].getKey()));
         CanvasSE prev = getPreview();
         prev.setSymbol(getFallbackSymbolizer());
-        updateTable();
+        tablePanel.updateTable();
     }
 
     /**
@@ -320,6 +320,6 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         }
         usp.setSymbolUom(ra.getSymbolUom());
         getPreview().setSymbol(usp.getSymbolizer());
-        updateTable();
+        tablePanel.updateTable();
     }
 }

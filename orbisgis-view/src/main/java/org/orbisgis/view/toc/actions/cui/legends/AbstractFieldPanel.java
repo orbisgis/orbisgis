@@ -101,7 +101,7 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
      */
     protected static final String COMBO_BOX_CONSTRAINTS =
             "width " + SECOND_COL_WIDTH + "!";
-    private ContainerItemProperties[] strokeUoms;
+    protected ContainerItemProperties[] strokeUoms;
     /**
      * DataSource associated to the layer attached to the LegendContext
      * passed to {@link #initialize(LegendContext, Legend)}.

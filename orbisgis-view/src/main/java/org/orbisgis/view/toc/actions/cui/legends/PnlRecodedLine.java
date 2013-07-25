@@ -158,7 +158,7 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     }
 
     @Override
-    public TableCellEditor getParametersCellEditor(){
+    public TableCellEditor getPreviewCellEditor(){
         return new ParametersEditorRecodedLine();
     }
 
