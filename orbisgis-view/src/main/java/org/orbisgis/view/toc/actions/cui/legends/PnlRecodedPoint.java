@@ -46,7 +46,6 @@ import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorRecodedPoint;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorUniqueValue;
 import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorRecodedPoint;
@@ -174,7 +173,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     }
 
     @Override
-    public TableCellEditor getParametersCellEditor() {
+    public TableCellEditor getPreviewCellEditor() {
         return new ParametersEditorRecodedPoint();
     }
 
@@ -223,17 +222,6 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         rl.setFallbackParameters(leg.getFallbackParameters());
         rl.setLookupFieldName(leg.getLookupFieldName());
         return rl;
-    }
-
-    @Override
-    public Component getComponent() {
-        initializeLegendFields();
-        return this;
-    }
-
-    @Override
-    public ISELegendPanel newInstance() {
-        return new PnlRecodedPoint();
     }
 
     @Override
@@ -298,7 +286,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         leg.setSymbolUom(Uom.fromString(uoms[index].getKey()));
         CanvasSE prev = getPreview();
         prev.setSymbol(getFallbackSymbolizer());
-        updateTable();
+        tablePanel.updateTable();
     }
 
     /**
@@ -332,6 +320,6 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         }
         usp.setSymbolUom(ra.getSymbolUom());
         getPreview().setSymbol(usp.getSymbolizer());
-        updateTable();
+        tablePanel.updateTable();
     }
 }

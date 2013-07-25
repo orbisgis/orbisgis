@@ -13,6 +13,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
@@ -120,7 +121,7 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     }
 
     @Override
-    public TableCellEditor getParametersCellEditor() {
+    public TableCellEditor getPreviewCellEditor() {
         return new ParametersEditorCategorizedArea();
     }
 
@@ -185,17 +186,6 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     }
 
     @Override
-    public Component getComponent() {
-        initializeLegendFields();
-        return this;
-    }
-
-    @Override
-    public ISELegendPanel newInstance() {
-        return new PnlCategorizedArea();
-    }
-
-    @Override
     public String validateInput() {
         return "";
     }
@@ -213,7 +203,7 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
         }
 
         getPreview().setSymbol(usa.getSymbolizer());
-        TableModelInterval model = (TableModelInterval) getJTable().getModel();
+        TableModelInterval model = (TableModelInterval) tablePanel.getJTable().getModel();
         model.fireTableDataChanged();
     }
 

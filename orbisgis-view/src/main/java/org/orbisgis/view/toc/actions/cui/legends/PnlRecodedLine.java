@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
@@ -42,7 +41,6 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorRecodedLine;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorUniqueValue;
 import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorRecodedLine;
@@ -79,17 +77,6 @@ import java.util.Set;
 public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlRecodedLine.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
-
-    @Override
-    public Component getComponent() {
-        initializeLegendFields();
-        return this;
-    }
-
-    @Override
-    public ISELegendPanel newInstance() {
-        return new PnlRecodedLine();
-    }
 
     @Override
     public String validateInput() {
@@ -171,7 +158,7 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     }
 
     @Override
-    public TableCellEditor getParametersCellEditor(){
+    public TableCellEditor getPreviewCellEditor(){
         return new ParametersEditorRecodedLine();
     }
 

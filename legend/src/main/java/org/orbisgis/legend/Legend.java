@@ -88,17 +88,19 @@ public interface Legend extends LegendStructure {
          */
         void setMaxScale(Double scale);
 
-	/**
-	 * Returns an Id that will be used to check that a Legend can be edited
-	 * with a given edition panel.
-	 * @return
-	 */
-	String getLegendTypeId();
+        /**
+         * Returns an Id that will be used to check that a Legend can be edited
+         * with a given edition panel.
+         *
+         * @return
+         */
+        String getLegendTypeId();
 
-	/**
-	 * Returns a string that describes - for human - the nature of the
-	 * thematic analysis made in this Legend.
-	 * @return
-	 */
-	String getLegendTypeName();
+        /**
+         * Returns a string that describes - for human - the nature of the
+         * thematic analysis made in this Legend.
+         *
+         * @return
+         */
+        String getLegendTypeName();
 }

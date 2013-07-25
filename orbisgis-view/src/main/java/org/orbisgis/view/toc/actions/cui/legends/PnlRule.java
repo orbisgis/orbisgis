@@ -46,7 +46,7 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * @author Alexis Guéganno
  */
-public class PnlRule extends JPanel  implements ISELegendPanel {
+public class PnlRule extends JPanel implements ISELegendPanel {
         private static final I18n I18N = I18nFactory.getI18n(PnlRule.class);
         private JButton btnCurrentScaleToMin;
         private JButton btnCurrentScaleToMax;
@@ -57,6 +57,15 @@ public class PnlRule extends JPanel  implements ISELegendPanel {
         private Rule rule;
         private LegendContext legendContext;
         private String id;
+
+        /**
+         * Create a new {@code PnlRule} with the given {@code LegendContext}.
+         *
+         * @param lc LegendContext
+         */
+        public PnlRule(LegendContext lc) {
+            this.legendContext = lc;
+        }
 
         /**
          * Sets the Rule associated to this panel.
@@ -146,12 +155,8 @@ public class PnlRule extends JPanel  implements ISELegendPanel {
 
         @Override
         public void initialize(LegendContext lc) {
-                legendContext = lc;
-        }
-
-        @Override
-        public PnlRule newInstance() {
-                return new PnlRule();
+            throw new UnsupportedOperationException("PnlRule is no longer " +
+                    "initialized this way.");
         }
 
         @Override

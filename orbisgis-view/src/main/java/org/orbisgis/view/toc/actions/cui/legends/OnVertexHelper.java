@@ -69,7 +69,7 @@ public class OnVertexHelper {
             ((PointSymbolizer) symbol).setOnVertex(onVertex);
             prev.imageChanged();
             if (panel instanceof PnlAbstractTableAnalysis) {
-                ((PnlAbstractTableAnalysis) panel).updateTable();
+                ((PnlAbstractTableAnalysis) panel).tablePanel.updateTable();
             }
         }
     }

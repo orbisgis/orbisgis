@@ -17,7 +17,6 @@ import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorCategorizedPoint;
 import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorCategorizedPoint;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelCatPoint;
@@ -133,7 +132,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     }
 
     @Override
-    public TableCellEditor getParametersCellEditor() {
+    public TableCellEditor getPreviewCellEditor() {
         return new ParametersEditorCategorizedPoint();
     }
 
@@ -211,17 +210,6 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     }
 
     @Override
-    public Component getComponent() {
-        initializeLegendFields();
-        return this;
-    }
-
-    @Override
-    public ISELegendPanel newInstance() {
-        return new PnlCategorizedPoint();
-    }
-
-    @Override
     public String validateInput() {
         return "";
     }
@@ -244,7 +232,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         }
         usp.setSymbolUom(cp.getSymbolUom());
         getPreview().setSymbol(usp.getSymbolizer());
-        TableModelInterval model = (TableModelInterval) getJTable().getModel();
+        TableModelInterval model = (TableModelInterval) tablePanel.getJTable().getModel();
         model.fireTableDataChanged();
     }
 
@@ -280,7 +268,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         leg.setSymbolUom(Uom.fromString(uoms[index].getKey()));
         CanvasSE prev = getPreview();
         prev.setSymbol(getFallbackSymbolizer());
-        updateTable();
+        tablePanel.updateTable();
     }
 
     /**

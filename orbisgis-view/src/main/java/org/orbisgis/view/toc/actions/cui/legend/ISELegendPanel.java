@@ -48,21 +48,13 @@ public interface ISELegendPanel {
 	Component getComponent();
 
 	/**
-	 * Initialize the legend. This method is called just after the legend
-	 * creation.
+	 * Initializes the panel using the given {@code LegendContext}.
+     * This method is called just after the legend creation.
 	 *
-	 * @param lc
-	 *            LegendContext is useful to get some information about the
-	 *            layer in edition.
+	 * @param lc LegendContext is useful to get some information about the
+	 *           layer in edition.
 	 */
 	void initialize(LegendContext lc);
-
-	/**
-	 * Creates a new empty instance of this panel.
-	 *
-	 * @return
-	 */
-	ISELegendPanel newInstance();
 
     /**
      * Gets the identifier of this panel.
@@ -82,5 +74,4 @@ public interface ISELegendPanel {
 	 *         if the legend cannot be created
 	 */
 	String validateInput();
-
 }
