@@ -38,7 +38,7 @@ import org.orbisgis.view.toc.actions.cui.legends.PnlStyle;
  * A Symbolizer can be associated to legends through its {@code Rule}. However,
  * as {@code Rule}s are associated to {@code Symbolizer}, we must use {@code
  * RuleWrapper} instances rather than {@code Rule} instances. This class is
- * intended to makde the link.
+ * intended to make the link.
  * @author Alexis Guéganno
  */
 public class StyleWrapper {

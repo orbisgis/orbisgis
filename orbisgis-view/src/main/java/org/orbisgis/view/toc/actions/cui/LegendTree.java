@@ -44,7 +44,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.factory.LegendFactory;
@@ -460,23 +459,19 @@ public class LegendTree extends JPanel {
         });
         if (UIFactory.showDialog(mip)) {
             String s = mip.getInput("RuleName");
-            RuleWrapper cur = getSelectedRule();
             LegendTreeModel tm = (LegendTreeModel) tree.getModel();
             //We need to link our new RuleWrapper with the layer we are editing.
-            Style style = simpleStyleEditor.getStyleWrapper().getStyle();
-            Rule temp = new Rule(style.getLayer());
+            Rule temp = new Rule(simpleStyleEditor.getStyleWrapper().getStyle().getLayer());
             temp.setName(s);
             Legend leg = LegendFactory.getLegend(
                     temp.getCompositeSymbolizer().getSymbolizerList().get(0));
             // Initialize a panel for this legend.
-            ILegendPanel ilp = ILegendPanelFactory.getILegendPanel(leg);
-            ilp.initialize((LegendContext) simpleStyleEditor);
-            // Set the legend to be edited to the given legend
-            ilp.setLegend(leg);
+            ILegendPanel ilp = ILegendPanelFactory.getILegendPanel(
+                    simpleStyleEditor, leg);
             List<ILegendPanel> list = new ArrayList<ILegendPanel>();
             list.add(ilp);
-            RuleWrapper nrw = new RuleWrapper(temp, list);
-            tm.addElement(tm.getRoot(), nrw, cur);
+            RuleWrapper nrw = new RuleWrapper(simpleStyleEditor, temp, list);
+            tm.addElement(tm.getRoot(), nrw, getSelectedRule());
             simpleStyleEditor.legendAdded(nrw.getPanel());
         }
     }

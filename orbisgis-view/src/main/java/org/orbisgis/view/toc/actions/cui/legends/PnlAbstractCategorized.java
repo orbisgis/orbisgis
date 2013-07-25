@@ -41,8 +41,10 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     private static final I18n I18N = I18nFactory.getI18n(PnlAbstractCategorized.class);
     private ColorConfigurationPanel colorConfig;
     private Thresholds thresholds;
-    public final static Integer[] THRESHOLDS_NUMBER = new Integer[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-    public final Integer[] THRESHOLDS_SQUARE = new Integer[]{2,4,8,16};
+    public static final Integer[] THRESHOLDS_NUMBER =
+            new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+    public static final Integer[] THRESHOLDS_SQUARE =
+            new Integer[]{2, 4, 8, 16};
     private JComboBox numberCombo;
     private JButton createCl;
     private JComboBox methodCombo;
@@ -81,12 +83,6 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     @Override
     public int getKeyColumn(){
         return TableModelInterval.KEY_COLUMN;
-    }
-
-    @Override
-    public Double getNotUsedKey(){
-        AbstractCategorizedLegend leg = (AbstractCategorizedLegend) getLegend();
-        return leg.getNotUsedKey((Double)leg.keySet().last());
     }
 
     @Override

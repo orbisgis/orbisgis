@@ -92,11 +92,6 @@ public class PnlStyle extends JPanel implements ISELegendPanel {
         }
 
         @Override
-        public ISELegendPanel newInstance() {
-                return new PnlStyle();
-        }
-
-        @Override
         public String getId() {
                 return id;
         }

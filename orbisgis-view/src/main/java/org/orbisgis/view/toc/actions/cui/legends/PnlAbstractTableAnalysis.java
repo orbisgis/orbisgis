@@ -3,8 +3,8 @@ package org.orbisgis.view.toc.actions.cui.legends;
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.OnVertexOnCentroid;
@@ -14,20 +14,15 @@ import org.orbisgis.legend.thematic.uom.SymbolUom;
 import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
-import org.orbisgis.view.toc.actions.cui.legends.model.KeyCellRenderer;
-import org.orbisgis.view.toc.actions.cui.legends.model.PreviewCellRenderer;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;
+import org.orbisgis.view.toc.actions.cui.legends.panels.TablePanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import javax.swing.event.CellEditorListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.ArrayList;
@@ -43,18 +38,12 @@ import java.util.SortedSet;
  * @author Alexis Guéganno
  */
 public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
-        extends AbstractFieldPanel implements ILegendPanel, ActionListener {
+        extends AbstractFieldPanel {
     public static final String FALLBACK = "Fallback";
     public static final String CREATE_CLASSIF = "Create classification";
     public static final Logger LOGGER = Logger.getLogger(PnlAbstractTableAnalysis.class);
-    public final static int CELL_PREVIEW_WIDTH = CanvasSE.WIDTH/2;
-    public final static int CELL_PREVIEW_HEIGHT = CanvasSE.HEIGHT/2;
     private static final I18n I18N = I18nFactory.getI18n(PnlAbstractTableAnalysis.class);
     private MappedLegend<K,U> legend;
-    private static final String ADD = "add";
-    private static final String REMOVE = "remove";
-    private DataSource ds;
-    private JTable table;
     private String id;
     protected CanvasSE fallbackPreview;
     protected WideComboBox fieldCombo;
@@ -62,17 +51,16 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     protected static final String ENABLE_BORDER = I18n.marktr("Enable border");
     protected static final String CLASSIFICATION_SETTINGS = I18n.marktr("Classification settings");
 
+    protected TablePanel<K, U> tablePanel;
     @Override
     public void initialize(LegendContext lc) {
-        if (getLegend() == null) {
-            setLegend(getEmptyAnalysis());
-            initPreview();
-        }
-        setGeometryType(lc.getGeometryType());
-        ILayer layer = lc.getLayer();
-        if (layer != null && layer.getDataSource() != null) {
-            setDataSource(layer.getDataSource());
-        }
+        initialize(lc, getEmptyAnalysis());
+    }
+
+    @Override
+    public void initialize(LegendContext lc, Legend l){
+        super.initialize(lc, l);
+        initPreview();
     }
 
     protected void setLegendImpl(MappedLegend<K,U> leg){
@@ -112,14 +100,6 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     }
 
     /**
-     * Sets the associated data source
-     * @param newDS the new {@link org.gdms.data.DataSource}.
-     */
-    protected void setDataSource(DataSource newDS){
-        ds = newDS;
-    }
-
-    /**
      * Gets the associated DataSource
      * @return The inner DataSource.
      */
@@ -141,123 +121,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
         return legend;
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if(e.getActionCommand().equals(ADD)){
-            K key = getNotUsedKey();
-            U lp = legend.getFallbackParameters();
-            legend.put(key, lp);
-            updateTable();
-        } else if (e.getActionCommand().equals(REMOVE)){
-            int col = getKeyColumn();
-            int row = getJTable().getSelectedRow();
-            if(col>=0 && row >= 0){
-                K key = (K)getJTable().getValueAt(row, col);
-                legend.remove(key);
-                updateTable();
-            }
-        }
-    }
-
-
-    /**
-     * Creates the two buttons add and remove, links them to this through actions and put them in a JPanel.
-     * @return the two buttons in a JPanel.
-     */
-    public JPanel getButtonsPanel(){
-        JPanel jp = new JPanel();
-        JButton jb1 = new JButton(I18N.tr("Add"));
-        jb1.setActionCommand(ADD);
-        jb1.addActionListener(this);
-        jp.add(jb1);
-        jp.setAlignmentX((float) .5);
-        JButton remove = new JButton(I18N.tr("Remove"));
-        remove.setActionCommand(REMOVE);
-        remove.addActionListener(this);
-        jp.add(jb1);
-        jp.add(remove);
-        jp.setAlignmentX((float) .5);
-        return jp;
-    }
-
-    /**
-     * Gets the JTable used to draw the mapping
-     * @return the JTable
-     */
-    public JTable getJTable(){
-        return table;
-    }
-    /**
-     * Build the panel that contains the JTable where the map is displayed.
-     * @return The panel that contains the JTable where the map is displayed.
-     */
-    public JPanel getTablePanel() {
-        JPanel jp = new JPanel();
-        BoxLayout bl = new BoxLayout(jp, BoxLayout.Y_AXIS);
-        jp.setLayout(bl);
-        jp.setBorder(BorderFactory.createTitledBorder(getTitleBorder()));
-        //we build the table here
-        AbstractTableModel model = getTableModel();
-        table = new JTable(model);
-        table.setDefaultEditor(Object.class, null);
-        table.setRowHeight(CELL_PREVIEW_HEIGHT);
-        final int previewWidth = CELL_PREVIEW_WIDTH;
-        TableColumn previews = table.getColumnModel().getColumn(getPreviewColumn());
-        previews.setWidth(previewWidth);
-        previews.setMinWidth(previewWidth);
-        previews.setMaxWidth(previewWidth);
-        previews.setCellRenderer(new PreviewCellRenderer(table, getPreviewClass(), (MappedLegend<K, U>) getLegend()));
-        previews.setCellEditor(getParametersCellEditor());
-        //We put a default editor on the keys.
-        TableColumn keys = table.getColumnModel().getColumn(getKeyColumn());
-        TableCellEditor ker = getKeyCellEditor();
-        CellEditorListener cel = EventHandler.create(CellEditorListener.class, model, "fireTableDataChanged", null, "editingStopped");
-        ker.addCellEditorListener(cel);
-        keys.setCellEditor(ker);
-        keys.setCellRenderer(new KeyCellRenderer(table, getPreviewClass(), (MappedLegend<K,U>)getLegend()));
-        JScrollPane jsp = new JScrollPane(table);
-        // Set the viewport to view 6 rows with a width of 400 pixels.
-        int rowHeight = table.getRowHeight();
-        int tableWidth = 400;
-        int tableHeight = rowHeight*6;
-        table.setPreferredScrollableViewportSize(
-                new Dimension(tableWidth, tableHeight));
-        table.setDoubleBuffered(true);
-        jsp.setAlignmentX((float).5);
-        jp.add(jsp, BorderLayout.CENTER);
-        table.doLayout();
-        jp.add(getButtonsPanel());
-        // Set the unit (click once on down arrow: scroll down one row)
-        // and block (one mouse scroll wheel: scroll down one half page)
-        // increments.
-        JScrollBar verticalScrollBar = jsp.getVerticalScrollBar();
-        verticalScrollBar.setUnitIncrement(rowHeight);
-        verticalScrollBar.setBlockIncrement(tableHeight);
-        // Set the scroll mode.
-        jsp.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
-        return jp;
-    }
-
     protected abstract String getTitleBorder();
-
-    /**
-     * Replaces the inner JTable.
-     * @param t The new JTable.
-     */
-    protected void setJTable(JTable t){
-        table = t;
-    }
-
-    /**
-     * Update the table if it is not null.
-     */
-    public void updateTable(){
-        JTable table = getJTable();
-        if(table != null){
-            AbstractTableModel model = (AbstractTableModel) table.getModel();
-            model.fireTableDataChanged();
-        }
-    }
 
     @Override
     public String getId() {
@@ -272,7 +136,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
         updateLUComboBox(jcb.getSelectedIndex());
         CanvasSE prev = getPreview();
         prev.setSymbol(getFallbackSymbolizer());
-        updateTable();
+        tablePanel.updateTable();
     }
 
 
@@ -419,7 +283,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
             ret.add(newCol);
         }
         ret.remove(0);
-        ret.remove(ret.size()-1);
+        ret.remove(ret.size() - 1);
         return ret;
     }
 
@@ -450,22 +314,28 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
      */
     public abstract void initPreview();
 
-    /**
-     * Initialize the panels.
-     */
-    public void initializeLegendFields() {
+    @Override
+    public final void initializeLegendFields() {
         this.removeAll();
 
         JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
-        //Fallback symbol
+        // Fallback symbol
         glob.add(getSettingsPanel());
 
         //Classification generator
         glob.add(getCreateClassificationPanel());
 
-        //Table for the recoded configurations
-        glob.add(getTablePanel(), "span 2, growx");
+        // Table
+        tablePanel = new TablePanel<K, U>(legend,
+                                          getTitleBorder(),
+                                          getTableModel(),
+                                          getKeyCellEditor(),
+                                          getKeyColumn(),
+                                          getPreviewCellEditor(),
+                                          getPreviewColumn(),
+                                          getPreviewClass());
+        glob.add(tablePanel, "span 2, growx");
         this.add(glob);
         this.revalidate();
     }
@@ -519,12 +389,6 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     public abstract MappedLegend<K,U> getEmptyAnalysis();
 
     /**
-     * Get a key that is not already used in the inner MappedLegend
-     * @return A not already used key.
-     */
-    public abstract K getNotUsedKey();
-
-    /**
      * Gets the model used to build the JTable.
      * @return The table model.
      */
@@ -534,7 +398,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
      * Gets the editor used to configure a cell with a preview.
      * @return A cell editor.
      */
-    public abstract TableCellEditor getParametersCellEditor();
+    public abstract TableCellEditor getPreviewCellEditor();
 
     /**
      * Gets the editor used to configure a key of the table

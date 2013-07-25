@@ -44,13 +44,11 @@ import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
@@ -86,18 +84,18 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         /**
          * Default constructor. The UOM combo box is displayed.
          */
-        public PnlUniqueLineSE(){
+        public PnlUniqueLineSE() {
             this(true);
         }
 
         /**
          * Builds a new PnlUniqueLineSE choosing if we want to display the uom combo box.
+         *
          * @param uom if true, the uom combo box will be displayed.
          */
         public PnlUniqueLineSE(boolean uom){
             super();
             this.displayUom = uom;
-
         }
 
         /**
@@ -106,11 +104,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          */
         protected boolean isUomEnabled(){
             return displayUom;
-        }
-
-        @Override
-        public Component getComponent() {
-                return this;
         }
 
         @Override
@@ -141,19 +134,13 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         /**
          * Initialize the panel. This method is called just after the panel
-         * creation.</p> <p>WARNING : the panel will be empty after calling this
-         * method. Indeed, there won't be any {@code Legend} instance associated
-         * to it. Use the
-         * {@code setLegend} method to achieve this goal.
-         *
+         * creation.
          * @param lc LegendContext is useful to get some information about the
          * layer in edition.
          */
         @Override
         public void initialize(LegendContext lc) {
-                if (uniqueLine == null) {
-                        setLegend(new UniqueSymbolLine());
-                }
+            initialize(lc, new UniqueSymbolLine());
         }
 
         @Override
@@ -161,11 +148,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 return geometryType == SimpleGeometryType.LINE ||
                         geometryType == SimpleGeometryType.POLYGON||
                         geometryType == SimpleGeometryType.ALL;
-        }
-
-        @Override
-        public ILegendPanel newInstance() {
-                return new PnlUniqueLineSE();
         }
 
         @Override
@@ -222,7 +204,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 ActionListener aclUom = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 lineUom.addActionListener(aclUom);
 
-                if(isLineOptional()){
+                if (isLineOptional()) {
                         lineCheckBox = new JCheckBox(I18N.tr("Enable"));
                         lineCheckBox.addActionListener(
                                 EventHandler.create(ActionListener.class, this, "onClickLineCheckBox"));
@@ -275,7 +257,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
             ComponentUtil.setFieldState(enable,lineDash);
             if (displayUom) {
                 if (uOMBox != null) {
-                    ComponentUtil.setFieldState(enable,uOMBox);
+                    ComponentUtil.setFieldState(enable, uOMBox);
                 }
             }
         }
@@ -312,7 +294,8 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 penStrokeMemory = cpsl;
         }
 
-        private void initializeLegendFields() {
+        @Override
+        public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
                 glob.add(getLineBlock(uniqueLine.getPenStroke(),

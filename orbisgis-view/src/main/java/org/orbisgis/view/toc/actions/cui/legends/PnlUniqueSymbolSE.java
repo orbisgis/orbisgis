@@ -36,7 +36,6 @@ import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -53,7 +52,7 @@ import java.beans.PropertyChangeListener;
  * for unique symbols.
  * @author Alexis Guéganno
  */
-public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements ILegendPanel, UIPanel {
+public abstract class PnlUniqueSymbolSE extends AbstractFieldPanel implements UIPanel {
 
         public static final double SPIN_STEP = 0.1;
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlUniqueSymbolSE.class);

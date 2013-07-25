@@ -30,9 +30,7 @@ package org.orbisgis.view.toc.actions.cui.legends;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.classification.ClassificationUtils;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -54,7 +52,6 @@ import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -80,14 +77,8 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlProportionalPointSE.class);
         private static final I18n I18N = I18nFactory.getI18n(PnlProportionalPointSE.class);
         private ProportionalPoint proportionalPoint;
-        private DataSource ds;
         private WideComboBox fieldCombo;
         MouseListener l;
-
-        @Override
-        public Component getComponent() {
-                return this;
-        }
 
         @Override
         public Legend getLegend() {
@@ -122,25 +113,14 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
 
         /**
          * Initialize the panel. This method is called just after the panel
-         * creation.</p> <p>WARNING : the panel will be empty after calling this
-         * method. Indeed, there won't be any {@code Legend} instance associated
-         * to it. Use the
-         * {@code setLegend} method to achieve this goal.
+         * creation.
          *
          * @param lc LegendContext is useful to get some information about the
          * layer in edition.
          */
         @Override
         public void initialize(LegendContext lc) {
-                if (proportionalPoint == null) {
-                        setLegend(new ProportionalPoint());
-                }
-                setGeometryType(lc.getGeometryType());
-                ILayer layer = lc.getLayer();
-                if(layer != null){
-                        ds = layer.getDataSource();
-                }
-                this.initializeLegendFields();
+                initialize(lc, new ProportionalPoint());
         }
 
         @Override
@@ -151,11 +131,6 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
         @Override
         public boolean acceptsGeometryType(int geometryType) {
                 return (geometryType & SimpleGeometryType.ALL) != 0;
-        }
-
-        @Override
-        public ILegendPanel newInstance() {
-                return new PnlProportionalPointSE();
         }
 
         @Override
@@ -178,7 +153,8 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 return "Proportional Points";
         }
 
-        private void initializeLegendFields() {
+        @Override
+        public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
 

@@ -53,6 +53,16 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
     public abstract void applyGlobalVisitor(ParameterVisitor rpv);
 
     /**
+     * Search in this legend for a key that is not already used. If the given
+     * key is not already in use, it is returned. Otherwise, a new one is
+     * created.
+     *
+     * @param orig The original key on which to base the search
+     * @return An unused key
+     */
+    public abstract T getNotUsedKey(T orig);
+
+    /**
      * Gets the analysis field.
      * @return The name of the analysis field.
      */
