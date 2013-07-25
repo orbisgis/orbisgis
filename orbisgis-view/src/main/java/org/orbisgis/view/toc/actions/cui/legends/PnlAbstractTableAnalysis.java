@@ -4,6 +4,7 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.OnVertexOnCentroid;
