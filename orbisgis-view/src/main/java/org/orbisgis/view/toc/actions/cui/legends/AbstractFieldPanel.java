@@ -70,16 +70,15 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
      * Height used for the rectangles that displays the color parameters of the symbols.
      */
     public final static int FILLED_LABEL_HEIGHT = 15;
-    protected static final String UNIT_OF_MEASURE = I18n.marktr("Unit of measure");
     protected static final String OPACITY = I18n.marktr("Opacity");
     protected static final String WIDTH = I18n.marktr("Width");
     protected static final String HEIGHT = I18n.marktr("Height");
     protected static final String SYMBOL = I18n.marktr("Symbol");
     protected static final String DASH_ARRAY = I18n.marktr("Dash array");
-    protected static final String FIELD = I18n.marktr("<html><b>Field</b></html>");
-    protected static final String LINE_WIDTH_UNIT = I18n.marktr("Line width unit");
-    protected static final String SYMBOL_SIZE_UNIT = I18n.marktr("Symbol size unit");
-    protected static final String PLACE_SYMBOL_ON = I18n.marktr(
+    public static final String FIELD = I18n.marktr("<html><b>Field</b></html>");
+    public static final String LINE_WIDTH_UNIT = I18n.marktr("Line width unit");
+    public static final String SYMBOL_SIZE_UNIT = I18n.marktr("Symbol size unit");
+    public static final String PLACE_SYMBOL_ON = I18n.marktr(
             "<html><p style=\"text-align:right\">Place symbol<br>on</p></html>");
 
     /**
@@ -89,7 +88,7 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
     /**
      * MigLayout constraints for sizing consistency.
      */
-    protected static final String COLUMN_CONSTRAINTS =
+    public static final String COLUMN_CONSTRAINTS =
             "[align r, 110::][align c, "
             + SECOND_COL_WIDTH + ":" + SECOND_COL_WIDTH + ":]";
     /**
@@ -99,7 +98,7 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
     /**
      * Constraints for ComboBoxes for sizing consistency.
      */
-    protected static final String COMBO_BOX_CONSTRAINTS =
+    public static final String COMBO_BOX_CONSTRAINTS =
             "width " + SECOND_COL_WIDTH + "!";
     protected ContainerItemProperties[] strokeUoms;
     /**
@@ -127,30 +126,6 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
      */
     protected void setDataSource(DataSource newDS){
         ds = newDS;
-    }
-
-    /**
-     * Initialize a {@code JComboBox} whose values are set according to the
-     * not spatial fields of {@code ds}.
-     * @param ds The original DataSource
-     * @return A JComboBox.
-     */
-    public WideComboBox getFieldCombo(DataSource ds){
-        WideComboBox combo = new WideComboBox();
-        if(ds != null){
-            try {
-                Metadata md = ds.getMetadata();
-                int fc = md.getFieldCount();
-                for (int i = 0; i < fc; i++) {
-                    if(!TypeFactory.isSpatial(md.getFieldType(i).getTypeCode())){
-                        combo.addItem(md.getFieldName(i));
-                    }
-                }
-            } catch (DriverException ex) {
-                LOGGER.error(ex);
-            }
-        }
-        return combo;
     }
 
     /**

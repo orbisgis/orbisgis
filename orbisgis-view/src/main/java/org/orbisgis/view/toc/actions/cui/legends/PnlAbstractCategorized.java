@@ -45,35 +45,10 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
             new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
     public static final Integer[] THRESHOLDS_SQUARE =
             new Integer[]{2, 4, 8, 16};
-    private JComboBox numberCombo;
+    private WideComboBox numberCombo;
     private JButton createCl;
-    private JComboBox methodCombo;
+    private WideComboBox methodCombo;
     private DefaultComboBoxModel comboModel;
-
-    /**
-     * Initialize a {@code JComboBo} whose values are set according to the
-     * not spatial fields of {@code ds}.
-     * @param ds The associated DataSource
-     * @return The combo box used to manage the studied field.
-     */
-    @Override
-    public WideComboBox getFieldCombo(DataSource ds){
-        WideComboBox combo = new WideComboBox();
-        if(ds != null){
-            try {
-                Metadata md = ds.getMetadata();
-                int fc = md.getFieldCount();
-                for (int i = 0; i < fc; i++) {
-                    if(TypeFactory.isNumerical(md.getFieldType(i).getTypeCode())){
-                        combo.addItem(md.getFieldName(i));
-                    }
-                }
-            } catch (DriverException ex) {
-                LOGGER.error(ex);
-            }
-        }
-        return combo;
-    }
 
     @Override
     public int getPreviewColumn(){
@@ -117,8 +92,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
      */
     public JPanel getCreateClassificationPanel(){
         if(numberCombo == null){
-            numberCombo = new JComboBox(getThresholdsNumber());
-            ((JLabel)numberCombo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
+            numberCombo = new WideComboBox(getThresholdsNumber());
         }
         comboModel = (DefaultComboBoxModel) numberCombo.getModel();
         createCl = new JButton(I18N.tr("Create"));
@@ -176,7 +150,6 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
             methodCombo = new WideComboBox(categorizeMethods);
             methodCombo.addActionListener(
                     EventHandler.create(ActionListener.class, this, "methodChanged"));
-            ((JLabel)methodCombo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
             methodCombo.setSelectedItem(CategorizeMethod.MANUAL.toString());
         }
         methodChanged();
@@ -218,7 +191,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     public void onComputeClassification(){
         String name = getFieldName();
         if(thresholds == null || !thresholds.getFieldName().equals(name)){
-            thresholds = computeStats(getFieldName());
+            thresholds = computeStats(name);
         }
         ContainerItemProperties selectedItem = (ContainerItemProperties) methodCombo.getSelectedItem();
         CategorizeMethod cm = CategorizeMethod.valueOf(selectedItem.getKey());

@@ -45,15 +45,12 @@ import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorRecodedLine;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorUniqueValue;
 import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorRecodedLine;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelRecodedLine;
-import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
@@ -89,7 +86,7 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
      * @param me The MouseEvent that caused the call to this method.
      */
     public void onEditFallback(MouseEvent me){
-        ((RecodedLine)getLegend()).setFallbackParameters(editCanvas(fallbackPreview));
+        getLegend().setFallbackParameters(editCanvas(fallbackPreview));
     }
 
     /**
@@ -98,9 +95,9 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
      * @return The LineParameters that must be used at the end of the edition.
      */
     private LineParameters editCanvas(CanvasSE cse){
-        LineParameters lps = ((RecodedLine)getLegend()).getFallbackParameters();
+        LineParameters lps = getLegend().getFallbackParameters();
         UniqueSymbolLine usl = new UniqueSymbolLine(lps);
-        usl.setStrokeUom(((RecodedLine)getLegend()).getStrokeUom());
+        usl.setStrokeUom(getLegend().getStrokeUom());
         PnlUniqueLineSE pls = new PnlUniqueLineSE(false);
         pls.setLegend(usl);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
@@ -114,27 +111,14 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     }
 
     /**
-     * Build the panel used to select the classification field.
-     *
-     * @return The JPanel where the user will choose the classification field.
-     */
-    private JPanel getFieldLine() {
-        JPanel jp = new JPanel();
-        jp.add(new JLabel(I18N.tr("Classification field : ")));
-        fieldCombo = getFieldComboBox();
-        jp.add(fieldCombo);
-        return jp;
-    }
-
-    /**
      * Gets the Symbolizer that is associated to the unique symbol matching the fallback configuration of this
      * unique value classification.
      * @return A Symbolizer.
      */
     @Override
     public Symbolizer getFallbackSymbolizer(){
-        UniqueSymbolLine usl = new UniqueSymbolLine(((RecodedLine)getLegend()).getFallbackParameters());
-        usl.setStrokeUom(((RecodedLine) getLegend()).getStrokeUom());
+        UniqueSymbolLine usl = new UniqueSymbolLine(getLegend().getFallbackParameters());
+        usl.setStrokeUom(getLegend().getStrokeUom());
         return usl.getSymbolizer();
     }
 
@@ -142,6 +126,7 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
      * Initializes the preview for the fallback configuration
      */
     public void initPreview() {
+        System.out.println("    Called from initPreview RL");
         fallbackPreview = new CanvasSE(getFallbackSymbolizer());
         MouseListener l = EventHandler.create(MouseListener.class, this, "onEditFallback", "", "mouseClicked");
         fallbackPreview.addMouseListener(l);
@@ -165,19 +150,6 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     @Override
     public KeyEditorUniqueValue<LineParameters> getKeyCellEditor(){
         return new KeyEditorRecodedLine();
-    }
-
-    @Override
-    protected void beforeFallbackSymbol(JPanel genSettings) {
-        // Empty on purpose
-    }
-
-    @Override
-    protected JComboBox getUOMComboBox() {
-        UomCombo jcb = getLineUomCombo(((RecodedLine) getLegend()));
-        jcb.addActionListener(
-                EventHandler.create(ActionListener.class, this, "updatePreview", "source"));
-        return jcb.getCombo();
     }
 
     @Override

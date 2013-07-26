@@ -30,15 +30,12 @@ package org.orbisgis.view.toc.actions.cui.legends;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
-import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.PointParameters;
-import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
-import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.orbisgis.legend.thematic.recode.RecodedPoint;
 import org.orbisgis.sif.UIFactory;
@@ -74,22 +71,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     public static final Logger LOGGER = Logger.getLogger(PnlRecodedLine.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
     private String id;
-    private JCheckBox strokeBox;
     private ContainerItemProperties[] uoms;
-
-    @Override
-    protected void beforeFallbackSymbol(JPanel genSettings) {
-        // UOM - symbol size
-        genSettings.add(new JLabel(I18N.tr(SYMBOL_SIZE_UNIT)));
-        genSettings.add(getSymbolUOMComboBox(), COMBO_BOX_CONSTRAINTS);
-
-        // On vertex? On centroid?
-        genSettings.add(new JLabel(I18N.tr(PLACE_SYMBOL_ON)), "span 1 2");
-        genSettings.add(OnVertexHelper.pnlOnVertex(this, (SymbolizerLegend) getLegend(), I18N), "span 1 2");
-
-        // Enable stroke?
-        genSettings.add(getEnableStrokeCheckBox(), "span 2, align center");
-    }
 
     @Override
     public RecodedPoint getEmptyAnalysis() {
@@ -98,13 +80,14 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
 
     @Override
     public void initPreview() {
+        System.out.println("    Called from initPreview RP");
         fallbackPreview = new CanvasSE(getFallbackSymbolizer());
         MouseListener l = EventHandler.create(MouseListener.class, this, "onEditFallback", "", "mouseClicked");
         fallbackPreview.addMouseListener(l);
     }
 
     public void onEditFallback(MouseEvent me){
-        ((RecodedPoint)getLegend()).setFallbackParameters(editCanvas(fallbackPreview));
+        (getLegend()).setFallbackParameters(editCanvas(fallbackPreview));
     }
 
     /**
@@ -115,7 +98,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     private PointParameters editCanvas(CanvasSE cse){
         RecodedPoint leg = (RecodedPoint) getLegend();
         PointParameters lps = leg.getFallbackParameters();
-        UniqueSymbolPoint usa =getFallBackLegend();
+        UniqueSymbolPoint usa = getFallBackLegend();
         PnlUniquePointSE pls = new PnlUniquePointSE(false, leg.isStrokeEnabled(), false);
         pls.setLegend(usa);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
@@ -126,20 +109,6 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         } else {
             return lps;
         }
-    }
-
-    /**
-     * called when the user wants to put the points on the vertices of the geometry.
-     */
-    public void onClickVertex(){
-        OnVertexHelper.changeOnVertex(this, true);
-    }
-
-    /**
-     * called when the user wants to put the points on the centroid of the geometry.
-     */
-    public void onClickCentroid(){
-        OnVertexHelper.changeOnVertex(this, false);
     }
 
     @Override
@@ -240,27 +209,6 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     }
 
     /**
-     * Build the panel used to select the classification field.
-     *
-     * @return The JPanel where the user will choose the classification field.
-     */
-    private JPanel getFieldLine() {
-        JPanel jp = new JPanel();
-        jp.add(new JLabel(I18N.tr("Classification field : ")));
-        fieldCombo =getFieldComboBox();
-        jp.add(fieldCombo);
-        return jp;
-    }
-
-    @Override
-    protected JComboBox getUOMComboBox(){
-        UomCombo jcb = getLineUomCombo(((RecodedPoint) getLegend()));
-        jcb.addActionListener(
-                EventHandler.create(ActionListener.class, this, "updatePreview", "source"));
-        return jcb.getCombo();
-    }
-
-    /**
      * A JPanel containing the combo returned bu getPointUomCombo
      * @return The JComboBox with a JLabel in a JPanel.
      */
@@ -285,41 +233,8 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         RecodedPoint leg = (RecodedPoint)getLegend();
         leg.setSymbolUom(Uom.fromString(uoms[index].getKey()));
         CanvasSE prev = getPreview();
+        System.out.println("    Called from updateSUComboBox RP");
         prev.setSymbol(getFallbackSymbolizer());
-        tablePanel.updateTable();
-    }
-
-    /**
-     * Gets the checkbox used to set if the border will be drawn.
-     *
-     * @return The enable border checkbox.
-     */
-    private JCheckBox getEnableStrokeCheckBox(){
-        strokeBox = new JCheckBox(I18N.tr(ENABLE_BORDER));
-        strokeBox.setSelected(((RecodedPoint) getLegend()).isStrokeEnabled());
-        strokeBox.addActionListener(
-                EventHandler.create(ActionListener.class, this, "onEnableStroke"));
-        return strokeBox;
-    }
-
-    /**
-     * Action done when the checkbox used to activate the stroke is pressed.
-     */
-    public void onEnableStroke(){
-        RecodedPoint ra = (RecodedPoint) getLegend();
-        ra.setStrokeEnabled(strokeBox.isSelected());
-        UniqueSymbolPoint usp = new UniqueSymbolPoint(ra.getFallbackParameters());
-        if(ra.isOnVertex()){
-            usp.setOnVertex();
-        } else {
-            usp.setOnCentroid();
-        }
-        if(ra.isStrokeEnabled()){
-            ra.setStrokeUom(Uom.fromString(uoms[lineUom.getSelectedIndex()].getKey()));
-            usp.setStrokeUom(ra.getStrokeUom());
-        }
-        usp.setSymbolUom(ra.getSymbolUom());
-        getPreview().setSymbol(usp.getSymbolizer());
         tablePanel.updateTable();
     }
 }

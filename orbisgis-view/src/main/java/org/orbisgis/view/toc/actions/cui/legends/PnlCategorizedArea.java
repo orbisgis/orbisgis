@@ -4,32 +4,24 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
 import org.orbisgis.legend.thematic.categorize.CategorizedArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
-import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorCategorizedArea;
 import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorCategorizedArea;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelCatArea;
-import org.orbisgis.view.toc.actions.cui.legends.model.TableModelInterval;
-import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
@@ -44,7 +36,6 @@ import java.util.Set;
 public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlCategorizedArea.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlCategorizedArea.class);
-    private JCheckBox strokeBox;
 
     /**
      * This methods is called by EventHandler when the user clicks on the fall back's preview. It opens an UI that lets
@@ -52,7 +43,7 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
      * @param me The MouseEvent that caused the call to this method.
      */
     public void onEditFallback(MouseEvent me){
-        ((CategorizedArea)getLegend()).setFallbackParameters(editCanvas(fallbackPreview));
+        getLegend().setFallbackParameters(editCanvas(fallbackPreview));
     }
 
     /**
@@ -81,6 +72,7 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
 
     @Override
     public void initPreview() {
+        System.out.println("    Called from initPreview CA");
         fallbackPreview = new CanvasSE(getFallbackSymbolizer());
         MouseListener l = EventHandler.create(MouseListener.class, this, "onEditFallback", "", "mouseClicked");
         fallbackPreview.addMouseListener(l);
@@ -89,25 +81,6 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     @Override
     public AreaParameters getColouredParameters(AreaParameters f, Color c) {
         return new AreaParameters(f.getLineColor(), f.getLineOpacity(),f.getLineWidth(),f.getLineDash(),c,f.getFillOpacity());
-    }
-
-    @Override
-    protected void beforeFallbackSymbol(JPanel genSettings) {
-        // Enable stroke?
-        genSettings.add(getEnableStrokeCheckBox(), "span 2, align center");
-    }
-
-    /**
-     * Gets the checkbox used to set if the border will be drawn.
-     *
-     * @return The enable border checkbox.
-     */
-    private JCheckBox getEnableStrokeCheckBox(){
-        strokeBox = new JCheckBox(I18N.tr(ENABLE_BORDER));
-        strokeBox.setSelected(((CategorizedArea) getLegend()).isStrokeEnabled());
-        strokeBox.addActionListener(
-                EventHandler.create(ActionListener.class, this, "onEnableStroke"));
-        return strokeBox;
     }
 
     @Override
@@ -166,8 +139,8 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
      */
     @Override
     public Symbolizer getFallbackSymbolizer(){
-        UniqueSymbolArea usl = new UniqueSymbolArea(((CategorizedArea)getLegend()).getFallbackParameters());
-        usl.setStrokeUom(((CategorizedArea) getLegend()).getStrokeUom());
+        UniqueSymbolArea usl = new UniqueSymbolArea(getLegend().getFallbackParameters());
+        usl.setStrokeUom(getLegend().getStrokeUom());
         return usl.getSymbolizer();
     }
 
@@ -188,43 +161,5 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     @Override
     public String validateInput() {
         return "";
-    }
-
-    /**
-     * Action done when the checkbox used to activate the stroke is pressed.
-     */
-    public void onEnableStroke(){
-        CategorizedArea ra = (CategorizedArea) getLegend();
-        ra.setStrokeEnabled(strokeBox.isSelected());
-        UniqueSymbolArea usa = new UniqueSymbolArea(ra.getFallbackParameters());
-        if(ra.isStrokeEnabled()){
-            ra.setStrokeUom(Uom.fromString(strokeUoms[lineUom.getSelectedIndex()].getKey()));
-            usa.setStrokeUom(ra.getStrokeUom());
-        }
-
-        getPreview().setSymbol(usa.getSymbolizer());
-        TableModelInterval model = (TableModelInterval) tablePanel.getJTable().getModel();
-        model.fireTableDataChanged();
-    }
-
-    /**
-     * Build the panel used to select the classification field.
-     *
-     * @return The JPanel where the user will choose the classification field.
-     */
-    private JPanel getFieldLine() {
-        JPanel jp = new JPanel();
-        jp.add(new JLabel(I18N.tr("Classification field : ")));
-        fieldCombo =getFieldComboBox();
-        jp.add(fieldCombo);
-        return jp;
-    }
-
-    @Override
-    protected JComboBox getUOMComboBox(){
-        UomCombo jcb = getLineUomCombo(((CategorizedArea) getLegend()));
-        jcb.addActionListener(
-                EventHandler.create(ActionListener.class, this, "updatePreview", "source"));
-        return jcb.getCombo();
     }
 }

@@ -9,7 +9,6 @@ import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
 import org.orbisgis.legend.thematic.categorize.CategorizedLine;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
-import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
@@ -17,15 +16,12 @@ import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorCategorizedLine;
 import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorCategorizedLine;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelCatLine;
-import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
@@ -47,7 +43,7 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
      * @param me The MouseEvent that caused the call to this method.
      */
     public void onEditFallback(MouseEvent me){
-        ((CategorizedLine)getLegend()).setFallbackParameters(editCanvas(fallbackPreview));
+        getLegend().setFallbackParameters(editCanvas(fallbackPreview));
     }
 
     /**
@@ -56,9 +52,9 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
      * @return The LineParameters that must be used at the end of the edition.
      */
     private LineParameters editCanvas(CanvasSE cse){
-        LineParameters lps = ((CategorizedLine)getLegend()).getFallbackParameters();
+        LineParameters lps = getLegend().getFallbackParameters();
         UniqueSymbolLine usl = new UniqueSymbolLine(lps);
-        usl.setStrokeUom(((CategorizedLine) getLegend()).getStrokeUom());
+        usl.setStrokeUom(getLegend().getStrokeUom());
         PnlUniqueLineSE pls = new PnlUniqueLineSE(false);
         pls.setLegend(usl);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
@@ -73,6 +69,7 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
 
     @Override
     public void initPreview() {
+        System.out.println("    Called from initPreview CL");
         fallbackPreview = new CanvasSE(getFallbackSymbolizer());
         MouseListener l = EventHandler.create(MouseListener.class, this, "onEditFallback", "", "mouseClicked");
         fallbackPreview.addMouseListener(l);
@@ -81,11 +78,6 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
     @Override
     public LineParameters getColouredParameters(LineParameters lp, Color newCol){
         return new LineParameters(newCol, lp.getLineOpacity(), lp.getLineWidth(), lp.getLineDash());
-    }
-
-    @Override
-    protected void beforeFallbackSymbol(JPanel genSettings) {
-        // Empty on purpose.
     }
 
     @Override
@@ -167,26 +159,5 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
     @Override
     public String validateInput() {
         return "";
-    }
-
-    /**
-     * Build the panel used to select the classification field.
-     *
-     * @return The JPanel where the user will choose the classification field.
-     */
-    private JPanel getFieldLine() {
-        JPanel jp = new JPanel();
-        jp.add(new JLabel(I18N.tr("Classification field : ")));
-        fieldCombo =getFieldComboBox();
-        jp.add(fieldCombo);
-        return jp;
-    }
-
-    @Override
-    protected JComboBox getUOMComboBox(){
-        UomCombo jcb = getLineUomCombo(((CategorizedLine) getLegend()));
-        jcb.addActionListener(
-                EventHandler.create(ActionListener.class, this, "updatePreview", "source"));
-        return jcb.getCombo();
     }
 }

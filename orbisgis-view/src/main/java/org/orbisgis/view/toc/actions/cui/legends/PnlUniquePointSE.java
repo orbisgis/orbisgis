@@ -47,6 +47,7 @@ import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.legends.panels.OnVertexOnCentroidPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -214,7 +215,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                     // he wants to draw symbols on centroid or on vertices.
                     if (geometryType != SimpleGeometryType.POINT) {
                         jp.add(new JLabel(I18N.tr(PLACE_SYMBOL_ON)), "span 1 2");
-                        jp.add(OnVertexHelper.pnlOnVertex(this, point, I18N), "span 1 2");
+                        jp.add(new OnVertexOnCentroidPanel(uniquePoint, getPreview()), "span 1 2");
                     }
                     // Unit of measure - symbol size
                     jp.add(new JLabel(I18N.tr(SYMBOL_SIZE_UNIT)));
@@ -286,7 +287,6 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                         values[i] = wkns[i].getLabel();
                 }
                 final WideComboBox jcc = new WideComboBox(values);
-                ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
                 ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateWKNComboBox", "source.selectedIndex");
                 jcc.addActionListener(acl2);
@@ -305,20 +305,6 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                         cips[i] = cip;
                 }
                 return cips;
-        }
-
-    /**
-         * called when the user wants to put the points on the vertices of the geometry.
-         */
-        public void onClickVertex(){
-            OnVertexHelper.changeOnVertex(this, true);
-        }
-
-        /**
-         * called when the user wants to put the points on the centroid of the geometry.
-         */
-        public void onClickCentroid(){
-            OnVertexHelper.changeOnVertex(this, false);
         }
 
         /**
@@ -343,7 +329,6 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                         values[i] = I18N.tr(uoms[i].toString());
                 }
                 final WideComboBox jcc = new WideComboBox(values);
-                ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
                 ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex");
                 jcc.addActionListener(acl2);

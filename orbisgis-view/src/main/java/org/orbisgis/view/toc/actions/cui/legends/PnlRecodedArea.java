@@ -32,27 +32,25 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
-import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.orbisgis.legend.thematic.recode.RecodedArea;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legends.model.*;
-import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
+import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorRecodedArea;
+import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorUniqueValue;
+import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorRecodedArea;
+import org.orbisgis.view.toc.actions.cui.legends.model.TableModelRecodedArea;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
@@ -77,7 +75,6 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlRecodedLine.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
     private String id;
-    private JCheckBox strokeBox;
 
     @Override
     public String getId() {
@@ -100,7 +97,7 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
      * @param me The MouseEvent that caused the call to this method.
      */
     public void onEditFallback(MouseEvent me){
-        ((RecodedArea)getLegend()).setFallbackParameters(editCanvas(fallbackPreview));
+        getLegend().setFallbackParameters(editCanvas(fallbackPreview));
     }
 
     /**
@@ -128,32 +125,20 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     }
 
     /**
-     * Build the panel used to select the classification field.
-     *
-     * @return The JPanel where the user will choose the classification field.
-     */
-    private JPanel getFieldLine() {
-        JPanel jp = new JPanel();
-        jp.add(new JLabel(I18N.tr("Classification field : ")));
-        fieldCombo =getFieldComboBox();
-        jp.add(fieldCombo);
-        return jp;
-    }
-
-    /**
      * Gets the Symbolizer that is associated to the unique symbol matching the fallback configuration of this
      * unique value classification.
      * @return A Symbolizer.
      */
     @Override
     public Symbolizer getFallbackSymbolizer(){
-        UniqueSymbolArea usl = new UniqueSymbolArea(((RecodedArea)getLegend()).getFallbackParameters());
-        usl.setStrokeUom(((RecodedArea) getLegend()).getStrokeUom());
+        UniqueSymbolArea usl = new UniqueSymbolArea(getLegend().getFallbackParameters());
+        usl.setStrokeUom(getLegend().getStrokeUom());
         return usl.getSymbolizer();
     }
 
     @Override
     public void initPreview() {
+        System.out.println("    Called from initPreview RA");
         fallbackPreview = new CanvasSE(getFallbackSymbolizer());
         MouseListener l = EventHandler.create(MouseListener.class, this, "onEditFallback", "", "mouseClicked");
         fallbackPreview.addMouseListener(l);
@@ -180,41 +165,6 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     }
 
     @Override
-    protected void beforeFallbackSymbol(JPanel genSettings) {
-        // Enable Stroke
-        genSettings.add(getEnableStrokeCheckBox(), "span 2, align center");
-    }
-
-    /**
-     * Gets the checkbox used to set if the border will be drawn.
-     *
-     * @return The enable border checkbox.
-     */
-    private JCheckBox getEnableStrokeCheckBox(){
-        strokeBox = new JCheckBox(I18N.tr(ENABLE_BORDER));
-        strokeBox.setSelected(((RecodedArea) getLegend()).isStrokeEnabled());
-        strokeBox.addActionListener(
-                EventHandler.create(ActionListener.class, this, "onEnableStroke"));
-        return strokeBox;
-    }
-
-    /**
-     * Action done when the checkbox used to activate the stroke is pressed.
-     */
-    public void onEnableStroke(){
-        RecodedArea ra = (RecodedArea) getLegend();
-        ra.setStrokeEnabled(strokeBox.isSelected());
-        UniqueSymbolArea usa = new UniqueSymbolArea(ra.getFallbackParameters());
-        if(ra.isStrokeEnabled()){
-            ra.setStrokeUom(Uom.fromString(strokeUoms[lineUom.getSelectedIndex()].getKey()));
-            usa.setStrokeUom(ra.getStrokeUom());
-        }
-        getPreview().setSymbol(usa.getSymbolizer());
-        TableModelUniqueValue model = (TableModelUniqueValue) tablePanel.getJTable().getModel();
-        model.fireTableDataChanged();
-    }
-
-    @Override
     public RecodedArea getEmptyAnalysis() {
         RecodedArea ra = new RecodedArea();
         RecodedArea old = (RecodedArea)getLegend();
@@ -224,21 +174,13 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
         return ra;
     }
 
-    @Override
-    protected JComboBox getUOMComboBox(){
-        UomCombo jcb = getLineUomCombo(((RecodedArea) getLegend()));
-        jcb.addActionListener(
-                EventHandler.create(ActionListener.class, this, "updatePreview", "source"));
-        return jcb.getCombo();
-    }
-
     /**
      * Used when the field against which the analysis is made changes.
      *
      * @param obj The new field.
      */
     public void updateField(String obj) {
-        ((RecodedArea)getLegend()).setLookupFieldName(obj);
+        (getLegend()).setLookupFieldName(obj);
     }
 
     @Override
@@ -274,12 +216,12 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     public Legend copyLegend() {
         RecodedArea rl = new RecodedArea();
         rl.setStrokeEnabled(((RecodedArea)getLegend()).isStrokeEnabled());
-        Set<Map.Entry<String,AreaParameters>> entries = ((RecodedArea)getLegend()).entrySet();
+        Set<Map.Entry<String,AreaParameters>> entries = getLegend().entrySet();
         for(Map.Entry<String,AreaParameters> entry : entries){
             rl.put(entry.getKey(),entry.getValue());
         }
-        rl.setFallbackParameters(((RecodedArea)getLegend()).getFallbackParameters());
-        rl.setLookupFieldName(((RecodedArea)getLegend()).getLookupFieldName());
+        rl.setFallbackParameters(getLegend().getFallbackParameters());
+        rl.setLookupFieldName(getLegend().getLookupFieldName());
         return rl;
     }
 }

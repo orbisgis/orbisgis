@@ -52,6 +52,7 @@ import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.legends.panels.OnVertexOnCentroidPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -243,7 +244,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 // wants to draw symbols on centroid or on vertices.
                 if(getGeometryType() != SimpleGeometryType.POINT){
                     jp.add(new JLabel(I18N.tr(PLACE_SYMBOL_ON)), "span 1 2");
-                    jp.add(OnVertexHelper.pnlOnVertex(this, prop, I18N), "span 1 2");
+                    jp.add(new OnVertexOnCentroidPanel(proportionalPoint, getPreview()), "span 1 2");
                 }
                 return jp;
         }
@@ -292,8 +293,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                                 fieldCombo.setSelectedItem(field);
                         }
                         fieldCombo.addActionListener(acl2);
-                        updateField((String)fieldCombo.getSelectedItem());
-                        ((JLabel)fieldCombo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
+                        updateField((String) fieldCombo.getSelectedItem());
                 } else {
                         fieldCombo = new WideComboBox();
                 }

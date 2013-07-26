@@ -15,7 +15,9 @@ import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;
+import org.orbisgis.view.toc.actions.cui.legends.panels.SettingsPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.TablePanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -46,12 +48,13 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     private MappedLegend<K,U> legend;
     private String id;
     protected CanvasSE fallbackPreview;
-    protected WideComboBox fieldCombo;
     protected JComboBox lineUom;
-    protected static final String ENABLE_BORDER = I18n.marktr("Enable border");
+    public static final String ENABLE_BORDER = I18n.marktr("Enable border");
     protected static final String CLASSIFICATION_SETTINGS = I18n.marktr("Classification settings");
 
     protected TablePanel<K, U> tablePanel;
+    private SettingsPanel<K, U> settingsPanel;
+
     @Override
     public void initialize(LegendContext lc) {
         initialize(lc, getEmptyAnalysis());
@@ -65,38 +68,6 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
 
     protected void setLegendImpl(MappedLegend<K,U> leg){
         this.legend =  leg;
-    }
-
-    /**
-     * Create and return a combobox for the border width unit,
-     * adding an appropriate action listener to update the preview.
-     *
-     * @return A combobox for the border width unit
-     */
-    protected abstract JComboBox getUOMComboBox();
-
-    /**
-     * Creates and fill the combo box that will be used to compute the
-     * analysis.
-     *
-     * @return  A ComboBox linked to the underlying MappedLegend that configures the analysis field.
-     */
-    public WideComboBox getFieldComboBox() {
-        if (ds != null) {
-            WideComboBox jcc = getFieldCombo(ds);
-            ActionListener acl2 = EventHandler.create(ActionListener.class,
-                    this, "updateField", "source.selectedItem");
-            String field = legend.getLookupFieldName();
-            if (field != null && !field.isEmpty()) {
-                jcc.setSelectedItem(field);
-            }
-            jcc.addActionListener(acl2);
-            updateField((String) jcc.getSelectedItem());
-            ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-            return jcc;
-        } else {
-            return new WideComboBox();
-        }
     }
 
     /**
@@ -135,6 +106,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
         JComboBox jcb = (JComboBox) source;
         updateLUComboBox(jcb.getSelectedIndex());
         CanvasSE prev = getPreview();
+        System.out.println("    Called from updatePreview ABS");
         prev.setSymbol(getFallbackSymbolizer());
         tablePanel.updateTable();
     }
@@ -184,7 +156,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
         int n = 0;
         pm.progressTo(50);
         pm.startTask(CREATE_CLASSIF , 100);
-        U lp = ((MappedLegend<K,U>)getLegend()).getFallbackParameters();
+        U lp = (getLegend()).getFallbackParameters();
         MappedLegend<K,U> newRL = getEmptyAnalysis();
         newRL.setFallbackParameters(lp);
         if(set.size() != colors.size()){
@@ -321,60 +293,30 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
         JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
         // Fallback symbol
-        glob.add(getSettingsPanel());
+//        glob.add(getSettingsPanel());
+        tablePanel = new TablePanel<K, U>(legend,
+                getTitleBorder(),
+                getTableModel(),
+                getKeyCellEditor(),
+                getKeyColumn(),
+                getPreviewCellEditor(),
+                getPreviewColumn(),
+                getPreviewClass());
+
+        settingsPanel = new SettingsPanel<K, U>(legend,
+                getDataSource(),
+                getPreview(),
+                tablePanel);
+        glob.add(settingsPanel);
 
         //Classification generator
         glob.add(getCreateClassificationPanel());
 
         // Table
-        tablePanel = new TablePanel<K, U>(legend,
-                                          getTitleBorder(),
-                                          getTableModel(),
-                                          getKeyCellEditor(),
-                                          getKeyColumn(),
-                                          getPreviewCellEditor(),
-                                          getPreviewColumn(),
-                                          getPreviewClass());
         glob.add(tablePanel, "span 2, growx");
         this.add(glob);
         this.revalidate();
     }
-
-    /**
-     * Initialize and return the settings panel.
-     *
-     * @return Settings panel
-     */
-    protected JPanel getSettingsPanel() {
-        JPanel jp = new JPanel(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
-        jp.setBorder(BorderFactory.createTitledBorder(I18N.tr("General settings")));
-
-        // Field chooser
-        jp.add(new JLabel(I18N.tr(FIELD)));
-        fieldCombo = getFieldComboBox();
-        jp.add(fieldCombo, COMBO_BOX_CONSTRAINTS);
-
-        // Unit of measure - line width
-        jp.add(new JLabel(I18N.tr(LINE_WIDTH_UNIT)));
-        lineUom = getUOMComboBox();
-        jp.add(lineUom, COMBO_BOX_CONSTRAINTS);
-
-        beforeFallbackSymbol(jp);
-
-        // Fallback symbol
-        jp.add(getPreview(), "span 2, align center");
-        jp.add(new JLabel(I18N.tr("Fallback symbol")), "span 2, align center");
-
-        return jp;
-    }
-
-    /**
-     * Add any necessary components in the general settings panel
-     * before the fallback symbol.
-     *
-     * @param genSettings The general settings panel
-     */
-    protected abstract void beforeFallbackSymbol(JPanel genSettings);
 
     /**
      * Gets the JPanel that gathers all the buttons and labels to create a classification from scratch;
@@ -435,6 +377,6 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
      * @return The name of the field.
      */
     public String getFieldName() {
-        return fieldCombo.getSelectedItem().toString();
+        return settingsPanel.getSelectedField();
     }
 }

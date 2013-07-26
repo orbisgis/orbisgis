@@ -245,7 +245,6 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
                         }
                         jcc.addActionListener(acl2);
                         updateField((String)jcc.getSelectedItem());
-                        ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
                         return jcc;
                 } else {
                         return new WideComboBox();

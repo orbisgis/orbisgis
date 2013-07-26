@@ -292,9 +292,20 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters>
 
     @Override
     public void setStrokeUom(Uom u) {
+        if (pointSymbolizer == null) {
+            System.out.println("Null pointSymbolizer");
+        }
         if(ps != null){
             MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getChildren().get(0);
             mg.getStroke().setUom(u);
+        } else {
+            System.out.println("Null ps. Trying another solution.");
+            Stroke stroke = ((MarkGraphic) pointSymbolizer.getGraphicCollection().getGraphic(0)).getStroke();
+            if (stroke != null){
+                stroke.setUom(u);
+            } else {
+                System.out.println("Null stroke");
+            }
         }
     }
 
