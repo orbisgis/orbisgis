@@ -39,9 +39,9 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.AreaSymbolizerType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
-import org.gdms.driver.DriverException;
+
+
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -211,7 +211,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
                 List<Shape> shapes = new LinkedList<Shape>();
                 shapes.add(mt.getShape(the_geom, true));
-                Map<String,Value> map = getFeaturesMap(sds, fid);
+                Map<String,Object> map = getFeaturesMap(sds, fid);
                 if (shapes != null) {
                         for (Shape shp : shapes) {
                                 if (this.getTranslate() != null) {

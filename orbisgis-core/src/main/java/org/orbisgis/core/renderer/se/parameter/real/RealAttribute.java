@@ -30,8 +30,8 @@ package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.util.Map;
 import net.opengis.fes._2.ValueReferenceType;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
+
+
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.ValueReference;
@@ -79,7 +79,7 @@ public class RealAttribute extends ValueReference implements RealParameter {
     @Override
     public Double getValue(DataSet sds, long fid) throws ParameterException {
         try {
-            Value value = this.getFieldValue(sds, fid);
+            Object value = this.getFieldValue(sds, fid);
             if (value.isNull()) {
                 return null;
             }
@@ -90,9 +90,9 @@ public class RealAttribute extends ValueReference implements RealParameter {
     }
 
     @Override
-    public Double getValue(Map<String,Value> map) throws ParameterException {
+    public Double getValue(Map<String,Object> map) throws ParameterException {
         try {
-            Value value = this.getFieldValue(map);
+            Object value = this.getFieldValue(map);
             if (value.isNull()) {
                 return null;
             }

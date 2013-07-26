@@ -43,7 +43,7 @@ import net.opengis.se._2_0.thematic.ObjectFactory;
 import net.opengis.se._2_0.thematic.PieChartType;
 import net.opengis.se._2_0.thematic.PieSubtypeType;
 import net.opengis.se._2_0.thematic.SliceType;
-import org.gdms.data.values.Value;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
@@ -413,7 +413,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
     }
 
     @Override
-    public Rectangle2D getBounds(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
+    public Rectangle2D getBounds(Map<String,Object> map, MapTransform mt) throws ParameterException, IOException {
 
         double r = DEFAULT_RADIUS_PX;
         if (radius != null) {
@@ -431,7 +431,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
     }
 
     @Override
-    public void draw(Graphics2D g2, Map<String,Value> map,
+    public void draw(Graphics2D g2, Map<String,Object> map,
             boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
 
         AffineTransform at = new AffineTransform(fat);

@@ -38,7 +38,7 @@ import net.opengis.se._2_0.core.CompositeGraphicType;
 import net.opengis.se._2_0.core.GraphicType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.apache.log4j.Logger;
-import org.gdms.data.values.Value;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -216,7 +216,7 @@ public final class GraphicCollection extends AbstractSymbolizerNode implements U
      * @throws ParameterException
      * @throws IOException 
      */
-    public Rectangle2D getBounds(Map<String,Value> map, boolean selected, MapTransform mt)
+    public Rectangle2D getBounds(Map<String,Object> map, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
 
         double xmin = Double.MAX_VALUE;
@@ -276,7 +276,7 @@ public final class GraphicCollection extends AbstractSymbolizerNode implements U
      * @throws ParameterException
      * @throws IOException
      */
-    public void draw(Graphics2D g2, Map<String,Value> map, boolean selected, MapTransform mt, AffineTransform at)
+    public void draw(Graphics2D g2, Map<String,Object> map, boolean selected, MapTransform mt, AffineTransform at)
             throws ParameterException, IOException {
         for (Graphic g : graphics) {
             try {

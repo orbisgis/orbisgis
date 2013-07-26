@@ -34,8 +34,8 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.InterpolateType;
 import net.opengis.se._2_0.core.InterpolationPointType;
 import net.opengis.se._2_0.core.ModeType;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
+
+
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Interpolate;
 import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
@@ -135,7 +135,7 @@ public final class Interpolate2Color extends Interpolate<ColorParameter, ColorLi
          * The interpolated <code>Color</code>
          */
         @Override
-        public Color getColor(Map<String,Value> map) throws ParameterException {
+        public Color getColor(Map<String,Object> map) throws ParameterException {
                 double value = this.getLookupValue().getValue(map);
                 int numPt = getNumInterpolationPoint();
                 if (getInterpolationPoint(0).getData() >= value) {

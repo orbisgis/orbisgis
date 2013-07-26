@@ -37,7 +37,6 @@ import net.opengis.se._2_0.core.LabelType;
 import net.opengis.se._2_0.core.LineLabelType;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.PointLabelType;
-import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
@@ -214,7 +213,7 @@ public abstract class Label extends AbstractSymbolizerNode implements UomNode {
 
     /**
      * Create a new {@code Label} built from a generic JAXB object.
-     * @param t
+     * @param l
      * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
      */
     protected Label(JAXBElement<? extends LabelType> l) throws InvalidStyle {
@@ -337,7 +336,7 @@ public abstract class Label extends AbstractSymbolizerNode implements UomNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, Map<String, Value> feat,
+    public abstract void draw(Graphics2D g2, Map<String, Object> feat,
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException;
 

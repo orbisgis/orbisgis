@@ -30,7 +30,7 @@ package org.orbisgis.core.renderer.se.graphic;
 
 import net.opengis.se._2_0.core.MarkGraphicType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.values.Value;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.*;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -341,7 +341,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
      * @return The source that defines this MarkGraphic
      * @throws ParameterException 
      */
-    private MarkGraphicSource getSource(Map<String,Value> map) throws ParameterException {
+    private MarkGraphicSource getSource(Map<String,Object> map) throws ParameterException {
         if (wkn != null) {
             return WellKnownName.fromString(wkn.getValue(map));
         } else if (onlineResource != null) {
@@ -350,7 +350,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         return null;
     }
 
-    private Shape getShape(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
+    private Shape getShape(Map<String,Object> map, MapTransform mt) throws ParameterException, IOException {
 
         Double dpi = null;
         Double scaleDenom = null;
@@ -370,7 +370,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     }
 
     @Override
-    public Rectangle2D getBounds(Map<String,Value> map,
+    public Rectangle2D getBounds(Map<String,Object> map,
             MapTransform mt) throws ParameterException, IOException {
         Shape shp;
 
@@ -395,7 +395,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     }
     
     @Override
-    public void draw(Graphics2D g2, Map<String,Value> map,
+    public void draw(Graphics2D g2, Map<String,Object> map,
             boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
         Shape shp;
 
@@ -447,7 +447,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         }
     }
 
-    private void drawHalo(Graphics2D g2, Map<String,Value> map,
+    private void drawHalo(Graphics2D g2, Map<String,Object> map,
             boolean selected, Shape shp,Shape atShp, MapTransform mt, 
             AffineTransform fat) throws ParameterException, IOException {
         //If we are dealing with a WKN, and if it is a Circle or a half-circle, 

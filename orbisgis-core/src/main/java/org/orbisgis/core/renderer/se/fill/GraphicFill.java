@@ -31,7 +31,7 @@ package org.orbisgis.core.renderer.se.fill;
 import net.opengis.se._2_0.core.GraphicFillType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TileGapType;
-import org.gdms.data.values.Value;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -175,7 +175,7 @@ public final class GraphicFill extends Fill {
      * see Fill
      */
     @Override
-    public void draw(Graphics2D g2, Map<String,Value> map, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Map<String,Object> map, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
         Paint stipple = this.getPaint(map, selected, mt);
 
         // TODO handle selected ! 
@@ -195,7 +195,7 @@ public final class GraphicFill extends Fill {
      * @throws IOException
      */
     @Override
-    public Paint getPaint(Map<String,Value> map, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public Paint getPaint(Map<String,Object> map, boolean selected, MapTransform mt) throws ParameterException, IOException {
         double gX = 0.0;
         double gY = 0.0;
 
@@ -220,7 +220,7 @@ public final class GraphicFill extends Fill {
         return getPaint(map, selected, mt, graphic, gX, gY, bounds);
     }
 
-    public static Paint getPaint(Map<String,Value> map, boolean selected,
+    public static Paint getPaint(Map<String,Object> map, boolean selected,
             MapTransform mt, GraphicCollection graphic, double gX, double gY, Rectangle2D bounds)
             throws ParameterException, IOException {
 

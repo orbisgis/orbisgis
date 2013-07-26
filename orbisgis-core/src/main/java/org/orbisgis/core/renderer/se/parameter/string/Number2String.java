@@ -37,8 +37,8 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.FormatNumberType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
+
+
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -128,7 +128,7 @@ public class Number2String extends AbstractSymbolizerNode implements SeParameter
         }
 
         @Override
-        public String getValue(Map<String,Value> map) throws ParameterException {
+        public String getValue(Map<String,Object> map) throws ParameterException {
                 double val = numericValue.getValue(map);
                 return formatter.format(val);
         }

@@ -32,7 +32,7 @@ import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.*;
 import java.util.Map;
-import org.gdms.data.values.Value;
+
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
@@ -142,7 +142,7 @@ public enum WellKnownName implements MarkGraphicSource {
     }
 
     @Override
-    public Shape getShape(ViewBox viewBox, Map<String,Value> map,
+    public Shape getShape(ViewBox viewBox, Map<String,Object> map,
             Double scale, Double dpi, RealParameter markIndex,
             String mimeType) throws ParameterException {
         if (map == null && viewBox != null){
@@ -289,7 +289,7 @@ public enum WellKnownName implements MarkGraphicSource {
     }
 
     @Override
-    public double getDefaultMaxWidth(Map<String,Value> map,
+    public double getDefaultMaxWidth(Map<String,Object> map,
             Double scale, Double dpi, RealParameter markIndex, String mimeType) {
         return DEFAULT_SIZE;
     }

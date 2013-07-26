@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import net.opengis.se._2_0.core.FontType;
 import net.opengis.se._2_0.core.StyledTextType;
-import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
@@ -290,7 +289,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
 
     /**
      * Set the font size used to represent this <code>StyledText</code>
-     * @param fontFamily 
+     * @param fontSize
      */
     public void setFontSize(RealParameter fontSize) {
         this.fontSize = fontSize;
@@ -311,7 +310,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
 
     /**
      * Set the font style used to represent this <code>StyledText</code>
-     * @param fontFamily 
+     * @param fontStyle
      */
     public void setFontStyle(StringParameter fontStyle) {
         if (fontStyle != null) {
@@ -332,7 +331,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
 
     /**
      * Set the font weight used to represent this <code>StyledText</code>
-     * @param fontFamily 
+     * @param fontWeight
      */
     public void setFontWeight(StringParameter fontWeight) {
         if (fontWeight != null) {
@@ -342,7 +341,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
         }
     }
 
-    private Font getFont(Map<String, Value> map, MapTransform mt) throws ParameterException, IOException {
+    private Font getFont(Map<String, Object> map, MapTransform mt) throws ParameterException, IOException {
         String family = "Arial";
         if (fontFamily != null) {
             family = fontFamily.getValue(map);
@@ -392,7 +391,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * @throws ParameterException
      * @throws IOException
      */
-    public Rectangle2D getBounds(Graphics2D g2, Map<String, Value> map,
+    public Rectangle2D getBounds(Graphics2D g2, Map<String, Object> map,
             MapTransform mt) throws ParameterException, IOException {
         String txt = this.text.getValue(map);
         return getBounds(g2, txt, map, mt);
@@ -408,7 +407,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * @throws ParameterException
      * @throws IOException
      */
-    public Rectangle2D getBounds(Graphics2D g2, String text, Map<String, Value> map,
+    public Rectangle2D getBounds(Graphics2D g2, String text, Map<String, Object> map,
             MapTransform mt) throws ParameterException, IOException {
 
         Font font = getFont(map, mt);
@@ -427,7 +426,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * @throws ParameterException
      * @throws IOException
      */
-    public void draw(Graphics2D g2, Map<String, Value> map,
+    public void draw(Graphics2D g2, Map<String, Object> map,
             boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
         String txt = this.text.getValue(map);
         draw(g2, txt, map, selected, mt, at, perm);
@@ -452,7 +451,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * @throws ParameterException
      * @throws IOException
      */
-    public Shape getOutline(Graphics2D g2, String text, Map<String, Value> map,
+    public Shape getOutline(Graphics2D g2, String text, Map<String, Object> map,
             MapTransform mt, AffineTransform at, RenderContext perm)
             throws ParameterException, IOException {
         return getOutline(g2, text, map, mt, at, perm, Label.VerticalAlignment.TOP);
@@ -482,7 +481,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * @throws IOException
      * If an error occurred while retrieving the {@code Font}.
      */
-    public Shape getOutline(Graphics2D g2, String text, Map<String, Value> map,
+    public Shape getOutline(Graphics2D g2, String text, Map<String, Object> map,
             MapTransform mt, AffineTransform at, RenderContext perm, Label.VerticalAlignment va)
             throws ParameterException, IOException {
         Font font = getFont(map, mt);
@@ -529,7 +528,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * @throws ParameterException
      * @throws IOException
      */
-    public void drawOutlines(Graphics2D g2, ArrayList<Shape> outlines, Map<String, Value> map,
+    public void drawOutlines(Graphics2D g2, ArrayList<Shape> outlines, Map<String, Object> map,
             boolean selected, MapTransform mt) throws ParameterException, IOException {
         if (halo != null) {
             for (Shape outline : outlines) {
@@ -567,7 +566,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * @throws ParameterException
      * @throws IOException
      */
-    public void draw(Graphics2D g2, String text, Map<String, Value> map,
+    public void draw(Graphics2D g2, String text, Map<String, Object> map,
             boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
 
         ArrayList<Shape> outlines = new ArrayList<Shape>();
@@ -582,7 +581,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * @return
      * @throws ParameterException
      */
-    public double getEmInPixel(Map<String, Value> map, MapTransform mt) throws ParameterException {
+    public double getEmInPixel(Map<String, Object> map, MapTransform mt) throws ParameterException {
         double size = Uom.toPixel(12, Uom.PT, mt.getDpi(), mt.getScaleDenominator(), null);
         if (fontSize != null) {
             size = Uom.toPixel(fontSize.getValue(map), getFontUom(), mt.getDpi(), mt.getScaleDenominator(), null);

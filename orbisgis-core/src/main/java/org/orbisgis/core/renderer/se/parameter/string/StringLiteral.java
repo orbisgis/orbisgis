@@ -32,8 +32,8 @@ import java.util.Arrays;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
+
+
 import org.orbisgis.core.renderer.se.parameter.Literal;
 
 /**
@@ -72,7 +72,7 @@ public class StringLiteral extends Literal implements StringParameter{
     }
 
     @Override
-    public String getValue(Map<String, Value> feature){
+    public String getValue(Map<String, Object> feature){
         return v;
     }
 

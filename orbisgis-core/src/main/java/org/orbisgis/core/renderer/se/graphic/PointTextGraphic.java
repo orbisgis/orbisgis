@@ -40,7 +40,7 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.PointTextGraphicType;
 import net.opengis.se._2_0.core.TranslateType;
-import org.gdms.data.values.Value;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -138,12 +138,12 @@ public final class PointTextGraphic extends Graphic implements UomNode {
         }
 
         @Override
-        public Rectangle2D getBounds(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
+        public Rectangle2D getBounds(Map<String,Object> map, MapTransform mt) throws ParameterException, IOException {
                 throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
-        public void draw(Graphics2D g2, Map<String,Value> map,
+        public void draw(Graphics2D g2, Map<String,Object> map,
                 boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
 
                 AffineTransform at = new AffineTransform(fat);

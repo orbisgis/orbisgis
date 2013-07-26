@@ -251,7 +251,7 @@ public abstract class Symbolizer extends AbstractSymbolizerNode implements Symbo
 
     /**
      * Gets the features that are needed to build this Symbolizer in a {@code
-     * Map<String,Value>}. This method is based on {@see
+     * Map<String,Object>}. This method is based on {@see
      * SymbolizerNode#dependsOnFeature()}. Using the field names retrieved with
      * this method, we search for {@code Values} at index {@code fid} in {@code
      * sds}.

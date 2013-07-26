@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import net.opengis.se._2_0.core.*;
-import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -164,7 +163,7 @@ public class Transform extends AbstractSymbolizerNode implements UomNode {
          * @throws IOException
          */
         public AffineTransform getGraphicalAffineTransform(boolean isForSpatialFeatures, 
-                    Map<String,Value> map, MapTransform mt, Double width, Double height)
+                    Map<String,Object> map, MapTransform mt, Double width, Double height)
                     throws ParameterException, IOException {
                 //return consolidateTrasformations(false).getGraphicalAffineTransform();
                 this.consolidateTransformations(map, isForSpatialFeatures, mt, width, height);
@@ -185,7 +184,7 @@ public class Transform extends AbstractSymbolizerNode implements UomNode {
          * @throws ParameterException
          * @throws IOException
          */
-        public void consolidateTransformations(Map<String,Value> map, boolean forGeometries,
+        public void consolidateTransformations(Map<String,Object> map, boolean forGeometries,
                 MapTransform mt, Double width, Double height) throws ParameterException, IOException {
 
                 // Result is Identity

@@ -52,7 +52,6 @@ import javax.media.jai.RenderedOp;
 import net.opengis.se._2_0.core.ExternalGraphicType;
 import net.opengis.se._2_0.core.MarkGraphicType;
 import net.opengis.se._2_0.core.VariableOnlineResourceType;
-import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -138,7 +137,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
      * @return The {@code PlanarImage} for the given configuration
      * @throws ParameterException If the given configuration can't be processed.
      */
-    public PlanarImage getPlanarJAI(Map<String, Value> map) throws ParameterException {
+    public PlanarImage getPlanarJAI(Map<String, Object> map) throws ParameterException {
         try {
             URL link = new URL(url.getValue(map));
             if (!imageCache.containsKey(link)) {
@@ -162,7 +161,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
      * @throws ParameterException
      */
     public Rectangle2D.Double getJAIBounds(ViewBox viewBox,
-                                           Map<String, Value> map, MapTransform mt,
+                                           Map<String, Object> map, MapTransform mt,
                                            String mimeType) throws ParameterException {
         PlanarImage raw = getPlanarJAI(map);
         double width = raw.getWidth();
@@ -196,7 +195,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
      * @return The {@code SVGIcon} for the given configuration
      * @throws ParameterException If the given configuration can't be processed.
      */
-    public SVGIcon getSVGIcon(Map<String,Value> map) throws ParameterException {
+    public SVGIcon getSVGIcon(Map<String,Object> map) throws ParameterException {
         try {
             URI uri = new URI(url.getValue(map));
             if(!svgCache.containsKey(uri)){
@@ -222,7 +221,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
      * @throws ParameterException
      */
     public Rectangle2D.Double getSvgBounds(ViewBox viewBox,
-                                           Map<String,Value> map, MapTransform mt,
+                                           Map<String,Object> map, MapTransform mt,
                                            String mimeType) throws ParameterException {
         SVGIcon svgIcon = getSVGIcon(map);
         double svgInitialHeight = (double) svgIcon.getIconHeight();
@@ -262,7 +261,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
 
     @Override
     public Rectangle2D.Double updateCacheAndGetBounds(ViewBox viewBox,
-                                                      Map<String,Value> map, MapTransform mt,
+                                                      Map<String,Object> map, MapTransform mt,
                                                       String mimeType) throws ParameterException {
         if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
             return getSvgBounds(viewBox, map, mt, mimeType);
@@ -283,7 +282,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
      * @param opacity
      * @throws ParameterException
      */
-    public void drawSVG(Graphics2D g2, Map<String,Value> map, AffineTransform at, double opacity)
+    public void drawSVG(Graphics2D g2, Map<String,Object> map, AffineTransform at, double opacity)
             throws ParameterException {
         try {
             AffineTransform fat = new AffineTransform(at);
@@ -322,7 +321,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
      * @param opacity The opacity of the image.
      * @throws ParameterException
      */
-    public void drawJAI(Graphics2D g2, Map<String,Value> map, AffineTransform at, MapTransform mt,
+    public void drawJAI(Graphics2D g2, Map<String,Object> map, AffineTransform at, MapTransform mt,
                         double opacity) throws ParameterException{
         try{
             AffineTransform fat = new AffineTransform(at);
@@ -357,7 +356,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
 
 
     @Override
-    public void draw(Graphics2D g2, Map<String,Value> map, AffineTransform at, MapTransform mt,
+    public void draw(Graphics2D g2, Map<String,Object> map, AffineTransform at, MapTransform mt,
                      double opacity, String mimeType) throws ParameterException {
         if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
             drawSVG(g2, map, at, opacity);
@@ -375,7 +374,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
     }
 
 
-    public Font getFont(Map<String,Value> map) {
+    public Font getFont(Map<String,Object> map) {
         InputStream iStream;
         try {
             URL u = new URL(this.url.getValue(map));
@@ -390,7 +389,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
 
 
     private Shape getTrueTypeGlyph(ViewBox viewBox,
-                                   Map<String,Value> map,
+                                   Map<String,Object> map,
                                    Double scale, Double dpi,
                                    RealParameter markIndex) throws ParameterException, IOException {
 
@@ -458,7 +457,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
 
 
     @Override
-    public Shape getShape(ViewBox viewBox, Map<String,Value> map, Double scale, 
+    public Shape getShape(ViewBox viewBox, Map<String,Object> map, Double scale,
             Double dpi, RealParameter markIndex, String mimeType) throws ParameterException, IOException {
 
         if (mimeType != null) {
@@ -478,7 +477,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
 
 
     @Override
-    public double getDefaultMaxWidth(Map<String,Value> map,
+    public double getDefaultMaxWidth(Map<String,Object> map,
                                      Double scale, Double dpi,
                                      RealParameter markIndex, String mimeType)
             throws IOException, ParameterException {
@@ -492,7 +491,7 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
     }
 
 
-    private double getTrueTypeGlyphMaxSize(Map<String,Value> map,
+    private double getTrueTypeGlyphMaxSize(Map<String,Object> map,
                                            /*Double scale, Double dpi,*/ RealParameter markIndex)
             throws IOException, ParameterException {
         try {

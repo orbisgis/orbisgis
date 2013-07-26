@@ -41,10 +41,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
+
 import org.gdms.data.indexes.FullIterator;
 import org.gdms.data.stream.GeoStream;
-import org.gdms.driver.DriverException;
+
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.layerModel.ILayer;

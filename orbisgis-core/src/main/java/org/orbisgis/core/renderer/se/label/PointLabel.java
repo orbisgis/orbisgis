@@ -39,7 +39,6 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.PointLabelType;
-import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -97,7 +96,7 @@ public final class PointLabel extends Label {
 
     /**
      * Creates a new {@code PointLabel} from a {@code JAXBElement} instance.
-     * @param plt
+     * @param pl
      * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
      */
     PointLabel(JAXBElement<PointLabelType> pl) throws InvalidStyle {
@@ -152,7 +151,7 @@ public final class PointLabel extends Label {
 
 
     @Override
-    public void draw(Graphics2D g2, Map<String, Value> map,
+    public void draw(Graphics2D g2, Map<String, Object> map,
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException {
         double x;

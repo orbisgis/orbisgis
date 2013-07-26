@@ -31,7 +31,6 @@ package org.orbisgis.core.renderer.se.fill;
 import net.opengis.se._2_0.core.FillType;
 import net.opengis.se._2_0.core.HatchedFillType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
@@ -122,7 +121,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
     }
 
     @Override
-    public void draw(Graphics2D g2, Map<String,Value> map, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Map<String,Object> map, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
         if (this.stroke != null) {
             // Perpendicular distance between two lines
@@ -160,8 +159,6 @@ public final class HatchedFill extends Fill implements StrokeNode {
      * Static method that draw hatches within provided shp
      * 
      * @param g2  the g2 to write on
-     * @param sds the spatial data source
-     * @param fidfeature if within sds
      * @param shp the shape to hatch
      * @param selected is the feature selected ? will emphasis hatches
      * @param mt the well known map transform
@@ -174,7 +171,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
      * @throws ParameterException
      * @throws IOException 
      */
-    public static void drawHatch(Graphics2D g2, Map<String,Value> map, Shape shp,
+    public static void drawHatch(Graphics2D g2, Map<String,Object> map, Shape shp,
             boolean selected, MapTransform mt, double alph, double pDist, Stroke stroke,
             double hOffset) throws ParameterException, IOException {
         double alpha = alph;
@@ -409,15 +406,13 @@ public final class HatchedFill extends Fill implements StrokeNode {
 
     /**
      * Hatched fill cannot be converted to a native java fill
-     * @param fid
-     * @param sds
      * @param selected
      * @param mt
      * @return null
      * @throws ParameterException
      */
     @Override
-    public Paint getPaint(Map<String,Value> map,
+    public Paint getPaint(Map<String,Object> map,
             boolean selected, MapTransform mt) throws ParameterException {
         return null;
     }

@@ -33,8 +33,8 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.RecodeType;
 import org.apache.log4j.Logger;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
+
+
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.Recode;
@@ -94,7 +94,7 @@ public final class Recode2String extends Recode<StringParameter, StringLiteral> 
         }
 
         @Override
-        public String getValue(Map<String,Value> map) {
+        public String getValue(Map<String,Object> map) {
                 try {
                         return getParameter(map).getValue(map);
                 } catch (ParameterException ex) {

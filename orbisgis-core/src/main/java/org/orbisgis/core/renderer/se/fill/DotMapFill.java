@@ -31,7 +31,7 @@ package org.orbisgis.core.renderer.se.fill;
 import net.opengis.se._2_0.thematic.DotMapFillType;
 import net.opengis.se._2_0.thematic.ObjectFactory;
 import org.apache.log4j.Logger;
-import org.gdms.data.values.Value;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -168,13 +168,13 @@ public final class DotMapFill extends Fill implements GraphicNode {
      * @throws ParameterException
      */
     @Override
-    public Paint getPaint(Map<String,Value> map,
+    public Paint getPaint(Map<String,Object> map,
             boolean selected, MapTransform mt) throws ParameterException {
         return null;
     }
 
     @Override
-    public void draw(Graphics2D g2, Map<String,Value> map, Shape shp, boolean selected, MapTransform mt)
+    public void draw(Graphics2D g2, Map<String,Object> map, Shape shp, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
 
         //RenderedImage m = this.mark.getGraphic(map, selected, mt).createRendering(mt.getCurrentRenderContext());

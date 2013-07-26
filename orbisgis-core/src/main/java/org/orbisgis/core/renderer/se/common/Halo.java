@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import net.opengis.se._2_0.core.HaloType;
 import org.apache.log4j.Logger;
-import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.FillNode;
@@ -172,13 +171,11 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
 
     /**
      * Return the halo radius in pixel
-     * @param sds
-     * @param fid
      * @param mt
      * @return
      * @throws ParameterException
      */
-    public double getHaloRadius(Map<String,Value> map, MapTransform mt) throws ParameterException {
+    public double getHaloRadius(Map<String,Object> map, MapTransform mt) throws ParameterException {
         return Uom.toPixel(radius.getValue(map), getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
     }
 
@@ -186,8 +183,6 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
      * Draw this {@code Halo} in {@code g2}. Basically compute an offseted shape
      * and fill the difference with the original one.
      * @param g2
-     * @param sds
-     * @param fid
      * @param selected
      * @param shp
      * @param mt
@@ -195,7 +190,7 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
      * @throws ParameterException
      * @throws IOException
      */
-    public void draw(Graphics2D g2, Map<String,Value> map, boolean selected,
+    public void draw(Graphics2D g2, Map<String,Object> map, boolean selected,
             Shape shp, MapTransform mt, boolean substract) throws ParameterException, IOException {
         if (radius != null && fill != null) {
             double r = this.getHaloRadius(map, mt);
@@ -217,9 +212,7 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
      * MapTransform.
      * @param g2
      * The {@code Graphics} where we are going to draw.
-     * @param sds
      * Our DataSet
-     * @param fid
      * The index of the current feature in sds.
      * @param selected
      * @param shp
@@ -234,7 +227,7 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
      * @throws ParameterException
      * @throws IOException 
      */
-    public void drawCircle(Graphics2D g2, Map<String,Value> map, boolean selected,
+    public void drawCircle(Graphics2D g2, Map<String,Object> map, boolean selected,
             Arc2D shp, Shape atShp, MapTransform mt, boolean substract, 
             ViewBox viewBox, AffineTransform at) throws ParameterException, IOException {
         //We want to make a halo around a WKN.CIRCLE instance. 
@@ -252,7 +245,7 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
     }
     
     private void fillHalo(Shape halo, Shape initialShp, Graphics2D g2, 
-                Map<String,Value> map, boolean selected,MapTransform mt, boolean substract)
+                Map<String,Object> map, boolean selected,MapTransform mt, boolean substract)
                 throws ParameterException, IOException {
         if (halo != null && initialShp != null) {
             Area initialArea = new Area(initialShp);

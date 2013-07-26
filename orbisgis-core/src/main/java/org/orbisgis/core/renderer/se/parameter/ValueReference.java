@@ -138,7 +138,7 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
 	}
 
         /**
-         * Get the GDMS {@code Value} associated to this Reference in the given
+         * Get the GDMS {@code Object} associated to this Reference in the given
          * table (represented by the {@code DataSet sds}) at line fid.
          * @param sds ResultSet
          * @param fid Field Id

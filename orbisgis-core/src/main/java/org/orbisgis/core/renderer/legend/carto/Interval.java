@@ -28,17 +28,17 @@
  */
 package org.orbisgis.core.renderer.legend.carto;
 
-import org.gdms.data.values.Value;
+
 import org.orbisgis.utils.FormatUtils;
 
 public class Interval {
 
-	private Value start;
-	private Value end;
+	private Object start;
+	private Object end;
 	private boolean minIncluded;
 	private boolean maxIncluded;
 
-	public Interval(Value start, boolean minIncluded, Value end,
+	public Interval(Object start, boolean minIncluded, Object end,
 			boolean maxIncluded) {
 		this.start = start;
 		if ((start != null) && start.isNull()) {
@@ -60,15 +60,15 @@ public class Interval {
 		return startF + " - " + endF;
 	}
 
-	public Value getMinValue() {
+	public Object getMinValue() {
 		return start;
 	}
 
-	public Value getMaxValue() {
+	public Object getMaxValue() {
 		return end;
 	}
 
-	public boolean contains(Value value) {
+	public boolean contains(Object value) {
 		boolean matchesLower = true;
 		if (start != null && !start.isNull()) {
 			if (minIncluded) {

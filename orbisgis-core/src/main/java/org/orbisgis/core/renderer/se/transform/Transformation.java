@@ -32,7 +32,6 @@ import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -67,7 +66,7 @@ public interface Transformation extends SymbolizerNode{
      * @throws ParameterException
      * @throws IOException
      */
-    AffineTransform getAffineTransform(Map<String,Value> map, Uom uom, MapTransform mt,
+    AffineTransform getAffineTransform(Map<String,Object> map, Uom uom, MapTransform mt,
             Double width, Double height) throws ParameterException, IOException;
 
     /**

@@ -38,9 +38,9 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LineSymbolizerType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
-import org.gdms.driver.DriverException;
+
+
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -161,7 +161,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
                 boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
                 throws ParameterException, IOException, DriverException {
                 if (stroke != null) {
-                        Map<String,Value> map = getFeaturesMap(sds, fid);
+                        Map<String,Object> map = getFeaturesMap(sds, fid);
                         Shape shp = mt.getShape(the_geom, true);
                         double offset = 0.0;
                         if (perpendicularOffset != null) {

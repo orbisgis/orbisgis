@@ -33,8 +33,8 @@ import java.io.IOException;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.raster.RasterSymbolizerType;
-import org.gdms.driver.DataSet;
-import org.gdms.driver.DriverException;
+
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;

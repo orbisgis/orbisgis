@@ -41,7 +41,7 @@ import net.opengis.se._2_0.core.MarkGraphicType;
 import net.opengis.se._2_0.core.PointTextGraphicType;
 import net.opengis.se._2_0.thematic.AxisChartType;
 import net.opengis.se._2_0.thematic.PieChartType;
-import org.gdms.data.values.Value;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -109,7 +109,7 @@ public abstract class Graphic extends AbstractSymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract Rectangle2D getBounds(Map<String,Value> map, MapTransform mt)
+    public abstract Rectangle2D getBounds(Map<String,Object> map, MapTransform mt)
             throws ParameterException, IOException;
 
     /**
@@ -122,7 +122,7 @@ public abstract class Graphic extends AbstractSymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, Map<String,Value> map,
+    public abstract void draw(Graphics2D g2, Map<String,Object> map,
             boolean selected, MapTransform mt, AffineTransform at) throws ParameterException, IOException;
 
     /**

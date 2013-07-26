@@ -38,8 +38,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
-import org.gdms.driver.DataSet;
-import org.gdms.driver.DriverException;
+
+
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;

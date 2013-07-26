@@ -28,13 +28,12 @@
  */
 package org.orbisgis.core.renderer.se.parameter.real;
 
+import java.sql.ResultSet;
 import java.util.*;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.FunctionType;
 import net.opengis.fes._2.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -173,16 +172,16 @@ public class RealFunction extends AbstractSymbolizerNode implements SeParameter,
     }
 
     @Override
-    public Double getValue(DataSet sds, long fid) throws ParameterException {
+    public Double getValue(ResultSet rs, long fid) throws ParameterException {
         List<Double>  vals = new LinkedList<Double>();
         for(RealParameter p : operands){
-            vals.add(p.getValue(sds, fid));
+            vals.add(p.getValue(rs, fid));
         }
         return getValue(vals);
     }
 
     @Override
-    public Double getValue(Map<String,Value> map)throws ParameterException {
+    public Double getValue(Map<String,Object> map)throws ParameterException {
         List<Double>  vals = new LinkedList<Double>();
         for(RealParameter p : operands){
             vals.add(p.getValue(map));

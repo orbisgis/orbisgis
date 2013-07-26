@@ -40,7 +40,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.GraphicStrokeType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.values.Value;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -193,7 +193,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
 
 
     @Override
-    public Double getNaturalLength(Map<String,Value> map, Shape shp, MapTransform mt) throws ParameterException, IOException {
+    public Double getNaturalLength(Map<String,Object> map, Shape shp, MapTransform mt) throws ParameterException, IOException {
         double naturalLength;
 
         if (length != null) {
@@ -217,7 +217,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
         return getGraphicWidth(map, mt);
     }
 
-    private double getGraphicWidth(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
+    private double getGraphicWidth(Map<String,Object> map, MapTransform mt) throws ParameterException, IOException {
         RelativeOrientation rOrient = this.getRelativeOrientation();
         Rectangle2D bounds = graphic.getBounds(map, false, mt);
 
@@ -237,7 +237,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
 
 
     @Override
-    public void draw(Graphics2D g2, Map<String,Value> map,
+    public void draw(Graphics2D g2, Map<String,Object> map,
             Shape shape, boolean selected, MapTransform mt, double offset)
             throws ParameterException, IOException {
 

@@ -30,7 +30,7 @@ package org.orbisgis.core.renderer.se.fill;
 
 import net.opengis.se._2_0.thematic.DensityFillType;
 import net.opengis.se._2_0.thematic.ObjectFactory;
-import org.gdms.data.values.Value;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -210,7 +210,7 @@ public final class DensityFill extends Fill implements GraphicNode {
     }
 
     @Override
-    public void draw(Graphics2D g2, Map<String,Value> map, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Map<String,Object> map, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
         if (isHatched) {
             double alpha = HatchedFill.DEFAULT_ALPHA;
@@ -250,7 +250,7 @@ public final class DensityFill extends Fill implements GraphicNode {
     }
 
     @Override
-    public Paint getPaint(Map<String,Value> map, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public Paint getPaint(Map<String,Object> map, boolean selected, MapTransform mt) throws ParameterException, IOException {
         double percentage = 0.0;
 
         if (percentageCovered != null) {

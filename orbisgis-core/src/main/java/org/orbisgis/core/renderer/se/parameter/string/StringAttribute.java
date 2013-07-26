@@ -30,8 +30,8 @@ package org.orbisgis.core.renderer.se.parameter.string;
 
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
+
+
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.ValueReference;
@@ -72,7 +72,7 @@ public class StringAttribute extends ValueReference implements StringParameter{
     @Override
     public String getValue(DataSet sds, long fid) throws ParameterException{ // TODO implement
         try {
-			Value fieldValue = getFieldValue(sds, fid);
+			Object fieldValue = getFieldValue(sds, fid);
 			return fieldValue.toString();
         } catch (Exception e) {
             throw new ParameterException("Could not fetch feature attribute \""+ getColumnName() +"\" (" + e + ")");
@@ -80,7 +80,7 @@ public class StringAttribute extends ValueReference implements StringParameter{
     }
 
     @Override
-    public String getValue(Map<String, Value> feature) throws ParameterException {
+    public String getValue(Map<String, Object> feature) throws ParameterException {
         return getFieldValue(feature).toString();
     }
 

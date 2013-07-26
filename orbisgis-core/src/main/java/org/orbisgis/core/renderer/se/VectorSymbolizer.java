@@ -33,19 +33,19 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.SymbolizerType;
 import org.apache.log4j.Logger;
-import org.gdms.driver.DataSet;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
+import org.orbisgis.sputilities.SpatialResultSet;
 
 /**
  * This class contains the common elements shared by <code>PointSymbolizer</code>,<code>LineSymbolizer</code>
@@ -98,33 +98,32 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
         /**
          * Get the {@code Geometry} stored in {@code sds} at index {@code fid}.
-         * @param sds
+         * @param rs
          * @param fid
          * @return
          * @throws ParameterException
-         * @throws DriverException 
+         * @throws SQLException
          */
-        public Geometry getGeometry(DataSet sds, Long fid) throws ParameterException, DriverException {
+        public Geometry getGeometry(ResultSet rs, Long fid) throws ParameterException, SQLException {
                 if (theGeom != null) {
-                        return theGeom.getTheGeom(sds, fid);
+                        return theGeom.getTheGeom(rs, fid);
                 } else {
-                        int fieldId = ShapeHelper.getGeometryFieldId(sds);
-                        return sds.getFieldValue(fid, fieldId).getAsGeometry();
+                        return rs.unwrap(SpatialResultSet.class).getGeometry();
                 }
         }
 
         /**
          * If {@code theGeom} is null, get the {@code Geometry} stored in 
          * {@code sds} at index {@code fid}. Otherwise, return {@code theGeom}.
-         * @param sds
+         * @param rs
          * @param fid
          * @return
          * @throws ParameterException
-         * @throws DriverException 
+         * @throws SQLException
          */
-        public Geometry getGeometry(DataSet sds, Long fid, Geometry theGeom) throws ParameterException, DriverException {
+        public Geometry getGeometry(ResultSet rs, Long fid, Geometry theGeom) throws ParameterException, SQLException {
                 if (theGeom == null) {
-                        return this.getGeometry(sds, fid);
+                        return this.getGeometry(rs, fid);
                 } else {
                         return theGeom;
                 }
@@ -134,16 +133,16 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
          * Convert a spatial feature into a LiteShape, should add parameters to handle
          * the scale and to perform a scale dependent generalization !
          *
-         * @param sds the data source
+         * @param rs the data source
          * @param fid the feature id
          * @throws ParameterException
          * @throws IOException
-         * @throws DriverException
+         * @throws SQLException
          */
-        public Shape getShape(DataSet sds, long fid,
-                MapTransform mt, Geometry theGeom, boolean generalize) throws ParameterException, IOException, DriverException {
+        public Shape getShape(ResultSet rs, long fid,
+                MapTransform mt, Geometry theGeom, boolean generalize) throws ParameterException, IOException, SQLException {
 
-                Geometry geom = getGeometry(sds, fid, theGeom);
+                Geometry geom = getGeometry(rs, fid, theGeom);
                 //ArrayList<Shape> shapes = new ArrayList<Shape>();
 
                 //shapes.add();
@@ -174,15 +173,15 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         /**
          * Convert a spatial feature into a set of linear shape
          *
-         * @param sds the data source
+         * @param rs the data source
          * @param fid the feature id
          * @throws ParameterException
          * @throws IOException
-         * @throws DriverException
+         * @throws SQLException
          */
-        public List<Shape> getLines(DataSet sds, long fid,
-                MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
-                Geometry geom = getGeometry(sds, fid, the_geom);
+        public List<Shape> getLines(ResultSet rs, long fid,
+                MapTransform mt, Geometry the_geom) throws ParameterException, IOException, SQLException {
+                Geometry geom = getGeometry(rs, fid, the_geom);
                 LinkedList<Shape> shapes = new LinkedList<Shape>();
                 LinkedList<Geometry> geom2Process = new LinkedList<Geometry>();
                 geom2Process.add(geom);
@@ -242,18 +241,18 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         /**
          * Return one point for each geometry
          *
-         * @param sds
+         * @param rs
          * @param fid
          * @param mt
          * @return
          * @throws ParameterException
          * @throws IOException
-         * @throws DriverException
+         * @throws SQLException
          */
-        public Point2D getPointShape(DataSet sds, long fid, MapTransform mt, Geometry theGeom)
-                        throws ParameterException, IOException, DriverException {
+        public Point2D getPointShape(ResultSet rs, long fid, MapTransform mt, Geometry theGeom)
+                        throws ParameterException, IOException, SQLException {
 
-                Geometry geom = getGeometry(sds, fid, theGeom);
+                Geometry geom = getGeometry(rs, fid, theGeom);
                 AffineTransform at = mt.getAffineTransform();
                 Point point;
 
@@ -268,18 +267,18 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
         /**
          * Return only the first point
-         * @param sds
+         * @param rs
          * @param fid
          * @param mt
          * @return
          * @throws ParameterException
          * @throws IOException
-         * @throws DriverException
+         * @throws SQLException
          */
-        public Point2D getFirstPointShape(DataSet sds, long fid, MapTransform mt,
-                Geometry theGeom) throws ParameterException, IOException, DriverException {
+        public Point2D getFirstPointShape(ResultSet rs, long fid, MapTransform mt,
+                Geometry theGeom) throws ParameterException, IOException, SQLException {
 
-                Geometry geom = getGeometry(sds, fid, theGeom);
+                Geometry geom = getGeometry(rs, fid, theGeom);
                 AffineTransform at = mt.getAffineTransform();
 
                 Coordinate[] coordinates = geom.getCoordinates();
@@ -290,19 +289,19 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         /**
          * Return all vertices of the geometry
          *
-         * @param sds
+         * @param rs
          * @param fid
          * @param mt
          * @param theGeom
          * @return
          * @throws ParameterException
          * @throws IOException
-         * @throws DriverException
+         * @throws SQLException
          */
-        public List<Point2D> getPoints(DataSet sds, long fid,
-                MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
+        public List<Point2D> getPoints(ResultSet rs, long fid,
+                MapTransform mt, Geometry theGeom) throws ParameterException, IOException, SQLException {
 
-                Geometry geom = getGeometry(sds, fid, theGeom);
+                Geometry geom = getGeometry(rs, fid, theGeom);
                 //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
 
                 LinkedList<Point2D> points = new LinkedList<Point2D>();

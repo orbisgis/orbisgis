@@ -40,7 +40,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LineLabelType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.values.Value;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -110,7 +110,7 @@ public class LineLabel extends Label {
      *
      */
     @Override
-    public void draw(Graphics2D g2, Map<String,Value> map,
+    public void draw(Graphics2D g2, Map<String,Object> map,
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException {
 

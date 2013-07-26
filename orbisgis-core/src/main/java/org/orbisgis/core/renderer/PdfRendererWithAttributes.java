@@ -39,10 +39,10 @@ import java.awt.Graphics2D;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.gdms.data.DataSource;
+
 import org.gdms.data.types.Type;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DriverException;
+
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Symbolizer;
 
@@ -130,7 +130,7 @@ public class PdfRendererWithAttributes extends Renderer {
                 if ((sds.getFieldType(i).getTypeCode() & Type.GEOMETRY) == 0) {
                     PdfDictionary property = new PdfDictionary();
                     property.put(PdfName.N, new PdfString(sds.getFieldName(i)));
-                    Value v = sds.getFieldValue(id, i);
+                    Object v = sds.getFieldValue(id, i);
                     property.put(PdfName.V, new PdfString(v.toString()));
                     properties.add(property);
                 }

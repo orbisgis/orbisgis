@@ -29,9 +29,8 @@
 package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
+import java.sql.ResultSet;
 import java.util.Map;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 
@@ -46,20 +45,19 @@ import org.orbisgis.core.renderer.se.parameter.SeParameter;
 public interface ColorParameter extends SeParameter {
 
     /**
-     * Retrieve the colour associated to this parameter, from the datasource sds, at index fid.
-     * @param sds
+     * Retrieve the colour associated to this parameter, from the result set sds, at index fid.
+     * @param rs
      * @param fid
      * @return
      * @throws ParameterException 
      */
-    Color getColor(DataSet sds, long fid) throws ParameterException;
+    Color getColor(ResultSet rs, long fid) throws ParameterException;
 
     /**
-     * Retrieve the colour associated to this parameter, from the datasource sds, at index fid.
-     * @param sds
-     * @param fid
-     * @return
+     * Retrieve the colour associated to this parameter, from the map, at index fid.
+     * @param map Field key, value object
+     * @return Color
      * @throws ParameterException
      */
-    Color getColor(Map<String,Value> map) throws ParameterException;
+    Color getColor(Map<String,Object> map) throws ParameterException;
 }

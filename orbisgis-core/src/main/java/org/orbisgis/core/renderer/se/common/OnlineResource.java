@@ -53,7 +53,7 @@ import net.opengis.ows._2.OnlineResourceType;
 import net.opengis.se._2_0.core.ExternalGraphicType;
 import net.opengis.se._2_0.core.MarkGraphicType;
 import net.opengis.se._2_0.core.VariableOnlineResourceType;
-import org.gdms.data.values.Value;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -149,7 +149,7 @@ public class OnlineResource extends AbstractSymbolizerNode implements ExternalGr
      * @return
      * @throws ParameterException
      */
-    public Rectangle2D.Double getJAIBounds(ViewBox viewBox, Map<String,Value> map, MapTransform mt, String mimeType) throws ParameterException {
+    public Rectangle2D.Double getJAIBounds(ViewBox viewBox, Map<String,Object> map, MapTransform mt, String mimeType) throws ParameterException {
         try {
             if (rawImage == null) {
                 rawImage = JAI.create("url", uri);
@@ -198,7 +198,7 @@ public class OnlineResource extends AbstractSymbolizerNode implements ExternalGr
      * @return
      * @throws ParameterException
      */
-    public Rectangle2D.Double getSvgBounds(ViewBox viewBox, Map<String,Value> map,
+    public Rectangle2D.Double getSvgBounds(ViewBox viewBox, Map<String,Object> map,
             MapTransform mt, String mimeType) throws ParameterException {
             /*
              * Fetch SVG if not already done
@@ -243,7 +243,7 @@ public class OnlineResource extends AbstractSymbolizerNode implements ExternalGr
     }
 
     @Override
-    public Rectangle2D.Double updateCacheAndGetBounds(ViewBox viewBox, Map<String,Value> map,
+    public Rectangle2D.Double updateCacheAndGetBounds(ViewBox viewBox, Map<String,Object> map,
             MapTransform mt, String mimeType) throws ParameterException {
         effectiveWidth = null;
         effectiveHeight = null;
@@ -315,7 +315,7 @@ public class OnlineResource extends AbstractSymbolizerNode implements ExternalGr
     }
 
     @Override
-    public void draw(Graphics2D g2, Map<String,Value> map,AffineTransform at, MapTransform mt, double opacity, String mimeType) {
+    public void draw(Graphics2D g2, Map<String,Object> map,AffineTransform at, MapTransform mt, double opacity, String mimeType) {
         if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
             drawSVG(g2, at, opacity);
         } else {
@@ -326,7 +326,7 @@ public class OnlineResource extends AbstractSymbolizerNode implements ExternalGr
     /**
      * @deprecated
      */
-    public RenderedImage getSvgImage(ViewBox viewBox, Map<String,Value> map, MapTransform mt, String mimeType)
+    public RenderedImage getSvgImage(ViewBox viewBox, Map<String,Object> map, MapTransform mt, String mimeType)
             throws IOException, ParameterException {
             SVGIcon icon = new SVGIcon();
             icon.setSvgURI(uri);
@@ -375,7 +375,7 @@ public class OnlineResource extends AbstractSymbolizerNode implements ExternalGr
      * @throws IOException
      * @throws ParameterException
      */
-    public PlanarImage getJAIImage(ViewBox viewBox, Map<String,Value> map, MapTransform mt, String mimeType)
+    public PlanarImage getJAIImage(ViewBox viewBox, Map<String,Object> map, MapTransform mt, String mimeType)
             throws IOException, ParameterException {
 
         try {
@@ -465,7 +465,7 @@ public class OnlineResource extends AbstractSymbolizerNode implements ExternalGr
         return null;
     }
 
-    private Shape getTrueTypeGlyph(ViewBox viewBox, Map<String,Value> map, Double scale,
+    private Shape getTrueTypeGlyph(ViewBox viewBox, Map<String,Object> map, Double scale,
             Double dpi, RealParameter markIndex) throws ParameterException, IOException {
 
         try {
@@ -518,7 +518,7 @@ public class OnlineResource extends AbstractSymbolizerNode implements ExternalGr
     }
 
     @Override
-    public Shape getShape(ViewBox viewBox, Map<String,Value> map, Double scale,
+    public Shape getShape(ViewBox viewBox, Map<String,Object> map, Double scale,
             Double dpi, RealParameter markIndex, String mimeType) throws ParameterException, IOException {
 
         if (mimeType != null) {
@@ -541,7 +541,7 @@ public class OnlineResource extends AbstractSymbolizerNode implements ExternalGr
     }
 
     @Override
-    public double getDefaultMaxWidth(Map<String,Value> map,
+    public double getDefaultMaxWidth(Map<String,Object> map,
             Double scale, Double dpi, RealParameter markIndex, String mimeType)
             throws IOException, ParameterException {
 
@@ -555,7 +555,7 @@ public class OnlineResource extends AbstractSymbolizerNode implements ExternalGr
 
     }
 
-    private double getTrueTypeGlyphMaxSize(Map<String,Value> map,
+    private double getTrueTypeGlyphMaxSize(Map<String,Object> map,
             /*Double scale, Double dpi,*/ RealParameter markIndex)
             throws IOException, ParameterException {
         try {

@@ -29,11 +29,11 @@
 package org.orbisgis.core.renderer.se.parameter.geometry;
 
 import com.vividsolutions.jts.geom.Geometry;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
 import net.opengis.se._2_0.core.GeometryType;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.ValueReference;
@@ -58,15 +58,15 @@ public class GeometryAttribute extends ValueReference {
     /**
      * Retrieve the geometry registered in the {@code SpatialDataSetDecorator}
      * at index {@code fid}.
-     * @param sds
+     * @param rs
      * @param fid
      * @return
      * @throws ParameterException 
      */
-    public Geometry getTheGeom(DataSet sds, long fid) throws ParameterException {
+    public Geometry getTheGeom(ResultSet rs, long fid) throws ParameterException {
         try {
-            return getFieldValue(sds, fid).getAsGeometry();
-        } catch (DriverException ex) {
+            return (Geometry)getFieldValue(rs, fid);
+        } catch (SQLException ex) {
             throw new ParameterException("Could not fetch feature attribute \"" + getColumnName() + "\"", ex);
         }
     }
@@ -74,13 +74,12 @@ public class GeometryAttribute extends ValueReference {
     /**
      * Retrieve the geometry registered in the {@code SpatialDataSetDecorator}
      * at index {@code fid}.
-     * @param sds
-     * @param fid
-     * @return
+     * @param map Field name and field value
+     * @return Geometry instance
      * @throws ParameterException
      */
-    public Geometry getTheGeom(Map<String,Value> map) throws ParameterException {
-            return getFieldValue(map).getAsGeometry();
+    public Geometry getTheGeom(Map<String,Object> map) throws ParameterException {
+            return (Geometry)getFieldValue(map);
     }
 
     /**

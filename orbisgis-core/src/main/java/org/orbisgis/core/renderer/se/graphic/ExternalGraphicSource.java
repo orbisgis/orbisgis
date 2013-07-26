@@ -33,7 +33,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.Map;
 import net.opengis.se._2_0.core.ExternalGraphicType;
-import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -62,7 +61,7 @@ public interface ExternalGraphicSource extends SymbolizerNode{
          * @throws ParameterException
          */
     Rectangle2D.Double updateCacheAndGetBounds(ViewBox viewBox, 
-            Map<String,Value> map, MapTransform mt, String mimeType) throws ParameterException;
+            Map<String,Object> map, MapTransform mt, String mimeType) throws ParameterException;
 
     /**
      * Draws the graphic on the map.
@@ -74,7 +73,7 @@ public interface ExternalGraphicSource extends SymbolizerNode{
      * @param mimeType The MIME type of the image.
      * @throws ParameterException
      */
-    void draw(Graphics2D g2, Map<String,Value> map, AffineTransform at, MapTransform mt,
+    void draw(Graphics2D g2, Map<String,Object> map, AffineTransform at, MapTransform mt,
               double opacity, String mimeType) throws ParameterException;
 
     void setJAXBSource(ExternalGraphicType e);

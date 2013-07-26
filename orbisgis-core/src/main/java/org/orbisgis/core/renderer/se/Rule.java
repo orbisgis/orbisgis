@@ -37,7 +37,6 @@ import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.*;
 import net.opengis.se._2_0.core.ElseFilterType;
 import net.opengis.se._2_0.core.RuleType;
-import org.h2gis.h2spatialapi.GeometryTypeCodes;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
@@ -48,6 +47,7 @@ import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
+import org.orbisgis.sputilities.GeometryTypeCodes;
 import org.orbisgis.sputilities.SFSUtilities;
 import org.orbisgis.sputilities.SpatialResultSet;
 
@@ -129,7 +129,7 @@ public final class Rule extends AbstractSymbolizerNode {
                                 break;
                         */
                         int typeCode = SFSUtilities.getGeometryType(connection,SFSUtilities.splitCatalogSchemaTableName(layer.getTableReference()),"");
-                        if(typeCode==GeometryTypeCodes.GEOMETRY || typeCode==GeometryTypeCodes.GEOMCOLLECTION) {
+                        if(typeCode== GeometryTypeCodes.GEOMETRY || typeCode==GeometryTypeCodes.GEOMCOLLECTION) {
                             // No symbol for Geometry type code, parse the ResultSet
                             typeCode = getAccurateType(layer);
                         }

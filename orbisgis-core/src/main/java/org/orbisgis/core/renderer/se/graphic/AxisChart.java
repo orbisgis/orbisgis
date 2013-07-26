@@ -45,7 +45,7 @@ import net.opengis.se._2_0.thematic.AxisChartSubtypeType;
 import net.opengis.se._2_0.thematic.AxisChartType;
 import net.opengis.se._2_0.thematic.CategoryType;
 import net.opengis.se._2_0.thematic.ObjectFactory;
-import org.gdms.data.values.Value;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -395,7 +395,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
         public void updateGraphic() {
         }
 
-        private double[] getMeasuresInPixel(Map<String,Value> map, MapTransform mt) throws ParameterException {
+        private double[] getMeasuresInPixel(Map<String,Object> map, MapTransform mt) throws ParameterException {
                 double rLength = Uom.toPixel(axisScale.getAxisLength().getValue(map),
                         getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 double rMesure = axisScale.getMeasureValue().getValue(map);
@@ -476,7 +476,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
          * @throws ParameterException
          * @throws IOException
          */
-        private void drawOrthoChart(Graphics2D g2, Map<String,Value> map,
+        private void drawOrthoChart(Graphics2D g2, Map<String,Object> map,
                 boolean selected, MapTransform mt, AffineTransform at)
                 throws ParameterException, IOException {
 
@@ -628,7 +628,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                  */
         }
 
-        private void drawStackedChart(Graphics2D g2, Map<String,Value> map,
+        private void drawStackedChart(Graphics2D g2, Map<String,Object> map,
                 boolean selected, MapTransform mt, AffineTransform at) throws ParameterException, IOException {
         }
 
@@ -643,7 +643,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
          * @throws ParameterException
          * @throws IOException
          */
-        private void drawPolarChart(Graphics2D g2, Map<String,Value> map,
+        private void drawPolarChart(Graphics2D g2, Map<String,Object> map,
                 boolean selected, MapTransform mt, AffineTransform at) throws ParameterException, IOException {
                 int nCat = categories.size();
                 double heights[] = getMeasuresInPixel(map, mt);
@@ -763,7 +763,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
         }
 
         @Override
-        public void draw(Graphics2D g2, Map<String,Value> map,
+        public void draw(Graphics2D g2, Map<String,Object> map,
                 boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
 
                 AffineTransform at = new AffineTransform(fat);
@@ -782,7 +782,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                 }
         }
 
-        private Rectangle2D getPolarBounds(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
+        private Rectangle2D getPolarBounds(Map<String,Object> map, MapTransform mt) throws ParameterException, IOException {
                 double[] measuresInPixel = getMeasuresInPixel(map, mt);
                 double max = 0.0;
                 for (double m : measuresInPixel) {
@@ -797,7 +797,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                 }
         }
 
-        private Rectangle2D getStackedBounds(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
+        private Rectangle2D getStackedBounds(Map<String,Object> map, MapTransform mt) throws ParameterException, IOException {
                 double[] measuresInPixel = getMeasuresInPixel(map, mt);
                 double sum = 0.0;
                 for (double m : measuresInPixel) {
@@ -822,7 +822,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                 }
         }
 
-        private Rectangle2D getOrthoBounds(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
+        private Rectangle2D getOrthoBounds(Map<String,Object> map, MapTransform mt) throws ParameterException, IOException {
                 double[] measuresInPixel = getMeasuresInPixel(map, mt);
                 double max = 0.0;
                 for (double m : measuresInPixel) {
@@ -846,7 +846,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
         }
 
         @Override
-        public Rectangle2D getBounds(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
+        public Rectangle2D getBounds(Map<String,Object> map, MapTransform mt) throws ParameterException, IOException {
 
                 switch (subtype) {
                         case POLAR:

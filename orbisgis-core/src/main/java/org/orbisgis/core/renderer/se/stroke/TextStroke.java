@@ -38,7 +38,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TextStrokeType;
-import org.gdms.data.values.Value;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -107,7 +107,7 @@ public final class TextStroke extends Stroke {
         }
 
         @Override
-        public void draw(Graphics2D g2, Map<String,Value> map, Shape shp,
+        public void draw(Graphics2D g2, Map<String,Object> map, Shape shp,
                         boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {
                 if (this.lineLabel != null) {
                         lineLabel.draw(g2, map, shp, selected, mt, null);
@@ -146,7 +146,7 @@ public final class TextStroke extends Stroke {
         }
 
         @Override
-        public Double getNaturalLength(Map<String,Value> map,
+        public Double getNaturalLength(Map<String,Object> map,
                         Shape shp, MapTransform mt) throws ParameterException, IOException {
                 Rectangle2D bounds = lineLabel.getLabel().getBounds(null, map, mt);
                 return bounds.getWidth();

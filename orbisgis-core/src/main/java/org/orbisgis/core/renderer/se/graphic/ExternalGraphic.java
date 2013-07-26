@@ -38,7 +38,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ExternalGraphicType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.values.Value;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -247,7 +247,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     }
 
     @Override
-    public Rectangle2D getBounds(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
+    public Rectangle2D getBounds(Map<String,Object> map, MapTransform mt) throws ParameterException, IOException {
         Rectangle2D.Double bounds = source.updateCacheAndGetBounds(viewBox, map, mt, mimeType);
         double width = bounds.getWidth();
         double height = bounds.getHeight();
@@ -279,7 +279,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     }
 
     @Override
-    public void draw(Graphics2D g2, Map<String,Value> map,
+    public void draw(Graphics2D g2, Map<String,Object> map,
             boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
 
 

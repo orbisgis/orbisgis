@@ -32,6 +32,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,9 +41,6 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TextSymbolizerType;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -151,11 +150,11 @@ public final class TextSymbolizer extends VectorSymbolizer {
         }
 
         @Override
-        public void draw(Graphics2D g2, DataSet sds, long fid,
+        public void draw(Graphics2D g2, ResultSet rs, long fid,
                 boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
-                throws ParameterException, IOException, DriverException {
-                Shape shape = this.getShape(sds, fid, mt, the_geom, false);
-                Map<String,Value> map = getFeaturesMap(sds, fid);
+                throws ParameterException, IOException, SQLException {
+                Shape shape = this.getShape(rs, fid, mt, the_geom, false);
+                Map<String,Object> map = getFeaturesMap(rs, fid);
                 if (shape != null) {
                         List<Shape> shps;
                         if (perpendicularOffset != null) {

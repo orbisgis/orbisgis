@@ -28,11 +28,10 @@
  */
 package org.orbisgis.core.renderer.se.parameter.real;
 
+import java.sql.ResultSet;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 
 /**
@@ -90,12 +89,12 @@ public class RealLiteral extends Literal implements RealParameter {
         }
 
         @Override
-        public Double getValue(DataSet sds, long fid) {
+        public Double getValue(ResultSet rs, long fid) {
                 return v;
         }
 
         @Override
-        public Double getValue(Map<String,Value> map) {
+        public Double getValue(Map<String,Object> map) {
                 return v;
         }
 

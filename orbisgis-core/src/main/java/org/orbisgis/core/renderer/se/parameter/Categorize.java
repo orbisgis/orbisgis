@@ -28,12 +28,11 @@
  */
 package org.orbisgis.core.renderer.se.parameter;
 
+import java.sql.ResultSet;
 import java.util.*;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
 import org.apache.log4j.Logger;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
@@ -462,14 +461,14 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     /**
      * Retrieves the value associated to the input data corresponding to the
      * lookupValue in {@code sds} at line {@code fid}.
-     * @param sds The original DataSet
+     * @param rs The original DataSet
      * @param fid The line we'll read in the DataSet
      * @return The value retrieved by this parameter in {@code sds} at line {fid}.
      */
-    protected ToType getParameter(DataSet sds, long fid) {
+    protected ToType getParameter(ResultSet rs, long fid) {
         try {
             if (getNumClasses() > 1) {
-                Double value = lookupValue.getValue(sds, fid);
+                Double value = lookupValue.getValue(rs, fid);
                 if(value == null){
                         return fallbackValue;
                 }
@@ -507,7 +506,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param map
      * @return
      */
-    protected ToType getParameter(Map<String, Value> map) {
+    protected ToType getParameter(Map<String, Object> map) {
         try {
             if (getNumClasses() > 1) {
                 Double value = lookupValue.getValue(map);
@@ -527,10 +526,10 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
     /**
      *
-     * @param ds
+     * @param rs
      * @param values the values to affect to classes. number of values give the number of classes
      */
-    public void categorizeByEqualsInterval(DataSet ds, ToType[] values) {
+    public void categorizeByEqualsInterval(ResultSet rs, ToType[] values) {
         method = CategorizeMethod.EQUAL_INTERVAL;
         // int n = values.length;
         // TODO compute n-1 thresholds and assign values
@@ -538,10 +537,10 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
     /**
      *
-     * @param ds
+     * @param rs
      * @param values the values to affect to classes. number of values give the numbe of classes
      */
-    public void categorizeByNaturalBreaks(DataSet ds, ToType[] values) {
+    public void categorizeByNaturalBreaks(ResultSet rs, ToType[] values) {
         method = CategorizeMethod.NATURAL_BREAKS;
         //int n = values.length;
         // TODO compute n-1 thresholds and assign values
@@ -549,10 +548,10 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
     /**
      *
-     * @param ds
+     * @param rs
      * @param values the values to affect to classes. number of values give the numbe of classes
      */
-    public void categorizeByQuantile(DataSet ds, ToType[] values) {
+    public void categorizeByQuantile(ResultSet rs, ToType[] values) {
         method = CategorizeMethod.QUANTILES;
         //int n = values.length;
         // TODO compute n-1 thresholds and assign values
@@ -561,11 +560,11 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     /**
      *
      *
-     * @param ds
+     * @param rs
      * @param values the values to affect to classes. number of values give the numbe of classes
      * @param factor class (except first and last) interval equals sd*factor
      */
-    public void categorizeByStandardDeviation(DataSet ds, ToType[] values, double factor) {
+    public void categorizeByStandardDeviation(ResultSet rs, ToType[] values, double factor) {
         method = CategorizeMethod.STANDARD_DEVIATION;
         // even => mean is a threshold
         // odd => mean is the central point of the central class

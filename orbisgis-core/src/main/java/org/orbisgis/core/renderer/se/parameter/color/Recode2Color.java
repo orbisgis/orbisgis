@@ -33,8 +33,8 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.RecodeType;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
+
+
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.Recode;
@@ -87,7 +87,7 @@ public class Recode2Color extends Recode<ColorParameter, ColorLiteral> implement
         }
 
         @Override
-        public Color getColor(Map<String,Value> map) throws ParameterException {
+        public Color getColor(Map<String,Object> map) throws ParameterException {
                 return getParameter(map).getColor(map);
         }
 }

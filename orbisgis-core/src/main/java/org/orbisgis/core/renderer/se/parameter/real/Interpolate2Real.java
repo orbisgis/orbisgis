@@ -32,8 +32,8 @@ import java.util.Map;
 import net.opengis.se._2_0.core.InterpolateType;
 import net.opengis.se._2_0.core.InterpolationPointType;
 import net.opengis.se._2_0.core.ModeType;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
+
+
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Interpolate;
 import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
@@ -149,7 +149,7 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
          * The interpolated <code>Double</code> value.
          */
         @Override
-        public Double getValue(Map<String,Value> map) throws ParameterException {
+        public Double getValue(Map<String,Object> map) throws ParameterException {
 
                 double value = this.getLookupValue().getValue(map);
 

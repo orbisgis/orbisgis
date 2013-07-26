@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.renderer.se.parameter;
 
+import java.sql.ResultSet;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.xml.bind.JAXBElement;
@@ -36,8 +37,6 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.RecodeType;
 import org.apache.log4j.Logger;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
@@ -213,7 +212,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         /**
          * Get the value associated to the key sored in {@code sds} at index
          * {@code fid}.
-         * @param sds
+         * @param rs
          * @param fid
          * @return
          * A {@code ToType} instance. If the feature found in {@code sds} at
@@ -222,10 +221,10 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
          * <p>If an error of any kind is catched, the {@code fallBackValue} is
          * returned, and a message is print using the {@code Logger}.
          */
-    public ToType getParameter(DataSet sds, long fid) {
+    public ToType getParameter(ResultSet rs, long fid) {
         String key = "";
         try {
-            key = lookupValue.getValue(sds, fid);
+            key = lookupValue.getValue(rs, fid);
             ToType ret = getMapItemValue(key);
             return ret == null ? fallbackValue : ret;
         } catch (Exception e) {
@@ -245,7 +244,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
     * <p>If an error of any kind is catched, the {@code fallBackValue} is
     * returned, and a message is print using the {@code Logger}.
     */
-    public ToType getParameter(Map<String,Value> map) {
+    public ToType getParameter(Map<String,Object> map) {
         String key = "";
         try {
             key = lookupValue.getValue(map);

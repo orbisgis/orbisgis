@@ -35,7 +35,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.RotateType;
-import org.gdms.data.values.Value;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -203,7 +203,7 @@ public final class Rotate extends AbstractSymbolizerNode implements Transformati
         }
 
         @Override
-        public AffineTransform getAffineTransform(Map<String,Value> map, Uom uom,
+        public AffineTransform getAffineTransform(Map<String,Object> map, Uom uom,
                         MapTransform mt, Double width, Double height) throws ParameterException {
                 double ox = 0.0;
                 if (x != null) {
