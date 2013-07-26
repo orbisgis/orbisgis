@@ -30,6 +30,7 @@ package org.orbisgis.core.renderer;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,11 +97,11 @@ public class ImageRenderer extends Renderer {
     }
 
     @Override
-    protected void beginFeature(long id, DataSource sds) {
+    protected void beginFeature(long id, ResultSet rs) {
     }
 
     @Override
-    protected void endFeature(long id, DataSource sds) {
+    protected void endFeature(long id, ResultSet rs) {
     }
 
 }

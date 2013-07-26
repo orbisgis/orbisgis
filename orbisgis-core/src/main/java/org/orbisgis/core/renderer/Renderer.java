@@ -36,16 +36,13 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Logger;
-
-import org.gdms.data.indexes.FullIterator;
-import org.gdms.data.stream.GeoStream;
-
-import org.gdms.driver.driverManager.DriverLoadException;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
@@ -105,15 +102,17 @@ public abstract class Renderer {
 
         /**
          * Called before each feature
-         * @param name the name of the feature
+         * @param id index of the feature
+         * @param rs Result set
          */
-        protected abstract void beginFeature(long id, DataSource sds);
+        protected abstract void beginFeature(long id, ResultSet rs);
 
         /**
          * Called after each feature
-         * @param name the name of the feature
+         * @param id index of the feature
+         * @param rs Result set
          */
-        protected abstract void endFeature(long id, DataSource sds);
+        protected abstract void endFeature(long id, ResultSet rs);
 
         /**
          * Called before each layer
@@ -145,27 +144,27 @@ public abstract class Renderer {
          * @return the number of rendered objects
          */
         public int drawVector(Graphics2D g2, MapTransform mt, ILayer layer,
-                ProgressMonitor pm, RenderContext perm) throws DriverException {
+                ProgressMonitor pm, RenderContext perm) throws SQLException {
                 Envelope extent = mt.getAdjustedExtent();
-                DataSource sds = null;
+                ResultSet rs = null;
                 int layerCount = 0;
                 try {
                         // long tV1 = System.currentTimeMillis();
-                        sds = layer.getTableReference();
-                        sds.open();
-                        long rowCount = sds.getRowCount();
+                        rs = layer.getTableReference();
+                        rs.open();
+                        long rowCount = rs.getRowCount();
                         // Extract into drawSeLayer method !
                         List<Style> styles = layer.getStyles();
                         for(Style style : styles){
-                                layerCount +=drawStyle(style, sds, g2, mt, layer, pm, perm, rowCount, extent);
+                                layerCount +=drawStyle(style, rs, g2, mt, layer, pm, perm, rowCount, extent);
                         }
                 } catch (DriverLoadException ex) {
                         printEx(ex, layer, g2);
                 } catch (DriverException ex) {
                         printEx(ex, layer, g2);
                 } finally {
-                        if (sds != null && sds.isOpen()) {
-                                sds.close();
+                        if (rs != null && rs.isOpen()) {
+                                rs.close();
                         }
                 }
                 return layerCount;

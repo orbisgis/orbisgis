@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.renderer.se.parameter.string;
 
+import java.sql.ResultSet;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -122,8 +123,8 @@ public class Number2String extends AbstractSymbolizerNode implements SeParameter
         }
 
         @Override
-        public String getValue(DataSet sds, long fid) throws ParameterException {
-                double val = numericValue.getValue(sds, fid);
+        public String getValue(ResultSet rs, long fid) throws ParameterException {
+                double val = numericValue.getValue(rs, fid);
                 return formatter.format(val);
         }
 

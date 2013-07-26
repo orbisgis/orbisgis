@@ -36,15 +36,15 @@ import com.itextpdf.text.pdf.PdfString;
 import com.itextpdf.text.pdf.PdfStructureElement;
 import com.itextpdf.text.pdf.PdfTemplate;
 import java.awt.Graphics2D;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.gdms.data.types.Type;
-
-
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.sputilities.SpatialResultSetMetaData;
 
 /**
  * This renderer is a prototype. The aim is to generate rendered-layers in a way
@@ -100,41 +100,23 @@ public class PdfRendererWithAttributes extends Renderer {
     }
 
     @Override
-    public void beginFeature(long id, DataSource sds) {
-        int fieldNameIndex;
-        try {
-            fieldNameIndex = sds.getFieldIndexByName(fieldName);
-        } catch (DriverException ex) {
-            Logger.getLogger(PdfRendererWithAttributes.class.getName()).log(Level.SEVERE, null, ex);
-            Logger.getLogger("Field name used for attributes does not exist: by default, we use feature + id");
-            fieldNameIndex = -1;
-
-        }
-
+    public void beginFeature(long id, ResultSet rs) {
         try {
             String attributeName;
-
-            if (fieldNameIndex > -1) {
-                attributeName = sds.getFieldValue(id, fieldNameIndex).toString();
-            } else {
-                attributeName = "feature " + (id + 1);
-            }
-
+            attributeName = rs.getString(fieldName);
+            rs.absolute((int)id);
 
             PdfStructureElement e = new PdfStructureElement(top, new PdfName(attributeName));
             PdfDictionary userProperties = new PdfDictionary();
             userProperties.put(PdfName.O, PdfName.USERPROPERTIES);
             PdfArray properties = new PdfArray();
+            SpatialResultSetMetaData metaData = rs.getMetaData().unwrap(SpatialResultSetMetaData.class);
 
-            for (int i = 0; i < sds.getFieldCount(); i++) {
-                if ((sds.getFieldType(i).getTypeCode() & Type.GEOMETRY) == 0) {
-                    PdfDictionary property = new PdfDictionary();
-                    property.put(PdfName.N, new PdfString(sds.getFieldName(i)));
-                    Object v = sds.getFieldValue(id, i);
-                    property.put(PdfName.V, new PdfString(v.toString()));
-                    properties.add(property);
-                }
-            }
+            int geometryField = metaData.getFirstGeometryFieldIndex();
+            PdfDictionary property = new PdfDictionary();
+            property.put(PdfName.N, new PdfString(metaData.getColumnName(geometryField)));
+            property.put(PdfName.V, new PdfString(rs.getString(geometryField)));
+            properties.add(property);
 
             userProperties.put(PdfName.P, properties);
             e.put(PdfName.A, userProperties);
@@ -142,13 +124,13 @@ public class PdfRendererWithAttributes extends Renderer {
             pTemp = cb.createTemplate(width, height);
             cb.beginMarkedContentSequence(e);
 
-        } catch (DriverException ex) {
+        } catch (SQLException ex) {
             Logger.getLogger(PdfRendererWithAttributes.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
-    public void endFeature(long id, DataSource sds) {
+    public void endFeature(long id, ResultSet rs) {
         cb.addTemplate(pTemp, lx, ly);
         cb.endMarkedContentSequence();
     }

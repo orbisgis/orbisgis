@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.renderer.se.parameter.string;
 
+import java.sql.ResultSet;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 
@@ -53,8 +54,6 @@ public class StringAttribute extends ValueReference implements StringParameter{
      * Creates a new {@code StringAttribute}, that will searches its values in a column named
      * filedName.
      * @param fieldName
-     * @param ds
-     * @throws DriverException
      */
     public StringAttribute(String fieldName) {
         super(fieldName);
@@ -63,16 +62,16 @@ public class StringAttribute extends ValueReference implements StringParameter{
     /**
      * Create a new instance of {@code StringAttribute}, using a {@code JAXBElement} to retrieve
      * all the needed informations.
-     * @param fieldName 
+     * @param expr
      */
     public StringAttribute(JAXBElement<String> expr) throws InvalidStyle {
         super(expr);
     }
 
     @Override
-    public String getValue(DataSet sds, long fid) throws ParameterException{ // TODO implement
+    public String getValue(ResultSet rs, long fid) throws ParameterException{ // TODO implement
         try {
-			Object fieldValue = getFieldValue(sds, fid);
+			Object fieldValue = getFieldValue(rs, fid);
 			return fieldValue.toString();
         } catch (Exception e) {
             throw new ParameterException("Could not fetch feature attribute \""+ getColumnName() +"\" (" + e + ")");

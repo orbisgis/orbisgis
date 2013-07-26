@@ -32,6 +32,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -157,7 +159,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
         /**
          * Get the geometric transformation that must be applied to the geometries.
-         * @param transform 
+         * @param translate
          */
         public void setTranslate(Translate translate) {
                 this.translate = translate;
@@ -198,39 +200,37 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
         /**
          *
          * @param g2
-         * @param sds
+         * @param rs
          * @param fid
          * @throws ParameterException
          * @throws IOException error while accessing external resource
-         * @throws DriverException
+         * @throws java.sql.SQLException
          */
         @Override
-        public void draw(Graphics2D g2, DataSet sds, long fid,
+        public void draw(Graphics2D g2, ResultSet rs, long fid,
                 boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
-                throws ParameterException, IOException, DriverException {
+                throws ParameterException, IOException, SQLException {
 
                 List<Shape> shapes = new LinkedList<Shape>();
                 shapes.add(mt.getShape(the_geom, true));
-                Map<String,Object> map = getFeaturesMap(sds, fid);
-                if (shapes != null) {
-                        for (Shape shp : shapes) {
-                                if (this.getTranslate() != null) {
-                                        shp = getTranslate().getAffineTransform(map, getUom(), mt,
-                                                (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shp);
+                Map<String,Object> map = getFeaturesMap(rs, fid);
+                for (Shape shp : shapes) {
+                        if (this.getTranslate() != null) {
+                                shp = getTranslate().getAffineTransform(map, getUom(), mt,
+                                        (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shp);
+                        }
+                        if (shp != null) {
+                                if (fill != null) {
+                                        fill.draw(g2, map, shp, selected, mt);
                                 }
-                                if (shp != null) {
-                                        if (fill != null) {
-                                                fill.draw(g2, map, shp, selected, mt);
-                                        }
 
-                                        if (stroke != null) {
-                                                double offset = 0.0;
-                                                if (perpendicularOffset != null) {
-                                                        offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
-                                                                getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                                                }
-                                                stroke.draw(g2, map, shp, selected, mt, offset);
+                                if (stroke != null) {
+                                        double offset = 0.0;
+                                        if (perpendicularOffset != null) {
+                                                offset = Uom.toPixel(perpendicularOffset.getValue(rs, fid),
+                                                        getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                                         }
+                                        stroke.draw(g2, map, shp, selected, mt, offset);
                                 }
                         }
                 }

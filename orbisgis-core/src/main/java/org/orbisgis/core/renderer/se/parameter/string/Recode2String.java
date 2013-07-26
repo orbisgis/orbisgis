@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.renderer.se.parameter.string;
 
+import java.sql.ResultSet;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MapItemType;
@@ -84,12 +85,12 @@ public final class Recode2String extends Recode<StringParameter, StringLiteral> 
         }
 
         @Override
-        public String getValue(DataSet sds, long fid) {
+        public String getValue(ResultSet rs, long fid) throws ParameterException {
                 try {
-                        return getParameter(sds, fid).getValue(sds, fid);
+                        return getParameter(rs, fid).getValue(rs, fid);
                 } catch (ParameterException ex) {
                         LOGGER.error(I18N.tr("Fallback"), ex);
-                        return getFallbackValue().getValue(sds, fid);
+                        return getFallbackValue().getValue(rs, fid);
                 }
         }
 

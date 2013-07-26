@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.renderer.se.parameter.string;
 
+import java.sql.ResultSet;
 import java.util.*;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ConcatenateType;
@@ -82,11 +83,11 @@ public class StringConcatenate extends AbstractSymbolizerNode implements SeParam
         }
 
         @Override
-        public String getValue(DataSet sds, long fid) throws ParameterException {
+        public String getValue(ResultSet rs, long fid) throws ParameterException {
                 List<String> inputs = new LinkedList<String>();
                 int expectedSize = 0;
                 for(StringParameter sp : inputStrings){
-                        String tmp = sp.getValue(sds, fid);
+                        String tmp = sp.getValue(rs, fid);
                         inputs.add(tmp);
                         expectedSize+=tmp.length();
                 }

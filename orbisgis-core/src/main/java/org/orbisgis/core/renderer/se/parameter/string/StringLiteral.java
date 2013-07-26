@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.renderer.se.parameter.string;
 
+import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -67,7 +68,7 @@ public class StringLiteral extends Literal implements StringParameter{
     }
 
     @Override
-    public String getValue(DataSet sds, long fid){
+    public String getValue(ResultSet rs, long fid){
         return v;
     }
 

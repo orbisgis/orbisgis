@@ -27,10 +27,6 @@
  * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.legend.carto;
-
-
-import org.orbisgis.utils.FormatUtils;
-
 public class Interval {
 
 	private Object start;
@@ -41,59 +37,8 @@ public class Interval {
 	public Interval(Object start, boolean minIncluded, Object end,
 			boolean maxIncluded) {
 		this.start = start;
-		if ((start != null) && start.isNull()) {
-			start = null;
-		}
 		this.minIncluded = minIncluded;
 		this.end = end;
-		if ((end != null) && end.isNull()) {
-			end = null;
-		}
 		this.maxIncluded = maxIncluded;
-	}
-
-	public String getIntervalString() {
-		String startF = new Double(FormatUtils.round(start.getAsDouble(), 3))
-				.toString();
-		String endF = new Double(FormatUtils.round(end.getAsDouble(), 3))
-				.toString();
-		return startF + " - " + endF;
-	}
-
-	public Object getMinValue() {
-		return start;
-	}
-
-	public Object getMaxValue() {
-		return end;
-	}
-
-	public boolean contains(Object value) {
-		boolean matchesLower = true;
-		if (start != null && !start.isNull()) {
-			if (minIncluded) {
-				matchesLower = start.lessEqual(value).getAsBoolean();
-			} else {
-				matchesLower = start.less(value).getAsBoolean();
-			}
-		}
-
-		boolean matchesUpper = true;
-		if (end != null && !end.isNull()) {
-			if (maxIncluded) {
-				matchesUpper = end.greaterEqual(value).getAsBoolean();
-			} else {
-				matchesUpper = end.greater(value).getAsBoolean();
-			}
-		}
-		return matchesLower && matchesUpper;
-	}
-
-	public boolean isMinIncluded() {
-		return minIncluded;
-	}
-
-	public boolean isMaxIncluded() {
-		return maxIncluded;
 	}
 }

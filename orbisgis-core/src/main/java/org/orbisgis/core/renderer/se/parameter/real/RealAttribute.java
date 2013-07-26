@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.renderer.se.parameter.real;
 
+import java.sql.ResultSet;
 import java.util.Map;
 import net.opengis.fes._2.ValueReferenceType;
 
@@ -50,7 +51,6 @@ public class RealAttribute extends ValueReference implements RealParameter {
 
     /**
      * Create a new instance of {@code RealAttribute}, with an empty associated field name.
-     * @param fieldName 
      */
     public RealAttribute() {
         ctx = RealParameterContext.REAL_CONTEXT;
@@ -69,7 +69,7 @@ public class RealAttribute extends ValueReference implements RealParameter {
     /**
      * Create a new instance of {@code RealAttribute}, using a {@code JAXBElement} to retrieve
      * all the needed informations.
-     * @param fieldName 
+     * @param expr
      */
     public RealAttribute(ValueReferenceType expr) throws InvalidStyle {
         super(expr);
@@ -77,13 +77,14 @@ public class RealAttribute extends ValueReference implements RealParameter {
     }
 
     @Override
-    public Double getValue(DataSet sds, long fid) throws ParameterException {
+    public Double getValue(ResultSet rs, long fid) throws ParameterException {
         try {
-            Object value = this.getFieldValue(sds, fid);
-            if (value.isNull()) {
+            Object value = this.getFieldValue(rs, fid);
+            if (value instanceof Double) {
+                return (Double)value;
+            } else {
                 return null;
             }
-            return value.getAsDouble();
         } catch (Exception e) {
             throw new ParameterException("Could not fetch feature attribute \"" + getColumnName() + "\"", e);
         }
@@ -93,10 +94,11 @@ public class RealAttribute extends ValueReference implements RealParameter {
     public Double getValue(Map<String,Object> map) throws ParameterException {
         try {
             Object value = this.getFieldValue(map);
-            if (value.isNull()) {
+            if (value instanceof Double) {
+                return (Double)value;
+            } else {
                 return null;
             }
-            return value.getAsDouble();
         } catch (Exception e) {
             throw new ParameterException("Could not fetch feature attribute \"" + getColumnName() + "\"", e);
         }
