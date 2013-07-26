@@ -36,11 +36,7 @@ import java.awt.geom.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.Type;
 
-
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -112,7 +108,7 @@ public final class ShapeHelper {
     }
 
     /**
-     * @see getAreaPerimeter
+     * @see #getAreaPerimeterLength
      */
     public static double getLineLength(Shape line) {
         return getAreaPerimeterLength(line);
@@ -253,7 +249,7 @@ public final class ShapeHelper {
      * Split a linear feature in segments of specified length. Last one may be shorter
      *
      * @param line  the line to split
-     * @param nbPart the number of part to create
+     * @param segLength the length of the parts to create
      * @return list of equal-length segment
      */
     public static List<Shape> splitLineInSeg(Shape line, double segLength) {
@@ -1307,44 +1303,6 @@ public final class ShapeHelper {
         } else {
             return new Line2D.Double(pts.get(0), pts.get(1));
         }
-    }
-
-    /**
-     * Look for a unique Geometry attribute within the data source
-     * @param sds the data source to search geometry attribute in.
-     *
-     * @return field id of the geometry attribute
-     * @throws DriverException If a problem occurs with the data source
-     * @throws ParameterException Is thrown if the number of geometry attribute isn't one
-     */
-    public static int getGeometryFieldId(DataSet sds) throws DriverException, ParameterException {
-        Metadata metadata = sds.getMetadata();
-
-        int fieldId = -1;
-        // /MetadataUtilities (i.e sds.getGeometry(..) return the first encountered geometry
-        // With SE, make sure sds only contains one geometry
-        StringBuffer available = new StringBuffer();
-        for (int i = 0; i < metadata.getFieldCount(); i++) {
-            int typeCode = metadata.getFieldType(i).getTypeCode();
-            if ((typeCode & Type.GEOMETRY) != 0 || typeCode == Type.RASTER) {
-                if (fieldId == -1) { // -1 means not found yet
-                    fieldId = i;
-                } else {
-                    fieldId = -2; // special value means ambigous
-                    available.append(" ");
-                    available.append(metadata.getFieldName(i));
-                }
-            }
-        }
-
-        if (fieldId == -2) {
-            throw new ParameterException("Reference to geometry attribute is ambigous. Available are :" + available);
-        }
-        if (fieldId == -1) {
-            throw new ParameterException("This data source doesn't contains any geometry");
-        }
-
-        return fieldId;
     }
 
     public static Geometry clipToExtent(Geometry theGeom, Envelope extent) {

@@ -32,6 +32,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -150,22 +152,22 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
         /**
          *
          * @param g2
-         * @param sds
+         * @param rs
          * @param fid
          * @throws ParameterException
          * @throws IOException
          * @todo make sure the geom is a line or an area; implement p_offset
          */
         @Override
-        public void draw(Graphics2D g2, DataSet sds, long fid,
+        public void draw(Graphics2D g2, ResultSet rs, long fid,
                 boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
-                throws ParameterException, IOException, DriverException {
+                throws ParameterException, IOException, SQLException {
                 if (stroke != null) {
-                        Map<String,Object> map = getFeaturesMap(sds, fid);
+                        Map<String,Object> map = getFeaturesMap(rs, fid);
                         Shape shp = mt.getShape(the_geom, true);
                         double offset = 0.0;
                         if (perpendicularOffset != null) {
-                                offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
+                                offset = Uom.toPixel(perpendicularOffset.getValue(rs, fid),
                                         getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                         }
 

@@ -29,6 +29,7 @@
 package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
+import java.sql.ResultSet;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.InterpolateType;
@@ -98,28 +99,28 @@ public final class Interpolate2Color extends Interpolate<ColorParameter, ColorLi
          * <code>fid</code> in <code>sds</code>. The resulting color is obtained by
          * using the value from the <code>DataSet</code>, the 
          * interpolation points and the interpolation method.
-         * @param ds
+         * @param rs
          * @param fid
          * @return
          * The interpolated <code>Color</code>
          */
         @Override
-        public Color getColor(DataSet sds, long fid) throws ParameterException {
-                double value = this.getLookupValue().getValue(sds, fid);
+        public Color getColor(ResultSet rs, long fid) throws ParameterException {
+                double value = this.getLookupValue().getValue(rs, fid);
                 int numPt = getNumInterpolationPoint();
                 if (getInterpolationPoint(0).getData() >= value) {
-                        return getInterpolationPoint(0).getValue().getColor(sds, fid);
+                        return getInterpolationPoint(0).getValue().getColor(rs, fid);
                 }
                 if (getInterpolationPoint(numPt - 1).getData() <= value) {
-                        return getInterpolationPoint(numPt - 1).getValue().getColor(sds, fid);
+                        return getInterpolationPoint(numPt - 1).getValue().getColor(rs, fid);
                 }
                 int k = getFirstIP(value);
                 InterpolationPoint<ColorParameter> ip1 = getInterpolationPoint(k);
                 InterpolationPoint<ColorParameter> ip2 = getInterpolationPoint(k + 1);
                 double d1 = ip1.getData();
                 double d2 = ip2.getData();
-                Color c1 = ip1.getValue().getColor(sds, fid);
-                Color c2 = ip2.getValue().getColor(sds, fid);
+                Color c1 = ip1.getValue().getColor(rs, fid);
+                Color c2 = ip2.getValue().getColor(rs, fid);
                 return computeColor(c1, c2, d1, d2, value);
 
         }
@@ -129,8 +130,7 @@ public final class Interpolate2Color extends Interpolate<ColorParameter, ColorLi
          * stored in {@code map}. The resulting color is obtained by
          * using the value from the <code>DataSet</code>, the
          * interpolation points and the interpolation method.
-         * @param ds
-         * @param fid
+         * @param map Value map
          * @return
          * The interpolated <code>Color</code>
          */

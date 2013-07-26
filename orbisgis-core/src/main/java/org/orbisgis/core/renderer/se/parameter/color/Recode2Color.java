@@ -29,6 +29,7 @@
 package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
+import java.sql.ResultSet;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MapItemType;
@@ -80,10 +81,10 @@ public class Recode2Color extends Recode<ColorParameter, ColorLiteral> implement
         }
 
         @Override
-        public Color getColor(DataSet sds, long fid) throws ParameterException {
+        public Color getColor(ResultSet rs, long fid) throws ParameterException {
                 //If we can't retrieve any information in sds, getParameter will provide a 
                 //default value, so we won't obtain any error.
-                return getParameter(sds, fid).getColor(sds, fid);
+                return getParameter(rs, fid).getColor(rs, fid);
         }
 
         @Override

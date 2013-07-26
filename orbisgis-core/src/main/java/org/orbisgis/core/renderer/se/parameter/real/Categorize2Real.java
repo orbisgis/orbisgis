@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.renderer.se.parameter.real;
 
+import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.Map;
 import net.opengis.fes._2.LiteralType;
@@ -97,11 +98,11 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
         }
 
         @Override
-        public Double getValue(DataSet sds, long fid) throws ParameterException{
-            if (sds == null){
+        public Double getValue(ResultSet rs, long fid) throws ParameterException{
+            if (rs == null){
                 throw new ParameterException("No feature");
             }
-            return getParameter(sds, fid).getValue(sds, fid);
+            return getParameter(rs, fid).getValue(rs, fid);
         }
 
         @Override

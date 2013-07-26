@@ -30,6 +30,8 @@ package org.orbisgis.core.renderer.se;
 import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.raster.RasterSymbolizerType;
@@ -86,9 +88,9 @@ public class RasterSymbolizer extends Symbolizer implements UomNode {
     }
 
     @Override
-    public void draw(Graphics2D g2, DataSet sds, long fid,
+    public void draw(Graphics2D g2, ResultSet rs, long fid,
             boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
-            throws ParameterException, IOException, DriverException {
+            throws ParameterException, IOException, SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

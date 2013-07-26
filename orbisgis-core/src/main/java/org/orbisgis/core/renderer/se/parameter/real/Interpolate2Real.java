@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.renderer.se.parameter.real;
 
+import java.sql.ResultSet;
 import java.util.Map;
 import net.opengis.se._2_0.core.InterpolateType;
 import net.opengis.se._2_0.core.InterpolationPointType;
@@ -95,26 +96,26 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
 
         /**
          * Retrieve the <code>Double</code> that must be associated to the datum at index
-         * <code>fid</code> in <code>sds</code>. The resulting value is obtained by
+         * <code>fid</code> in <code>rs</code>. The resulting value is obtained by
          * using the value from the <code>DataSet</code>, the 
          * interpolation points and the interpolation method.
-         * @param sds
+         * @param rs
          * @param fid The index where to search in the original source.
          * @return
          * The interpolated <code>Double</code> value.
          */
         @Override
-        public Double getValue(DataSet sds, long fid) throws ParameterException {
+        public Double getValue(ResultSet rs, long fid) throws ParameterException {
 
-                double value = this.getLookupValue().getValue(sds, fid);
+                double value = this.getLookupValue().getValue(rs, fid);
 
                 if (getInterpolationPoint(0).getData() >= value) {
-                        return getInterpolationPoint(0).getValue().getValue(sds, fid);
+                        return getInterpolationPoint(0).getValue().getValue(rs, fid);
                 }
 
                 int numPt = getNumInterpolationPoint();
                 if (getInterpolationPoint(numPt - 1).getData() <= value) {
-                        return getInterpolationPoint(numPt - 1).getValue().getValue(sds, fid);
+                        return getInterpolationPoint(numPt - 1).getValue().getValue(rs, fid);
                 }
 
                 int k = getFirstIP(value);
@@ -125,13 +126,13 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
                 switch (getMode()) {
                         case CUBIC:
                                 return cubicInterpolation(ip1.getData(), ip2.getData(), value,
-                                        ip1.getValue().getValue(sds, fid), ip2.getValue().getValue(sds, fid), -1.0, -1.0);
+                                        ip1.getValue().getValue(rs, fid), ip2.getValue().getValue(rs, fid), -1.0, -1.0);
                         case COSINE:
                                 return cosineInterpolation(ip1.getData(), ip2.getData(), value,
-                                        ip1.getValue().getValue(sds, fid), ip2.getValue().getValue(sds, fid));
+                                        ip1.getValue().getValue(rs, fid), ip2.getValue().getValue(rs, fid));
                         case LINEAR:
                                 return linearInterpolation(ip1.getData(), ip2.getData(), value,
-                                        ip1.getValue().getValue(sds, fid), ip2.getValue().getValue(sds, fid));
+                                        ip1.getValue().getValue(rs, fid), ip2.getValue().getValue(rs, fid));
 
                 }
                 //as we've analyzed the three only possible cases in the switch,

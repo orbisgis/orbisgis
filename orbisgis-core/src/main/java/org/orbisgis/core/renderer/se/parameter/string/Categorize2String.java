@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.renderer.se.parameter.string;
 
+import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -98,11 +99,11 @@ public final class Categorize2String extends Categorize<StringParameter, StringL
     }
 
     @Override
-    public String getValue(DataSet sds, long fid) {
+    public String getValue(ResultSet rs, long fid) {
         try {
-            return getParameter(sds, fid).getValue(sds, fid);
+            return getParameter(rs, fid).getValue(rs, fid);
         } catch (ParameterException ex) {
-            return this.getFallbackValue().getValue( sds, fid);
+            return this.getFallbackValue().getValue( rs, fid);
         }
     }
 

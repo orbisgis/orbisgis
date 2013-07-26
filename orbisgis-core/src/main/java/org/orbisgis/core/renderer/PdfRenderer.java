@@ -30,6 +30,7 @@ package org.orbisgis.core.renderer;
 
 import com.itextpdf.text.pdf.PdfTemplate;
 import java.awt.Graphics2D;
+import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -134,10 +135,10 @@ public class PdfRenderer extends Renderer {
     }
 
     @Override
-    protected void beginFeature(long id, DataSource sds) {
+    protected void beginFeature(long id, ResultSet rs) {
     }
 
     @Override
-    protected void endFeature(long id, DataSource sds) {
+    protected void endFeature(long id, ResultSet rs) {
     }
 }

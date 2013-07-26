@@ -33,6 +33,8 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -145,22 +147,22 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
     }
 
     @Override
-    public void draw(Graphics2D g2, DataSet sds, long fid,
+    public void draw(Graphics2D g2, ResultSet rs, long fid,
             boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
-            throws IOException, DriverException, ParameterException {
+            throws IOException, SQLException, ParameterException {
 
             if (graphic != null && graphic.getNumGraphics() > 0) {
                 double x,y;
-                Map<String,Object> map = getFeaturesMap(sds, fid);
+                Map<String,Object> map = getFeaturesMap(rs, fid);
                 if (onVertex) {
-                    List<Point2D> points = getPoints(sds, fid, mt, the_geom);
+                    List<Point2D> points = getPoints(rs, fid, mt, the_geom);
                     for (Point2D pt : points) {
                     x = pt.getX();
                     y = pt.getY();
                     graphic.draw(g2, map, selected, mt, AffineTransform.getTranslateInstance(x, y));
                     }
                 } else {
-                    Point2D pt = getPointShape(sds, fid, mt, the_geom);
+                    Point2D pt = getPointShape(rs, fid, mt, the_geom);
 
                     x = pt.getX();
                     y = pt.getY();
