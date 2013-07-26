@@ -28,9 +28,8 @@
  */
 package org.orbisgis.core.renderer.se.parameter.string;
 
+import java.sql.ResultSet;
 import java.util.Map;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 
@@ -61,7 +60,7 @@ public interface StringParameter extends SeParameter {
          * A {@code String} instance.
          * @throws ParameterException 
          */
-    String getValue(DataSet sds, long fid) throws ParameterException;
+    String getValue(ResultSet sds, long fid) throws ParameterException;
 
     /**
      * Retrieve the {@code String} value associated to this {@code StringParameter}
@@ -75,7 +74,7 @@ public interface StringParameter extends SeParameter {
      * A {@code String} instance.
      * @throws ParameterException
      */
-    String getValue(Map<String,Value> feature) throws ParameterException;
+    String getValue(Map<String,Object> feature) throws ParameterException;
 
     /**
      * Set the list of restrictions</p><p>

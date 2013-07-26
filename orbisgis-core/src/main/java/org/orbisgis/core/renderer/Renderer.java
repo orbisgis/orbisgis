@@ -151,7 +151,7 @@ public abstract class Renderer {
                 int layerCount = 0;
                 try {
                         // long tV1 = System.currentTimeMillis();
-                        sds = layer.getDataSource();
+                        sds = layer.getTableReference();
                         sds.open();
                         long rowCount = sds.getRowCount();
                         // Extract into drawSeLayer method !
@@ -395,7 +395,7 @@ public abstract class Renderer {
                                                 if (layer.isStream()) {
                                                         drawStreamLayer(g2, layer, width, height, extent, pm);
                                                 } else {
-                                                        DataSource sds = layer.getDataSource();
+                                                        DataSource sds = layer.getTableReference();
                                                         if (sds != null) {
                                                                 if (sds.isVectorial()) {
                                                                         this.drawVector(g2, mt, layer, pm, perm);
@@ -419,8 +419,8 @@ public abstract class Renderer {
                 try {
                         layer.open();
 
-                        for (int i = 0 ; i < layer.getDataSource().getRowCount() ; i++) {
-                                GeoStream geoStream = layer.getDataSource().getStream(i);
+                        for (int i = 0 ; i < layer.getTableReference().getRowCount() ; i++) {
+                                GeoStream geoStream = layer.getTableReference().getStream(i);
 
                                 Image img = geoStream.getMap(width, height, extent, pm);
                                 g2.drawImage(img, 0, 0, null);
@@ -476,7 +476,7 @@ public abstract class Renderer {
         if (!isHeadLess) {
             configuration = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
         }
-        DataSource ds = layer.getDataSource();
+        DataSource ds = layer.getTableReference();
         long rowCount = ds.getRowCount();
         for (int i = 0; i < rowCount; i++) {
             GeoRaster geoRaster = ds.getRaster(i);

@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
-import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -160,7 +159,7 @@ public abstract class Stroke extends AbstractSymbolizerNode implements UomNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, Map<String,Value> map, Shape shp,
+    public abstract void draw(Graphics2D g2, Map<String,Object> map, Shape shp,
             boolean selected, MapTransform mt, double offset) throws ParameterException, IOException;
 
     /**
@@ -173,7 +172,6 @@ public abstract class Stroke extends AbstractSymbolizerNode implements UomNode {
     /**
      * Fill the {@code LabelType} given in argument with this {@code Label}'s
      * properties.
-     * @param lt
      */
     protected final void setJAXBProperties(StrokeType s) {
 
@@ -214,7 +212,7 @@ public abstract class Stroke extends AbstractSymbolizerNode implements UomNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract Double getNaturalLength(Map<String,Value> map,
+    public abstract Double getNaturalLength(Map<String,Object> map,
             Shape shp, MapTransform mt) throws ParameterException, IOException;
 
     /**
@@ -231,7 +229,7 @@ public abstract class Stroke extends AbstractSymbolizerNode implements UomNode {
      * @throws ParameterException
      * @throws IOException 
      */
-    public Double getNaturalLengthForCompound(Map<String,Value> map,
+    public Double getNaturalLengthForCompound(Map<String,Object> map,
             Shape shp, MapTransform mt) throws ParameterException, IOException {
         return getNaturalLength(map, shp, mt);
     }

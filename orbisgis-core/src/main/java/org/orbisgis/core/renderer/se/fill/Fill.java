@@ -40,7 +40,6 @@ import net.opengis.se._2_0.core.HatchedFillType;
 import net.opengis.se._2_0.core.SolidFillType;
 import net.opengis.se._2_0.thematic.DensityFillType;
 import net.opengis.se._2_0.thematic.DotMapFillType;
-import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -108,11 +107,10 @@ public abstract class Fill extends AbstractSymbolizerNode implements UomNode {
      *
      * @param g2 draw within this graphics2d
      * @param shp fill this shape
-     * @param feat feature which contains potential used attributes
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, Map<String,Value> map, Shape shp,
+    public abstract void draw(Graphics2D g2, Map<String,Object> map, Shape shp,
             boolean selected, MapTransform mt) throws ParameterException, IOException;
 
 
@@ -120,15 +118,13 @@ public abstract class Fill extends AbstractSymbolizerNode implements UomNode {
      * Return a Paint that correspond to the SE Fill type.
      * If the fill type cannot be converted into a Painter, null is returned
      *
-     * @param fid current feature id
-     * @param sds data source
      * @param selected is the feature selected ?
      * @param mt the map transform
      * @return the paint that correspond to the SE Fill or null if inconvertible (e.g hatched fill, dot map fill, etc)
      *
      * @throws ParameterException
      */
-	public abstract Paint getPaint(Map<String,Value> map, boolean selected, MapTransform mt) throws ParameterException, IOException;
+	public abstract Paint getPaint(Map<String,Object> map, boolean selected, MapTransform mt) throws ParameterException, IOException;
 
 
     /**

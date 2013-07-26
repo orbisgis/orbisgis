@@ -29,13 +29,13 @@
 package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
+
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import net.opengis.ows_context.LayerType;
-import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
@@ -185,7 +185,7 @@ public class LayerCollection extends BeanLayer {
     }
 
 	@Override
-	public ArrayList<Rule> getRenderingRule() throws DriverException {
+	public ArrayList<Rule> getRenderingRule() throws LayerException {
 		throw new UnsupportedOperationException("A layer collection doesn't have any rule !");
 	}
 
@@ -337,10 +337,10 @@ public class LayerCollection extends BeanLayer {
         /**
          * Retrieve the children of this collection that are raster layers
          * @return
-         * @throws DriverException
+         * @throws LayerException
          */
         @Override
-	public ILayer[] getRasterLayers() throws DriverException {
+	public ILayer[] getRasterLayers() throws LayerException {
 		ILayer[] allLayers = getLayersRecursively();
 
 		ArrayList<ILayer> filterLayer = new ArrayList<ILayer>();
@@ -358,10 +358,10 @@ public class LayerCollection extends BeanLayer {
         /**
          * Retrieve the children of this collection that are vector layers
          * @return
-         * @throws DriverException
+         * @throws LayerException
          */
         @Override
-	public ILayer[] getVectorLayers() throws DriverException {
+	public ILayer[] getVectorLayers() throws LayerException {
 		ILayer[] allLayers = getLayersRecursively();
 
 		ArrayList<ILayer> filterLayer = new ArrayList<ILayer>();
@@ -403,17 +403,17 @@ public class LayerCollection extends BeanLayer {
 		return false;
 	}
 
-        /**
-         * Supposed to return the datasource associated to this layer. But it's a collection,
-         * so it is null. 
-         * @return
-         */
         @Override
-	public DataSource getDataSource() {
-		return null;
-	}
+        public String getTableReference() {
+            return "";
+        }
 
-        @Override
+    @Override
+    public URI getDataUri() {
+        return null;
+    }
+
+    @Override
         public Set<String> getAllLayersNames() {
                 final Set<String> result = new HashSet<String>();
                 final LayerCollection lc = this;
@@ -433,7 +433,7 @@ public class LayerCollection extends BeanLayer {
         //////////////////Unsupported methods////////////////////////
 
         @Override
-	public GeoRaster getRaster() throws DriverException {
+	public GeoRaster getRaster() throws LayerException {
 		throw new UnsupportedOperationException(I18N.tr("Cannot do this operation on a layer collection"));
 	}
 

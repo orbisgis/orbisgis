@@ -28,6 +28,9 @@
  */
 package org.orbisgis.core.renderer.se.parameter;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +38,6 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ObjectFactory;
 import net.opengis.fes._2.ValueReferenceType;
 import net.opengis.se._2_0.core.ParameterValueType;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -140,30 +140,37 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
         /**
          * Get the GDMS {@code Value} associated to this Reference in the given
          * table (represented by the {@code DataSet sds}) at line fid.
-         * @param sds
-         * @param fid
-         * @return
-         * @throws DriverException 
+         * @param sds ResultSet
+         * @param fid Field Id
+         * @return Field Value
          */
-    public Value getFieldValue(DataSet sds, long fid) throws DriverException {
+    public Object getFieldValue(ResultSet sds, long fid) throws SQLException {
         if (this.fieldId == -1) {
-            this.fieldId = sds.getMetadata().getFieldIndex(fieldName);
+            this.fieldId = getFieldIndexFromLabel(sds, fieldName);
         }
-        return sds.getFieldValue(fid, fieldId);
+        sds.absolute((int)fid);
+        return sds.getObject(fieldId);
     }
 
+    private static int getFieldIndexFromLabel(ResultSet rs, String fieldName) throws SQLException {
+        ResultSetMetaData mt = rs.getMetaData();
+        for(int idcolumn=0;idcolumn<mt.getColumnCount();idcolumn++) {
+            if(mt.getColumnName(idcolumn).equalsIgnoreCase(fieldName)) {
+                return idcolumn;
+            }
+        }
+        throw new SQLException("Field not found "+fieldName);
+    }
     /**
      * Get the GDMS {@code Value} associated to this reference in the given
      * {@code map}. The value returned by {@link ValueReference#getColumnName()}
      * is used as the key.
-     * @param sds
-     * @param fid
-     * @return
+     * @return Value
      * @throws ParameterException
      * If the value returned by {@link ValueReference#getColumnName()} is not
      * a key in {@code map}.
      */
-    public Value getFieldValue(Map<String,Value> map) throws ParameterException {
+    public Object getFieldValue(Map<String,Object> map) throws ParameterException {
         if(map.containsKey(fieldName)){
             return map.get(fieldName);
         } else {

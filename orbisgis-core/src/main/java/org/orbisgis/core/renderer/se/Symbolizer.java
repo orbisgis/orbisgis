@@ -31,15 +31,14 @@ package org.orbisgis.core.renderer.se;
 import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
 import net.opengis.se._2_0.raster.RasterSymbolizerType;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -68,7 +67,7 @@ public abstract class Symbolizer extends AbstractSymbolizerNode implements Symbo
     //protected GeometryAttribute the_geom;
     protected int level;
     private Set<String> features;
-    private Map<String,Value> featuresMap;
+    private Map<String,Object> featuresMap;
     private FeaturesVisitor featuresVisitor = new FeaturesVisitor();
 
     /**
@@ -252,26 +251,26 @@ public abstract class Symbolizer extends AbstractSymbolizerNode implements Symbo
 
     /**
      * Gets the features that are needed to build this Symbolizer in a {@code
-     * Map<String,Value>}. This method is based on {@link
+     * Map<String,Value>}. This method is based on {@see
      * SymbolizerNode#dependsOnFeature()}. Using the field names retrieved with
      * this method, we search for {@code Values} at index {@code fid} in {@code
      * sds}.
      * @param sds
      * @param fid
      * @return
-     * @throws DriverException
+     * @throws SQLException
      */
-    public Map<String,Value> getFeaturesMap(DataSet sds, long fid) throws DriverException{
+    public Map<String,Object> getFeaturesMap(ResultSet sds, long fid) throws SQLException{
         if(features==null){
             acceptVisitor(featuresVisitor);
             features = featuresVisitor.getResult();
         }
         if(featuresMap == null){
-            featuresMap = new HashMap<String,Value>();
+            featuresMap = new HashMap<String,Object>();
         }
+        sds.absolute((int)fid);
         for(String s : features){
-            int index  = sds.getMetadata().getFieldIndex(s);
-            featuresMap.put(s, sds.getFieldValue(fid, index));
+            featuresMap.put(s, sds.getObject(s));
         }
         return featuresMap;
     }
@@ -290,7 +289,7 @@ public abstract class Symbolizer extends AbstractSymbolizerNode implements Symbo
     /**
      * Draw the symbols in g2, using infos that are found in sds at index fid.
      * @param g2
-     * @param sds
+     * @param rs
      * @param fid
      * @param selected
      * @param mt
@@ -298,11 +297,11 @@ public abstract class Symbolizer extends AbstractSymbolizerNode implements Symbo
      * @param perm
      * @throws ParameterException
      * @throws IOException
-     * @throws DriverException 
+     * @throws SQLException
      */
-    public abstract void draw(Graphics2D g2, DataSet sds, long fid,
+    public abstract void draw(Graphics2D g2, ResultSet rs, long fid,
             boolean selected, MapTransform mt, Geometry theGeom, RenderContext perm)
-            throws ParameterException, IOException, DriverException;
+            throws ParameterException, IOException, SQLException;
 
     /**
      * Get a JAXB representation of this Symbolizer.

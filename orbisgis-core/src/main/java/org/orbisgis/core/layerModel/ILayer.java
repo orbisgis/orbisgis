@@ -30,6 +30,7 @@ package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.beans.PropertyChangeListener;
+import java.net.URI;
 import java.util.List;
 import java.util.Set;
 import net.opengis.ows_context.LayerType;
@@ -45,6 +46,7 @@ public interface ILayer {
         public static final String PROP_VISIBLE = "visible";
         public static final String PROP_STYLES = "styles";
         public static final String PROP_SELECTION = "selection";
+        public static final String PROP_SOURCE_URI = "sourceUri";
         
         
         /**
@@ -289,7 +291,14 @@ public interface ILayer {
 	 *         up by a DataSource (Layer collections and WMS
 	 *         layers, for example)
 	 */
-	String getDataSource();
+	String getTableReference();
+
+        /**
+         * Get the URI used to build the table in the DataBase.
+         * It can be the Table URI itself or an external resource.
+         * @return
+         */
+        URI getDataUri();
 
         /**
          * Gets the {@code List} of SE styles that are used to define the
@@ -344,9 +353,7 @@ public interface ILayer {
 
 	/**
 	 * If isRaster is true returns the first raster in the layer DataSource.
-	 * Otherwise it throws an {@link UnsupportedOperationException}. The method
-	 * is just a shortcut for getDataSource().getRaster(0)
-	 * 
+	 * Otherwise it throws an {@link UnsupportedOperationException}.	 *
 	 * @return
 	 * @throws LayerException
 	 * @throws UnsupportedOperationException

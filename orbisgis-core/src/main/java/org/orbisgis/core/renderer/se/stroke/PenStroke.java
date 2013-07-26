@@ -39,7 +39,6 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.PenStrokeType;
-import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -197,7 +196,7 @@ public final class PenStroke extends Stroke implements FillNode {
     }
 
     @Override
-    public Double getNaturalLength(Map<String,Value> map, Shape shp, MapTransform mt) {
+    public Double getNaturalLength(Map<String,Object> map, Shape shp, MapTransform mt) {
 
         if (dashArray != null) {
             // A dashed penstroke has a length
@@ -226,7 +225,7 @@ public final class PenStroke extends Stroke implements FillNode {
     }
 
     @Override
-    public Double getNaturalLengthForCompound(Map<String,Value> map,
+    public Double getNaturalLengthForCompound(Map<String,Object> map,
             Shape shp, MapTransform mt) throws ParameterException, IOException {
         return Double.POSITIVE_INFINITY;
     }
@@ -271,7 +270,7 @@ public final class PenStroke extends Stroke implements FillNode {
 
     /**
      * Sets the way to draw the extremities of a line.
-     * @param cap The new {@link LineCap}. Will be replaced by {@value DEFAULT_CAP} if null.
+     * @param cap The new {@link LineCap}. Will be replaced by {@see DEFAULT_CAP} if null.
      */
     public void setLineCap(LineCap cap) {
         lineCap = cap == null ? DEFAULT_CAP : cap;
@@ -291,7 +290,7 @@ public final class PenStroke extends Stroke implements FillNode {
 
     /**
      * Sets the ways used to draw the join between line segments.
-     * @param join  The new {@link LineJoin}. Will be replaced by {@value DEFAULT_JOIN} if null.
+     * @param join  The new {@link LineJoin}. Will be replaced by {@see DEFAULT_JOIN} if null.
      */
     public void setLineJoin(LineJoin join) {
         lineJoin = join == null ? DEFAULT_JOIN : join;
@@ -371,7 +370,7 @@ public final class PenStroke extends Stroke implements FillNode {
         this.dashArray.setParent(this);
     }
 
-    private BasicStroke createBasicStroke(Map<String,Value> map,
+    private BasicStroke createBasicStroke(Map<String,Object> map,
             Shape shp, MapTransform mt, Double v100p, boolean useDash) throws ParameterException {
 
         int cap;
@@ -469,7 +468,7 @@ public final class PenStroke extends Stroke implements FillNode {
      * @throws IllegalArgumentException If the embedded dash pattern is invalid
      * (eg. if it contains negative numbers).
      */
-    public BasicStroke getBasicStroke(Map<String,Value> map, MapTransform mt, Double v100p) throws ParameterException {
+    public BasicStroke getBasicStroke(Map<String,Object> map, MapTransform mt, Double v100p) throws ParameterException {
         return this.createBasicStroke(map, null, mt, v100p, true);
     }
 
@@ -517,7 +516,7 @@ public final class PenStroke extends Stroke implements FillNode {
      * (eg. if it contains negative numbers).
      */
     @Override
-    public void draw(Graphics2D g2, Map<String,Value> map, Shape shape,
+    public void draw(Graphics2D g2, Map<String,Object> map, Shape shape,
             boolean selected, MapTransform mt, double offset)
             throws ParameterException, IOException {
 
@@ -643,7 +642,7 @@ public final class PenStroke extends Stroke implements FillNode {
      * @return
      * @throws ParameterException 
      */
-    public double getWidthInPixel(Map<String,Value> map, MapTransform mt) throws ParameterException {
+    public double getWidthInPixel(Map<String,Object> map, MapTransform mt) throws ParameterException {
         if (this.width != null) {
             return Uom.toPixel(width.getValue(map), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
         } else {
@@ -659,7 +658,7 @@ public final class PenStroke extends Stroke implements FillNode {
      * @return
      * @throws ParameterException 
      */
-    public double getMinLength(Map<String,Value> map, MapTransform mt) throws ParameterException {
+    public double getMinLength(Map<String,Object> map, MapTransform mt) throws ParameterException {
         double length = 0;
         if (dashArray != null) {
             String sDash = this.dashArray.getValue(map);

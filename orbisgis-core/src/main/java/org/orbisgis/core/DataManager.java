@@ -30,8 +30,8 @@ package org.orbisgis.core;
 
 import javax.sql.RowSet;
 import java.net.URI;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * DataManager has been created in order to minimize the usage of JDBC transaction when the ResultSet is
@@ -46,7 +46,7 @@ public interface DataManager {
     /**
      * Return the result set corresponding to the content of a table or view.
      * @param sourceName Table reference (can include schema and/or database)
-     * @return RowSet implementation.
+     * @return RowSet implementation.Do not hold an active connection to the DataBase, it is a partial cached view of a ResultSet.
      * @throws SQLException If the table does not exists
      */
     RowSet getDataSource(String sourceName) throws SQLException;
@@ -55,10 +55,10 @@ public interface DataManager {
      * Return the result set corresponding to the result of a statement.
      * This function never return the same ResultSet for the same statement.
      * @param statement Query method statement
-     * @return RowSet implementation.
+     * @return RowSet implementation.Do not hold an active connection to the DataBase, it is a partial cached view of a ResultSet.
      * @throws SQLException Error while executing the statement.
      */
-    RowSet getDataSource(Statement statement) throws SQLException;
+    RowSet getDataSource(PreparedStatement statement) throws SQLException;
 
     /**
      * This method use the URI in order to upload or link a data source.

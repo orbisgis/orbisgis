@@ -32,16 +32,12 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import net.opengis.ows_context.*;
-import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
-import org.gdms.source.Source;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.Style;
@@ -62,8 +58,7 @@ public abstract class BeanLayer extends AbstractLayer {
         protected IntegerUnion selection = new IntegerUnion();
         private boolean visible = true;
         private PropertyChangeListener styleListener = EventHandler.create(PropertyChangeListener.class,this,"onStyleChanged","");
-        
-                
+
         public BeanLayer(String name) {
                 super();
                 description = new Description();
@@ -99,13 +94,12 @@ public abstract class BeanLayer extends AbstractLayer {
                 boolean oldVisible = this.visible;
                 this.visible = visible;
                 propertyChangeSupport.firePropertyChange(PROP_VISIBLE, oldVisible, visible);
-                //Deprectated listener
+                //Deprecated listener
                 fireVisibilityChanged();
         }
         @Override
         public LayerType getJAXBElement() {
                 ObjectFactory ows_context_factory = new ObjectFactory();
-                net.opengis.se._2_0.core.ObjectFactory se_of = new net.opengis.se._2_0.core.ObjectFactory();
                 LayerType layerType = ows_context_factory.createLayerType();
                 description.initJAXBType(layerType);
                 layerType.setHidden(!visible);
@@ -127,30 +121,14 @@ public abstract class BeanLayer extends AbstractLayer {
                                 sltType.setAbstractStyle(style.getJAXBElement());
                         }                        
                 }
-                DataSource dataSource = getDataSource();
                 //Serialisation of dataSource as a DataUrl string
-                if(dataSource!=null) {
-                        //Create jaxb instances
-                        URLType dataURL = ows_context_factory.createURLType();
-                        OnlineResourceType resource = ows_context_factory.createOnlineResourceType();
-                        dataURL.setOnlineResource(resource);
-                        //Retrieve data source properties
-                        Source src = dataSource.getSource();                                                
-                        //Serialisation of the data source into a single string
-                        String resourceSerialisation = "";
-                        try {
-                                URI srcUri = src.getURI();
-                                if(srcUri!=null) {
-                                        resourceSerialisation = srcUri.toString();
-                                }
-                        } catch (DriverException ex) {
-                                LOGGER.error(I18N.tr("Unable to serialise the data source of layer {0}",getName()),ex);
-                        }
-                        
-                        resource.setHref(resourceSerialisation);
-                        if(!resourceSerialisation.isEmpty()) {
-                                layerType.setDataURL(dataURL);                                
-                        }
+                //Create jaxb instances
+                URLType dataURL = ows_context_factory.createURLType();
+                OnlineResourceType resource = ows_context_factory.createOnlineResourceType();
+                dataURL.setOnlineResource(resource);
+                resource.setHref(getDataUri().toString());
+                if(resource.isSetHref()) {
+                        layerType.setDataURL(dataURL);
                 }
                 return layerType;
         }
@@ -183,7 +161,7 @@ public abstract class BeanLayer extends AbstractLayer {
         * Add a property-change listener for all properties.
         * The listener is called for all properties.
         * @param listener The PropertyChangeListener instance
-        * @note Use EventHandler.create to build the PropertyChangeListener instance
+        * Use EventHandler.create to build the PropertyChangeListener instance
         */
         @Override
         public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -195,7 +173,7 @@ public abstract class BeanLayer extends AbstractLayer {
         * the specified property.
         * @param prop The static property name PROP_..
         * @param listener The PropertyChangeListener instance
-        * @note Use EventHandler.create to build the PropertyChangeListener instance
+        * Use EventHandler.create to build the PropertyChangeListener instance
         */
         @Override
         public void addPropertyChangeListener(String prop,PropertyChangeListener listener) {

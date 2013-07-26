@@ -28,24 +28,17 @@
  */
 package org.orbisgis.core.renderer.se;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import com.vividsolutions.jts.geom.*;
 import net.opengis.se._2_0.core.ElseFilterType;
 import net.opengis.se._2_0.core.RuleType;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.FilterDataSourceDecorator;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryDimensionConstraint;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.GeometryValue;
-import org.gdms.driver.DriverException;
+import org.h2gis.h2spatialapi.GeometryTypeCodes;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -55,6 +48,10 @@ import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
+import org.orbisgis.sputilities.SFSUtilities;
+import org.orbisgis.sputilities.SpatialResultSet;
+
+import javax.sql.DataSource;
 
 /**
  * Rules are used to group rendering instructions by feature-property conditions and map scales.
@@ -119,50 +116,44 @@ public final class Rule extends AbstractSymbolizerNode {
      */
     public void createSymbolizer(ILayer layer) {
         if (layer != null) {
+
             try {
-                Symbolizer symb = null;
-                Metadata metadata = layer.getDataSource().getMetadata();
-                for (int i = 0; i < metadata.getFieldCount(); i++) {
-                    Type fieldType = metadata.getFieldType(i);
-                    int typeCode = fieldType.getTypeCode();
-                    if ((TypeFactory.isVectorial(typeCode) && typeCode != Type.NULL)
-                            || (typeCode == Type.RASTER)) {
-                        int test;
-                        if(typeCode == Type.GEOMETRY || typeCode == Type.GEOMETRYCOLLECTION){
-                            test = getAccurateType(layer, i);
-                        } else {
-                            test = typeCode;
-                        }
-                        switch (test) {
-                            case Type.GEOMETRY:
-                            case Type.GEOMETRYCOLLECTION:
-                                symb = new PointSymbolizer();
-                                break;
-                            case Type.POINT:
-                            case Type.MULTIPOINT:
-                                symb = new PointSymbolizer();
-                                break;
-                            case Type.LINESTRING:
-                            case Type.MULTILINESTRING:
-                                symb = new LineSymbolizer();
-                                break;
-                            case Type.POLYGON:
-                            case Type.MULTIPOLYGON:
-                                symb = new AreaSymbolizer();
-                                break;
-                            case Type.RASTER:
+                    Symbolizer symb = null;
+                    DataSource ds = Services.getService(DataSource.class);
+                    Connection connection = ds.getConnection();
+                    try {
+                        /*
+                            TODO
+                            case GeometryTypeCodes.RASTER:
                                 symb = new RasterSymbolizer();
                                 break;
-                            default:
-                                throw new UnsupportedOperationException("Can't get the dimension of this type : " + TypeFactory.getTypeName(typeCode));
+                        */
+                        int typeCode = SFSUtilities.getGeometryType(connection,SFSUtilities.splitCatalogSchemaTableName(layer.getTableReference()),"");
+                        if(typeCode==GeometryTypeCodes.GEOMETRY || typeCode==GeometryTypeCodes.GEOMCOLLECTION) {
+                            // No symbol for Geometry type code, parse the ResultSet
+                            typeCode = getAccurateType(layer);
                         }
-                        break;
+                        switch (typeCode) {
+                            case GeometryTypeCodes.POINT:
+                            case GeometryTypeCodes.MULTIPOINT:
+                                symb = new PointSymbolizer();
+                                break;
+                            case GeometryTypeCodes.LINESTRING:
+                            case GeometryTypeCodes.MULTILINESTRING:
+                                symb = new LineSymbolizer();
+                                break;
+                            case GeometryTypeCodes.POLYGON:
+                            case GeometryTypeCodes.MULTIPOLYGON:
+                                symb = new AreaSymbolizer();
+                                break;
+                            default:
+                                symb = new PointSymbolizer();
+                        }
+                        symbolizer.addSymbolizer(symb);
+                    } finally {
+                        connection.close();
                     }
-                }
-                if (symb != null) {
-                    symbolizer.addSymbolizer(symb);
-                }
-            } catch (DriverException ex) {
+            } catch (SQLException ex) {
                 Logger.getLogger(Rule.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -172,62 +163,30 @@ public final class Rule extends AbstractSymbolizerNode {
      * We want to handle Geometry and GeometryCollection in a special way. We first check we don't have a dimension
      * constraint on the column. If we don't, we use the value of the first
      * @param layer The layer we want to analyze
-     * @param sfi The index we will query in the data source contained in the input layer. Must be a valid spatial field.
      * @return The type found after analysis.
      */
-    private int getAccurateType(ILayer layer, int sfi){
+    private int getAccurateType(ILayer layer) throws SQLException {
+        DataSource ds = Services.getService(DataSource.class);
+        Connection connection = ds.getConnection();
         try {
-            DataSource ds = layer.getDataSource();
-            boolean opened = false;
-            if(!ds.isOpen()){
-                ds.open();
-                opened = true;
-            }
-            Type fieldType = ds.getMetadata().getFieldType(sfi);
-            int ret = fieldType.getTypeCode();
-            GeometryDimensionConstraint gdc =
-                    (GeometryDimensionConstraint) fieldType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
-            if (gdc == null) {
-                if(ds.getRowCount() > 0 && sfi > -1){
-                    GeometryValue gv = (GeometryValue) ds.getFieldValue(0,sfi);
-                    Geometry geom = gv.getAsGeometry();
-                    if(geom instanceof Point || geom instanceof MultiPoint){
-                        ret = Type.POINT;
-                    } else if(geom instanceof LineString || geom instanceof MultiLineString){
-                        ret = Type.LINESTRING;
-                    } else if(geom instanceof Polygon || geom instanceof MultiPolygon){
-                        ret = Type.POLYGON;
-                    } else {
-                        ret = Type.GEOMETRY;
-                    }
-                }
-            } else {
-                int dim = gdc.getDimension();
-                switch (dim) {
-                    case Type.POINT:
-                    case Type.MULTIPOINT:
-                        ret = Type.POINT;
-                        break;
-                    case Type.LINESTRING:
-                    case Type.MULTILINESTRING:
-                        ret = Type.LINESTRING;
-                        break;
-                    case Type.POLYGON:
-                    case Type.MULTIPOLYGON:
-                        ret = Type.POLYGON;
-                        break;
-                    default:
-                        throw new UnsupportedOperationException("Can't get the dimension of this type : "
-                                + TypeFactory.getTypeName(dim));
+            String tableRef = layer.getTableReference();
+            SpatialResultSet rs = connection.createStatement().executeQuery("select * from "+tableRef+" LIMIT 1").unwrap(SpatialResultSet.class);
+            if(rs.next()) {
+                Geometry geom = rs.getGeometry();
+                if(geom instanceof Point || geom instanceof MultiPoint){
+                    return GeometryTypeCodes.POINT;
+                } else if(geom instanceof LineString || geom instanceof MultiLineString){
+                    return GeometryTypeCodes.LINESTRING;
+                } else if(geom instanceof Polygon || geom instanceof MultiPolygon){
+                    return GeometryTypeCodes.POLYGON;
+                } else {
+                    return GeometryTypeCodes.GEOMETRY;
                 }
             }
-            if(opened){
-                ds.close();
-            }
-            return ret;
-        } catch (DriverException e) {
-            throw new UnsupportedOperationException("Not able to open the input data source.",e);
+        } finally {
+            connection.close();
         }
+        return GeometryTypeCodes.GEOMETRY;
     }
 
     /**
@@ -343,26 +302,6 @@ public final class Rule extends AbstractSymbolizerNode {
      */
     public void setWhere(String where) {
         this.where = where;
-    }
-
-    /**
-     * Return a new Spatial data source, according to rule filter and specified extent
-     * In the case there is no filter to apply, sds is returned
-     *
-     * If the returned data source not equals sds, the new new data source must be purged
-     *
-     * @return The filtered data source.
-     * @throws DriverException
-     */
-    public FilterDataSourceDecorator getFilteredDataSet(FilterDataSourceDecorator fds)
-            throws DataSourceCreationException, DriverException {
-        if (where != null && !where.isEmpty()) {
-            return new FilterDataSourceDecorator(fds, where + getOrderBy());
-        } else if (!getOrderBy().isEmpty()) {
-            return new FilterDataSourceDecorator(fds, "1=1 " + getOrderBy());
-        } else {
-            return fds;
-        }
     }
 
     /**

@@ -30,6 +30,7 @@ package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
 
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ import java.util.List;
 import java.util.Set;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.sputilities.SFSUtilities;
@@ -45,94 +45,48 @@ import org.orbisgis.sputilities.SFSUtilities;
 import javax.sql.DataSource;
 
 public class Layer extends BeanLayer {        
-	private String dataSource;
-	private RefreshSelectionEditionListener editionListener;
+	private String tableReference;
+    private URI dataURI;
 
-	public Layer(String name, String tableRef) {
+	public Layer(String name, URI dataURI) {
 		super(name);
-		this.dataSource = tableRef;
-		editionListener = new RefreshSelectionEditionListener();
+		this.dataURI = dataURI;
 	}
 
     @Override
-	public String getDataSource() {
-		return dataSource;
+    public URI getDataUri() {
+        return dataURI;
+    }
+
+    @Override
+	public String getTableReference() {
+		return tableReference;
 	}
 
     @Override
 	public Envelope getEnvelope() {
 		Envelope result = new Envelope();
 
-		if (null != dataSource) {
-			try {
-				result = dataSource.getFullExtent();
-			} catch (DriverException e) {
-				LOGGER.error(
-						I18N.tr("Cannot get the extent of the layer {0}",dataSource.getName())
-								 , e);
-			}
-		}
 		return result;
 	}
 
     @Override
 	public void close() throws LayerException {
-		try {
-                        if (dataSource.isEditable()) {                                
-                                try {
-                                        dataSource.removeEditionListener(editionListener);
-                                } catch(UnsupportedOperationException ex) {
-                                        //Ignore
-                                }
-                        }
-			dataSource.close();
-		} catch (AlreadyClosedException e) {
-			throw new LayerException(I18N.tr("Cannot close the data source"), e);
-		} catch (DriverException e) {
-			throw new LayerException(I18N.tr("Cannot close the data source"),e);
-		}
+
 	}
 
         @Override
 	public void open() throws LayerException {
-		try {
-			dataSource.open();
-                        if (getStyles().isEmpty()) {
-                                // special case: no style were ever set
-                                // let's go for a default style
-                                // add style in the list directly
-                                // do not fire style change event
-                                Style defStyle = new Style(this, true);
-                                styleList.add(defStyle);
-                                addStyleListener(defStyle);
-                        }
-			// Listen modifications to update selection
-                        if (dataSource.isEditable()) {
-                                try {
-                                        dataSource.addEditionListener(editionListener);
-                                } catch (UnsupportedOperationException ex) {
-                                        LOGGER.warn(I18N.tr("The layer cannot listen to source modifications"),ex);
-                                }
-                        }
-		} catch (DriverException e) {
-			throw new LayerException(I18N.tr("Cannot open the layer"), e);
-		}
-	}
-
-	private void validateType(int sfi, int fieldType, String type)
-			throws DriverException {
-		Metadata metadata = dataSource.getMetadata();
-		if ((metadata.getFieldType(sfi).getTypeCode() & fieldType) ==0) {
-			throw new IllegalArgumentException(I18N.tr("The field is not {0}",type));
-		}
-	}
-
-	private int getFieldIndexForLegend(String fieldName) throws LayerException {
-		int sfi = dataSource.getFieldIndexByName(fieldName);
-		if (sfi == -1) {
-			throw new IllegalArgumentException(I18N.tr("The field {0} is not found",fieldName));
-		}
-		return sfi;
+        if (getStyles().isEmpty()) {
+                // special case: no style were ever set
+                // let's go for a default style
+                // add style in the list directly
+                // do not fire style change event
+                Style defStyle = new Style(this, true);
+                styleList.add(defStyle);
+                addStyleListener(defStyle);
+        }
+        // TODO load or find the table from dataURI
 	}
 
     @Override
@@ -143,13 +97,13 @@ public class Layer extends BeanLayer {
     @Override
 	public boolean isVectorial() throws LayerException {
         DataSource dataSource = Services.getService(DataSource.class);
-        if(dataSource==null || getDataSource()==null) {
+        if(dataSource==null || getTableReference()==null) {
             throw new LayerException("This layer is not opened");
         }
         try {
             Connection connection = dataSource.getConnection();
             try {
-                return !SFSUtilities.getGeometryFields(connection,SFSUtilities.splitCatalogSchemaTableName(getDataSource())).isEmpty();
+                return !SFSUtilities.getGeometryFields(connection,SFSUtilities.splitCatalogSchemaTableName(getTableReference())).isEmpty();
             } finally {
                 connection.close();
             }
@@ -160,7 +114,7 @@ public class Layer extends BeanLayer {
 
         @Override
         public boolean isSerializable() {
-                return dataSource != null;
+                return tableReference != null;
         }
 
 

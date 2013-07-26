@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import net.opengis.se._2_0.core.ViewBoxType;
-import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -51,7 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <ul><li>X : the width of the box.</li>
  * <li>Y : the height of the box.</li></ul>
  * If only one of these two is given, they are considered to be equal.</p>
- * <p>The main difference between this class and {@link Scale} is that a {@code Scale}
+ * <p>The main difference between this class and Scale is that a {@code Scale}
  * will use a reference graphic, that already has a size, and process an affine transformation
  * on it, while here the size of the graphic will be defined directly using its height
  * and width.</p>
@@ -145,12 +144,12 @@ public final class ViewBox extends  AbstractSymbolizerNode {
 
         /**
          * Return the final dimension described by this view box, in [px].
-         * @param ds map
-         * @param ratio required final ratio (if either width or height isn't defined)
+         * @param map map
+         * @param scale required final ratio (if either width or height isn't defined)
          * @return
          * @throws ParameterException
          */
-        public Point2D getDimensionInPixel(Map<String,Value> map, double height,
+        public Point2D getDimensionInPixel(Map<String,Object> map, double height,
                     double width, Double scale, Double dpi) throws ParameterException {
                 double dx, dy;
 

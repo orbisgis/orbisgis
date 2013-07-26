@@ -30,7 +30,6 @@ package org.orbisgis.core.layerModel;
 
 import java.util.*;
 import org.apache.log4j.Logger;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.utils.CollectionUtils;
 import org.xnap.commons.i18n.I18n;
@@ -310,12 +309,12 @@ public abstract class AbstractLayer implements ILayer {
     }
 
     @Override
-    public ILayer[] getRasterLayers() throws DriverException {
+    public ILayer[] getRasterLayers() throws LayerException {
         return new ILayer[0];
     }
 
     @Override
-    public ILayer[] getVectorLayers() throws DriverException {
+    public ILayer[] getVectorLayers() throws LayerException {
         return new ILayer[0];
     }
 }
