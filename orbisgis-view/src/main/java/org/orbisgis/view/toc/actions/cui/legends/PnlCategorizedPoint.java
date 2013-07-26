@@ -19,6 +19,7 @@ import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorCategorizedPoint
 import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorCategorizedPoint;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelCatPoint;
 import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
+import org.orbisgis.view.toc.actions.cui.legends.panels.Util;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -140,29 +141,6 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
                 geometryType == SimpleGeometryType.LINE||
                 geometryType == SimpleGeometryType.POINT||
                 geometryType == SimpleGeometryType.ALL;
-    }
-
-    /**
-     * Gets the Symbolizer that is associated to the unique symbol matching the fallback configuration of this
-     * interval classification.
-     * @return A Symbolizer.
-     */
-    @Override
-    public Symbolizer getFallbackSymbolizer(){
-        return getFallBackLegend().getSymbolizer();
-    }
-
-    private UniqueSymbolPoint getFallBackLegend(){
-        CategorizedPoint leg = (CategorizedPoint)getLegend();
-        UniqueSymbolPoint usl = new UniqueSymbolPoint(leg.getFallbackParameters());
-        usl.setStrokeUom(leg.getStrokeUom());
-        usl.setSymbolUom(leg.getSymbolUom());
-        if(leg.isOnVertex()){
-            usl.setOnVertex();
-        } else {
-            usl.setOnCentroid();
-        }
-        return usl;
     }
 
     @Override

@@ -35,7 +35,7 @@ public class Util {
         tablePanel.updateTable();
     }
 
-    private static Symbolizer getFallbackSymbolizer(MappedLegend legend) {
+    public static Symbolizer getFallbackSymbolizer(MappedLegend legend) {
         SymbolizerLegend symLeg;
         SymbolParameters fallbackParameters = legend.getFallbackParameters();
         if (legend instanceof CategorizedLine ||

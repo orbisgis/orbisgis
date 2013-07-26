@@ -124,18 +124,6 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
         }
     }
 
-    /**
-     * Gets the Symbolizer that is associated to the unique symbol matching the fallback configuration of this
-     * unique value classification.
-     * @return A Symbolizer.
-     */
-    @Override
-    public Symbolizer getFallbackSymbolizer(){
-        UniqueSymbolArea usl = new UniqueSymbolArea(getLegend().getFallbackParameters());
-        usl.setStrokeUom(getLegend().getStrokeUom());
-        return usl.getSymbolizer();
-    }
-
     @Override
     public void initPreview() {
         System.out.println("    Called from initPreview RA");

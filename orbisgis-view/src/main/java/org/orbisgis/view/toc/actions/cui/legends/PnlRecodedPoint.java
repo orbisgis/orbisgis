@@ -118,11 +118,6 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
                     f.getWidth(), f.getHeight(), f.getWkn());
     }
 
-    @Override
-    public Symbolizer getFallbackSymbolizer() {
-        return getFallBackLegend().getSymbolizer();
-    }
-
     private UniqueSymbolPoint getFallBackLegend(){
         RecodedPoint leg = (RecodedPoint)getLegend();
         UniqueSymbolPoint usl = new UniqueSymbolPoint(leg.getFallbackParameters());

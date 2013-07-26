@@ -130,18 +130,6 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
                 geometryType == SimpleGeometryType.ALL;
     }
 
-    /**
-     * Gets the Symbolizer that is associated to the unique symbol matching the fallback configuration of this
-     * interval classification.
-     * @return A Symbolizer.
-     */
-    @Override
-    public Symbolizer getFallbackSymbolizer(){
-        UniqueSymbolLine usl = new UniqueSymbolLine(((CategorizedLine)getLegend()).getFallbackParameters());
-        usl.setStrokeUom(((CategorizedLine) getLegend()).getStrokeUom());
-        return usl.getSymbolizer();
-    }
-
     @Override
     public Legend copyLegend() {
         CategorizedLine cl = (CategorizedLine) getLegend();

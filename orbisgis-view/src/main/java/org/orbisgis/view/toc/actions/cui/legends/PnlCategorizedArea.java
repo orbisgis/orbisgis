@@ -132,18 +132,6 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
                 geometryType == SimpleGeometryType.ALL;
     }
 
-    /**
-     * Gets the Symbolizer that is associated to the unique symbol matching the fallback configuration of this
-     * interval classification.
-     * @return A Symbolizer.
-     */
-    @Override
-    public Symbolizer getFallbackSymbolizer(){
-        UniqueSymbolArea usl = new UniqueSymbolArea(getLegend().getFallbackParameters());
-        usl.setStrokeUom(getLegend().getStrokeUom());
-        return usl.getSymbolizer();
-    }
-
     @Override
     public Legend copyLegend() {
         CategorizedArea cl = (CategorizedArea) getLegend();

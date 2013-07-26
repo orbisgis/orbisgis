@@ -111,18 +111,6 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     }
 
     /**
-     * Gets the Symbolizer that is associated to the unique symbol matching the fallback configuration of this
-     * unique value classification.
-     * @return A Symbolizer.
-     */
-    @Override
-    public Symbolizer getFallbackSymbolizer(){
-        UniqueSymbolLine usl = new UniqueSymbolLine(getLegend().getFallbackParameters());
-        usl.setStrokeUom(getLegend().getStrokeUom());
-        return usl.getSymbolizer();
-    }
-
-    /**
      * Initializes the preview for the fallback configuration
      */
     public void initPreview() {

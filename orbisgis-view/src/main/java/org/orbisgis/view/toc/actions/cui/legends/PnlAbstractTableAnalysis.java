@@ -14,10 +14,7 @@ import org.orbisgis.legend.thematic.uom.SymbolUom;
 import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;
-import org.orbisgis.view.toc.actions.cui.legends.panels.SettingsPanel;
-import org.orbisgis.view.toc.actions.cui.legends.panels.TablePanel;
-import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
+import org.orbisgis.view.toc.actions.cui.legends.panels.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -364,7 +361,9 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
      * Gets the constant Symbolizer obtained when using all the constant and fallback values of the original Symbolizer.
      * @return The fallback Symbolizer.
      */
-    public abstract Symbolizer getFallbackSymbolizer();
+    public Symbolizer getFallbackSymbolizer() {
+        return Util.getFallbackSymbolizer(legend);
+    }
 
     /**
      * Gets the Class of the keys used in the map.
