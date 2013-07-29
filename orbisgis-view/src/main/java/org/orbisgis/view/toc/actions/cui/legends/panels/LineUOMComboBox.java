@@ -1,7 +1,9 @@
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.*;
+import org.orbisgis.legend.thematic.constant.IUniqueSymbolLine;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
@@ -14,16 +16,26 @@ import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
  */
 public class LineUOMComboBox<K, U extends LineParameters> extends UOMComboBox<K, U> {
 
-    public LineUOMComboBox(MappedLegend<K, U> legend,
+    public LineUOMComboBox(MappedLegend legend,
                            CanvasSE preview,
                            TablePanel<K, U> tablePanel) {
         super(legend, preview, tablePanel);
         setSelectedItem(legend.getStrokeUom());
     }
 
+    public LineUOMComboBox(SymbolizerLegend legend,
+                           CanvasSE preview) {
+        super(legend, preview);
+        setSelectedItem(legend.getStrokeUom());
+    }
+
     @Override
     protected void updatePreview() {
-        legend.setStrokeUom(Uom.fromString((String) getSelectedItem()));
-        Util.updatePreview(legend, preview, tablePanel);
+        ((SymbolizerLegend) legend).setStrokeUom(Uom.fromString((String) getSelectedItem()));
+        if (legend instanceof MappedLegend) {
+            Util.updatePreview((MappedLegend) legend, preview, tablePanel);
+        } else if (legend instanceof ConstantColorAndDashesLine) {
+            preview.imageChanged();
+        }
     }
 }

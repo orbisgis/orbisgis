@@ -355,7 +355,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
             gbc.gridy = i;
             gbc.fill = GridBagConstraints.HORIZONTAL;
             i++;
-            JPanel p1 = getLineBlock(usp.getPenStroke(),
+            JPanel p1 = getLineBlock(usp,
                                      I18N.tr(LINE_SETTINGS));
             glob.add(p1, gbc);
             gbc = new GridBagConstraints();

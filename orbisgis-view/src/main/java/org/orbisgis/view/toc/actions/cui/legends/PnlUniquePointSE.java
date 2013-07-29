@@ -179,7 +179,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
-                JPanel lb = getLineBlock(uniquePoint.getPenStroke(),
+                JPanel lb = getLineBlock(uniquePoint,
                                          I18N.tr(BORDER_SETTINGS));
                 ComponentUtil.setFieldState(isStrokeEnabled(), lb);
                 glob.add(lb);

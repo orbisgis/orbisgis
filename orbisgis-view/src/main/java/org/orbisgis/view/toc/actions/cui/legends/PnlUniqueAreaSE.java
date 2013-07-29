@@ -184,7 +184,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
 
-                JPanel p1 = getLineBlock(uniqueArea.getPenStroke(),
+                JPanel p1 = getLineBlock(uniqueArea,
                                          I18N.tr(BORDER_SETTINGS));
                 ComponentUtil.setFieldState(displayStroke, p1);
                 glob.add(p1, "cell 0 0, span 1 2, aligny top");

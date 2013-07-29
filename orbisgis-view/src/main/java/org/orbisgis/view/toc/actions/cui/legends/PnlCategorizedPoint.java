@@ -161,32 +161,4 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     public String validateInput() {
         return "";
     }
-
-    /**
-     * A JPanel containing the combo returned bu getPointUomCombo
-     * @return The JComboBox with a JLabel in a JPanel.
-     */
-    private JComboBox getSymbolUOMComboBox(){
-        uoms = getUomProperties();
-        UomCombo puc = new UomCombo(((CategorizedPoint)getLegend()).getSymbolUom(),
-                uoms,
-                I18N.tr(SYMBOL_SIZE_UNIT));
-        puc.addActionListener(
-                EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex"));
-        return puc.getCombo();
-    }
-
-    /**
-     * Sets the underlying graphic to use the ith element of the combo box
-     * as its uom. Used when changing the combo box selection.
-     * @param index The index of the selected unit of measure.
-     */
-    public void updateSUComboBox(int index){
-        CategorizedPoint leg = (CategorizedPoint)getLegend();
-        leg.setSymbolUom(Uom.fromString(uoms[index].getKey()));
-        CanvasSE prev = getPreview();
-        System.out.println("    Called from updateSUComboBox CP");
-        prev.setSymbol(getFallbackSymbolizer());
-        tablePanel.updateTable();
-    }
 }

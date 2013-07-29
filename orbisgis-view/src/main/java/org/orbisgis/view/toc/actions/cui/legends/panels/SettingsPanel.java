@@ -32,7 +32,6 @@ public class SettingsPanel<K, U extends LineParameters> extends JPanel {
     private static final I18n I18N = I18nFactory.getI18n(SettingsPanel.class);
 
     private MappedLegend<K, U> legend;
-    private DataSource dataSource;
     private CanvasSE preview;
     private TablePanel<K, U> tablePanel;
 
@@ -45,7 +44,6 @@ public class SettingsPanel<K, U extends LineParameters> extends JPanel {
                          TablePanel<K, U> tablePanel) {
         super(new MigLayout("wrap 2", AbstractFieldPanel.COLUMN_CONSTRAINTS));
         this.legend = legend;
-        this.dataSource = dataSource;
         this.preview = preview;
         this.tablePanel = tablePanel;
         if (legend instanceof AbstractCategorizedLegend) {

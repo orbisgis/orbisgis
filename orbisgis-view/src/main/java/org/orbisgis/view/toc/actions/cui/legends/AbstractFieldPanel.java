@@ -190,24 +190,6 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
     }
 
     /**
-     * ComboBox to configure the unit of measure used to draw th stroke. The generated {@link JComboBox} only updates
-     * the UOM of the given {@code StrokeUom}.
-     * @param input The StrokeUom instance we get the unit from.
-     * @return The JComboBox that can be used to change the UOM of {@code input}.
-     */
-    public UomCombo getLineUomCombo(StrokeUom input){
-        strokeUoms = getUomProperties();
-        // Note: the title is not used in the UI since we extract
-        // the ComboBox.
-        UomCombo puc = new UomCombo(input.getStrokeUom(),
-                strokeUoms,
-                I18N.tr(LINE_WIDTH_UNIT));
-        ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateLUComboBox", "source.selectedIndex");
-        puc.addActionListener(acl2);
-        return puc;
-    }
-
-    /**
      * Gets a preview for the fallback value of the symbol.
      * @return The Preview in a CanvasSE.
      */
@@ -234,14 +216,5 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
             cips[i] = cip;
         }
         return cips;
-    }
-
-    /**
-     * Sets the underlying graphic to use the ith element of the ComboBox
-     * as its well-known name. Used when changing the ComboBox selection.
-     * @param index The index of the unit of measure.
-     */
-    public void updateLUComboBox(int index){
-        ((StrokeUom)getLegend()).setStrokeUom(Uom.fromString(strokeUoms[index].getKey()));
     }
 }

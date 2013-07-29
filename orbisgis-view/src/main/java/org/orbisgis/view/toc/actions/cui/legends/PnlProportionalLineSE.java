@@ -49,6 +49,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
+import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.WideComboBox;
@@ -56,6 +57,7 @@ import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.LineUOMComboBox;
 import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -67,9 +69,11 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class PnlProportionalLineSE extends PnlUniqueLineSE {
 
-        private ProportionalLine legend;
         private static final I18n I18N = I18nFactory.getI18n(PnlProportionalLineSE.class);
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlProportionalLineSE.class);
+
+        private ProportionalLine legend;
+
         private JPanel lineColor;
         private JSpinner lineOpacity;
         private JTextField lineDash;
@@ -153,7 +157,7 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
          * Gets a panel containing all the fields to edit a unique line.
          * @return
          */
-        public JPanel getLineBlock(){
+        public JPanel getLineBlock() {
                 if(getPreview() == null && getLegend() != null){
                         initPreview();
                 }
@@ -172,10 +176,7 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
                 jp.add(lineColor);
                 // Unit of Measure - line width
                 jp.add(new JLabel(I18N.tr(LINE_WIDTH_UNIT)));
-                UomCombo lineUom = getLineUomCombo(legend);
-                lineUom.addActionListener(
-                        EventHandler.create(ActionListener.class, getPreview(), "imageChanged"));
-                jp.add(lineUom.getCombo(), COMBO_BOX_CONSTRAINTS);
+                jp.add(new LineUOMComboBox(legend, getPreview()), COMBO_BOX_CONSTRAINTS);
                 // Max width
                 jp.add(new JLabel(I18N.tr("Max width")));
                 jp.add(getSecondConf(legend), "growx");

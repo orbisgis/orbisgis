@@ -1,7 +1,9 @@
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
+import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -20,16 +22,13 @@ import java.awt.event.ActionListener;
  */
 public abstract class UOMComboBox<K, U extends LineParameters> extends WideComboBox {
 
-
-    private static final I18n I18N = I18nFactory.getI18n(LineUOMComboBox.class);
-
-    protected MappedLegend<K, U> legend;
+    protected Legend legend;
     protected CanvasSE preview;
     protected TablePanel<K, U> tablePanel;
 
-    public UOMComboBox(MappedLegend<K, U> legend,
-                           CanvasSE preview,
-                           TablePanel<K, U> tablePanel) {
+    public UOMComboBox(Legend legend,
+                       CanvasSE preview,
+                       TablePanel<K, U> tablePanel) {
         super(Uom.getLocalizedStrings());
         this.legend = legend;
         this.preview = preview;
@@ -40,6 +39,11 @@ public abstract class UOMComboBox<K, U extends LineParameters> extends WideCombo
                 updatePreview();
             }
         });
+    }
+
+    public UOMComboBox(Legend legend,
+                       CanvasSE preview) {
+        this(legend, preview, null);
     }
 
     protected abstract void updatePreview();

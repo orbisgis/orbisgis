@@ -97,19 +97,6 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     }
 
     /**
-     * Update the inner CanvasSE. It updates its symbolizer and forces the image to be redrawn.
-     */
-    public final void updatePreview(Object source){
-        JComboBox jcb = (JComboBox) source;
-        updateLUComboBox(jcb.getSelectedIndex());
-        CanvasSE prev = getPreview();
-        System.out.println("    Called from updatePreview ABS");
-        prev.setSymbol(getFallbackSymbolizer());
-        tablePanel.updateTable();
-    }
-
-
-    /**
      * We take the fallback configuration and copy it for each key, changing the colour. The colour management is
      * made thanks to {@link #getColouredParameters(org.orbisgis.legend.thematic.LineParameters, java.awt.Color)}.
      * The base colours are found in the given color scheme. We will put the colors from it. If there are more

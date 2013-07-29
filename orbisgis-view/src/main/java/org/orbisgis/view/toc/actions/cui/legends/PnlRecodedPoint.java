@@ -202,34 +202,4 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     public String validateInput() {
         return "";
     }
-
-    /**
-     * A JPanel containing the combo returned bu getPointUomCombo
-     * @return The JComboBox with a JLabel in a JPanel.
-     */
-    private JComboBox getSymbolUOMComboBox() {
-        uoms = getUomProperties();
-        // Note: The text here is never used since in practice we just extract
-        // the ComboBox.
-        UomCombo puc = new UomCombo(((RecodedPoint)getLegend()).getSymbolUom(),
-                uoms,
-                I18N.tr(SYMBOL_SIZE_UNIT));
-        puc.addActionListener(
-                EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex"));
-        return puc.getCombo();
-    }
-
-    /**
-     * Sets the underlying graphic to use the ith element of the combo box
-     * as its uom. Used when changing the combo box selection.
-     * @param index The index of the selected unit of measure.
-     */
-    public void updateSUComboBox(int index){
-        RecodedPoint leg = (RecodedPoint)getLegend();
-        leg.setSymbolUom(Uom.fromString(uoms[index].getKey()));
-        CanvasSE prev = getPreview();
-        System.out.println("    Called from updateSUComboBox RP");
-        prev.setSymbol(getFallbackSymbolizer());
-        tablePanel.updateTable();
-    }
 }

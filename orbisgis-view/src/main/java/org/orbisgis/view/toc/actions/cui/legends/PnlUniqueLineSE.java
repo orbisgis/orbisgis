@@ -35,16 +35,15 @@ import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
+import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolLine;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
-import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
-import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
+import org.orbisgis.view.toc.actions.cui.legends.panels.LineUOMComboBox;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -64,22 +63,26 @@ import java.net.URL;
 public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
     private static final I18n I18N = I18nFactory.getI18n(PnlUniqueLineSE.class);
         private ConstantPenStrokeLegend penStrokeMemory;
+
         private JCheckBox lineCheckBox;
+
         private JSpinner lineWidth;
         private JPanel lineColor;
         private JSpinner lineOpacity;
-        private JComboBox uOMBox;
         private JTextField lineDash;
-        private ContainerItemProperties[] uoms;
+
+        private LineUOMComboBox lineUOMComboBox;
+        private final boolean displayUom;
+
         public static final String LINE_SETTINGS = I18n.marktr("Line settings");
         public static final String BORDER_SETTINGS = I18n.marktr("Border settings");
         public static final String MARK_SETTINGS = I18n.marktr("Mark settings");
+
         /**
          * Here we can put all the Legend instances we want... but they have to
          * be unique symbol (ie constant) Legends.
          */
         private UniqueSymbolLine uniqueLine;
-        private final boolean displayUom;
 
         /**
          * Default constructor. The UOM combo box is displayed.
@@ -190,7 +193,10 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          * @param title
          * @return
          */
-        public JPanel getLineBlock(ConstantPenStroke leg, String title){
+        public JPanel getLineBlock(IUniqueSymbolLine usl, String title){
+
+                ConstantPenStroke leg = usl.getPenStroke();
+
                 if(getPreview() == null && getLegend() != null){
                         initPreview();
                 }
@@ -198,11 +204,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
                 JPanel jp = new JPanel(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
                 jp.setBorder(BorderFactory.createTitledBorder(title));
-
-                UomCombo lineUom = getLineUomCombo((StrokeUom) getLegend());
-                CanvasSE prev = getPreview();
-                ActionListener aclUom = EventHandler.create(ActionListener.class, prev, "imageChanged");
-                lineUom.addActionListener(aclUom);
 
                 if (isLineOptional()) {
                         lineCheckBox = new JCheckBox(I18N.tr("Enable"));
@@ -225,8 +226,8 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 if(displayUom){
                     JLabel uom = new JLabel(I18N.tr(LINE_WIDTH_UNIT));
                     jp.add(uom);
-                    uOMBox = lineUom.getCombo();
-                    jp.add(uOMBox, COMBO_BOX_CONSTRAINTS);
+                    lineUOMComboBox = new LineUOMComboBox((SymbolizerLegend) usl, getPreview());
+                    jp.add(lineUOMComboBox, COMBO_BOX_CONSTRAINTS);
                 }
                 // Line width
                 jp.add(new JLabel(I18N.tr(WIDTH)));
@@ -256,8 +257,8 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
             ComponentUtil.setFieldState(enable,lineOpacity);
             ComponentUtil.setFieldState(enable,lineDash);
             if (displayUom) {
-                if (uOMBox != null) {
-                    ComponentUtil.setFieldState(enable, uOMBox);
+                if (lineUOMComboBox != null) {
+                    ComponentUtil.setFieldState(enable, lineUOMComboBox);
                 }
             }
         }
@@ -298,7 +299,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
-                glob.add(getLineBlock(uniqueLine.getPenStroke(),
+                glob.add(getLineBlock(uniqueLine,
                                       I18N.tr(LINE_SETTINGS)));
                 glob.add(getPreviewPanel());
                 this.add(glob);
