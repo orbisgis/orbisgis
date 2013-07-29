@@ -79,12 +79,22 @@ public abstract class PnlUniqueSymbolSE extends AbstractFieldPanel implements UI
          * @return Preview of the symbol in a bordered JPanel.
          */
         public JPanel getPreviewPanel(){
-                JPanel previewPanel = new JPanel(
-                        new MigLayout("wrap 1", "[" + FIXED_WIDTH + "]"));
-                previewPanel.setBorder(
-                        BorderFactory.createTitledBorder(I18N.tr("Preview")));
-                previewPanel.add(preview, "align c");
-                return previewPanel;
+                return getPreviewPanel(preview);
+        }
+
+        /**
+         * Gets the {@code CanvasSE} instance used to display a preview of
+         * the current symbol in a bordered JPanel.
+         *
+         * @return Preview of the symbol in a bordered JPanel.
+         */
+        public JPanel getPreviewPanel(CanvasSE prev){
+            JPanel previewPanel = new JPanel(
+                    new MigLayout("wrap 1", "[" + FIXED_WIDTH + "]"));
+            previewPanel.setBorder(
+                    BorderFactory.createTitledBorder(I18N.tr("Preview")));
+            previewPanel.add(prev, "align c");
+            return previewPanel;
         }
 
         /**
@@ -95,75 +105,6 @@ public abstract class PnlUniqueSymbolSE extends AbstractFieldPanel implements UI
          */
         public CanvasSE getPreview(){
                 return preview;
-        }
-
-        /**
-         * Creates and configures a line width {@link JSpinner}.
-         *
-         * @param cps The stroke that will be configured with the spinner.
-         * @return The wanted {@code JSpinner}.
-         */
-        public JSpinner getLineWidthSpinner(final ConstantPenStroke cps){
-                SpinnerNumberModel model = new SpinnerNumberModel(
-                        cps.getLineWidth(), 0, Double.POSITIVE_INFINITY, SPIN_STEP);
-                final JSpinner jns = new JSpinner(model);
-                jns.addChangeListener(
-                        EventHandler.create(ChangeListener.class, cps, "lineWidth", "source.value"));
-                jns.addChangeListener(
-                        EventHandler.create(ChangeListener.class, preview, "imageChanged"));
-                return jns;
-        }
-
-        /**
-         * Gets a spinner that is linked with the opacity of the {@code
-         * ConstantSolidFill} given in argument.
-         *
-         * @param cps
-         * @return
-         */
-        public JSpinner getLineOpacitySpinner(final ConstantSolidFill cps){
-                SpinnerNumberModel model = new SpinnerNumberModel(
-                        cps.getOpacity(), 0, 1, SPIN_STEP);
-                final JSpinner jns = new JSpinner(model);
-                jns.addChangeListener(
-                        EventHandler.create(ChangeListener.class, cps, "opacity", "source.value"));
-                jns.addChangeListener(
-                        EventHandler.create(ChangeListener.class, preview, "imageChanged"));
-                return jns;
-        }
-
-        /**
-         * Get a {@code TextField} instance linked to the given parameter.
-         *
-         * @param cps
-         *      The parameter we want to configure with our panel
-         * @return A {@code JTextField}
-         */
-        public JTextField getDashArrayField(final ConstantColorAndDashesPSLegend cps){
-                final JTextField jrf = new JTextField();
-                jrf.setText(cps.getDashArray());
-                jrf.setHorizontalAlignment(JFormattedTextField.RIGHT);
-                jrf.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        cps.setDashArray(((JTextField)e.getSource()).getText());
-                    }
-                });
-                jrf.addFocusListener(new FocusAdapter() {
-                    @Override
-                    public void focusLost(FocusEvent e) {
-                        JTextField jtf = (JTextField) e.getSource();
-                        String tmp = jtf.getText();
-                        cps.setDashArray(tmp);
-                        if (!tmp.equals(cps.getDashArray())) {
-                            LOGGER.warn(I18N.tr("Could not validate your input."));
-                            jtf.setText(cps.getDashArray());
-                        }
-                    }
-                });
-                jrf.addFocusListener(
-                        EventHandler.create(FocusListener.class, preview, "imageChanged"));
-                return jrf;
         }
 
         /**

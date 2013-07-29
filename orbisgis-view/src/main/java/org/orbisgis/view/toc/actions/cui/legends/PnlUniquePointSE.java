@@ -47,6 +47,7 @@ import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.OnVertexOnCentroidPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -179,10 +180,12 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
-                JPanel lb = getLineBlock(uniquePoint,
-                                         I18N.tr(BORDER_SETTINGS));
-                ComponentUtil.setFieldState(isStrokeEnabled(), lb);
-                glob.add(lb);
+                glob.add(new LinePanel(uniquePoint,
+                        getPenStrokeMemory(),
+                        getPreview(),
+                        true,
+                        true,
+                        I18N.tr(BORDER_SETTINGS)));
 
                 glob.add(getPointBlock(uniquePoint,
                                        I18N.tr(MARK_SETTINGS)));

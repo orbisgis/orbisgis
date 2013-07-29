@@ -34,7 +34,7 @@ public class LineUOMComboBox<K, U extends LineParameters> extends UOMComboBox<K,
         ((SymbolizerLegend) legend).setStrokeUom(Uom.fromString((String) getSelectedItem()));
         if (legend instanceof MappedLegend) {
             Util.updatePreview((MappedLegend) legend, preview, tablePanel);
-        } else if (legend instanceof ConstantColorAndDashesLine) {
+        } else {
             preview.imageChanged();
         }
     }

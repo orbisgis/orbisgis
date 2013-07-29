@@ -52,6 +52,7 @@ import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.OnVertexOnCentroidPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -346,26 +347,21 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
 
         @Override
         public Component getComponent() {
-            JPanel glob = new JPanel();
-            GridBagLayout grid = new GridBagLayout();
-            glob.setLayout(grid);
-            int i = 0;
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.gridx = 0;
-            gbc.gridy = i;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            i++;
-            JPanel p1 = getLineBlock(usp,
-                                     I18N.tr(LINE_SETTINGS));
-            glob.add(p1, gbc);
-            gbc = new GridBagConstraints();
-            gbc.gridx = 0;
-            gbc.gridy = i;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            gbc.insets = new Insets(5, 0, 5, 0);
-            JPanel p2 = getAreaBlock(usp.getFillLegend(),
-                                     I18N.tr(FILL_SETTINGS));
-            glob.add(p2, gbc);
+            JPanel glob = new JPanel(new MigLayout("wrap 1"));
+
+            // Update only a local preview until the changes are applied.
+            // About #497
+            CanvasSE localPreview = new CanvasSE(usp.getSymbolizer());
+
+            glob.add(new LinePanel(usp,
+                    getPenStrokeMemory(),
+                    localPreview,
+                    true,
+                    true,
+                    I18N.tr(BORDER_SETTINGS)));
+            // TODO: Make this update the local preview.
+            glob.add(getAreaBlock(usp.getFillLegend(), I18N.tr(FILL_SETTINGS)));
+
             return glob;
         }
     }

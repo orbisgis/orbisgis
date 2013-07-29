@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
@@ -40,25 +39,22 @@ import javax.swing.*;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.classification.ClassificationUtils;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
-import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.DashArrayField;
+import org.orbisgis.view.toc.actions.cui.legends.panels.LineOpacitySpinner;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LineUOMComboBox;
-import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -75,8 +71,8 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
         private ProportionalLine legend;
 
         private JPanel lineColor;
-        private JSpinner lineOpacity;
-        private JTextField lineDash;
+        private LineOpacitySpinner lineOpacity;
+        private DashArrayField dashArrayField;
 
         @Override
         public Legend getLegend() {
@@ -185,12 +181,12 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
                 jp.add(getFirstConf(legend), "growx");
                 // Opacity
                 jp.add(new JLabel(I18N.tr(OPACITY)));
-                lineOpacity = getLineOpacitySpinner(csf);
+                lineOpacity = new LineOpacitySpinner(csf, getPreview());
                 jp.add(lineOpacity, "growx");
                 // Dash array
                 jp.add(new JLabel(I18N.tr(DASH_ARRAY)));
-                lineDash = getDashArrayField(strokeLeg);
-                jp.add(lineDash, "growx");
+                dashArrayField = new DashArrayField(strokeLeg, getPreview());
+                jp.add(dashArrayField, "growx");
                 jp.setBorder(BorderFactory.createTitledBorder(
                         I18N.tr(LINE_SETTINGS)));
                 return jp;
