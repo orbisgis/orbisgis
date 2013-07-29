@@ -48,10 +48,16 @@ public class Layer extends BeanLayer {
 	private String tableReference;
     private URI dataURI;
 
-	public Layer(String name, URI dataURI) {
+	public Layer(String name, String tableReference) {
 		super(name);
-		this.dataURI = dataURI;
+		this.tableReference = tableReference;
 	}
+
+    public Layer(String name, URI dataURI) {
+        super(name);
+        this.dataURI = dataURI;
+        tableReference = "";
+    }
 
     @Override
     public URI getDataUri() {
@@ -86,7 +92,7 @@ public class Layer extends BeanLayer {
                 styleList.add(defStyle);
                 addStyleListener(defStyle);
         }
-        // TODO load or find the table from dataURI
+        // TODO load or find the table dataURI from table
 	}
 
     @Override

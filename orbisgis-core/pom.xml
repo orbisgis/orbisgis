@@ -53,7 +53,7 @@
                                                         <overWriteSnapshots>false</overWriteSnapshots>
                                                         <overWriteIfNewer>true</overWriteIfNewer>
                                                         <excludeTransitive>true</excludeTransitive>
-                                                        <includeScope>test</includeScope>
+                                                        <includeArtifactIds>h2,h2spatial-ext,h2spatial-ext-osgi,h2spatial,h2spatial-osgi</includeArtifactIds>
                                                 </configuration>
                                         </execution>
                                 </executions>
@@ -228,10 +228,28 @@
                 </dependency>
                 <dependency>
                     <groupId>org.h2gis</groupId>
-                    <artifactId>h2spatial-ext</artifactId>
-                    <version>0.1-SNAPSHOT</version>
+                    <artifactId>h2spatial-ext-osgi</artifactId>
+                    <version>${h2-spatial-version}</version>
                     <scope>test</scope>
                 </dependency>
+            <dependency>
+                <groupId>org.h2gis</groupId>
+                <artifactId>h2spatial-ext</artifactId>
+                <version>${h2-spatial-version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.h2gis</groupId>
+                <artifactId>h2spatial</artifactId>
+                <version>${h2-spatial-version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.h2gis</groupId>
+                <artifactId>h2spatial-osgi</artifactId>
+                <version>${h2-spatial-version}</version>
+                <scope>test</scope>
+            </dependency>
             </dependencies>
         <pluginRepositories>
                 <pluginRepository>

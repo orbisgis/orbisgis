@@ -68,4 +68,11 @@ public interface DataManager {
      * @throws SQLException Error while transaction with JDBC
      */
     String registerDataSource(URI uri) throws SQLException;
+
+    /**
+     * Some tables are linked with
+     * @param tableReference Table reference (can include schema and/or database)
+     * @return The URI of the DataSource
+     */
+    URI getDataSourceUri(String tableReference) throws SQLException;
 }

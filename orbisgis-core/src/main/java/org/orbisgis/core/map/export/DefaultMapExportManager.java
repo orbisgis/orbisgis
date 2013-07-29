@@ -31,11 +31,11 @@ package org.orbisgis.core.map.export;
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
@@ -54,7 +54,7 @@ public class DefaultMapExportManager implements MapExportManager {
 	public void exportSVG(MapContext mapContext, OutputStream outStream,
 			double width, double height, Envelope extent, Scale scale, int dpi,
 			ProgressMonitor pm) throws UnsupportedEncodingException,
-			IOException, DriverException {
+			IOException, SQLException {
 
 		// Calculate the number of pixels to have the desired dpi when the image
 		// has the specified size
@@ -134,7 +134,7 @@ public class DefaultMapExportManager implements MapExportManager {
 	public void exportSVG(MapContext mc, OutputStream outputStream,
 			double width, double height, Envelope envelope, Scale scale, int dpi)
 			throws UnsupportedEncodingException, IOException,
-			IllegalArgumentException, DriverException {
+			IllegalArgumentException, SQLException {
 		exportSVG(mc, outputStream, width, height, envelope, scale, dpi,
 				new NullProgressMonitor());
 	}

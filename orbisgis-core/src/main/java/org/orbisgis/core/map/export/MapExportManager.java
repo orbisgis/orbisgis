@@ -32,7 +32,8 @@ import com.vividsolutions.jts.geom.Envelope;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import org.gdms.driver.DriverException;
+import java.sql.SQLException;
+
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
 
@@ -63,13 +64,13 @@ public interface MapExportManager {
 	 * @throws IOException
 	 * @throws IllegalArgumentException
 	 *             If the specified mapContext is not open
-	 * @throws DriverException
+	 * @throws SQLException
 	 *             If there is an error accessing any of the layers in the map
 	 */
 	void exportSVG(MapContext mapContext, OutputStream outStream, double width,
 			double height, Envelope extent, Scale scale, int mapDpi)
 			throws UnsupportedEncodingException, IOException,
-			IllegalArgumentException, DriverException;
+			IllegalArgumentException, SQLException;
 
 	/**
 	 * @see #exportSVG(MapContext, OutputStream, int, int, Envelope)
@@ -77,7 +78,7 @@ public interface MapExportManager {
 	void exportSVG(MapContext mapContext, OutputStream outStream, double width,
 			double height, Envelope extent, Scale scale, int mapDpi,
 			ProgressMonitor pm) throws UnsupportedEncodingException,
-			IOException, IllegalArgumentException, DriverException;
+			IOException, IllegalArgumentException, SQLException;
 
 	/**
 	 * Adds a new scale to the export manager

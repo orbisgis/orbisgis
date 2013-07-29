@@ -181,7 +181,9 @@ public final class BeanshellScript {
                                         FileReader reader = new FileReader(file);
                                         interpreter.eval(reader);
                                 } finally {
-                                        mainContext.dispose();
+                                        if(mainContext!=null) {
+                                            mainContext.dispose();
+                                        }
                                 }
                         }
                 } else {

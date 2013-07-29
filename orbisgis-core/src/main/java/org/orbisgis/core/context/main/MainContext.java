@@ -39,7 +39,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -56,6 +58,7 @@ import org.orbisgis.core.plugin.BundleTools;
 import org.orbisgis.core.plugin.PluginHost;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.sputilities.JDBCUrlParser;
+import org.orbisgis.sputilities.SFSUtilities;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -82,6 +85,11 @@ public class MainContext {
     private DataSource dataSource;
     private PluginHost pluginHost;
     private static final int BUNDLE_STABILITY_TIMEOUT = 3000;
+    private static Map<String,String> URI_DRIVER_TO_OSGI_DRIVER = new HashMap<String, String>();
+    static {
+        URI_DRIVER_TO_OSGI_DRIVER.put("h2","H2 JDBC Driver");
+        URI_DRIVER_TO_OSGI_DRIVER.put("postgresql","Postgresql");
+    }
 
     /**
      * Single parameter constructor
@@ -166,7 +174,7 @@ public class MainContext {
             ServiceReference<DataSourceFactory> dbDriverReference=null;
             for(ServiceReference<DataSourceFactory> serviceReference : serviceReferences) {
                 Object property = serviceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME);
-                if(property instanceof String && ((String) property).equalsIgnoreCase(driverName)) {
+                if(property instanceof String && ((String) property).equalsIgnoreCase(URI_DRIVER_TO_OSGI_DRIVER.get(driverName))) {
                     dbDriverReference = serviceReference;
                     break;
                 }
@@ -177,7 +185,7 @@ public class MainContext {
             // Referenced driver is found, use it to create a DataSource.
             try {
                 DataSourceFactory dataSourceFactory = pluginHost.getHostBundleContext().getService(dbDriverReference);
-                dataSource = dataSourceFactory.createDataSource(properties);
+                dataSource = SFSUtilities.wrapSpatialDataSource(dataSourceFactory.createDataSource(properties));
                 // Register the connection factory in service hosts
                 Services.registerService(DataSource.class,"OrbisGIS main DataSource",dataSource);
                 // Register DataSource, will be used to register spatial features

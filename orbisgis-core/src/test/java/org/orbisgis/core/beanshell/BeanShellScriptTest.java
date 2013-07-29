@@ -44,7 +44,7 @@ import org.junit.Test;
 public class BeanShellScriptTest {
         private static final String[] DEFAULT_ARGS = new String[] {"",
                 BeanshellScript.ARG_APPFOLDER,"orbisgis",
-                BeanshellScript.ARG_WORKSPACE,"workspace"};
+                BeanshellScript.ARG_WORKSPACE,"workspace", "debug"};
         private static String[] mainParams(String scriptPath) {
             return mainParams(scriptPath,new String[0]);
         }
@@ -98,7 +98,7 @@ public class BeanShellScriptTest {
             try {
                 BeanshellScript.main(new String[]{ "youhou", "../src/test/resources/beanshell/helloWorld.bsh"});
                 String out = baos.toString();
-                assertTrue(out.equals(BeanshellScript.getHelp()));
+                assertTrue(out.endsWith(BeanshellScript.getHelp()));
             } finally {
                 System.setOut(psbak);
             }
@@ -118,7 +118,7 @@ public class BeanShellScriptTest {
             try {
                 BeanshellScript.main(mainParams("../src/test/resources/beanshell/basicDbProcessing.bsh"));
                 String out = baos.toString();
-                assertEquals("rincevent\n",out);
+                assertTrue(out,out.endsWith("rincevent\n"));
             } finally {
                 System.setOut(psbak);
             }
@@ -133,7 +133,7 @@ public class BeanShellScriptTest {
             try {
                 BeanshellScript.main(mainParams("../src/test/resources/beanshell/spatialDbProcessing.bsh"));
                 String out = baos.toString();
-                assertEquals("POLYGON ((59 18, 67 18, 67 13, 59 13, 59 18))\n",out);
+                assertTrue(out,out.endsWith("POLYGON ((59 18, 67 18, 67 13, 59 13, 59 18))\n"));
             } finally {
                 System.setOut(psbak);
             }
