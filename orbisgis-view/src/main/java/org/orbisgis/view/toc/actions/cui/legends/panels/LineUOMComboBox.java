@@ -31,8 +31,8 @@ package org.orbisgis.view.toc.actions.cui.legends.panels;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.*;
-import org.orbisgis.legend.thematic.constant.IUniqueSymbolLine;
 import org.orbisgis.legend.thematic.map.MappedLegend;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
 /**
@@ -44,26 +44,21 @@ import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
  */
 public class LineUOMComboBox<K, U extends LineParameters> extends UOMComboBox<K, U> {
 
-    public LineUOMComboBox(MappedLegend legend,
+    public LineUOMComboBox(StrokeUom legend,
                            CanvasSE preview,
                            TablePanel<K, U> tablePanel) {
-        super(legend, preview, tablePanel);
+        super((Legend) legend, preview, tablePanel);
         setSelectedItem(legend.getStrokeUom());
     }
 
-    public LineUOMComboBox(SymbolizerLegend legend,
+    public LineUOMComboBox(StrokeUom legend,
                            CanvasSE preview) {
-        super(legend, preview);
-        setSelectedItem(legend.getStrokeUom());
+        this(legend, preview, null);
     }
 
     @Override
-    protected void updatePreview() {
-        ((SymbolizerLegend) legend).setStrokeUom(Uom.fromString((String) getSelectedItem()));
-        if (legend instanceof MappedLegend) {
-            Util.updatePreview((MappedLegend) legend, preview, tablePanel);
-        } else {
-            preview.imageChanged();
-        }
+    protected void updateAttributes() {
+        ((SymbolizerLegend) legend).setStrokeUom(
+                Uom.fromString((String) getSelectedItem()));
     }
 }

@@ -28,36 +28,27 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.legend.thematic.LineParameters;
-import org.orbisgis.legend.thematic.SymbolizerLegend;
-import org.orbisgis.legend.thematic.uom.SymbolUom;
+import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
+import javax.swing.*;
+import javax.swing.event.ChangeListener;
+import java.beans.EventHandler;
+
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 26/07/13
- * Time: 14:28
- * To change this template use File | Settings | File Templates.
+ * Spinner for symbol height.
  */
-public class SymbolUOMComboBox<K, U extends LineParameters> extends UOMComboBox<K, U> {
+public class SymbolHeightSpinner extends AbsSpinner {
 
-    public SymbolUOMComboBox(SymbolUom legend,
-                             CanvasSE preview,
-                             TablePanel<K, U> tablePanel) {
-        super((SymbolizerLegend) legend, preview, tablePanel);
-        setSelectedItem(legend.getSymbolUom());
-    }
-
-    public SymbolUOMComboBox(SymbolUom legend,
-                             CanvasSE preview) {
-        this(legend, preview, null);
-    }
-
-    @Override
-    protected void updateAttributes() {
-        ((SymbolUom) legend).setSymbolUom(
-                Uom.fromString((String) getSelectedItem()));
+    public SymbolHeightSpinner(final UniqueSymbolPoint legend,
+                              CanvasSE preview) {
+        super(new SpinnerNumberModel(
+                (legend.getViewBoxHeight() == null)
+                        ? legend.getViewBoxWidth().doubleValue()
+                        : legend.getViewBoxHeight().doubleValue(),
+                Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPIN_STEP),
+                preview);
+        addChangeListener(EventHandler.create(
+                ChangeListener.class, legend, "viewBoxHeight", "source.value"));
     }
 }

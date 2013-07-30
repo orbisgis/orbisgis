@@ -72,8 +72,8 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
     public final static int FILLED_LABEL_HEIGHT = 15;
     public static final String OPACITY = I18n.marktr("Opacity");
     public static final String WIDTH = I18n.marktr("Width");
-    protected static final String HEIGHT = I18n.marktr("Height");
-    protected static final String SYMBOL = I18n.marktr("Symbol");
+    public static final String HEIGHT = I18n.marktr("Height");
+    public static final String SYMBOL = I18n.marktr("Symbol");
     public static final String DASH_ARRAY = I18n.marktr("Dash array");
     public static final String FIELD = I18n.marktr("<html><b>Field</b></html>");
     public static final String LINE_WIDTH_UNIT = I18n.marktr("Line width unit");

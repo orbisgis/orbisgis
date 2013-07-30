@@ -28,36 +28,24 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.legend.thematic.LineParameters;
-import org.orbisgis.legend.thematic.SymbolizerLegend;
-import org.orbisgis.legend.thematic.uom.SymbolUom;
+import org.orbisgis.core.renderer.se.graphic.WellKnownName;
+import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 26/07/13
- * Time: 14:28
- * To change this template use File | Settings | File Templates.
+ * Combo box for the symbol's well-known name.
  */
-public class SymbolUOMComboBox<K, U extends LineParameters> extends UOMComboBox<K, U> {
+public class WKNComboBox extends AbsComboBox {
 
-    public SymbolUOMComboBox(SymbolUom legend,
-                             CanvasSE preview,
-                             TablePanel<K, U> tablePanel) {
-        super((SymbolizerLegend) legend, preview, tablePanel);
-        setSelectedItem(legend.getSymbolUom());
-    }
-
-    public SymbolUOMComboBox(SymbolUom legend,
-                             CanvasSE preview) {
-        this(legend, preview, null);
+    public WKNComboBox(UniqueSymbolPoint legend,
+                       CanvasSE preview) {
+        super(WellKnownName.getLocalizedStrings(), legend, preview);
+        setSelectedItem(legend.getWellKnownName());
     }
 
     @Override
-    protected void updateAttributes() {
-        ((SymbolUom) legend).setSymbolUom(
-                Uom.fromString((String) getSelectedItem()));
+    protected void updatePreview() {
+        ((UniqueSymbolPoint) legend).setWellKnownName((String) getSelectedItem());
+        preview.imageChanged();
     }
 }

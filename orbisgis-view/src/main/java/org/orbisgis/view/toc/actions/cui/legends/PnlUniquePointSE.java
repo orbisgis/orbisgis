@@ -50,6 +50,7 @@ import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.OnVertexOnCentroidPanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.PointPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -181,10 +182,13 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                         getPreview(),
                         I18N.tr(BORDER_SETTINGS),
                         true,
-                        true));
+                        isUomEnabled()));
 
-                glob.add(getPointBlock(uniquePoint,
-                                       I18N.tr(MARK_SETTINGS)));
+                glob.add(new PointPanel(uniquePoint,
+                        getPreview(),
+                        I18N.tr("New Mark"),
+                        isUomEnabled(),
+                        geometryType));
 
                 glob.add(new AreaPanel(uniquePoint,
                         getPreview(),
@@ -194,85 +198,6 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 glob.add(getPreviewPanel(), "growx");
 
                 this.add(glob);
-        }
-
-        /**
-         * Builds the UI block used to configure the fill color of the
-         * symbolizer.
-         * @param point
-         * @param title
-         * @return
-         */
-        public JPanel getPointBlock(UniqueSymbolPoint point, String title) {
-                if(getPreview() == null && getLegend() != null){
-                        initPreview();
-                }
-
-                JPanel jp = new JPanel(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
-                jp.setBorder(BorderFactory.createTitledBorder(title));
-
-                if(isUomEnabled()){
-                    // If geometryType != POINT, we must let the user choose if
-                    // he wants to draw symbols on centroid or on vertices.
-                    if (geometryType != SimpleGeometryType.POINT) {
-                        jp.add(new JLabel(I18N.tr(PLACE_SYMBOL_ON)), "span 1 2");
-                        jp.add(new OnVertexOnCentroidPanel(uniquePoint, getPreview()), "span 1 2");
-                    }
-                    // Unit of measure - symbol size
-                    jp.add(new JLabel(I18N.tr(SYMBOL_SIZE_UNIT)));
-                    jp.add(getPointUomCombo(), COMBO_BOX_CONSTRAINTS);
-                }
-
-                // Well-known name
-                jp.add(new JLabel(I18N.tr(SYMBOL)));
-                jp.add(getWKNCombo(point), COMBO_BOX_CONSTRAINTS);
-                // Mark width
-                jp.add(new JLabel(I18N.tr(WIDTH)));
-                jp.add(getMarkWidth(point), "growx");
-                // Mark height
-                jp.add(new JLabel(I18N.tr(HEIGHT)));
-                jp.add(getMarkHeight(point), "growx");
-
-                return jp;
-        }
-
-        /**
-         * JSpinner to configure the width of the symbol
-         * @param point
-         * @return
-         */
-
-        private JSpinner getMarkWidth(UniqueSymbolPoint point){
-                double initialValue = (point.getViewBoxWidth() == null)
-                        ? point.getViewBoxHeight()
-                        : point.getViewBoxWidth();
-                SpinnerNumberModel model = new SpinnerNumberModel(
-                        initialValue, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPIN_STEP);
-                final JSpinner jns = new JSpinner(model);
-                jns.addChangeListener(
-                        EventHandler.create(ChangeListener.class, point, "viewBoxWidth", "source.value"));
-                jns.addChangeListener(
-                        EventHandler.create(ChangeListener.class, getPreview(), "imageChanged"));
-                return jns;
-        }
-
-        /**
-         * JSpinner to configure the height of the symbol
-         * @param point
-         * @return
-         */
-        private JSpinner getMarkHeight(UniqueSymbolPoint point){
-                double initialValue = (point.getViewBoxHeight() == null)
-                        ? point.getViewBoxWidth()
-                        : point.getViewBoxHeight();
-                SpinnerNumberModel model = new SpinnerNumberModel(
-                        initialValue, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPIN_STEP);
-                final JSpinner jns = new JSpinner(model);
-                jns.addChangeListener(
-                        EventHandler.create(ChangeListener.class, point, "viewBoxHeight", "source.value"));
-                jns.addChangeListener(
-                        EventHandler.create(ChangeListener.class, getPreview(), "imageChanged"));
-                return jns;
         }
 
         /**

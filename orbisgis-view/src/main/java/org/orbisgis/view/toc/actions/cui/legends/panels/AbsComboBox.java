@@ -28,36 +28,34 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.legend.thematic.LineParameters;
-import org.orbisgis.legend.thematic.SymbolizerLegend;
-import org.orbisgis.legend.thematic.uom.SymbolUom;
+import org.orbisgis.legend.Legend;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 26/07/13
- * Time: 14:28
- * To change this template use File | Settings | File Templates.
+ * Root class for combo boxes.
  */
-public class SymbolUOMComboBox<K, U extends LineParameters> extends UOMComboBox<K, U> {
+public abstract class AbsComboBox extends WideComboBox {
 
-    public SymbolUOMComboBox(SymbolUom legend,
-                             CanvasSE preview,
-                             TablePanel<K, U> tablePanel) {
-        super((SymbolizerLegend) legend, preview, tablePanel);
-        setSelectedItem(legend.getSymbolUom());
+    protected Legend legend;
+    protected CanvasSE preview;
+
+    public AbsComboBox(String[] items,
+                       Legend legend,
+                       CanvasSE preview) {
+        super(items);
+        this.legend = legend;
+        this.preview = preview;
+        addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updatePreview();
+            }
+        });
     }
 
-    public SymbolUOMComboBox(SymbolUom legend,
-                             CanvasSE preview) {
-        this(legend, preview, null);
-    }
-
-    @Override
-    protected void updateAttributes() {
-        ((SymbolUom) legend).setSymbolUom(
-                Uom.fromString((String) getSelectedItem()));
-    }
+    protected abstract void updatePreview();
 }

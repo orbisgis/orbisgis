@@ -28,36 +28,30 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.legend.thematic.LineParameters;
-import org.orbisgis.legend.thematic.SymbolizerLegend;
-import org.orbisgis.legend.thematic.uom.SymbolUom;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.beans.EventHandler;
+
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 26/07/13
- * Time: 14:28
- * To change this template use File | Settings | File Templates.
+ * Root class for spinners.
  */
-public class SymbolUOMComboBox<K, U extends LineParameters> extends UOMComboBox<K, U> {
+public class AbsSpinner extends JSpinner {
 
-    public SymbolUOMComboBox(SymbolUom legend,
-                             CanvasSE preview,
-                             TablePanel<K, U> tablePanel) {
-        super((SymbolizerLegend) legend, preview, tablePanel);
-        setSelectedItem(legend.getSymbolUom());
-    }
+    public static final double SPIN_STEP = 0.1;
 
-    public SymbolUOMComboBox(SymbolUom legend,
-                             CanvasSE preview) {
-        this(legend, preview, null);
-    }
-
-    @Override
-    protected void updateAttributes() {
-        ((SymbolUom) legend).setSymbolUom(
-                Uom.fromString((String) getSelectedItem()));
+    public AbsSpinner(SpinnerModel model,
+                      final CanvasSE preview) {
+        super(model);
+        addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                preview.imageChanged();
+            }
+        });
+        addChangeListener(EventHandler.create(
+                ChangeListener.class, preview, "imageChanged"));
     }
 }

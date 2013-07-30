@@ -42,9 +42,7 @@ import java.beans.EventHandler;
  * Time: 17:04
  * To change this template use File | Settings | File Templates.
  */
-public class LineWidthSpinner extends JSpinner {
-
-    public static final double SPIN_STEP = 0.1;
+public class LineWidthSpinner extends AbsSpinner {
 
     /**
      * Creates and configures a line width {@link javax.swing.JSpinner}.
@@ -54,10 +52,9 @@ public class LineWidthSpinner extends JSpinner {
     public LineWidthSpinner(final ConstantPenStroke legend,
                             CanvasSE preview) {
         super(new SpinnerNumberModel(
-                legend.getLineWidth(), 0, Double.POSITIVE_INFINITY, SPIN_STEP));
+                legend.getLineWidth(), 0, Double.POSITIVE_INFINITY, SPIN_STEP),
+                preview);
         addChangeListener(EventHandler.create(
                 ChangeListener.class, legend, "lineWidth", "source.value"));
-        addChangeListener(EventHandler.create(
-                ChangeListener.class, preview, "imageChanged"));
     }
 }

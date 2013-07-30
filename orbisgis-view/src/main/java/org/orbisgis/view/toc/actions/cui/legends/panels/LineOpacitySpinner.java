@@ -32,6 +32,7 @@ import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.beans.EventHandler;
 
@@ -42,9 +43,7 @@ import java.beans.EventHandler;
  * Time: 17:10
  * To change this template use File | Settings | File Templates.
  */
-public class LineOpacitySpinner extends JSpinner {
-
-    public static final double SPIN_STEP = 0.1;
+public class LineOpacitySpinner extends AbsSpinner {
 
     /**
      * Gets a spinner that is linked with the opacity of the {@code
@@ -54,10 +53,9 @@ public class LineOpacitySpinner extends JSpinner {
      */
     public LineOpacitySpinner(final ConstantSolidFill legend,
                               CanvasSE preview) {
-        super(new SpinnerNumberModel(legend.getOpacity(), 0, 1, SPIN_STEP));
+        super(new SpinnerNumberModel(legend.getOpacity(), 0, 1, SPIN_STEP),
+              preview);
         addChangeListener(EventHandler.create(
                 ChangeListener.class, legend, "opacity", "source.value"));
-        addChangeListener(EventHandler.create(
-                ChangeListener.class, preview, "imageChanged"));
     }
 }

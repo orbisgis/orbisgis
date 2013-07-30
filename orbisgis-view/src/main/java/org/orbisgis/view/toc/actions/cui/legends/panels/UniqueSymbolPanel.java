@@ -112,12 +112,14 @@ public abstract class UniqueSymbolPanel extends JPanel {
     protected abstract void onClickOptionalCheckBox();
 
     /**
-     * Initialize the components.
+     * Initialize the components. Must be called at the end of the
+     * constructor, just before {@link #addComponents()}.
      */
     protected abstract void init();
 
     /**
-     * Add the components to the UI.
+     * Add the components to the UI. Must be the last line in the constructor,
+     * just after {@link #init()}.
      */
     protected abstract void addComponents();
 
