@@ -2,6 +2,7 @@ package org.orbisgis.view.toc.actions.cui.legends.panels;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.AbstractFieldPanel;
 
@@ -14,16 +15,30 @@ import javax.swing.*;
  * Time: 11:22
  * To change this template use File | Settings | File Templates.
  */
-public class UniqueSymbolPanel extends JPanel {
+public abstract class UniqueSymbolPanel extends JPanel {
 
-    protected Legend legend;
+    protected LegendStructure legend;
     protected CanvasSE preview;
 
-    public UniqueSymbolPanel(Legend legend,
-                             CanvasSE preview) {
+    public UniqueSymbolPanel(LegendStructure legend,
+                             CanvasSE preview,
+                             String title) {
         super(new MigLayout("wrap 2", AbstractFieldPanel.COLUMN_CONSTRAINTS));
+        setBorder(BorderFactory.createTitledBorder(title));
         this.legend = legend;
         this.preview = preview;
+        if (preview == null && legend != null) {
+            initPreview();
+        }
+    }
+
+    /**
+     * Gets the legend.
+     *
+     * @return The legend.
+     */
+    protected LegendStructure getLegend() {
+        return legend;
     }
 
     /**
@@ -32,8 +47,13 @@ public class UniqueSymbolPanel extends JPanel {
      */
     protected void initPreview() {
         if (legend != null) {
-            preview = new CanvasSE(legend.getSymbolizer());
+            preview = new CanvasSE(((Legend) legend).getSymbolizer());
             preview.imageChanged();
         }
     }
+
+    /**
+     * Add the components to the UI.
+     */
+    protected abstract void addComponents();
 }

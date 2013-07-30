@@ -15,7 +15,6 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.EventHandler;
 
 /**
  * Created with IntelliJ IDEA.
@@ -47,23 +46,18 @@ public class LinePanel extends UniqueSymbolPanel {
                      ConstantPenStrokeLegend penStrokeMemory,
                      boolean displayUom,
                      boolean isLineOptional) {
-        super(legend, preview);
-        setBorder(BorderFactory.createTitledBorder(title));
+        super(legend, preview, title);
         this.penStrokeMemory = penStrokeMemory;
         this.displayUom = displayUom;
         this.isLineOptional = isLineOptional;
-        this.penStrokeIsConstant =
+        penStrokeIsConstant =
                 getLegend().getPenStroke() instanceof ConstantPenStrokeLegend;
         init(penStrokeMemory, displayUom);
         addComponents();
     }
 
-    /**
-     * Gets the legend.
-     *
-     * @return The legend.
-     */
-    private IUniqueSymbolLine getLegend() {
+    @Override
+    protected IUniqueSymbolLine getLegend() {
         return (IUniqueSymbolLine) legend;
     }
 
@@ -74,28 +68,13 @@ public class LinePanel extends UniqueSymbolPanel {
      * @param displayUom      Whether the stroke UOM should be displayed
      */
     private void init(ConstantPenStrokeLegend penStrokeMemory, boolean displayUom) {
-        if (preview == null && legend != null) {
-            initPreview();
-        }
         ConstantPenStroke chosenPenStroke =
                 penStrokeIsConstant ? getLegend().getPenStroke() : penStrokeMemory;
-        this.colorLabel = new ColorLabel(preview, chosenPenStroke.getFillLegend());
+        colorLabel = new ColorLabel(preview, chosenPenStroke.getFillLegend());
         if (displayUom) {
-            this.lineUOMComboBox =
+            lineUOMComboBox =
                     new LineUOMComboBox((SymbolizerLegend) legend, preview);
         }
-        this.lineWidthSpinner =
-                new LineWidthSpinner(chosenPenStroke, preview);
-        this.lineOpacitySpinner =
-                new LineOpacitySpinner(chosenPenStroke.getFillLegend(), preview);
-        this.dashArrayField =
-                new DashArrayField((ConstantColorAndDashesPSLegend) chosenPenStroke, preview);
-    }
-
-    /**
-     * Add the components to the UI.
-     */
-    private void addComponents() {
         if (isLineOptional) {
             lineCheckBox = new JCheckBox(I18N.tr("Enable"));
             lineCheckBox.addActionListener(new ActionListener() {
@@ -104,6 +83,19 @@ public class LinePanel extends UniqueSymbolPanel {
                     onClickLineCheckBox();
                 }
             });
+        }
+        lineWidthSpinner =
+                new LineWidthSpinner(chosenPenStroke, preview);
+        lineOpacitySpinner =
+                new LineOpacitySpinner(chosenPenStroke.getFillLegend(), preview);
+        dashArrayField =
+                new DashArrayField((ConstantColorAndDashesPSLegend) chosenPenStroke, preview);
+    }
+
+    @Override
+    protected void addComponents() {
+        // Enable checkbox (if optional).
+        if (isLineOptional) {
             add(lineCheckBox, "align l");
             // We must check the CheckBox according to leg, not to legend.
             // legend is here mainly to let us fill safely all our
@@ -155,12 +147,12 @@ public class LinePanel extends UniqueSymbolPanel {
     }
 
     /**
-     * If {@code isLineOptional()}, a {@code JCheckBox} will be added in the
+     * If the stroke is optional, a {@code JCheckBox} will be added in the
      * UI to let the user enable or disable the line configuration. In fact,
      * clicking on it will recursively enable or disable the containers
      * contained in the configuration panel.
      */
-    public void onClickLineCheckBox() {
+    private void onClickLineCheckBox() {
         if (lineCheckBox.isSelected()) {
             getLegend().setPenStroke(penStrokeMemory);
             setLineFieldsState(true);

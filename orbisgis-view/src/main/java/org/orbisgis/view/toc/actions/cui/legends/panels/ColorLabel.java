@@ -9,7 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 
@@ -40,6 +39,15 @@ public class ColorLabel extends JPanel {
         this.preview = preview;
         this.fill = fill;
         add(getColorField(fill));
+    }
+
+    /**
+     * Get the fill.
+     *
+     * @return The fill
+     */
+    public ConstantSolidFill getFill() {
+        return fill;
     }
 
     /**

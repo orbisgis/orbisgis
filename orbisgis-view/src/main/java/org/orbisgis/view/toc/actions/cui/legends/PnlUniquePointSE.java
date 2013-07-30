@@ -39,6 +39,7 @@ import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
+import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
@@ -46,6 +47,7 @@ import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.OnVertexOnCentroidPanel;
 import org.xnap.commons.i18n.I18n;
@@ -97,7 +99,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         }
 
         @Override
-        public Legend getLegend() {
+        public IUniqueSymbolArea getLegend() {
                 return uniquePoint;
         }
 
@@ -185,8 +187,10 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 glob.add(getPointBlock(uniquePoint,
                                        I18N.tr(MARK_SETTINGS)));
 
-                glob.add(getAreaBlock(uniquePoint.getFillLegend(),
-                                      I18N.tr(FILL_SETTINGS)));
+                glob.add(new AreaPanel(uniquePoint,
+                        getPreview(),
+                        I18N.tr(FILL_SETTINGS),
+                        isAreaOptional));
 
                 glob.add(getPreviewPanel(), "growx");
 

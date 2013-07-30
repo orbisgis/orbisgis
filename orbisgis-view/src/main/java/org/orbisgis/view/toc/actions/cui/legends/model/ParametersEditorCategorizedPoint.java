@@ -58,7 +58,7 @@ public class ParametersEditorCategorizedPoint extends ParametersEditorMappedLege
             Double key = (Double) getCellEditorValue();
             PointParameters lp = cp.get(key);
             UniqueSymbolPoint usl = new UniqueSymbolPoint(lp);
-            PnlUniquePointSE pls = new PnlUniquePointSE(false, cp.isStrokeEnabled(), false);
+            PnlUniquePointSE pls = new PnlUniquePointSE(false, cp.isStrokeEnabled());
             pls.setLegend(usl);
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 PointParameters edited = usl.getPointParameters();

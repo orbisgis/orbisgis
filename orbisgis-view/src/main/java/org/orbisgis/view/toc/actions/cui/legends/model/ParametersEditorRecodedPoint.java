@@ -56,7 +56,7 @@ public class ParametersEditorRecodedPoint extends ParametersEditorMappedLegend<S
             String key = (String) getCellEditorValue();
             PointParameters lp = rl.get(key);
             UniqueSymbolPoint usl = new UniqueSymbolPoint(lp);
-            PnlUniquePointSE pls = new PnlUniquePointSE(false,rl.isStrokeEnabled(), false);
+            PnlUniquePointSE pls = new PnlUniquePointSE(false,rl.isStrokeEnabled());
             pls.setLegend(usl);
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 PointParameters edited = usl.getPointParameters();

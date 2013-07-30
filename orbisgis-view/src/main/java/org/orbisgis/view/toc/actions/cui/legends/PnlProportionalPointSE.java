@@ -44,6 +44,7 @@ import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.PointParameters;
+import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
 import org.orbisgis.sif.UIFactory;
@@ -52,6 +53,7 @@ import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.OnVertexOnCentroidPanel;
 import org.xnap.commons.i18n.I18n;
@@ -83,7 +85,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
         MouseListener l;
 
         @Override
-        public Legend getLegend() {
+        public IUniqueSymbolArea getLegend() {
                 return proportionalPoint;
         }
 
@@ -359,8 +361,13 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                     getPenStrokeMemory(),
                     true,
                     true));
-            // TODO: Make this update the local preview.
-            glob.add(getAreaBlock(usp.getFillLegend(), I18N.tr(FILL_SETTINGS)));
+
+            glob.add(new AreaPanel(usp,
+                    localPreview,
+                    I18N.tr(FILL_SETTINGS),
+                    true));
+
+            glob.add(getPreviewPanel(localPreview));
 
             return glob;
         }

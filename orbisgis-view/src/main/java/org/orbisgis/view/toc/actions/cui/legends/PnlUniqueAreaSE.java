@@ -43,6 +43,7 @@ import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
+import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LineOpacitySpinner;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
 import org.xnap.commons.i18n.I18n;
@@ -61,9 +62,6 @@ import java.net.URL;
  */
 public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueAreaSE.class);
-        private JPanel fill;
-        private LineOpacitySpinner fillOpacitySpinner;
-        private JCheckBox areaCheckBox;
         private ConstantSolidFillLegend solidFillMemory;
         public static final String FILL_SETTINGS = I18n.marktr("Fill settings");
 
@@ -72,7 +70,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
          * be unique symbol (ie constant) Legends.
          */
         private UniqueSymbolArea uniqueArea;
-        private boolean isAreaOptional;
+        protected boolean isAreaOptional;
 
         /**
          * Default constructor. UOM will be displayed as well as the stroke
@@ -108,7 +106,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         }
 
         @Override
-        public Legend getLegend() {
+        public IUniqueSymbolArea getLegend() {
                 return uniqueArea;
         }
 
@@ -181,7 +179,6 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
 
-
                 glob.add(new LinePanel(uniqueArea,
                         getPreview(),
                         I18N.tr(BORDER_SETTINGS),
@@ -190,79 +187,17 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                         true),
                         "cell 0 0, span 1 2, aligny top");
 
-                ConstantSolidFill leg = uniqueArea.getFillLegend();
-                JPanel p2 = getAreaBlock(leg, I18N.tr(FILL_SETTINGS));
-                setAreaFieldsState(leg instanceof ConstantSolidFillLegend);
-                glob.add(p2, "cell 1 0, growx");
+                glob.add(new AreaPanel(uniqueArea,
+                        getPreview(),
+                        I18N.tr(FILL_SETTINGS),
+                        isAreaOptional),
+                        "cell 1 0, growx");
 
                 glob.add(getPreviewPanel(), "cell 1 1, growx");
                 this.add(glob);
         }
 
-        /**
-         * Builds the UI block used to configure the fill color of the
-         * symbolizer.
-         * @param fillLegend  The fill we want to configure.
-         * @param title The title of the panel
-         * @return The JPanel that can be used to configure the way the area will be filled.
-         */
-        public JPanel getAreaBlock(ConstantSolidFill fillLegend, String title) {
-                if(getPreview() == null && getLegend() != null){
-                        initPreview();
-                }
-
-                JPanel jp = new JPanel(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
-                jp.setBorder(BorderFactory.createTitledBorder(title));
-
-                ConstantSolidFill fl =
-                        (fillLegend instanceof ConstantSolidFillLegend)
-                        ? fillLegend : solidFillMemory;
-                if (isAreaOptional) {
-                    // The JCheckBox that can be used to enable/disable the
-                    // fill conf.
-                    areaCheckBox = new JCheckBox(I18N.tr("Enable"));
-                    areaCheckBox.addActionListener(
-                            EventHandler.create(ActionListener.class, this, "onClickAreaCheckBox"));
-                    jp.add(areaCheckBox, "align l");
-                    // We must check the CheckBox according to leg, not to legend.
-                    // legend is here mainly to let us fill safely all our
-                    // parameters.
-                    areaCheckBox.setSelected(fillLegend instanceof ConstantSolidFillLegend);
-                } else {
-                    // Just add blank space
-                    jp.add(Box.createGlue());
-                }
-
-                // Color
-                fill = getColorField(fl);
-                jp.add(fill);
-                // Opacity
-                fillOpacitySpinner = new LineOpacitySpinner(fl, getPreview());
-                jp.add(new JLabel(I18N.tr(OPACITY)));
-                jp.add(fillOpacitySpinner, "growx");
-
-                return jp;
-        }
-
-        /**
-         * If {@code isLineOptional()}, a {@code JCheckBox} will be added in the
-         * UI to let the user enable or disable the fill configuration. In fact,
-         * clicking on it will recursively enable or disable the containers
-         * contained in the configuration panel.
-         */
-        public void onClickAreaCheckBox(){
-                if(areaCheckBox.isSelected()){
-                        ((IUniqueSymbolArea)getLegend()).setFillLegend(solidFillMemory);
-                        setAreaFieldsState(true);
-                } else {
-                        NullSolidFillLegend nsf = new NullSolidFillLegend();
-                        ((IUniqueSymbolArea)getLegend()).setFillLegend(nsf);
-                        setAreaFieldsState(false);
-                }
-                getPreview().imageChanged();
-        }
-
-        /**
+    /**
          * In order to improve the user experience, it may be interesting to
          * store the {@code ConstantSolidFillLegend} as a field before removing
          * it. This way, we will be able to use it back directly... unless the
@@ -271,10 +206,5 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
          */
         protected void setSolidFillMemory(ConstantSolidFillLegend fill){
                 solidFillMemory = fill;
-        }
-
-        private void setAreaFieldsState(boolean state){
-                ComponentUtil.setFieldState(state, fill);
-                ComponentUtil.setFieldState(state, fillOpacitySpinner);
         }
 }

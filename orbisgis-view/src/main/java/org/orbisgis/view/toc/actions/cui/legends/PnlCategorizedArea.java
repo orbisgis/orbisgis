@@ -58,7 +58,7 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
         if(leg.isStrokeEnabled()){
             usa.setStrokeUom(leg.getStrokeUom());
         }
-        PnlUniqueAreaSE pls = new PnlUniqueAreaSE(false, leg.isStrokeEnabled(), false);
+        PnlUniqueAreaSE pls = new PnlUniqueAreaSE(false, leg.isStrokeEnabled());
         pls.setLegend(usa);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
             usa = (UniqueSymbolArea) pls.getLegend();

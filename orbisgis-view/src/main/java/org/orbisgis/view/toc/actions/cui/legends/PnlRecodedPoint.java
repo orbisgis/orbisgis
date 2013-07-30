@@ -99,7 +99,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         RecodedPoint leg = (RecodedPoint) getLegend();
         PointParameters lps = leg.getFallbackParameters();
         UniqueSymbolPoint usa = getFallBackLegend();
-        PnlUniquePointSE pls = new PnlUniquePointSE(false, leg.isStrokeEnabled(), false);
+        PnlUniquePointSE pls = new PnlUniquePointSE(false, leg.isStrokeEnabled());
         pls.setLegend(usa);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
             usa = (UniqueSymbolPoint) pls.getLegend();

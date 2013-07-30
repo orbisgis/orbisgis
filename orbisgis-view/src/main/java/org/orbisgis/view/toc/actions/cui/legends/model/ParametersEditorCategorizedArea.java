@@ -59,7 +59,7 @@ public class ParametersEditorCategorizedArea extends ParametersEditorMappedLegen
             Double key = (Double) getCellEditorValue();
             AreaParameters lp = ca.get(key);
             UniqueSymbolArea usl = new UniqueSymbolArea(lp);
-            PnlUniqueAreaSE pls = new PnlUniqueAreaSE(false, ca.isStrokeEnabled(), false);
+            PnlUniqueAreaSE pls = new PnlUniqueAreaSE(false, ca.isStrokeEnabled());
             pls.setLegend(usl);
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 AreaParameters edited = usl.getAreaParameters();

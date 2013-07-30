@@ -65,7 +65,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         if(leg.isStrokeEnabled()){
             usa.setStrokeUom(leg.getStrokeUom());
         }
-        PnlUniquePointSE pls = new PnlUniquePointSE(false, leg.isStrokeEnabled(), false);
+        PnlUniquePointSE pls = new PnlUniquePointSE(false, leg.isStrokeEnabled());
         pls.setLegend(usa);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
             usa = (UniqueSymbolPoint) pls.getLegend();
