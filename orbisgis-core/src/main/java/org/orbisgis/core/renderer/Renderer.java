@@ -154,7 +154,6 @@ public abstract class Renderer {
                 int layerCount = 0;
                 String tableReference = layer.getTableReference();
                 DataSource dataSource = Services.getService(DataSource.class);
-                DataManager dataManager = Services.getService(DataManager.class);
                 Connection connection = dataSource.getConnection();
                 try {
                         List<String> geometryFields = SFSUtilities.getGeometryFields(connection, SFSUtilities.splitCatalogSchemaTableName(tableReference));
@@ -163,11 +162,11 @@ public abstract class Renderer {
                         }
                         PreparedStatement st = connection.prepareStatement(
                                 String.format("select * from %s where %s && $1::Geometry",tableReference,geometryFields.get(0)));
-                        ResultSet rs = dataManager.getDataSource(st);
                         GeometryFactory geometryFactory = new GeometryFactory();
                         st.setString(1, geometryFactory.toGeometry(extent).toText()); // Filter geometry by envelope
+                        ResultSet rs = st.executeQuery();
                         // long tV1 = System.currentTimeMillis();
-                        long rowCount = ((RowSet) rs).getMaxRows();
+                        long rowCount = 100; // TODO do a count(*) cpt
                         // Extract into drawSeLayer method !
                         List<Style> styles = layer.getStyles();
                         for(Style style : styles){
