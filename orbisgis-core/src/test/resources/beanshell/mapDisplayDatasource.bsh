@@ -12,7 +12,7 @@ import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.ImageRenderer;
 
-public class basicDbProcessing {
+public class mapDisplay {
     public static void run(DataSource dataSource) throws SQLException, LayerException {
         Connection connection = dataSource.getConnection();
         try {
@@ -42,4 +42,4 @@ public class basicDbProcessing {
         }
     }
 }
-basicDbProcessing.run(bsh.dataSource);
+mapDisplay.run(bsh.dataSource);

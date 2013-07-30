@@ -126,4 +126,14 @@ public class BeanShellScriptTest {
                 BeanshellScript.execute(mainParams("../src/test/resources/beanshell/testSeveralArguments.bsh", "orbis","1"));
                 assertTrue(true);
         }
+
+        @Test
+        public void testDrawOwsInImage() throws Exception {
+            File rendered = new File("render.png");
+            if(rendered.exists()) {
+                assertTrue(rendered.delete());
+            }
+            BeanshellScript.execute(mainParams("../src/test/resources/beanshell/ShapeToImage.bsh"));
+            assertTrue(rendered.exists());
+        }
 }
