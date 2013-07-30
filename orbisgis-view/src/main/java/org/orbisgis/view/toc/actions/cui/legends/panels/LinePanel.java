@@ -94,7 +94,7 @@ public class LinePanel extends UniqueSymbolPanel {
      * @param displayUom      Whether the stroke UOM should be displayed
      */
     private void init(boolean displayUom) {
-        colorLabel = new ColorLabel(preview, penStrokeMemory.getFillLegend());
+        colorLabel = new ColorLabel(penStrokeMemory.getFillLegend(), preview);
         if (displayUom) {
             lineUOMComboBox =
                     new LineUOMComboBox((SymbolizerLegend) legend, preview);
@@ -180,8 +180,6 @@ public class LinePanel extends UniqueSymbolPanel {
         } else {
             // Remember the old configuration.
             penStrokeMemory = getLegend().getPenStroke();
-            // We must replace the old PenStroke representation with
-            // its null representation.
             getLegend().setPenStroke(new NullPenStrokeLegend());
             setLineFieldsState(false);
         }

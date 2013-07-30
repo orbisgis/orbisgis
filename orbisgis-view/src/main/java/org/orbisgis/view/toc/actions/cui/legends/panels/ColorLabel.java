@@ -61,12 +61,11 @@ public class ColorLabel extends JPanel {
     private CanvasSE preview;
     private ConstantSolidFill fill;
 
-    public ColorLabel(CanvasSE preview,
-                      ConstantSolidFill fill) {
+    public ColorLabel(ConstantSolidFill legend, CanvasSE preview) {
         super();
         this.preview = preview;
-        this.fill = fill;
-        add(getColorField(fill));
+        this.fill = legend;
+        add(getColorField(legend));
     }
 
     /**

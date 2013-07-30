@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.sif.ComponentUtil;
@@ -51,6 +52,8 @@ public class AreaPanel extends UniqueSymbolPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(AreaPanel.class);
 
+    private ConstantSolidFill fillLegendMemory;
+
     private final boolean isAreaOptional;
 
     private JCheckBox areaCheckBox;
@@ -63,6 +66,7 @@ public class AreaPanel extends UniqueSymbolPanel {
                      boolean isAreaOptional) {
         super(legend, preview, title);
         this.isAreaOptional = isAreaOptional;
+        fillLegendMemory = getLegend().getFillLegend();
         init();
         addComponents();
     }
@@ -73,7 +77,7 @@ public class AreaPanel extends UniqueSymbolPanel {
     }
 
     private void init() {
-        this.colorLabel = new ColorLabel(preview, getLegend().getFillLegend());
+        this.colorLabel = new ColorLabel(fillLegendMemory, preview);
         if (isAreaOptional) {
             areaCheckBox = new JCheckBox(I18N.tr("Enable"));
             areaCheckBox.addActionListener(new ActionListener() {
@@ -85,7 +89,7 @@ public class AreaPanel extends UniqueSymbolPanel {
             areaCheckBox.setSelected(true);
         }
         this.fillOpacitySpinner = new LineOpacitySpinner(
-                getLegend().getFillLegend(), preview);
+                fillLegendMemory, preview);
     }
 
     @Override
@@ -112,9 +116,11 @@ public class AreaPanel extends UniqueSymbolPanel {
     private void onClickAreaCheckBox() {
         if (areaCheckBox.isSelected()) {
             // TODO: Answer why this works with opacity.
-            getLegend().setFillLegend(colorLabel.getFill());
+            getLegend().setFillLegend(fillLegendMemory);
             setAreaFieldsState(true);
         } else {
+            // Remember the old configuration.
+            fillLegendMemory = getLegend().getFillLegend();
             getLegend().setFillLegend(new NullSolidFillLegend());
             setAreaFieldsState(false);
         }
