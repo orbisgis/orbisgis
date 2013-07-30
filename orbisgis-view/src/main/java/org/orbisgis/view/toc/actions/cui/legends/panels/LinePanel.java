@@ -55,7 +55,7 @@ public class LinePanel extends UniqueSymbolPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(LinePanel.class);
 
-    private ConstantPenStrokeLegend penStrokeMemory;
+    private ConstantPenStroke penStrokeMemory;
 
     private final boolean displayUom;
     private final boolean isLineOptional;
@@ -71,16 +71,15 @@ public class LinePanel extends UniqueSymbolPanel {
     public LinePanel(IUniqueSymbolLine legend,
                      CanvasSE preview,
                      String title,
-                     ConstantPenStrokeLegend penStrokeMemory,
                      boolean displayUom,
                      boolean isLineOptional) {
         super(legend, preview, title);
-        this.penStrokeMemory = penStrokeMemory;
         this.displayUom = displayUom;
         this.isLineOptional = isLineOptional;
         penStrokeIsConstant =
                 getLegend().getPenStroke() instanceof ConstantPenStrokeLegend;
-        init(penStrokeMemory, displayUom);
+        penStrokeMemory = getLegend().getPenStroke();
+        init(displayUom);
         addComponents();
     }
 
@@ -92,13 +91,10 @@ public class LinePanel extends UniqueSymbolPanel {
     /**
      * Initialize the elements.
      *
-     * @param penStrokeMemory
      * @param displayUom      Whether the stroke UOM should be displayed
      */
-    private void init(ConstantPenStrokeLegend penStrokeMemory, boolean displayUom) {
-        ConstantPenStroke chosenPenStroke =
-                penStrokeIsConstant ? getLegend().getPenStroke() : penStrokeMemory;
-        colorLabel = new ColorLabel(preview, chosenPenStroke.getFillLegend());
+    private void init(boolean displayUom) {
+        colorLabel = new ColorLabel(preview, penStrokeMemory.getFillLegend());
         if (displayUom) {
             lineUOMComboBox =
                     new LineUOMComboBox((SymbolizerLegend) legend, preview);
@@ -113,11 +109,11 @@ public class LinePanel extends UniqueSymbolPanel {
             });
         }
         lineWidthSpinner =
-                new LineWidthSpinner(chosenPenStroke, preview);
+                new LineWidthSpinner(penStrokeMemory, preview);
         lineOpacitySpinner =
-                new LineOpacitySpinner(chosenPenStroke.getFillLegend(), preview);
+                new LineOpacitySpinner(penStrokeMemory.getFillLegend(), preview);
         dashArrayField =
-                new DashArrayField((ConstantColorAndDashesPSLegend) chosenPenStroke, preview);
+                new DashArrayField((ConstantColorAndDashesPSLegend) penStrokeMemory, preview);
     }
 
     @Override
@@ -125,10 +121,7 @@ public class LinePanel extends UniqueSymbolPanel {
         // Enable checkbox (if optional).
         if (isLineOptional) {
             add(lineCheckBox, "align l");
-            // We must check the CheckBox according to leg, not to legend.
-            // legend is here mainly to let us fill safely all our
-            // parameters.
-            lineCheckBox.setSelected(penStrokeIsConstant);
+            lineCheckBox.setSelected(true);
         } else {
             // Just add blank space
             add(Box.createGlue());
@@ -185,6 +178,8 @@ public class LinePanel extends UniqueSymbolPanel {
             getLegend().setPenStroke(penStrokeMemory);
             setLineFieldsState(true);
         } else {
+            // Remember the old configuration.
+            penStrokeMemory = getLegend().getPenStroke();
             // We must replace the old PenStroke representation with
             // its null representation.
             getLegend().setPenStroke(new NullPenStrokeLegend());

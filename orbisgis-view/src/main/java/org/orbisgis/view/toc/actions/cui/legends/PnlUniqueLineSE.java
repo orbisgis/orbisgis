@@ -171,11 +171,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 penStrokeMemory = cpsl;
         }
 
-        // TODO: Avoid this.
-        protected ConstantPenStrokeLegend getPenStrokeMemory() {
-            return penStrokeMemory;
-        }
-
         @Override
         public void initializeLegendFields() {
                 this.removeAll();
@@ -183,7 +178,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 glob.add(new LinePanel(uniqueLine,
                         getPreview(),
                         I18N.tr(LINE_SETTINGS),
-                        penStrokeMemory,
                         displayUom,
                         false));
                 glob.add(getPreviewPanel());

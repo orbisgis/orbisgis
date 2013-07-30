@@ -358,7 +358,6 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
             glob.add(new LinePanel(usp,
                     localPreview,
                     I18N.tr(BORDER_SETTINGS),
-                    getPenStrokeMemory(),
                     true,
                     true));
 

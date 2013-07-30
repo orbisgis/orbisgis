@@ -180,7 +180,6 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 glob.add(new LinePanel(uniquePoint,
                         getPreview(),
                         I18N.tr(BORDER_SETTINGS),
-                        getPenStrokeMemory(),
                         true,
                         true));
 
