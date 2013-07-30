@@ -18,20 +18,25 @@ public class basicDbProcessing {
         try {
             String dataFile = "../src/test/resources/beanshell/orbisgis.shp";
             Statement st = connection.createStatement();
+            st.execute("DROP TABLE IF EXISTS ORBISSHP");
             st.execute("call FILE_TABLE('"+dataFile+"','orbisshp')");
-            MapContext mapContext = new OwsMapContext();
-            ILayer layer = mapContext.createLayer("sample","orbisshp");
-            layer.open();
-            Renderer r = new ImageRenderer();
-            BufferedImage img = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
-            r.draw(img, layer.getEnvelope(), layer);
+            try {
+                MapContext mapContext = new OwsMapContext();
+                ILayer layer = mapContext.createLayer("sample","orbisshp");
+                layer.open();
+                Renderer r = new ImageRenderer();
+                BufferedImage img = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
+                r.draw(img, layer.getEnvelope(), layer);
 
-            JFrame frm = new JFrame();
-            frm.getContentPane().add(new JLabel(new ImageIcon(img)));
-            frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frm.pack();
-            frm.setLocationRelativeTo(null);
-            frm.setVisible(true);
+                JFrame frm = new JFrame();
+                frm.getContentPane().add(new JLabel(new ImageIcon(img)));
+                frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frm.pack();
+                frm.setLocationRelativeTo(null);
+                frm.setVisible(true);
+            } finally {
+                st.execute("DROP TABLE ORBISSHP");
+            }
         } finally {
             connection.close();
         }
