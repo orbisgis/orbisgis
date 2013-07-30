@@ -67,7 +67,7 @@ public final class LegendUIController {
              * @param fts the style to edit.
              */
 
-    public LegendUIController(Style fts) throws InvalidStyle {
+    public LegendUIController(int index,Style fts) throws InvalidStyle {
 
 		this.style = new Style(fts.getJAXBElement(), fts.getLayer());
 
@@ -128,7 +128,7 @@ public final class LegendUIController {
 				structureChanged(symbPanel, false);
 			}
 		}
-		mainPanel = new LegendUIMainPanel(this, style);
+		mainPanel = new LegendUIMainPanel(this, style, index);
 	}
 
 	public int getGeometryType() {

@@ -1008,7 +1008,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                             JOptionPane.showMessageDialog(null,I18N.tr("Advanced Editor can't be loaded"));
                                     }
 
-                                    LegendUIController controller = new LegendUIController(style);
+                                    LegendUIController controller = new LegendUIController(index,style);
 
                                     if (UIFactory.showDialog((UIPanel)controller.getMainPanel())) {
                                             layer.setStyle(index,controller.getEditedFeatureTypeStyle());

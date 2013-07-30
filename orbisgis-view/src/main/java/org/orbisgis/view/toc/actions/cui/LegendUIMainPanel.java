@@ -60,11 +60,13 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 	private JPanel overview;
 	private LegendUIRuleListPanel rules;
 	private LegendUITOCPanel tocPanel;
+    private int index;
 
 	private JButton apply;
 
-	public LegendUIMainPanel (LegendUIController controller, Style fts){
+	public LegendUIMainPanel (LegendUIController controller, Style fts, int index){
 		super(new BorderLayout());
+        this.index = index;
 		this.controller = controller;
 
 		leftMenu = new JPanel(new BorderLayout());
@@ -182,11 +184,9 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				Style eFts = controller.getEditedFeatureTypeStyle();
-				Style fts = new Style(eFts.getJAXBElement(), eFts.getLayer());
-                                List<Style> styles = new ArrayList<Style>();
-                                styles.add(fts);
-				eFts.getLayer().setStyles(styles);
+                Style eFts = controller.getEditedFeatureTypeStyle();
+                Style fts = new Style(eFts.getJAXBElement(), eFts.getLayer());
+				eFts.getLayer().setStyle(index,fts);
 			} catch (InvalidStyle ex) {
 				Logger.getLogger(LegendUIMainPanel.class.getName()).log(Level.SEVERE, null, ex);
 			}
