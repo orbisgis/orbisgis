@@ -146,16 +146,12 @@ public class LinePanel extends UniqueSymbolPanel {
 
         add(dashArrayField, "growx");
         if (isLineOptional) {
-            setLineFieldsState(penStrokeIsConstant);
+            setFieldsState(penStrokeIsConstant);
         }
     }
 
-    /**
-     * Change the state of all the fields used for the line configuration.
-     *
-     * @param enable
-     */
-    private void setLineFieldsState(boolean enable) {
+    @Override
+    protected void setFieldsState(boolean enable) {
         ComponentUtil.setFieldState(enable, colorLabel);
         if (displayUom) {
             if (lineUOMComboBox != null) {
@@ -176,12 +172,12 @@ public class LinePanel extends UniqueSymbolPanel {
     private void onClickLineCheckBox() {
         if (lineCheckBox.isSelected()) {
             getLegend().setPenStroke(penStrokeMemory);
-            setLineFieldsState(true);
+            setFieldsState(true);
         } else {
             // Remember the old configuration.
             penStrokeMemory = getLegend().getPenStroke();
             getLegend().setPenStroke(new NullPenStrokeLegend());
-            setLineFieldsState(false);
+            setFieldsState(false);
         }
         preview.imageChanged();
     }

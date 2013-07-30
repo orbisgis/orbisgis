@@ -117,17 +117,18 @@ public class AreaPanel extends UniqueSymbolPanel {
         if (areaCheckBox.isSelected()) {
             // TODO: Answer why this works with opacity.
             getLegend().setFillLegend(fillLegendMemory);
-            setAreaFieldsState(true);
+            setFieldsState(true);
         } else {
             // Remember the old configuration.
             fillLegendMemory = getLegend().getFillLegend();
             getLegend().setFillLegend(new NullSolidFillLegend());
-            setAreaFieldsState(false);
+            setFieldsState(false);
         }
         preview.imageChanged();
     }
 
-    private void setAreaFieldsState(boolean state) {
+    @Override
+    protected void setFieldsState(boolean state) {
         ComponentUtil.setFieldState(state, colorLabel);
         ComponentUtil.setFieldState(state, fillOpacitySpinner);
     }

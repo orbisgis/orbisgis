@@ -84,4 +84,11 @@ public abstract class UniqueSymbolPanel extends JPanel {
      * Add the components to the UI.
      */
     protected abstract void addComponents();
+
+    /**
+     * Enable or disable all fields (used when the checkbox is clicked).
+     *
+     * @param enable True if the fields are to be enabled.
+     */
+    protected abstract void setFieldsState(boolean enable);
 }
