@@ -85,6 +85,11 @@ public abstract class UniqueSymbolPanel extends JPanel {
     }
 
     /**
+     * Initialize the components.
+     */
+    protected abstract void init();
+
+    /**
      * Add the components to the UI.
      */
     protected abstract void addComponents();

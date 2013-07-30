@@ -63,7 +63,6 @@ public class AreaPanel extends UniqueSymbolPanel {
                      String title,
                      boolean isAreaOptional) {
         super(legend, preview, title, isAreaOptional);
-        fillLegendMemory = getLegend().getFillLegend();
         init();
         addComponents();
     }
@@ -73,8 +72,10 @@ public class AreaPanel extends UniqueSymbolPanel {
         return (IUniqueSymbolArea) legend;
     }
 
-    private void init() {
-        this.colorLabel = new ColorLabel(fillLegendMemory, preview);
+    @Override
+    protected void init() {
+        fillLegendMemory = getLegend().getFillLegend();
+        colorLabel = new ColorLabel(fillLegendMemory, preview);
         if (isOptional) {
             areaCheckBox = new JCheckBox(I18N.tr("Enable"));
             areaCheckBox.addActionListener(new ActionListener() {
@@ -85,8 +86,7 @@ public class AreaPanel extends UniqueSymbolPanel {
             });
             areaCheckBox.setSelected(true);
         }
-        this.fillOpacitySpinner = new LineOpacitySpinner(
-                fillLegendMemory, preview);
+        fillOpacitySpinner = new LineOpacitySpinner(fillLegendMemory, preview);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class AreaPanel extends UniqueSymbolPanel {
     private void onClickAreaCheckBox() {
         if (areaCheckBox.isSelected()) {
             // TODO: Answer why this works with opacity.
-            getLegend().setFillLegend(colorLabel.getFill());
+            getLegend().setFillLegend(fillLegendMemory);
             setFieldsState(true);
         } else {
             // Remember the old configuration.

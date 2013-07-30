@@ -72,7 +72,6 @@ public class LinePanel extends UniqueSymbolPanel {
                      boolean displayUom) {
         super(legend, preview, title, isLineOptional);
         this.displayUom = displayUom;
-        penStrokeMemory = getLegend().getPenStroke();
         init();
         addComponents();
     }
@@ -82,10 +81,9 @@ public class LinePanel extends UniqueSymbolPanel {
         return (IUniqueSymbolLine) legend;
     }
 
-    /**
-     * Initialize the elements.
-     */
-    private void init() {
+    @Override
+    protected void init() {
+        penStrokeMemory = getLegend().getPenStroke();
         colorLabel = new ColorLabel(penStrokeMemory.getFillLegend(), preview);
         if (displayUom) {
             lineUOMComboBox =
@@ -105,8 +103,15 @@ public class LinePanel extends UniqueSymbolPanel {
                 new LineWidthSpinner(penStrokeMemory, preview);
         lineOpacitySpinner =
                 new LineOpacitySpinner(penStrokeMemory.getFillLegend(), preview);
-        dashArrayField =
-                new DashArrayField((ConstantColorAndDashesPSLegend) penStrokeMemory, preview);
+        if (penStrokeMemory instanceof ConstantColorAndDashesPSLegend) {
+            dashArrayField =
+                    new DashArrayField((ConstantColorAndDashesPSLegend) penStrokeMemory, preview);
+        } else {
+            throw new IllegalStateException("Legend " +
+                    getLegend().getLegendTypeName() + " must have a " +
+                    "ConstantColorAndDashesPSLegend penstroke in order to " +
+                    "initialize the DashArrayField.");
+        }
     }
 
     @Override
