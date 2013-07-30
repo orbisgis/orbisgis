@@ -1,27 +1,40 @@
 import java.awt.image.BufferedImage;
-import java.io.File;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.sql.DataSource;
+import javax.swing.*;
+
 import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.layerModel.LayerException;
+import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.ImageRenderer;
 
-dataFile = "src/test/resources/beanshell/orbisgis.shp";
-DataManager dm = Services.getService(DataManager.class);
+public class basicDbProcessing {
+    public static void run(DataSource dataSource) throws SQLException, LayerException {
+        Connection connection = dataSource.getConnection();
+        try {
+            String dataFile = "../src/test/resources/beanshell/orbisgis.shp";
+            Statement st = connection.createStatement();
+            st.execute("call FILE_TABLE('"+dataFile+"','orbisshp')");
+            MapContext mapContext = new OwsMapContext();
+            ILayer layer = mapContext.createLayer("sample","orbisshp");
+            layer.open();
+            Renderer r = new ImageRenderer();
+            BufferedImage img = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
+            r.draw(img, layer.getEnvelope(), layer);
 
-ILayer layer = dm.createLayer(pathToFile(dataFile));
-layer.open();
-print(layer.getName());
-
-Renderer r = new ImageRenderer();
-BufferedImage img = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
-r.draw(img, layer.getEnvelope(), layer);
-
-JFrame frm = new JFrame();
-frm.getContentPane().add(new JLabel(new ImageIcon(img)));
-frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-frm.pack();
-frm.setLocationRelativeTo(null);
-frm.setVisible(true);
+            JFrame frm = new JFrame();
+            frm.getContentPane().add(new JLabel(new ImageIcon(img)));
+            frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frm.pack();
+            frm.setLocationRelativeTo(null);
+            frm.setVisible(true);
+        } finally {
+            connection.close();
+        }
+    }
+}
+basicDbProcessing.run(bsh.dataSource);

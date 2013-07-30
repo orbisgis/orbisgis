@@ -51,7 +51,8 @@ import org.osgi.framework.ServiceReference;
  * @author Erwan Bocher
  */
 public final class BeanshellScript {
-        static MainContext mainContext;
+        private static MainContext mainContext;
+        private static Interpreter interpreter;
         public static final String ARG_WORKSPACE = "-wks";
         public static final String ARG_APPFOLDER = "-af";
         public static final String ARG_DEBUG = "debug";
@@ -66,14 +67,20 @@ public final class BeanshellScript {
                 if (args.length == 0) {
                         printHelp();
                 } else {
-                        execute(args);
+                        try {
+                            if(init(args)) {
+                                execute(args);
+                            }
+                        } finally {
+                            dispose();
+                        }
                 }
         }
 
         /**
          * This class is used to load a datasourcefactory
          */
-        public static void servicesRegister(Map<String,String> parameters) throws IllegalArgumentException {
+        private static void servicesRegister(Map<String,String> parameters) throws IllegalArgumentException {
                 CoreWorkspace coreWorkspace = new CoreWorkspace();
                 if(parameters.containsKey(ARG_APPFOLDER)) {
                     coreWorkspace.setApplicationFolder(new File(parameters.get(ARG_APPFOLDER)).getAbsolutePath());
@@ -154,41 +161,55 @@ public final class BeanshellScript {
         }
 
         /**
-         * Here the method to execute the beanshell script
-         * @param  args
+         * Static init made public for unit test
+         * @return True if ready to call execute method
+         */
+        public static boolean init(String[] args)  throws EvalError, FileNotFoundException {
+            String script = args[0];
+            boolean okToInit = false;
+            if (script != null && !script.isEmpty()) {
+                File file = new File(script);
+                if (!file.isFile()){
+                    printHelp();
+                } else if (!file.exists()) {
+                    System.err.println("The file doesn't exist.");
+                } else {
+                    servicesRegister(parseArgs(1,args));
+                    interpreter = new Interpreter();
+                    interpreter.set("bsh.args", args);
+                    interpreter.set("bsh.bundleContext", mainContext.getPluginHost().getHostBundleContext());
+                    interpreter.set("bsh.dataSource", mainContext.getDataSource());
+                    interpreter.eval("setAccessibility(true)");
+                    okToInit = true;
+                }
+            } else {
+                System.err.print("The second parameter must be not null.\n");
+            }
+            return okToInit;
+        }
+
+        /**
+         * Static dispose made public for unit test
+         */
+        public static void dispose() {
+            if(mainContext!=null) {
+                mainContext.dispose();
+            }
+        }
+
+
+        /**
+         * Here the method to execute the beanshell script.Made public for unit test. Must be called after init() and before dipose()
+         * @param  args Arguments [Script file, ..]
          * @throws EvalError
          * @throws FileNotFoundException 
          */
-        private static void execute(String[] args) throws EvalError, FileNotFoundException {
-                String script = args[0];
-                if (script != null && !script.isEmpty()) {
-                        File file = new File(script);
-                        if (!file.isFile()){
-                                printHelp();
-                        }
-                        else if (!file.exists()) {
-                                System.err.println("The file doesn't exist.");
-                        } else {
-                                try {
-                                        servicesRegister(parseArgs(1,args));
-                                        Interpreter interpreter = new Interpreter();
-                                        interpreter.setOut(System.out);
-                                        interpreter.setClassLoader(mainContext.getClass().getClassLoader());
-                                        interpreter.set("bsh.args", args);
-                                        interpreter.set("bsh.bundleContext", mainContext.getPluginHost().getHostBundleContext());
-                                        interpreter.set("bsh.dataSource", mainContext.getDataSource());
-                                        interpreter.eval("setAccessibility(true)");
-                                        FileReader reader = new FileReader(file);
-                                        interpreter.eval(reader);
-                                } finally {
-                                        if(mainContext!=null) {
-                                            mainContext.dispose();
-                                        }
-                                }
-                        }
-                } else {
-                        System.err.print("The second parameter must be not null.\n");
-                }
+        public static void execute(String[] args) throws EvalError, FileNotFoundException {
+                interpreter.set("bsh.args", args);
+                interpreter.setOut(System.out);
+                interpreter.setClassLoader(mainContext.getClass().getClassLoader());
+                FileReader reader = new FileReader(new File(args[0]));
+                interpreter.eval(reader);
         }
 
         /**
