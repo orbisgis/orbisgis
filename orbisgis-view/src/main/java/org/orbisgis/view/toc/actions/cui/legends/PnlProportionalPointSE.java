@@ -354,11 +354,11 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
             CanvasSE localPreview = new CanvasSE(usp.getSymbolizer());
 
             glob.add(new LinePanel(usp,
-                    getPenStrokeMemory(),
                     localPreview,
+                    I18N.tr(BORDER_SETTINGS),
+                    getPenStrokeMemory(),
                     true,
-                    true,
-                    I18N.tr(BORDER_SETTINGS)));
+                    true));
             // TODO: Make this update the local preview.
             glob.add(getAreaBlock(usp.getFillLegend(), I18N.tr(FILL_SETTINGS)));
 

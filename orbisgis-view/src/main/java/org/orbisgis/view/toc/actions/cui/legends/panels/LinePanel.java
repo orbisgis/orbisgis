@@ -1,6 +1,5 @@
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
-import net.miginfocom.swing.MigLayout;
 import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
@@ -14,6 +13,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 
@@ -24,16 +24,15 @@ import java.beans.EventHandler;
  * Time: 16:40
  * To change this template use File | Settings | File Templates.
  */
-public class LinePanel extends JPanel {
+public class LinePanel extends UniqueSymbolPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(LinePanel.class);
 
-    private IUniqueSymbolLine legend;
     private ConstantPenStrokeLegend penStrokeMemory;
-    private CanvasSE preview;
+
     private final boolean displayUom;
     private final boolean isLineOptional;
-    private final boolean penStrokeConstant;
+    private final boolean penStrokeIsConstant;
 
     private JCheckBox lineCheckBox;
     private ColorLabel colorLabel;
@@ -43,53 +42,73 @@ public class LinePanel extends JPanel {
     private DashArrayField dashArrayField;
 
     public LinePanel(IUniqueSymbolLine legend,
-                     ConstantPenStrokeLegend penStrokeMemory,
                      CanvasSE preview,
+                     String title,
+                     ConstantPenStrokeLegend penStrokeMemory,
                      boolean displayUom,
-                     boolean isLineOptional,
-                     String title) {
-        super(new MigLayout("wrap 2", AbstractFieldPanel.COLUMN_CONSTRAINTS));
+                     boolean isLineOptional) {
+        super(legend, preview);
         setBorder(BorderFactory.createTitledBorder(title));
-        this.legend = legend;
         this.penStrokeMemory = penStrokeMemory;
-        this.preview = preview;
         this.displayUom = displayUom;
         this.isLineOptional = isLineOptional;
-
-        ConstantPenStroke penStroke = legend.getPenStroke();
-        if (preview == null && legend != null) {
-            initPreview();
-        }
-        this.penStrokeConstant = penStroke instanceof ConstantPenStrokeLegend;
-        ConstantPenStroke chosenPenStroke =
-                penStrokeConstant ? penStroke : penStrokeMemory;
-
-        this.colorLabel = new ColorLabel(preview, chosenPenStroke.getFillLegend());
-        if (displayUom) {
-            this.lineUOMComboBox = new LineUOMComboBox((SymbolizerLegend) legend, preview);
-        }
-        this.lineWidthSpinner = new LineWidthSpinner(chosenPenStroke, preview);
-        this.lineOpacitySpinner = new LineOpacitySpinner(chosenPenStroke.getFillLegend(), preview);
-        dashArrayField = new DashArrayField((ConstantColorAndDashesPSLegend) chosenPenStroke, preview);
-
-        init();
+        this.penStrokeIsConstant =
+                getLegend().getPenStroke() instanceof ConstantPenStrokeLegend;
+        init(penStrokeMemory, displayUom);
+        addComponents();
     }
 
     /**
-     * Gets a panel containing all the fields to edit a unique line.
+     * Gets the legend.
      *
-     * @return
+     * @return The legend.
      */
-    private void init() {
+    private IUniqueSymbolLine getLegend() {
+        return (IUniqueSymbolLine) legend;
+    }
+
+    /**
+     * Initialize the elements.
+     *
+     * @param penStrokeMemory
+     * @param displayUom      Whether the stroke UOM should be displayed
+     */
+    private void init(ConstantPenStrokeLegend penStrokeMemory, boolean displayUom) {
+        if (preview == null && legend != null) {
+            initPreview();
+        }
+        ConstantPenStroke chosenPenStroke =
+                penStrokeIsConstant ? getLegend().getPenStroke() : penStrokeMemory;
+        this.colorLabel = new ColorLabel(preview, chosenPenStroke.getFillLegend());
+        if (displayUom) {
+            this.lineUOMComboBox =
+                    new LineUOMComboBox((SymbolizerLegend) legend, preview);
+        }
+        this.lineWidthSpinner =
+                new LineWidthSpinner(chosenPenStroke, preview);
+        this.lineOpacitySpinner =
+                new LineOpacitySpinner(chosenPenStroke.getFillLegend(), preview);
+        this.dashArrayField =
+                new DashArrayField((ConstantColorAndDashesPSLegend) chosenPenStroke, preview);
+    }
+
+    /**
+     * Add the components to the UI.
+     */
+    private void addComponents() {
         if (isLineOptional) {
             lineCheckBox = new JCheckBox(I18N.tr("Enable"));
-            lineCheckBox.addActionListener(
-                    EventHandler.create(ActionListener.class, this, "onClickLineCheckBox"));
+            lineCheckBox.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    onClickLineCheckBox();
+                }
+            });
             add(lineCheckBox, "align l");
             // We must check the CheckBox according to leg, not to legend.
             // legend is here mainly to let us fill safely all our
             // parameters.
-            lineCheckBox.setSelected(penStrokeConstant);
+            lineCheckBox.setSelected(penStrokeIsConstant);
         } else {
             // Just add blank space
             add(Box.createGlue());
@@ -114,18 +133,7 @@ public class LinePanel extends JPanel {
 
         add(dashArrayField, "growx");
         if (isLineOptional) {
-            setLineFieldsState(penStrokeConstant);
-        }
-    }
-
-    /**
-     * Rebuild the {@code CanvasSE} instance used to display a preview of
-     * the current symbol.
-     */
-    private void initPreview() {
-        if (legend != null) {
-            preview = new CanvasSE(legend.getSymbolizer());
-            preview.imageChanged();
+            setLineFieldsState(penStrokeIsConstant);
         }
     }
 
@@ -154,12 +162,12 @@ public class LinePanel extends JPanel {
      */
     public void onClickLineCheckBox() {
         if (lineCheckBox.isSelected()) {
-            legend.setPenStroke(penStrokeMemory);
+            getLegend().setPenStroke(penStrokeMemory);
             setLineFieldsState(true);
         } else {
             // We must replace the old PenStroke representation with
             // its null representation.
-            legend.setPenStroke(new NullPenStrokeLegend());
+            getLegend().setPenStroke(new NullPenStrokeLegend());
             setLineFieldsState(false);
         }
         preview.imageChanged();

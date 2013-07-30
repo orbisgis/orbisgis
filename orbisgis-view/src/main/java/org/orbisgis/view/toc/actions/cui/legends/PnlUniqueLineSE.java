@@ -31,26 +31,16 @@ package org.orbisgis.view.toc.actions.cui.legends;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
-import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
-import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
-import org.orbisgis.legend.thematic.SymbolizerLegend;
-import org.orbisgis.legend.thematic.constant.IUniqueSymbolLine;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
-import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
-import org.orbisgis.view.toc.actions.cui.legends.panels.LineUOMComboBox;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
 import java.net.URL;
 
 /**
@@ -191,11 +181,11 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
                 glob.add(new LinePanel(uniqueLine,
-                        penStrokeMemory,
                         getPreview(),
+                        I18N.tr(LINE_SETTINGS),
+                        penStrokeMemory,
                         displayUom,
-                        false,
-                        I18N.tr(LINE_SETTINGS)));
+                        false));
                 glob.add(getPreviewPanel());
                 this.add(glob);
         }

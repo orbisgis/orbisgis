@@ -183,11 +183,11 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
 
 
                 glob.add(new LinePanel(uniqueArea,
-                        getPenStrokeMemory(),
                         getPreview(),
+                        I18N.tr(BORDER_SETTINGS),
+                        getPenStrokeMemory(),
                         true,
-                        true,
-                        I18N.tr(BORDER_SETTINGS)),
+                        true),
                         "cell 0 0, span 1 2, aligny top");
 
                 ConstantSolidFill leg = uniqueArea.getFillLegend();

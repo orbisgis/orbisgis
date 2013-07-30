@@ -40,7 +40,6 @@ import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
-import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.WideComboBox;
@@ -81,7 +80,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * and fill configuration panels.
          */
         public PnlUniquePointSE() {
-            this(true, true, true);
+            this(true, true);
         }
 
         /**
@@ -91,14 +90,10 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          *                      symbolizer UOM will be displayed.
          * @param displayStroke If true, the panel used to configure the
          *                      symbol's stroke will be enabled.
-         * @param displayBoxes  If true,  the two boxes that are used to enable
-         *                      and disable the stroke and fill of the symbol
-         *                      will be displayed.
          */
         public PnlUniquePointSE(boolean uom,
-                                boolean displayStroke,
-                                boolean displayBoxes) {
-            super(uom, displayStroke, displayBoxes);
+                                boolean displayStroke) {
+            super(uom, displayStroke);
         }
 
         @Override
@@ -181,11 +176,11 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
                 glob.add(new LinePanel(uniquePoint,
-                        getPenStrokeMemory(),
                         getPreview(),
+                        I18N.tr(BORDER_SETTINGS),
+                        getPenStrokeMemory(),
                         true,
-                        true,
-                        I18N.tr(BORDER_SETTINGS)));
+                        true));
 
                 glob.add(getPointBlock(uniquePoint,
                                        I18N.tr(MARK_SETTINGS)));
