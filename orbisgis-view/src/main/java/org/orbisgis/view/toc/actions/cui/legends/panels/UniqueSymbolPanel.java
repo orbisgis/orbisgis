@@ -33,8 +33,12 @@ import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.AbstractFieldPanel;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Created with IntelliJ IDEA.
@@ -45,10 +49,13 @@ import javax.swing.*;
  */
 public abstract class UniqueSymbolPanel extends JPanel {
 
+    private static final I18n I18N = I18nFactory.getI18n(UniqueSymbolPanel.class);
+
     protected LegendStructure legend;
     protected CanvasSE preview;
 
     protected final boolean isOptional;
+    protected JCheckBox enableCheckBox;
 
     public UniqueSymbolPanel(LegendStructure legend,
                              CanvasSE preview,
@@ -59,8 +66,11 @@ public abstract class UniqueSymbolPanel extends JPanel {
         this.legend = legend;
         this.preview = preview;
         this.isOptional = isOptional;
-        if (preview == null && legend != null) {
+        if (legend != null && preview == null) {
             initPreview();
+        }
+        if (isOptional) {
+            initEnableCheckBox();
         }
     }
 
@@ -78,11 +88,28 @@ public abstract class UniqueSymbolPanel extends JPanel {
      * the current symbol.
      */
     protected void initPreview() {
-        if (legend != null) {
-            preview = new CanvasSE(((Legend) legend).getSymbolizer());
-            preview.imageChanged();
-        }
+        preview = new CanvasSE(((Legend) legend).getSymbolizer());
+        preview.imageChanged();
     }
+
+    /**
+     * Initialize the "Enable" checkbox.
+     */
+    private void initEnableCheckBox() {
+        enableCheckBox = new JCheckBox(I18N.tr("Enable"));
+        enableCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onClickOptionalCheckBox();
+            }
+        });
+        enableCheckBox.setSelected(true);
+    }
+
+    /**
+     * Action taken when the optional checkbox is (de)selected.
+     */
+    protected abstract void onClickOptionalCheckBox();
 
     /**
      * Initialize the components.

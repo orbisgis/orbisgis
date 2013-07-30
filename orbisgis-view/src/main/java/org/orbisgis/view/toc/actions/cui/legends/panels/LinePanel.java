@@ -40,8 +40,6 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Created with IntelliJ IDEA.
@@ -58,7 +56,6 @@ public class LinePanel extends UniqueSymbolPanel {
 
     private final boolean displayUom;
 
-    private JCheckBox lineCheckBox;
     private ColorLabel colorLabel;
     private LineUOMComboBox lineUOMComboBox;
     private LineWidthSpinner lineWidthSpinner;
@@ -89,16 +86,6 @@ public class LinePanel extends UniqueSymbolPanel {
             lineUOMComboBox =
                     new LineUOMComboBox((SymbolizerLegend) legend, preview);
         }
-        if (isOptional) {
-            lineCheckBox = new JCheckBox(I18N.tr("Enable"));
-            lineCheckBox.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    onClickLineCheckBox();
-                }
-            });
-            lineCheckBox.setSelected(true);
-        }
         lineWidthSpinner =
                 new LineWidthSpinner(penStrokeMemory, preview);
         lineOpacitySpinner =
@@ -118,7 +105,7 @@ public class LinePanel extends UniqueSymbolPanel {
     protected void addComponents() {
         // Enable checkbox (if optional).
         if (isOptional) {
-            add(lineCheckBox, "align l");
+            add(enableCheckBox, "align l");
         } else {
             // Just add blank space
             add(Box.createGlue());
@@ -142,6 +129,20 @@ public class LinePanel extends UniqueSymbolPanel {
     }
 
     @Override
+    protected void onClickOptionalCheckBox() {
+        if (enableCheckBox.isSelected()) {
+            getLegend().setPenStroke(penStrokeMemory);
+            setFieldsState(true);
+        } else {
+            // Remember the old configuration.
+            penStrokeMemory = getLegend().getPenStroke();
+            getLegend().setPenStroke(new NullPenStrokeLegend());
+            setFieldsState(false);
+        }
+        preview.imageChanged();
+    }
+
+    @Override
     protected void setFieldsState(boolean enable) {
         ComponentUtil.setFieldState(enable, colorLabel);
         if (displayUom) {
@@ -152,24 +153,5 @@ public class LinePanel extends UniqueSymbolPanel {
         ComponentUtil.setFieldState(enable, lineWidthSpinner);
         ComponentUtil.setFieldState(enable, lineOpacitySpinner);
         ComponentUtil.setFieldState(enable, dashArrayField);
-    }
-
-    /**
-     * If the stroke is optional, a {@code JCheckBox} will be added in the
-     * UI to let the user enable or disable the line configuration. In fact,
-     * clicking on it will recursively enable or disable the containers
-     * contained in the configuration panel.
-     */
-    private void onClickLineCheckBox() {
-        if (lineCheckBox.isSelected()) {
-            getLegend().setPenStroke(penStrokeMemory);
-            setFieldsState(true);
-        } else {
-            // Remember the old configuration.
-            penStrokeMemory = getLegend().getPenStroke();
-            getLegend().setPenStroke(new NullPenStrokeLegend());
-            setFieldsState(false);
-        }
-        preview.imageChanged();
     }
 }

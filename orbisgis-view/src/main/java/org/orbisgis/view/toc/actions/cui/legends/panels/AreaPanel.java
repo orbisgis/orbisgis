@@ -38,8 +38,6 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Created with IntelliJ IDEA.
@@ -54,7 +52,6 @@ public class AreaPanel extends UniqueSymbolPanel {
 
     private ConstantSolidFill fillLegendMemory;
 
-    private JCheckBox areaCheckBox;
     private ColorLabel colorLabel;
     private LineOpacitySpinner fillOpacitySpinner;
 
@@ -76,23 +73,13 @@ public class AreaPanel extends UniqueSymbolPanel {
     protected void init() {
         fillLegendMemory = getLegend().getFillLegend();
         colorLabel = new ColorLabel(fillLegendMemory, preview);
-        if (isOptional) {
-            areaCheckBox = new JCheckBox(I18N.tr("Enable"));
-            areaCheckBox.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    onClickAreaCheckBox();
-                }
-            });
-            areaCheckBox.setSelected(true);
-        }
         fillOpacitySpinner = new LineOpacitySpinner(fillLegendMemory, preview);
     }
 
     @Override
     public void addComponents() {
         if (isOptional) {
-            add(areaCheckBox, "align l");
+            add(enableCheckBox, "align l");
         } else {
             // Just add blank space
             add(Box.createGlue());
@@ -104,15 +91,9 @@ public class AreaPanel extends UniqueSymbolPanel {
         add(fillOpacitySpinner, "growx");
     }
 
-    /**
-     * If {@code isLineOptional()}, a {@code JCheckBox} will be added in the
-     * UI to let the user enable or disable the fill configuration. In fact,
-     * clicking on it will recursively enable or disable the containers
-     * contained in the configuration panel.
-     */
-    private void onClickAreaCheckBox() {
-        if (areaCheckBox.isSelected()) {
-            // TODO: Answer why this works with opacity.
+    @Override
+    protected void onClickOptionalCheckBox() {
+        if (enableCheckBox.isSelected()) {
             getLegend().setFillLegend(fillLegendMemory);
             setFieldsState(true);
         } else {
