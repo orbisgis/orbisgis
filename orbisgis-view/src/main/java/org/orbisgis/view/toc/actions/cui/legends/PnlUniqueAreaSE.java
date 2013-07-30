@@ -34,24 +34,19 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
-import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
-import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
-import org.orbisgis.view.toc.actions.cui.legends.panels.LineOpacitySpinner;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
 import java.net.URL;
 
 /**

@@ -30,7 +30,6 @@ package org.orbisgis.view.toc.actions.cui.legends.panels;
 
 import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
-import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolLine;
@@ -58,8 +57,6 @@ public class LinePanel extends UniqueSymbolPanel {
     private ConstantPenStroke penStrokeMemory;
 
     private final boolean displayUom;
-    private final boolean isLineOptional;
-    private final boolean penStrokeIsConstant;
 
     private JCheckBox lineCheckBox;
     private ColorLabel colorLabel;
@@ -71,15 +68,12 @@ public class LinePanel extends UniqueSymbolPanel {
     public LinePanel(IUniqueSymbolLine legend,
                      CanvasSE preview,
                      String title,
-                     boolean displayUom,
-                     boolean isLineOptional) {
-        super(legend, preview, title);
+                     boolean isLineOptional,
+                     boolean displayUom) {
+        super(legend, preview, title, isLineOptional);
         this.displayUom = displayUom;
-        this.isLineOptional = isLineOptional;
-        penStrokeIsConstant =
-                getLegend().getPenStroke() instanceof ConstantPenStrokeLegend;
         penStrokeMemory = getLegend().getPenStroke();
-        init(displayUom);
+        init();
         addComponents();
     }
 
@@ -90,16 +84,14 @@ public class LinePanel extends UniqueSymbolPanel {
 
     /**
      * Initialize the elements.
-     *
-     * @param displayUom      Whether the stroke UOM should be displayed
      */
-    private void init(boolean displayUom) {
+    private void init() {
         colorLabel = new ColorLabel(penStrokeMemory.getFillLegend(), preview);
         if (displayUom) {
             lineUOMComboBox =
                     new LineUOMComboBox((SymbolizerLegend) legend, preview);
         }
-        if (isLineOptional) {
+        if (isOptional) {
             lineCheckBox = new JCheckBox(I18N.tr("Enable"));
             lineCheckBox.addActionListener(new ActionListener() {
                 @Override
@@ -107,6 +99,7 @@ public class LinePanel extends UniqueSymbolPanel {
                     onClickLineCheckBox();
                 }
             });
+            lineCheckBox.setSelected(true);
         }
         lineWidthSpinner =
                 new LineWidthSpinner(penStrokeMemory, preview);
@@ -119,20 +112,17 @@ public class LinePanel extends UniqueSymbolPanel {
     @Override
     protected void addComponents() {
         // Enable checkbox (if optional).
-        if (isLineOptional) {
+        if (isOptional) {
             add(lineCheckBox, "align l");
-            lineCheckBox.setSelected(true);
         } else {
             // Just add blank space
             add(Box.createGlue());
         }
         // Line color
         add(colorLabel);
-
         // Unit of measure - line width
         if (displayUom) {
-            JLabel uom = new JLabel(I18N.tr(AbstractFieldPanel.LINE_WIDTH_UNIT));
-            add(uom);
+            add(new JLabel(I18N.tr(AbstractFieldPanel.LINE_WIDTH_UNIT)));
             add(lineUOMComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
         }
         // Line width
@@ -143,11 +133,7 @@ public class LinePanel extends UniqueSymbolPanel {
         add(lineOpacitySpinner, "growx");
         // Dash array
         add(new JLabel(I18N.tr(AbstractFieldPanel.DASH_ARRAY)));
-
         add(dashArrayField, "growx");
-        if (isLineOptional) {
-            setFieldsState(penStrokeIsConstant);
-        }
     }
 
     @Override

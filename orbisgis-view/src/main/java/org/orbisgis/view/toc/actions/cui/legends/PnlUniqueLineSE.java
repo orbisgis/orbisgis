@@ -178,8 +178,8 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 glob.add(new LinePanel(uniqueLine,
                         getPreview(),
                         I18N.tr(LINE_SETTINGS),
-                        displayUom,
-                        false));
+                        false,
+                        displayUom));
                 glob.add(getPreviewPanel());
                 this.add(glob);
         }

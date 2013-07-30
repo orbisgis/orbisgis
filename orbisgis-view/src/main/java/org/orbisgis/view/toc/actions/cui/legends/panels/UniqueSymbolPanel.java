@@ -48,13 +48,17 @@ public abstract class UniqueSymbolPanel extends JPanel {
     protected LegendStructure legend;
     protected CanvasSE preview;
 
+    protected final boolean isOptional;
+
     public UniqueSymbolPanel(LegendStructure legend,
                              CanvasSE preview,
-                             String title) {
+                             String title,
+                             boolean isOptional) {
         super(new MigLayout("wrap 2", AbstractFieldPanel.COLUMN_CONSTRAINTS));
         setBorder(BorderFactory.createTitledBorder(title));
         this.legend = legend;
         this.preview = preview;
+        this.isOptional = isOptional;
         if (preview == null && legend != null) {
             initPreview();
         }
