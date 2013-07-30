@@ -301,6 +301,11 @@ public interface ILayer {
         URI getDataUri();
 
         /**
+         * @param uri external resource used to build the Layer data
+         */
+        void setDataUri(URI uri);
+
+        /**
          * Gets the {@code List} of SE styles that are used to define the
          * symbologies associated to the current {@code ILayer}.
          * @return

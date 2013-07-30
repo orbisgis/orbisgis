@@ -52,7 +52,9 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.varia.LevelRangeFilter;
+import org.orbisgis.core.DataManagerImpl;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.plugin.BundleReference;
 import org.orbisgis.core.plugin.BundleTools;
 import org.orbisgis.core.plugin.PluginHost;
@@ -86,6 +88,8 @@ public class MainContext {
     private PluginHost pluginHost;
     private static final int BUNDLE_STABILITY_TIMEOUT = 3000;
     private static Map<String,String> URI_DRIVER_TO_OSGI_DRIVER = new HashMap<String, String>();
+    private DataManager dataManager;
+
     static {
         URI_DRIVER_TO_OSGI_DRIVER.put("h2","H2 JDBC Driver");
         URI_DRIVER_TO_OSGI_DRIVER.put("postgresql","Postgresql");
@@ -190,6 +194,10 @@ public class MainContext {
                 Services.registerService(DataSource.class,"OrbisGIS main DataSource",dataSource);
                 // Register DataSource, will be used to register spatial features
                 pluginHost.getHostBundleContext().registerService(DataSource.class,dataSource,null);
+                // Create and register DataManager
+                dataManager = new DataManagerImpl(dataSource);
+                Services.registerService(DataManager.class,"OrbisGIS source registration helper",dataManager);
+                pluginHost.getHostBundleContext().registerService(DataManager.class,dataManager,null);
             } finally {
                 pluginHost.getHostBundleContext().ungetService(dbDriverReference);
             }

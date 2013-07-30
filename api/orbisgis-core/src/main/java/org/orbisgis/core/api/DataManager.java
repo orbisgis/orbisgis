@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core;
+package org.orbisgis.core.api;
 
 import javax.sql.RowSet;
 import java.net.URI;

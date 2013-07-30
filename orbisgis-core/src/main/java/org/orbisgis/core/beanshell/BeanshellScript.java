@@ -103,6 +103,7 @@ public final class BeanshellScript {
                         throw new IllegalArgumentException("Could not create workspace folder, check disk space and rights");
                     }
                 }
+                MainContext.initConsoleLogger(true);
                 mainContext = new MainContext(parameters.containsKey(ARG_DEBUG),coreWorkspace,true);
                 // Read user default workspace, or use predefined one
                 // Launch OSGi

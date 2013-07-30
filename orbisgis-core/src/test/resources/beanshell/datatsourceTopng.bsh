@@ -1,13 +1,4 @@
-import java.awt.image.BufferedImage;
-import java.io.File;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.renderer.Renderer;
-import org.orbisgis.core.renderer.ImageRenderer;
-import javax.imageio.ImageIO;
 
 dataFile = "src/test/resources/beanshell/orbisgis.shp";
 DataManager dm = Services.getService(DataManager.class);

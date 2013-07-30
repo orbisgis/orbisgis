@@ -55,8 +55,13 @@ public class LayerCollection extends BeanLayer {
 		super(layerType);
 		layerCollection = new ArrayList<ILayer>();
 	}
-        
-        /**
+
+    @Override
+    public void setDataUri(URI uri) {
+        throw new UnsupportedOperationException("LayerCollection does not hold resources");
+    }
+
+    /**
          * Retrieve the layer collection as a list of layers.
          * @return
          */

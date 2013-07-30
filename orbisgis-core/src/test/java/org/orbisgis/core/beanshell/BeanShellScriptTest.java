@@ -33,6 +33,8 @@ import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Arrays;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
@@ -40,6 +42,9 @@ import static org.junit.Assume.assumeTrue;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.orbisgis.core.Services;
+
+import javax.sql.DataSource;
 
 /**
  *
@@ -129,11 +134,19 @@ public class BeanShellScriptTest {
 
         @Test
         public void testDrawOwsInImage() throws Exception {
-            File rendered = new File("render.png");
-            if(rendered.exists()) {
-                assertTrue(rendered.delete());
+            DataSource ds = Services.getService(DataSource.class);
+            Connection connection = ds.getConnection();
+            try {
+                connection.createStatement().execute("DROP TABLE IF EXISTS LANDCOVER2000");
+                File rendered = new File("render.png");
+                if(rendered.exists()) {
+                    assertTrue(rendered.delete());
+                }
+                BeanshellScript.execute(mainParams("../src/test/resources/beanshell/ShapeToImage.bsh"));
+                assertTrue(rendered.exists());
+                connection.createStatement().execute("DROP TABLE IF EXISTS LANDCOVER2000");
+            } finally {
+                connection.close();
             }
-            BeanshellScript.execute(mainParams("../src/test/resources/beanshell/ShapeToImage.bsh"));
-            assertTrue(rendered.exists());
         }
 }

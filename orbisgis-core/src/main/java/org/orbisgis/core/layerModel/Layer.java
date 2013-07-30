@@ -65,6 +65,13 @@ public class Layer extends BeanLayer {
     }
 
     @Override
+    public void setDataUri(URI uri) {
+        URI oldUri = this.dataURI;
+        this.dataURI = uri;
+        propertyChangeSupport.firePropertyChange(PROP_SOURCE_URI, oldUri, uri);
+    }
+
+    @Override
 	public String getTableReference() {
 		return tableReference;
 	}

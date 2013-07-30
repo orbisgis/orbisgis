@@ -15,6 +15,7 @@
                 <module>wms-client</module>
                 <!-- <module>gdms</module> -->
                 <!-- <module>bundles/plugin-test</module>-->
+                <module>api/orbisgis-core</module>
                 <module>orbisgis-core</module>
                 <!-- <module>legend</module> -->
                 <module>orbisgis-sif</module>
@@ -37,7 +38,6 @@
                 <spatial-utilities-version>1.0-SNAPSHOT</spatial-utilities-version>
                 <h2-version>1.0-SNAPSHOT</h2-version>
                 <h2-spatial-version>0.1-SNAPSHOT</h2-spatial-version>
-                <orbisgis-core-version>4.1-SNAPSHOT</orbisgis-core-version>
                 <sl4j-version>1.6.0</sl4j-version>
         </properties>
         <scm>

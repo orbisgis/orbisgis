@@ -29,12 +29,13 @@
 package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
+
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,8 +59,8 @@ import net.opengis.ows_context.ResourceListType;
 import net.opengis.ows_context.StyleType;
 import net.opengis.ows_context.URLType;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.Renderer;
@@ -473,15 +474,6 @@ public final class OwsMapContext extends BeanMapContext {
         }
 
         /**
-         * Register a layer DataURL from an URI
-         * @return Table reference
-         */
-        private String registerLayerResource(URI resourceUri) throws SQLException {
-                DataManager dm = Services.getService(DataManager.class);
-                return dm.registerDataSource(resourceUri);
-        }
-
-        /**
          * Recursive function to parse a layer tree
          *
          * @param lt
@@ -497,12 +489,23 @@ public final class OwsMapContext extends BeanMapContext {
                         //We need to read the data declaration and create the layer
                         URLType dataUrl = lt.getDataURL();
                         String layerSource = null;
+                        URI layerURI=null;
                         if (dataUrl != null) {
                                 OnlineResourceType resType = dataUrl.getOnlineResource();
                                 if (resType != null) {
                                         try {
-                                                URI resourceURI = new URI(resType.getHref());
-                                                layerSource = registerLayerResource(resourceURI);
+                                                layerURI = new URI(resType.getHref());
+                                                DataManager dm = Services.getService(DataManager.class);
+                                                // The resource is given as relative to MapContext location
+                                                if(!layerURI.isAbsolute() && getLocation()!=null) {
+                                                    try {
+                                                        // Resolve the relative resource ex: new Uri("myFile.shp")
+                                                        layerURI = getLocation().resolve(layerURI);
+                                                    } catch (IllegalArgumentException ex) {
+                                                        LOGGER.warn("Error while trying to find an absolute path for an external resource", ex);
+                                                    }
+                                                }
+                                                layerSource =  dm.registerDataSource(layerURI);
                                         } catch (URISyntaxException ex) {
                                                 throw new LayerException(I18N.tr("Unable to parse the href URI {0}.", resType.getHref()), ex);
                                         } catch (Exception ex) {
@@ -516,6 +519,9 @@ public final class OwsMapContext extends BeanMapContext {
                                         ILayer leafLayer = createLayer(layerSource);
                                         leafLayer.setDescription(new Description(lt));
                                         leafLayer.setVisible(!lt.isHidden());
+                                        if(layerURI!=null) {
+                                            leafLayer.setDataUri(layerURI);
+                                        }
                                         //Parse styles
                                         if(lt.isSetStyleList()) {
                                                 for(StyleType st : lt.getStyleList().getStyle()) {

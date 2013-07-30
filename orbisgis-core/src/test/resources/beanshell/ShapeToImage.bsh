@@ -17,6 +17,7 @@ public class mapDisplay {
             // Read OWS file
             MapContext mapContext = new OwsMapContext();
             mapContext.read(new FileInputStream(owsPath));
+            mapContext.setLocation(owsPath.toURI());
             // Load shape file
             mapContext.open(new NullProgressMonitor());
             // Set rendering parameters

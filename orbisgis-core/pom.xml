@@ -2,10 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
         <modelVersion>4.0.0</modelVersion>
-        <groupId>org.orbisgis</groupId>
         <artifactId>orbisgis-core</artifactId>
         <name>orbisgis-core</name>
-        <version>${orbisgis-core-version}</version>
         <url>http://orbisgis.org</url>
         <parent>
                 <artifactId>orbisgis-monomap</artifactId>
@@ -261,6 +259,11 @@
                 <artifactId>slf4j-simple</artifactId>
                 <version>${sl4j-version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>orbisgis-core-api</artifactId>
+                <version>${project.version}</version>
             </dependency>
             </dependencies>
         <pluginRepositories>
