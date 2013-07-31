@@ -110,24 +110,6 @@ public abstract class PnlUniqueSymbolSE extends AbstractFieldPanel implements UI
             return preview;
         }
 
-        /**
-         * Get a {@code JPanel} that contains a {@code JLabel}. If the {@code
-         * JLabel} is clicked, a dialog is open to let the user choose a color.
-         * This {@code JLabel} is linked to the given {@code USParameter}.
-         * @param c
-         * @return
-         */
-        public JPanel getColorField(final ConstantSolidFill c){
-                JLabel lblFill = getFilledLabel(c.getColor());
-                PropertyChangeListener pcl = EventHandler.create(PropertyChangeListener.class,c,"color","newValue");
-                PropertyChangeListener pcl2 = EventHandler.create(PropertyChangeListener.class, preview, "imageChanged");
-                lblFill.addPropertyChangeListener("background", pcl);
-                lblFill.addPropertyChangeListener("background", pcl2);
-                JPanel jp = new JPanel();
-                jp.add(lblFill);
-                return jp;
-        }
-
         @Override
         public String getId(){
                 return id;

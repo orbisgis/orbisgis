@@ -154,42 +154,6 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
     }
 
     /**
-     * Get a JLabel of dimensions {@link PnlUniqueSymbolSE#FILLED_LABEL_WIDTH} and {@link PnlUniqueSymbolSE#FILLED_LABEL_HEIGHT}
-     * opaque and with a background of Color {@code c}.
-     * @param c The background color of the label we want.
-     * @return the label with c as a background colour.
-     */
-    public JLabel getFilledLabel(Color c){
-        JLabel lblFill = new JLabel();
-        lblFill.setBackground(c);
-        lblFill.setBorder(BorderFactory.createLineBorder(Color.black));
-        lblFill.setPreferredSize(new Dimension(FILLED_LABEL_WIDTH, FILLED_LABEL_HEIGHT));
-        lblFill.setMaximumSize(new Dimension(FILLED_LABEL_WIDTH, FILLED_LABEL_HEIGHT));
-        lblFill.setOpaque(true);
-        lblFill.setHorizontalAlignment(JLabel.LEFT);
-        lblFill.addMouseListener(
-                EventHandler.create(MouseListener.class, this, "chooseFillColor", "", "mouseClicked"));
-        return lblFill;
-    }
-
-    /**
-     * This method will let the user choose a color that will be set as the
-     * background of the source of the event.
-     * @param e The input event.
-     */
-    public void chooseFillColor(MouseEvent e) {
-        Component source = (Component)e.getSource();
-        if(source.isEnabled()){
-            JLabel lab = (JLabel) source;
-            ColorPicker picker = new ColorPicker(lab.getBackground());
-            if (UIFactory.showDialog(picker,false, true)) {
-                Color color = picker.getColor();
-                source.setBackground(color);
-            }
-        }
-    }
-
-    /**
      * Gets a preview for the fallback value of the symbol.
      * @return The Preview in a CanvasSE.
      */

@@ -96,7 +96,7 @@ public class ProportionalLine extends ConstantColorAndDashesLine
     }
 
     @Override
-    public LegendStructure getStrokeLegend() {
+    public ProportionalStrokeLegend getStrokeLegend() {
         return strokeLegend;
     }
 
