@@ -33,42 +33,41 @@ import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.renderer.classification.ClassificationUtils;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.legend.LookupFieldName;
+import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
+import org.orbisgis.sif.components.WideComboBox;
+
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 26/07/13
- * Time: 15:48
- * To change this template use File | Settings | File Templates.
+ * A JComboBox containing the numerical fields of the given {@link DataSource}.
  */
 public class NumericalFieldsComboBox extends FieldComboBox {
 
     private static final Logger LOGGER = Logger.getLogger(NumericalFieldsComboBox.class);
 
     public NumericalFieldsComboBox(DataSource ds,
-                                   final AbstractCategorizedLegend legend) {
+                                   final LookupFieldName legend) {
         super(ds, legend);
     }
 
-    /**
-     * Initialize a {@code JComboBox} whose values are set according to the
-     * numerical fields of {@code ds}.
-     *
-     * @return A JComboBox.
-     */
     @Override
-    protected void addFields() {
+    protected boolean canAddField(int index) {
         try {
-            Metadata md = ds.getMetadata();
-            int fc = md.getFieldCount();
-            for (int i = 0; i < fc; i++) {
-                if (TypeFactory.isNumerical(md.getFieldType(i).getTypeCode())) {
-                    addItem(md.getFieldName(i));
-                }
-            }
+            return TypeFactory.isNumerical(
+                    ds.getMetadata().getFieldType(index).getTypeCode());
         } catch (DriverException ex) {
-            LOGGER.error(ex);
+            LOGGER.error("Cannot at field at position " + index
+                + " to the NumericalFieldsComboBox because the metadata " +
+                    "could not be recovered.");
+            return false;
         }
     }
 }

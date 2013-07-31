@@ -29,6 +29,10 @@
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.driver.DriverException;
+import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.sif.components.WideComboBox;
 
@@ -49,9 +53,9 @@ public abstract class FieldComboBox extends WideComboBox {
     private static final Logger LOGGER = Logger.getLogger("gui." + FieldComboBox.class);
 
     protected DataSource ds;
-    private MappedLegend legend;
+    protected LookupFieldName legend;
 
-    public FieldComboBox(DataSource ds, final MappedLegend legend) {
+    public FieldComboBox(DataSource ds, final LookupFieldName legend) {
         super();
         this.ds = ds;
         this.legend = legend;
@@ -68,18 +72,17 @@ public abstract class FieldComboBox extends WideComboBox {
     private void init() {
         if (ds != null) {
             addFields();
+            addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    updateField((String) ((WideComboBox) e.getSource())
+                            .getSelectedItem());
+                }
+            });
             String field = legend.getLookupFieldName();
             if (field != null && !field.isEmpty()) {
                 setSelectedItem(field);
             }
-            addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    updateField(legend, (String) ((WideComboBox) e.getSource())
-                            .getSelectedItem());
-                }
-            });
-            updateField(legend, (String) getSelectedItem());
         } else {
             LOGGER.error("Cannot construct the field combo box because the " +
                     "DataSource is null.");
@@ -89,14 +92,31 @@ public abstract class FieldComboBox extends WideComboBox {
     /**
      * Add the fields.
      */
-    protected abstract void addFields();
+    private void addFields() {
+        try {
+            Metadata md = ds.getMetadata();
+            int fc = md.getFieldCount();
+            for (int i = 0; i < fc; i++) {
+                if (canAddField(i)) {
+                    addItem(md.getFieldName(i));
+                }
+            }
+        } catch (DriverException ex) {
+            LOGGER.error(ex);
+        }
+    }
+
+    /**
+     * Determine which kind of fields to add.
+     */
+    protected abstract boolean canAddField(int index);
 
     /**
      * Used when the field against which the analysis is made changes.
      *
      * @param name The new field.
      */
-    private void updateField(MappedLegend legend, String name) {
+    protected void updateField(String name) {
         legend.setLookupFieldName(name);
     }
 }

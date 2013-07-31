@@ -29,6 +29,7 @@
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
 import org.orbisgis.core.renderer.se.graphic.WellKnownName;
+import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
@@ -37,7 +38,7 @@ import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
  */
 public class WKNComboBox extends AbsComboBox {
 
-    public WKNComboBox(UniqueSymbolPoint legend,
+    public WKNComboBox(ConstantFormPoint legend,
                        CanvasSE preview) {
         super(WellKnownName.getLocalizedStrings(), legend, preview);
         setSelectedItem(legend.getWellKnownName());
@@ -45,7 +46,7 @@ public class WKNComboBox extends AbsComboBox {
 
     @Override
     protected void updatePreview() {
-        ((UniqueSymbolPoint) legend).setWellKnownName((String) getSelectedItem());
+        ((ConstantFormPoint) legend).setWellKnownName((String) getSelectedItem());
         preview.imageChanged();
     }
 }

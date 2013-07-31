@@ -79,7 +79,7 @@ public abstract class PnlUniqueSymbolSE extends AbstractFieldPanel implements UI
          * @return Preview of the symbol in a bordered JPanel.
          */
         public JPanel getPreviewPanel(){
-                return getPreviewPanel(preview);
+                return getPreviewPanel(getPreview());
         }
 
         /**
@@ -104,7 +104,10 @@ public abstract class PnlUniqueSymbolSE extends AbstractFieldPanel implements UI
          * @return Preview of the symbol.
          */
         public CanvasSE getPreview(){
-                return preview;
+            if (preview == null) {
+                initPreview();
+            }
+            return preview;
         }
 
         /**

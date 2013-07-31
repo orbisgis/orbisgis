@@ -56,6 +56,7 @@ import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.OnVertexOnCentroidPanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.ProportionalPointPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -160,19 +161,27 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
         @Override
         public void initializeLegendFields() {
                 this.removeAll();
-                JPanel glob = new JPanel(new MigLayout());
+                JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
-                glob.add(getProportionalBlock(proportionalPoint,
-                                              I18N.tr(MARK_SETTINGS)));
-                // PREVIEW
-                CanvasSE prev = getPreview();
+                // TODO: Without this call to initFieldCombo(), I get an
+                // ArrayIndexOutOfBoundsException. Figure out why.
+                initFieldCombo();
+                glob.add(new ProportionalPointPanel(
+                    proportionalPoint,
+                    getPreview(),
+                    I18N.tr(MARK_SETTINGS),
+                    false,
+                    ds,
+                    getGeometryType()));
 
                 // The preview is created only once while the other panels are
                 // created twice, currently. Adds a locally stored listener to
                 // avoid having it twice because of this double call of
                 // initializeLegendFields.
+                CanvasSE prev = getPreview();
                 if(l == null || prev.getMouseListeners().length == 0){
-                    l = EventHandler.create(MouseListener.class, this, "onClickOnPreview", "", "mouseClicked");
+                    l = EventHandler.create(MouseListener.class, this,
+                            "onClickOnPreview", "", "mouseClicked");
                     prev.addMouseListener(l);
                 }
                 glob.add(getPreviewPanel());
@@ -213,77 +222,6 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 proportionalPoint.setWellKnownName(usp.getWellKnownName());
                 getPreview().imageChanged();
             }
-        }
-
-        /**
-         * Gets the block that will contain the configuration of the size of
-         * a proportional point symbol.
-         * @param prop The input proportional point
-         * @param title The title of the block
-         * @return The JPanel containing the fields that sets the symbol min and max size.
-         */
-        public JPanel getProportionalBlock(ProportionalPoint prop, String title){
-
-                JPanel jp = new JPanel(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
-                jp.setBorder(BorderFactory.createTitledBorder(title));
-
-                // Field
-                initFieldCombo();
-                jp.add(new JLabel(I18N.tr(FIELD)));
-                jp.add(fieldCombo, COMBO_BOX_CONSTRAINTS);
-                // Unit of measure - symbol size
-                jp.add(new JLabel(I18N.tr(SYMBOL_SIZE_UNIT)));
-                jp.add(getPointUomCombo(), COMBO_BOX_CONSTRAINTS);
-                // Symbol
-                jp.add(new JLabel(I18N.tr(SYMBOL)));
-                jp.add(getWKNCombo(prop), COMBO_BOX_CONSTRAINTS);
-                // Max size
-                jp.add(new JLabel(I18N.tr("Max. size")));
-                jp.add(getSecondConf(prop), "growx");
-                // Min size
-                jp.add(new JLabel(I18N.tr("Min. size")));
-                jp.add(getFirstConf(prop), "growx");
-                // If geometryType != POINT, we must let the user choose if he
-                // wants to draw symbols on centroid or on vertices.
-                if(getGeometryType() != SimpleGeometryType.POINT){
-                    jp.add(new JLabel(I18N.tr(PLACE_SYMBOL_ON)), "span 1 2");
-                    jp.add(new OnVertexOnCentroidPanel(proportionalPoint, getPreview()), "span 1 2");
-                }
-                return jp;
-        }
-
-        private JFormattedTextField getSecondConf(ProportionalPoint prop){
-                CanvasSE prev = getPreview();
-                JFormattedTextField jftf = new JFormattedTextField(new DecimalFormat());
-                try {
-                        jftf.setValue(prop.getSecondValue());
-                } catch (ParameterException ex) {
-                        LOGGER.error(I18N.tr("Can't retrieve the maximum value of"
-                                + " the symbol"), ex);
-                }
-                jftf.addPropertyChangeListener(
-                        "value",
-                        EventHandler.create(PropertyChangeListener.class, prop, "secondValue", "source.value"));
-                jftf.addPropertyChangeListener(
-                        "value",
-                        EventHandler.create(PropertyChangeListener.class, prev, "imageChanged"));
-                jftf.setHorizontalAlignment(SwingConstants.RIGHT);
-                return jftf;
-        }
-
-        private JFormattedTextField getFirstConf(ProportionalPoint prop){
-                JFormattedTextField jftf = new JFormattedTextField(new DecimalFormat());
-                try {
-                        jftf.setValue(prop.getFirstValue());
-                } catch (ParameterException ex) {
-                        LOGGER.error(I18N.tr("Can't retrieve the minimum value of"
-                                + " the symbol"), ex);
-                }
-                jftf.addPropertyChangeListener(
-                        "value",
-                        EventHandler.create(PropertyChangeListener.class, prop, "firstValue", "source.value"));
-                jftf.setHorizontalAlignment(SwingConstants.RIGHT);
-                return jftf;
         }
 
         private void initFieldCombo(){
