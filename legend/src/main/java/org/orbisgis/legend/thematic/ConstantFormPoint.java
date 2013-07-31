@@ -32,13 +32,15 @@ import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
+import org.orbisgis.legend.thematic.uom.SymbolUom;
 
 /**
  * This class gathers methods that are common to thematic analysis where
  * the {@code Stroke}, {@code Fill} and well-known name are constant.
  * @author Alexis Guéganno
  */
-public abstract class ConstantFormPoint extends SymbolizerLegend {
+public abstract class ConstantFormPoint extends SymbolizerLegend
+    implements OnVertexOnCentroid, SymbolUom {
 
     private PointSymbolizer pointSymbolizer;
 
@@ -94,56 +96,37 @@ public abstract class ConstantFormPoint extends SymbolizerLegend {
         getMarkGraphic().setWellKnownName(str);
     }
 
-    /**
-     * Gets whether symbols must be drawn on vertices or on centroid.
-     * @return
-     */
+    @Override
     public boolean isOnVertex(){
             return pointSymbolizer.isOnVertex();
     }
 
-    /**
-     * Sets that symbols must be drawn on vertices or on centroid.
-     */
+    @Override
     public void setOnVertex(){
             pointSymbolizer.setOnVertex(true);
     }
 
-    /**
-     * Sets that symbols must be drawn on vertices or on centroid.
-     */
+    @Override
     public void setOnCentroid(){
             pointSymbolizer.setOnVertex(false);
     }
 
-    /**
-     * Gets the unit of measure used to draw the associated {@code Stroke}.
-     * @return
-     */
+    @Override
     public Uom getStrokeUom(){
             return getMarkGraphic().getStrokeUom();
     }
 
-    /**
-     * Sets the unit of measure used to draw the associated {@code Stroke}.
-     * @param u
-     */
+    @Override
     public void setStrokeUom(Uom u){
             getMarkGraphic().setStrokeUom(u);
     }
 
-    /**
-     * Gets the unit of measure used to size the associated {@code Stroke}.
-     * @return
-     */
+    @Override
     public Uom getSymbolUom(){
             return getMarkGraphic().getSymbolUom();
     }
 
-    /**
-     * Sets the unit of measure used to size the associated {@code Stroke}.
-     * @param u
-     */
+    @Override
     public void setSymbolUom(Uom u){
             getMarkGraphic().setSymbolUom(u);
     }

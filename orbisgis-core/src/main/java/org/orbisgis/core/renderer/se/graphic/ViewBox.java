@@ -44,9 +44,9 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
- * {@code ViewBox} supplies a simplen and convenient method to change the view box of a graphic,
+ * {@code ViewBox} supplies a simple and convenient method to change the view box of a graphic,
  * in a {@link MarkGraphic} for instance.
- * {@code ViewBox} is bult using the following parameters :
+ * {@code ViewBox} is built using the following parameters :
  * <ul><li>X : the width of the box.</li>
  * <li>Y : the height of the box.</li></ul>
  * If only one of these two is given, they are considered to be equal.</p>
@@ -74,7 +74,15 @@ public final class ViewBox extends  AbstractSymbolizerNode {
          * Build a new {@code ViewBox}, using the given width.
          */
         public ViewBox(RealParameter width) {
-                setWidth(width);
+            setWidth(width);
+        }
+
+        /**
+         * Build a new {@code ViewBox}, using the given width and height.
+         */
+        public ViewBox(RealParameter width, RealParameter height) {
+            setWidth(width);
+            setHeight(height);
         }
 
         /**

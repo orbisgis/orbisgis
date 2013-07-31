@@ -28,16 +28,13 @@
  */
 package org.orbisgis.legend.analyzer;
 
-import java.awt.Color;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.graphic.ViewBox;
 import org.orbisgis.core.renderer.se.parameter.string.InvalidString;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
@@ -46,6 +43,10 @@ import org.orbisgis.legend.analyzer.symbolizers.PointSymbolizerAnalyzer;
 import org.orbisgis.legend.structure.viewbox.ConstantViewBox;
 import org.orbisgis.legend.thematic.categorize.CategorizedPoint;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
+
+import java.awt.*;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -308,7 +309,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(mg.getViewBox().getHeight() == null);
         assertTrue(mg.getViewBox().getWidth().getValue(null, 0) == 5);
         UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
-        assertTrue(uvp.getViewBoxHeight() == null);
+        assertTrue(uvp.getViewBoxHeight() == 5);
         assertTrue(uvp.getViewBoxWidth() == 5);
     }
 
@@ -343,34 +344,44 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(mg.getViewBox().getWidth().getValue(null, 0) == 5);
         UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
         uvp.setViewBoxWidth(15.0);
-        assertTrue(uvp.getViewBoxHeight() == null);
+        assertTrue(uvp.getViewBoxHeight() == 5.0);
         assertTrue(uvp.getViewBoxWidth() == 15.0);
         uvp.setViewBoxHeight(16.0);
         assertTrue(uvp.getViewBoxHeight() == 16.0);
         assertTrue(uvp.getViewBoxWidth() == 15.0);
         uvp.setViewBoxWidth(null);
         assertTrue(uvp.getViewBoxHeight() == 16.0);
-        assertTrue(uvp.getViewBoxWidth() == null);
+        assertTrue(uvp.getViewBoxWidth() == 16.0);
         uvp.setViewBoxWidth(15.0);
         assertTrue(uvp.getViewBoxHeight() == 16.0);
         assertTrue(uvp.getViewBoxWidth() == 15.0);
         uvp.setViewBoxHeight(null);
-        assertTrue(uvp.getViewBoxHeight() == null);
+        assertTrue(uvp.getViewBoxHeight() == 15.0);
         assertTrue(uvp.getViewBoxWidth() == 15.0);
-        try{
-            uvp.setViewBoxWidth(null);
-            fail();
-        } catch(IllegalArgumentException iae){
-            assertTrue(true);
-        }
-        uvp.setViewBoxHeight(16.0);
-        uvp.setViewBoxWidth(null);
-        try{
-            uvp.setViewBoxHeight(null);
-            fail();
-        } catch(IllegalArgumentException iae){
-            assertTrue(true);
-        }
+    }
+
+    @Test
+    public void testWithoutWidth() throws Exception {
+        PointSymbolizer ps = new PointSymbolizer();
+        ViewBox viewBox = ((MarkGraphic) ps.getGraphicCollection().getGraphic(0)).getViewBox();
+        viewBox.setHeight(null);
+        UniqueSymbolPoint usp = new UniqueSymbolPoint(ps);
+        assertTrue(usp.getViewBoxHeight().equals(usp.getViewBoxWidth()));
+        assertTrue(usp.getViewBoxHeight().equals(MarkGraphic.DEFAULT_SIZE));
+        usp.setViewBoxWidth(27.27);
+        assertFalse(usp.getViewBoxHeight().equals(27.27));
+    }
+
+    @Test
+    public void testWithoutHeight() throws Exception {
+        PointSymbolizer ps = new PointSymbolizer();
+        ViewBox viewBox = ((MarkGraphic) ps.getGraphicCollection().getGraphic(0)).getViewBox();
+        viewBox.setWidth(null);
+        UniqueSymbolPoint usp = new UniqueSymbolPoint(ps);
+        assertTrue(usp.getViewBoxHeight().equals(usp.getViewBoxWidth()));
+        assertTrue(usp.getViewBoxHeight().equals(MarkGraphic.DEFAULT_SIZE));
+        usp.setViewBoxHeight(27.27);
+        assertFalse(usp.getViewBoxWidth().equals(27.27));
     }
 
     @Test

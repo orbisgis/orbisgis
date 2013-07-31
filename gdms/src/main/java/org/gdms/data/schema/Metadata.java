@@ -53,8 +53,8 @@ public interface Metadata {
 	 * Gets the name of the field.
 	 * 
 	 * @param fieldId
-         * @return
-         * @throws DriverException
+     * @return
+     * @throws DriverException
 	 */
 	String getFieldName(int fieldId) throws DriverException;
 
@@ -62,31 +62,31 @@ public interface Metadata {
 	 * Gets the index of the field.
 	 * 
 	 * @param fieldName
-         * @return
-         * @throws DriverException
+     * @return
+     * @throws DriverException
 	 */
 	int getFieldIndex(String fieldName) throws DriverException;
 
 	/**
 	 * Gets the type of the field.
 	 * 
-         * @param fieldId
-         * @return
-         * @throws DriverException 
+     * @param fieldId
+     * @return
+     * @throws DriverException
 	 */
 	Type getFieldType(int fieldId) throws DriverException;
 
-        /**
-         * Gets the Schema associated with this Metadata. Can be null
-         *
-         * @return the schema
-         */
-        Schema getSchema();
+    /**
+     * Gets the Schema associated with this Metadata. Can be null
+     *
+     * @return the schema
+     */
+    Schema getSchema();
 
-        /**
-         * Gets the names of all the fields in this Metadata object
-         * @return a String array, possibly empty, of the field names
-         * @throws DriverException
-         */
-        String[] getFieldNames() throws DriverException;
+    /**
+     * Gets the names of all the fields in this Metadata object
+     * @return a String array, possibly empty, of the field names
+     * @throws DriverException
+     */
+    String[] getFieldNames() throws DriverException;
 }

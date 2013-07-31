@@ -35,6 +35,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
@@ -42,10 +44,11 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
+ * Style UI.
  *
  * @author Alexis Guéganno
  */
-public class PnlStyle extends JPanel  implements ISELegendPanel {
+public class PnlStyle extends JPanel implements ISELegendPanel {
         private static final I18n I18N = I18nFactory.getI18n(PnlStyle.class);
         private Style style;
         private JTextField txtName;
@@ -70,38 +73,22 @@ public class PnlStyle extends JPanel  implements ISELegendPanel {
         @Override
         public Component getComponent() {
                 removeAll();
-                FlowLayout fl = new FlowLayout();
-                JPanel panel = new JPanel();
-                fl.setVgap(0);
-                this.setLayout(fl);
-                panel.setLayout(new GridBagLayout());
-                GridBagConstraints gbc = new GridBagConstraints();
-                //We display the title
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                gbc.anchor = GridBagConstraints.LINE_START;
-                panel.add(new JLabel(I18N.tr("Title : ")), gbc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 1;
-                gbc.gridy = 0;
-                gbc.anchor = GridBagConstraints.LINE_START;
-                txtName = new JTextField(style.getName(),40);
-                txtName.addFocusListener(EventHandler.create(FocusListener.class, this, "setTitle","source.text","focusLost"));
-                panel.add(txtName, gbc);
+                JPanel panel = new JPanel(new MigLayout("wrap 2", "[align r][170]"));
+                panel.setBorder(BorderFactory.createTitledBorder(I18N.tr("Style settings")));
+
+                panel.add(new JLabel(I18N.tr("Title")));
+                txtName = new JTextField(style.getName());
+                txtName.addFocusListener(
+                        EventHandler.create(FocusListener.class, this,
+                                "setTitle","source.text","focusLost"));
+                panel.add(txtName, "growx");
+
                 this.add(panel);
-                this.setMinimumSize(panel.getPreferredSize());
-                this.setBorder(BorderFactory.createTitledBorder(
-                I18N.tr("Style configuration")));
                 return this;
         }
 
         @Override
         public void initialize(LegendContext lc) {
-        }
-
-        @Override
-        public ISELegendPanel newInstance() {
-                return new PnlStyle();
         }
 
         @Override

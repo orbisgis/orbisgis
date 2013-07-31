@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
@@ -38,29 +39,31 @@ import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
+import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
 
 /**
+ * "Unique Symbol - Area" UI.
  *
+ * This panel is used to configure a unique symbol configuration for an area symbolizer.
  * @author Alexis Guéganno
  */
 public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueAreaSE.class);
         private JPanel fill;
-        private JPanel fillOpacity;
+        private JSpinner fillOpacity;
         private JCheckBox areaCheckBox;
         private ConstantSolidFillLegend solidFillMemory;
+        public static final String FILL_SETTINGS = I18n.marktr("Fill settings");
 
         /**
          * Here we can put all the Legend instances we want... but they have to
@@ -71,15 +74,17 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         private boolean displayBoxes;
 
         /**
-         * Default constructor. UOM will be displayed as well as the stroke configuration and the check boxes used to
-         * enable or disable stroke and fill configuration panels.
+         * Default constructor. UOM will be displayed as well as the stroke
+         * configuration and the check boxes used to enable or disable stroke
+         * and fill configuration panels.
          */
         public PnlUniqueAreaSE(){
-            this(true, true, true);
+            this(true);
         }
 
         /**
          * Constructor that is used to set if the UOM must be displayed or not.
+         *
          * @param uom If true, the uom will be displayed.
          */
         public PnlUniqueAreaSE(boolean uom){
@@ -88,20 +93,21 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
 
         /**
          * Builds the panel.
-         * @param uom If true, the combo used to configure the symbolizer UOM will be displayed.
-         * @param displayStroke If true, the panel used to configure the symbol's stroke will be enabled.
-         * @param displayBoxes If true,  the two boxes that are used to enable and disable the stroke and fill of
-         *                     the symbol will be displayed.
+         *
+         * @param uom           If true, the combo used to configure the
+         *                      symbolizer UOM will be displayed.
+         * @param displayStroke If true, the panel used to configure the
+         *                      symbol's stroke will be enabled.
+         * @param displayBoxes  If true,  the two boxes that are used to enable
+         *                      and disable the stroke and fill of the symbol
+         *                      will be displayed.
          */
-        public PnlUniqueAreaSE(boolean uom, boolean displayStroke, boolean displayBoxes){
+        public PnlUniqueAreaSE(boolean uom,
+                               boolean displayStroke,
+                               boolean displayBoxes){
             super(uom);
             this.displayStroke = displayStroke;
             this.displayBoxes = displayBoxes;
-        }
-
-        @Override
-        public Component getComponent() {
-                return this;
         }
 
         @Override
@@ -135,30 +141,20 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
 
         /**
          * Initialize the panel. This method is called just after the panel
-         * creation.</p> <p>WARNING : the panel will be empty after calling this
-         * method. Indeed, there won't be any {@code Legend} instance associated
-         * to it. Use the
-         * {@code setLegend} method to achieve this goal.
+         * creation.
          *
          * @param lc LegendContext is useful to get some information about the
          * layer in edition.
          */
         @Override
         public void initialize(LegendContext lc) {
-                if (uniqueArea == null) {
-                        setLegend(new UniqueSymbolArea());
-                }
+            initialize(lc, new UniqueSymbolArea());
         }
 
         @Override
         public boolean acceptsGeometryType(int geometryType) {
                 return geometryType == SimpleGeometryType.POLYGON||
                         geometryType == SimpleGeometryType.ALL;
-        }
-
-        @Override
-        public ILegendPanel newInstance() {
-                return new PnlUniqueAreaSE();
         }
 
         @Override
@@ -173,7 +169,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
 
         @Override
         public String getTitle() {
-                return "Unique symbol for lines.";
+                return "Unique symbol for lines";
         }        
 
         @Override
@@ -183,31 +179,22 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 return ret;
         }
 
-        private void initializeLegendFields() {
+        @Override
+        public void initializeLegendFields() {
                 this.removeAll();
-                JPanel glob = new JPanel();
-                GridBagLayout grid = new GridBagLayout();
-                glob.setLayout(grid);
-                GridBagConstraints gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                JPanel p1 = getLineBlock(uniqueArea.getPenStroke(), I18N.tr("Line configuration"));
-                setFieldState(displayStroke, p1);
-                glob.add(p1, gbc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 1;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                gbc.insets = new Insets(5, 0, 5, 0);
+                JPanel glob = new JPanel(new MigLayout());
+
+                JPanel p1 = getLineBlock(uniqueArea.getPenStroke(),
+                                         I18N.tr(BORDER_SETTINGS));
+                ComponentUtil.setFieldState(displayStroke, p1);
+                glob.add(p1, "cell 0 0, span 1 2, aligny top");
+
                 ConstantSolidFill leg = uniqueArea.getFillLegend();
-                JPanel p2 = getAreaBlock(leg, I18N.tr("Fill configuration"));
+                JPanel p2 = getAreaBlock(leg, I18N.tr(FILL_SETTINGS));
                 setAreaFieldsState(leg instanceof ConstantSolidFillLegend);
-                glob.add(p2, gbc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 2;
-                glob.add(getPreview(), gbc);
+                glob.add(p2, "cell 1 0, growx");
+
+                glob.add(getPreviewPanel(), "cell 1 1, growx");
                 this.add(glob);
         }
 
@@ -222,38 +209,38 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 if(getPreview() == null && getLegend() != null){
                         initPreview();
                 }
-                ConstantSolidFill fl = fillLegend instanceof ConstantSolidFillLegend ? fillLegend : solidFillMemory;
-                JPanel glob = new JPanel();
-                glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
-                JPanel jp = new JPanel();
-                int db = displayBoxes ? 1 : 0;
-                GridLayout grid = new GridLayout(2+db,3);
-                grid.setVgap(5);
-                jp.setLayout(grid);
+
+                JPanel jp = new JPanel(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
+                jp.setBorder(BorderFactory.createTitledBorder(title));
+
+                ConstantSolidFill fl =
+                        (fillLegend instanceof ConstantSolidFillLegend)
+                        ? fillLegend : solidFillMemory;
                 if(displayBoxes){
-                    //The JCheckBox that can be used to enable/disable the fill conf.
-                    jp.add(buildText(I18N.tr("Enable fill : ")));
-                    areaCheckBox = new JCheckBox("");
-                    ActionListener acl = EventHandler.create(ActionListener.class, this, "onClickAreaCheckBox");
-                    areaCheckBox.addActionListener(acl);
-                    jp.add(areaCheckBox);
-                    //We must check the CheckBox according to leg, not to legend.
-                    //legend is here mainly to let us fill safely all our
-                    //parameters.
+                    // The JCheckBox that can be used to enable/disable the
+                    // fill conf.
+                    areaCheckBox = new JCheckBox(I18N.tr("Enable"));
+                    areaCheckBox.addActionListener(
+                            EventHandler.create(ActionListener.class, this, "onClickAreaCheckBox"));
+                    jp.add(areaCheckBox, "align l");
+                    // We must check the CheckBox according to leg, not to legend.
+                    // legend is here mainly to let us fill safely all our
+                    // parameters.
                     areaCheckBox.setSelected(fillLegend instanceof ConstantSolidFillLegend);
+                } else {
+                    // Just add blank space
+                    jp.add(Box.createGlue());
                 }
-                //Color
+
+                // Color
                 fill = getColorField(fl);
-                jp.add(buildText(I18N.tr("Fill color :")));
                 jp.add(fill);
-                //Opacity
+                // Opacity
                 fillOpacity = getLineOpacitySpinner(fl);
-                jp.add(buildText(I18N.tr("Fill opacity :")));
-                jp.add(fillOpacity);
-                //We add a canvas to display a preview.
-                glob.add(jp);
-                glob.setBorder(BorderFactory.createTitledBorder(title));
-                return glob;
+                jp.add(new JLabel(I18N.tr(OPACITY)));
+                jp.add(fillOpacity, "growx");
+
+                return jp;
         }
 
         /**
@@ -280,6 +267,14 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         }
 
         /**
+         * If true, the stroke parameters shown by the UI must be enabled. They are disabled otherwise.
+         * @return If the stroke parameters can be edited
+         */
+        protected boolean isStrokeEnabled(){
+            return displayStroke;
+        }
+
+        /**
          * In order to improve the user experience, it may be interesting to
          * store the {@code ConstantSolidFillLegend} as a field before removing
          * it. This way, we will be able to use it back directly... unless the
@@ -291,7 +286,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         }
 
         private void setAreaFieldsState(boolean state){
-                setFieldState(state, fill);
-                setFieldState(state, fillOpacity);
+                ComponentUtil.setFieldState(state, fill);
+                ComponentUtil.setFieldState(state, fillOpacity);
         }
 }

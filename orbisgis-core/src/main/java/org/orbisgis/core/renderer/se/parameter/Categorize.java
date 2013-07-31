@@ -125,7 +125,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      */
     public static enum CategorizeMethod {
 
-        MANUAL, NATURAL_BREAKS, QUANTILES, EQUAL_INTERVAL, STANDARD_DEVIATION;
+        MANUAL, NATURAL_BREAKS, QUANTILES, EQUAL_INTERVAL, STANDARD_DEVIATION, BOXED_MEANS;
         private static final I18n I18N = I18nFactory.getI18n(CategorizeMethod.class);
 
         /**
@@ -139,6 +139,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
                 case QUANTILES: return I18N.tr("Quantiles");
                 case EQUAL_INTERVAL: return I18N.tr("Equal Intervals");
                 case STANDARD_DEVIATION: return I18N.tr("Mean - Standard deviation");
+                case BOXED_MEANS: return I18N.tr("Boxed means");
                 default : throw new IllegalArgumentException("Can't recognize this classification method");
             }
         }

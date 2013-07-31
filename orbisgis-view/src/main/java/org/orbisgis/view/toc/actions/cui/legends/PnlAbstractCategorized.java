@@ -1,5 +1,6 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import net.miginfocom.swing.MigLayout;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
@@ -8,51 +9,56 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
-import static org.orbisgis.core.renderer.se.parameter.Categorize.CategorizeMethod;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.sif.common.ContainerItemProperties;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelInterval;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorConfigurationPanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;
 import org.orbisgis.view.toc.actions.cui.legends.stats.Thresholds;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusListener;
 import java.beans.EventHandler;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.SortedSet;
+
+import static org.orbisgis.core.renderer.se.parameter.Categorize.CategorizeMethod;
 
 /**
- * Common base for all the panels used to configure the interval classifications.
+ * Base class for Interval Classification UIs.
+ *
  * @author Alexis Guéganno
  */
 public abstract class PnlAbstractCategorized<U extends LineParameters> extends PnlAbstractTableAnalysis<Double,U> {
     public static final Logger LOGGER = Logger.getLogger(PnlAbstractCategorized.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlAbstractCategorized.class);
-    private Integer classNumber;
     private ColorConfigurationPanel colorConfig;
     private Thresholds thresholds;
-    /**
-     * The default number of classes in a classification.
-     */
-    public static final Integer DEFAULT_CLASS_NUMBER = 5;
-    private JTextField jtf;
+    public static final Integer[] THRESHOLDS_NUMBER =
+            new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+    public static final Integer[] THRESHOLDS_SQUARE =
+            new Integer[]{2, 4, 8, 16};
+    private JComboBox numberCombo;
     private JButton createCl;
     private JComboBox methodCombo;
+    private DefaultComboBoxModel comboModel;
 
     /**
      * Initialize a {@code JComboBo} whose values are set according to the
      * not spatial fields of {@code ds}.
-     * @param ds
-     * @return
+     * @param ds The associated DataSource
+     * @return The combo box used to manage the studied field.
      */
     @Override
-    public JComboBox getFieldCombo(DataSource ds){
-        JComboBox combo = new JComboBox();
+    public WideComboBox getFieldCombo(DataSource ds){
+        WideComboBox combo = new WideComboBox();
         if(ds != null){
             try {
                 Metadata md = ds.getMetadata();
@@ -77,12 +83,6 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     @Override
     public int getKeyColumn(){
         return TableModelInterval.KEY_COLUMN;
-    }
-
-    @Override
-    public Double getNotUsedKey(){
-        AbstractCategorizedLegend leg = (AbstractCategorizedLegend) getLegend();
-        return leg.getNotUsedKey((Double)leg.keySet().last());
     }
 
     @Override
@@ -116,38 +116,54 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
      * @return The panel gathering the graphic elements that can be used to create the classification.
      */
     public JPanel getCreateClassificationPanel(){
-        JPanel ret = new JPanel();
-        BoxLayout bl = new BoxLayout(ret, BoxLayout.PAGE_AXIS);
-        ret.setLayout(bl);
-        JPanel sec = new JPanel();
-        JLabel numbLab = new JLabel(I18N.tr("Classes:"));
-        JLabel clLab = new JLabel(I18N.tr("Method:"));
-        createCl = new JButton(I18N.tr("Create Classification"));
-        if(classNumber == null){
-            classNumber = DEFAULT_CLASS_NUMBER;
+        if(numberCombo == null){
+            numberCombo = new JComboBox(getThresholdsNumber());
+            ((JLabel)numberCombo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         }
-        if(colorConfig == null){
-            colorConfig = new ColorConfigurationPanel();
-        }
-        jtf = new JTextField(classNumber.toString(),3);
-        ActionListener textListener = EventHandler.create(ActionListener.class, this, "updateFieldContent");
-        FocusListener focusListener = EventHandler.create(FocusListener.class, this, "updateFieldContent");
-        jtf.addActionListener(textListener);
-        jtf.addFocusListener(focusListener);
-        JPanel btnPanel = new JPanel();
+        comboModel = (DefaultComboBoxModel) numberCombo.getModel();
+        createCl = new JButton(I18N.tr("Create"));
         createCl.setActionCommand("click");
-        btnPanel.add(createCl);
-        ActionListener btn = EventHandler.create(ActionListener.class, this, "onComputeClassification");
-        createCl.addActionListener(btn);
+        createCl.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onComputeClassification"));
+        createCl.setEnabled(false);
 
-        sec.add(numbLab);
-        sec.add(jtf);
-        sec.add(clLab);
-        sec.add(getMethodCombo());
-        sec.add(btnPanel);
-        ret.add(colorConfig);
-        ret.add(sec);
-        return ret;
+        JPanel inner = new JPanel(
+                new MigLayout("wrap 2", "[align r][align l]"));
+
+        inner.add(new JLabel(I18N.tr("Method")));
+        inner.add(getMethodCombo(), "width ::130");
+        inner.add(new JLabel(I18N.tr("Classes")));
+        inner.add(numberCombo, "split 2");
+        inner.add(createCl, "gapleft push");
+
+        JPanel outside = new JPanel(new MigLayout("wrap 1", "[" + FIXED_WIDTH + ", align c]"));
+        outside.setBorder(BorderFactory.createTitledBorder(
+                I18N.tr(CLASSIFICATION_SETTINGS)));
+        if(colorConfig == null){
+            ArrayList<String> names = new ArrayList<String>(ColorScheme.rangeColorSchemeNames());
+            names.addAll(ColorScheme.discreteColorSchemeNames());
+            colorConfig = new ColorConfigurationPanel(names);
+        }
+        outside.add(new JLabel(I18N.tr("Color scheme:")), "align l");
+        outside.add(colorConfig, "growx");
+        outside.add(inner, "growx");
+        return outside;
+    }
+
+    /**
+     * Change what is displayed by the combo box.
+     */
+    private void changeModelContent(){
+        Integer selItem = (Integer)numberCombo.getSelectedItem();
+        Integer[] vals = getThresholdsNumber();
+        int index = Arrays.binarySearch(vals,selItem);
+        int real = index < 0 ? -index-1 : index;
+        comboModel.removeAllElements();
+        for(int i=0;i<vals.length;i++){
+            comboModel.addElement(vals[i]);
+        }
+        numberCombo.setSelectedIndex(real);
+        numberCombo.invalidate();
     }
 
     /**
@@ -157,9 +173,10 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     public JComboBox getMethodCombo(){
         if(methodCombo == null){
             ContainerItemProperties[] categorizeMethods = getCategorizeMethods();
-            methodCombo = new JComboBox(categorizeMethods);
-            ActionListener acl = EventHandler.create(ActionListener.class, this, "methodChanged");
-            methodCombo.addActionListener(acl);
+            methodCombo = new WideComboBox(categorizeMethods);
+            methodCombo.addActionListener(
+                    EventHandler.create(ActionListener.class, this, "methodChanged"));
+            ((JLabel)methodCombo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
             methodCombo.setSelectedItem(CategorizeMethod.MANUAL.toString());
         }
         methodChanged();
@@ -167,10 +184,28 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     }
 
     /**
+     * Gets the supported number of thresholds for the currently selected classification.
+     * @return The number of thresholds.
+     */
+    private Integer[] getThresholdsNumber(){
+        if(methodCombo == null){
+            return THRESHOLDS_SQUARE;
+        } else {
+            ContainerItemProperties selectedItem = (ContainerItemProperties) methodCombo.getSelectedItem();
+            CategorizeMethod cm = CategorizeMethod.valueOf(selectedItem.getKey());
+            switch(cm){
+                case BOXED_MEANS: return THRESHOLDS_SQUARE;
+                default : return THRESHOLDS_NUMBER;
+            }
+        }
+    }
+
+    /**
      * The selected classification has changed. Called by EventHandler.
      */
     public void methodChanged(){
         ContainerItemProperties selectedItem = (ContainerItemProperties) methodCombo.getSelectedItem();
+        changeModelContent();
         boolean b = CategorizeMethod.valueOf(selectedItem.getKey()).equals(CategorizeMethod.MANUAL);
         if(createCl != null){
             createCl.setEnabled(!b);
@@ -187,28 +222,17 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         }
         ContainerItemProperties selectedItem = (ContainerItemProperties) methodCombo.getSelectedItem();
         CategorizeMethod cm = CategorizeMethod.valueOf(selectedItem.getKey());
-        SortedSet<Double> set = thresholds.getThresholds(cm,classNumber);
+        Integer number = (Integer) numberCombo.getSelectedItem();
+        SortedSet<Double> set = thresholds.getThresholds(cm,number);
         if(!set.isEmpty()){
+            ColorScheme sc = colorConfig.getColorScheme();
             MappedLegend<Double,U> cl = createColouredClassification(
                     set,
                     new NullProgressMonitor(),
-                    colorConfig.getStartColor(),
-                    colorConfig.getEndCol());
+                    sc);
             cl.setLookupFieldName(((MappedLegend)getLegend()).getLookupFieldName());
             cl.setName(getLegend().getName());
             setLegend(cl);
-        }
-    }
-
-    /**
-     * Updates the content of the numeric field where the user can put the number of classes that must be put in the
-     * classification.
-     */
-    public void updateFieldContent(){
-        try{
-            classNumber = Integer.valueOf(jtf.getText());
-        } catch(NumberFormatException nfe){
-            jtf.setText(classNumber.toString());
         }
     }
 
@@ -230,12 +254,18 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         return temp.toArray(new ContainerItemProperties[temp.size()]);
     }
 
+    /**
+     * Return if the given method is supported
+     * @param cm The tested method
+     * @return true if cm is supported
+     */
     private boolean isSupported(CategorizeMethod cm){
         switch(cm){
             case EQUAL_INTERVAL : return true;
             case MANUAL : return true;
             case STANDARD_DEVIATION: return true;
             case QUANTILES: return true;
+            case BOXED_MEANS: return true;
             default : return false;
         }
     }

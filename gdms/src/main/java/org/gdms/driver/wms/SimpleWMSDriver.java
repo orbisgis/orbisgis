@@ -113,6 +113,9 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
             sb.append(streamSource.getScheme());
             sb.append("://");
             sb.append(streamSource.getHost());
+            if(streamSource.getPort() != WMSStreamSource.DEFAULT_PORT ){
+                sb.append(":").append(streamSource.getPort());
+            }
             sb.append(streamSource.getPath());
             sb.append("?");
             Map<String, String> others = streamSource.getOthersQueryMap();
@@ -201,9 +204,11 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
     /**
      * Gets the bounding box of the layer with the srs and the layer.
      *
-     * @param layer
-     * @param srs
-     * @return
+     * @param layer The input MapLayer
+     * @param srs A string representation of the expected SRS
+     * @return The bounding box of layer in srs if it is explicitly advertised by the server. If it is not, we
+     * retrieve an explicitly advertised bounding box defined on the server with its associated SRS and we
+     * project it to the SRS we desire.
      */
     private BoundingBox getLayerBoundingBox(MapLayer layer, String srs) throws DriverException {
         // Obtain the bbox at current level

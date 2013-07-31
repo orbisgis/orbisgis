@@ -39,7 +39,10 @@ import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.ColorPicker;
+import org.orbisgis.sif.components.WideComboBox;
+import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -55,28 +58,85 @@ import java.beans.EventHandler;
  * Some useful methods that will be available for all thematic panels.
  * @author alexis
  */
-public abstract class AbstractFieldPanel extends JPanel {
-    private static final Logger LOGGER = Logger.getLogger("gui."+AbstractFieldPanel.class);
+public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel {
+
+    private static final Logger LOGGER = Logger.getLogger("gui." + AbstractFieldPanel.class);
     private static final I18n I18N = I18nFactory.getI18n(AbstractFieldPanel.class);
     /**
      * Width used for the rectangles that displays the color parameters of the symbols.
      */
-    public final static int FILLED_LABEL_WIDTH = 40;
+    public final static int FILLED_LABEL_WIDTH = 55;
     /**
      * Height used for the rectangles that displays the color parameters of the symbols.
      */
-    public final static int FILLED_LABEL_HEIGHT = 20;
-
-    private ContainerItemProperties[] strokeUoms;
+    public final static int FILLED_LABEL_HEIGHT = 15;
+    protected static final String UNIT_OF_MEASURE = I18n.marktr("Unit of measure");
+    protected static final String OPACITY = I18n.marktr("Opacity");
+    protected static final String WIDTH = I18n.marktr("Width");
+    protected static final String HEIGHT = I18n.marktr("Height");
+    protected static final String SYMBOL = I18n.marktr("Symbol");
+    protected static final String DASH_ARRAY = I18n.marktr("Dash array");
+    protected static final String FIELD = I18n.marktr("<html><b>Field</b></html>");
+    protected static final String LINE_WIDTH_UNIT = I18n.marktr("Line width unit");
+    protected static final String SYMBOL_SIZE_UNIT = I18n.marktr("Symbol size unit");
+    protected static final String PLACE_SYMBOL_ON = I18n.marktr(
+            "<html><p style=\"text-align:right\">Place symbol<br>on</p></html>");
 
     /**
-     * Initialize a {@code JComboBo} whose values are set according to the
+     * Width of the second column in pixels.
+     */
+    protected static final int SECOND_COL_WIDTH = 95;
+    /**
+     * MigLayout constraints for sizing consistency.
+     */
+    protected static final String COLUMN_CONSTRAINTS =
+            "[align r, 110::][align c, "
+            + SECOND_COL_WIDTH + ":" + SECOND_COL_WIDTH + ":]";
+    /**
+     * Fixed width for panels that need it.
+     */
+    protected static final int FIXED_WIDTH = 210;
+    /**
+     * Constraints for ComboBoxes for sizing consistency.
+     */
+    protected static final String COMBO_BOX_CONSTRAINTS =
+            "width " + SECOND_COL_WIDTH + "!";
+    protected ContainerItemProperties[] strokeUoms;
+    /**
+     * DataSource associated to the layer attached to the LegendContext
+     * passed to {@link #initialize(LegendContext, Legend)}.
+     */
+    protected DataSource ds;
+
+    @Override
+    public Component getComponent() {
+        return this;
+    }
+
+    @Override
+    public void initialize(LegendContext lc, Legend leg) {
+        setDataSource(lc.getLayer().getDataSource());
+        setGeometryType(lc.getGeometryType());
+        setLegend(leg);
+    }
+
+    /**
+     * Sets the associated data source.
+     *
+     * @param newDS the new {@link org.gdms.data.DataSource}.
+     */
+    protected void setDataSource(DataSource newDS){
+        ds = newDS;
+    }
+
+    /**
+     * Initialize a {@code JComboBox} whose values are set according to the
      * not spatial fields of {@code ds}.
      * @param ds The original DataSource
      * @return A JComboBox.
      */
-    public JComboBox getFieldCombo(DataSource ds){
-        JComboBox combo = new JComboBox();
+    public WideComboBox getFieldCombo(DataSource ds){
+        WideComboBox combo = new WideComboBox();
         if(ds != null){
             try {
                 Metadata md = ds.getMetadata();
@@ -94,13 +154,14 @@ public abstract class AbstractFieldPanel extends JPanel {
     }
 
     /**
-     * Initialize a {@code JComboBo} whose values are set according to the
+     * Initializes a {@code WideComboBox} whose values are set according to the
      * numeric fields of {@code ds}.
+     *
      * @param ds The original DataSource
-     * @return A JComboBox.
+     * @return WideComboBox
      */
-    public JComboBox getNumericFieldCombo(DataSource ds){
-        JComboBox combo = new JComboBox();
+    public WideComboBox getNumericFieldCombo(DataSource ds){
+        WideComboBox combo = new WideComboBox();
         if(ds != null){
             try {
                 Metadata md = ds.getMetadata();
@@ -130,25 +191,10 @@ public abstract class AbstractFieldPanel extends JPanel {
         lblFill.setPreferredSize(new Dimension(FILLED_LABEL_WIDTH, FILLED_LABEL_HEIGHT));
         lblFill.setMaximumSize(new Dimension(FILLED_LABEL_WIDTH, FILLED_LABEL_HEIGHT));
         lblFill.setOpaque(true);
-        MouseListener ma = EventHandler.create(MouseListener.class, this, "chooseFillColor", "", "mouseClicked");
-        lblFill.addMouseListener(ma);
+        lblFill.setHorizontalAlignment(JLabel.LEFT);
+        lblFill.addMouseListener(
+                EventHandler.create(MouseListener.class, this, "chooseFillColor", "", "mouseClicked"));
         return lblFill;
-    }
-
-    /**
-     * Recursively enables or disables all the components contained in the
-     * containers of {@code comps}.
-     * @param enable Tell if the underlying components should be active or not
-     * @param comp The root component.
-     */
-    protected void setFieldState(boolean enable, Component comp){
-        comp.setEnabled(enable);
-        if(comp instanceof Container){
-            Component[] comps = ((Container)comp).getComponents();
-            for(Component c: comps){
-                setFieldState(enable, c);
-            }
-        }
     }
 
     /**
@@ -176,9 +222,11 @@ public abstract class AbstractFieldPanel extends JPanel {
      */
     public UomCombo getLineUomCombo(StrokeUom input){
         strokeUoms = getUomProperties();
+        // Note: the title is not used in the UI since we extract
+        // the ComboBox.
         UomCombo puc = new UomCombo(input.getStrokeUom(),
                 strokeUoms,
-                I18N.tr("Unit of measure - stroke width :"));
+                I18N.tr(LINE_WIDTH_UNIT));
         ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateLUComboBox", "source.selectedIndex");
         puc.addActionListener(acl2);
         return puc;

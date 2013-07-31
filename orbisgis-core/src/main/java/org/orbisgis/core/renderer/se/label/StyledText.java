@@ -289,7 +289,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
 
     /**
      * Set the font size used to represent this <code>StyledText</code>
-     * @param fontSize
+     * @param fontSize The new font's size
      */
     public void setFontSize(RealParameter fontSize) {
         this.fontSize = fontSize;
@@ -310,7 +310,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
 
     /**
      * Set the font style used to represent this <code>StyledText</code>
-     * @param fontStyle
+     * @param fontStyle The new font's style
      */
     public void setFontStyle(StringParameter fontStyle) {
         if (fontStyle != null) {
@@ -331,7 +331,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
 
     /**
      * Set the font weight used to represent this <code>StyledText</code>
-     * @param fontWeight
+     * @param fontWeight The new font's weight
      */
     public void setFontWeight(StringParameter fontWeight) {
         if (fontWeight != null) {
@@ -384,12 +384,11 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
 
     /**
      * Get the minimal {@code Rectangle2D} that contains this {@code StyledText}.
-     * @param g2
-     * @param map
-     * @param mt
-     * @return
-     * @throws ParameterException
-     * @throws IOException
+     * @param g2 The graphics we draw with
+     * @param map The map of input values
+     * @param mt The current MapTransform
+     * @throws ParameterException If we can't get the input parameters
+     * @throws IOException If something goes wrong while handling fonts
      */
     public Rectangle2D getBounds(Graphics2D g2, Map<String, Object> map,
             MapTransform mt) throws ParameterException, IOException {
@@ -399,11 +398,11 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
 
     /**
      * Get the minimal {@code Rectangle2D} that contains this {@code StyledText}.
-     * @param g2
-     * @param text
-     * @param map
-     * @param mt
-     * @return
+     * @param g2 The graphics we draw with
+     * @param text The text for which we need the bounds.
+     * @param map The map of input values
+     * @param mt The current MapTransform
+     * @return The bounds of the text
      * @throws ParameterException
      * @throws IOException
      */
@@ -417,19 +416,38 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
 
     /**
      * Draw this {@code StyledText} in the {@code Graphics2D g2}.
-     * @param g2
-     * @param map
-     * @param selected
-     * @param mt
-     * @param at
-     * @param perm
+     * @param g2 The graphics we draw with
+     * @param map The map of input values
+     * @param selected If true, the input geometry has been selected
+     * @param mt The current MapTransform
+     * @param at The configured affine transformation
+     * @param perm The rendering permissions
      * @throws ParameterException
      * @throws IOException
      */
     public void draw(Graphics2D g2, Map<String, Object> map,
             boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
         String txt = this.text.getValue(map);
-        draw(g2, txt, map, selected, mt, at, perm);
+        draw(g2, txt, map, selected, mt, at, perm, Label.VerticalAlignment.TOP);
+    }
+
+    /**
+     * Draw this {@code StyledText} in the {@code Graphics2D g2}.
+     * @param g2 The graphics we draw with
+     * @param map The map of input values
+     * @param selected If true, the input geometry has been selected
+     * @param mt The current MapTransform
+     * @param at The configured affine transformation
+     * @param perm The rendering permissions
+     * @param va The needed vertical alignment
+     * @throws ParameterException
+     * @throws IOException
+     */
+    public void draw(Graphics2D g2, Map<String, Object> map,
+            boolean selected, MapTransform mt, AffineTransform at, RenderContext perm,
+            Label.VerticalAlignment va) throws ParameterException, IOException {
+        String txt = this.text.getValue(map);
+        draw(g2, txt, map, selected, mt, at, perm, va);
     }
 
     /**
@@ -440,14 +458,14 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * @param g2
      * The {@code Graphics2D} instance used to render the map we are drawing.
      * @param text
-     * The text we want to compute the ouline of.
-     * @param map
+     * The text we want to compute the outline of.
+     * @param map     The map of input values
      * @param mt
      * Used to compute the font's size.
      * @param at
      * The AffineTransform that we must apply to the shape before returning it.
-     * @param perm
-     * @return
+     * @param perm The rendering permissions
+     * @return The needed Shape
      * @throws ParameterException
      * @throws IOException
      */
@@ -464,17 +482,17 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * @param g2
      * The {@code Graphics2D} instance used to render the map we are drawing.
      * @param text
-     * The text we want to compute the ouline of.
-     * @param map
+     * The text we want to compute the outline of.
+     * @param map     The map of input values
      * @param mt
      * Used to compute the font's size.
      * @param at
      * The AffineTransform that we must apply to the shape before returning it.
-     * @param perm
+     * @param perm The rendering permissions
      * @param va
      * The {@code Label.VerticalAlignment} we must use to determine where to put
      * the baseline of {@code text}.
-     * @return
+     * @return The needed Shape
      * @throws ParameterException
      * If we fail to retrieve a parameter used to configure this {@code
      * StyledText}.
@@ -510,8 +528,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
         //We apply the translation used to manage the height of the text on the
         //line BEFORE to apply at : we use concatenate.
         rat.concatenate(AffineTransform.getTranslateInstance(0, dy));
-        Shape outline = tl.getOutline(rat);
-        return outline;
+        return tl.getOutline(rat);
     }
 
     /**
@@ -519,12 +536,13 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * transformed to {@code Shape} instances. We'll use for that, of course,
      * the inner {@code Fill}, {@code Halo} and {@code Stroke} instances. If
      * they are not set, a simple default {@code SolidFill} will be used.
+     * @param g2 The graphics we draw with
+     * @param map The map of input values
+     * @param selected If true, the input geometry has been selected
      *
-     * @param g2
-     * @param outlines
-     * @param map
-     * @param selected
+     * @param outlines  The list of needed outlines
      * @param mt
+     * Used to compute the font's size.
      * @throws ParameterException
      * @throws IOException
      */
@@ -538,7 +556,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
         }
         for (Shape outline : outlines) {
             /**
-             * No fill and no stroke : apply default solidfill !
+             * No fill and no stroke : apply default SolidFill !
              */
             if (fill == null && stroke == null) {
                 SolidFill sf = new SolidFill(Color.BLACK, 1.0);
@@ -556,21 +574,23 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
 
     /**
      * Draw this {@code StyledText} in the {@code Graphics2D g2}.
-     * @param g2
-     * @param text
-     * @param map
-     * @param selected
-     * @param mt
-     * @param at
-     * @param perm
+     * @param g2 The graphics we draw with
+     * @param text The text we want to draw
+     * @param map The map of input values
+     * @param selected If true, the input geometry has been selected
+     * @param mt The current MapTransform
+     * @param at The configured affine transformation
+     * @param perm The rendering permissions
+     * @param va The needed vertical alignment
      * @throws ParameterException
      * @throws IOException
      */
     public void draw(Graphics2D g2, String text, Map<String, Object> map,
-            boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
+            boolean selected, MapTransform mt, AffineTransform at, RenderContext perm,
+            Label.VerticalAlignment va) throws ParameterException, IOException {
 
         ArrayList<Shape> outlines = new ArrayList<Shape>();
-        outlines.add(getOutline(g2, text, map, mt, at, perm));
+        outlines.add(getOutline(g2, text, map, mt, at, perm, va));
         drawOutlines(g2, outlines, map, selected, mt);
     }
 

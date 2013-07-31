@@ -32,6 +32,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.EventHandler;
 import javax.swing.*;
+
+import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
@@ -40,10 +42,11 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * Panel associated to {@code Rule} instances in the legend edition UI.
+ * Rule UI.
+ *
  * @author Alexis Guéganno
  */
-public class PnlRule extends JPanel  implements ISELegendPanel {
+public class PnlRule extends JPanel implements ISELegendPanel {
         private static final I18n I18N = I18nFactory.getI18n(PnlRule.class);
         private JButton btnCurrentScaleToMin;
         private JButton btnCurrentScaleToMax;
@@ -54,6 +57,15 @@ public class PnlRule extends JPanel  implements ISELegendPanel {
         private Rule rule;
         private LegendContext legendContext;
         private String id;
+
+        /**
+         * Create a new {@code PnlRule} with the given {@code LegendContext}.
+         *
+         * @param lc LegendContext
+         */
+        public PnlRule(LegendContext lc) {
+            this.legendContext = lc;
+        }
 
         /**
          * Sets the Rule associated to this panel.
@@ -76,133 +88,75 @@ public class PnlRule extends JPanel  implements ISELegendPanel {
         @Override
         public Component getComponent() {
                 removeAll();
-                FlowLayout fl = new FlowLayout();
-                fl.setVgap(0);
-                this.setLayout(fl);
-                //We need the map transform to use the buttons
-                final MapTransform mt = legendContext.getCurrentMapTransform();
-                JPanel panel = new JPanel();
-                panel.setLayout(new GridBagLayout());
-                GridBagConstraints gbc = new GridBagConstraints();
-                //We display the title
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                gbc.anchor = GridBagConstraints.LINE_START;
-                panel.add(new JLabel(I18N.tr("Title : ")), gbc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 1;
-                gbc.gridy = 0;
-                gbc.anchor = GridBagConstraints.LINE_START;
-                txtName = new JTextField(rule.getName(), 10);
-                txtName.addFocusListener(EventHandler.create(FocusListener.class, this, "setTitle", "source.text", "focusLost"));
-                panel.add(txtName, gbc);
-                //We display the description
-                //Label
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 1;
-                gbc.anchor = GridBagConstraints.LINE_START;
-                panel.add(new JLabel("Description : "), gbc);
-                //Text field
-                gbc = new GridBagConstraints();
-                gbc.gridx = 1;
-                gbc.gridy = 1;
-                gbc.insets = new Insets(5, 5, 5, 5);
-                gbc.anchor = GridBagConstraints.LINE_START;
+
+                JPanel panel = new JPanel(new MigLayout("wrap 3", "[align r][95][]"));
+                panel.setBorder(BorderFactory.createTitledBorder(
+                        I18N.tr("Rule settings")));
+
+                // Title
+                panel.add(new JLabel(I18N.tr("Title")));
+
+                txtName = new JTextField(rule.getName());
+                txtName.addFocusListener(
+                        EventHandler.create(FocusListener.class, this,
+                                "setTitle", "source.text", "focusLost"));
+                panel.add(txtName, "span 2, growx");
+
+                // Description
+                panel.add(new JLabel(I18N.tr("Description")));
                 txtDescription = new JTextArea("");
-                txtDescription.setColumns(40);
                 txtDescription.setRows(6);
                 txtDescription.setLineWrap(true);
-                txtDescription.addFocusListener(EventHandler.create(
-                        FocusListener.class, this, "setDescription", "source.text", "focusLost"));
-                JScrollPane jsp = new JScrollPane(txtDescription);
-                jsp.setPreferredSize(txtDescription.getPreferredSize());
-                panel.add(jsp, gbc);
-                //We display the minScale
-                KeyListener keyAdapter = EventHandler.create(KeyListener.class, this, "applyScales");
-                //Text
-                //We put the text field and the button in a single panel in order to
-                JPanel min = new JPanel();
-                FlowLayout flowMin = new FlowLayout();
-                flowMin.setHgap(5);
-                min.setLayout(flowMin);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 2;
-                gbc.anchor = GridBagConstraints.LINE_START;
-                panel.add(new JLabel(I18N.tr("Min. scale :")), gbc);
-                //Text field
-                txtMinScale = new JTextField(10);
+                txtDescription.setWrapStyleWord(true);
+                txtDescription.addFocusListener(
+                        EventHandler.create(FocusListener.class, this,
+                                "setDescription", "source.text", "focusLost"));
+                panel.add(new JScrollPane(txtDescription), "span 2, growx");
+
+                // Min scale
+                panel.add(new JLabel(I18N.tr("Min. scale")));
+                txtMinScale = new JTextField(getMinscale());
+                KeyListener keyAdapter =
+                        EventHandler.create(KeyListener.class, this, "applyScales");
                 txtMinScale.addKeyListener(keyAdapter);
-                txtMinScale.setText(getMinscale());
-                min.add(txtMinScale);
-                //Button
-                btnCurrentScaleToMin = new JButton(I18N.tr("Current scale"));
+                panel.add(txtMinScale, "growx");
+                btnCurrentScaleToMin = new JButton(I18N.tr("Current"));
                 btnCurrentScaleToMin.addActionListener(new ActionListener() {
-
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                                txtMinScale.setText(Integer.toString((int) mt.getScaleDenominator()));
+                                txtMinScale.setText(Integer.toString(
+                                        (int) legendContext.getCurrentMapTransform()
+                                                .getScaleDenominator()));
                                 applyScales();
                         }
                 });
-                min.add(btnCurrentScaleToMin);
-                //We add this dedicated panel to our GridBagLayout.
-                gbc = new GridBagConstraints();
-                gbc.gridx = 1;
-                gbc.gridy = 2;
-                gbc.anchor = GridBagConstraints.LINE_START;
-                panel.add(min, gbc);
-                //We display the maxScale
-                //Text
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 3;
-                gbc.anchor = GridBagConstraints.LINE_START;
-                panel.add(new JLabel(I18N.tr("Max. scale :")), gbc);
-                //We put the text field and the button in a single panel in order to
-                //improve the UI.
-                //Text field
-                JPanel max = new JPanel();
-                FlowLayout flowMax = new FlowLayout();
-                flowMax.setHgap(5);
-                max.setLayout(flowMax);
-                txtMaxScale = new JTextField(10);
+                panel.add(btnCurrentScaleToMin);
+
+                // Max scale
+                panel.add(new JLabel(I18N.tr("Max. scale")));
+                txtMaxScale = new JTextField(getMaxscale());
                 txtMaxScale.addKeyListener(keyAdapter);
-                txtMaxScale.setText(getMaxscale());
-                max.add(txtMaxScale, gbc);
-                //Button
-                btnCurrentScaleToMax = new JButton(I18N.tr("Current scale"));
+                panel.add(txtMaxScale, "growx");
+                btnCurrentScaleToMax = new JButton(I18N.tr("Current"));
                 btnCurrentScaleToMax.addActionListener(new ActionListener() {
-
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                                txtMaxScale.setText(Integer.toString((int) mt.getScaleDenominator()));
+                                txtMaxScale.setText(Integer.toString(
+                                        (int) legendContext.getCurrentMapTransform()
+                                                .getScaleDenominator()));
                                 applyScales();
                         }
                 });
-                max.add(btnCurrentScaleToMax);
-                //We add this dedicated panel to our GridBagLayout.
-                gbc = new GridBagConstraints();
-                gbc.gridx = 1;
-                gbc.gridy = 3;
-                gbc.anchor = GridBagConstraints.LINE_START;
-                panel.add(max, gbc);
+                panel.add(btnCurrentScaleToMax);
+
                 this.add(panel);
-                this.setMinimumSize(panel.getPreferredSize());
-                this.setBorder(BorderFactory.createTitledBorder(I18N.tr("Rule Configuration")));
                 return this;
         }
 
         @Override
         public void initialize(LegendContext lc) {
-                legendContext = lc;
-                getComponent();
-        }
-
-        @Override
-        public PnlRule newInstance() {
-                return new PnlRule();
+            throw new UnsupportedOperationException("PnlRule is no longer " +
+                    "initialized this way.");
         }
 
         @Override

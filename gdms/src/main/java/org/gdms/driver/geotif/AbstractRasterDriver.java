@@ -34,8 +34,10 @@ package org.gdms.driver.geotif;
 import com.vividsolutions.jts.geom.Envelope;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.cts.crs.CRSException;
 import org.cts.crs.CoordinateReferenceSystem;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.*;
@@ -95,6 +97,8 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
 
         } catch (IOException e) {
             throw new DriverException("Cannot access the source: " + file, e);
+        } catch (CRSException e) {
+            throw new DriverException("Cannot create the CRS", e);
         }
     }
 

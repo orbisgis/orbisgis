@@ -55,10 +55,11 @@ import org.xnap.commons.i18n.I18nFactory;
  * We expect from its {@code Fill} to be a constant {@code SolidFill} instance.
  * @author Alexis Guéganno
  */
-public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbolArea, StrokeUom {
+public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbolArea {
 
     private static final I18n I18N = I18nFactory.getI18n(UniqueSymbolArea.class);
     private ConstantSolidFill fillLegend;
+    public static final String NAME = I18N.tr("Unique Symbol - Area");
 
     /**
      * Builds a new default {@code UniqueSymbolArea} from scratch. It contains a
@@ -139,7 +140,7 @@ public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbo
 
     @Override
     public String getLegendTypeName() {
-        return I18N.tr("Unique Symbol - Polygon");
+        return NAME;
     }
 
     @Override

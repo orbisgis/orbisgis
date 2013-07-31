@@ -58,6 +58,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Translate;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * A "AreaSymbolizer" specifies the rendering of a polygon or other area/surface geometry, 
@@ -74,14 +76,15 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
         private RealParameter perpendicularOffset;
         private Stroke stroke;
         private Fill fill;
+        private static final I18n I18N = I18nFactory.getI18n(AreaSymbolizer.class);
 
         /**
-         * Build a new AreaSymbolizer, named "Area Symbolizer". It is defined with a 
+         * Build a new AreaSymbolizer, named "Area Symbolizer". It is defined with a
          * <code>SolidFill</code> and a <code>PenStroke</code>
          */
         public AreaSymbolizer() {
                 super();
-                name = "Area symbolizer";
+                name = I18N.tr("Area Symbolizer");
                 this.setFill(new SolidFill());
                 this.setStroke(new PenStroke());
         }

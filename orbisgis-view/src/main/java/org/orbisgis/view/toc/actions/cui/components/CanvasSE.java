@@ -106,7 +106,7 @@ public class CanvasSE extends JPanel {
         this.setSize(width, height);
         this.setPreferredSize(new Dimension(width, height));
         this.setMaximumSize(new Dimension(width, height));
-        this.setOpaque(true);
+        this.setOpaque(false);
         s = sym;
         gf = new GeometryFactory();
         geom = getSampleGeometry();
@@ -138,8 +138,8 @@ public class CanvasSE extends JPanel {
                 setBasicDataSource();
             }
             try {
-                g2.setBackground(Color.WHITE);
-                g2.fillRect(0, 0, width, height);
+                g2.setBackground(new Color(255, 255, 255, 0));
+                g2.clearRect(0, 0, width, height);
                 if(sample instanceof DataSource){
                     DataSource ds = (DataSource) sample;
                     if(!ds.isOpen()){

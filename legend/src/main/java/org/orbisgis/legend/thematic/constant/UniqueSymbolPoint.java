@@ -38,6 +38,8 @@ import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.awt.*;
 
@@ -55,9 +57,11 @@ import java.awt.*;
  * </ul>
  * @author Alexis Guéganno
  */
-public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbolArea, StrokeUom {
+public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbolArea {
 
     private ConstantWKNLegend markGraphic;
+    private static final I18n I18N = I18nFactory.getI18n(UniqueSymbolPoint.class);
+    public static final String NAME = I18N.tr("Unique Symbol - Point");
 
     /**
      * Build a new {@code UniqueSymbolPoint} from scratch. It will instanciate
@@ -90,6 +94,8 @@ public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbo
             if(gr instanceof MarkGraphic){
                 markGraphic = new ConstantWKNLegend((MarkGraphic)gr);
             }
+            setViewBoxHeight(getViewBoxHeight());
+            setViewBoxWidth(getViewBoxWidth());
         } else {
             throw new IllegalArgumentException("We can't analyze symbolizers with"
                     + "graphic collections.");
@@ -191,7 +197,7 @@ public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbo
 
     @Override
     public String getLegendTypeName() {
-        return "Unique Symbol - Point";
+        return NAME;
     }
 
     @Override

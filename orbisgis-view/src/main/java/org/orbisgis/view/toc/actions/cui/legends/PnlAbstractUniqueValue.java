@@ -28,8 +28,11 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
@@ -37,12 +40,15 @@ import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.background.*;
 import org.orbisgis.view.joblist.JobListItem;
+import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelUniqueValue;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorConfigurationPanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -53,11 +59,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.TreeSet;
 
 /**
- * Methods shared by unique value analysis.
+ * Base class for Value Classification UIs.
+ *
  * @author alexis
  */
 public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends PnlAbstractTableAnalysis<String,U> {
@@ -65,9 +74,10 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
     public static final String CREATE_CLASSIF = "Create classification";
     public static final Logger LOGGER = Logger.getLogger(PnlAbstractUniqueValue.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlAbstractUniqueValue.class);
-    private ColorConfigurationPanel colorConfig;
+    private ColorConfigurationPanel colorConfigPanel;
     private BackgroundListener background;
     protected final static String JOB_NAME = "recodeSelectDistinct";
+    private JPanel classifPanel;
 
     /**
      * We take the fallback configuration and copy it for each key.
@@ -78,6 +88,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
     public AbstractRecodedLegend<U> createConstantClassification(TreeSet<String> set, ProgressMonitor pm) {
         U lp = ((MappedLegend<String,U>)getLegend()).getFallbackParameters();
         AbstractRecodedLegend<U> newRL = (AbstractRecodedLegend<U>) getEmptyAnalysis();
+        newRL.setComparator(getComparator());
         newRL.setFallbackParameters(lp);
         int size = set.size();
         double m = size == 0 ? 0 : 90.0/(double)size;
@@ -100,73 +111,83 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
         pm.progressTo(100);
         pm.endTask();
         pm.progressTo(100);
+        postProcess(newRL);
         return newRL;
     }
+
+    /**
+     * Get the comparator to be used to retrieve the values sorted the best way.
+     * @return A comparator that can be used with the keys of the associated mapping.
+     */
+    public Comparator<String> getComparator(){
+        String fieldName = getFieldName();
+        DataSource ds = getDataSource();
+        try {
+            Metadata metadata = ds.getMetadata();
+            Type type = metadata.getFieldType(metadata.getFieldIndex(fieldName));
+            return AbstractRecodedLegend.getComparator(type);
+        } catch (DriverException e) {
+            LOGGER.warn(I18N.tr("Can't build the analysis with an accurate comparator."),e);
+        }
+        return null;
+    }
+
     /**
      * Disables the colour configuration.
      */
     public void onFromFallback(){
-        setFieldState(false,colorConfig);
+        ComponentUtil.setFieldState(false, colorConfigPanel);
     }
 
     /**
      * Enables the colour configuration.
      */
     public void onComputed(){
-        setFieldState(true, colorConfig);
+        ComponentUtil.setFieldState(true, colorConfigPanel);
     }
 
     /**
      * Gets the JPanel that gathers all the buttons and labels to create a classification from scratch;
      * @return The JPanel used to create a classification from scratch.
      */
+    @Override
     public JPanel getCreateClassificationPanel() {
-        JPanel ret = new JPanel();
-        BoxLayout bl = new BoxLayout(ret, BoxLayout.Y_AXIS);
-        ret.setLayout(bl);
-        ret.setBorder(BorderFactory.createTitledBorder(I18N.tr("Generate")));
-        //The button Group
-        JPanel btnPnl = new JPanel();
-        BoxLayout btnLayout = new BoxLayout(btnPnl, BoxLayout.Y_AXIS);
-        btnPnl.setLayout(btnLayout);
-        ButtonGroup bg = new ButtonGroup();
-        JRadioButton fromFallback = new JRadioButton(I18N.tr("Colour from the fallback symbol"));
-        fromFallback.setActionCommand(FALLBACK);
-        JRadioButton computed = new JRadioButton(I18N.tr("Computed colour"));
-        computed.setActionCommand(COMPUTED);
-        bg.add(fromFallback);
-        bg.add(computed);
-        bg.setSelected(computed.getModel(), true);
-        fromFallback.setAlignmentX((float) 0);
-        computed.setAlignmentX((float)0);
-        btnPnl.add(fromFallback);
-        btnPnl.add(computed);
-        btnPnl.setAlignmentX((float).5);
-        ret.add(btnPnl);
-        //We build the panel used to configure the color before creating the classification.
-        if(colorConfig == null){
-            colorConfig = new ColorConfigurationPanel();
+        if(classifPanel == null){
+            classifPanel = new JPanel(new MigLayout("wrap 1", "[" + FIXED_WIDTH + "]"));
+            classifPanel.setBorder(BorderFactory.createTitledBorder(
+                    I18N.tr(CLASSIFICATION_SETTINGS)));
+
+            // Choose between fallback color and a color scheme
+            JRadioButton fromFallback = new JRadioButton(I18N.tr("Use the fallback color"));
+            fromFallback.setActionCommand(FALLBACK);
+            fromFallback.addActionListener(
+                    EventHandler.create(ActionListener.class, this, "onFromFallback"));
+            JRadioButton computed = new JRadioButton(I18N.tr("Use a color scheme:"));
+            computed.setActionCommand(COMPUTED);
+            computed.addActionListener(
+                    EventHandler.create(ActionListener.class, this, "onComputed"));
+            ButtonGroup bg = new ButtonGroup();
+            bg.add(fromFallback);
+            bg.add(computed);
+            bg.setSelected(computed.getModel(), true);
+            classifPanel.add(fromFallback);
+            classifPanel.add(computed);
+            // Color scheme panel
+            ArrayList<String> names = new ArrayList<String>(ColorScheme.discreteColorSchemeNames());
+            names.addAll(ColorScheme.rangeColorSchemeNames());
+            colorConfigPanel = new ColorConfigurationPanel(names);
+            classifPanel.add(colorConfigPanel, "align c, growx");
+            // Create button
+            JButton createButton = new JButton(I18N.tr("Create"));
+            createButton.setActionCommand("click");
+            createButton.addActionListener(
+                    EventHandler.create(ActionListener.class, this, "onCreateClassification", ""));
+            classifPanel.add(createButton, "align c");
+
+            // Enable the color config by default
+            onComputed();
         }
-        ret.add(colorConfig);
-        //We still need a button to configure all of that
-        JPanel btnPanel = new JPanel();
-        JButton createButton = new JButton(I18N.tr("Create Classification"));
-        createButton.setActionCommand("click");
-        btnPanel.add(createButton);
-        btnPanel.setAlignmentX((float).5);
-        ret.add(btnPanel);
-        //We still must feed all of that with listeners...
-        //Colours
-        ActionListener al1 = EventHandler.create(ActionListener.class, this, "onFromFallback");
-        ActionListener al2 = EventHandler.create(ActionListener.class, this, "onComputed");
-        fromFallback.addActionListener(al1);
-        computed.addActionListener(al2);
-        //Creation
-        ActionListener btn = EventHandler.create(ActionListener.class, this, "onCreateClassification","");
-        createButton.addActionListener(btn);
-        //We enable the color config by default
-        onComputed();
-        return ret;
+        return classifPanel;
     }
 
     @Override
@@ -177,12 +198,6 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
     @Override
     public int getKeyColumn(){
         return TableModelUniqueValue.KEY_COLUMN;
-    }
-
-    @Override
-    public String getNotUsedKey(){
-        AbstractRecodedLegend leg = (AbstractRecodedLegend) getLegend();
-        return leg.getNotUsedKey("newValue");
     }
 
     @Override
@@ -232,18 +247,18 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
 
         @Override
         public void run(ProgressMonitor pm) {
-            MappedLegend<String,U> legend = ((MappedLegend<String,U>)getLegend());
             result = getValues(pm);
             if(result != null){
                 AbstractRecodedLegend<U> rl;
-                if(colorConfig.isEnabled() && result.size() > 0){
-                    Color start = colorConfig.getStartColor();
-                    Color end = colorConfig.getEndCol();
-                    rl = (AbstractRecodedLegend<U>) createColouredClassification(result, pm, start, end);
+                if(colorConfigPanel.isEnabled() && result.size() > 0){
+                    ColorScheme sc = colorConfigPanel.getColorScheme();
+                    rl = (AbstractRecodedLegend<U>) createColouredClassification(result, pm, sc);
+                    rl.setComparator(getComparator());
                 } else {
                     rl = createConstantClassification(result, pm);
                 }
                 if(rl != null){
+                    MappedLegend<String,U> legend = getLegend();
                     rl.setLookupFieldName(legend.getLookupFieldName());
                     rl.setName(legend.getName());
                     setLegend(rl);
@@ -260,7 +275,8 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
          * @return The distinct values as String instances in a {@link HashSet} or null if the job has been cancelled.
          */
         public TreeSet<String> getValues(final ProgressMonitor pm){
-            TreeSet<String> ret = new TreeSet<String>();
+            Comparator<String> comparator = getComparator();
+            TreeSet<String> ret = comparator != null ? new TreeSet<String>(comparator) : new TreeSet<String>();
             try {
                 DataSource ds = getDataSource();
                 long rowCount=ds.getRowCount();
@@ -442,8 +458,9 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
         @Override
         public void jobRemoved(Job job) {
             if(job.getId().is(new DefaultJobId(JOB_NAME))){
-                ((AbstractTableModel) getJTable().getModel()).fireTableDataChanged();
-                getJTable().invalidate();
+                JTable table = tablePanel.getJTable();
+                ((AbstractTableModel) table.getModel()).fireTableDataChanged();
+                table.invalidate();
             }
         }
 

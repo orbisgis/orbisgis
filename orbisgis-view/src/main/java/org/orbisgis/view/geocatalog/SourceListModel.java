@@ -39,6 +39,7 @@ import org.apache.commons.collections.ComparatorUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.Schema;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
@@ -213,6 +214,9 @@ public class SourceListModel extends AbstractListModel {
                         }
                     }
                 } catch(DriverException ex) {
+                    //Log warning
+                    LOGGER.warn(I18N.tr("Data source schema could not be read"),ex);
+                } catch(DriverLoadException ex) {
                     //Log warning
                     LOGGER.warn(I18N.tr("Data source schema could not be read"),ex);
                 }

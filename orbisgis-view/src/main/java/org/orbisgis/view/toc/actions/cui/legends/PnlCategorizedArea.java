@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
@@ -12,6 +13,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
@@ -35,19 +37,14 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * "Interval classification - Area" UI.
+ *
  * @author Alexis Guéganno
  */
 public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlCategorizedArea.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlCategorizedArea.class);
-    private CanvasSE fallbackPreview;
-    private JComboBox fieldCombo;
     private JCheckBox strokeBox;
-
-    @Override
-    public CanvasSE getPreview() {
-        return fallbackPreview;
-    }
 
     /**
      * This methods is called by EventHandler when the user clicks on the fall back's preview. It opens an UI that lets
@@ -95,75 +92,26 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     }
 
     @Override
-    public void initializeLegendFields() {
-        this.removeAll();
-        JPanel glob = new JPanel();
-        GridBagLayout grid = new GridBagLayout();
-        glob.setLayout(grid);
-        int i = 0;
-        //Field chooser
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getFieldLine(), gbc);
-        //Fallback symbol
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getFallback(), gbc);
-        //UOM
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getUOMCombo(),gbc);
-        //Enable Stroke
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getEnableStrokeCheckBox(), gbc);
-        //Classification generator
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getCreateClassificationPanel(),gbc);
-        //Table for the recoded configurations
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        i++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        glob.add(getTablePanel(), gbc);
-        this.add(glob);
-        this.revalidate();
+    protected void beforeFallbackSymbol(JPanel genSettings) {
+        // Enable stroke?
+        genSettings.add(getEnableStrokeCheckBox(), "span 2, align center");
     }
 
     /**
-     * Gets the panel used to set if the stroke will be drawable or not.
-     * @return The configuration panel for the stroke use.
+     * Gets the checkbox used to set if the border will be drawn.
+     *
+     * @return The enable border checkbox.
      */
-    public JPanel getEnableStrokeCheckBox(){
-        JPanel ret = new JPanel();
-        ret.add(new JLabel(I18N.tr("Enable Stroke:")));
-        strokeBox = new JCheckBox(I18N.tr(""));
-        CategorizedArea ra = (CategorizedArea) getLegend();
-        strokeBox.setSelected(ra.isStrokeEnabled());
-        strokeBox.addActionListener(EventHandler.create(ActionListener.class, this, "onEnableStroke"));
-        ret.add(strokeBox);
-        return ret;
+    private JCheckBox getEnableStrokeCheckBox(){
+        strokeBox = new JCheckBox(I18N.tr(ENABLE_BORDER));
+        strokeBox.setSelected(((CategorizedArea) getLegend()).isStrokeEnabled());
+        strokeBox.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onEnableStroke"));
+        return strokeBox;
     }
 
     @Override
-    public MappedLegend<Double,AreaParameters> getEmptyAnalysis() {
+    public CategorizedArea getEmptyAnalysis() {
         return new CategorizedArea();
     }
 
@@ -173,7 +121,7 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     }
 
     @Override
-    public TableCellEditor getParametersCellEditor() {
+    public TableCellEditor getPreviewCellEditor() {
         return new ParametersEditorCategorizedArea();
     }
 
@@ -238,24 +186,8 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     }
 
     @Override
-    public Component getComponent() {
-        initializeLegendFields();
-        return this;
-    }
-
-    @Override
-    public ISELegendPanel newInstance() {
-        return new PnlCategorizedArea();
-    }
-
-    @Override
     public String validateInput() {
         return "";
-    }
-
-    @Override
-    public String getFieldName(){
-        return fieldCombo.getSelectedItem().toString();
     }
 
     /**
@@ -264,8 +196,14 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     public void onEnableStroke(){
         CategorizedArea ra = (CategorizedArea) getLegend();
         ra.setStrokeEnabled(strokeBox.isSelected());
-        getPreview().setSymbol(new UniqueSymbolArea(ra.getFallbackParameters()).getSymbolizer());
-        TableModelInterval model = (TableModelInterval) getJTable().getModel();
+        UniqueSymbolArea usa = new UniqueSymbolArea(ra.getFallbackParameters());
+        if(ra.isStrokeEnabled()){
+            ra.setStrokeUom(Uom.fromString(strokeUoms[lineUom.getSelectedIndex()].getKey()));
+            usa.setStrokeUom(ra.getStrokeUom());
+        }
+
+        getPreview().setSymbol(usa.getSymbolizer());
+        TableModelInterval model = (TableModelInterval) tablePanel.getJTable().getModel();
         model.fireTableDataChanged();
     }
 
@@ -282,23 +220,11 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
         return jp;
     }
 
-    /**
-     * Builds the panel used to display and configure the fallback symbol
-     *
-     * @return The Panel where the fallback configuration is displayed.
-     */
-    private JPanel getFallback() {
-        JPanel jp = new JPanel();
-        jp.add(new JLabel(I18N.tr("Fallback Symbol")));
-        initPreview();
-        jp.add(fallbackPreview);
-        return jp;
-    }
-
-    private JPanel getUOMCombo(){
+    @Override
+    protected JComboBox getUOMComboBox(){
         UomCombo jcb = getLineUomCombo(((CategorizedArea) getLegend()));
-        ActionListener aclUom = EventHandler.create(ActionListener.class, this, "updatePreview", "source");
-        jcb.addActionListener(aclUom);
-        return jcb;
+        jcb.addActionListener(
+                EventHandler.create(ActionListener.class, this, "updatePreview", "source"));
+        return jcb.getCombo();
     }
 }

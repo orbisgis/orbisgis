@@ -17,6 +17,8 @@ import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -27,13 +29,15 @@ import java.util.List;
  * of literal or categorized parameters.
  * @author Alexis Guéganno
  */
-public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> implements StrokeUom{
+public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> {
 
     private LineSymbolizer symbolizer;
     private CategorizedColor color;
     private CategorizedReal opacity;
     private CategorizedReal width;
     private CategorizedString dash;
+    private static final I18n I18N = I18nFactory.getI18n(CategorizedLine.class);
+    public static final String NAME = I18N.tr("Interval Classification - Line");
 
     /**
      * Builds a new, empty, {@code CategorizedLine}.
@@ -136,7 +140,7 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> i
 
     @Override
     public String getLegendTypeName() {
-        return "Interval Classification - Line";
+        return NAME;
     }
 
     @Override
@@ -194,19 +198,11 @@ public class CategorizedLine extends AbstractCategorizedLegend<LineParameters> i
         return ret;
     }
 
-    /**
-     * Gets the Uom used for the inner Stroke.
-     * @return The unit of measure used to compute the width of the stroke.
-     */
     @Override
     public Uom getStrokeUom(){
         return symbolizer.getStroke().getUom();
     }
 
-    /**
-     * Gets the Uom used for the inner Stroke.
-     * @param u The unit of measure used to compute the width of the stroke.
-     */
     @Override
     public void setStrokeUom(Uom u){
         symbolizer.getStroke().setUom(u);

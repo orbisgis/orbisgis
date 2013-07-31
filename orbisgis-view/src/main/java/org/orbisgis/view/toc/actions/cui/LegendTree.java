@@ -29,7 +29,6 @@ package org.orbisgis.view.toc.actions.cui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
@@ -45,7 +44,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.factory.LegendFactory;
@@ -56,6 +54,7 @@ import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.orbisgis.view.components.renderers.TreeLaFRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.view.toc.actions.cui.legend.ILegendPanelFactory;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.LegendTreeModel;
 import org.orbisgis.view.toc.wrapper.RuleWrapper;
@@ -81,8 +80,8 @@ public class LegendTree extends JPanel {
     private JButton jButtonMenuRename;
     private JButton jButtonMenuUp;
 
-    public LegendTree(final SimpleStyleEditor simpleStyleEditor) {
-        this.simpleStyleEditor = simpleStyleEditor;
+    public LegendTree(final SimpleStyleEditor simpleEditor) {
+        simpleStyleEditor = simpleEditor;
 
         StyleWrapper style = simpleStyleEditor.getStyleWrapper();
         //We create our tree
@@ -103,6 +102,7 @@ public class LegendTree extends JPanel {
         //We want to select only one element at a time.
         tree.getSelectionModel().setSelectionMode(
                 TreeSelectionModel.SINGLE_TREE_SELECTION);
+        selectAndShowFirstLegend(style);
         //We refresh icons when the selection changes.
         TreeSelectionListener tsl = EventHandler.create(
                 TreeSelectionListener.class, this, "refreshIcons");
@@ -118,8 +118,6 @@ public class LegendTree extends JPanel {
         this.setLayout(new BorderLayout());
         this.add(toolBar, BorderLayout.PAGE_START);
         JScrollPane scrollPane = new JScrollPane(tree);
-        scrollPane.getViewport().setViewSize(new Dimension(200, 200));
-        scrollPane.getViewport().setExtentSize(new Dimension(200, 200));
         this.add(scrollPane, BorderLayout.CENTER);
         refreshIcons();
     }
@@ -248,7 +246,6 @@ public class LegendTree extends JPanel {
             }
         }
         return null;
-
     }
 
     /**
@@ -342,6 +339,7 @@ public class LegendTree extends JPanel {
         ActionListener aladd = EventHandler.create(
                 ActionListener.class, this, "addElement");
         jButtonMenuAdd.addActionListener(aladd);
+        jButtonMenuAdd.setFocusPainted(false);
         toolBar.add(jButtonMenuAdd);
 
         jButtonMenuDel = new JButton();
@@ -370,54 +368,45 @@ public class LegendTree extends JPanel {
      * be added in the case there is none.
      */
     private void addLegend() {
-        StyleWrapper sw = simpleStyleEditor.getStyleWrapper();
-        ArrayList<String> paneNames = new ArrayList<String>();
-        ArrayList<ILegendPanel> ids = new ArrayList<ILegendPanel>();
-        ILegendPanel[] legends = simpleStyleEditor.getAvailableLegends();
-        for (int i = 0; i < legends.length; i++) {
-            ILegendPanel legendPanelUI = legends[i];
-            if (legendPanelUI.acceptsGeometryType(
-                    simpleStyleEditor.getGeometryType())) {
-                paneNames.add(legendPanelUI.getLegend().getLegendTypeName());
-                ids.add(legendPanelUI);
-            }
-        }
-        LegendUIChooser legendPicker = new LegendUIChooser(
-                paneNames.toArray(new String[paneNames.size()]),
-                ids.toArray(new ILegendPanel[ids.size()]));
+        LegendUIChooser legendPicker = new LegendUIChooser(simpleStyleEditor);
 
         if (UIFactory.showDialog(legendPicker)) {
-            //We retrieve the legend we want to add
-            ILegendPanel ilp = (ILegendPanel) legendPicker.getSelected();
-            Legend leg = ilp.copyLegend();
-            ILegendPanel copy = (ILegendPanel) ilp.newInstance();
-            copy.setLegend(leg);
-            copy.setGeometryType(simpleStyleEditor.getGeometryType());
-            //We retrieve the rw where we will add it.
+            // Recover the panel that was selected when the user clicked OK.
+            ILegendPanel ilp = legendPicker.getSelectedPanel();
+
+            // Get the currently selected RuleWrapper, or the last one in this
+            // style if none is currently selected.
             RuleWrapper currentrw = getSelectedRule();
+            StyleWrapper sw = simpleStyleEditor.getStyleWrapper();
             if (currentrw == null) {
                 if (sw.getSize() == 0) {
                     addRule();
                 }
                 currentrw = sw.getRuleWrapper(sw.getSize() - 1);
             }
-            Symbolizer sym = leg.getSymbolizer();
-            sym.setName(getUniqueName(ilp.getLegend().getLegendTypeName(),
-                                      currentrw.getRule(), 0));
-            //We retrieve the index where to put it.
-            ILegendPanel sl = getSelectedLegend();
-            LegendTreeModel tm = (LegendTreeModel) tree.getModel();
-            tm.addElement(currentrw, copy, sl);
+
+            // Set the Legend's name.
+            Legend legend = ilp.getLegend();
+            legend.getSymbolizer().setName(
+                getUniqueName(legend.getLegendTypeName(),
+                              currentrw.getRule(), 0));
+
+            // Add the panel to the LegendTree.
+            ((LegendTreeModel) tree.getModel())
+                    .addElement(currentrw, ilp, getSelectedLegend());
+
             // Automatically select the newly added legend in the tree.
             TreePath selectionPath = tree.getSelectionPath();
             TreePath parent;
             if(selectionPath.getLastPathComponent() instanceof RuleWrapper){
                 parent = selectionPath;
             } else {
-                parent = selectionPath.getParentPath();;
+                parent = selectionPath.getParentPath();
             }
-            tree.setSelectionPath(parent.pathByAddingChild(copy));
-            simpleStyleEditor.legendAdded(copy);
+            tree.setSelectionPath(parent.pathByAddingChild(ilp));
+
+            // Notify the SimpleStyleEditor that a Legend has been added.
+            simpleStyleEditor.legendAdded(ilp);
         }
     }
 
@@ -470,19 +459,19 @@ public class LegendTree extends JPanel {
         });
         if (UIFactory.showDialog(mip)) {
             String s = mip.getInput("RuleName");
-            RuleWrapper cur = getSelectedRule();
             LegendTreeModel tm = (LegendTreeModel) tree.getModel();
             //We need to link our new RuleWrapper with the layer we are editing.
-            Style style = simpleStyleEditor.getStyleWrapper().getStyle();
-            Rule temp = new Rule(style.getLayer());
+            Rule temp = new Rule(simpleStyleEditor.getStyleWrapper().getStyle().getLayer());
             temp.setName(s);
             Legend leg = LegendFactory.getLegend(
                     temp.getCompositeSymbolizer().getSymbolizerList().get(0));
-            ILegendPanel ilp = simpleStyleEditor.associatePanel(leg);
+            // Initialize a panel for this legend.
+            ILegendPanel ilp = ILegendPanelFactory.getILegendPanel(
+                    simpleStyleEditor, leg);
             List<ILegendPanel> list = new ArrayList<ILegendPanel>();
             list.add(ilp);
-            RuleWrapper nrw = new RuleWrapper(temp, list);
-            tm.addElement(tm.getRoot(), nrw, cur);
+            RuleWrapper nrw = new RuleWrapper(simpleStyleEditor, temp, list);
+            tm.addElement(tm.getRoot(), nrw, getSelectedRule());
             simpleStyleEditor.legendAdded(nrw.getPanel());
         }
     }
@@ -506,6 +495,23 @@ public class LegendTree extends JPanel {
 
     private void refreshModel() {
         ((LegendTreeModel) tree.getModel()).refresh();
+    }
+
+    /**
+     * Selects the first legend attached to the given style in this
+     * {@link LegendTree} and displays it in the Simple Style Editor's card
+     * layout.
+     *
+     * @param style Style
+     */
+    private void selectAndShowFirstLegend(StyleWrapper style) {
+        RuleWrapper firstRW = style.getRuleWrapper(0);
+        ILegendPanel firstPanel = firstRW.getLegend(0);
+        TreePath tp = new TreePath(style)
+                .pathByAddingChild(firstRW)
+                .pathByAddingChild(firstPanel);
+        tree.setSelectionPath(tp);
+        simpleStyleEditor.showDialogForLegend(firstPanel);
     }
 
     /**

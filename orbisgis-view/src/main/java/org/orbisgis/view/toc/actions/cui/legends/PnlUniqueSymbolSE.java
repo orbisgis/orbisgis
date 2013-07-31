@@ -28,37 +28,33 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.sif.components.JNumericSpinner;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.event.*;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 
 /**
+ * Base class for "Unique Symbol" UIs.
+ *
  * This class proposes some methods that will be common to all the panels built
  * for unique symbols.
  * @author Alexis Guéganno
  */
-public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements ILegendPanel, UIPanel {
+public abstract class PnlUniqueSymbolSE extends AbstractFieldPanel implements UIPanel {
 
         public static final double SPIN_STEP = 0.1;
-
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlUniqueSymbolSE.class);
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueSymbolSE.class);
         private String id;
@@ -71,103 +67,103 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
         public void initPreview(){
                 Legend leg = getLegend();
                 if(leg != null){
-                        preview= new CanvasSE(leg.getSymbolizer());
+                        preview = new CanvasSE(leg.getSymbolizer());
                         preview.imageChanged();
                 }
         }
 
         /**
-         * Gets the {@code CanvasSe} instance used to display a preview of
+         * Gets the {@code CanvasSE} instance used to display a preview of
+         * the current symbol in a bordered JPanel.
+         *
+         * @return Preview of the symbol in a bordered JPanel.
+         */
+        public JPanel getPreviewPanel(){
+                JPanel previewPanel = new JPanel(
+                        new MigLayout("wrap 1", "[" + FIXED_WIDTH + "]"));
+                previewPanel.setBorder(
+                        BorderFactory.createTitledBorder(I18N.tr("Preview")));
+                previewPanel.add(preview, "align c");
+                return previewPanel;
+        }
+
+        /**
+         * Gets the {@code CanvasSE} instance used to display a preview of
          * the current symbol.
-         * @return
+         *
+         * @return Preview of the symbol.
          */
         public CanvasSE getPreview(){
                 return preview;
         }
 
         /**
-         * Build a {@code JLabel} from {@code name} with x-alignment set to
-         * {@code Component.LEFT_ALIGNMENT}.
-         * @param name
-         * @return
-         */
-        public JLabel buildText(String name){
-                JLabel c1 = new JLabel(name);
-                c1.setAlignmentX(Component.LEFT_ALIGNMENT);
-                return c1;
-        }
-
-        /**
-         * Retrieve a spinner with the wanted listener.
+         * Creates and configures a line width {@link JSpinner}.
+         *
          * @param cps The stroke that will be configured with the spinner.
-         * @return
-         *      The wanted {@code JNumericSpinner}.
+         * @return The wanted {@code JSpinner}.
          */
-        public JNumericSpinner getLineWidthSpinner(final ConstantPenStroke cps){
-                final JNumericSpinner jns = new JNumericSpinner(4, 0, Integer.MAX_VALUE, SPIN_STEP);
-                ChangeListener cl = EventHandler.create(ChangeListener.class, cps, "lineWidth", "source.value");
-                jns.addChangeListener(cl);
-                jns.setValue(cps.getLineWidth());
-                jns.setMaximumSize(new Dimension(60,30));
-                jns.setPreferredSize(new Dimension(60,30));
-                ChangeListener cl2 = EventHandler.create(ChangeListener.class, preview, "imageChanged");
-                jns.addChangeListener(cl2);
+        public JSpinner getLineWidthSpinner(final ConstantPenStroke cps){
+                SpinnerNumberModel model = new SpinnerNumberModel(
+                        cps.getLineWidth(), 0, Double.POSITIVE_INFINITY, SPIN_STEP);
+                final JSpinner jns = new JSpinner(model);
+                jns.addChangeListener(
+                        EventHandler.create(ChangeListener.class, cps, "lineWidth", "source.value"));
+                jns.addChangeListener(
+                        EventHandler.create(ChangeListener.class, preview, "imageChanged"));
                 return jns;
         }
 
         /**
          * Gets a spinner that is linked with the opacity of the {@code
          * ConstantSolidFill} given in argument.
+         *
          * @param cps
          * @return
          */
-        public JNumericSpinner getLineOpacitySpinner(final ConstantSolidFill cps){
-                final JNumericSpinner jns = new JNumericSpinner(4, 0, 1, SPIN_STEP);
-                ChangeListener cl = EventHandler.create(ChangeListener.class, cps, "opacity", "source.value");
-                jns.addChangeListener(cl);
-                jns.setValue(cps.getOpacity());
-                jns.setMaximumSize(new Dimension(60,30));
-                jns.setPreferredSize(new Dimension(60,30));
-                ChangeListener cl2 = EventHandler.create(ChangeListener.class, preview, "imageChanged");
-                jns.addChangeListener(cl2);
+        public JSpinner getLineOpacitySpinner(final ConstantSolidFill cps){
+                SpinnerNumberModel model = new SpinnerNumberModel(
+                        cps.getOpacity(), 0, 1, SPIN_STEP);
+                final JSpinner jns = new JSpinner(model);
+                jns.addChangeListener(
+                        EventHandler.create(ChangeListener.class, cps, "opacity", "source.value"));
+                jns.addChangeListener(
+                        EventHandler.create(ChangeListener.class, preview, "imageChanged"));
                 return jns;
         }
 
         /**
          * Get a {@code TextField} instance linked to the given parameter.
+         *
          * @param cps
          *      The parameter we want to configure with our panel
-         * @return
-         *      A {@code JTextField} embedded in a {@code JPanel}.
+         * @return A {@code JTextField}
          */
-        public JPanel getDashArrayField(final ConstantColorAndDashesPSLegend cps){
-                JPanel cont = new JPanel();
-                final JTextField jrf = new JTextField(8);
-                ActionListener al = new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                                cps.setDashArray(((JTextField)e.getSource()).getText());
-                        }
-                };
-                jrf.addActionListener(al);
-                FocusListener fl = new FocusListener() {
-                        @Override public void focusGained(FocusEvent e) {}
-                        @Override public void focusLost(FocusEvent e) {
-                                JTextField jtf = (JTextField)e.getSource();
-                                String tmp = jtf.getText();
-                                cps.setDashArray(tmp);
-                                if(!tmp.equals(cps.getDashArray())){
-                                        LOGGER.warn(I18N.tr("Could not validate your input."));
-                                        jtf.setText(cps.getDashArray());
-                                }
-                        }
-                };
-                jrf.addFocusListener(fl);
-                FocusListener prev = EventHandler.create(FocusListener.class, preview, "imageChanged");
-                jrf.addFocusListener(prev);
+        public JTextField getDashArrayField(final ConstantColorAndDashesPSLegend cps){
+                final JTextField jrf = new JTextField();
                 jrf.setText(cps.getDashArray());
-                cont.add(jrf);
-                return cont;
+                jrf.setHorizontalAlignment(JFormattedTextField.RIGHT);
+                jrf.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        cps.setDashArray(((JTextField)e.getSource()).getText());
+                    }
+                });
+                jrf.addFocusListener(new FocusAdapter() {
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        JTextField jtf = (JTextField) e.getSource();
+                        String tmp = jtf.getText();
+                        cps.setDashArray(tmp);
+                        if (!tmp.equals(cps.getDashArray())) {
+                            LOGGER.warn(I18N.tr("Could not validate your input."));
+                            jtf.setText(cps.getDashArray());
+                        }
+                    }
+                });
+                jrf.addFocusListener(
+                        EventHandler.create(FocusListener.class, preview, "imageChanged"));
+                return jrf;
         }
 
         /**

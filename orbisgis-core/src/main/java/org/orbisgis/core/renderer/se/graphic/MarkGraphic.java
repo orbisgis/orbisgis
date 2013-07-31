@@ -123,7 +123,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         this.setUom(Uom.MM);
         this.setWkn(new StringLiteral("circle"));
 
-        this.setViewBox(new ViewBox(new RealLiteral(DEFAULT_SIZE)));
+        this.setViewBox(new ViewBox(new RealLiteral(DEFAULT_SIZE), new RealLiteral(DEFAULT_SIZE)));
         this.setFill(new SolidFill());
         ((RealLiteral) ((SolidFill) this.getFill()).getOpacity()).setValue(100.0);
         this.setStroke(new PenStroke());

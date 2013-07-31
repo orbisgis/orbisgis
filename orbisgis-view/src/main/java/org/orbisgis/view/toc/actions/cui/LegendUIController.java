@@ -43,6 +43,8 @@ import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * The controller makes a copy of the style and mount UI to edit the copy
@@ -59,11 +61,13 @@ public final class LegendUIController {
 	private ArrayList<LegendUIRulePanel> rulePanels;
 	private ArrayList<String> availableSymbolizers;
 	private Dimension maxAllowedSize;
+    private static final I18n I18N = I18nFactory.getI18n(LegendUIController.class);
 
-	/**
-	 * @param fts the style to edit.
-	 */
-	public LegendUIController(Style fts) throws InvalidStyle {
+            /**
+             * @param fts the style to edit.
+             */
+
+    public LegendUIController(Style fts) throws InvalidStyle {
 
 		this.style = new Style(fts.getJAXBElement(), fts.getLayer());
 
@@ -95,16 +99,16 @@ public final class LegendUIController {
 			case Type.GEOMETRYCOLLECTION:
 			case Type.POLYGON:
 			case Type.MULTIPOLYGON:
-				availableSymbolizers.add("Area Symbolizer");
+				availableSymbolizers.add(I18N.tr("Area Symbolizer"));
 			case Type.LINESTRING:
 			case Type.MULTILINESTRING:
-				availableSymbolizers.add("Line Symbolizer");
+				availableSymbolizers.add(I18N.tr("Line Symbolizer"));
 			case Type.POINT:
 			case Type.MULTIPOINT:
-				availableSymbolizers.add("Point Symbolizer");
+				availableSymbolizers.add(I18N.tr("Point Symbolizer"));
 		}
 
-		availableSymbolizers.add("Text Symbolizer");
+		availableSymbolizers.add(I18N.tr("Text Symbolizer"));
 
 
 		int i;

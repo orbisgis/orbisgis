@@ -29,13 +29,24 @@
 package org.orbisgis.view.toc.actions.cui.legend;
 
 import org.orbisgis.legend.Legend;
+import org.orbisgis.view.toc.actions.cui.LegendContext;
 
 /**
- * 
+ * Interface for Legend UI panels in the SimpleStyleEditor.
+ *
  * @author David Ortega
  * @author Alexis Guéganno
  */
-public interface ILegendPanel  extends ISELegendPanel {
+public interface ILegendPanel extends ISELegendPanel {
+
+    /**
+     * Initialize this panel using the given context and legend. Both must
+     * be not null and {@code leg} must be acceptable by this panel
+     * @param lc The input context
+     * @param leg The input legend
+     * @throws IllegalArgumentException If the provided legend is not acceptable.
+     */
+    void initialize(LegendContext lc, Legend leg);
 
 	/**
 	 * It will return the Legend created by all the variables in the panel.
@@ -51,12 +62,17 @@ public interface ILegendPanel  extends ISELegendPanel {
 	 */
 	void setLegend(Legend legend);
 
-        /**
-         * Sets the type of the geometry field of the data that must be
-         * represented.
-         * @param type
-         */
-        void setGeometryType(int type);
+    /**
+     * Initialize and layout the UI.
+     */
+    void initializeLegendFields();
+
+    /**
+     * Sets the type of the geometry field of the data that must be
+     * represented.
+     * @param type
+     */
+    void setGeometryType(int type);
 
 	/**
 	 * Returns true if this legend can be applied to the specified geometry
@@ -69,10 +85,10 @@ public interface ILegendPanel  extends ISELegendPanel {
 	 */
 	boolean acceptsGeometryType(int geometryType);
 
-        /**
-         * Copy the {@code Legend} instance associated to this 
-         * {@code ILegendPanel}. It is faster than copying the whole panel.
-         * @return 
-         */
-        Legend copyLegend();
+    /**
+     * Copy the {@code Legend} instance associated to this
+     * {@code ILegendPanel}. It is faster than copying the whole panel.
+     * @return
+     */
+    Legend copyLegend();
 }

@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import org.orbisgis.core.renderer.se.PointSymbolizer;
+import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.WellKnownName;
@@ -40,24 +40,24 @@ import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
+import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
-import org.orbisgis.sif.components.JNumericSpinner;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
-import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
 
 /**
+ * "Unique Symbol - Point" UI.
  *
  * @author Alexis Guéganno
  */
@@ -74,28 +74,29 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         private ContainerItemProperties[] wkns;
 
         /**
-         * Default constructor. UOM will be displayed as well as the stroke configuration and the check boxes used to
-         * enable or disable stroke and fill configuration panels.
+         * Default constructor. UOM will be displayed as well as the stroke
+         * configuration and the check boxes used to enable or disable stroke
+         * and fill configuration panels.
          */
-        public PnlUniquePointSE(){
+        public PnlUniquePointSE() {
             this(true, true, true);
         }
 
         /**
          * Builds the panel.
-         * @param uomAndOnVertex If true, the combo used to configure the symbolizer UOM and the radio buttons used to
-         *                       decide if the symbol must be displayed on vertices or on centroid will be displayed.
-         * @param displayStroke If true, the panel used to configure the symbol's stroke will be enabled.
-         * @param displayBoxes If true,  the two boxes that are used to enable and disable the stroke and fill of
-         *                     the symbol will be displayed.
+         *
+         * @param uom           If true, the combo used to configure the
+         *                      symbolizer UOM will be displayed.
+         * @param displayStroke If true, the panel used to configure the
+         *                      symbol's stroke will be enabled.
+         * @param displayBoxes  If true,  the two boxes that are used to enable
+         *                      and disable the stroke and fill of the symbol
+         *                      will be displayed.
          */
-        public PnlUniquePointSE(boolean uomAndOnVertex, boolean displayStroke, boolean displayBoxes){
-            super(uomAndOnVertex,displayStroke,displayBoxes);
-        }
-
-        @Override
-        public Component getComponent() {
-                return this;
+        public PnlUniquePointSE(boolean uom,
+                                boolean displayStroke,
+                                boolean displayBoxes) {
+            super(uom, displayStroke, displayBoxes);
         }
 
         @Override
@@ -141,32 +142,14 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 return geometryType;
         }
 
-        /**
-         * Initialize the panel. This method is called just after the panel
-         * creation.</p> <p>WARNING : the panel will be empty after calling this
-         * method. Indeed, there won't be any {@code Legend} instance associated
-         * to it. Use the
-         * {@code setLegend} method to achieve this goal.
-         *
-         * @param lc LegendContext is useful to get some information about the
-         * layer in edition.
-         */
         @Override
         public void initialize(LegendContext lc) {
-                if (uniquePoint == null) {
-                        setLegend(new UniqueSymbolPoint());
-                }
-                setGeometryType(lc.getGeometryType());
+            initialize(lc, new UniqueSymbolPoint());
         }
 
         @Override
         public boolean acceptsGeometryType(int geometryType) {
                 return (geometryType & SimpleGeometryType.ALL) != 0;
-        }
-
-        @Override
-        public ILegendPanel newInstance() {
-                return new PnlUniquePointSE();
         }
 
         @Override
@@ -181,7 +164,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
 
         @Override
         public String getTitle() {
-                return "Unique symbol for points.";
+                return "Unique symbol for points";
         }
         
 
@@ -190,35 +173,24 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 return new UniqueSymbolPoint();
         }
 
-        private void initializeLegendFields() {
+        @Override
+        public void initializeLegendFields() {
                 this.removeAll();
-                JPanel glob = new JPanel();
-                GridBagLayout grid = new GridBagLayout();
-                glob.setLayout(grid);
-                GridBagConstraints gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                JPanel p1 = getLineBlock(uniquePoint.getPenStroke(), I18N.tr("Line configuration"));
-                glob.add(p1, gbc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 1;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                gbc.insets = new Insets(5, 0, 5, 0);
-                JPanel p2 = getAreaBlock(uniquePoint.getFillLegend(), I18N.tr("Fill configuration"));
-                glob.add(p2, gbc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 2;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                gbc.insets = new Insets(5, 0, 5, 0);
-                JPanel p3 = getPointBlock(uniquePoint, I18N.tr("Mark configuration"));
-                glob.add(p3, gbc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 3;
-                glob.add(getPreview(), gbc);
+                JPanel glob = new JPanel(new MigLayout("wrap 2"));
+
+                JPanel lb = getLineBlock(uniquePoint.getPenStroke(),
+                                         I18N.tr(BORDER_SETTINGS));
+                ComponentUtil.setFieldState(isStrokeEnabled(), lb);
+                glob.add(lb);
+
+                glob.add(getPointBlock(uniquePoint,
+                                       I18N.tr(MARK_SETTINGS)));
+
+                glob.add(getAreaBlock(uniquePoint.getFillLegend(),
+                                      I18N.tr(FILL_SETTINGS)));
+
+                glob.add(getPreviewPanel(), "growx");
+
                 this.add(glob);
         }
 
@@ -233,75 +205,71 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 if(getPreview() == null && getLegend() != null){
                         initPreview();
                 }
-                JPanel glob = new JPanel();
-                glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
-                JPanel jp = new JPanel();
-                boolean withUom = isUomEnabled();
-                boolean canBeOnV = geometryType != SimpleGeometryType.POINT && withUom;
-                int onV = canBeOnV ? 1 : 0;
-                int wu = withUom ? 1 : 0;
-                GridLayout grid = new GridLayout(3+wu+onV,2);
-                grid.setVgap(5);
-                jp.setLayout(grid);
-                //If geometryType != POINT, we must let the user choose if he
-                //wants to draw symbols on centroid or on vertices.
-                if(canBeOnV){
-                        addPointOnVertices(point, jp);
+
+                JPanel jp = new JPanel(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
+                jp.setBorder(BorderFactory.createTitledBorder(title));
+
+                if(isUomEnabled()){
+                    // If geometryType != POINT, we must let the user choose if
+                    // he wants to draw symbols on centroid or on vertices.
+                    if (geometryType != SimpleGeometryType.POINT) {
+                        jp.add(new JLabel(I18N.tr(PLACE_SYMBOL_ON)), "span 1 2");
+                        jp.add(OnVertexHelper.pnlOnVertex(this, point, I18N), "span 1 2");
+                    }
+                    // Unit of measure - symbol size
+                    jp.add(new JLabel(I18N.tr(SYMBOL_SIZE_UNIT)));
+                    jp.add(getPointUomCombo(), COMBO_BOX_CONSTRAINTS);
                 }
-                //Uom
-                if(withUom){
-                    jp.add(buildText(I18N.tr("Unit of measure :")));
-                    jp.add(getPointUomCombo());
-                }
-                //Combo box
-                jp.add(buildText(I18N.tr("Symbol form :")));
-                jp.add(getWKNCombo(point));
-                //Mark width
-                jp.add(buildText(I18N.tr("Mark width :")));
-                jp.add(getMarkWidth(point));
-                //Mark height
-                jp.add(buildText(I18N.tr("Mark height :")));
-                jp.add(getMarkHeight(point));
-                glob.add(jp);
-                //We add a canvas to display a preview.
-                glob.setBorder(BorderFactory.createTitledBorder(title));
-                return glob;
+
+                // Well-known name
+                jp.add(new JLabel(I18N.tr(SYMBOL)));
+                jp.add(getWKNCombo(point), COMBO_BOX_CONSTRAINTS);
+                // Mark width
+                jp.add(new JLabel(I18N.tr(WIDTH)));
+                jp.add(getMarkWidth(point), "growx");
+                // Mark height
+                jp.add(new JLabel(I18N.tr(HEIGHT)));
+                jp.add(getMarkHeight(point), "growx");
+
+                return jp;
         }
 
         /**
-         * JNumericSpinner embedded in a JPanel to configure the width of the symbol
+         * JSpinner to configure the width of the symbol
          * @param point
          * @return
          */
 
-        private JPanel getMarkWidth(UniqueSymbolPoint point){
-                CanvasSE prev = getPreview();
-                final JNumericSpinner jns = new JNumericSpinner(4, Integer.MIN_VALUE, Integer.MAX_VALUE, SPIN_STEP);
-                ChangeListener cl = EventHandler.create(ChangeListener.class, point, "viewBoxWidth", "source.value");
-                jns.addChangeListener(cl);
-                jns.setValue(point.getViewBoxWidth() == null? point.getViewBoxHeight() : point.getViewBoxWidth());
-                jns.setMaximumSize(new Dimension(60,30));
-                jns.setPreferredSize(new Dimension(60,30));
-                ChangeListener cl2 = EventHandler.create(ChangeListener.class, prev, "imageChanged");
-                jns.addChangeListener(cl2);
+        private JSpinner getMarkWidth(UniqueSymbolPoint point){
+                double initialValue = (point.getViewBoxWidth() == null)
+                        ? point.getViewBoxHeight()
+                        : point.getViewBoxWidth();
+                SpinnerNumberModel model = new SpinnerNumberModel(
+                        initialValue, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPIN_STEP);
+                final JSpinner jns = new JSpinner(model);
+                jns.addChangeListener(
+                        EventHandler.create(ChangeListener.class, point, "viewBoxWidth", "source.value"));
+                jns.addChangeListener(
+                        EventHandler.create(ChangeListener.class, getPreview(), "imageChanged"));
                 return jns;
         }
 
         /**
-         * JNumericSpinner embedded in a JPane to configure the height of the symbol
+         * JSpinner to configure the height of the symbol
          * @param point
          * @return
          */
-        private JPanel getMarkHeight(UniqueSymbolPoint point){
-                CanvasSE prev = getPreview();
-                final JNumericSpinner jns = new JNumericSpinner(4, Integer.MIN_VALUE, Integer.MAX_VALUE, SPIN_STEP);
-                ChangeListener cl = EventHandler.create(ChangeListener.class, point, "viewBoxHeight", "source.value");
-                jns.addChangeListener(cl);
-                jns.setValue(point.getViewBoxHeight() == null? point.getViewBoxWidth() : point.getViewBoxHeight());
-                jns.setMaximumSize(new Dimension(60,30));
-                jns.setPreferredSize(new Dimension(60,30));
-                ChangeListener cl2 = EventHandler.create(ChangeListener.class, prev, "imageChanged");
-                jns.addChangeListener(cl2);
+        private JSpinner getMarkHeight(UniqueSymbolPoint point){
+                double initialValue = (point.getViewBoxHeight() == null)
+                        ? point.getViewBoxWidth()
+                        : point.getViewBoxHeight();
+                SpinnerNumberModel model = new SpinnerNumberModel(
+                        initialValue, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPIN_STEP);
+                final JSpinner jns = new JSpinner(model);
+                jns.addChangeListener(
+                        EventHandler.create(ChangeListener.class, point, "viewBoxHeight", "source.value"));
+                jns.addChangeListener(
+                        EventHandler.create(ChangeListener.class, getPreview(), "imageChanged"));
                 return jns;
         }
 
@@ -310,14 +278,15 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * @param point
          * @return
          */
-        public JComboBox getWKNCombo(ConstantFormPoint point){
+        public WideComboBox getWKNCombo(ConstantFormPoint point){
                 CanvasSE prev = getPreview();
                 wkns = getWknProperties();
                 String[] values = new String[wkns.length];
                 for (int i = 0; i < values.length; i++) {
                         values[i] = wkns[i].getLabel();
                 }
-                final JComboBox jcc = new JComboBox(values);
+                final WideComboBox jcc = new WideComboBox(values);
+                ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
                 ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateWKNComboBox", "source.selectedIndex");
                 jcc.addActionListener(acl2);
@@ -337,31 +306,19 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 }
                 return cips;
         }
-        /**
-         * If called, this method will add a {@code ButtonGroup} made of two
-         * {@code JRadioButton}s that will be used to choose if the symbols
-         * must be drawn on vertices or on the centroid of the input geometry.
-         * @param point
-         * @param jp
+
+    /**
+         * called when the user wants to put the points on the vertices of the geometry.
          */
-        public void addPointOnVertices(ConstantFormPoint point, JPanel jp){
-                CanvasSE prev = getPreview();
-                JRadioButton bVertex = new JRadioButton(I18N.tr("On vertex"));
-                JRadioButton bCentroid = new JRadioButton(I18N.tr("On centroid"));
-                ButtonGroup bg = new ButtonGroup();
-                bg.add(bVertex);
-                bg.add(bCentroid);
-                ActionListener actionV = EventHandler.create(ActionListener.class, point, "setOnVertex");
-                ActionListener actionC = EventHandler.create(ActionListener.class, point, "setOnCentroid");
-                ActionListener actionRef = EventHandler.create(ActionListener.class, prev, "imageChanged");
-                bVertex.addActionListener(actionV);
-                bVertex.addActionListener(actionRef);
-                bCentroid.addActionListener(actionC);
-                bCentroid.addActionListener(actionRef);
-                bVertex.setSelected(((PointSymbolizer)point.getSymbolizer()).isOnVertex());
-                bCentroid.setSelected(!((PointSymbolizer)point.getSymbolizer()).isOnVertex());
-                jp.add(bVertex);
-                jp.add(bCentroid);
+        public void onClickVertex(){
+            OnVertexHelper.changeOnVertex(this, true);
+        }
+
+        /**
+         * called when the user wants to put the points on the centroid of the geometry.
+         */
+        public void onClickCentroid(){
+            OnVertexHelper.changeOnVertex(this, false);
         }
 
         /**
@@ -378,14 +335,15 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * ComboBox to configure the unit of measure used to draw th stroke.
          * @return
          */
-        protected JComboBox getPointUomCombo(){
+        protected WideComboBox getPointUomCombo(){
                 CanvasSE prev = getPreview();
-                uoms= getUomProperties();
+                uoms = getUomProperties();
                 String[] values = new String[uoms.length];
                 for (int i = 0; i < values.length; i++) {
                         values[i] = I18N.tr(uoms[i].toString());
                 }
-                final JComboBox jcc = new JComboBox(values);
+                final WideComboBox jcc = new WideComboBox(values);
+                ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
                 ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex");
                 jcc.addActionListener(acl2);

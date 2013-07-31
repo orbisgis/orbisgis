@@ -31,6 +31,7 @@ package org.orbisgis.legend.thematic.uom;
 import org.orbisgis.core.renderer.se.common.Uom;
 
 /**
+ * Interface for Legends that have a stroke unit of measure.
  *
  * @author Alexis Guéganno
  */

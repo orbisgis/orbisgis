@@ -37,6 +37,9 @@ import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
+
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -46,10 +49,12 @@ import java.util.List;
  * {@code Recode} instances on a common field or of {@code Literal}.
  * @author Alexis Guéganno
  */
-public class RecodedLine extends AbstractRecodedLegend<LineParameters> implements StrokeUom {
+public class RecodedLine extends AbstractRecodedLegend<LineParameters> {
 
         private final LineSymbolizer ls;
         private final RecodedPenStroke ps;
+        private static final I18n I18N = I18nFactory.getI18n(RecodedLine.class);
+        public static final String NAME = I18N.tr("Value Classification - Line");
 
         /**
          * Default constructor. Builds a {@code RecodedLine} from scratch using a constant {@link LineSymbolizer} that
@@ -194,7 +199,7 @@ public class RecodedLine extends AbstractRecodedLegend<LineParameters> implement
 
         @Override
         public String getLegendTypeName() {
-                return "Value Classification - Line";
+                return NAME;
         }
 
         @Override
@@ -228,10 +233,8 @@ public class RecodedLine extends AbstractRecodedLegend<LineParameters> implement
             getLineDash().setFallbackValue(lps.getLineDash());
         }
 
-    @Override
-    public String getLegendTypeId() {
-        return "org.orbisgis.legend.thematic.recode.RecodedLine";
-    }
-        
-        
+        @Override
+        public String getLegendTypeId() {
+            return "org.orbisgis.legend.thematic.recode.RecodedLine";
+        }
 }

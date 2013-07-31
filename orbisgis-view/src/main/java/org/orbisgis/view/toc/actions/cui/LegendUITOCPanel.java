@@ -54,6 +54,8 @@ import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.TextSymbolizer;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  *
@@ -71,8 +73,9 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 	private JButton btnAdd;
 	private JButton btnRm;
 	private int currentRuleId;
+    private static final I18n I18N = I18nFactory.getI18n(LegendUITOCPanel.class);
 
-	public LegendUITOCPanel(final LegendUIController controller) {
+    public LegendUITOCPanel(final LegendUIController controller) {
 		super(new BorderLayout());
 		this.controller = controller;
 
@@ -114,13 +117,13 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 						sTypes.toArray(), sTypes.get(0));
 
 				if (choice != null) {
-					if (choice.equals("Area Symbolizer")) {
+					if (choice.equals(I18N.tr("Area Symbolizer"))) {
 						s = new AreaSymbolizer();
-					} else if (choice.equals("Line Symbolizer")) {
+					} else if (choice.equals(I18N.tr("Line Symbolizer"))) {
 						s = new LineSymbolizer();
-					} else if (choice.equals("Point Symbolizer")) {
+					} else if (choice.equals(I18N.tr("Point Symbolizer"))) {
 						s = new PointSymbolizer();
-					} else if (choice.equals("Text Symbolizer")) {
+					} else if (choice.equals(I18N.tr("Text Symbolizer"))) {
 						s = new TextSymbolizer();
 					}
 

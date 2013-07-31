@@ -29,13 +29,14 @@
 package org.orbisgis.legend.thematic;
 
 import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 
 /**
  * Gathers method that are common to all the {@code Legend} realizations.
  *
  * @author Alexis Guéganno
  */
-public abstract class SymbolizerLegend implements Legend {
+public abstract class SymbolizerLegend implements Legend, StrokeUom {
 
         @Override
         public String getName() {
@@ -67,9 +68,8 @@ public abstract class SymbolizerLegend implements Legend {
                 getSymbolizer().getRule().setMaxScaleDenom(scale);
         }
 
-	@Override
-	public String getLegendTypeId(){
-		return "org.orbisgis.legend.thematic.SymbolizerLegend";
-	}
-
+        @Override
+        public String getLegendTypeId(){
+            return "org.orbisgis.legend.thematic.SymbolizerLegend";
+        }
 }

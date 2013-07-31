@@ -64,18 +64,14 @@ public abstract class AbstractOutsideFrame extends JDialog implements
          * @param ok
          */
         void exit(boolean ok) {
-                boolean closePanel = true;
-                if (ok) {
-                        closePanel = validateInput();
-
-                }
+                boolean closePanel = !ok || validateInput();
                 if (!closePanel) {
                         setVisible(true);
                 } else {
                         setVisible(false);
                         dispose();
                 }
-                accepted = ok;
+                accepted = ok && closePanel;
         }
 
         /**
@@ -86,7 +82,8 @@ public abstract class AbstractOutsideFrame extends JDialog implements
         public boolean validateInput() {
                 String err = getSimplePanel().getUIPanel().validateInput();
                 if (err != null) {
-                        JOptionPane.showMessageDialog(rootPane, err);
+                        JOptionPane.showMessageDialog(rootPane, err,
+                                I18N.tr("Error"), JOptionPane.ERROR_MESSAGE);
                         return false;
                 } else {
                         return true;

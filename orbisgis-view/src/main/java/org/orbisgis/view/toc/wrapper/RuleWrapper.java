@@ -28,15 +28,16 @@
  */
 package org.orbisgis.view.toc.wrapper;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.view.toc.actions.cui.SimpleStyleEditor;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
-import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.PnlRule;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * A Rule can be associated to a list of {@code Legend} instances. If
@@ -47,58 +48,45 @@ import org.orbisgis.view.toc.actions.cui.legends.PnlRule;
  */
 public class RuleWrapper {
 
+        private static final I18n I18N = I18nFactory.getI18n(RuleWrapper.class);
+
         private Rule rule;
         private List<ILegendPanel> legends;
         private PnlRule panel;
 
-        /**
-         * Build a {@code RuleWrapper} from scratch, with an empty list of
-         * {@code Legend} and an empty {@code Rule}.
-         */
-        public RuleWrapper() {
-                legends = new ArrayList<ILegendPanel>();
-                rule = new Rule();
-                createRulePanel();
-        }
-
-        /**
-         * Build a {@code RuleWrapper} from scratch, with an empty list of
-         * {@code Legend} and an empty {@code Rule}.
-         *
-         * @param name The name of the rule.
-         */
-        public RuleWrapper(String name) {
-                this();
-                rule.setName(name);
-                createRulePanel();
-        }
+        private SimpleStyleEditor editor;
 
         /**
          * Build a new {@code RuleWrapper} using the given {@code Rule} and list
-         * of {@code Legend}. If the symbolizers contained in {@code r} and in
-         * {@code l} don't match, an exception is thrown.
+         * of {@code ILegendPanel}s. If the symbolizers contained in {@code r} and in
+         * the corresponding {@code Legend}s of {@code l} don't match, an
+         * exception is thrown. The SimpleStyleEditor is used for initializing
+         * a new PnlRule in {@link #createRulePanel()}.
          *
-         * @param r
-         * @param l
+         * @param ed SimpleStyleEditor
+         * @param r  Rule
+         * @param l  List of ILegendPanels
+         *
          * @throws IllegalArgumentException if the symbolizers contained in the
-         * {@code Legend} instances and in the {@code Rule} mismatch.
+         * {@code ILegendPanel} instances and in the {@code Rule} don't match.
          */
-        public RuleWrapper(Rule r, List<ILegendPanel> l) {
-                rule = r;
-                legends = l;
-                List<Symbolizer> ls = r.getCompositeSymbolizer().getSymbolizerList();
-                if (ls.size() != l.size()) {
-                        throw new IllegalArgumentException("The number of legends "
-                                + "and of symbolizers mismatch");
-                } else {
-                        for (int i = 0; i < l.size(); i++) {
-                                if (l.get(i).getLegend().getSymbolizer() != ls.get(i)) {
-                                        throw new IllegalArgumentException("Symbolizers registered"
-                                                + "in the rule and in the legend mismatch.");
-                                }
-                        }
+        public RuleWrapper(SimpleStyleEditor ed, Rule r, List<ILegendPanel> l) {
+            editor = ed;
+            rule = r;
+            legends = l;
+            List<Symbolizer> ls = r.getCompositeSymbolizer().getSymbolizerList();
+            if (ls.size() != l.size()) {
+                throw new IllegalArgumentException("The number of legends "
+                        + "and of symbolizers mismatch");
+            } else {
+                for (int i = 0; i < l.size(); i++) {
+                    if (l.get(i).getLegend().getSymbolizer() != ls.get(i)) {
+                        throw new IllegalArgumentException("Symbolizers registered "
+                                + "in the rule and in the legend mismatch.");
+                    }
                 }
-                createRulePanel();
+            }
+            createRulePanel();
         }
 
         /**
@@ -167,7 +155,7 @@ public class RuleWrapper {
         /**
          * Moves the ith registered {@code Legend} to position i-1.
          *
-         * @param rw
+         * @param i the index of the legend to be moved
          */
         public void moveLegendUp(int i) {
                 if (i > 0 && i < legends.size()) {
@@ -179,7 +167,7 @@ public class RuleWrapper {
         /**
          * Moves the ith registered {@code RuleWrapper} to position i+1.
          *
-         * @param rw
+         * @param i the index of the legend to be moved
          */
         public void moveLegendDown(int i) {
                 if (i >= 0 && i < legends.size() - 1) {
@@ -229,7 +217,7 @@ public class RuleWrapper {
          *
          * @return
          */
-        public ISELegendPanel getPanel() {
+        public PnlRule getPanel() {
                 if (panel == null) {
                         createRulePanel();
                 }
@@ -245,7 +233,7 @@ public class RuleWrapper {
         }
 
         private void createRulePanel() {
-                panel = new PnlRule();
+                panel = new PnlRule(editor);
                 panel.setRule(rule);
         }
 
@@ -257,6 +245,12 @@ public class RuleWrapper {
                         String s = ilp.validateInput();
                         ll.add(s);
                 }
-                return ll;
+            Double max = rule.getMaxScaleDenom();
+            Double min = rule.getMinScaleDenom();
+            boolean err = max != null && min != null && min > max;
+            if(err){
+                ll.add(I18N.tr("Min scale greater than max scale in rule {0}.", rule.getName()));
+            }
+            return ll;
         }
 }

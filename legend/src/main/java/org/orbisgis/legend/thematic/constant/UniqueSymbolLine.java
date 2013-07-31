@@ -52,10 +52,11 @@ import org.xnap.commons.i18n.I18nFactory;
  * </ul>
  * @author Alexis Guéganno
  */
-public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUniqueSymbolLine, StrokeUom {
+public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUniqueSymbolLine {
 
     private static final I18n I18N = I18nFactory.getI18n(UniqueSymbolLine.class);
     private ConstantPenStroke strokeLegend;
+    public static final String NAME = I18N.tr("Unique Symbol - Line");
 
     /**
      * Build a new default {@code UniqueSymbolLine} from scratch. It contains a
@@ -133,7 +134,7 @@ public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUni
 
     @Override
     public String getLegendTypeName() {
-        return I18N.tr("Unique Symbol - Line");
+        return NAME;
     }
 
     @Override

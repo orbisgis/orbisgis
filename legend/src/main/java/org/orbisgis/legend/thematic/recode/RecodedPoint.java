@@ -49,8 +49,13 @@ import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
+import org.orbisgis.legend.thematic.EnablesStroke;
+import org.orbisgis.legend.thematic.OnVertexOnCentroid;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
+import org.orbisgis.legend.thematic.uom.SymbolUom;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -62,7 +67,8 @@ import java.util.Set;
  * Wrapper for unique value classification that are made on PointSymbolizer instances.
  * @author Alexis Guéganno
  */
-public class RecodedPoint extends AbstractRecodedLegend<PointParameters> implements StrokeUom {
+public class RecodedPoint extends AbstractRecodedLegend<PointParameters>
+        implements SymbolUom, EnablesStroke, OnVertexOnCentroid {
 
     private PointSymbolizer pointSymbolizer;
     private final RecodedSolidFillLegend fill;
@@ -70,6 +76,8 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters> impleme
     private RecodedString wkn;
     private RecodedReal width;
     private RecodedReal height;
+    private static final I18n I18N = I18nFactory.getI18n(RecodedPoint.class);
+    public static final String NAME = I18N.tr("Value Classification - Point");
 
     /**
      * Default constructor : builds an empty classification based on the default {@link org.orbisgis.core.renderer.se.PointSymbolizer}.
@@ -201,7 +209,7 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters> impleme
 
     @Override
     public String getLegendTypeName() {
-        return "Value Classification - Point";
+        return NAME;
     }
 
     /**
@@ -438,19 +446,12 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters> impleme
         return "org.orbisgis.legend.thematic.recode.RecodedPoint";
     }
 
-    /**
-     * Returns true if the stroke of the associated symbolizer.
-     * @return  true if the geometries can be stroked by the associated symbolizer, ie its inner {@code PenStroke} is
-     * not null.
-     */
+    @Override
     public boolean isStrokeEnabled(){
         return ps != null;
     }
 
-    /**
-     * Enables or disables the usage of a stroke for the drawn geometries.
-     * @param enable If true, the stroke will be drawn. If false, it won't be drawn.
-     */
+    @Override
     public void setStrokeEnabled(boolean enable){
         MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getChildren().get(0);
         if(enable && ps ==null){
@@ -463,41 +464,28 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters> impleme
         }
     }
 
-    /**
-     * Sets that symbols must be drawn on vertices or on centroid.
-     */
+    @Override
     public void setOnVertex(){
         pointSymbolizer.setOnVertex(true);
     }
 
-    /**
-     * Sets that symbols must be drawn on vertices or on centroid.
-     */
+    @Override
     public void setOnCentroid(){
         pointSymbolizer.setOnVertex(false);
     }
 
-    /**
-     * Returns true if the symbol will be drawn on the vertices of the symbol.
-     * @return
-     */
+    @Override
     public boolean isOnVertex(){
         return pointSymbolizer.isOnVertex();
     }
 
-    /**
-     * Gets the unit of measure used to size the associated {@code Stroke}.
-     * @return
-     */
+    @Override
     public Uom getSymbolUom(){
         MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getChildren().get(0);
         return mg.getUom();
     }
 
-    /**
-     * Sets the unit of measure used to size the associated {@code Stroke}.
-     * @param u
-     */
+    @Override
     public void setSymbolUom(Uom u){
         MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getChildren().get(0);
         mg.setUom(u);
