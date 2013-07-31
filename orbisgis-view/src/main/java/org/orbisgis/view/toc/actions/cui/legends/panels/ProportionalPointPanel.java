@@ -22,7 +22,7 @@ public class ProportionalPointPanel extends UniqueSymbolPanel {
     private DataSource dataSource;
     private int geometryType;
 
-    private ProportionalPointFieldsComboBox proportionalPointFieldsComboBox;
+    private NumericalFieldsComboBox numericalFieldsComboBox;
     private SymbolUOMComboBox symbolUOMComboBox;
     private WKNComboBox wknComboBox;
     private SecondValueTextField secondValueTextField;
@@ -50,8 +50,8 @@ public class ProportionalPointPanel extends UniqueSymbolPanel {
 
     @Override
     protected void init() {
-        proportionalPointFieldsComboBox =
-                new ProportionalPointFieldsComboBox(dataSource, getLegend(), preview);
+        numericalFieldsComboBox =
+                new NumericalFieldsComboBox(dataSource, getLegend());
         symbolUOMComboBox = new SymbolUOMComboBox(getLegend(), preview);
         wknComboBox = new WKNComboBox(getLegend(), preview);
         secondValueTextField = new SecondValueTextField(getLegend(), preview);
@@ -66,7 +66,7 @@ public class ProportionalPointPanel extends UniqueSymbolPanel {
     protected void addComponents() {
         // Field
         add(new JLabel(I18N.tr(AbstractFieldPanel.FIELD)));
-        add(proportionalPointFieldsComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+        add(numericalFieldsComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
         // Unit of measure - symbol size
         add(new JLabel(I18N.tr(AbstractFieldPanel.SYMBOL_SIZE_UNIT)));
         add(symbolUOMComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
