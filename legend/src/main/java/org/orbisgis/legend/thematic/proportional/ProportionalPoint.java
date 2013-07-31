@@ -32,6 +32,7 @@ import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.legend.IInterpolationLegend;
 import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
@@ -39,7 +40,6 @@ import org.orbisgis.legend.structure.graphic.ProportionalWKNLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
-import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -50,7 +50,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Alexis Guéganno
  */
 public class ProportionalPoint extends ConstantFormPoint
-        implements IUniqueSymbolArea, LookupFieldName {
+        implements IUniqueSymbolArea, LookupFieldName,
+        IInterpolationLegend {
 
     private ProportionalWKNLegend markGraphic;
     private static final I18n I18N = I18nFactory.getI18n(ProportionalPoint.class);
@@ -183,52 +184,24 @@ public class ProportionalPoint extends ConstantFormPoint
         markGraphic.setSecondData(d);
     }
 
-    /**
-     * Get the value of the first interpolation point as a double. We are not
-     * supposed to work here with {@code RealParameter} other than {@code
-     * RealLiteral}, so we retrieve directly the {@code double} it contains.
-     * @return
-     * @throws ParameterException
-     * If a problem is encountered while retrieving the double value.
-     */
+    @Override
     public double getFirstValue() throws ParameterException{
         return markGraphic.getFirstValue();
     }
     
-    /**
-     * Set the value of the first interpolation point as a double. We are not
-     * supposed to work here with {@code RealParameter} other than {@code
-     * RealLiteral}, so we give directly the {@code double} it must contain.
-     * @param d
-     * @throws ParameterException
-     * If a problem is encountered while retrieving the double value.
-     */
-    public void setFirstValue(Number d) {
-        markGraphic.setFirstValue(d.doubleValue());
+    @Override
+    public void setFirstValue(double d) {
+        markGraphic.setFirstValue(d);
     }
 
-    /**
-     * Get the value of the second interpolation point as a double. We are not
-     * supposed to work here with {@code RealParameter} other than {@code
-     * RealLiteral}, so we retrieve directly the {@code double} it contains.
-     * @return
-     * @throws ParameterException
-     * If a problem is encountered while retrieving the double value.
-     */
+    @Override
     public double getSecondValue() throws ParameterException{
         return markGraphic.getSecondValue();
     }
 
-    /**
-     * Set the value of the second interpolation point as a double. We are not
-     * supposed to work here with {@code RealParameter} other than {@code
-     * RealLiteral}, so we give directly the {@code double} it must contain.
-     * @param d
-     * @throws ParameterException
-     * If a problem is encountered while retrieving the double value.
-     */
-    public void setSecondValue(Number d) {
-        markGraphic.setSecondValue(d.doubleValue());
+    @Override
+    public void setSecondValue(double d) {
+        markGraphic.setSecondValue(d);
     }
 
     @Override

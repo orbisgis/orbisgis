@@ -32,6 +32,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.legend.IInterpolationLegend;
 import org.orbisgis.legend.structure.parameter.NumericLegend;
 
 /**
@@ -41,7 +42,7 @@ import org.orbisgis.legend.structure.parameter.NumericLegend;
  * instance used by the analyzer.
  * @author Alexis Guéganno
  */
-public class InterpolationLegend implements NumericLegend {
+public class InterpolationLegend implements NumericLegend, IInterpolationLegend {
 
         private Interpolate2Real interp;
 
@@ -85,7 +86,6 @@ public class InterpolationLegend implements NumericLegend {
 
         /**
          * Gets the data associated to the second interpolation point.
-         * @param d
          */
         public double getSecondData() {
             return interp.getInterpolationPoint(1).getData();
@@ -99,52 +99,24 @@ public class InterpolationLegend implements NumericLegend {
             interp.getInterpolationPoint(1).setData(d);
         }
 
-        /**
-         * Gets the value associated to the first interpolation point, as a double.
-         * We are supposed to have check before initialization that the inner
-         * interpolation is made with {@code RealLiteral} instances.
-         * @return
-         * @throws ParameterException
-         * If the inner interpolation contain a value that is not a literal.
-         */
+        @Override
         public double getFirstValue() throws ParameterException {
             return interp.getInterpolationPoint(0).getValue().getValue(null, 0);
         }
 
-        /**
-         * Sets the value associated to the first interpolation point.
-         * We are supposed to have check before initialization that the inner
-         * interpolation is made with {@code RealLiteral} instances.
-         * @param d
-         * @throws ClassCastException
-         * If the inner interpolation contain a value that is not a literal.
-         */
-        public void setFirstValue(double d){
+        @Override
+        public void setFirstValue(double d) {
             RealLiteral rl = (RealLiteral) interp.getInterpolationPoint(0).getValue();
             rl.setValue(d);
         }
 
-        /**
-         * Gets the value associated to the second interpolation point, as a double.
-         * We are supposed to have check before initialization that the inner
-         * interpolation is made with {@code RealLiteral} instances.
-         * @return
-         * @throws ParameterException
-         * If the inner interpolation contain a value that is not a literal.
-         */
+        @Override
         public double getSecondValue() throws ParameterException {
             return interp.getInterpolationPoint(1).getValue().getValue(null, 0);
         }
 
-        /**
-         * Sets the value associated to the first interpolation point.
-         * We are supposed to have check before initialization that the inner
-         * interpolation is made with {@code RealLiteral} instances.
-         * @param d
-         * @throws ClassCastException
-         * If the inner interpolation contain a value that is not a literal.
-         */
-        public void setSecondValue(double d){
+        @Override
+        public void setSecondValue(double d) {
             RealLiteral rl = (RealLiteral) interp.getInterpolationPoint(1).getValue();
             rl.setValue(d);
         }

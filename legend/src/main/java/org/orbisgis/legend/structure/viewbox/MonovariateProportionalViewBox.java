@@ -36,6 +36,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealFunction;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.legend.IInterpolationLegend;
 import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
 
@@ -49,7 +50,7 @@ import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
  * @author Alexis Guéganno
  */
 public class MonovariateProportionalViewBox extends DefaultViewBox
-        implements LookupFieldName {
+        implements LookupFieldName, IInterpolationLegend {
         
         private boolean onH;
 
@@ -169,51 +170,22 @@ public class MonovariateProportionalViewBox extends DefaultViewBox
             getInterpolation().setSecondData(d);
         }
 
-        /**
-         * Get the value of the first interpolation point as a double. We are not
-         * supposed to work here with {@code RealParameter} other than {@code
-         * RealLiteral}, so we retrieve directly the {@code double} it contains.
-         * @return
-         * @throws ParameterException
-         * If a problem is encountered while retrieving the double value.
-         */
+        @Override
         public double getFirstValue() throws ParameterException {
            return  getInterpolation().getFirstValue();
         }
 
-        /**
-         * Set the value of the first interpolation point as a double. We are not
-         * supposed to work here with {@code RealParameter} other than {@code
-         * RealLiteral}, so we give directly the {@code double} it must contain.
-         * @param d
-         * @throws ParameterException
-         * If a problem is encountered while retrieving the double value.
-         */
+        @Override
         public void setFirstValue(double d) {
             getInterpolation().setFirstValue(d);
         }
 
-        /**
-         * Get the value of the second interpolation point as a double. We are not
-         * supposed to work here with {@code RealParameter} other than {@code
-         * RealLiteral}, so we retrieve directly the {@code double} it contains.
-         * @return
-         * @throws ParameterException
-         * If a problem is encountered while retrieving the double value.
-         */
+        @Override
         public double getSecondValue() throws ParameterException {
             return getInterpolation().getSecondValue();
         }
 
-
-        /**
-         * Set the value of the second interpolation point as a double. We are not
-         * supposed to work here with {@code RealParameter} other than {@code
-         * RealLiteral}, so we give directly the {@code double} it must contain.
-         * @param d
-         * @throws ParameterException
-         * If a problem is encountered while retrieving the double value.
-         */
+        @Override
         public void setSecondValue(double d) {
             getInterpolation().setSecondValue(d);
         }

@@ -33,6 +33,7 @@ import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.legend.IInterpolationLegend;
 import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
@@ -48,7 +49,7 @@ import org.orbisgis.legend.structure.viewbox.ViewBoxLegendFactory;
  * @author Alexis Guéganno
  */
 public class ProportionalWKNLegend extends ConstantFormWKN
-        implements LookupFieldName {
+        implements LookupFieldName, IInterpolationLegend {
 
     /**
      * Builds a new {@code ProportionalWKNLegend} with a default {@link
@@ -111,50 +112,22 @@ public class ProportionalWKNLegend extends ConstantFormWKN
     }
 
 
-    /**
-     * Get the value of the first interpolation point as a double. We are not
-     * supposed to work here with {@code RealParameter} other than {@code
-     * RealLiteral}, so we retrieve directly the {@code double} it contains.
-     * @return
-     * @throws ParameterException
-     * If a problem is encountered while retrieving the double value.
-     */
+    @Override
     public double getFirstValue() throws ParameterException {
         return ((MonovariateProportionalViewBox) getViewBoxLegend()).getFirstValue();
     }
 
-    /**
-     * Set the value of the first interpolation point as a double. We are not
-     * supposed to work here with {@code RealParameter} other than {@code
-     * RealLiteral}, so we give directly the {@code double} it must contain.
-         * @param d
-     * @throws ParameterException
-     * If a problem is encountered while retrieving the double value.
-     */
+    @Override
     public void setFirstValue(double d) {
         ((MonovariateProportionalViewBox) getViewBoxLegend()).setFirstValue(d);
     }
     
-    /**
-     * Get the value of the second interpolation point as a double. We are not
-     * supposed to work here with {@code RealParameter} other than {@code
-     * RealLiteral}, so we retrieve directly the {@code double} it contains.
-     * @return
-     * @throws ParameterException
-     * If a problem is encountered while retrieving the double value.
-     */
+    @Override
     public double getSecondValue() throws ParameterException {
         return ((MonovariateProportionalViewBox) getViewBoxLegend()).getSecondValue();
     }
 
-    /**
-     * Set the value of the second interpolation point as a double. We are not
-     * supposed to work here with {@code RealParameter} other than {@code
-     * RealLiteral}, so we give directly the {@code double} it must contain.
-         * @param d
-     * @throws ParameterException
-     * If a problem is encountered while retrieving the double value.
-     */
+    @Override
     public void setSecondValue(double d) {
         ((MonovariateProportionalViewBox) getViewBoxLegend()).setSecondValue(d);
     }

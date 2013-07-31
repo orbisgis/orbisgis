@@ -37,6 +37,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.legend.IInterpolationLegend;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.legend.structure.fill.constant.ConstantFillLegend;
@@ -52,7 +53,7 @@ import org.orbisgis.legend.structure.parameter.NumericLegend;
  * @author Alexis Guéganno
  */
 public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend
-        implements LookupFieldName {
+        implements LookupFieldName, IInterpolationLegend {
 
         /**
          * Builds an empty {@code ProportionalStrokeLegend}. It will change 0 to
@@ -130,38 +131,22 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend
             ((LinearInterpolationLegend)getLineWidthLegend()).setSecondData(d);
         }
 
-        /**
-         * Get the value of the first interpolation point, as a {@code double}. The
-         * interpolation value is supposed to be a {@code RealLiteral} instance. If
-         * it is not, an exception should have been thrown at initialization.
-         * @return
-         */
+        @Override
         public double getFirstValue() throws ParameterException {
             return ((LinearInterpolationLegend)getLineWidthLegend()).getFirstValue();
         }
 
-        /**
-         * Set the value of the first interpolation point, as a {@code double}.
-         * @param d
-         */
+        @Override
         public void setFirstValue(double d) {
             ((LinearInterpolationLegend)getLineWidthLegend()).setFirstValue(d);
         }
-        
-        /**
-         * Get the value of the second interpolation point, as a {@code double}. The
-         * interpolation value is supposed to be a {@code RealLiteral} instance. If
-         * it is not, an exception should have been thrown at initialization.
-         * @return
-         */
+
+        @Override
         public double getSecondValue() throws ParameterException {
             return ((LinearInterpolationLegend)getLineWidthLegend()).getSecondValue();
         }
 
-        /**
-         * Set the value of the second interpolation point, as a {@code double}.
-         * @param d 
-         */
+        @Override
         public void setSecondValue(double d) {
             ((LinearInterpolationLegend)getLineWidthLegend()).setSecondValue(d);
         }
