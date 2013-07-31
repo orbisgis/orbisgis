@@ -55,6 +55,8 @@ import org.apache.log4j.varia.LevelRangeFilter;
 import org.orbisgis.core.DataManagerImpl;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.api.DataManager;
+import org.orbisgis.core.map.export.DefaultMapExportManager;
+import org.orbisgis.core.map.export.MapExportManager;
 import org.orbisgis.core.plugin.BundleReference;
 import org.orbisgis.core.plugin.BundleTools;
 import org.orbisgis.core.plugin.PluginHost;
@@ -212,6 +214,7 @@ public class MainContext {
     private void registerServices() {
         Services.registerService(CoreWorkspace.class, I18N.tr("Contains folders path"),
                         coreWorkspace);
+        Services.registerService(MapExportManager.class, I18N.tr("Map exporter"), new DefaultMapExportManager());
     }
     
     /**

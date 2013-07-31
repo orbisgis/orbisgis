@@ -38,13 +38,17 @@ import java.util.List;
 import java.util.Set;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.sputilities.SFSUtilities;
 
 import javax.sql.DataSource;
 
-public class Layer extends BeanLayer {        
+public class Layer extends BeanLayer {
+    // When dataURI is not specified, this layer use the tableReference instead of external URI
+    private static final String JDBC_REFERENCE_SCHEME = "WORKSPACE";
+
 	private String tableReference;
     private URI dataURI;
 
@@ -56,12 +60,21 @@ public class Layer extends BeanLayer {
     public Layer(String name, URI dataURI) {
         super(name);
         this.dataURI = dataURI;
-        tableReference = "";
+        if(JDBC_REFERENCE_SCHEME.equalsIgnoreCase(dataURI.getScheme())) {
+            String path =  dataURI.getPath(); // ex: /myschema.mytable
+            tableReference = path.substring(1);
+        } else {
+            tableReference = "";
+        }
     }
 
     @Override
     public URI getDataUri() {
-        return dataURI;
+        if(dataURI!=null) {
+            return dataURI;
+        } else {
+            return URI.create(JDBC_REFERENCE_SCHEME+":/"+tableReference);
+        }
     }
 
     @Override
@@ -100,16 +113,32 @@ public class Layer extends BeanLayer {
 
         @Override
 	public void open() throws LayerException {
-        if (getStyles().isEmpty()) {
-                // special case: no style were ever set
-                // let's go for a default style
-                // add style in the list directly
-                // do not fire style change event
-                Style defStyle = new Style(this, true);
-                styleList.add(defStyle);
-                addStyleListener(defStyle);
+        DataManager dm = Services.getService(DataManager.class);
+        if(tableReference.isEmpty()) {
+            try {
+                tableReference =  dm.registerDataSource(dataURI);
+            } catch (Exception ex) {
+                throw new LayerException(I18N.tr("Unable to load the data source uri {0}.", dataURI), ex);
+            }
+        } else if(dataURI == null) {
+            // Check if the table exists
+            try {
+                if(!dm.isTableExists(tableReference)) {
+                    LOGGER.warn(I18N.tr("Specified table '{0}' does not exists, and no source URI is given", tableReference));
+                }
+            } catch (SQLException ex) {
+                LOGGER.warn("Error while fetching table list",ex);
+            }
         }
-        // TODO load or find the table dataURI from table
+        if (getStyles().isEmpty()) {
+            // special case: no style were ever set
+            // let's go for a default style
+            // add style in the list directly
+            // do not fire style change event
+            Style defStyle = new Style(this, true);
+            styleList.add(defStyle);
+            addStyleListener(defStyle);
+        }
 	}
 
     @Override

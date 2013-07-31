@@ -154,7 +154,7 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
 
     private static int getFieldIndexFromLabel(ResultSet rs, String fieldName) throws SQLException {
         ResultSetMetaData mt = rs.getMetaData();
-        for(int idcolumn=0;idcolumn<mt.getColumnCount();idcolumn++) {
+        for(int idcolumn=1;idcolumn<=mt.getColumnCount();idcolumn++) {
             if(mt.getColumnName(idcolumn).equalsIgnoreCase(fieldName)) {
                 return idcolumn;
             }

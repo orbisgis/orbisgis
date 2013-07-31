@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.api;
 
+import javax.sql.DataSource;
 import javax.sql.RowSet;
 import java.net.URI;
 import java.sql.PreparedStatement;
@@ -75,4 +76,15 @@ public interface DataManager {
      * @return The URI of the DataSource
      */
     URI getDataSourceUri(String tableReference) throws SQLException;
+
+    /**
+     * @param tableReference Table reference [[catalog.]schema.]table
+     * @return True if this table exists
+     */
+    boolean isTableExists(String tableReference) throws SQLException;
+
+    /**
+     * @return DataSource of this DataManager
+     */
+    DataSource getDataSource();
 }

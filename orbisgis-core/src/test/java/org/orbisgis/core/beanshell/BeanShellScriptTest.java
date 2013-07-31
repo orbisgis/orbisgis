@@ -57,7 +57,7 @@ public class BeanShellScriptTest {
         private static String[] mainParams(String scriptPath) {
             return mainParams(scriptPath,new String[0]);
         }
-        private static String[] mainParams(String scriptPath, String... additionnalArgs) {
+        public static String[] mainParams(String scriptPath, String... additionnalArgs) {
             String[] args = Arrays.copyOf(DEFAULT_ARGS, DEFAULT_ARGS.length + additionnalArgs.length);
             args[0] = scriptPath;
             int i=DEFAULT_ARGS.length;

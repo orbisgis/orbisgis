@@ -124,11 +124,13 @@ public abstract class BeanLayer extends AbstractLayer {
                 //Serialisation of dataSource as a DataUrl string
                 //Create jaxb instances
                 URLType dataURL = ows_context_factory.createURLType();
-                OnlineResourceType resource = ows_context_factory.createOnlineResourceType();
-                dataURL.setOnlineResource(resource);
-                resource.setHref(getDataUri().toString());
-                if(resource.isSetHref()) {
+                if(!(this instanceof LayerCollection)) {
+                    OnlineResourceType resource = ows_context_factory.createOnlineResourceType();
+                    dataURL.setOnlineResource(resource);
+                    resource.setHref(getDataUri().toString());
+                    if(resource.isSetHref()) {
                         layerType.setDataURL(dataURL);
+                    }
                 }
                 return layerType;
         }

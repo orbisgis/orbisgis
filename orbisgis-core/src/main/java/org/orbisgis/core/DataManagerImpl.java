@@ -10,6 +10,7 @@ import java.io.File;
 import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -43,12 +44,28 @@ public class DataManagerImpl implements DataManager {
         return new JdbcRowSetImpl(statement.executeQuery());
     }
 
+    private String findUniqueTableName(String originalTableName) throws SQLException{
+        String tableName = originalTableName;
+        int offset = 0;
+        while(isTableExists(tableName)) {
+            tableName = originalTableName + "_" + ++offset;
+        }
+        return tableName;
+    }
+
     @Override
     public String registerDataSource(URI uri) throws SQLException {
-        Connection connection = dataSource.getConnection();
-        String tableName = FileUtils.getNameFromURI(uri);
+        if(!uri.isAbsolute()) {
+            // Uri is incomplete, resolve it by using working directory
+            uri = new File("./").toURI().resolve(uri);
+        }
+        String tableName = findUniqueTableName(FileUtils.getNameFromURI(uri));
         if("file".equals(uri.getScheme())) {
             File path = new File(uri);
+            if(!path.exists()) {
+                throw new SQLException("Specified source does not exists");
+            }
+            Connection connection = dataSource.getConnection();
             try {
                 connection.createStatement().execute("CALL FILE_TABLE('"+path.getAbsolutePath()+"','"+tableName+"')");
             } finally {
@@ -64,5 +81,26 @@ public class DataManagerImpl implements DataManager {
     public URI getDataSourceUri(String tableReference) throws SQLException {
         // TODO Compute DataSource and table URI
         return null;
+    }
+
+    @Override
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    @Override
+    public boolean isTableExists(String tableName) throws SQLException {
+        Connection connection = dataSource.getConnection();
+        boolean exists = false;
+        try {
+            PreparedStatement st = connection.prepareStatement("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE UPPER(TABLE_NAME) = ?");
+            st.setString(1, tableName.toUpperCase());
+            ResultSet rs = st.executeQuery();
+            exists = rs.next();
+            rs.close();
+        } finally {
+            connection.close();
+        }
+        return exists;
     }
 }

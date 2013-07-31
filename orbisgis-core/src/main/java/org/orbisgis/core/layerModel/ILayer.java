@@ -287,7 +287,7 @@ public interface ILayer {
 	/**
 	 * Returns a table reference to access the source of this layer
 	 * 
-	 * @return A DataSource or null if this layer is not backed
+	 * @return A table name or null if this layer is not backed
 	 *         up by a DataSource (Layer collections and WMS
 	 *         layers, for example)
 	 */

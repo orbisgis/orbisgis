@@ -123,6 +123,7 @@ public interface MapContext {
          * @throws LayerException The creation of the layer fail
          */
         public ILayer createLayer(String tableRef) throws LayerException;
+
         /**
          * Return a new layer corresponding to the provided data source
          * @param layerName Layer name with the default Locale
@@ -131,6 +132,23 @@ public interface MapContext {
          * @throws LayerException The creation of the layer fail
          */
         public ILayer createLayer(String layerName, String tableRef) throws LayerException;
+
+        /**
+         * Return a new layer corresponding to the provided data source
+         * @param source Spatial data source name
+         * @return A new layer linked with this data source
+         * @throws LayerException The creation of the layer fail
+         */
+        public ILayer createLayer(URI source) throws LayerException;
+
+        /**
+         * Return a new layer corresponding to the provided data source
+         * @param layerName Layer name with the default Locale
+         * @param source Spatial data source
+         * @return A new layer linked with this data source
+         * @throws LayerException The creation of the layer fail
+         */
+        public ILayer createLayer(String layerName, URI source) throws LayerException;
 
         /**
          * Return a new layer group

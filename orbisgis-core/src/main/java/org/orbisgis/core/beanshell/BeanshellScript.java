@@ -67,12 +67,26 @@ public final class BeanshellScript {
                 if (args.length == 0) {
                         printHelp();
                 } else {
-                        try {
-                            if(init(args)) {
-                                execute(args);
+                        // Check script file
+                        String script = args[0];
+                        if (script != null && !script.isEmpty()) {
+                            File file = new File(script);
+                            if (!file.isFile()){
+                                printHelp();
+                            } else if (!file.exists()) {
+                                System.err.println("The file doesn't exist.");
+                            } else {
+                                // Script file is here, init the engine
+                                try {
+                                    if(init(args)) {
+                                        execute(args);
+                                    }
+                                } finally {
+                                    dispose();
+                                }
                             }
-                        } finally {
-                            dispose();
+                        } else {
+                            System.err.print("The second parameter must be not null.\n");
                         }
                 }
         }
@@ -166,27 +180,13 @@ public final class BeanshellScript {
          * @return True if ready to call execute method
          */
         public static boolean init(String[] args)  throws EvalError, FileNotFoundException {
-            String script = args[0];
-            boolean okToInit = false;
-            if (script != null && !script.isEmpty()) {
-                File file = new File(script);
-                if (!file.isFile()){
-                    printHelp();
-                } else if (!file.exists()) {
-                    System.err.println("The file doesn't exist.");
-                } else {
-                    servicesRegister(parseArgs(1,args));
-                    interpreter = new Interpreter();
-                    interpreter.set("bsh.args", args);
-                    interpreter.set("bsh.bundleContext", mainContext.getPluginHost().getHostBundleContext());
-                    interpreter.set("bsh.dataSource", mainContext.getDataSource());
-                    interpreter.eval("setAccessibility(true)");
-                    okToInit = true;
-                }
-            } else {
-                System.err.print("The second parameter must be not null.\n");
-            }
-            return okToInit;
+            servicesRegister(parseArgs(1,args));
+            interpreter = new Interpreter();
+            interpreter.set("bsh.args", args);
+            interpreter.set("bsh.bundleContext", mainContext.getPluginHost().getHostBundleContext());
+            interpreter.set("bsh.dataSource", mainContext.getDataSource());
+            interpreter.eval("setAccessibility(true)");
+            return true;
         }
 
         /**

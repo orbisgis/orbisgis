@@ -133,6 +133,16 @@ public final class OwsMapContext extends BeanMapContext {
         }
 
         @Override
+        public ILayer createLayer(String layerName, URI source) throws LayerException {
+            return new Layer(layerName, source);
+        }
+
+        @Override
+        public ILayer createLayer(URI source) throws LayerException {
+            return createLayer(org.orbisgis.utils.FileUtils.getNameFromURI(source), source);
+        }
+
+    @Override
         public ILayer createLayerCollection(String layerName) {
                 return new LayerCollection(layerName);
         }
@@ -488,40 +498,23 @@ public final class OwsMapContext extends BeanMapContext {
                         //it corresponding to a leaf layer
                         //We need to read the data declaration and create the layer
                         URLType dataUrl = lt.getDataURL();
-                        String layerSource = null;
-                        URI layerURI=null;
                         if (dataUrl != null) {
                                 OnlineResourceType resType = dataUrl.getOnlineResource();
-                                if (resType != null) {
-                                        try {
-                                                layerURI = new URI(resType.getHref());
-                                                DataManager dm = Services.getService(DataManager.class);
-                                                // The resource is given as relative to MapContext location
-                                                if(!layerURI.isAbsolute() && getLocation()!=null) {
-                                                    try {
-                                                        // Resolve the relative resource ex: new Uri("myFile.shp")
-                                                        layerURI = getLocation().resolve(layerURI);
-                                                    } catch (IllegalArgumentException ex) {
-                                                        LOGGER.warn("Error while trying to find an absolute path for an external resource", ex);
-                                                    }
-                                                }
-                                                layerSource =  dm.registerDataSource(layerURI);
-                                        } catch (URISyntaxException ex) {
-                                                throw new LayerException(I18N.tr("Unable to parse the href URI {0}.", resType.getHref()), ex);
-                                        } catch (Exception ex) {
-                                            throw new LayerException(I18N.tr("Unable to load the data source uri {0}.", resType.getHref()), ex);
-                                        }
-                                }
-                        }
-                        if (layerSource != null) {
                                 try {
+                                        URI layerURI = new URI(resType.getHref());
+                                        // The resource is given as relative to MapContext location
+                                        if(!layerURI.isAbsolute() && getLocation()!=null) {
+                                            try {
+                                                // Resolve the relative resource ex: new Uri("myFile.shp")
+                                                layerURI = getLocation().resolve(layerURI);
+                                            } catch (IllegalArgumentException ex) {
+                                                LOGGER.warn("Error while trying to find an absolute path for an external resource", ex);
+                                            }
+                                        }
                                         //Get table name
-                                        ILayer leafLayer = createLayer(layerSource);
+                                        ILayer leafLayer = createLayer(layerURI);
                                         leafLayer.setDescription(new Description(lt));
                                         leafLayer.setVisible(!lt.isHidden());
-                                        if(layerURI!=null) {
-                                            leafLayer.setDataUri(layerURI);
-                                        }
                                         //Parse styles
                                         if(lt.isSetStyleList()) {
                                                 for(StyleType st : lt.getStyleList().getStyle()) {
@@ -533,6 +526,8 @@ public final class OwsMapContext extends BeanMapContext {
                                                 }
                                         }
                                         parentLayer.addLayer(leafLayer);
+                                } catch (URISyntaxException ex) {
+                                    throw new LayerException(I18N.tr("Unable to parse the href URI {0}.", resType.getHref()), ex);
                                 } catch (InvalidStyle ex) {
                                         throw new LayerException(I18N.tr("Unable to load the description of the layer {0}", lt.getTitle().toString()), ex);
                                 }
