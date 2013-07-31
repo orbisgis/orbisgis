@@ -38,6 +38,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.legend.structure.fill.constant.ConstantFillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
@@ -50,7 +51,8 @@ import org.orbisgis.legend.structure.parameter.NumericLegend;
  * some numeric attribute. This way, we obtain a "proportional line" analysis.
  * @author Alexis Guéganno
  */
-public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
+public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend
+        implements LookupFieldName {
 
         /**
          * Builds an empty {@code ProportionalStrokeLegend}. It will change 0 to
@@ -164,18 +166,12 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
             ((LinearInterpolationLegend)getLineWidthLegend()).setSecondValue(d);
         }
 
-        /**
-         * Sets the name of the field where values will be retrieved.
-         * @param name
-         */
+        @Override
         public void setLookupFieldName(String name) {
                 ((LinearInterpolationLegend)getLineWidthLegend()).setLookupFieldName(name);
         }
 
-        /**
-         * Gets the name of the field where values will be retrieved.
-         * @return
-         */
+        @Override
         public String getLookupFieldName() {
                 return ((LinearInterpolationLegend)getLineWidthLegend()).getLookupFieldName();
         }

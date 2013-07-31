@@ -36,6 +36,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealFunction;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
 
 /**
@@ -47,7 +48,8 @@ import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
  * 
  * @author Alexis Guéganno
  */
-public class MonovariateProportionalViewBox extends DefaultViewBox {
+public class MonovariateProportionalViewBox extends DefaultViewBox
+        implements LookupFieldName {
         
         private boolean onH;
 
@@ -216,18 +218,12 @@ public class MonovariateProportionalViewBox extends DefaultViewBox {
             getInterpolation().setSecondValue(d);
         }
 
-        /**
-         * Gets the name of the field where values will be retrieved.
-         * @return
-         */
+        @Override
         public String getLookupFieldName(){
                 return getInterpolation().getLookupFieldName();
         }
 
-        /**
-         * Sets the name of the field where values will be retrieved.
-         * @param name
-         */
+        @Override
         public void setLookupFieldName(String name){
                 getInterpolation().setLookupFieldName(name);
         }

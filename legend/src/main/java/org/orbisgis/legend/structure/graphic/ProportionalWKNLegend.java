@@ -33,6 +33,7 @@ import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
@@ -46,7 +47,8 @@ import org.orbisgis.legend.structure.viewbox.ViewBoxLegendFactory;
  * simple proportional symbol configuration, associated to a WKN graphic.
  * @author Alexis Guéganno
  */
-public class ProportionalWKNLegend extends ConstantFormWKN {
+public class ProportionalWKNLegend extends ConstantFormWKN
+        implements LookupFieldName {
 
     /**
      * Builds a new {@code ProportionalWKNLegend} with a default {@link
@@ -157,20 +159,13 @@ public class ProportionalWKNLegend extends ConstantFormWKN {
         ((MonovariateProportionalViewBox) getViewBoxLegend()).setSecondValue(d);
     }
 
-    /**
-     * Gets the name of the field where the values will be retrieved.
-     * @return
-     */
+    @Override
     public String getLookupFieldName() {
         return ((MonovariateProportionalViewBox)getViewBoxLegend()).getLookupFieldName();
     }
 
-    /**
-     * Sets the name of the field where values will be retrieved.
-     * @param name
-     */
+    @Override
     public void setLookupFieldName(String name){
         ((MonovariateProportionalViewBox)getViewBoxLegend()).setLookupFieldName(name);
     }
-
 }

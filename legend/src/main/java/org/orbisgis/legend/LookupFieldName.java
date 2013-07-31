@@ -26,37 +26,26 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.legend.structure.interpolation;
-
-import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.legend.LookupFieldName;
+package org.orbisgis.legend;
 
 /**
- * Analysis associated to a linear interpolation. This structure can be defined
- * as an interpolation on any numerci, unaltered, value.</p>
- * <p>Note that we don't care that one of the values given to compute the
- * interpolation is 0 or not. We do it, that's all.
- * @author Alexis Guéganno
+ * Interface for legends that can set and get the field name.
+ *
+ * @author Adam Gouge
  */
-public class LinearInterpolationLegend extends InterpolationLegend
-        implements LookupFieldName {
+public interface LookupFieldName {
 
-        /**
-         * Build a new Legend using the given {@code Interpolate2Real} instance.
-         * @param inter
-         */
-        public LinearInterpolationLegend(Interpolate2Real inter){
-                super(inter);
-        }
+    /**
+     * Gets the field name.
+     *
+     * @return The field name
+     */
+    String getLookupFieldName();
 
-        @Override
-        public String getLookupFieldName(){
-                return ((RealAttribute)getInterpolation().getLookupValue()).getColumnName();
-        }
-
-        @Override
-        public void setLookupFieldName(String name){
-                ((RealAttribute)getInterpolation().getLookupValue()).setColumnName(name);
-        }
+    /**
+     * Sets the field name.
+     *
+     * @param name Name
+     */
+    void setLookupFieldName(String name);
 }

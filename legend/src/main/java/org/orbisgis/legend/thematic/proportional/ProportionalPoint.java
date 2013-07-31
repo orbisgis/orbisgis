@@ -32,6 +32,7 @@ import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
 import org.orbisgis.legend.structure.graphic.ProportionalWKNLegend;
@@ -48,7 +49,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * MonovariateProportionalViewBox}.
  * @author Alexis Guéganno
  */
-public class ProportionalPoint extends ConstantFormPoint implements IUniqueSymbolArea {
+public class ProportionalPoint extends ConstantFormPoint
+        implements IUniqueSymbolArea, LookupFieldName {
 
     private ProportionalWKNLegend markGraphic;
     private static final I18n I18N = I18nFactory.getI18n(ProportionalPoint.class);
@@ -139,18 +141,12 @@ public class ProportionalPoint extends ConstantFormPoint implements IUniqueSymbo
         markGraphic.setPenStroke(cpsl);
     }
 
-    /**
-     * Gets the name of the field where values will be retrieved.
-     * @return
-     */
+    @Override
     public String getLookupFieldName(){
             return markGraphic.getLookupFieldName();
     }
 
-    /**
-     * Sets the name of the field where values will be retrieved.
-     * @param name
-     */
+    @Override
     public void setLookupFieldName(String name){
             markGraphic.setLookupFieldName(name);
     }

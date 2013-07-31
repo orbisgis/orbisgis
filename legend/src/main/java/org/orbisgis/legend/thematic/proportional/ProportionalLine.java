@@ -33,6 +33,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
@@ -46,7 +47,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * raw value (i.e. we don't apply any mathematical function to the input values).
  * @author Alexis Guéganno
  */
-public class ProportionalLine extends ConstantColorAndDashesLine {
+public class ProportionalLine extends ConstantColorAndDashesLine
+    implements LookupFieldName {
 
     private ProportionalStrokeLegend strokeLegend;
     private static final I18n I18N = I18nFactory.getI18n(ProportionalLine.class);
@@ -84,18 +86,12 @@ public class ProportionalLine extends ConstantColorAndDashesLine {
         strokeLegend = legend;
     }
 
-    /**
-     * Gets the name of the field where values will be retrieved.
-     * @return
-     */
+    @Override
     public String getLookupFieldName(){
             return strokeLegend.getLookupFieldName();
     }
 
-    /**
-     * Sets the name of the field where values will be retrieved.
-     * @param name
-     */
+    @Override
     public void setLookupFieldName(String name){
             strokeLegend.setLookupFieldName(name);
     }
