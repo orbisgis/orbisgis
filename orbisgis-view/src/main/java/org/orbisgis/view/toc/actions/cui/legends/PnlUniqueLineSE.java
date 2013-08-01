@@ -42,6 +42,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.net.URL;
+import java.util.Arrays;
 
 /**
  * "Unique Symbol - Line" UI.
@@ -54,24 +55,40 @@ import java.net.URL;
 public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueLineSE.class);
 
-        private ConstantPenStrokeLegend penStrokeMemory;
-        private final boolean displayUom;
-
         public static final String LINE_SETTINGS = I18n.marktr("Line settings");
         public static final String BORDER_SETTINGS = I18n.marktr("Border settings");
         public static final String MARK_SETTINGS = I18n.marktr("Mark settings");
 
-        /**
-         * Here we can put all the Legend instances we want... but they have to
-         * be unique symbol (ie constant) Legends.
-         */
         private UniqueSymbolLine uniqueLine;
+        private ConstantPenStrokeLegend penStrokeMemory;
+        private final boolean displayUom;
+
+        public PnlUniqueLineSE(LegendContext lc) {
+            System.out.println("LC constructor");
+            setDataSource(lc.getLayer().getDataSource());
+            setGeometryType(lc.getGeometryType());
+            uniqueLine = new UniqueSymbolLine();
+            displayUom = true;
+            initPreview();
+            initializeLegendFields();
+        }
+
+        public PnlUniqueLineSE(LegendContext lc, UniqueSymbolLine legend) {
+            System.out.println("LC, leg constructor");
+            setDataSource(lc.getLayer().getDataSource());
+            setGeometryType(lc.getGeometryType());
+            uniqueLine = legend;
+            displayUom = true;
+            initPreview();
+            initializeLegendFields();
+        }
 
         /**
          * Default constructor. The UOM combo box is displayed.
          */
         public PnlUniqueLineSE() {
             this(true);
+            System.out.println("Old PnlUniqueLineSE() constructor");
         }
 
         /**
@@ -80,7 +97,10 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          * @param uom if true, the uom combo box will be displayed.
          */
         public PnlUniqueLineSE(boolean uom){
-            super();
+            System.out.println("Old PnlUniqueLineSE(boolean uom) constructor");
+            for (StackTraceElement elt : Thread.currentThread().getStackTrace()) {
+                System.out.println(elt.toString());
+            }
             this.displayUom = uom;
         }
 
@@ -116,6 +136,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         @Override
         public void setGeometryType(int type){
+            // TODO: Why does this do nothing?
         }
 
         /**
@@ -173,6 +194,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         @Override
         public void initializeLegendFields() {
+            System.out.println("Initializing LF UL!");
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
                 glob.add(new LinePanel(uniqueLine,

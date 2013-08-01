@@ -30,6 +30,7 @@ package org.orbisgis.view.toc.actions.cui.legends;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.classification.ClassificationUtils;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
@@ -78,9 +79,27 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
 
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlProportionalPointSE.class);
         private static final I18n I18N = I18nFactory.getI18n(PnlProportionalPointSE.class);
+
         private ProportionalPoint proportionalPoint;
+
         private WideComboBox fieldCombo;
         MouseListener l;
+
+        public PnlProportionalPointSE(LegendContext lc) {
+            setDataSource(lc.getLayer().getDataSource());
+            setGeometryType(lc.getGeometryType());
+            proportionalPoint = new ProportionalPoint();
+            initPreview();
+            initializeLegendFields();
+        }
+
+        public PnlProportionalPointSE(LegendContext lc, ProportionalPoint legend) {
+            setDataSource(lc.getLayer().getDataSource());
+            setGeometryType(lc.getGeometryType());
+            proportionalPoint = legend;
+            initPreview();
+            initializeLegendFields();
+        }
 
         @Override
         public IUniqueSymbolArea getLegend() {

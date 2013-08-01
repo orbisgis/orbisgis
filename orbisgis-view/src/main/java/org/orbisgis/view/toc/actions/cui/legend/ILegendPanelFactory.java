@@ -40,6 +40,7 @@ import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
 import org.orbisgis.legend.thematic.recode.RecodedArea;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
 import org.orbisgis.legend.thematic.recode.RecodedPoint;
+import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legends.*;
 
@@ -51,55 +52,80 @@ public class ILegendPanelFactory {
     /**
      * Return a new ILegendPanel instance associated to the given Legend.
      *
+     * Used in {@link org.orbisgis.view.toc.actions.cui.LegendTree#addRule}
+     * and {@link org.orbisgis.view.toc.actions.cui.SimpleStyleEditor#addSymbolPanel}.
+     *
      * @param lc     LegendContext
      * @param legend Legend
-     *
      * @return Associated ILegendPanel
      */
     public static ILegendPanel getILegendPanel(LegendContext lc, Legend legend) {
-        ILegendPanel ilp = getILegendPanel(lc, legend.getLegendTypeName());
-        ilp.initialize(lc, legend);
-        return ilp;
+        System.out.println("Recovering old legend for " + legend.getLegendTypeName());
+        if (legend instanceof UniqueSymbolPoint) {
+            System.out.println("instanceof UniqueSymbolPoint");
+            return new PnlUniquePointSE(lc, (UniqueSymbolPoint) legend);
+        } else if (legend instanceof UniqueSymbolLine) {
+            System.out.println("instanceof UniqueSymbolLine");
+            return new PnlUniqueLineSE(lc, (UniqueSymbolLine) legend);
+        } else if (legend instanceof UniqueSymbolArea) {
+            System.out.println("instanceof UniqueSymbolArea");
+            return new PnlUniqueAreaSE(lc, (UniqueSymbolArea) legend);
+        } else if (legend instanceof ProportionalPoint) {
+            System.out.println("instanceof ProportionalPoint");
+            return new PnlProportionalPointSE(lc, (ProportionalPoint) legend);
+        } else if (legend instanceof ProportionalLine) {
+            System.out.println("instanceof ProportionalLine");
+            return new PnlProportionalLineSE(lc, (ProportionalLine) legend);
+        } else {
+            System.out.println("instanceof other");
+            ILegendPanel ilp = getPanelForLegendUIChooser(lc, legend.getLegendTypeName());
+            ilp.initialize(lc, legend);
+            return ilp;
+        }
     }
 
     /**
      * Return a new ILegendPanel instance associated to the Legend with the
      * given name.
      *
+     * Used in {@link org.orbisgis.view.toc.actions.cui.LegendUIChooser#getSelectedPanel}.
      *
      * @param lc
      * @param legendName Legend name
      * @return Associated ILegendPanel
      */
-    public static ILegendPanel getILegendPanel(LegendContext lc, String legendName) {
-        ILegendPanel ilp;
+    public static ILegendPanel getPanelForLegendUIChooser(LegendContext lc, String legendName) {
+        System.out.println("Creating new legend for " + legendName);
         if (legendName.equals(UniqueSymbolPoint.NAME)) {
-            ilp = new PnlUniquePointSE();
+            return new PnlUniquePointSE(lc);
         } else if (legendName.equals(UniqueSymbolLine.NAME)) {
-            ilp = new PnlUniqueLineSE();
+            return new PnlUniqueLineSE(lc);
         } else if (legendName.equals(UniqueSymbolArea.NAME)) {
-            ilp = new PnlUniqueAreaSE();
+            return new PnlUniqueAreaSE(lc);
         } else if (legendName.equals(ProportionalPoint.NAME)) {
-            ilp = new PnlProportionalPointSE();
+            return new PnlProportionalPointSE(lc);
         } else if (legendName.equals(ProportionalLine.NAME)) {
-            ilp = new PnlProportionalLineSE();
-        } else if (legendName.equals(RecodedPoint.NAME)) {
-            ilp = new PnlRecodedPoint();
-        } else if (legendName.equals(RecodedLine.NAME)) {
-            ilp = new PnlRecodedLine();
-        } else if (legendName.equals(RecodedArea.NAME)) {
-            ilp = new PnlRecodedArea();
-        } else if (legendName.equals(CategorizedPoint.NAME)) {
-            ilp = new PnlCategorizedPoint();
-        } else if (legendName.equals(CategorizedLine.NAME)) {
-            ilp = new PnlCategorizedLine();
-        } else if (legendName.equals(CategorizedArea.NAME)) {
-            ilp = new PnlCategorizedArea();
+            return new PnlProportionalLineSE(lc);
         } else {
-            throw new UnsupportedOperationException("No available " +
-                    "ILegendPanel for legend" + legendName + ".");
+            ILegendPanel ilp;
+            if (legendName.equals(RecodedPoint.NAME)) {
+                ilp =  new PnlRecodedPoint();
+            } else if (legendName.equals(RecodedLine.NAME)) {
+                ilp =  new PnlRecodedLine();
+            } else if (legendName.equals(RecodedArea.NAME)) {
+                ilp =  new PnlRecodedArea();
+            } else if (legendName.equals(CategorizedPoint.NAME)) {
+                ilp =  new PnlCategorizedPoint();
+            } else if (legendName.equals(CategorizedLine.NAME)) {
+                ilp =  new PnlCategorizedLine();
+            } else if (legendName.equals(CategorizedArea.NAME)) {
+                ilp =  new PnlCategorizedArea();
+            } else {
+                throw new UnsupportedOperationException("No available " +
+                        "ILegendPanel for legend" + legendName + ".");
+            }
+            ilp.initialize(lc);
+            return ilp;
         }
-        ilp.initialize(lc);
-        return ilp;
     }
 }

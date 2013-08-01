@@ -70,8 +70,8 @@ import java.util.Set;
 public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     public static final Logger LOGGER = Logger.getLogger(PnlRecodedLine.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
+
     private String id;
-    private ContainerItemProperties[] uoms;
 
     @Override
     public RecodedPoint getEmptyAnalysis() {

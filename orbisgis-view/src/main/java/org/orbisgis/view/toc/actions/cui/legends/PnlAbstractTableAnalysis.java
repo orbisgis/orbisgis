@@ -11,19 +11,18 @@ import org.orbisgis.legend.thematic.OnVertexOnCentroid;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.legend.thematic.uom.SymbolUom;
-import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legends.panels.*;
+import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;
+import org.orbisgis.view.toc.actions.cui.legends.panels.SettingsPanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.TablePanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.Util;
 import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -38,19 +37,21 @@ import java.util.SortedSet;
  */
 public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
         extends AbstractFieldPanel {
+
+    public static final Logger LOGGER = Logger.getLogger(PnlAbstractTableAnalysis.class);
+
+    private MappedLegend<K,U> legend;
+    private SettingsPanel<K, U> settingsPanel;
+    protected CanvasSE fallbackPreview;
+    protected TablePanel<K, U> tablePanel;
+
+    private String id;
+    protected JComboBox lineUom;
+
     public static final String FALLBACK = "Fallback";
     public static final String CREATE_CLASSIF = "Create classification";
-    public static final Logger LOGGER = Logger.getLogger(PnlAbstractTableAnalysis.class);
-    private static final I18n I18N = I18nFactory.getI18n(PnlAbstractTableAnalysis.class);
-    private MappedLegend<K,U> legend;
-    private String id;
-    protected CanvasSE fallbackPreview;
-    protected JComboBox lineUom;
     public static final String ENABLE_BORDER = I18n.marktr("Enable border");
     protected static final String CLASSIFICATION_SETTINGS = I18n.marktr("Classification settings");
-
-    protected TablePanel<K, U> tablePanel;
-    private SettingsPanel<K, U> settingsPanel;
 
     @Override
     public void initialize(LegendContext lc) {

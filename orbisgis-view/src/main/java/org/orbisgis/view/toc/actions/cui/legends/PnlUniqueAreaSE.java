@@ -38,6 +38,7 @@ import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
+import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
@@ -56,16 +57,32 @@ import java.net.URL;
  * @author Alexis Guéganno
  */
 public class PnlUniqueAreaSE extends PnlUniqueLineSE {
+
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueAreaSE.class);
+
+        private UniqueSymbolArea uniqueArea;
         private ConstantSolidFillLegend solidFillMemory;
+        protected boolean isAreaOptional;
+
         public static final String FILL_SETTINGS = I18n.marktr("Fill settings");
 
-        /**
-         * Here we can put all the Legend instances we want... but they have to
-         * be unique symbol (ie constant) Legends.
-         */
-        private UniqueSymbolArea uniqueArea;
-        protected boolean isAreaOptional;
+        public PnlUniqueAreaSE(LegendContext lc) {
+            setDataSource(lc.getLayer().getDataSource());
+            setGeometryType(lc.getGeometryType());
+            uniqueArea = new UniqueSymbolArea();
+            initPreview();
+            initializeLegendFields();
+        }
+
+        public PnlUniqueAreaSE(LegendContext lc, UniqueSymbolArea legend) {
+            System.out.println("beginning of constructor");
+            setDataSource(lc.getLayer().getDataSource());
+            setGeometryType(lc.getGeometryType());
+            uniqueArea = legend;
+            initPreview();
+            initializeLegendFields();
+            System.out.println("end of constructor");
+        }
 
         /**
          * Default constructor. UOM will be displayed as well as the stroke

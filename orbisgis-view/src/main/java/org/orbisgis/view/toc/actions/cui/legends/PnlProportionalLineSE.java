@@ -30,9 +30,7 @@ package org.orbisgis.view.toc.actions.cui.legends;
 
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.*;
@@ -44,17 +42,12 @@ import org.orbisgis.core.renderer.classification.ClassificationUtils;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
-import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legends.panels.DashArrayField;
-import org.orbisgis.view.toc.actions.cui.legends.panels.LineOpacitySpinner;
-import org.orbisgis.view.toc.actions.cui.legends.panels.LineUOMComboBox;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ProportionalLinePanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -69,17 +62,33 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlProportionalLineSE.class);
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlProportionalLineSE.class);
 
-        private ProportionalLine legend;
+        private ProportionalLine proportionalLine;
+
+        public PnlProportionalLineSE(LegendContext lc) {
+            setDataSource(lc.getLayer().getDataSource());
+            setGeometryType(lc.getGeometryType());
+            proportionalLine = new ProportionalLine();
+            initPreview();
+            initializeLegendFields();
+        }
+
+        public PnlProportionalLineSE(LegendContext lc, ProportionalLine legend) {
+            setDataSource(lc.getLayer().getDataSource());
+            setGeometryType(lc.getGeometryType());
+            proportionalLine = legend;
+            initPreview();
+            initializeLegendFields();
+        }
 
         @Override
         public ProportionalLine getLegend() {
-                return legend;
+                return proportionalLine;
         }
 
         @Override
         public void setLegend(Legend legend) {
                 if(legend instanceof ProportionalLine){
-                        this.legend = (ProportionalLine)legend;
+                        this.proportionalLine = (ProportionalLine)legend;
                         initPreview();
                         initializeLegendFields();
                 } else {
@@ -102,7 +111,7 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
         @Override
         public Legend copyLegend() {
                 ProportionalLine usl = new ProportionalLine();
-                ProportionalStrokeLegend strokeLeg = legend.getStrokeLegend();
+                ProportionalStrokeLegend strokeLeg = proportionalLine.getStrokeLegend();
                 ProportionalStrokeLegend newLeg = usl.getStrokeLegend();
                 newLeg.setDashArray(strokeLeg.getDashArray());
                 try{
@@ -159,7 +168,7 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
                         WideComboBox jcc = getNumericFieldCombo(ds);
                         ActionListener acl2 = EventHandler.create(ActionListener.class,
                                 this, "updateField", "source.selectedItem");
-                        String field = legend.getLookupFieldName();
+                        String field = proportionalLine.getLookupFieldName();
                         if(field != null && !field.isEmpty()){
                                 jcc.setSelectedItem(field);
                         }
@@ -178,9 +187,9 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
         public void updateField(String obj){
                 try {
                         double[] mnm=ClassificationUtils.getMinAndMax(ds, new RealAttribute(obj));
-                        legend.setFirstData(mnm[0]);
-                        legend.setSecondData(mnm[1]);
-                        legend.setLookupFieldName(obj);
+                        proportionalLine.setFirstData(mnm[0]);
+                        proportionalLine.setSecondData(mnm[1]);
+                        proportionalLine.setLookupFieldName(obj);
                         Map<String, Object> sample = new HashMap<String, Object>();
                         sample.put(obj, mnm[1]);
                         getPreview().setSampleDatasource(sample);

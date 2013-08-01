@@ -40,6 +40,7 @@ import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
+import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
@@ -66,16 +67,30 @@ import java.net.URL;
  * @author Alexis Guéganno
  */
 public class PnlUniquePointSE extends PnlUniqueAreaSE {
-        private static final I18n I18N = I18nFactory.getI18n(PnlUniquePointSE.class);
-        private int geometryType = SimpleGeometryType.ALL;
-        private ContainerItemProperties[] uoms;
 
-        /**
-         * Here we can put all the Legend instances we want... but they have to
-         * be unique symbol (ie constant) Legends.
-         */
+        private static final I18n I18N = I18nFactory.getI18n(PnlUniquePointSE.class);
+
         private UniqueSymbolPoint uniquePoint;
-        private ContainerItemProperties[] wkns;
+        private int geometryType = SimpleGeometryType.ALL;
+
+
+        public PnlUniquePointSE(LegendContext lc) {
+            System.out.println("LC constructor");
+            setDataSource(lc.getLayer().getDataSource());
+            setGeometryType(lc.getGeometryType());
+            uniquePoint = new UniqueSymbolPoint();
+            initPreview();
+            initializeLegendFields();
+        }
+
+        public PnlUniquePointSE(LegendContext lc, UniqueSymbolPoint legend) {
+            System.out.println("LC, leg constructor");
+            setDataSource(lc.getLayer().getDataSource());
+            setGeometryType(lc.getGeometryType());
+            uniquePoint = legend;
+            initPreview();
+            initializeLegendFields();
+        }
 
         /**
          * Default constructor. UOM will be displayed as well as the stroke
