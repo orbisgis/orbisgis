@@ -23,13 +23,13 @@
                 <module>bundles/orbisgis-oshell</module>
                 <module>bundles/orbisgis-omanager</module>
                 <module>bundles/orbisgis-omanager-plugin</module>
-                <!-- <module>orbisgis-view</module> -->
+                <module>orbisgis-view</module>
                 <module>orbisgis-dist</module>
         </modules>
         <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <netbeans.hint.license>OrbisGIS</netbeans.hint.license>
-                <default-main-class>org.orbisgis.core.beanshell.BeanshellScript</default-main-class>
+                <default-main-class>org.orbisgis.view.main.Main</default-main-class>
                 <!-- Common Dependencies version -->
                 <log4j-version>1.2.16</log4j-version>
                 <commons-io-version>1.3.2</commons-io-version>

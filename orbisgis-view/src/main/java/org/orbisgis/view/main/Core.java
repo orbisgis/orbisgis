@@ -54,7 +54,6 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
-import org.orbisgis.view.beanshell.BeanShellFrameFactory;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.docking.DockingManagerImpl;
@@ -62,21 +61,12 @@ import org.orbisgis.view.docking.internals.DockingPanelTracker;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.edition.dialogs.SaveDocuments;
-import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.main.bundles.BundleFromResources;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.main.frames.ext.MainWindow;
 import org.orbisgis.view.main.frames.ext.ToolBarAction;
-import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.output.OutputManager;
-import org.orbisgis.view.sql.MapContext_AddLayer;
-import org.orbisgis.view.sql.MapContext_BBox;
-import org.orbisgis.view.sql.MapContext_Share;
-import org.orbisgis.view.sql.MapContext_ZoomTo;
-import org.orbisgis.view.sqlconsole.SQLConsoleFactory;
-import org.orbisgis.view.table.TableEditorFactory;
-import org.orbisgis.view.toc.TocEditorFactory;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.orbisgis.view.workspace.WorkspaceSelectionDialog;
 import org.osgi.framework.BundleException;
@@ -96,7 +86,7 @@ public class Core {
     //view package
     private EditorManager editors;         /*!< Management of editors */
     private MainFrame mainFrame = new MainFrame();     /*!< The main window */
-    private Catalog geoCatalog= null;      /*!< The GeoCatalog frame */
+    //private Catalog geoCatalog= null;      /*!< The GeoCatalog frame */
     private ViewWorkspace viewWorkspace;
     private OutputManager loggerCollection;    /*!< Loggings panels */
     private BackgroundManager backgroundManager;
@@ -218,13 +208,14 @@ public class Core {
                         }
                 }
     }
+
     /**
      * For UnitTest purpose
      * @return The Catalog instance
      */
-    public Catalog getGeoCatalog() {
-        return geoCatalog;
-    }
+    //public Catalog getGeoCatalog() {
+    //    return geoCatalog;
+    //}
 
     /**
      * Init the SIF ui factory
@@ -284,22 +275,22 @@ public class Core {
      */
     private void makeGeoCatalogPanel() {
         //The geo-catalog view content is read from the SourceContext
-        geoCatalog = new Catalog();
+        //geoCatalog = new Catalog();
         // Catalog extensions
-        geoCatalog.registerActionTrackers(pluginFramework.getHostBundleContext());
+        //geoCatalog.registerActionTrackers(pluginFramework.getHostBundleContext());
         //Add the view as a new Docking Panel
-        dockManager.addDockingPanel(geoCatalog);
+        //dockManager.addDockingPanel(geoCatalog);
     }
 
     /**
      * Load the built-ins editors factories
      */
     private void loadEditorFactories() {
-            editors.addEditorFactory(new TocEditorFactory(pluginFramework.getHostBundleContext()));
-            editors.addEditorFactory(new MapEditorFactory(pluginFramework.getHostBundleContext()));
-            editors.addEditorFactory(new SQLConsoleFactory(pluginFramework.getHostBundleContext()));
-            editors.addEditorFactory(new TableEditorFactory());
-            editors.addEditorFactory(new BeanShellFrameFactory());
+            //editors.addEditorFactory(new TocEditorFactory(pluginFramework.getHostBundleContext()));
+            //editors.addEditorFactory(new MapEditorFactory(pluginFramework.getHostBundleContext()));
+            //editors.addEditorFactory(new SQLConsoleFactory(pluginFramework.getHostBundleContext()));
+            //editors.addEditorFactory(new TableEditorFactory());
+            //editors.addEditorFactory(new BeanShellFrameFactory());
     }
     /**
      * Initialisation of the BackGroundManager Service
@@ -436,10 +427,10 @@ public class Core {
      * Add SQL functions to interact with OrbisGIS UI
      */
         private void addSQLFunctions() {
-                mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_AddLayer.class);
-                mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_BBox.class);
-                mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_ZoomTo.class);
-                mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_Share.class);
+                //mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_AddLayer.class);
+                //mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_BBox.class);
+                //mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_ZoomTo.class);
+                //mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_Share.class);
         }
 
     /**
@@ -489,7 +480,7 @@ public class Core {
 
         //Free UI resources
         editors.dispose();
-        geoCatalog.dispose();
+        //TODO geoCatalog.dispose();
         mainFrame.dispose();
         if(singleFrameTracker!=null) {
                 singleFrameTracker.close();

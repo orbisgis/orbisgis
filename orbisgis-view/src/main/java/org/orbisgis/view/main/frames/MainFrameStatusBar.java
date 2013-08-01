@@ -195,8 +195,6 @@ public class MainFrameStatusBar extends StatusBar {
 
         /**
          * On resize , the job list window must be moved
-         *
-         * @param ce
          */
         public void onJobPopupResize() {
                 if (jobPopup != null) {

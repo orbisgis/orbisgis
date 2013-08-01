@@ -1,6 +1,5 @@
 package org.orbisgis.view.components.actions;
 
-import javax.swing.Action;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.osgi.framework.BundleContext;

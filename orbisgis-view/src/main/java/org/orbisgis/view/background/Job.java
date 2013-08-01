@@ -31,7 +31,6 @@ package org.orbisgis.view.background;
 import java.util.ArrayList;
 import org.orbisgis.progress.DefaultProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.view.map.MapStatusBar;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

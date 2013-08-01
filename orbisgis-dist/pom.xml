@@ -123,7 +123,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>orbisgis-core</artifactId>
+            <artifactId>orbisgis-view</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -161,6 +161,11 @@
             <artifactId>junit</artifactId>
             <version>4.10</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>${org.osgi.compendium-version}</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
