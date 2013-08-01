@@ -15,6 +15,7 @@ import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.WideComboBox;
+import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelInterval;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorConfigurationPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;
@@ -49,6 +50,10 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     private JButton createCl;
     private WideComboBox methodCombo;
     private DefaultComboBoxModel comboModel;
+
+    public PnlAbstractCategorized(LegendContext lc, MappedLegend<Double, U> legend) {
+        super(lc, legend);
+    }
 
     @Override
     public int getPreviewColumn(){

@@ -8,9 +8,11 @@ import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
 import org.orbisgis.legend.thematic.categorize.CategorizedLine;
+import org.orbisgis.legend.thematic.categorize.CategorizedPoint;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorCategorizedLine;
@@ -36,6 +38,16 @@ import java.util.Set;
 public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlCategorizedLine.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlCategorizedLine.class);
+
+    public PnlCategorizedLine(LegendContext lc) {
+        this(lc, new CategorizedLine());
+    }
+
+    public PnlCategorizedLine(LegendContext lc, CategorizedLine leg) {
+        super(lc, leg);
+        initPreview();
+        initializeLegendFields();
+    }
 
     /**
      * This methods is called by EventHandler when the user clicks on the fall back's preview. It opens an UI that lets

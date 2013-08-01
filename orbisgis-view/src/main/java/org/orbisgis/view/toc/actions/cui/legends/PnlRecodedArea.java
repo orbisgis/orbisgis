@@ -39,6 +39,7 @@ import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.orbisgis.legend.thematic.recode.RecodedArea;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorRecodedArea;
@@ -75,6 +76,16 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlRecodedLine.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
     private String id;
+
+    public PnlRecodedArea(LegendContext lc) {
+        this(lc, new RecodedArea());
+    }
+
+    public PnlRecodedArea(LegendContext lc, RecodedArea leg) {
+        super(lc, leg);
+        initPreview();
+        initializeLegendFields();
+    }
 
     @Override
     public String getId() {

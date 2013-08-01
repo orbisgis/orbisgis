@@ -11,6 +11,7 @@ import org.orbisgis.legend.thematic.categorize.CategorizedArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorCategorizedArea;
@@ -36,6 +37,16 @@ import java.util.Set;
 public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlCategorizedArea.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlCategorizedArea.class);
+
+    public PnlCategorizedArea(LegendContext lc) {
+        this(lc, new CategorizedArea());
+    }
+
+    public PnlCategorizedArea(LegendContext lc, CategorizedArea leg) {
+        super(lc, leg);
+        initPreview();
+        initializeLegendFields();
+    }
 
     /**
      * This methods is called by EventHandler when the user clicks on the fall back's preview. It opens an UI that lets

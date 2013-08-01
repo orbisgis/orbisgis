@@ -79,6 +79,10 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
     protected final static String JOB_NAME = "recodeSelectDistinct";
     private JPanel classifPanel;
 
+    public PnlAbstractUniqueValue(LegendContext lc, MappedLegend<String, U> leg) {
+        super(lc, leg);
+    }
+
     /**
      * We take the fallback configuration and copy it for each key.
      * @param set A set of keys we use as a basis.

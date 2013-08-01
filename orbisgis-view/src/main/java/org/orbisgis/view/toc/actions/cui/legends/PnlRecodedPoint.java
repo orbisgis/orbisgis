@@ -31,31 +31,26 @@ package org.orbisgis.view.toc.actions.cui.legends;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
-import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
+import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.RecodedPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.sif.common.ContainerItemProperties;
+import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorRecodedPoint;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorUniqueValue;
 import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorRecodedPoint;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelRecodedPoint;
-import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
@@ -73,6 +68,21 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
 
     private String id;
 
+    public PnlRecodedPoint(LegendContext lc) {
+        this(lc, new RecodedPoint());
+    }
+
+    public PnlRecodedPoint(LegendContext lc, RecodedPoint leg) {
+        super(lc, leg);
+        initPreview();
+        initializeLegendFields();
+    }
+
+    @Override
+    public RecodedPoint getLegend() {
+        return (RecodedPoint) super.getLegend();
+    }
+
     @Override
     public RecodedPoint getEmptyAnalysis() {
         return new RecodedPoint();
@@ -87,7 +97,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     }
 
     public void onEditFallback(MouseEvent me){
-        (getLegend()).setFallbackParameters(editCanvas(fallbackPreview));
+        getLegend().setFallbackParameters(editCanvas(fallbackPreview));
     }
 
     /**
@@ -96,7 +106,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
      * @return The LineParameters that must be used at the end of the edition.
      */
     private PointParameters editCanvas(CanvasSE cse){
-        RecodedPoint leg = (RecodedPoint) getLegend();
+        RecodedPoint leg = getLegend();
         PointParameters lps = leg.getFallbackParameters();
         UniqueSymbolPoint usa = getFallBackLegend();
         PnlUniquePointSE pls = new PnlUniquePointSE(false, leg.isStrokeEnabled());
@@ -119,7 +129,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     }
 
     private UniqueSymbolPoint getFallBackLegend(){
-        RecodedPoint leg = (RecodedPoint)getLegend();
+        RecodedPoint leg = getLegend();
         UniqueSymbolPoint usl = new UniqueSymbolPoint(leg.getFallbackParameters());
         usl.setStrokeUom(leg.getStrokeUom());
         usl.setSymbolUom(leg.getSymbolUom());
@@ -133,7 +143,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
 
     @Override
     public AbstractTableModel getTableModel() {
-        return new TableModelRecodedPoint((AbstractRecodedLegend<PointParameters>) getLegend());
+        return new TableModelRecodedPoint(getLegend());
     }
 
     @Override
@@ -153,7 +163,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
                 Rule rule = getLegend().getSymbolizer().getRule();
                 if(rule != null){
                     CompositeSymbolizer compositeSymbolizer = rule.getCompositeSymbolizer();
-                    int i = compositeSymbolizer.getSymbolizerList().indexOf(this.getLegend().getSymbolizer());
+                    int i = compositeSymbolizer.getSymbolizerList().indexOf(getLegend().getSymbolizer());
                     compositeSymbolizer.setSymbolizer(i, legend.getSymbolizer());
                 }
             }
@@ -177,7 +187,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     @Override
     public Legend copyLegend() {
         RecodedPoint rl = new RecodedPoint();
-        RecodedPoint leg = (RecodedPoint) getLegend();
+        RecodedPoint leg = getLegend();
         leg.setStrokeEnabled(rl.isStrokeEnabled());
         Set<Map.Entry<String,PointParameters>> entries = leg.entrySet();
         for(Map.Entry<String,PointParameters> entry : entries){

@@ -51,7 +51,7 @@ public class ILegendPanelFactory {
 
     /**
      * Return a new ILegendPanel instance associated to the given Legend.
-     *
+     * <p/>
      * Used in {@link org.orbisgis.view.toc.actions.cui.LegendTree#addRule}
      * and {@link org.orbisgis.view.toc.actions.cui.SimpleStyleEditor#addSymbolPanel}.
      *
@@ -76,18 +76,34 @@ public class ILegendPanelFactory {
         } else if (legend instanceof ProportionalLine) {
             System.out.println("instanceof ProportionalLine");
             return new PnlProportionalLineSE(lc, (ProportionalLine) legend);
+        } else if (legend instanceof RecodedPoint) {
+            System.out.println("instanceof RecodedPoint");
+            return new PnlRecodedPoint(lc, (RecodedPoint) legend);
+        } else if (legend instanceof RecodedLine) {
+            System.out.println("instanceof RecodedLine");
+            return new PnlRecodedLine(lc, (RecodedLine) legend);
+        } else if (legend instanceof RecodedArea) {
+            System.out.println("instanceof RecodedArea");
+            return new PnlRecodedArea(lc, (RecodedArea) legend);
+        } else if (legend instanceof CategorizedPoint) {
+            System.out.println("instanceof CategorizedPoint");
+            return new PnlCategorizedPoint(lc, (CategorizedPoint) legend);
+        } else if (legend instanceof CategorizedLine) {
+            System.out.println("instanceof CategorizedLine");
+            return new PnlCategorizedLine(lc, (CategorizedLine) legend);
+        } else if (legend instanceof CategorizedArea) {
+            System.out.println("instanceof CategorizedArea");
+            return new PnlCategorizedArea(lc, (CategorizedArea) legend);
         } else {
-            System.out.println("instanceof other");
-            ILegendPanel ilp = getPanelForLegendUIChooser(lc, legend.getLegendTypeName());
-            ilp.initialize(lc, legend);
-            return ilp;
+            throw new UnsupportedOperationException("No available " +
+                    "ILegendPanel for legend " + legend.getLegendTypeName() + ".");
         }
     }
 
     /**
      * Return a new ILegendPanel instance associated to the Legend with the
      * given name.
-     *
+     * <p/>
      * Used in {@link org.orbisgis.view.toc.actions.cui.LegendUIChooser#getSelectedPanel}.
      *
      * @param lc
@@ -106,26 +122,21 @@ public class ILegendPanelFactory {
             return new PnlProportionalPointSE(lc);
         } else if (legendName.equals(ProportionalLine.NAME)) {
             return new PnlProportionalLineSE(lc);
+        } else if (legendName.equals(RecodedPoint.NAME)) {
+            return new PnlRecodedPoint(lc);
+        } else if (legendName.equals(RecodedLine.NAME)) {
+            return new PnlRecodedLine(lc);
+        } else if (legendName.equals(RecodedArea.NAME)) {
+            return new PnlRecodedArea(lc);
+        } else if (legendName.equals(CategorizedPoint.NAME)) {
+            return new PnlCategorizedPoint(lc);
+        } else if (legendName.equals(CategorizedLine.NAME)) {
+            return new PnlCategorizedLine(lc);
+        } else if (legendName.equals(CategorizedArea.NAME)) {
+            return new PnlCategorizedArea(lc);
         } else {
-            ILegendPanel ilp;
-            if (legendName.equals(RecodedPoint.NAME)) {
-                ilp =  new PnlRecodedPoint();
-            } else if (legendName.equals(RecodedLine.NAME)) {
-                ilp =  new PnlRecodedLine();
-            } else if (legendName.equals(RecodedArea.NAME)) {
-                ilp =  new PnlRecodedArea();
-            } else if (legendName.equals(CategorizedPoint.NAME)) {
-                ilp =  new PnlCategorizedPoint();
-            } else if (legendName.equals(CategorizedLine.NAME)) {
-                ilp =  new PnlCategorizedLine();
-            } else if (legendName.equals(CategorizedArea.NAME)) {
-                ilp =  new PnlCategorizedArea();
-            } else {
-                throw new UnsupportedOperationException("No available " +
-                        "ILegendPanel for legend" + legendName + ".");
-            }
-            ilp.initialize(lc);
-            return ilp;
+            throw new UnsupportedOperationException("No available " +
+                    "ILegendPanel for legend" + legendName + ".");
         }
     }
 }

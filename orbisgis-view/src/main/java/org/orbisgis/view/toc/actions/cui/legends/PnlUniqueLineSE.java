@@ -88,7 +88,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          */
         public PnlUniqueLineSE() {
             this(true);
-            System.out.println("Old PnlUniqueLineSE() constructor");
         }
 
         /**
@@ -97,10 +96,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          * @param uom if true, the uom combo box will be displayed.
          */
         public PnlUniqueLineSE(boolean uom){
-            System.out.println("Old PnlUniqueLineSE(boolean uom) constructor");
-            for (StackTraceElement elt : Thread.currentThread().getStackTrace()) {
-                System.out.println(elt.toString());
-            }
             this.displayUom = uom;
         }
 
