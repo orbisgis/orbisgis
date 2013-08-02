@@ -36,23 +36,21 @@ import javax.swing.event.ChangeListener;
 import java.beans.EventHandler;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 29/07/13
- * Time: 17:04
- * To change this template use File | Settings | File Templates.
+ * Line width spinner
+ *
+ * @author Adam Gouge
  */
-public class LineWidthSpinner extends AbsSpinner {
+public class LineWidthSpinner extends AbsPreviewSpinner {
 
     /**
-     * Creates and configures a line width {@link javax.swing.JSpinner}.
+     * Constructor
      *
-     * @param legend The stroke that will be configured with the spinner.
+     * @param legend Legend
      */
     public LineWidthSpinner(final ConstantPenStroke legend,
                             CanvasSE preview) {
         super(new SpinnerNumberModel(
-                legend.getLineWidth(), 0, Double.POSITIVE_INFINITY, SPIN_STEP),
+                legend.getLineWidth(), 0, Double.POSITIVE_INFINITY, SMALL_STEP),
                 preview);
         addChangeListener(EventHandler.create(
                 ChangeListener.class, legend, "lineWidth", "source.value"));

@@ -1,6 +1,7 @@
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
@@ -27,8 +28,8 @@ public class ProportionalLinePanel extends UniqueSymbolPanel {
     private NumericalFieldsComboBox numericalFieldsComboBox;
     private ColorLabel colorLabel;
     private LineUOMComboBox lineUOMComboBox;
-    private SecondValueTextField secondValueTextField;
-    private FirstValueTextField firstValueTextField;
+    private MaxSizeSpinner maxSizeSpinner;
+    private MinSizeSpinner minSizeSpinner;
 
     private LineOpacitySpinner lineOpacitySpinner;
     private DashArrayField dashArrayField;
@@ -56,8 +57,12 @@ public class ProportionalLinePanel extends UniqueSymbolPanel {
                 new NumericalFieldsComboBox(dataSource, getLegend());
         colorLabel = new ColorLabel(fillAnalysis, preview);
         lineUOMComboBox = new LineUOMComboBox(getLegend(), preview);
-        secondValueTextField = new SecondValueTextField(getLegend(), preview);
-        firstValueTextField = new FirstValueTextField(getLegend());
+        try {
+            maxSizeSpinner = new MaxSizeSpinner(getLegend(), preview);
+            minSizeSpinner = new MinSizeSpinner(getLegend(), maxSizeSpinner);
+        } catch (ParameterException e) {
+            e.printStackTrace();
+        }
         lineOpacitySpinner = new LineOpacitySpinner(fillAnalysis, preview);
         dashArrayField = new DashArrayField(strokeLegend, preview);
     }
@@ -75,10 +80,10 @@ public class ProportionalLinePanel extends UniqueSymbolPanel {
         add(lineUOMComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
         // Max width
         add(new JLabel(I18N.tr("Max width")));
-        add(secondValueTextField, "growx");
+        add(maxSizeSpinner, "growx");
         // Min width
         add(new JLabel(I18N.tr("Min width")));
-        add(firstValueTextField, "growx");
+        add(minSizeSpinner, "growx");
         // Opacity
         add(new JLabel(I18N.tr(AbstractFieldPanel.OPACITY)));
         add(lineOpacitySpinner, "growx");

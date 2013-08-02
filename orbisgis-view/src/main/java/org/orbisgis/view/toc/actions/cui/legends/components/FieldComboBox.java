@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.components;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
 import org.gdms.driver.DriverException;
@@ -36,8 +37,6 @@ import org.orbisgis.sif.components.WideComboBox;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import org.apache.log4j.Logger;
 
 /**
  * Created with IntelliJ IDEA.

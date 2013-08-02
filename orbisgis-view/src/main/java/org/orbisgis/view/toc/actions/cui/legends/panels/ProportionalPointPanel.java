@@ -1,6 +1,7 @@
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -26,8 +27,8 @@ public class ProportionalPointPanel extends UniqueSymbolPanel {
     private NumericalFieldsComboBox numericalFieldsComboBox;
     private SymbolUOMComboBox symbolUOMComboBox;
     private WKNComboBox wknComboBox;
-    private SecondValueTextField secondValueTextField;
-    private FirstValueTextField firstValueTextField;
+    private MaxSizeSpinner maxSizeSpinner;
+    private MinSizeSpinner minSizeSpinner;
 
     private OnVertexOnCentroidPanel onVertexOnCentroidPanel;
 
@@ -55,8 +56,12 @@ public class ProportionalPointPanel extends UniqueSymbolPanel {
                 new NumericalFieldsComboBox(dataSource, getLegend());
         symbolUOMComboBox = new SymbolUOMComboBox(getLegend(), preview);
         wknComboBox = new WKNComboBox(getLegend(), preview);
-        secondValueTextField = new SecondValueTextField(getLegend(), preview);
-        firstValueTextField = new FirstValueTextField(getLegend());
+        try {
+            maxSizeSpinner = new MaxSizeSpinner(getLegend(), preview);
+            minSizeSpinner = new MinSizeSpinner(getLegend(), maxSizeSpinner);
+        } catch (ParameterException e) {
+            e.printStackTrace();
+        }
         if (geometryType != SimpleGeometryType.POINT) {
             onVertexOnCentroidPanel =
                     new OnVertexOnCentroidPanel(getLegend(), preview);
@@ -76,10 +81,10 @@ public class ProportionalPointPanel extends UniqueSymbolPanel {
         add(wknComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
         // Max size
         add(new JLabel(I18N.tr("Max. size")));
-        add(secondValueTextField, "growx");
+        add(maxSizeSpinner, "growx");
         // Min size
         add(new JLabel(I18N.tr("Min. size")));
-        add(firstValueTextField, "growx");
+        add(minSizeSpinner, "growx");
         // If geometryType != POINT, we must let the user choose if he
         // wants to draw symbols on centroid or on vertices.
         if (geometryType != SimpleGeometryType.POINT) {

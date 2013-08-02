@@ -37,16 +37,24 @@ import java.beans.EventHandler;
 
 /**
  * Spinner for symbol height.
+ *
+ * @author Adam Gouge
  */
-public class SymbolHeightSpinner extends AbsSpinner {
+public class SymbolHeightSpinner extends AbsPreviewSpinner {
 
+    /**
+     * Constructor
+     *
+     * @param legend  Legend
+     * @param preview Preview
+     */
     public SymbolHeightSpinner(final UniqueSymbolPoint legend,
-                              CanvasSE preview) {
+                               CanvasSE preview) {
         super(new SpinnerNumberModel(
                 (legend.getViewBoxHeight() == null)
                         ? legend.getViewBoxWidth().doubleValue()
                         : legend.getViewBoxHeight().doubleValue(),
-                Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPIN_STEP),
+                Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SMALL_STEP),
                 preview);
         addChangeListener(EventHandler.create(
                 ChangeListener.class, legend, "viewBoxHeight", "source.value"));

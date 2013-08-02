@@ -30,7 +30,8 @@ package org.orbisgis.view.toc.actions.cui.legends.components;
 
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.thematic.*;
+import org.orbisgis.legend.thematic.LineParameters;
+import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.panels.TablePanel;

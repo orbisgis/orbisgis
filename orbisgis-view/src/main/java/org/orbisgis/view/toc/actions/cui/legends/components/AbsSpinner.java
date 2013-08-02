@@ -28,33 +28,28 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.components;
 
-import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.beans.EventHandler;
 
 /**
- * Root class for spinners.
+ * Root class for spinners. Adds a {@code MouseWheelListener} so that the user
+ * can update the value by means of the mouse scroll wheel.
+ *
+ * @author Adam Gouge
  */
 public class AbsSpinner extends JSpinner {
 
-    public static final double SPIN_STEP = 0.1;
+    protected static final double SMALL_STEP = 0.1;
+    protected static final double LARGE_STEP = 0.5;
 
-    public AbsSpinner(final SpinnerNumberModel model,
-                      final CanvasSE preview) {
+    /**
+     * Constructor
+     *
+     * @param model Spinner model
+     */
+    public AbsSpinner(final SpinnerNumberModel model) {
         super(model);
-        addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                preview.imageChanged();
-            }
-        });
-        addChangeListener(EventHandler.create(
-                ChangeListener.class, preview, "imageChanged"));
         // Enable the mouse scroll wheel on spinners.
         addMouseWheelListener(new MouseWheelListener() {
             @Override
@@ -62,7 +57,7 @@ public class AbsSpinner extends JSpinner {
                 // The new value is the old one minus the wheel rotation
                 // times the spin step.
                 Double newValue = ((Double) getValue())
-                        - e.getPreciseWheelRotation() * SPIN_STEP;
+                        - e.getPreciseWheelRotation() * getSpinStep();
                 // Only update if we are within the given range.
                 if (model.getMaximum().compareTo(newValue) >= 0
                         && model.getMinimum().compareTo(newValue) <= 0) {
@@ -70,5 +65,14 @@ public class AbsSpinner extends JSpinner {
                 }
             }
         });
+    }
+
+    /**
+     * Gets the spin step for the mouse scroll wheel listener.
+     *
+     * @return The spin step.
+     */
+    protected double getSpinStep() {
+        return SMALL_STEP;
     }
 }

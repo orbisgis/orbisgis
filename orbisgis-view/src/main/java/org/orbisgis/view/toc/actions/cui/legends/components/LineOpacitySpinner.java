@@ -42,7 +42,7 @@ import java.beans.EventHandler;
  * Time: 17:10
  * To change this template use File | Settings | File Templates.
  */
-public class LineOpacitySpinner extends AbsSpinner {
+public class LineOpacitySpinner extends AbsPreviewSpinner {
 
     /**
      * Gets a spinner that is linked with the opacity of the {@code
@@ -52,7 +52,7 @@ public class LineOpacitySpinner extends AbsSpinner {
      */
     public LineOpacitySpinner(final ConstantSolidFill legend,
                               CanvasSE preview) {
-        super(new SpinnerNumberModel(legend.getOpacity(), 0, 1, SPIN_STEP),
+        super(new SpinnerNumberModel(legend.getOpacity(), 0, 1, SMALL_STEP),
               preview);
         addChangeListener(EventHandler.create(
                 ChangeListener.class, legend, "opacity", "source.value"));

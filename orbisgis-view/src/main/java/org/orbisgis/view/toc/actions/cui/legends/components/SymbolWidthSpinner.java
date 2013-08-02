@@ -37,16 +37,24 @@ import java.beans.EventHandler;
 
 /**
  * Spinner for symbol width.
+ *
+ * @author Adam Gouge
  */
-public class SymbolWidthSpinner extends AbsSpinner {
+public class SymbolWidthSpinner extends AbsPreviewSpinner {
 
+    /**
+     * Constructor
+     *
+     * @param legend  Legend
+     * @param preview Preview
+     */
     public SymbolWidthSpinner(final UniqueSymbolPoint legend,
                               CanvasSE preview) {
         super(new SpinnerNumberModel(
                 (legend.getViewBoxWidth() == null)
                         ? legend.getViewBoxHeight().doubleValue()
                         : legend.getViewBoxWidth().doubleValue(),
-                Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPIN_STEP),
+                Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SMALL_STEP),
                 preview);
         addChangeListener(EventHandler.create(
                 ChangeListener.class, legend, "viewBoxWidth", "source.value"));
