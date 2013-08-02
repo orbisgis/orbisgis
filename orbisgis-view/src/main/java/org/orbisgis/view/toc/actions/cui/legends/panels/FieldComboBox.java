@@ -83,6 +83,7 @@ public abstract class FieldComboBox extends WideComboBox {
             if (field != null && !field.isEmpty()) {
                 setSelectedItem(field);
             }
+            updateField((String) getSelectedItem());
         } else {
             LOGGER.error("Cannot construct the field combo box because the " +
                     "DataSource is null.");
