@@ -30,26 +30,30 @@ package org.orbisgis.view.sqlconsole.language;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import javax.sql.DataSource;
 import javax.swing.text.BadLocationException;
-import org.antlr.runtime.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.parser.*;
-import org.gdms.sql.engine.ANTLRCaseInsensitiveInputStream;
-import org.gdms.sql.parser.GdmSQLLexer;
-import org.gdms.sql.parser.GdmSQLParser;
 
 /**
- * A parser for Gdms SQL syntax that provides error locations.
- *
+ * A parser for SQL syntax that provides error locations.
+ * This parser use EXPLAIN SQL command, and parse SQLException.
  * @author Antoine Gourlay
+ * @author Nicolas Fortin
  */
 public class SQLParser extends AbstractParser {
-
         private RSyntaxTextArea textArea;
+        private DataSource dataSource;
 
-        SQLParser(RSyntaxTextArea textArea) {
-                this.textArea = textArea;
+    /**
+     *
+     * @param dataSource
+     * @param textArea
+     */
+        public SQLParser(DataSource dataSource, RSyntaxTextArea textArea) {
+            this.dataSource = dataSource;
+            this.textArea = textArea;
         }
 
         @Override

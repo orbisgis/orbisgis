@@ -12,6 +12,7 @@
         </organization>
         <url>http://www.orbisgis.org</url>
         <modules>
+                <module>bundles/sqlconsole-parser</module>
                 <module>wms-client</module>
                 <!-- <module>gdms</module> -->
                 <!-- <module>bundles/plugin-test</module>-->
@@ -39,6 +40,7 @@
                 <h2-version>1.0-SNAPSHOT</h2-version>
                 <h2-spatial-version>0.1-SNAPSHOT</h2-spatial-version>
                 <sl4j-version>1.6.0</sl4j-version>
+                <rsyntax-version>2.0.5.1</rsyntax-version>
         </properties>
         <scm>
                 <connection>scm:git:https://github.com/irstv/orbisgis.git</connection>
