@@ -75,7 +75,6 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
 
 
         public PnlUniquePointSE(LegendContext lc) {
-            System.out.println("LC constructor");
             setDataSource(lc.getLayer().getDataSource());
             setGeometryType(lc.getGeometryType());
             uniquePoint = new UniqueSymbolPoint();
@@ -84,7 +83,6 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         }
 
         public PnlUniquePointSE(LegendContext lc, UniqueSymbolPoint legend) {
-            System.out.println("LC, leg constructor");
             setDataSource(lc.getLayer().getDataSource());
             setGeometryType(lc.getGeometryType());
             uniquePoint = legend;

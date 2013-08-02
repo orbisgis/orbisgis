@@ -60,39 +60,27 @@ public class ILegendPanelFactory {
      * @return Associated ILegendPanel
      */
     public static ILegendPanel getILegendPanel(LegendContext lc, Legend legend) {
-        System.out.println("Recovering old legend for " + legend.getLegendTypeName());
         if (legend instanceof UniqueSymbolPoint) {
-            System.out.println("instanceof UniqueSymbolPoint");
             return new PnlUniquePointSE(lc, (UniqueSymbolPoint) legend);
         } else if (legend instanceof UniqueSymbolLine) {
-            System.out.println("instanceof UniqueSymbolLine");
             return new PnlUniqueLineSE(lc, (UniqueSymbolLine) legend);
         } else if (legend instanceof UniqueSymbolArea) {
-            System.out.println("instanceof UniqueSymbolArea");
             return new PnlUniqueAreaSE(lc, (UniqueSymbolArea) legend);
         } else if (legend instanceof ProportionalPoint) {
-            System.out.println("instanceof ProportionalPoint");
             return new PnlProportionalPointSE(lc, (ProportionalPoint) legend);
         } else if (legend instanceof ProportionalLine) {
-            System.out.println("instanceof ProportionalLine");
             return new PnlProportionalLineSE(lc, (ProportionalLine) legend);
         } else if (legend instanceof RecodedPoint) {
-            System.out.println("instanceof RecodedPoint");
             return new PnlRecodedPoint(lc, (RecodedPoint) legend);
         } else if (legend instanceof RecodedLine) {
-            System.out.println("instanceof RecodedLine");
             return new PnlRecodedLine(lc, (RecodedLine) legend);
         } else if (legend instanceof RecodedArea) {
-            System.out.println("instanceof RecodedArea");
             return new PnlRecodedArea(lc, (RecodedArea) legend);
         } else if (legend instanceof CategorizedPoint) {
-            System.out.println("instanceof CategorizedPoint");
             return new PnlCategorizedPoint(lc, (CategorizedPoint) legend);
         } else if (legend instanceof CategorizedLine) {
-            System.out.println("instanceof CategorizedLine");
             return new PnlCategorizedLine(lc, (CategorizedLine) legend);
         } else if (legend instanceof CategorizedArea) {
-            System.out.println("instanceof CategorizedArea");
             return new PnlCategorizedArea(lc, (CategorizedArea) legend);
         } else {
             throw new UnsupportedOperationException("No available " +
@@ -111,7 +99,6 @@ public class ILegendPanelFactory {
      * @return Associated ILegendPanel
      */
     public static ILegendPanel getPanelForLegendUIChooser(LegendContext lc, String legendName) {
-        System.out.println("Creating new legend for " + legendName);
         if (legendName.equals(UniqueSymbolPoint.NAME)) {
             return new PnlUniquePointSE(lc);
         } else if (legendName.equals(UniqueSymbolLine.NAME)) {

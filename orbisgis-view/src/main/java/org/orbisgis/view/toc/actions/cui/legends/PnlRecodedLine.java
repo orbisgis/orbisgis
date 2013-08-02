@@ -126,7 +126,6 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
      * Initializes the preview for the fallback configuration
      */
     public void initPreview() {
-        System.out.println("    Called from initPreview RL");
         fallbackPreview = new CanvasSE(getFallbackSymbolizer());
         MouseListener l = EventHandler.create(MouseListener.class, this, "onEditFallback", "", "mouseClicked");
         fallbackPreview.addMouseListener(l);

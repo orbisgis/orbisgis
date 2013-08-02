@@ -54,13 +54,18 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         initializeLegendFields();
     }
 
+    @Override
+    public CategorizedPoint getLegend() {
+        return (CategorizedPoint) super.getLegend();
+    }
+
     /**
      * This methods is called by EventHandler when the user clicks on the fall back's preview. It opens an UI that lets
      * the user edit the parameters of the fall back configuration and that apply it if the user clicks OK.
      * @param me The MouseEvent that caused the call to this method.
      */
     public void onEditFallback(MouseEvent me){
-        (getLegend()).setFallbackParameters(editCanvas(fallbackPreview));
+        getLegend().setFallbackParameters(editCanvas(fallbackPreview));
     }
 
     /**
@@ -69,7 +74,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
      * @return The PointParameters that must be used at the end of the edition.
      */
     private PointParameters editCanvas(CanvasSE cse){
-        CategorizedPoint leg = (CategorizedPoint) getLegend();
+        CategorizedPoint leg = getLegend();
         PointParameters lps = leg.getFallbackParameters();
         UniqueSymbolPoint usa = new UniqueSymbolPoint(lps);
         if(leg.isStrokeEnabled()){
@@ -89,7 +94,6 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
 
     @Override
     public void initPreview() {
-        System.out.println("    Called from initPreview CP");
         fallbackPreview = new CanvasSE(getFallbackSymbolizer());
         MouseListener l = EventHandler.create(MouseListener.class, this, "onEditFallback", "", "mouseClicked");
         fallbackPreview.addMouseListener(l);
@@ -109,7 +113,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
 
     @Override
     public AbstractTableModel getTableModel() {
-        return new TableModelCatPoint((AbstractCategorizedLegend<PointParameters>)getLegend());
+        return new TableModelCatPoint(getLegend());
     }
 
     @Override
@@ -155,7 +159,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
 
     @Override
     public Legend copyLegend() {
-        CategorizedPoint cl = (CategorizedPoint) getLegend();
+        CategorizedPoint cl = getLegend();
         Set<Map.Entry<Double,PointParameters>> entries = cl.entrySet();
         CategorizedPoint ret = new CategorizedPoint();
         for(Map.Entry<Double,PointParameters> en : entries){

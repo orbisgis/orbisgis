@@ -137,7 +137,6 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
 
     @Override
     public void initPreview() {
-        System.out.println("    Called from initPreview RA");
         fallbackPreview = new CanvasSE(getFallbackSymbolizer());
         MouseListener l = EventHandler.create(MouseListener.class, this, "onEditFallback", "", "mouseClicked");
         fallbackPreview.addMouseListener(l);

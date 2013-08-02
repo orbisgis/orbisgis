@@ -9,6 +9,7 @@ import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
 import org.orbisgis.legend.thematic.categorize.CategorizedArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
+import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
@@ -48,6 +49,11 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
         initializeLegendFields();
     }
 
+    @Override
+    public CategorizedArea getLegend() {
+        return (CategorizedArea) super.getLegend();
+    }
+
     /**
      * This methods is called by EventHandler when the user clicks on the fall back's preview. It opens an UI that lets
      * the user edit the parameters of the fall back configuration and that apply it if the user clicks OK.
@@ -63,7 +69,7 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
      * @return The AreaParameters that must be used at the end of the edition.
      */
     private AreaParameters editCanvas(CanvasSE cse){
-        CategorizedArea leg = (CategorizedArea) getLegend();
+        CategorizedArea leg = getLegend();
         AreaParameters lps = leg.getFallbackParameters();
         UniqueSymbolArea usa = new UniqueSymbolArea(lps);
         if(leg.isStrokeEnabled()){
@@ -83,7 +89,6 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
 
     @Override
     public void initPreview() {
-        System.out.println("    Called from initPreview CA");
         fallbackPreview = new CanvasSE(getFallbackSymbolizer());
         MouseListener l = EventHandler.create(MouseListener.class, this, "onEditFallback", "", "mouseClicked");
         fallbackPreview.addMouseListener(l);
@@ -101,7 +106,7 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
 
     @Override
     public AbstractTableModel getTableModel() {
-        return new TableModelCatArea((AbstractCategorizedLegend<AreaParameters>)getLegend());
+        return new TableModelCatArea(getLegend());
     }
 
     @Override
@@ -145,7 +150,7 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
 
     @Override
     public Legend copyLegend() {
-        CategorizedArea cl = (CategorizedArea) getLegend();
+        CategorizedArea cl = getLegend();
         Set<Map.Entry<Double,AreaParameters>> entries = cl.entrySet();
         CategorizedArea ret = new CategorizedArea();
         for(Map.Entry<Double,AreaParameters> en : entries){

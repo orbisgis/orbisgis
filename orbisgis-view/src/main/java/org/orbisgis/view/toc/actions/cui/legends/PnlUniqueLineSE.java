@@ -64,7 +64,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private final boolean displayUom;
 
         public PnlUniqueLineSE(LegendContext lc) {
-            System.out.println("LC constructor");
             setDataSource(lc.getLayer().getDataSource());
             setGeometryType(lc.getGeometryType());
             uniqueLine = new UniqueSymbolLine();
@@ -74,7 +73,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         }
 
         public PnlUniqueLineSE(LegendContext lc, UniqueSymbolLine legend) {
-            System.out.println("LC, leg constructor");
             setDataSource(lc.getLayer().getDataSource());
             setGeometryType(lc.getGeometryType());
             uniqueLine = legend;
@@ -189,7 +187,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         @Override
         public void initializeLegendFields() {
-            System.out.println("Initializing LF UL!");
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
                 glob.add(new LinePanel(uniqueLine,

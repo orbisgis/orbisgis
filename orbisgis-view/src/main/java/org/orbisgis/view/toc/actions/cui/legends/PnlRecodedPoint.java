@@ -90,7 +90,6 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
 
     @Override
     public void initPreview() {
-        System.out.println("    Called from initPreview RP");
         fallbackPreview = new CanvasSE(getFallbackSymbolizer());
         MouseListener l = EventHandler.create(MouseListener.class, this, "onEditFallback", "", "mouseClicked");
         fallbackPreview.addMouseListener(l);

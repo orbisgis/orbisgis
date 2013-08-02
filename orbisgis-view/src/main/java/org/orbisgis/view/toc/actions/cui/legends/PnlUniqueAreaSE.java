@@ -75,13 +75,11 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         }
 
         public PnlUniqueAreaSE(LegendContext lc, UniqueSymbolArea legend) {
-            System.out.println("beginning of constructor");
             setDataSource(lc.getLayer().getDataSource());
             setGeometryType(lc.getGeometryType());
             uniqueArea = legend;
             initPreview();
             initializeLegendFields();
-            System.out.println("end of constructor");
         }
 
         /**

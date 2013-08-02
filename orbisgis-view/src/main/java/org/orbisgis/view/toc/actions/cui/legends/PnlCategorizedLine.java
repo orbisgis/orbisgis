@@ -49,6 +49,11 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
         initializeLegendFields();
     }
 
+    @Override
+    public CategorizedLine getLegend() {
+        return (CategorizedLine) super.getLegend();
+    }
+
     /**
      * This methods is called by EventHandler when the user clicks on the fall back's preview. It opens an UI that lets
      * the user edit the parameters of the fall back configuration and that apply it if the user clicks OK.
@@ -81,7 +86,6 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
 
     @Override
     public void initPreview() {
-        System.out.println("    Called from initPreview CL");
         fallbackPreview = new CanvasSE(getFallbackSymbolizer());
         MouseListener l = EventHandler.create(MouseListener.class, this, "onEditFallback", "", "mouseClicked");
         fallbackPreview.addMouseListener(l);
@@ -99,7 +103,7 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
 
     @Override
     public AbstractTableModel getTableModel() {
-        return new TableModelCatLine((AbstractCategorizedLegend<LineParameters>)getLegend());
+        return new TableModelCatLine(getLegend());
     }
 
     @Override
@@ -144,7 +148,7 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
 
     @Override
     public Legend copyLegend() {
-        CategorizedLine cl = (CategorizedLine) getLegend();
+        CategorizedLine cl = getLegend();
         Set<Map.Entry<Double,LineParameters>> entries = cl.entrySet();
         CategorizedLine ret = new CategorizedLine();
         for(Map.Entry<Double,LineParameters> en : entries){
