@@ -33,7 +33,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.legend.thematic.recode.RecodedPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.view.toc.actions.cui.legends.PnlUniquePointSE;
+import org.orbisgis.view.toc.actions.cui.legends.ui.PnlUniquePointSE;
 
 import java.awt.event.ActionEvent;
 

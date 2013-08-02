@@ -40,9 +40,8 @@ import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
 import org.orbisgis.legend.thematic.recode.RecodedArea;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
 import org.orbisgis.legend.thematic.recode.RecodedPoint;
-import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
-import org.orbisgis.view.toc.actions.cui.legends.*;
+import org.orbisgis.view.toc.actions.cui.legends.ui.*;
 
 /**
  * A helper class to associate an {@link ILegendPanel} to a {@link Legend}.

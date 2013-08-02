@@ -99,7 +99,7 @@ public class ColorLabel extends JPanel {
     }
 
     /**
-     * Get a JLabel of dimensions {@link org.orbisgis.view.toc.actions.cui.legends.PnlUniqueSymbolSE#FILLED_LABEL_WIDTH} and {@link org.orbisgis.view.toc.actions.cui.legends.PnlUniqueSymbolSE#FILLED_LABEL_HEIGHT}
+     * Get a JLabel of dimensions {@link org.orbisgis.view.toc.actions.cui.legends.ui.PnlUniqueSymbolSE#FILLED_LABEL_WIDTH} and {@link org.orbisgis.view.toc.actions.cui.legends.ui.PnlUniqueSymbolSE#FILLED_LABEL_HEIGHT}
      * opaque and with a background of Color {@code c}.
      *
      * @param c The background color of the label we want.

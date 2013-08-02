@@ -1,4 +1,4 @@
-package org.orbisgis.view.toc.actions.cui.legends;
+package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;

@@ -33,7 +33,7 @@ import org.orbisgis.legend.thematic.categorize.CategorizedLine;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueLineSE;
+import org.orbisgis.view.toc.actions.cui.legends.ui.PnlUniqueLineSE;
 
 import java.awt.event.ActionEvent;
 

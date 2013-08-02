@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends;
+package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
@@ -42,7 +42,6 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.net.URL;
-import java.util.Arrays;
 
 /**
  * "Unique Symbol - Line" UI.

@@ -29,7 +29,7 @@
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
 import org.orbisgis.legend.thematic.EnablesStroke;
-import org.orbisgis.view.toc.actions.cui.legends.PnlAbstractTableAnalysis;
+import org.orbisgis.view.toc.actions.cui.legends.ui.PnlAbstractTableAnalysis;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

@@ -4,7 +4,7 @@ import org.gdms.data.DataSource;
 import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legends.AbstractFieldPanel;
+import org.orbisgis.view.toc.actions.cui.legends.ui.AbstractFieldPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

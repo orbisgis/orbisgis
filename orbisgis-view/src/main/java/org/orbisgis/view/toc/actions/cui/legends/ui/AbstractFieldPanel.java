@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends;
+package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
@@ -35,24 +35,16 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.thematic.uom.StrokeUom;
-import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
-import org.orbisgis.sif.components.ColorPicker;
 import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
-import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.beans.EventHandler;
 
 /**
  * Some useful methods that will be available for all thematic panels.

@@ -50,7 +50,7 @@ import java.beans.EventHandler;
 /**
  * The table panel used in Value and Interval Classifications.
  *
- * @see org.orbisgis.view.toc.actions.cui.legends.PnlAbstractTableAnalysis
+ * @see org.orbisgis.view.toc.actions.cui.legends.ui.PnlAbstractTableAnalysis
  *
  * @author Adam Gouge
  * @author Alexis Guéganno

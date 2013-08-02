@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends;
+package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -34,7 +34,6 @@ import java.beans.EventHandler;
 import javax.swing.*;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;

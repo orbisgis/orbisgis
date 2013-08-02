@@ -1,34 +1,26 @@
-package org.orbisgis.view.toc.actions.cui.legends;
+package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.thematic.PointParameters;
-import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
-import org.orbisgis.legend.thematic.categorize.CategorizedPoint;
-import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
+import org.orbisgis.legend.thematic.AreaParameters;
+import org.orbisgis.legend.thematic.categorize.CategorizedArea;
+import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorCategorizedPoint;
-import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorCategorizedPoint;
-import org.orbisgis.view.toc.actions.cui.legends.model.TableModelCatPoint;
-import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
-import org.orbisgis.view.toc.actions.cui.legends.panels.Util;
+import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorCategorizedArea;
+import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorCategorizedArea;
+import org.orbisgis.view.toc.actions.cui.legends.model.TableModelCatArea;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
@@ -36,27 +28,27 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * "Interval classification - Point" UI.
+ * "Interval classification - Area" UI.
  *
  * @author Alexis Guéganno
  */
-public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>{
-    public static final Logger LOGGER = Logger.getLogger(PnlCategorizedPoint.class);
-    private static final I18n I18N = I18nFactory.getI18n(PnlCategorizedPoint.class);
+public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
+    public static final Logger LOGGER = Logger.getLogger(PnlCategorizedArea.class);
+    private static final I18n I18N = I18nFactory.getI18n(PnlCategorizedArea.class);
 
-    public PnlCategorizedPoint(LegendContext lc) {
-        this(lc, new CategorizedPoint());
+    public PnlCategorizedArea(LegendContext lc) {
+        this(lc, new CategorizedArea());
     }
 
-    public PnlCategorizedPoint(LegendContext lc, CategorizedPoint leg) {
+    public PnlCategorizedArea(LegendContext lc, CategorizedArea leg) {
         super(lc, leg);
         initPreview();
         initializeLegendFields();
     }
 
     @Override
-    public CategorizedPoint getLegend() {
-        return (CategorizedPoint) super.getLegend();
+    public CategorizedArea getLegend() {
+        return (CategorizedArea) super.getLegend();
     }
 
     /**
@@ -69,22 +61,22 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     }
 
     /**
-     * Builds a SIF dialog used to edit the given PointParameters.
+     * Builds a SIF dialog used to edit the given AreaParameters.
      * @param cse The canvas we want to edit
-     * @return The PointParameters that must be used at the end of the edition.
+     * @return The AreaParameters that must be used at the end of the edition.
      */
-    private PointParameters editCanvas(CanvasSE cse){
-        CategorizedPoint leg = getLegend();
-        PointParameters lps = leg.getFallbackParameters();
-        UniqueSymbolPoint usa = new UniqueSymbolPoint(lps);
+    private AreaParameters editCanvas(CanvasSE cse){
+        CategorizedArea leg = getLegend();
+        AreaParameters lps = leg.getFallbackParameters();
+        UniqueSymbolArea usa = new UniqueSymbolArea(lps);
         if(leg.isStrokeEnabled()){
             usa.setStrokeUom(leg.getStrokeUom());
         }
-        PnlUniquePointSE pls = new PnlUniquePointSE(false, leg.isStrokeEnabled());
+        PnlUniqueAreaSE pls = new PnlUniqueAreaSE(false, leg.isStrokeEnabled());
         pls.setLegend(usa);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
-            usa = (UniqueSymbolPoint) pls.getLegend();
-            PointParameters nlp = usa.getPointParameters();
+            usa = (UniqueSymbolArea) pls.getLegend();
+            AreaParameters nlp = usa.getAreaParameters();
             cse.setSymbol(usa.getSymbolizer());
             return nlp;
         } else {
@@ -100,35 +92,33 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     }
 
     @Override
-    public PointParameters getColouredParameters(PointParameters f, Color c) {
-        return new PointParameters(f.getLineColor(), f.getLineOpacity(),f.getLineWidth(),f.getLineDash(),
-                c,f.getFillOpacity(),
-                f.getWidth(), f.getHeight(), f.getWkn());
+    public AreaParameters getColouredParameters(AreaParameters f, Color c) {
+        return new AreaParameters(f.getLineColor(), f.getLineOpacity(),f.getLineWidth(),f.getLineDash(),c,f.getFillOpacity());
     }
 
     @Override
-    public CategorizedPoint getEmptyAnalysis() {
-        return new CategorizedPoint();
+    public CategorizedArea getEmptyAnalysis() {
+        return new CategorizedArea();
     }
 
     @Override
     public AbstractTableModel getTableModel() {
-        return new TableModelCatPoint(getLegend());
+        return new TableModelCatArea(getLegend());
     }
 
     @Override
     public TableCellEditor getPreviewCellEditor() {
-        return new ParametersEditorCategorizedPoint();
+        return new ParametersEditorCategorizedArea();
     }
 
     @Override
     public TableCellEditor getKeyCellEditor() {
-        return new KeyEditorCategorizedPoint();
+        return new KeyEditorCategorizedArea();
     }
 
     @Override
     public void setLegend(Legend legend) {
-        if (legend instanceof CategorizedPoint) {
+        if (legend instanceof CategorizedArea) {
             if(getLegend() != null){
                 Rule rule = getLegend().getSymbolizer().getRule();
                 if(rule != null){
@@ -137,7 +127,7 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
                     compositeSymbolizer.setSymbolizer(i, legend.getSymbolizer());
                 }
             }
-            setLegendImpl((CategorizedPoint)legend);
+            setLegendImpl((CategorizedArea)legend);
             this.initializeLegendFields();
         } else {
             throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in"
@@ -152,17 +142,15 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     @Override
     public boolean acceptsGeometryType(int geometryType) {
         return geometryType == SimpleGeometryType.POLYGON||
-                geometryType == SimpleGeometryType.LINE||
-                geometryType == SimpleGeometryType.POINT||
                 geometryType == SimpleGeometryType.ALL;
     }
 
     @Override
     public Legend copyLegend() {
-        CategorizedPoint cl = getLegend();
-        Set<Map.Entry<Double,PointParameters>> entries = cl.entrySet();
-        CategorizedPoint ret = new CategorizedPoint();
-        for(Map.Entry<Double,PointParameters> en : entries){
+        CategorizedArea cl = getLegend();
+        Set<Map.Entry<Double,AreaParameters>> entries = cl.entrySet();
+        CategorizedArea ret = new CategorizedArea();
+        for(Map.Entry<Double,AreaParameters> en : entries){
             ret.put(en.getKey(),en.getValue());
         }
         ret.setStrokeUom(cl.getStrokeUom());

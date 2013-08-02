@@ -32,7 +32,7 @@ import net.miginfocom.swing.MigLayout;
 import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.ColorPicker;
-import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueSymbolSE;
+import org.orbisgis.view.toc.actions.cui.legends.ui.PnlUniqueSymbolSE;
 import org.orbisgis.sif.components.WideComboBox;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;

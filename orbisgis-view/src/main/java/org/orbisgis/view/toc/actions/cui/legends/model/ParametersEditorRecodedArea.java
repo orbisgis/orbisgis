@@ -33,7 +33,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 import org.orbisgis.legend.thematic.recode.RecodedArea;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueAreaSE;
+import org.orbisgis.view.toc.actions.cui.legends.ui.PnlUniqueAreaSE;
 
 import java.awt.event.ActionEvent;
 

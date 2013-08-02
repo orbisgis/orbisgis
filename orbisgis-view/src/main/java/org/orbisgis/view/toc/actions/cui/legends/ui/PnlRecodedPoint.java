@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends;
+package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
@@ -34,7 +34,6 @@ import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
-import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.RecodedPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;

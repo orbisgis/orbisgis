@@ -26,24 +26,17 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends;
+package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
-import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
-import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import javax.swing.event.ChangeListener;
-import java.awt.event.*;
-import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
 
 /**
  * Base class for "Unique Symbol" UIs.

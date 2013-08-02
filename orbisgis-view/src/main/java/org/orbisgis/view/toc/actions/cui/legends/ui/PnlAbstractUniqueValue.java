@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends;
+package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
@@ -268,7 +268,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
                     setLegend(rl);
                 }
             } else {
-                pm.startTask(PnlRecodedLine.CREATE_CLASSIF, 100);
+                pm.startTask(CREATE_CLASSIF, 100);
                 pm.endTask();
             }
         }

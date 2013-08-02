@@ -1,23 +1,20 @@
-package org.orbisgis.view.toc.actions.cui.legends;
+package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.thematic.LineParameters;
-import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
-import org.orbisgis.legend.thematic.categorize.CategorizedLine;
+import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.categorize.CategorizedPoint;
-import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
+import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorCategorizedLine;
-import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorCategorizedLine;
-import org.orbisgis.view.toc.actions.cui.legends.model.TableModelCatLine;
+import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorCategorizedPoint;
+import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorCategorizedPoint;
+import org.orbisgis.view.toc.actions.cui.legends.model.TableModelCatPoint;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -31,27 +28,27 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * "Interval classification - Line" UI.
+ * "Interval classification - Point" UI.
  *
  * @author Alexis Guéganno
  */
-public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
-    public static final Logger LOGGER = Logger.getLogger(PnlCategorizedLine.class);
-    private static final I18n I18N = I18nFactory.getI18n(PnlCategorizedLine.class);
+public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>{
+    public static final Logger LOGGER = Logger.getLogger(PnlCategorizedPoint.class);
+    private static final I18n I18N = I18nFactory.getI18n(PnlCategorizedPoint.class);
 
-    public PnlCategorizedLine(LegendContext lc) {
-        this(lc, new CategorizedLine());
+    public PnlCategorizedPoint(LegendContext lc) {
+        this(lc, new CategorizedPoint());
     }
 
-    public PnlCategorizedLine(LegendContext lc, CategorizedLine leg) {
+    public PnlCategorizedPoint(LegendContext lc, CategorizedPoint leg) {
         super(lc, leg);
         initPreview();
         initializeLegendFields();
     }
 
     @Override
-    public CategorizedLine getLegend() {
-        return (CategorizedLine) super.getLegend();
+    public CategorizedPoint getLegend() {
+        return (CategorizedPoint) super.getLegend();
     }
 
     /**
@@ -64,20 +61,23 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
     }
 
     /**
-     * Builds a SIF dialog used to edit the given LineParameters.
+     * Builds a SIF dialog used to edit the given PointParameters.
      * @param cse The canvas we want to edit
-     * @return The LineParameters that must be used at the end of the edition.
+     * @return The PointParameters that must be used at the end of the edition.
      */
-    private LineParameters editCanvas(CanvasSE cse){
-        LineParameters lps = getLegend().getFallbackParameters();
-        UniqueSymbolLine usl = new UniqueSymbolLine(lps);
-        usl.setStrokeUom(getLegend().getStrokeUom());
-        PnlUniqueLineSE pls = new PnlUniqueLineSE(false);
-        pls.setLegend(usl);
+    private PointParameters editCanvas(CanvasSE cse){
+        CategorizedPoint leg = getLegend();
+        PointParameters lps = leg.getFallbackParameters();
+        UniqueSymbolPoint usa = new UniqueSymbolPoint(lps);
+        if(leg.isStrokeEnabled()){
+            usa.setStrokeUom(leg.getStrokeUom());
+        }
+        PnlUniquePointSE pls = new PnlUniquePointSE(false, leg.isStrokeEnabled());
+        pls.setLegend(usa);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
-            usl = (UniqueSymbolLine) pls.getLegend();
-            LineParameters nlp = usl.getLineParameters();
-            cse.setSymbol(usl.getSymbolizer());
+            usa = (UniqueSymbolPoint) pls.getLegend();
+            PointParameters nlp = usa.getPointParameters();
+            cse.setSymbol(usa.getSymbolizer());
             return nlp;
         } else {
             return lps;
@@ -92,33 +92,35 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
     }
 
     @Override
-    public LineParameters getColouredParameters(LineParameters lp, Color newCol){
-        return new LineParameters(newCol, lp.getLineOpacity(), lp.getLineWidth(), lp.getLineDash());
+    public PointParameters getColouredParameters(PointParameters f, Color c) {
+        return new PointParameters(f.getLineColor(), f.getLineOpacity(),f.getLineWidth(),f.getLineDash(),
+                c,f.getFillOpacity(),
+                f.getWidth(), f.getHeight(), f.getWkn());
     }
 
     @Override
-    public CategorizedLine getEmptyAnalysis() {
-        return new CategorizedLine();
+    public CategorizedPoint getEmptyAnalysis() {
+        return new CategorizedPoint();
     }
 
     @Override
     public AbstractTableModel getTableModel() {
-        return new TableModelCatLine(getLegend());
+        return new TableModelCatPoint(getLegend());
     }
 
     @Override
     public TableCellEditor getPreviewCellEditor() {
-        return new ParametersEditorCategorizedLine();
+        return new ParametersEditorCategorizedPoint();
     }
 
     @Override
     public TableCellEditor getKeyCellEditor() {
-        return new KeyEditorCategorizedLine();
+        return new KeyEditorCategorizedPoint();
     }
 
     @Override
     public void setLegend(Legend legend) {
-        if (legend instanceof CategorizedLine) {
+        if (legend instanceof CategorizedPoint) {
             if(getLegend() != null){
                 Rule rule = getLegend().getSymbolizer().getRule();
                 if(rule != null){
@@ -127,7 +129,7 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
                     compositeSymbolizer.setSymbolizer(i, legend.getSymbolizer());
                 }
             }
-            setLegendImpl((CategorizedLine)legend);
+            setLegendImpl((CategorizedPoint)legend);
             this.initializeLegendFields();
         } else {
             throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in"
@@ -141,17 +143,18 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
 
     @Override
     public boolean acceptsGeometryType(int geometryType) {
-        return geometryType == SimpleGeometryType.LINE ||
-                geometryType == SimpleGeometryType.POLYGON||
+        return geometryType == SimpleGeometryType.POLYGON||
+                geometryType == SimpleGeometryType.LINE||
+                geometryType == SimpleGeometryType.POINT||
                 geometryType == SimpleGeometryType.ALL;
     }
 
     @Override
     public Legend copyLegend() {
-        CategorizedLine cl = getLegend();
-        Set<Map.Entry<Double,LineParameters>> entries = cl.entrySet();
-        CategorizedLine ret = new CategorizedLine();
-        for(Map.Entry<Double,LineParameters> en : entries){
+        CategorizedPoint cl = getLegend();
+        Set<Map.Entry<Double,PointParameters>> entries = cl.entrySet();
+        CategorizedPoint ret = new CategorizedPoint();
+        for(Map.Entry<Double,PointParameters> en : entries){
             ret.put(en.getKey(),en.getValue());
         }
         ret.setStrokeUom(cl.getStrokeUom());
