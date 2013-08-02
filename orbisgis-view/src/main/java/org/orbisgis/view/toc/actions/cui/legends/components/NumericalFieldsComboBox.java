@@ -26,25 +26,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends.panels;
+package org.orbisgis.view.toc.actions.cui.legends.components;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.renderer.classification.ClassificationUtils;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.legend.LookupFieldName;
-import org.orbisgis.legend.thematic.SymbolizerLegend;
-import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
-import org.orbisgis.sif.components.WideComboBox;
-
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A JComboBox containing the numerical fields of the given {@link DataSource}.

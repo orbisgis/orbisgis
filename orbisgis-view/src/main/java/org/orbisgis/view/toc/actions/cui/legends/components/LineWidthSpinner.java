@@ -26,49 +26,35 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends.panels;
+package org.orbisgis.view.toc.actions.cui.legends.components;
 
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.beans.EventHandler;
 
 /**
- * Root class for spinners.
+ * Created with IntelliJ IDEA.
+ * User: adam
+ * Date: 29/07/13
+ * Time: 17:04
+ * To change this template use File | Settings | File Templates.
  */
-public class AbsSpinner extends JSpinner {
+public class LineWidthSpinner extends AbsSpinner {
 
-    public static final double SPIN_STEP = 0.1;
-
-    public AbsSpinner(final SpinnerNumberModel model,
-                      final CanvasSE preview) {
-        super(model);
-        addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                preview.imageChanged();
-            }
-        });
+    /**
+     * Creates and configures a line width {@link javax.swing.JSpinner}.
+     *
+     * @param legend The stroke that will be configured with the spinner.
+     */
+    public LineWidthSpinner(final ConstantPenStroke legend,
+                            CanvasSE preview) {
+        super(new SpinnerNumberModel(
+                legend.getLineWidth(), 0, Double.POSITIVE_INFINITY, SPIN_STEP),
+                preview);
         addChangeListener(EventHandler.create(
-                ChangeListener.class, preview, "imageChanged"));
-        // Enable the mouse scroll wheel on spinners.
-        addMouseWheelListener(new MouseWheelListener() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                // The new value is the old one minus the wheel rotation
-                // times the spin step.
-                Double newValue = ((Double) getValue())
-                        - e.getPreciseWheelRotation() * SPIN_STEP;
-                // Only update if we are within the given range.
-                if (model.getMaximum().compareTo(newValue) >= 0
-                        && model.getMinimum().compareTo(newValue) <= 0) {
-                    setValue(newValue);
-                }
-            }
-        });
+                ChangeListener.class, legend, "lineWidth", "source.value"));
     }
 }

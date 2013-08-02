@@ -26,27 +26,36 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends.panels;
+package org.orbisgis.view.toc.actions.cui.legends.components;
 
-import org.orbisgis.core.renderer.se.graphic.WellKnownName;
-import org.orbisgis.legend.thematic.ConstantFormPoint;
-import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
+import org.orbisgis.legend.Legend;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
- * Combo box for the symbol's well-known name.
+ * Root class for combo boxes.
  */
-public class WKNComboBox extends AbsComboBox {
+public abstract class AbsComboBox extends WideComboBox {
 
-    public WKNComboBox(ConstantFormPoint legend,
+    protected Legend legend;
+    protected CanvasSE preview;
+
+    public AbsComboBox(String[] items,
+                       Legend legend,
                        CanvasSE preview) {
-        super(WellKnownName.getLocalizedStrings(), legend, preview);
-        setSelectedItem(legend.getWellKnownName());
+        super(items);
+        this.legend = legend;
+        this.preview = preview;
+        addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updatePreview();
+            }
+        });
     }
 
-    @Override
-    protected void updatePreview() {
-        ((ConstantFormPoint) legend).setWellKnownName((String) getSelectedItem());
-        preview.imageChanged();
-    }
+    protected abstract void updatePreview();
 }

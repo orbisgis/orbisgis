@@ -26,38 +26,49 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends.panels;
+package org.orbisgis.view.toc.actions.cui.legends.components;
 
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
-import org.orbisgis.legend.thematic.SymbolizerLegend;
-import org.orbisgis.legend.thematic.uom.SymbolUom;
+import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.legends.panels.TablePanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.Util;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 26/07/13
- * Time: 14:28
- * To change this template use File | Settings | File Templates.
+ * Root class for (stroke and symbol) UOM combo boxes.
  */
-public class SymbolUOMComboBox<K, U extends LineParameters> extends UOMComboBox<K, U> {
+public abstract class UOMComboBox<K, U extends LineParameters> extends AbsComboBox {
 
-    public SymbolUOMComboBox(SymbolUom legend,
-                             CanvasSE preview,
-                             TablePanel<K, U> tablePanel) {
-        super((SymbolizerLegend) legend, preview, tablePanel);
-        setSelectedItem(legend.getSymbolUom());
-    }
+    protected TablePanel<K, U> tablePanel;
 
-    public SymbolUOMComboBox(SymbolUom legend,
-                             CanvasSE preview) {
-        this(legend, preview, null);
+    public UOMComboBox(Legend legend,
+                       CanvasSE preview,
+                       TablePanel<K, U> tablePanel) {
+        super(Uom.getLocalizedStrings(), legend, preview);
+        this.tablePanel = tablePanel;
     }
 
     @Override
-    protected void updateAttributes() {
-        ((SymbolUom) legend).setSymbolUom(
-                Uom.fromString((String) getSelectedItem()));
+    protected final void updatePreview() {
+        updateAttributes();
+        updatePreviews();
+    }
+
+    /**
+     * Update any necessary attributes before updating the preview.
+     */
+    protected abstract void updateAttributes();
+
+    /**
+     * Update the preview(s) (plural if classification).
+     */
+    private void updatePreviews() {
+        if (legend instanceof MappedLegend) {
+            Util.updatePreview((MappedLegend) legend, preview, tablePanel);
+        } else {
+            preview.imageChanged();
+        }
     }
 }

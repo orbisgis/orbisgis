@@ -26,39 +26,36 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends.panels;
+package org.orbisgis.view.toc.actions.cui.legends.components;
 
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.thematic.*;
-import org.orbisgis.legend.thematic.map.MappedLegend;
-import org.orbisgis.legend.thematic.uom.StrokeUom;
-import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.driver.DriverException;
+import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 26/07/13
- * Time: 10:06
- * To change this template use File | Settings | File Templates.
+ * A JComboBox containing the non-spatial fields of the given {@link DataSource}.
  */
-public class LineUOMComboBox<K, U extends LineParameters> extends UOMComboBox<K, U> {
+public class NonSpatialFieldsComboBox extends FieldComboBox {
 
-    public LineUOMComboBox(StrokeUom legend,
-                           CanvasSE preview,
-                           TablePanel<K, U> tablePanel) {
-        super((Legend) legend, preview, tablePanel);
-        setSelectedItem(legend.getStrokeUom());
-    }
+    private static final Logger LOGGER = Logger.getLogger(NonSpatialFieldsComboBox.class);
 
-    public LineUOMComboBox(StrokeUom legend,
-                           CanvasSE preview) {
-        this(legend, preview, null);
+    public NonSpatialFieldsComboBox(DataSource ds,
+                                    AbstractRecodedLegend legend) {
+        super(ds, legend);
     }
 
     @Override
-    protected void updateAttributes() {
-        ((SymbolizerLegend) legend).setStrokeUom(
-                Uom.fromString((String) getSelectedItem()));
+    protected boolean canAddField(int index) {
+        try {
+            return !TypeFactory.isSpatial(
+                    ds.getMetadata().getFieldType(index).getTypeCode());
+        } catch (DriverException ex) {
+            LOGGER.error("Cannot at field at position " + index
+                    + " to the NonSpatialFieldsComboBox because the metadata " +
+                    "could not be recovered.");
+            return false;
+        }
     }
 }

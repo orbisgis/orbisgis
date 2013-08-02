@@ -5,6 +5,7 @@ import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.legends.components.*;
 import org.orbisgis.view.toc.actions.cui.legends.ui.AbstractFieldPanel;
 import org.orbisgis.view.toc.actions.cui.legends.ui.PnlUniqueLineSE;
 import org.xnap.commons.i18n.I18n;

@@ -26,9 +26,9 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends.panels;
+package org.orbisgis.view.toc.actions.cui.legends.components;
 
-import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
 import javax.swing.*;
@@ -36,19 +36,25 @@ import javax.swing.event.ChangeListener;
 import java.beans.EventHandler;
 
 /**
- * Spinner for symbol height.
+ * Created with IntelliJ IDEA.
+ * User: adam
+ * Date: 29/07/13
+ * Time: 17:10
+ * To change this template use File | Settings | File Templates.
  */
-public class SymbolHeightSpinner extends AbsSpinner {
+public class LineOpacitySpinner extends AbsSpinner {
 
-    public SymbolHeightSpinner(final UniqueSymbolPoint legend,
+    /**
+     * Gets a spinner that is linked with the opacity of the {@code
+     * ConstantSolidFill} given in argument.
+     *
+     * @param legend The stroke that will be configured with the spinner.
+     */
+    public LineOpacitySpinner(final ConstantSolidFill legend,
                               CanvasSE preview) {
-        super(new SpinnerNumberModel(
-                (legend.getViewBoxHeight() == null)
-                        ? legend.getViewBoxWidth().doubleValue()
-                        : legend.getViewBoxHeight().doubleValue(),
-                Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPIN_STEP),
-                preview);
+        super(new SpinnerNumberModel(legend.getOpacity(), 0, 1, SPIN_STEP),
+              preview);
         addChangeListener(EventHandler.create(
-                ChangeListener.class, legend, "viewBoxHeight", "source.value"));
+                ChangeListener.class, legend, "opacity", "source.value"));
     }
 }

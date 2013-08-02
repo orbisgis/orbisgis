@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends.panels;
+package org.orbisgis.view.toc.actions.cui.legends.components;
 
 import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.view.toc.actions.cui.legends.ui.PnlAbstractTableAnalysis;

@@ -26,36 +26,39 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends.panels;
+package org.orbisgis.view.toc.actions.cui.legends.components;
 
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
+import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.legend.thematic.LineParameters;
+import org.orbisgis.legend.thematic.SymbolizerLegend;
+import org.orbisgis.legend.thematic.uom.SymbolUom;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.beans.EventHandler;
+import org.orbisgis.view.toc.actions.cui.legends.panels.TablePanel;
 
 /**
  * Created with IntelliJ IDEA.
  * User: adam
- * Date: 29/07/13
- * Time: 17:10
+ * Date: 26/07/13
+ * Time: 14:28
  * To change this template use File | Settings | File Templates.
  */
-public class LineOpacitySpinner extends AbsSpinner {
+public class SymbolUOMComboBox<K, U extends LineParameters> extends UOMComboBox<K, U> {
 
-    /**
-     * Gets a spinner that is linked with the opacity of the {@code
-     * ConstantSolidFill} given in argument.
-     *
-     * @param legend The stroke that will be configured with the spinner.
-     */
-    public LineOpacitySpinner(final ConstantSolidFill legend,
-                              CanvasSE preview) {
-        super(new SpinnerNumberModel(legend.getOpacity(), 0, 1, SPIN_STEP),
-              preview);
-        addChangeListener(EventHandler.create(
-                ChangeListener.class, legend, "opacity", "source.value"));
+    public SymbolUOMComboBox(SymbolUom legend,
+                             CanvasSE preview,
+                             TablePanel<K, U> tablePanel) {
+        super((SymbolizerLegend) legend, preview, tablePanel);
+        setSelectedItem(legend.getSymbolUom());
+    }
+
+    public SymbolUOMComboBox(SymbolUom legend,
+                             CanvasSE preview) {
+        this(legend, preview, null);
+    }
+
+    @Override
+    protected void updateAttributes() {
+        ((SymbolUom) legend).setSymbolUom(
+                Uom.fromString((String) getSelectedItem()));
     }
 }

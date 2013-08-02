@@ -26,47 +26,26 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends.panels;
+package org.orbisgis.view.toc.actions.cui.legends.components;
 
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.thematic.LineParameters;
-import org.orbisgis.legend.thematic.map.MappedLegend;
+import org.orbisgis.core.renderer.se.graphic.WellKnownName;
+import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
 /**
- * Root class for (stroke and symbol) UOM combo boxes.
+ * Combo box for the symbol's well-known name.
  */
-public abstract class UOMComboBox<K, U extends LineParameters> extends AbsComboBox {
+public class WKNComboBox extends AbsComboBox {
 
-    protected TablePanel<K, U> tablePanel;
-
-    public UOMComboBox(Legend legend,
-                       CanvasSE preview,
-                       TablePanel<K, U> tablePanel) {
-        super(Uom.getLocalizedStrings(), legend, preview);
-        this.tablePanel = tablePanel;
+    public WKNComboBox(ConstantFormPoint legend,
+                       CanvasSE preview) {
+        super(WellKnownName.getLocalizedStrings(), legend, preview);
+        setSelectedItem(legend.getWellKnownName());
     }
 
     @Override
-    protected final void updatePreview() {
-        updateAttributes();
-        updatePreviews();
-    }
-
-    /**
-     * Update any necessary attributes before updating the preview.
-     */
-    protected abstract void updateAttributes();
-
-    /**
-     * Update the preview(s) (plural if classification).
-     */
-    private void updatePreviews() {
-        if (legend instanceof MappedLegend) {
-            Util.updatePreview((MappedLegend) legend, preview, tablePanel);
-        } else {
-            preview.imageChanged();
-        }
+    protected void updatePreview() {
+        ((ConstantFormPoint) legend).setWellKnownName((String) getSelectedItem());
+        preview.imageChanged();
     }
 }

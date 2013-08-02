@@ -1,4 +1,4 @@
-package org.orbisgis.view.toc.actions.cui.legends.panels;
+package org.orbisgis.view.toc.actions.cui.legends.components;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;

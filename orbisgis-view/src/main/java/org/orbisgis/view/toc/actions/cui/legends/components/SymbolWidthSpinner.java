@@ -26,36 +26,29 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends.panels;
+package org.orbisgis.view.toc.actions.cui.legends.components;
 
-import org.orbisgis.legend.Legend;
-import org.orbisgis.sif.components.WideComboBox;
+import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
+import javax.swing.event.ChangeListener;
+import java.beans.EventHandler;
 
 /**
- * Root class for combo boxes.
+ * Spinner for symbol width.
  */
-public abstract class AbsComboBox extends WideComboBox {
+public class SymbolWidthSpinner extends AbsSpinner {
 
-    protected Legend legend;
-    protected CanvasSE preview;
-
-    public AbsComboBox(String[] items,
-                       Legend legend,
-                       CanvasSE preview) {
-        super(items);
-        this.legend = legend;
-        this.preview = preview;
-        addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updatePreview();
-            }
-        });
+    public SymbolWidthSpinner(final UniqueSymbolPoint legend,
+                              CanvasSE preview) {
+        super(new SpinnerNumberModel(
+                (legend.getViewBoxWidth() == null)
+                        ? legend.getViewBoxHeight().doubleValue()
+                        : legend.getViewBoxWidth().doubleValue(),
+                Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPIN_STEP),
+                preview);
+        addChangeListener(EventHandler.create(
+                ChangeListener.class, legend, "viewBoxWidth", "source.value"));
     }
-
-    protected abstract void updatePreview();
 }

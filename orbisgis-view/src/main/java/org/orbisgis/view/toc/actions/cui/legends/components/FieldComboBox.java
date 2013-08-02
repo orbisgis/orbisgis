@@ -26,14 +26,12 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends.panels;
+package org.orbisgis.view.toc.actions.cui.legends.components;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.legend.LookupFieldName;
-import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.sif.components.WideComboBox;
 
 import java.awt.event.ActionEvent;
