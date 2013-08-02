@@ -67,6 +67,7 @@ import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.main.frames.ext.MainWindow;
 import org.orbisgis.view.main.frames.ext.ToolBarAction;
 import org.orbisgis.view.output.OutputManager;
+import org.orbisgis.view.sqlconsole.SQLConsoleFactory;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.orbisgis.view.workspace.WorkspaceSelectionDialog;
 import org.osgi.framework.BundleException;
@@ -288,7 +289,7 @@ public class Core {
     private void loadEditorFactories() {
             //editors.addEditorFactory(new TocEditorFactory(pluginFramework.getHostBundleContext()));
             //editors.addEditorFactory(new MapEditorFactory(pluginFramework.getHostBundleContext()));
-            //editors.addEditorFactory(new SQLConsoleFactory(pluginFramework.getHostBundleContext()));
+            editors.addEditorFactory(new SQLConsoleFactory(pluginFramework.getHostBundleContext()));
             //editors.addEditorFactory(new TableEditorFactory());
             //editors.addEditorFactory(new BeanShellFrameFactory());
     }

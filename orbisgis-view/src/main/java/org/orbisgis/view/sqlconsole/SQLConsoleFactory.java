@@ -85,6 +85,7 @@ public class SQLConsoleFactory implements SingleEditorFactory {
 
         @Override
         public void dispose() {
+                actionTracker.close();
                 sqlConsole.dispose();
                 sqlMetadataManager.stop();
         }

@@ -271,7 +271,7 @@ public class SQLConsolePanel extends JPanel {
                 outfilePanel.loadState();
                 if (UIFactory.showDialog(outfilePanel)) {
                         try {
-                        FileUtils.write(outfilePanel.getSelectedFile(), scriptPanel.getText());
+                        FileUtils.writeStringToFile(outfilePanel.getSelectedFile(), scriptPanel.getText());
                         } catch (IOException e1) {
                                 LOGGER.error(I18N.tr("IO error."), e1);
                                 return;

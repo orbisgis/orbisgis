@@ -38,9 +38,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.BevelBorder;
-import org.gdms.sql.function.FunctionManager;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
+import javax.swing.event.ListSelectionListener;
+
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.sqlconsole.ui.functionFilters.NameFilterFactory;
@@ -60,8 +59,6 @@ public class SQLFunctionsPanel extends JPanel {
         private final FunctionListModel functionListModel;
         private final FilterFactoryManager<FunctionFilter,DefaultActiveFilter> functionFilters = new FilterFactoryManager<FunctionFilter,DefaultActiveFilter>();
         private final JLabel functionLabelCount;
-
-        private final FunctionManager functionManager;
         private final FilterFactoryManager.FilterChangeListener filterEvent = EventHandler.create(FilterFactoryManager.FilterChangeListener.class,this,"doFilter");
         private AtomicBoolean initialised = new AtomicBoolean(false);
         
@@ -70,13 +67,14 @@ public class SQLFunctionsPanel extends JPanel {
         public SQLFunctionsPanel() {
                 this.setLayout(new BorderLayout());
                 expandedPanel = new JPanel(new BorderLayout());
-                functionManager = Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager();
                 functionListModel = new FunctionListModel();
+                functionLabelCount = new JLabel(I18N.tr("Functions count = {0}",0));
 
                 list = new JList();
                 list.setBorder(BorderFactory.createLoweredBevelBorder());
                 list.setModel(functionListModel);
                 list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                list.addListSelectionListener(EventHandler.create(ListSelectionListener.class,this,"onListChange"));
 
                 expandedPanel.add(new JScrollPane(list), BorderLayout.CENTER);
                 functionFilters.setUserCanRemoveFilter(false);
@@ -85,7 +83,6 @@ public class SQLFunctionsPanel extends JPanel {
                 list.setCellRenderer(new FunctionListRenderer(list));
                 list.setTransferHandler(new FunctionListTransferHandler());
                 list.setDragEnabled(true);
-                functionLabelCount = new JLabel(I18N.tr("Functions count = {0}",functionListModel.getSize()));
                 expandedPanel.add(functionLabelCount, BorderLayout.SOUTH);
                 add(expandedPanel, BorderLayout.CENTER);
                 expandedPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
@@ -113,11 +110,14 @@ public class SQLFunctionsPanel extends JPanel {
                 String[] sources = new String[selectedValues.length];
                 for (int i = 0; i < sources.length; i++) {
                         FunctionElement functionElement = (FunctionElement) selectedValues[i];
-                        sources[i] = functionManager.getFunction(functionElement.getFunctionName()).getSqlOrder();
+                        sources[i] = functionElement.getSQLCommand();
                 }
                 return sources;
         }
 
+        public void onListChange() {
+            functionLabelCount.setText(I18N.tr("Functions count = {0}",functionListModel.getSize()));
+        }
         /**
          * Called by the listener filterEvent
          */
@@ -127,8 +127,6 @@ public class SQLFunctionsPanel extends JPanel {
         
         /**
          * Switch the visibility state of the panel
-         * @see collapse
-         * @see expand
          */
         public void switchPanelVisibilityState() {
                 if (expandedPanel.isVisible()) {

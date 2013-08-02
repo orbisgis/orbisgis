@@ -51,13 +51,7 @@ public class FunctionListRenderer extends ListLaFRenderer {
         
         private static Icon getFunctionIcon(FunctionElement value) {
                 int type = value.getFunctionType();
-                if (type == FunctionElement.BASIC_FUNCTION) {
-                        return OrbisGISIcon.getIcon("builtinfunctionmap");
-                } else if (type == FunctionElement.CUSTOM_FUNCTION) {
-                        return OrbisGISIcon.getIcon("builtincustomquerymap");
-                } else {
-                        return OrbisGISIcon.getIcon("builtincustomquerymaperror");
-                }
+                return OrbisGISIcon.getIcon("builtinfunctionmap");
         }
         @Override
         public Component getListCellRendererComponent(JList jlist, Object value, int index, boolean isSelected, boolean cellHasFocus) {

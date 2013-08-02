@@ -35,16 +35,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import javax.sql.DataSource;
 import javax.swing.JOptionPane;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.edition.EditionEvent;
-import org.gdms.data.edition.EditionListener;
-import org.gdms.data.edition.MultipleEditionEvent;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerCollectionEvent;
@@ -56,16 +55,17 @@ import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.core.layerModel.SelectionEvent;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sputilities.JDBCUtilities;
+import org.orbisgis.sputilities.TableLocation;
 import org.orbisgis.view.edition.AbstractEditableElement;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorManager;
-import org.orbisgis.view.toc.Toc;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * MapElement is an editable document that contains a Map Context.
- * @note The source code, functionality is mainly provided by GeocognitionMapContext
+ * The source code, functionality is mainly provided by GeocognitionMapContext
  */
 public final class MapElement extends AbstractEditableElement {
         public static final String EDITABLE_TYPE = "MapContext";
@@ -73,16 +73,14 @@ public final class MapElement extends AbstractEditableElement {
 	private static final I18n I18N = I18nFactory.getI18n(MapElement.class);
 
 	// The following events does not change the MapElement modification state.
-    private Set<String> ignoredModificationEvents = new HashSet(Arrays.asList(
+    private Set<String> ignoredModificationEvents = new HashSet<String>(Arrays.asList(
             new String[]{MapContext.PROP_ACTIVELAYER, MapContext.PROP_SELECTEDLAYERS, MapContext.PROP_SELECTEDSTYLES}));
         
 	private MapContext mapContext;
-        private MapEditor editor;
         private String mapId;
         private PropertyChangeListener mapContextPropertyUpdateListener =
                 EventHandler.create(PropertyChangeListener.class, this , "onMapUpdate","");
         private LayerUpdateListener layerUpdateListener = new LayerUpdateListener();
-        private SourceUpdateListener sourceUpdateListener = new SourceUpdateListener();
         private File mapContextFile;
         
 	public MapElement(MapContext mapContext,File mapContextFile) {
@@ -141,81 +139,40 @@ public final class MapElement extends AbstractEditableElement {
         public void setModified(Boolean modified) {
             this.modified = modified;
         }        
-        private boolean hasNotWellKnownDataSources() {
-                for(ILayer layer : mapContext.getLayers()) {
-                        DataSource source = layer.getDataSource();
-                        if(source!=null) {
-                                if(!source.getSource().isWellKnownName()) {
-                                        return true;
+        private boolean hasTemporaryTables() {
+                DataSource dataSource = Services.getService(DataSource.class);
+                try {
+                    Connection connection = dataSource.getConnection();
+                    try {
+                        for(ILayer layer : mapContext.getLayers()) {
+                                String table = layer.getTableReference();
+                                if(table!=null && !table.isEmpty()) {
+                                        if(JDBCUtilities.isTemporaryTable(connection,TableLocation.parse(table))) {
+                                                return true;
+                                        }
                                 }
                         }
+                    } finally {
+                        connection.close();
+                    }
+                } catch (SQLException ex) {
+                    LOGGER.error(I18N.tr("Error while checking temporary table"));
                 }
                 return false;
         }
-    private boolean hasModifiedDataSources() {
-        for(ILayer layer : mapContext.getLayers()) {
-            DataSource source = layer.getDataSource();
-            if(source!=null) {
-                if(source.isModified()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    /**
-     * @return True if all sources saved without errors.
-     */
-    private boolean saveModifiedDataSources() {
-        boolean commitWithoutErrors=true;
-        for(ILayer layer : mapContext.getLayers()) {
-            DataSource source = layer.getDataSource();
-            if(source!=null) {
-                if(source.isModified()) {
-                    try {
-                        source.commit();
-                    } catch (Exception ex) {
-                        LOGGER.error(ex.getLocalizedMessage(),ex);
-                        commitWithoutErrors = false;
-                    }
-                }
-            }
-        }
-        return commitWithoutErrors;
-    }
         
 	@Override
 	public void save() throws UnsupportedOperationException {
                 // If a layer hold a not well known source then alert the user
                 boolean doSave = true;
-                if(hasNotWellKnownDataSources()) {
+                if(hasTemporaryTables()) {
                         int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
-                                I18N.tr("Some layers use temporary data source, are you sure to save this map and loose layers with temporary data sources ?"),
+                                I18N.tr("Some layers use temporary table, are you sure to save this map and loose layers with temporary tables ?"),
                                 I18N.tr("Temporary layers data source"),
                                 JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
                         if(response == JOptionPane.NO_OPTION) {
                                 doSave = false;
                         }
-                }
-                if(hasModifiedDataSources()) {
-                    int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
-                            I18N.tr("Some layers use modified data source, do you want to save also these modifications ?"),
-                            I18N.tr("Save geometry edits"),
-                            JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
-                    if(response == JOptionPane.CANCEL_OPTION) {
-                        doSave = false;
-                    } else if(response == JOptionPane.YES_OPTION){
-                        // Save DataSources
-                        if(!saveModifiedDataSources()) {
-                            response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
-                                    I18N.tr("Some layers data source modifications can not be saved, are you sure you want to continue ?"),
-                                    I18N.tr("Errors on data source save process"),
-                                    JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
-                            if(response == JOptionPane.NO_OPTION) {
-                                doSave = false;
-                            }
-                        }
-                    }
                 }
                 if(doSave) {
                         // Save MapContext
@@ -262,14 +219,6 @@ public final class MapElement extends AbstractEditableElement {
             return;
         }
         layer.addLayerListener(layerUpdateListener);
-        DataSource dataSource = layer.getDataSource();
-        if(dataSource!=null && dataSource.isEditable()) {
-            try {
-                layer.getDataSource().addEditionListener(sourceUpdateListener);
-            } catch (UnsupportedOperationException ex) {
-                LOGGER.warn(ex.getLocalizedMessage(),ex);
-            }
-        }
         ILayer[] layers = layer.getLayersRecursively();
         if(layers!=null) {
             for(ILayer subLayer : layers) {
@@ -282,14 +231,6 @@ public final class MapElement extends AbstractEditableElement {
             return;
         }
         layer.removeLayerListener(layerUpdateListener);
-        DataSource src = layer.getDataSource();
-        if(src!=null && src.isEditable()) {
-            try {
-                src.removeEditionListener(sourceUpdateListener);
-            } catch (UnsupportedOperationException ex) {
-                LOGGER.warn(ex.getLocalizedMessage(),ex);
-            }
-        }
         ILayer[] layers = layer.getLayersRecursively();
         if(layers!=null) {
             for(ILayer subLayer : layers) {
@@ -324,41 +265,6 @@ public final class MapElement extends AbstractEditableElement {
 		return I18N.tr("MapContext - {0}",FilenameUtils.getBaseName(mapContextFile.getName()));
 	}
 
-        /**
-         * Gets the editor linked to this {@code MapElement}. This is needed
-         * in order to be able to retrieve all the informations about the map
-         * from the {@link Toc}
-         * @return
-         */
-        public MapEditor getMapEditor(){
-                return editor;
-        }
-        
-        /**
-         * Sets the editor linked to this {@code MapElement}. This is needed
-         * in order to be able to retrieve all the informations about the map
-         * from the {@link Toc}
-         * @param edit
-         */
-        public void setMapEditor(MapEditor edit){
-                editor = edit;
-        }
-        private class SourceUpdateListener implements EditionListener {
-            @Override
-            public void singleModification(EditionEvent e) {
-                if(e.getDataSource().isModified()) {
-                    setModified(true);
-                }
-            }
-
-            @Override
-            public void multipleModification(MultipleEditionEvent me) {
-                for(EditionEvent e : me.getEvents()) {
-                    singleModification(e);
-                    break;
-                }
-            }
-        }
         /**
          * Set the editable map as modified when the layer model change
          */

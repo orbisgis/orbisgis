@@ -33,9 +33,6 @@ import java.awt.datatransfer.Transferable;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.TransferHandler;
-import org.gdms.sql.function.FunctionManager;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
 
 /**
  * Drag functions orders as a Transferable String
@@ -54,9 +51,9 @@ public class FunctionListTransferHandler extends TransferHandler {
                 JList list = (JList) jc;
                 StringBuilder stringBuilder = new StringBuilder();
                 Object[] selectedItems = list.getSelectedValues();
-                FunctionManager functionManager = Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager();
                 for(Object item : selectedItems) {
-                        stringBuilder.append(functionManager.getFunction(((FunctionElement)item).getFunctionName()).getSqlOrder());
+                        stringBuilder.append(((FunctionElement)item).getSQLCommand());
+                        stringBuilder.append("\n");
                 }
                 return new StringSelection(stringBuilder.toString());
         }
