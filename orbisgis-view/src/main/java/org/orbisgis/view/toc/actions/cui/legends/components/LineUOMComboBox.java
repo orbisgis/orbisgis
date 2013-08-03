@@ -37,29 +37,40 @@ import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.panels.TablePanel;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 26/07/13
- * Time: 10:06
- * To change this template use File | Settings | File Templates.
+ * UOM combo box for line/border width unit.
+ *
+ * @author Adam Gouge
  */
 public class LineUOMComboBox<K, U extends LineParameters> extends UOMComboBox<K, U> {
 
-    public LineUOMComboBox(StrokeUom legend,
-                           CanvasSE preview,
-                           TablePanel<K, U> tablePanel) {
-        super((Legend) legend, preview, tablePanel);
-        setSelectedItem(legend.getStrokeUom());
-    }
-
+    /**
+     * Constructor
+     *
+     * @param legend  Legend
+     * @param preview Preview
+     */
     public LineUOMComboBox(StrokeUom legend,
                            CanvasSE preview) {
         this(legend, preview, null);
     }
 
+    /**
+     * Constructor
+     *
+     * @param legend     Legend
+     * @param preview    Preview
+     * @param tablePanel Table panel to update (for classifications)
+     */
+    public LineUOMComboBox(StrokeUom legend,
+                           CanvasSE preview,
+                           TablePanel<K, U> tablePanel) {
+        super((Legend) legend, preview, tablePanel);
+        setSelectedItem(legend.getStrokeUom().toString());
+    }
+
     @Override
     protected void updateAttributes() {
         ((SymbolizerLegend) legend).setStrokeUom(
-                Uom.fromString((String) getSelectedItem()));
+                Uom.fromString(getSelectedItem().toString()));
     }
 }

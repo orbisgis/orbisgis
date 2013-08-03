@@ -37,12 +37,21 @@ import java.awt.event.ActionListener;
 
 /**
  * Root class for combo boxes.
+ *
+ * @author Adam Gouge
  */
 public abstract class AbsComboBox extends WideComboBox {
 
     protected Legend legend;
     protected CanvasSE preview;
 
+    /**
+     * Constructor
+     *
+     * @param items   Items to be contained in the combo box
+     * @param legend  Legend
+     * @param preview Preview
+     */
     public AbsComboBox(String[] items,
                        Legend legend,
                        CanvasSE preview) {
@@ -57,5 +66,8 @@ public abstract class AbsComboBox extends WideComboBox {
         });
     }
 
+    /**
+     * Update the preview according to the item selected in the combo box.
+     */
     protected abstract void updatePreview();
 }

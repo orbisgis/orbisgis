@@ -36,29 +36,40 @@ import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.panels.TablePanel;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 26/07/13
- * Time: 14:28
- * To change this template use File | Settings | File Templates.
+ * UOM combo box for symbol size unit.
+ *
+ * @author Adam Gouge
  */
 public class SymbolUOMComboBox<K, U extends LineParameters> extends UOMComboBox<K, U> {
 
-    public SymbolUOMComboBox(SymbolUom legend,
-                             CanvasSE preview,
-                             TablePanel<K, U> tablePanel) {
-        super((SymbolizerLegend) legend, preview, tablePanel);
-        setSelectedItem(legend.getSymbolUom());
-    }
-
+    /**
+     * Constructor
+     *
+     * @param legend     Legend
+     * @param preview    Preview
+     */
     public SymbolUOMComboBox(SymbolUom legend,
                              CanvasSE preview) {
         this(legend, preview, null);
     }
 
+    /**
+     * Constructor
+     *
+     * @param legend     Legend
+     * @param preview    Preview
+     * @param tablePanel Table panel to update (for classifications)
+     */
+    public SymbolUOMComboBox(SymbolUom legend,
+                             CanvasSE preview,
+                             TablePanel<K, U> tablePanel) {
+        super((SymbolizerLegend) legend, preview, tablePanel);
+        setSelectedItem(legend.getSymbolUom().toString());
+    }
+
     @Override
     protected void updateAttributes() {
         ((SymbolUom) legend).setSymbolUom(
-                Uom.fromString((String) getSelectedItem()));
+                Uom.fromString(getSelectedItem().toString()));
     }
 }

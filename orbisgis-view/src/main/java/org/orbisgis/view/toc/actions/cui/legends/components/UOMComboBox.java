@@ -38,15 +38,24 @@ import org.orbisgis.view.toc.actions.cui.legends.panels.Util;
 
 /**
  * Root class for (stroke and symbol) UOM combo boxes.
+ *
+ * @author Adam Gouge
  */
 public abstract class UOMComboBox<K, U extends LineParameters> extends AbsComboBox {
 
     protected TablePanel<K, U> tablePanel;
 
+    /**
+     * Constructor
+     *
+     * @param legend     Legend
+     * @param preview    Preview
+     * @param tablePanel Table Panel
+     */
     public UOMComboBox(Legend legend,
                        CanvasSE preview,
                        TablePanel<K, U> tablePanel) {
-        super(Uom.getLocalizedStrings(), legend, preview);
+        super(Uom.getStrings(), legend, preview);
         this.tablePanel = tablePanel;
     }
 
@@ -65,7 +74,7 @@ public abstract class UOMComboBox<K, U extends LineParameters> extends AbsComboB
      * Update the preview(s) (plural if classification).
      */
     private void updatePreviews() {
-        if (legend instanceof MappedLegend) {
+        if (tablePanel != null) {
             Util.updatePreview((MappedLegend) legend, preview, tablePanel);
         } else {
             preview.imageChanged();
