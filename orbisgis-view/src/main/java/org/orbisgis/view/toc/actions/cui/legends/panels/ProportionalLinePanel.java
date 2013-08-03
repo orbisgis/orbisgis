@@ -60,6 +60,7 @@ public class ProportionalLinePanel extends UniqueSymbolPanel {
         try {
             maxSizeSpinner = new MaxSizeSpinner(getLegend(), preview);
             minSizeSpinner = new MinSizeSpinner(getLegend(), maxSizeSpinner);
+            maxSizeSpinner.setMinSizeSpinner(minSizeSpinner);
         } catch (ParameterException e) {
             e.printStackTrace();
         }

@@ -32,6 +32,17 @@ public class MaxSizeSpinner extends AbsPreviewSpinner {
                 ChangeListener.class, legend, "secondValue", "source.value"));
     }
 
+    /**
+     * Make sure this value is always >= the min value. This should always be
+     * called just after the initialization of {@code minSizeSpinner}.
+     *
+     * @param minSizeSpinner Spinner from which to obtain the min value.
+     */
+    public void setMinSizeSpinner(MinSizeSpinner minSizeSpinner) {
+        minSizeSpinner.addChangeListener(EventHandler.create(
+                ChangeListener.class, this.getModel(), "minimum", "source.value"));
+    }
+
     @Override
     protected double getSpinStep() {
         return LARGE_STEP;

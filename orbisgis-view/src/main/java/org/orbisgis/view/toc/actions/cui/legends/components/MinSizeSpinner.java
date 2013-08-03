@@ -4,7 +4,6 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.legend.IInterpolationLegend;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.beans.EventHandler;
 
@@ -31,8 +30,7 @@ public class MinSizeSpinner extends AbsSpinner {
         addChangeListener(EventHandler.create(
                 ChangeListener.class, legend, "firstValue", "source.value"));
         maxSizeSpinner.addChangeListener(EventHandler.create(
-                ChangeListener.class, this.getModel(), "maximum", "source.value"
-        ));
+                ChangeListener.class, this.getModel(), "maximum", "source.value"));
     }
 
     @Override
