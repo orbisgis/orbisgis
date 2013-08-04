@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.components;
 
+import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
@@ -42,6 +43,8 @@ import org.orbisgis.view.toc.actions.cui.legends.panels.Util;
  * @author Adam Gouge
  */
 public abstract class UOMComboBox<K, U extends LineParameters> extends AbsComboBox {
+
+    private static final Logger LOGGER = Logger.getLogger(UOMComboBox.class);
 
     protected TablePanel<K, U> tablePanel;
 
@@ -74,8 +77,13 @@ public abstract class UOMComboBox<K, U extends LineParameters> extends AbsComboB
      * Update the preview(s) (plural if classification).
      */
     private void updatePreviews() {
-        if (tablePanel != null) {
-            Util.updatePreview((MappedLegend) legend, preview, tablePanel);
+        if (legend instanceof MappedLegend) {
+            preview.setSymbol(Util.getFallbackSymbolizer((MappedLegend) legend));
+            if (tablePanel != null) {
+                tablePanel.updateTable();
+            } else {
+                LOGGER.error("Can't update table panel because it is null.");
+            }
         } else {
             preview.imageChanged();
         }
