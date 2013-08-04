@@ -34,18 +34,27 @@ import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
 /**
  * Combo box for the symbol's well-known name.
+ *
+ * @author Adam Gouge
  */
 public class WKNComboBox extends AbsComboBox {
 
+    /**
+     * Constructor
+     *
+     * @param legend  Legend
+     * @param preview Preview
+     */
     public WKNComboBox(ConstantFormPoint legend,
                        CanvasSE preview) {
         super(WellKnownName.getLocalizedStrings(), legend, preview);
-        setSelectedItem(legend.getWellKnownName());
+        setSelectedItem(WellKnownName.fromString(legend.getWellKnownName())
+                .toLocalizedString());
     }
 
     @Override
     protected void updatePreview() {
-        ((ConstantFormPoint) legend).setWellKnownName((String) getSelectedItem());
+        ((ConstantFormPoint) legend).setWellKnownName(getSelectedItem().toString());
         preview.imageChanged();
     }
 }
