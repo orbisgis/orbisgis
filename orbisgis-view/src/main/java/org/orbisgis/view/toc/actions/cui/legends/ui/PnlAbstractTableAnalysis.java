@@ -13,7 +13,7 @@ import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.legend.thematic.uom.SymbolUom;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legends.panels.ColorScheme;
+import org.orbisgis.view.toc.actions.cui.legends.components.ColorScheme;
 import org.orbisgis.view.toc.actions.cui.legends.panels.SettingsPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.TablePanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.Util;

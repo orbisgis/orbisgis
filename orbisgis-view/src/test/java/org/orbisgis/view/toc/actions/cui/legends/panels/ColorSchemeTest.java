@@ -1,6 +1,7 @@
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
 import org.junit.Test;
+import org.orbisgis.view.toc.actions.cui.legends.components.ColorScheme;
 
 import java.awt.*;
 import java.util.ArrayList;

@@ -29,7 +29,7 @@
  * (250)385-6040
  * www.vividsolutions.com
  */
-package org.orbisgis.view.toc.actions.cui.legends.panels;
+package org.orbisgis.view.toc.actions.cui.legends.components;
 
 import com.vividsolutions.jts.util.Assert;
 import org.apache.commons.io.IOUtils;

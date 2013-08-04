@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends.panels;
+package org.orbisgis.view.toc.actions.cui.legends.components;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
@@ -34,6 +34,7 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.OnVertexOnCentroid;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.legends.panels.TablePanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
