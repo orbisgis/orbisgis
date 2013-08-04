@@ -50,11 +50,9 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 25/07/13
- * Time: 15:49
- * To change this template use File | Settings | File Templates.
+ * Settings panel for classification UIs.
+ *
+ * @author Adam Gouge
  */
 public class SettingsPanel<K, U extends LineParameters> extends JPanel {
 
@@ -64,7 +62,7 @@ public class SettingsPanel<K, U extends LineParameters> extends JPanel {
     private CanvasSE preview;
     private TablePanel<K, U> tablePanel;
 
-    private AbsFieldComboBox fieldComboBox;
+    private AbsFieldsComboBox fieldComboBox;
     private LineUOMComboBox<K, U> lineUOMComboBox;
 
     public SettingsPanel(MappedLegend<K, U> legend,
@@ -76,11 +74,11 @@ public class SettingsPanel<K, U extends LineParameters> extends JPanel {
         this.preview = preview;
         this.tablePanel = tablePanel;
         if (legend instanceof AbstractCategorizedLegend) {
-            this.fieldComboBox = new NumericalFieldsComboBox(
+            this.fieldComboBox = NumericalFieldsComboBox.createInstance(
                     dataSource,
                     (AbstractCategorizedLegend) legend);
         } else if (legend instanceof AbstractRecodedLegend) {
-            this.fieldComboBox = new NonSpatialFieldsComboBox(
+            this.fieldComboBox = NonSpatialFieldsComboBox.createInstance(
                     dataSource,
                     (AbstractRecodedLegend) legend);
         } else {

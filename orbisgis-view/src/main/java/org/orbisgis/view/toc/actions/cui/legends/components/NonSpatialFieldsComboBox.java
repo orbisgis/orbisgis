@@ -32,17 +32,20 @@ import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
+import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 
 /**
  * A JComboBox containing the non-spatial fields of the given {@link DataSource}.
+ *
+ * @author Adam Gouge
  */
-public class NonSpatialFieldsComboBox extends AbsFieldComboBox {
+public class NonSpatialFieldsComboBox extends AbsFieldsComboBox {
 
     private static final Logger LOGGER = Logger.getLogger(NonSpatialFieldsComboBox.class);
 
-    public NonSpatialFieldsComboBox(DataSource ds,
-                                    AbstractRecodedLegend legend) {
+    protected NonSpatialFieldsComboBox(DataSource ds,
+                                       AbstractRecodedLegend legend) {
         super(ds, legend);
     }
 
@@ -57,5 +60,13 @@ public class NonSpatialFieldsComboBox extends AbsFieldComboBox {
                     "could not be recovered.");
             return false;
         }
+    }
+
+    public static NonSpatialFieldsComboBox createInstance(
+            DataSource ds,
+            final AbstractRecodedLegend legend) {
+        NonSpatialFieldsComboBox box = new NonSpatialFieldsComboBox(ds, legend);
+        box.init();
+        return box;
     }
 }

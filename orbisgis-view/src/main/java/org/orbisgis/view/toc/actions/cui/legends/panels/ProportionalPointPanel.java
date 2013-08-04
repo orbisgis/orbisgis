@@ -24,7 +24,7 @@ public class ProportionalPointPanel extends AbsPanel {
     private DataSource dataSource;
     private int geometryType;
 
-    private NumericalFieldsComboBox numericalFieldsComboBox;
+    private PPointFieldsComboBox pPointFieldsComboBox;
     private SymbolUOMComboBox symbolUOMComboBox;
     private WKNComboBox wknComboBox;
     private MaxSizeSpinner maxSizeSpinner;
@@ -60,8 +60,8 @@ public class ProportionalPointPanel extends AbsPanel {
 
     @Override
     protected void init() {
-        numericalFieldsComboBox =
-                new NumericalFieldsComboBox(dataSource, getLegend());
+        pPointFieldsComboBox = PPointFieldsComboBox.
+                createInstance(dataSource, getLegend(), preview);
         symbolUOMComboBox = new SymbolUOMComboBox(getLegend(), preview);
         wknComboBox = new WKNComboBox(getLegend(), preview);
         try {
@@ -81,7 +81,7 @@ public class ProportionalPointPanel extends AbsPanel {
     protected void addComponents() {
         // Field
         add(new JLabel(I18N.tr(AbstractFieldPanel.FIELD)));
-        add(numericalFieldsComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+        add(pPointFieldsComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
         // Unit of measure - symbol size
         add(new JLabel(I18N.tr(AbstractFieldPanel.SYMBOL_SIZE_UNIT)));
         add(symbolUOMComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);

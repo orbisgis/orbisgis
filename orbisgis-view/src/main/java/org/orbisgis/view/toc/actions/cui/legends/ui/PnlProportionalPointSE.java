@@ -178,9 +178,6 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
-                // TODO: Without this call to initFieldCombo(), I get an
-                // ArrayIndexOutOfBoundsException. Figure out why.
-                initFieldCombo();
                 glob.add(new ProportionalPointPanel(
                     proportionalPoint,
                     getPreview(),
@@ -236,44 +233,6 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 proportionalPoint.setWellKnownName(usp.getWellKnownName());
                 getPreview().imageChanged();
             }
-        }
-
-        private void initFieldCombo(){
-                if(ds != null){
-                        fieldCombo = getNumericFieldCombo(ds);
-                        ActionListener acl2 = EventHandler.create(ActionListener.class,
-                                this, "updateField", "source.selectedItem");
-                        String field = proportionalPoint.getLookupFieldName();
-                        if(field != null && !field.isEmpty()){
-                                fieldCombo.setSelectedItem(field);
-                        }
-                        fieldCombo.addActionListener(acl2);
-                        updateField((String) fieldCombo.getSelectedItem());
-                } else {
-                        fieldCombo = new WideComboBox();
-                }
-        }
-
-        /**
-         * Used when the field against which the analysis is made changes.
-         * @param obj  The new name.
-         */
-        public void updateField(String obj){
-                try {
-                        double[] mnm=ClassificationUtils.getMinAndMax(ds, new RealAttribute(obj));
-                        proportionalPoint.setFirstData(Math.sqrt(mnm[0]));
-                        proportionalPoint.setSecondData(Math.sqrt(mnm[1]));
-                        proportionalPoint.setLookupFieldName(obj);
-                        Map<String, Object> sample = new HashMap<String, Object>();
-                        sample.put(obj, mnm[1]);
-                        getPreview().setSampleDatasource(sample);
-                        getPreview().setDisplayed(true);
-                        getPreview().imageChanged();
-                } catch (DriverException ex) {
-                        LOGGER.error("", ex);
-                } catch (ParameterException ex) {
-                        LOGGER.error("", ex);
-                }
         }
 
     private class ConfigPanel extends JPanel implements UIPanel {

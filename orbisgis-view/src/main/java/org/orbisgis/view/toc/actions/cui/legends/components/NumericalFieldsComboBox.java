@@ -32,17 +32,21 @@ import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
+import org.orbisgis.legend.IInterpolationLegend;
 import org.orbisgis.legend.LookupFieldName;
+import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
 /**
  * A JComboBox containing the numerical fields of the given {@link DataSource}.
+ *
+ * @author Adam Gouge
  */
-public class NumericalFieldsComboBox extends AbsFieldComboBox {
+public class NumericalFieldsComboBox extends AbsFieldsComboBox {
 
     private static final Logger LOGGER = Logger.getLogger(NumericalFieldsComboBox.class);
 
-    public NumericalFieldsComboBox(DataSource ds,
-                                   final LookupFieldName legend) {
+    protected NumericalFieldsComboBox(DataSource ds,
+                                      final LookupFieldName legend) {
         super(ds, legend);
     }
 
@@ -53,9 +57,17 @@ public class NumericalFieldsComboBox extends AbsFieldComboBox {
                     ds.getMetadata().getFieldType(index).getTypeCode());
         } catch (DriverException ex) {
             LOGGER.error("Cannot at field at position " + index
-                + " to the NumericalFieldsComboBox because the metadata " +
+                    + " to the NumericalFieldsComboBox because the metadata " +
                     "could not be recovered.");
             return false;
         }
+    }
+
+    public static NumericalFieldsComboBox createInstance(
+            DataSource ds,
+            final LookupFieldName legend) {
+        NumericalFieldsComboBox box = new NumericalFieldsComboBox(ds, legend);
+        box.init();
+        return box;
     }
 }

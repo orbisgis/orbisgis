@@ -150,55 +150,8 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
         public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
-                // TODO: Without this call to getFieldComboBox(), I get an
-                // ArrayIndexOutOfBoundsException. Figure out why.
-                getFieldComboBox();
                 glob.add(new ProportionalLinePanel(getLegend(), getPreview(), ds));
                 glob.add(getPreviewPanel());
                 this.add(glob);
-        }
-
-        /**
-         * Creates and fill the combo box that will be used to compute the
-         * analysis.
-         * @return The combo box we can use to choose the text.
-         */
-        private WideComboBox getFieldComboBox(){
-                if(ds != null){
-                        WideComboBox jcc = getNumericFieldCombo(ds);
-                        ActionListener acl2 = EventHandler.create(ActionListener.class,
-                                this, "updateField", "source.selectedItem");
-                        String field = proportionalLine.getLookupFieldName();
-                        if(field != null && !field.isEmpty()){
-                                jcc.setSelectedItem(field);
-                        }
-                        jcc.addActionListener(acl2);
-                        updateField((String)jcc.getSelectedItem());
-                        return jcc;
-                } else {
-                        return new WideComboBox();
-                }
-        }
-
-        /**
-         * Used when the field against which the analysis is made changes.
-         * @param obj The new field name.
-         */
-        public void updateField(String obj){
-                try {
-                        double[] mnm=ClassificationUtils.getMinAndMax(ds, new RealAttribute(obj));
-                        proportionalLine.setFirstData(mnm[0]);
-                        proportionalLine.setSecondData(mnm[1]);
-                        proportionalLine.setLookupFieldName(obj);
-                        Map<String, Object> sample = new HashMap<String, Object>();
-                        sample.put(obj, mnm[1]);
-                        getPreview().setSampleDatasource(sample);
-                        getPreview().setDisplayed(true);
-                        getPreview().imageChanged();
-                } catch (DriverException ex) {
-                        LOGGER.error("", ex);
-                } catch (ParameterException ex) {
-                        LOGGER.error("", ex);
-                }
         }
 }

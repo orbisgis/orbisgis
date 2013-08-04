@@ -25,7 +25,7 @@ public class ProportionalLinePanel extends AbsPanel {
 
     private DataSource dataSource;
 
-    private NumericalFieldsComboBox numericalFieldsComboBox;
+    private PLineFieldsComboBox pLineFieldsComboBox;
     private ColorLabel colorLabel;
     private LineUOMComboBox lineUOMComboBox;
     private MaxSizeSpinner maxSizeSpinner;
@@ -60,8 +60,8 @@ public class ProportionalLinePanel extends AbsPanel {
         ProportionalStrokeLegend strokeLegend = getLegend().getStrokeLegend();
         ConstantSolidFill fillAnalysis = (ConstantSolidFill) strokeLegend.getFillAnalysis();
 
-        numericalFieldsComboBox =
-                new NumericalFieldsComboBox(dataSource, getLegend());
+        pLineFieldsComboBox = PLineFieldsComboBox
+                .createInstance(dataSource, getLegend(), preview);
         colorLabel = new ColorLabel(fillAnalysis, preview);
         lineUOMComboBox = new LineUOMComboBox(getLegend(), preview);
         try {
@@ -79,7 +79,7 @@ public class ProportionalLinePanel extends AbsPanel {
     protected void addComponents() {
         // Field
         add(new JLabel(I18N.tr(AbstractFieldPanel.FIELD)));
-        add(numericalFieldsComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+        add(pLineFieldsComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
         // Color
         add(new JLabel(I18N.tr("Color")));
         add(colorLabel);

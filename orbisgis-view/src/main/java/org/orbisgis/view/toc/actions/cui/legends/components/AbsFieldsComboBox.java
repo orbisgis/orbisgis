@@ -43,9 +43,9 @@ import java.awt.event.ActionListener;
  *
  * @author Adam Gouge
  */
-public abstract class AbsFieldComboBox extends WideComboBox {
+public abstract class AbsFieldsComboBox extends WideComboBox {
 
-    private static final Logger LOGGER = Logger.getLogger(AbsFieldComboBox.class);
+    private static final Logger LOGGER = Logger.getLogger(AbsFieldsComboBox.class);
 
     protected DataSource ds;
     protected LookupFieldName legend;
@@ -56,11 +56,10 @@ public abstract class AbsFieldComboBox extends WideComboBox {
      * @param ds     DataSource
      * @param legend Legend
      */
-    public AbsFieldComboBox(DataSource ds, final LookupFieldName legend) {
+    public AbsFieldsComboBox(DataSource ds, final LookupFieldName legend) {
         super();
         this.ds = ds;
         this.legend = legend;
-        init();
     }
 
     /**
@@ -70,7 +69,7 @@ public abstract class AbsFieldComboBox extends WideComboBox {
      * @return A ComboBox linked to the underlying MappedLegend that
      *         configures the analysis field.
      */
-    private void init() {
+    protected void init() {
         if (ds != null) {
             addFields();
             addActionListener(new ActionListener() {
