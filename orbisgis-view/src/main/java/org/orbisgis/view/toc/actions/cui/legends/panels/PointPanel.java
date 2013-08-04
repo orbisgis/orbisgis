@@ -42,9 +42,11 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.*;
 
 /**
- * Point panel for unique symbols.
+ * Unique Symbol - Point settings panel.
+ *
+ * @author Adam Gouge
  */
-public class PointPanel extends UniqueSymbolPanel {
+public class PointPanel extends AbsPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(PointPanel.class);
 
@@ -57,12 +59,21 @@ public class PointPanel extends UniqueSymbolPanel {
     private SymbolWidthSpinner symbolWidthSpinner;
     private SymbolHeightSpinner symbolHeightSpinner;
 
+    /**
+     * Constructor
+     *
+     * @param legend       Legend
+     * @param preview      Preview
+     * @param title        Title
+     * @param displayUOM   Whether the symbol UOM combo box should be displayed
+     * @param geometryType The type of geometry linked to this legend
+     */
     public PointPanel(UniqueSymbolPoint legend,
                       CanvasSE preview,
                       String title,
                       boolean displayUOM,
                       int geometryType) {
-        super(legend, preview, title, false);
+        super(legend, preview, title);
         this.displayUOM = displayUOM;
         this.geometryType = geometryType;
         init();
@@ -110,15 +121,5 @@ public class PointPanel extends UniqueSymbolPanel {
         // Mark height
         add(new JLabel(I18N.tr(AbstractFieldPanel.HEIGHT)));
         add(symbolHeightSpinner, "growx");
-    }
-
-    @Override
-    protected void onClickOptionalCheckBox() {
-        // Never optional.
-    }
-
-    @Override
-    protected void setFieldsState(boolean enable) {
-        // No need since never optional.
     }
 }

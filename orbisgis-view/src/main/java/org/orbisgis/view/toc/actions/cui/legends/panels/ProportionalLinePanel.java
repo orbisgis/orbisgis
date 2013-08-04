@@ -19,7 +19,7 @@ import javax.swing.*;
  *
  * @author Adam Gouge
  */
-public class ProportionalLinePanel extends UniqueSymbolPanel {
+public class ProportionalLinePanel extends AbsPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(ProportionalLinePanel.class);
 
@@ -34,10 +34,17 @@ public class ProportionalLinePanel extends UniqueSymbolPanel {
     private LineOpacitySpinner lineOpacitySpinner;
     private DashArrayField dashArrayField;
 
+    /**
+     * Constructor
+     *
+     * @param legend     Legend
+     * @param preview    Preview
+     * @param dataSource DataSource
+     */
     public ProportionalLinePanel(ProportionalLine legend,
                                  CanvasSE preview,
                                  DataSource dataSource) {
-        super(legend, preview, I18N.tr(PnlUniqueLineSE.LINE_SETTINGS), false);
+        super(legend, preview, I18N.tr(PnlUniqueLineSE.LINE_SETTINGS));
         this.dataSource = dataSource;
         init();
         addComponents();
@@ -91,15 +98,5 @@ public class ProportionalLinePanel extends UniqueSymbolPanel {
         // Dash array
         add(new JLabel(I18N.tr(AbstractFieldPanel.DASH_ARRAY)));
         add(dashArrayField, "growx");
-    }
-
-    @Override
-    protected void onClickOptionalCheckBox() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected void setFieldsState(boolean enable) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

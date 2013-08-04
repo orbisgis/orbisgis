@@ -17,7 +17,7 @@ import javax.swing.*;
  *
  * @author Adam Gouge
  */
-public class ProportionalPointPanel extends UniqueSymbolPanel {
+public class ProportionalPointPanel extends AbsPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(ProportionalPointPanel.class);
 
@@ -32,13 +32,21 @@ public class ProportionalPointPanel extends UniqueSymbolPanel {
 
     private OnVertexOnCentroidPanel onVertexOnCentroidPanel;
 
+    /**
+     * Constructor
+     *
+     * @param legend       Legend
+     * @param preview      Preview
+     * @param title        Title
+     * @param dataSource   DataSource
+     * @param geometryType The type of geometry linked to this legend
+     */
     public ProportionalPointPanel(ProportionalPoint legend,
                                   CanvasSE preview,
                                   String title,
-                                  boolean isOptional,
                                   DataSource dataSource,
                                   int geometryType) {
-        super(legend, preview, title, isOptional);
+        super(legend, preview, title);
         this.dataSource = dataSource;
         this.geometryType = geometryType;
         init();
@@ -92,13 +100,5 @@ public class ProportionalPointPanel extends UniqueSymbolPanel {
             add(new JLabel(I18N.tr(AbstractFieldPanel.PLACE_SYMBOL_ON)), "span 1 2");
             add(onVertexOnCentroidPanel, "span 1 2");
         }
-    }
-
-    @Override
-    protected void onClickOptionalCheckBox() {
-    }
-
-    @Override
-    protected void setFieldsState(boolean enable) {
     }
 }

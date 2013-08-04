@@ -46,13 +46,11 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 29/07/13
- * Time: 16:40
- * To change this template use File | Settings | File Templates.
+ * Unique Symbol - Line settings panel.
+ *
+ * @author Adam Gouge
  */
-public class LinePanel extends UniqueSymbolPanel {
+public class LinePanel extends AbsOptionalPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(LinePanel.class);
 
@@ -66,6 +64,14 @@ public class LinePanel extends UniqueSymbolPanel {
     private LineOpacitySpinner lineOpacitySpinner;
     private DashArrayField dashArrayField;
 
+    /**
+     * Constructor
+     *
+     * @param legend         Legend
+     * @param preview        Preview
+     * @param title          Title
+     * @param isLineOptional Whether the enable line checkbox should be created.
+     */
     public LinePanel(IUniqueSymbolLine legend,
                      CanvasSE preview,
                      String title,

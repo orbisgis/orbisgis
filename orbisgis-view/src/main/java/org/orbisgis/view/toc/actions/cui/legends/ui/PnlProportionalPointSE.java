@@ -185,7 +185,6 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                     proportionalPoint,
                     getPreview(),
                     I18N.tr(MARK_SETTINGS),
-                    false,
                     ds,
                     getGeometryType()));
 

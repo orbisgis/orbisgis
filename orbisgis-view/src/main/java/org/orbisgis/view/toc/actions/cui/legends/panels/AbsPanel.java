@@ -41,37 +41,31 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 30/07/13
- * Time: 11:22
- * To change this template use File | Settings | File Templates.
+ * Root class for unique symbol and proportional panels.
+ *
+ * @author Adam Gouge
  */
-public abstract class UniqueSymbolPanel extends JPanel {
-
-    private static final I18n I18N = I18nFactory.getI18n(UniqueSymbolPanel.class);
+public abstract class AbsPanel extends JPanel {
 
     protected LegendStructure legend;
     protected CanvasSE preview;
 
-    protected final boolean isOptional;
-    protected JCheckBox enableCheckBox;
-
-    // TODO: Add a default constructor where isOptional is false.
-    public UniqueSymbolPanel(LegendStructure legend,
-                             CanvasSE preview,
-                             String title,
-                             boolean isOptional) {
+    /**
+     * Constructor
+     *
+     * @param legend  Legend
+     * @param preview Preview
+     * @param title   Title
+     */
+    public AbsPanel(LegendStructure legend,
+                    CanvasSE preview,
+                    String title) {
         super(new MigLayout("wrap 2", AbstractFieldPanel.COLUMN_CONSTRAINTS));
         setBorder(BorderFactory.createTitledBorder(title));
         this.legend = legend;
         this.preview = preview;
-        this.isOptional = isOptional;
         if (legend != null && preview == null) {
             initPreview();
-        }
-        if (isOptional) {
-            initEnableCheckBox();
         }
     }
 
@@ -94,25 +88,6 @@ public abstract class UniqueSymbolPanel extends JPanel {
     }
 
     /**
-     * Initialize the "Enable" checkbox.
-     */
-    private void initEnableCheckBox() {
-        enableCheckBox = new JCheckBox(I18N.tr("Enable"));
-        enableCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                onClickOptionalCheckBox();
-            }
-        });
-        enableCheckBox.setSelected(true);
-    }
-
-    /**
-     * Action taken when the optional checkbox is (de)selected.
-     */
-    protected abstract void onClickOptionalCheckBox();
-
-    /**
      * Initialize the components. Must be called at the end of the
      * constructor, just before {@link #addComponents()}.
      */
@@ -123,11 +98,4 @@ public abstract class UniqueSymbolPanel extends JPanel {
      * just after {@link #init()}.
      */
     protected abstract void addComponents();
-
-    /**
-     * Enable or disable all fields (used when the checkbox is clicked).
-     *
-     * @param enable True if the fields are to be enabled.
-     */
-    protected abstract void setFieldsState(boolean enable);
 }
