@@ -53,7 +53,7 @@ import org.orbisgis.legend.structure.parameter.NumericLegend;
  * @author Alexis Guéganno
  */
 public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend
-        implements LookupFieldName, IInterpolationLegend {
+        implements IInterpolationLegend {
 
         /**
          * Builds an empty {@code ProportionalStrokeLegend}. It will change 0 to

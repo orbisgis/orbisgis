@@ -50,8 +50,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Alexis Guéganno
  */
 public class ProportionalPoint extends ConstantFormPoint
-        implements IUniqueSymbolArea, LookupFieldName,
-        IInterpolationLegend {
+        implements IUniqueSymbolArea, IInterpolationLegend {
 
     private ProportionalWKNLegend markGraphic;
     private static final I18n I18N = I18nFactory.getI18n(ProportionalPoint.class);

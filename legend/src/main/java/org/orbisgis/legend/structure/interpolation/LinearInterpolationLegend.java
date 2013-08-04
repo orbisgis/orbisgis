@@ -39,8 +39,7 @@ import org.orbisgis.legend.LookupFieldName;
  * interpolation is 0 or not. We do it, that's all.
  * @author Alexis Guéganno
  */
-public class LinearInterpolationLegend extends InterpolationLegend
-        implements LookupFieldName {
+public class LinearInterpolationLegend extends InterpolationLegend {
 
         /**
          * Build a new Legend using the given {@code Interpolate2Real} instance.

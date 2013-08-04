@@ -47,7 +47,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Alexis Guéganno
  */
 public class ProportionalLine extends ConstantColorAndDashesLine
-    implements LookupFieldName, IInterpolationLegend {
+    implements IInterpolationLegend {
 
     private ProportionalStrokeLegend strokeLegend;
     private static final I18n I18N = I18nFactory.getI18n(ProportionalLine.class);

@@ -35,7 +35,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  *
  * @author Adam Gouge
  */
-public interface IInterpolationLegend {
+public interface IInterpolationLegend extends LookupFieldName {
 
     /**
      * Gets the data of the first interpolation point.

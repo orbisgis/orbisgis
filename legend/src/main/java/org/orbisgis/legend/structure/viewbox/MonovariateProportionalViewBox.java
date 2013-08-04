@@ -50,7 +50,7 @@ import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
  * @author Alexis Guéganno
  */
 public class MonovariateProportionalViewBox extends DefaultViewBox
-        implements LookupFieldName, IInterpolationLegend {
+        implements IInterpolationLegend {
         
         private boolean onH;
 

@@ -42,7 +42,7 @@ import org.orbisgis.legend.structure.parameter.NumericLegend;
  * instance used by the analyzer.
  * @author Alexis Guéganno
  */
-public class InterpolationLegend implements NumericLegend, IInterpolationLegend {
+public abstract class InterpolationLegend implements NumericLegend, IInterpolationLegend {
 
         private Interpolate2Real interp;
 

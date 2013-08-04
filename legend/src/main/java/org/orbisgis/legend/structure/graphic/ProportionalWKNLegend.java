@@ -49,7 +49,7 @@ import org.orbisgis.legend.structure.viewbox.ViewBoxLegendFactory;
  * @author Alexis Guéganno
  */
 public class ProportionalWKNLegend extends ConstantFormWKN
-        implements LookupFieldName, IInterpolationLegend {
+        implements IInterpolationLegend {
 
     /**
      * Builds a new {@code ProportionalWKNLegend} with a default {@link
