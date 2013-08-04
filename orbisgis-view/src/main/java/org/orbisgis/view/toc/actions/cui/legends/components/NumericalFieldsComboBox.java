@@ -37,7 +37,7 @@ import org.orbisgis.legend.LookupFieldName;
 /**
  * A JComboBox containing the numerical fields of the given {@link DataSource}.
  */
-public class NumericalFieldsComboBox extends FieldComboBox {
+public class NumericalFieldsComboBox extends AbsFieldComboBox {
 
     private static final Logger LOGGER = Logger.getLogger(NumericalFieldsComboBox.class);
 

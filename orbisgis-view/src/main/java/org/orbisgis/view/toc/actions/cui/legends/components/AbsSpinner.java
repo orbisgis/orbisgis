@@ -38,7 +38,7 @@ import java.awt.event.MouseWheelListener;
  *
  * @author Adam Gouge
  */
-public class AbsSpinner extends JSpinner {
+public abstract class AbsSpinner extends JSpinner {
 
     protected static final double SMALL_STEP = 0.1;
     protected static final double LARGE_STEP = 0.5;

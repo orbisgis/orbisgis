@@ -64,7 +64,7 @@ public class SettingsPanel<K, U extends LineParameters> extends JPanel {
     private CanvasSE preview;
     private TablePanel<K, U> tablePanel;
 
-    private FieldComboBox fieldComboBox;
+    private AbsFieldComboBox fieldComboBox;
     private LineUOMComboBox<K, U> lineUOMComboBox;
 
     public SettingsPanel(MappedLegend<K, U> legend,

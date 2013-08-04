@@ -38,11 +38,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 26/07/13
- * Time: 12:11
- * To change this template use File | Settings | File Templates.
+ * A checkbox for enabling the legend's stroke.
+ *
+ * @author Adam Gouge
  */
 public class EnableStrokeCheckBox extends JCheckBox {
 
@@ -51,6 +49,12 @@ public class EnableStrokeCheckBox extends JCheckBox {
     private EnablesStroke legend;
     private LineUOMComboBox lineUOMComboBox;
 
+    /**
+     * Constructor
+     *
+     * @param legend          Legend
+     * @param lineUOMComboBox Line UOM combo box
+     */
     public EnableStrokeCheckBox(EnablesStroke legend,
                                 LineUOMComboBox lineUOMComboBox) {
         super(I18N.tr(PnlAbstractTableAnalysis.ENABLE_BORDER));

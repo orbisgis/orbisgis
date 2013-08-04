@@ -40,7 +40,7 @@ import java.beans.EventHandler;
  *
  * @author Adam Gouge
  */
-public class SymbolWidthSpinner extends AbsPreviewSpinner {
+public class SymbolWidthSpinner extends PreviewSpinner {
 
     /**
      * Constructor

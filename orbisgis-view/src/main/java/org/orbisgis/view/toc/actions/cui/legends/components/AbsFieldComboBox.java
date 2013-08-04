@@ -39,20 +39,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 25/07/13
- * Time: 15:58
- * To change this template use File | Settings | File Templates.
+ * Root class for combo boxes containing field names.
+ *
+ * @author Adam Gouge
  */
-public abstract class FieldComboBox extends WideComboBox {
+public abstract class AbsFieldComboBox extends WideComboBox {
 
-    private static final Logger LOGGER = Logger.getLogger("gui." + FieldComboBox.class);
+    private static final Logger LOGGER = Logger.getLogger(AbsFieldComboBox.class);
 
     protected DataSource ds;
     protected LookupFieldName legend;
 
-    public FieldComboBox(DataSource ds, final LookupFieldName legend) {
+    /**
+     * Constructor
+     *
+     * @param ds     DataSource
+     * @param legend Legend
+     */
+    public AbsFieldComboBox(DataSource ds, final LookupFieldName legend) {
         super();
         this.ds = ds;
         this.legend = legend;

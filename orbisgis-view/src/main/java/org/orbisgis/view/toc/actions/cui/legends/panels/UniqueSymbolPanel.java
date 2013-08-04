@@ -57,6 +57,7 @@ public abstract class UniqueSymbolPanel extends JPanel {
     protected final boolean isOptional;
     protected JCheckBox enableCheckBox;
 
+    // TODO: Add a default constructor where isOptional is false.
     public UniqueSymbolPanel(LegendStructure legend,
                              CanvasSE preview,
                              String title,

@@ -39,17 +39,23 @@ import java.awt.event.*;
 import java.beans.EventHandler;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 29/07/13
- * Time: 17:18
- * To change this template use File | Settings | File Templates.
+ * A text field which updates the the line dash array. The input must be a
+ * space-separated list of integers specifying the lengths of the dashes.
+ *
+ * @author Adam Gouge
+ * @author Alexis Guéganno
  */
 public class DashArrayField extends JTextField {
 
     private static final I18n I18N = I18nFactory.getI18n(DashArrayField.class);
     private static final Logger LOGGER = Logger.getLogger(DashArrayField.class);
 
+    /**
+     * Constructor
+     *
+     * @param legend  Legend
+     * @param preview Preview
+     */
     public DashArrayField(final ConstantColorAndDashesPSLegend legend,
                           CanvasSE preview) {
         super();

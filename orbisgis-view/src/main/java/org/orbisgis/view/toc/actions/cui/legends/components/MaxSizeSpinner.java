@@ -13,7 +13,7 @@ import java.beans.EventHandler;
  *
  * @author Adam Gouge
  */
-public class MaxSizeSpinner extends AbsPreviewSpinner {
+public class MaxSizeSpinner extends PreviewSpinner {
 
     /**
      * Constructor

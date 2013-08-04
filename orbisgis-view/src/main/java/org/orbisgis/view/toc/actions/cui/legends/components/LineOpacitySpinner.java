@@ -36,24 +36,21 @@ import javax.swing.event.ChangeListener;
 import java.beans.EventHandler;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 29/07/13
- * Time: 17:10
- * To change this template use File | Settings | File Templates.
+ * A spinner to update a legend's line/border opacity.
+ *
+ * @author Adam Gouge
  */
-public class LineOpacitySpinner extends AbsPreviewSpinner {
+public class LineOpacitySpinner extends PreviewSpinner {
 
     /**
-     * Gets a spinner that is linked with the opacity of the {@code
-     * ConstantSolidFill} given in argument.
+     * Constructor
      *
-     * @param legend The stroke that will be configured with the spinner.
+     * @param legend Legend
      */
     public LineOpacitySpinner(final ConstantSolidFill legend,
                               CanvasSE preview) {
         super(new SpinnerNumberModel(legend.getOpacity(), 0, 1, SMALL_STEP),
-              preview);
+                preview);
         addChangeListener(EventHandler.create(
                 ChangeListener.class, legend, "opacity", "source.value"));
     }

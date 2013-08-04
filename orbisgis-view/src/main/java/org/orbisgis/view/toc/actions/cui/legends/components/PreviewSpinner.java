@@ -7,11 +7,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
- * Root class for mouse wheel scrollable spinners which also update a preview.
+ * Root class for mouse wheel scrollable spinners which also update the preview.
  *
  * @author Adam Gouge
  */
-public class AbsPreviewSpinner extends AbsSpinner {
+public abstract class PreviewSpinner extends AbsSpinner {
 
     /**
      * Constructor
@@ -19,8 +19,8 @@ public class AbsPreviewSpinner extends AbsSpinner {
      * @param model   Spinner model
      * @param preview Preview
      */
-    public AbsPreviewSpinner(SpinnerNumberModel model,
-                             final CanvasSE preview) {
+    public PreviewSpinner(SpinnerNumberModel model,
+                          final CanvasSE preview) {
         super(model);
         addChangeListener(new ChangeListener() {
             @Override

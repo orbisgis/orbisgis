@@ -37,7 +37,7 @@ import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 /**
  * A JComboBox containing the non-spatial fields of the given {@link DataSource}.
  */
-public class NonSpatialFieldsComboBox extends FieldComboBox {
+public class NonSpatialFieldsComboBox extends AbsFieldComboBox {
 
     private static final Logger LOGGER = Logger.getLogger(NonSpatialFieldsComboBox.class);
 
