@@ -100,34 +100,22 @@ public class ProportionalLine extends ConstantColorAndDashesLine
         return strokeLegend;
     }
 
-    /**
-     * Get the data of the first interpolation point
-     * @return
-     */
+    @Override
     public double getFirstData() {
         return strokeLegend.getFirstData();
     }
 
-    /**
-     * Get the data of the second interpolation point
-     * @return
-     */
+    @Override
     public double getSecondData() {
         return strokeLegend.getSecondData();
     }
 
-    /**
-     * Set the data of the first interpolation point
-     * @param d
-     */
+    @Override
     public void setFirstData(double d) {
         strokeLegend.setFirstData(d);
     }
 
-    /**
-     * Set the data of the second interpolation point
-     * @param d
-     */
+    @Override
     public void setSecondData(double d) {
         strokeLegend.setSecondData(d);
     }

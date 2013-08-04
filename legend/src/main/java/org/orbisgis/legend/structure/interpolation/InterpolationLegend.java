@@ -68,33 +68,22 @@ public class InterpolationLegend implements NumericLegend, IInterpolationLegend 
                 return getInterpolation();
         }
 
-        /**
-         * Gets the data associated to the first interpolation point.
-         * @return
-         */
+        @Override
         public double getFirstData() {
             return interp.getInterpolationPoint(0).getData();
         }
         
-        /**
-         * Sets the data associated to the first interpolation point.
-         * @return
-         */
+        @Override
         public void setFirstData(double d) {
             interp.getInterpolationPoint(0).setData(d);
         }
 
-        /**
-         * Gets the data associated to the second interpolation point.
-         */
+        @Override
         public double getSecondData() {
             return interp.getInterpolationPoint(1).getData();
         }
 
-        /**
-         * Sets the data associated to the second interpolation point.
-         * @param d
-         */
+        @Override
         public void setSecondData(double d) {
             interp.getInterpolationPoint(1).setData(d);
         }

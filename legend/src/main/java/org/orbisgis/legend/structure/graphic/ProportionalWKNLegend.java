@@ -80,37 +80,25 @@ public class ProportionalWKNLegend extends ConstantFormWKN
         super(mark, wknLegend, viewBoxLegend, fillLegend, strokeLegend);
     }
 
-    /**
-     * Gets the data associated to the first interpolation point.
-     * @return
-     */
+    @Override
     public double getFirstData() {
         return ((MonovariateProportionalViewBox) getViewBoxLegend()).getFirstData();
     }
-    /**
-     * Gets the data associated to the second interpolation point.
-     * @return
-     */
+
+    @Override
     public double getSecondData() {
         return ((MonovariateProportionalViewBox) getViewBoxLegend()).getSecondData();
     }
 
-    /**
-     * Sets the data associated to the first interpolation point.
-     * @return
-     */
+    @Override
     public void setFirstData(double d) {
         ((MonovariateProportionalViewBox) getViewBoxLegend()).setFirstData(d);
     }
 
-    /**
-     * Sets the data associated to the second interpolation point.
-     * @return
-     */
+    @Override
     public void setSecondData(double d) {
         ((MonovariateProportionalViewBox) getViewBoxLegend()).setSecondData(d);
     }
-
 
     @Override
     public double getFirstValue() throws ParameterException {
