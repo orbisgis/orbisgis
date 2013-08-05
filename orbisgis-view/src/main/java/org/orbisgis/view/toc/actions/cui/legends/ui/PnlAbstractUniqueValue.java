@@ -79,7 +79,8 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
     protected final static String JOB_NAME = "recodeSelectDistinct";
     private JPanel classifPanel;
 
-    public PnlAbstractUniqueValue(LegendContext lc, MappedLegend<String, U> leg) {
+    public PnlAbstractUniqueValue(LegendContext lc,
+                                  AbstractRecodedLegend<U> leg) {
         super(lc, leg);
     }
 

@@ -64,11 +64,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
 
 
         public PnlUniquePointSE(LegendContext lc) {
-            setDataSource(lc.getLayer().getDataSource());
-            setGeometryType(lc.getGeometryType());
-            uniquePoint = new UniqueSymbolPoint();
-            initPreview();
-            initializeLegendFields();
+            this(lc, new UniqueSymbolPoint());
         }
 
         public PnlUniquePointSE(LegendContext lc, UniqueSymbolPoint legend) {

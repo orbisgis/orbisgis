@@ -28,29 +28,21 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.ui;
 
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import javax.swing.*;
-
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
-import org.gdms.driver.DriverException;
-import org.orbisgis.core.renderer.classification.ClassificationUtils;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ProportionalLinePanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.swing.*;
+import java.net.URL;
 
 /**
  * "Proportional Line" UI.
@@ -65,11 +57,7 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
         private ProportionalLine proportionalLine;
 
         public PnlProportionalLineSE(LegendContext lc) {
-            setDataSource(lc.getLayer().getDataSource());
-            setGeometryType(lc.getGeometryType());
-            proportionalLine = new ProportionalLine();
-            initPreview();
-            initializeLegendFields();
+            this(lc, new ProportionalLine());
         }
 
         public PnlProportionalLineSE(LegendContext lc, ProportionalLine legend) {

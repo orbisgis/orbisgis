@@ -85,11 +85,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
         MouseListener l;
 
         public PnlProportionalPointSE(LegendContext lc) {
-            setDataSource(lc.getLayer().getDataSource());
-            setGeometryType(lc.getGeometryType());
-            proportionalPoint = new ProportionalPoint();
-            initPreview();
-            initializeLegendFields();
+            this(lc, new ProportionalPoint());
         }
 
         public PnlProportionalPointSE(LegendContext lc, ProportionalPoint legend) {

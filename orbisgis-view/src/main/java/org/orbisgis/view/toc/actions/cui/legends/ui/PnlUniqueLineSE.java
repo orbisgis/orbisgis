@@ -63,19 +63,14 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private final boolean displayUom;
 
         public PnlUniqueLineSE(LegendContext lc) {
-            setDataSource(lc.getLayer().getDataSource());
-            setGeometryType(lc.getGeometryType());
-            uniqueLine = new UniqueSymbolLine();
-            displayUom = true;
-            initPreview();
-            initializeLegendFields();
+            this(lc, new UniqueSymbolLine());
         }
 
         public PnlUniqueLineSE(LegendContext lc, UniqueSymbolLine legend) {
+            this(true);
             setDataSource(lc.getLayer().getDataSource());
             setGeometryType(lc.getGeometryType());
             uniqueLine = legend;
-            displayUom = true;
             initPreview();
             initializeLegendFields();
         }

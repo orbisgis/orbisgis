@@ -8,6 +8,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.legend.thematic.LineParameters;
+import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.sif.common.ContainerItemProperties;
@@ -48,7 +49,8 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     private WideComboBox methodCombo;
     private DefaultComboBoxModel comboModel;
 
-    public PnlAbstractCategorized(LegendContext lc, MappedLegend<Double, U> legend) {
+    public PnlAbstractCategorized(LegendContext lc,
+                                  AbstractCategorizedLegend<U> legend) {
         super(lc, legend);
     }
 

@@ -66,11 +66,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         public static final String FILL_SETTINGS = I18n.marktr("Fill settings");
 
         public PnlUniqueAreaSE(LegendContext lc) {
-            setDataSource(lc.getLayer().getDataSource());
-            setGeometryType(lc.getGeometryType());
-            uniqueArea = new UniqueSymbolArea();
-            initPreview();
-            initializeLegendFields();
+            this(lc, new UniqueSymbolArea());
         }
 
         public PnlUniqueAreaSE(LegendContext lc, UniqueSymbolArea legend) {
@@ -174,7 +170,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         @Override
         public String getTitle() {
                 return "Unique symbol for lines";
-        }        
+        }
 
         @Override
         public Legend copyLegend() {
