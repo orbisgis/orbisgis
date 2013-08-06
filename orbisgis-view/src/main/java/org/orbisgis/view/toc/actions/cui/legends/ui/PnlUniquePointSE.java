@@ -126,7 +126,11 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 }
         }
 
-        @Override
+        /**
+         * Sets the type of the geometry field of the data that must be
+         * represented.
+         * @param type Geometry type
+         */
         public void setGeometryType(int type) {
                 geometryType = type;
         }
@@ -136,7 +140,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * {@code PnlUniquePointSE}.
          * @return
          */
-        public int getGeometryType(){
+        public int getGeometryType() {
                 return geometryType;
         }
 

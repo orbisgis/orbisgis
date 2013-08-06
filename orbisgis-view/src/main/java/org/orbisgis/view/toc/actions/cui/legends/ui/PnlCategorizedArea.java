@@ -136,10 +136,6 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     }
 
     @Override
-    public void setGeometryType(int type) {
-    }
-
-    @Override
     public boolean acceptsGeometryType(int geometryType) {
         return geometryType == SimpleGeometryType.POLYGON||
                 geometryType == SimpleGeometryType.ALL;

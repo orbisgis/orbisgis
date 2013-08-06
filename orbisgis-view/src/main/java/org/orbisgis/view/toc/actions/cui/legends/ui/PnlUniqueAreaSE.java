@@ -71,7 +71,6 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
 
         public PnlUniqueAreaSE(LegendContext lc, UniqueSymbolArea legend) {
             setDataSource(lc.getLayer().getDataSource());
-            setGeometryType(lc.getGeometryType());
             uniqueArea = legend;
             initPreview();
             initializeLegendFields();

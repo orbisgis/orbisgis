@@ -155,10 +155,6 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     }
 
     @Override
-    public void setGeometryType(int type) {
-    }
-
-    @Override
     public boolean acceptsGeometryType(int geometryType) {
                 return geometryType == SimpleGeometryType.LINE ||
                         geometryType == SimpleGeometryType.POLYGON||

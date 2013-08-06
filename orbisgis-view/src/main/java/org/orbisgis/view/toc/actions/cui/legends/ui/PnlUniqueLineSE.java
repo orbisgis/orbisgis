@@ -69,7 +69,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         public PnlUniqueLineSE(LegendContext lc, UniqueSymbolLine legend) {
             this(true);
             setDataSource(lc.getLayer().getDataSource());
-            setGeometryType(lc.getGeometryType());
             uniqueLine = legend;
             initPreview();
             initializeLegendFields();
@@ -119,11 +118,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                         throw new IllegalArgumentException("The given Legend is not"
                                 + "a UniqueSymbolLine");
                 }
-        }
-
-        @Override
-        public void setGeometryType(int type){
-            // TODO: Why does this do nothing?
         }
 
         /**

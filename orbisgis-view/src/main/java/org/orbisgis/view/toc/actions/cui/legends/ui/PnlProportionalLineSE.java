@@ -62,7 +62,6 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
 
         public PnlProportionalLineSE(LegendContext lc, ProportionalLine legend) {
             setDataSource(lc.getLayer().getDataSource());
-            setGeometryType(lc.getGeometryType());
             proportionalLine = legend;
             initPreview();
             initializeLegendFields();
@@ -83,10 +82,6 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
                         throw new IllegalArgumentException(I18N.tr("The given legend is"
                                 + "not an instance of proportional line."));
                 }
-        }
-
-        @Override
-        public void setGeometryType(int type) {
         }
 
         @Override

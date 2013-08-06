@@ -174,10 +174,6 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     }
 
     @Override
-    public void setGeometryType(int type) {
-    }
-
-    @Override
     public boolean acceptsGeometryType(int geometryType) {
         return (geometryType & SimpleGeometryType.ALL) != 0;
     }

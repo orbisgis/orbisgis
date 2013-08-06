@@ -200,10 +200,6 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     }
 
     @Override
-    public void setGeometryType(int type) {
-    }
-
-    @Override
     public boolean acceptsGeometryType(int geometryType) {
         return geometryType == SimpleGeometryType.POLYGON||
                     geometryType == SimpleGeometryType.ALL;

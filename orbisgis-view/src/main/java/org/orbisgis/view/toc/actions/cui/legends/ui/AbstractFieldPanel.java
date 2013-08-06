@@ -86,7 +86,7 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
     /**
      * Fixed width for panels that need it.
      */
-    protected static final int FIXED_WIDTH = 210;
+    public static final int FIXED_WIDTH = 210;
     /**
      * Constraints for ComboBoxes for sizing consistency.
      */
@@ -107,7 +107,6 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
     @Override
     public void initialize(LegendContext lc, Legend leg) {
         setDataSource(lc.getLayer().getDataSource());
-        setGeometryType(lc.getGeometryType());
         setLegend(leg);
     }
 
