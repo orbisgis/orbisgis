@@ -28,15 +28,9 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.ui;
 
-import net.miginfocom.swing.MigLayout;
-import org.apache.log4j.Logger;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
-
-import javax.swing.*;
 
 /**
  * Base class for "Unique Symbol" UIs.
@@ -47,9 +41,6 @@ import javax.swing.*;
  */
 public abstract class PnlUniqueSymbolSE extends AbstractFieldPanel implements UIPanel {
 
-        public static final double SPIN_STEP = 0.1;
-        private static final Logger LOGGER = Logger.getLogger("gui."+PnlUniqueSymbolSE.class);
-        private static final I18n I18N = I18nFactory.getI18n(PnlUniqueSymbolSE.class);
         private String id;
         private CanvasSE preview;
 
@@ -63,31 +54,6 @@ public abstract class PnlUniqueSymbolSE extends AbstractFieldPanel implements UI
                         preview = new CanvasSE(leg.getSymbolizer());
                         preview.imageChanged();
                 }
-        }
-
-        /**
-         * Gets the {@code CanvasSE} instance used to display a preview of
-         * the current symbol in a bordered JPanel.
-         *
-         * @return Preview of the symbol in a bordered JPanel.
-         */
-        public JPanel getPreviewPanel(){
-                return getPreviewPanel(getPreview());
-        }
-
-        /**
-         * Gets the {@code CanvasSE} instance used to display a preview of
-         * the current symbol in a bordered JPanel.
-         *
-         * @return Preview of the symbol in a bordered JPanel.
-         */
-        public JPanel getPreviewPanel(CanvasSE prev){
-            JPanel previewPanel = new JPanel(
-                    new MigLayout("wrap 1", "[" + FIXED_WIDTH + "]"));
-            previewPanel.setBorder(
-                    BorderFactory.createTitledBorder(I18N.tr("Preview")));
-            previewPanel.add(prev, "align c");
-            return previewPanel;
         }
 
         /**

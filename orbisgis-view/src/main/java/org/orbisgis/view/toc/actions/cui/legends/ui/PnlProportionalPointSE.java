@@ -55,6 +55,7 @@ import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.PreviewPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ProportionalPointPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -191,7 +192,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                             "onClickOnPreview", "", "mouseClicked");
                     prev.addMouseListener(l);
                 }
-                glob.add(getPreviewPanel());
+                glob.add(new PreviewPanel(getPreview()));
                 this.add(glob);
         }
 
@@ -273,7 +274,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                     I18N.tr(FILL_SETTINGS),
                     true));
 
-            glob.add(getPreviewPanel(localPreview));
+            glob.add(new PreviewPanel(localPreview));
 
             return glob;
         }

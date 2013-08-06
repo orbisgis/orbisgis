@@ -44,6 +44,7 @@ import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.PointPanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.PreviewPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -197,7 +198,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                         I18N.tr(FILL_SETTINGS),
                         isAreaOptional));
 
-                glob.add(getPreviewPanel(), "growx");
+                glob.add(new PreviewPanel(getPreview()), "growx");
 
                 this.add(glob);
         }

@@ -43,6 +43,7 @@ import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.PreviewPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -196,7 +197,8 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                         isAreaOptional),
                         "cell 1 0, growx");
 
-                glob.add(getPreviewPanel(), "cell 1 1, growx");
+                glob.add(new PreviewPanel(getPreview()),
+                        "cell 1 1, growx");
                 this.add(glob);
         }
 
