@@ -272,11 +272,6 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
         return fallbackPreview;
     }
 
-    /**
-     * Init the preview of the fallback symbol.
-     */
-    public abstract void initPreview();
-
     @Override
     public final void initializeLegendFields() {
         this.removeAll();

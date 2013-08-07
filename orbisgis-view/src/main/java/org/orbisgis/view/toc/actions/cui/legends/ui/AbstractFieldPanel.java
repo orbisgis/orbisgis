@@ -151,6 +151,12 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
     public abstract CanvasSE getPreview();
 
     /**
+     * (Re)Build the {@code CanvasSE} instance used to display a preview of
+     * the fallback symbol.
+     */
+    public abstract void initPreview();
+
+    /**
      * Gets the legend we want to edit.
      * @return
      */

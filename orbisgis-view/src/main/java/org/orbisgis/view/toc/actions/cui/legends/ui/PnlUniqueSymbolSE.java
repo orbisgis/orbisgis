@@ -44,13 +44,10 @@ public abstract class PnlUniqueSymbolSE extends AbstractFieldPanel implements UI
         private String id;
         private CanvasSE preview;
 
-        /**
-         * Rebuild the {@code CanvasSe} instance used to display a preview of
-         * the current symbol.
-         */
-        public void initPreview(){
+        @Override
+        public void initPreview() {
                 Legend leg = getLegend();
-                if(leg != null){
+                if (leg != null) {
                         preview = new CanvasSE(leg.getSymbolizer());
                         preview.imageChanged();
                 }
