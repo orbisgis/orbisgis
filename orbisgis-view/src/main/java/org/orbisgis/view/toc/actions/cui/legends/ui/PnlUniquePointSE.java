@@ -156,22 +156,6 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         }
 
         @Override
-        public String validateInput() {
-                return null;
-        }
-
-        @Override
-        public URL getIconURL() {
-                return UIFactory.getDefaultIcon();
-        }
-
-        @Override
-        public String getTitle() {
-                return "Unique symbol for points";
-        }
-        
-
-        @Override
         public Legend copyLegend() {
                 return new UniqueSymbolPoint();
         }
@@ -201,5 +185,11 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 glob.add(new PreviewPanel(getPreview()), "growx");
 
                 this.add(glob);
+        }
+
+        // ************************* UIPanel ***************************
+        @Override
+        public String getTitle() {
+            return UniqueSymbolPoint.NAME;
         }
 }

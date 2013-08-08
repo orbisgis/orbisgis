@@ -140,21 +140,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        public String validateInput() {
-                return null;
-        }
-
-        @Override
-        public URL getIconURL() {
-                return UIFactory.getDefaultIcon();
-        }
-
-        @Override
-        public String getTitle() {
-                return "Unique symbol for lines";
-        }
-
-        @Override
         public Legend copyLegend() {
                 UniqueSymbolLine usl = new UniqueSymbolLine();
                 usl.getPenStroke().setDashArray(uniqueLine.getPenStroke().getDashArray());
@@ -185,5 +170,22 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                         displayUom));
                 glob.add(new PreviewPanel(getPreview()));
                 this.add(glob);
+        }
+
+
+        // ************************* UIPanel ***************************
+        @Override
+        public String validateInput() {
+            return null;
+        }
+
+        @Override
+        public URL getIconURL() {
+            return UIFactory.getDefaultIcon();
+        }
+
+        @Override
+        public String getTitle() {
+            return UniqueSymbolLine.NAME;
         }
 }

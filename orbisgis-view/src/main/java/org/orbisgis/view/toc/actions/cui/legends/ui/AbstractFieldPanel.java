@@ -100,11 +100,6 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
     protected DataSource ds;
 
     @Override
-    public Component getComponent() {
-        return this;
-    }
-
-    @Override
     public void initialize(LegendContext lc, Legend leg) {
         setDataSource(lc.getLayer().getDataSource());
         setLegend(leg);
@@ -177,5 +172,11 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
             cips[i] = cip;
         }
         return cips;
+    }
+
+    // ************************* UIPanel ***************************
+    @Override
+    public Component getComponent() {
+        return this;
     }
 }

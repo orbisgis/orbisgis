@@ -158,21 +158,6 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         }
 
         @Override
-        public String validateInput() {
-                return null;
-        }
-
-        @Override
-        public URL getIconURL() {
-                return UIFactory.getDefaultIcon();
-        }
-
-        @Override
-        public String getTitle() {
-                return "Unique symbol for lines";
-        }
-
-        @Override
         public Legend copyLegend() {
                 UniqueSymbolArea ret = new UniqueSymbolArea();
                 ret.getFillLegend().setColor(uniqueArea.getFillLegend().getColor());
@@ -202,7 +187,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 this.add(glob);
         }
 
-    /**
+        /**
          * In order to improve the user experience, it may be interesting to
          * store the {@code ConstantSolidFillLegend} as a field before removing
          * it. This way, we will be able to use it back directly... unless the
@@ -211,5 +196,11 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
          */
         protected void setSolidFillMemory(ConstantSolidFillLegend fill){
                 solidFillMemory = fill;
+        }
+
+        // ************************* UIPanel ***************************
+        @Override
+        public String getTitle() {
+            return UniqueSymbolArea.NAME;
         }
 }

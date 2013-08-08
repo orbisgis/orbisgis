@@ -82,7 +82,6 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
 
         private ProportionalPoint proportionalPoint;
 
-        private WideComboBox fieldCombo;
         MouseListener l;
 
         public PnlProportionalPointSE(LegendContext lc) {
@@ -151,26 +150,6 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
         }
 
         @Override
-        public String validateInput() {
-                if(fieldCombo.getSelectedItem() != null){
-                        return null;
-                } else {
-                        return I18N.tr("A valid numeric field must be selected !");
-                }
-                
-        }
-
-        @Override
-        public URL getIconURL() {
-                return UIFactory.getDefaultIcon();
-        }
-
-        @Override
-        public String getTitle() {
-                return "Proportional Points";
-        }
-
-        @Override
         public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
@@ -232,6 +211,12 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
             }
         }
 
+        // ************************* UIPanel ***************************
+        @Override
+        public String getTitle() {
+            return ProportionalPoint.NAME;
+        }
+
     private class ConfigPanel extends JPanel implements UIPanel {
 
         private UniqueSymbolPoint usp;
@@ -240,9 +225,10 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
             usp = point;
         }
 
+        // ************************* UIPanel ***************************
         @Override
         public URL getIconURL() {
-            return null;
+            return UIFactory.getDefaultIcon();
         }
 
         @Override

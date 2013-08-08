@@ -116,26 +116,17 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
         }
 
         @Override
-        public String validateInput() {
-                return null;
-        }
-
-        @Override
-        public URL getIconURL() {
-                return UIFactory.getDefaultIcon();
-        }
-
-        @Override
-        public String getTitle() {
-                return "Proportional Line";
-        }
-
-        @Override
         public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
                 glob.add(new ProportionalLinePanel(getLegend(), getPreview(), ds));
                 glob.add(new PreviewPanel(getPreview()));
                 this.add(glob);
+        }
+
+        // ************************* UIPanel ***************************
+        @Override
+        public String getTitle() {
+            return ProportionalLine.NAME;
         }
 }
