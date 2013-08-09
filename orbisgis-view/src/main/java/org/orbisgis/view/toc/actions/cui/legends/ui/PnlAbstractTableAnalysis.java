@@ -29,9 +29,8 @@ import java.util.List;
 import java.util.SortedSet;
 
 /**
- * Base class for the analysis that relies on a "table", i.e., Value and
- * Interval Classifications. Provides some useful methods related to color
- * generation and JTable management, and a framework used by its inheritors.
+ * Root class for Value and Interval Classifications. Provides some methods for
+ * color generation and JTable management.
  *
  * @author Alexis Guéganno
  */
@@ -46,7 +45,6 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     protected TablePanel<K, U> tablePanel;
 
     private String id;
-    protected JComboBox lineUom;
 
     public static final String FALLBACK = "Fallback";
     public static final String CREATE_CLASSIF = "Create classification";
@@ -54,7 +52,6 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     protected static final String CLASSIFICATION_SETTINGS = I18n.marktr("Classification settings");
 
     private DataSource ds;
-
 
     public PnlAbstractTableAnalysis(LegendContext lc, MappedLegend<K,U> legend) {
         this.ds = lc.getLayer().getDataSource();

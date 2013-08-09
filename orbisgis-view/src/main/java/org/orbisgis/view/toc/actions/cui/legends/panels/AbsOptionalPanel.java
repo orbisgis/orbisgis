@@ -10,7 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Root class for optional unique symbol panels, namely area and border.
+ * Root class for unique symbol panels which may be optional, namely Unique
+ * Area and Unique Line (Border).
  *
  * @author Adam Gouge
  */

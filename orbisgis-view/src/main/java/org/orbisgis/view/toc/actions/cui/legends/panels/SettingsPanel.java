@@ -49,7 +49,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.*;
 
 /**
- * Settings panel for classification UIs.
+ * Value and Interval Classification settings panel.
  *
  * @author Adam Gouge
  */

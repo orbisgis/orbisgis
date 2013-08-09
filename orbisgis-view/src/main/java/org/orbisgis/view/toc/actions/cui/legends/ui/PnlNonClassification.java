@@ -5,7 +5,8 @@ import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.xnap.commons.i18n.I18n;
 
 /**
- * Root class for non-classification UIs.
+ * Root class for non-classification UIs. (That is, everything other than Value
+ * and Interval Classifications).
  *
  * @author Adam Gouge
  */

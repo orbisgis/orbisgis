@@ -43,7 +43,8 @@ import org.orbisgis.legend.thematic.recode.RecodedPoint;
 import org.orbisgis.legend.thematic.uom.SymbolUom;
 
 /**
- * Helper class for legend UIs.
+ * Helper class for legend UIs, used to get a new fallback symbolizer based on
+ * a given legend.
  *
  * @author Adam Gouge
  * @author Alexis Guéganno

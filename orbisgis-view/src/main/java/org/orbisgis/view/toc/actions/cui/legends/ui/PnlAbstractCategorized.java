@@ -32,7 +32,7 @@ import java.util.SortedSet;
 import static org.orbisgis.core.renderer.se.parameter.Categorize.CategorizeMethod;
 
 /**
- * Base class for Interval Classification UIs.
+ * Root class for Interval Classifications.
  *
  * @author Alexis Guéganno
  */

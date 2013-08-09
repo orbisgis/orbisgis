@@ -12,7 +12,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.*;
 
 /**
- * Settings panel for Proportional Point.
+ * "Proportional Point" settings panel.
  *
  * @author Adam Gouge
  */

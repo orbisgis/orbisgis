@@ -42,7 +42,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.*;
 
 /**
- * Unique Symbol - Line settings panel.
+ * "Unique Symbol - Line" settings panel.
  *
  * @author Adam Gouge
  */

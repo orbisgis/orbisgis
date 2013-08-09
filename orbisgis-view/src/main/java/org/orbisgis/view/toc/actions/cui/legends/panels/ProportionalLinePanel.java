@@ -14,7 +14,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.*;
 
 /**
- * Settings panel for Proportional Line.
+ * "Proportional Line" settings panel.
  *
  * @author Adam Gouge
  */

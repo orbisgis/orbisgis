@@ -66,7 +66,7 @@ import java.util.HashSet;
 import java.util.TreeSet;
 
 /**
- * Base class for Value Classification UIs.
+ * Root class for Value Classifications.
  *
  * @author alexis
  */

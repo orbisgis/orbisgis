@@ -37,8 +37,10 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Some useful methods that will be available for all thematic panels.
+ * Root class for UIs in the Simple Style Editor.
+ *
  * @author alexis
+ * @author Adam Gouge
  */
 public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel {
 

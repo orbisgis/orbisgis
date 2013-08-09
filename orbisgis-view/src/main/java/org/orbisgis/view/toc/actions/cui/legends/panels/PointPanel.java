@@ -38,7 +38,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.*;
 
 /**
- * Unique Symbol - Point settings panel.
+ * "Unique Symbol - Point" settings panel.
  *
  * @author Adam Gouge
  */

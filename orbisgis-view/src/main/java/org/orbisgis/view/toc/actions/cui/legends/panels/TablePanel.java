@@ -48,7 +48,7 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 
 /**
- * The table panel used in Value and Interval Classifications.
+ * Value and Interval Classification table panel.
  *
  * @see org.orbisgis.view.toc.actions.cui.legends.ui.PnlAbstractTableAnalysis
  *

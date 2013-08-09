@@ -41,7 +41,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.*;
 
 /**
- * Unique Symbol - Area settings panel.
+ * "Unique Symbol - Area" settings panel.
  *
  * @author Adam Gouge
  */

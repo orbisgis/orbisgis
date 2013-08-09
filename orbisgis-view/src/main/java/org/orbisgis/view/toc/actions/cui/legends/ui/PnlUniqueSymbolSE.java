@@ -34,7 +34,7 @@ import org.orbisgis.sif.UIPanel;
 import java.net.URL;
 
 /**
- * Base class for "Unique Symbol" UIs.
+ * Root class for unique symbol UIs.
  *
  * @author Alexis Guéganno
  * @author Adam Gouge
