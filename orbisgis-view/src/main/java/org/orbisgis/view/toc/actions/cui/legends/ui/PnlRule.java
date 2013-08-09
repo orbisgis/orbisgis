@@ -37,10 +37,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.beans.EventHandler;
 
 /**
@@ -59,6 +56,8 @@ public class PnlRule extends JPanel implements ISELegendPanel {
         private Rule rule;
         private LegendContext legendContext;
         private String id;
+
+        private boolean descriptionAlreadyFocused = false;
 
         /**
          * Create a new {@code PnlRule} with the given {@code LegendContext}.
@@ -110,6 +109,20 @@ public class PnlRule extends JPanel implements ISELegendPanel {
                 txtDescription.setRows(6);
                 txtDescription.setLineWrap(true);
                 txtDescription.setWrapStyleWord(true);
+                txtDescription.addFocusListener(new FocusAdapter() {
+                    @Override
+                    public void focusGained(FocusEvent e) {
+                        if (!descriptionAlreadyFocused) {
+                            JOptionPane.showMessageDialog(
+                                    null,
+                                    "It is not yet possible to save descriptions.\n" +
+                                            "See https://github.com/irstv/orbisgis/issues/486.",
+                                    "Warning",
+                                    JOptionPane.WARNING_MESSAGE);
+                            descriptionAlreadyFocused = true;
+                        }
+                    }
+                });
                 txtDescription.addFocusListener(
                         EventHandler.create(FocusListener.class, this,
                                 "setDescription", "source.text", "focusLost"));
