@@ -32,13 +32,9 @@ import net.miginfocom.swing.MigLayout;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legends.ui.AbstractFieldPanel;
 import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Root class for unique symbol and proportional panels.
@@ -50,6 +46,36 @@ public abstract class AbsPanel extends JPanel {
     protected LegendStructure legend;
     protected CanvasSE preview;
 
+    public static final String OPACITY = I18n.marktr("Opacity");
+    public static final String WIDTH = I18n.marktr("Width");
+    public static final String HEIGHT = I18n.marktr("Height");
+    public static final String SYMBOL = I18n.marktr("Symbol");
+    public static final String DASH_ARRAY = I18n.marktr("Dash array");
+    public static final String FIELD = I18n.marktr("<html><b>Field</b></html>");
+    public static final String LINE_WIDTH_UNIT = I18n.marktr("Line width unit");
+    public static final String SYMBOL_SIZE_UNIT = I18n.marktr("Symbol size unit");
+    public static final String PLACE_SYMBOL_ON = I18n.marktr(
+            "<html><p style=\"text-align:right\">Place symbol<br>on</p></html>");
+    /**
+     * Width of the second column in pixels.
+     */
+    private static final int SECOND_COL_WIDTH = 95;
+    /**
+     * Constraints for ComboBoxes for sizing consistency.
+     */
+    public static final String COMBO_BOX_CONSTRAINTS =
+            "width " + SECOND_COL_WIDTH + "!";
+    /**
+     * MigLayout constraints for sizing consistency.
+     */
+    public static final String COLUMN_CONSTRAINTS =
+            "[align r, 110::][align c, "
+                    + SECOND_COL_WIDTH + ":" + SECOND_COL_WIDTH + ":]";
+    /**
+     * Fixed width for panels that need it.
+     */
+    public static final int FIXED_WIDTH = 210;
+
     /**
      * Constructor
      *
@@ -60,7 +86,7 @@ public abstract class AbsPanel extends JPanel {
     public AbsPanel(LegendStructure legend,
                     CanvasSE preview,
                     String title) {
-        super(new MigLayout("wrap 2", AbstractFieldPanel.COLUMN_CONSTRAINTS));
+        super(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
         setBorder(BorderFactory.createTitledBorder(title));
         this.legend = legend;
         this.preview = preview;

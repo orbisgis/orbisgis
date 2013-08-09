@@ -30,7 +30,6 @@ package org.orbisgis.view.toc.actions.cui.legends.panels;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legends.ui.AbstractFieldPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -51,7 +50,7 @@ public class PreviewPanel extends JPanel {
      * @param preview Preview
      */
     public PreviewPanel(CanvasSE preview) {
-        super(new MigLayout("wrap 1", "[" + AbstractFieldPanel.FIXED_WIDTH + "]"));
+        super(new MigLayout("wrap 1", "[" + AbsPanel.FIXED_WIDTH + "]"));
         setBorder(BorderFactory.createTitledBorder(I18N.tr("Preview")));
         add(preview, "align c");
     }

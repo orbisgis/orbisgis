@@ -36,7 +36,6 @@ import org.orbisgis.legend.thematic.constant.IUniqueSymbolLine;
 import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.components.*;
-import org.orbisgis.view.toc.actions.cui.legends.ui.AbstractFieldPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -121,17 +120,17 @@ public class LinePanel extends AbsOptionalPanel {
         add(colorLabel);
         // Unit of measure - line width
         if (displayUom) {
-            add(new JLabel(I18N.tr(AbstractFieldPanel.LINE_WIDTH_UNIT)));
-            add(lineUOMComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+            add(new JLabel(I18N.tr(LINE_WIDTH_UNIT)));
+            add(lineUOMComboBox, COMBO_BOX_CONSTRAINTS);
         }
         // Line width
-        add(new JLabel(I18N.tr(AbstractFieldPanel.WIDTH)));
+        add(new JLabel(I18N.tr(WIDTH)));
         add(lineWidthSpinner, "growx");
         // Line opacity
-        add(new JLabel(I18N.tr(AbstractFieldPanel.OPACITY)));
+        add(new JLabel(I18N.tr(OPACITY)));
         add(lineOpacitySpinner, "growx");
         // Dash array
-        add(new JLabel(I18N.tr(AbstractFieldPanel.DASH_ARRAY)));
+        add(new JLabel(I18N.tr(DASH_ARRAY)));
         add(dashArrayField, "growx");
     }
 

@@ -6,7 +6,6 @@ import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.components.*;
-import org.orbisgis.view.toc.actions.cui.legends.ui.AbstractFieldPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -80,14 +79,14 @@ public class ProportionalPointPanel extends AbsPanel {
     @Override
     protected void addComponents() {
         // Field
-        add(new JLabel(I18N.tr(AbstractFieldPanel.FIELD)));
-        add(pPointFieldsComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+        add(new JLabel(I18N.tr(FIELD)));
+        add(pPointFieldsComboBox, COMBO_BOX_CONSTRAINTS);
         // Unit of measure - symbol size
-        add(new JLabel(I18N.tr(AbstractFieldPanel.SYMBOL_SIZE_UNIT)));
-        add(symbolUOMComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+        add(new JLabel(I18N.tr(SYMBOL_SIZE_UNIT)));
+        add(symbolUOMComboBox, COMBO_BOX_CONSTRAINTS);
         // Symbol
-        add(new JLabel(I18N.tr(AbstractFieldPanel.SYMBOL)));
-        add(wknComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+        add(new JLabel(I18N.tr(SYMBOL)));
+        add(wknComboBox, COMBO_BOX_CONSTRAINTS);
         // Max size
         add(new JLabel(I18N.tr("Max. size")));
         add(maxSizeSpinner, "growx");
@@ -97,7 +96,7 @@ public class ProportionalPointPanel extends AbsPanel {
         // If geometryType != POINT, we must let the user choose if he
         // wants to draw symbols on centroid or on vertices.
         if (geometryType != SimpleGeometryType.POINT) {
-            add(new JLabel(I18N.tr(AbstractFieldPanel.PLACE_SYMBOL_ON)), "span 1 2");
+            add(new JLabel(I18N.tr(PLACE_SYMBOL_ON)), "span 1 2");
             add(onVertexOnCentroidPanel, "span 1 2");
         }
     }

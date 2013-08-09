@@ -17,6 +17,7 @@ import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legends.components.ColorConfigurationPanel;
 import org.orbisgis.view.toc.actions.cui.legends.components.ColorScheme;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelInterval;
+import org.orbisgis.view.toc.actions.cui.legends.panels.AbsPanel;
 import org.orbisgis.view.toc.actions.cui.legends.stats.Thresholds;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -114,7 +115,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         inner.add(numberCombo, "split 2");
         inner.add(createCl, "gapleft push");
 
-        JPanel outside = new JPanel(new MigLayout("wrap 1", "[" + FIXED_WIDTH + ", align c]"));
+        JPanel outside = new JPanel(new MigLayout("wrap 1", "[" + AbsPanel.FIXED_WIDTH + ", align c]"));
         outside.setBorder(BorderFactory.createTitledBorder(
                 I18N.tr(CLASSIFICATION_SETTINGS)));
         if(colorConfig == null){

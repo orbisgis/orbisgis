@@ -35,7 +35,6 @@ import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.components.ColorLabel;
 import org.orbisgis.view.toc.actions.cui.legends.components.LineOpacitySpinner;
-import org.orbisgis.view.toc.actions.cui.legends.ui.AbstractFieldPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -95,7 +94,7 @@ public class AreaPanel extends AbsOptionalPanel {
         // Color
         add(colorLabel);
         // Opacity
-        add(new JLabel(I18N.tr(AbstractFieldPanel.OPACITY)));
+        add(new JLabel(I18N.tr(OPACITY)));
         add(fillOpacitySpinner, "growx");
     }
 

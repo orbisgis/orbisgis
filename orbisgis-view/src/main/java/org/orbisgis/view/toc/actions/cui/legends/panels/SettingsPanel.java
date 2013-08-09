@@ -43,7 +43,6 @@ import org.orbisgis.legend.thematic.recode.RecodedPoint;
 import org.orbisgis.legend.thematic.uom.SymbolUom;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.components.*;
-import org.orbisgis.view.toc.actions.cui.legends.ui.AbstractFieldPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -69,7 +68,7 @@ public class SettingsPanel<K, U extends LineParameters> extends JPanel {
                          DataSource dataSource,
                          CanvasSE preview,
                          TablePanel<K, U> tablePanel) {
-        super(new MigLayout("wrap 2", AbstractFieldPanel.COLUMN_CONSTRAINTS));
+        super(new MigLayout("wrap 2", AbsPanel.COLUMN_CONSTRAINTS));
         this.legend = legend;
         this.preview = preview;
         this.tablePanel = tablePanel;
@@ -96,13 +95,13 @@ public class SettingsPanel<K, U extends LineParameters> extends JPanel {
         setBorder(BorderFactory.createTitledBorder(I18N.tr("General settings")));
 
         // Field chooser
-        add(new JLabel(I18N.tr(AbstractFieldPanel.FIELD)));
+        add(new JLabel(I18N.tr(AbsPanel.FIELD)));
 
-        add(fieldComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+        add(fieldComboBox, AbsPanel.COMBO_BOX_CONSTRAINTS);
 
         // Unit of measure - line width
-        add(new JLabel(I18N.tr(AbstractFieldPanel.LINE_WIDTH_UNIT)));
-        add(lineUOMComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+        add(new JLabel(I18N.tr(AbsPanel.LINE_WIDTH_UNIT)));
+        add(lineUOMComboBox, AbsPanel.COMBO_BOX_CONSTRAINTS);
 
         beforeFallbackSymbol();
 
@@ -113,11 +112,11 @@ public class SettingsPanel<K, U extends LineParameters> extends JPanel {
 
     private void beforeFallbackSymbol() {
         if (point()) {
-            add(new JLabel(I18N.tr(AbstractFieldPanel.SYMBOL_SIZE_UNIT)));
+            add(new JLabel(I18N.tr(AbsPanel.SYMBOL_SIZE_UNIT)));
             add(new SymbolUOMComboBox<K, U>((SymbolUom) legend, preview, tablePanel),
-                    AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+                    AbsPanel.COMBO_BOX_CONSTRAINTS);
 
-            add(new JLabel(I18N.tr(AbstractFieldPanel.PLACE_SYMBOL_ON)), "span 1 2");
+            add(new JLabel(I18N.tr(AbsPanel.PLACE_SYMBOL_ON)), "span 1 2");
             add(new OnVertexOnCentroidPanel((OnVertexOnCentroid) legend, preview, tablePanel),
                     "span 1 2");
         }

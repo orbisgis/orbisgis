@@ -89,8 +89,10 @@ public class ColorConfigurationPanel extends JPanel {
     }
 
     /**
-     * Get a JLabel of dimensions {@link PnlUniqueSymbolSE#FILLED_LABEL_WIDTH} and {@link PnlUniqueSymbolSE#FILLED_LABEL_HEIGHT}
-     * opaque and with a background of Color {@code c}.
+     * Get a JLabel of dimensions {@link ColorLabel#FILLED_LABEL_WIDTH} and
+     * {@link ColorLabel#FILLED_LABEL_HEIGHT} opaque and with a background of
+     * Color {@code c}.
+     *
      * @param c The background color of the label we want.
      * @return the label with c as a background colour.
      */
@@ -98,8 +100,8 @@ public class ColorConfigurationPanel extends JPanel {
         JLabel lblFill = new JLabel();
         lblFill.setBackground(c);
         lblFill.setBorder(BorderFactory.createLineBorder(Color.black));
-        lblFill.setPreferredSize(new Dimension(PnlUniqueSymbolSE.FILLED_LABEL_HEIGHT, PnlUniqueSymbolSE.FILLED_LABEL_HEIGHT));
-        lblFill.setMaximumSize(new Dimension(PnlUniqueSymbolSE.FILLED_LABEL_HEIGHT, PnlUniqueSymbolSE.FILLED_LABEL_HEIGHT));
+        lblFill.setPreferredSize(new Dimension(ColorLabel.FILLED_LABEL_HEIGHT, ColorLabel.FILLED_LABEL_HEIGHT));
+        lblFill.setMaximumSize(new Dimension(ColorLabel.FILLED_LABEL_HEIGHT, ColorLabel.FILLED_LABEL_HEIGHT));
         lblFill.setOpaque(true);
         MouseListener ma = EventHandler.create(MouseListener.class, this, "chooseFillColor", "", "mouseClicked");
         lblFill.addMouseListener(ma);

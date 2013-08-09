@@ -48,11 +48,11 @@ public interface ILegendPanel extends ISELegendPanel {
      */
     void initialize(LegendContext lc, Legend leg);
 
-	/**
-	 * It will return the Legend created by all the variables in the panel.
-	 * 
-	 * @return Legend
-	 */
+    /**
+     * Gets the legend we want to edit.
+     *
+     * @return The legend to edit.
+     */
 	Legend getLegend();
 
 	/**

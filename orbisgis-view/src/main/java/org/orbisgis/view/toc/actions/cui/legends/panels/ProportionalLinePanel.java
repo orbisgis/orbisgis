@@ -7,7 +7,6 @@ import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.components.*;
-import org.orbisgis.view.toc.actions.cui.legends.ui.AbstractFieldPanel;
 import org.orbisgis.view.toc.actions.cui.legends.ui.PnlUniqueLineSE;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -78,14 +77,14 @@ public class ProportionalLinePanel extends AbsPanel {
     @Override
     protected void addComponents() {
         // Field
-        add(new JLabel(I18N.tr(AbstractFieldPanel.FIELD)));
-        add(pLineFieldsComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+        add(new JLabel(I18N.tr(FIELD)));
+        add(pLineFieldsComboBox, COMBO_BOX_CONSTRAINTS);
         // Color
         add(new JLabel(I18N.tr("Color")));
         add(colorLabel);
         // Unit of Measure - line width
-        add(new JLabel(I18N.tr(AbstractFieldPanel.LINE_WIDTH_UNIT)));
-        add(lineUOMComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+        add(new JLabel(I18N.tr(LINE_WIDTH_UNIT)));
+        add(lineUOMComboBox, COMBO_BOX_CONSTRAINTS);
         // Max width
         add(new JLabel(I18N.tr("Max width")));
         add(maxSizeSpinner, "growx");
@@ -93,10 +92,10 @@ public class ProportionalLinePanel extends AbsPanel {
         add(new JLabel(I18N.tr("Min width")));
         add(minSizeSpinner, "growx");
         // Opacity
-        add(new JLabel(I18N.tr(AbstractFieldPanel.OPACITY)));
+        add(new JLabel(I18N.tr(OPACITY)));
         add(lineOpacitySpinner, "growx");
         // Dash array
-        add(new JLabel(I18N.tr(AbstractFieldPanel.DASH_ARRAY)));
+        add(new JLabel(I18N.tr(DASH_ARRAY)));
         add(dashArrayField, "growx");
     }
 }

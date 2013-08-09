@@ -49,6 +49,7 @@ import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legends.components.ColorConfigurationPanel;
 import org.orbisgis.view.toc.actions.cui.legends.components.ColorScheme;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelUniqueValue;
+import org.orbisgis.view.toc.actions.cui.legends.panels.AbsPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -158,7 +159,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
     @Override
     public JPanel getCreateClassificationPanel() {
         if(classifPanel == null){
-            classifPanel = new JPanel(new MigLayout("wrap 1", "[" + FIXED_WIDTH + "]"));
+            classifPanel = new JPanel(new MigLayout("wrap 1", "[" + AbsPanel.FIXED_WIDTH + "]"));
             classifPanel.setBorder(BorderFactory.createTitledBorder(
                     I18N.tr(CLASSIFICATION_SETTINGS)));
 
