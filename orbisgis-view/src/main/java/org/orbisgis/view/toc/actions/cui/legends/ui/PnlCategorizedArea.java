@@ -36,12 +36,23 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlCategorizedArea.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlCategorizedArea.class);
 
+    /**
+     * Builds a panel with a new legend.
+     *
+     * @param lc     LegendContext
+     */
     public PnlCategorizedArea(LegendContext lc) {
         this(lc, new CategorizedArea());
     }
 
-    public PnlCategorizedArea(LegendContext lc, CategorizedArea leg) {
-        super(lc, leg);
+    /**
+     * Builds a panel based on the given legend.
+     *
+     * @param lc     LegendContext
+     * @param legend Legend
+     */
+    public PnlCategorizedArea(LegendContext lc, CategorizedArea legend) {
+        super(lc, legend);
         initPreview();
         initializeLegendFields();
     }
@@ -74,7 +85,7 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
         }
         PnlUniqueAreaSE pls = new PnlUniqueAreaSE(usa, leg.isStrokeEnabled());
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
-            usa = (UniqueSymbolArea) pls.getLegend();
+            usa = pls.getLegend();
             AreaParameters nlp = usa.getAreaParameters();
             cse.setSymbol(usa.getSymbolizer());
             return nlp;
@@ -152,10 +163,5 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
         ret.setFallbackParameters(cl.getFallbackParameters());
         ret.setLookupFieldName(cl.getLookupFieldName());
         return ret;
-    }
-
-    @Override
-    public String validateInput() {
-        return "";
     }
 }

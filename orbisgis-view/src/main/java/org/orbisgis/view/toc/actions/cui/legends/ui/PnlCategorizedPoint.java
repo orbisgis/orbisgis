@@ -36,12 +36,23 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
     public static final Logger LOGGER = Logger.getLogger(PnlCategorizedPoint.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlCategorizedPoint.class);
 
+    /**
+     * Builds a panel with a new legend.
+     *
+     * @param lc     LegendContext
+     */
     public PnlCategorizedPoint(LegendContext lc) {
         this(lc, new CategorizedPoint());
     }
 
-    public PnlCategorizedPoint(LegendContext lc, CategorizedPoint leg) {
-        super(lc, leg);
+    /**
+     * Builds a panel based on the given legend.
+     *
+     * @param lc     LegendContext
+     * @param legend Legend
+     */
+    public PnlCategorizedPoint(LegendContext lc, CategorizedPoint legend) {
+        super(lc, legend);
         initPreview();
         initializeLegendFields();
     }
@@ -156,10 +167,5 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
         ret.setFallbackParameters(cl.getFallbackParameters());
         ret.setLookupFieldName(cl.getLookupFieldName());
         return ret;
-    }
-
-    @Override
-    public String validateInput() {
-        return "";
     }
 }

@@ -67,12 +67,23 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
 
     private String id;
 
+    /**
+     * Builds a panel with a new legend.
+     *
+     * @param lc     LegendContext
+     */
     public PnlRecodedPoint(LegendContext lc) {
         this(lc, new RecodedPoint());
     }
 
-    public PnlRecodedPoint(LegendContext lc, RecodedPoint leg) {
-        super(lc, leg);
+    /**
+     * Builds a panel based on the given legend.
+     *
+     * @param lc     LegendContext
+     * @param legend Legend
+     */
+    public PnlRecodedPoint(LegendContext lc, RecodedPoint legend) {
+        super(lc, legend);
         initPreview();
         initializeLegendFields();
     }
@@ -109,7 +120,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         UniqueSymbolPoint usa = getFallBackLegend();
         PnlUniquePointSE pls = new PnlUniquePointSE(usa, leg.isStrokeEnabled());
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
-            usa = (UniqueSymbolPoint) pls.getLegend();
+            usa = pls.getLegend();
             PointParameters nlp = usa.getPointParameters();
             cse.setSymbol(usa.getSymbolizer());
             return nlp;
@@ -199,10 +210,5 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     @Override
     public void setId(String newId) {
         id = newId;
-    }
-
-    @Override
-    public String validateInput() {
-        return "";
     }
 }

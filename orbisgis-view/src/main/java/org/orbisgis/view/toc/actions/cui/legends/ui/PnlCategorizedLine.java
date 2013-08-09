@@ -36,12 +36,23 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlCategorizedLine.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlCategorizedLine.class);
 
+    /**
+     * Builds a panel with a new legend.
+     *
+     * @param lc     LegendContext
+     */
     public PnlCategorizedLine(LegendContext lc) {
         this(lc, new CategorizedLine());
     }
 
-    public PnlCategorizedLine(LegendContext lc, CategorizedLine leg) {
-        super(lc, leg);
+    /**
+     * Builds a panel based on the given legend.
+     *
+     * @param lc     LegendContext
+     * @param legend Legend
+     */
+    public PnlCategorizedLine(LegendContext lc, CategorizedLine legend) {
+        super(lc, legend);
         initPreview();
         initializeLegendFields();
     }
@@ -71,7 +82,7 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
         usl.setStrokeUom(getLegend().getStrokeUom());
         PnlUniqueLineSE pls = new PnlUniqueLineSE(usl, false);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
-            usl = (UniqueSymbolLine) pls.getLegend();
+            usl = pls.getLegend();
             LineParameters nlp = usl.getLineParameters();
             cse.setSymbol(usl.getSymbolizer());
             return nlp;
@@ -150,10 +161,5 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
         ret.setFallbackParameters(cl.getFallbackParameters());
         ret.setLookupFieldName(cl.getLookupFieldName());
         return ret;
-    }
-
-    @Override
-    public String validateInput() {
-        return "";
     }
 }

@@ -76,12 +76,23 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     private static final I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
     private String id;
 
+    /**
+     * Builds a panel with a new legend.
+     *
+     * @param lc     LegendContext
+     */
     public PnlRecodedArea(LegendContext lc) {
         this(lc, new RecodedArea());
     }
 
-    public PnlRecodedArea(LegendContext lc, RecodedArea leg) {
-        super(lc, leg);
+    /**
+     * Builds a panel based on the given legend.
+     *
+     * @param lc     LegendContext
+     * @param legend Legend
+     */
+    public PnlRecodedArea(LegendContext lc, RecodedArea legend) {
+        super(lc, legend);
         initPreview();
         initializeLegendFields();
     }
@@ -94,11 +105,6 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
     @Override
     public void setId(String newId) {
         id = newId;
-    }
-
-    @Override
-    public String validateInput() {
-        return "";
     }
 
     /**
@@ -124,7 +130,7 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
         }
         PnlUniqueAreaSE pls = new PnlUniqueAreaSE(usa, leg.isStrokeEnabled());
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
-            usa = (UniqueSymbolArea) pls.getLegend();
+            usa = pls.getLegend();
             AreaParameters nlp = usa.getAreaParameters();
             cse.setSymbol(usa.getSymbolizer());
             return nlp;
@@ -168,15 +174,6 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
             ra.setStrokeEnabled(old.isStrokeEnabled());
         }
         return ra;
-    }
-
-    /**
-     * Used when the field against which the analysis is made changes.
-     *
-     * @param obj The new field.
-     */
-    public void updateField(String obj) {
-        (getLegend()).setLookupFieldName(obj);
     }
 
     @Override

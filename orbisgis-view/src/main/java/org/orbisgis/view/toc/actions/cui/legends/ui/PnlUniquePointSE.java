@@ -30,7 +30,6 @@ package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
@@ -56,28 +55,58 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
         private int geometryType = SimpleGeometryType.ALL;
 
         private boolean uom;
-        private boolean displayStroke;
+        private boolean enableArea;
 
+        /**
+         * Builds a panel based on a new legend.
+         *
+         * @param lc     LegendContext
+         */
         public PnlUniquePointSE(LegendContext lc) {
             this(lc, new UniqueSymbolPoint());
         }
 
+        /**
+         * Builds a panel based on the given legend, displaying the UOM and
+         * the Enable Area checkbox.
+         *
+         * @param lc     LegendContext
+         * @param legend Legend
+         */
         public PnlUniquePointSE(LegendContext lc, UniqueSymbolPoint legend) {
             this(lc, legend, true, true);
         }
 
+        /**
+         * Builds a panel based on the given legend, hiding the UOM and
+         * optionally displaying the Enable Area checkbox.
+         *
+         * @param legend        Legend
+         * @param enableArea    True if the Enable Area checkbox should be
+         *                      displayed
+         */
         public PnlUniquePointSE(UniqueSymbolPoint legend,
-                                boolean displayStroke) {
-            this(null, legend, false, displayStroke);
+                                boolean enableArea) {
+            this(null, legend, false, enableArea);
         }
 
+        /**
+         * Builds a panel based on the given legend, optionally displaying
+         * the UOM and the Enable Area checkbox.
+         *
+         * @param lc            LegendContext
+         * @param legend        Legend
+         * @param uom           True if the UOM should be displayed
+         * @param enableArea    True if the Enable Area checkbox should be
+         *                      displayed
+         */
         private PnlUniquePointSE(LegendContext lc,
                                 UniqueSymbolPoint legend,
                                 boolean uom,
-                                boolean displayStroke) {
+                                boolean enableArea) {
             this.uniquePoint = legend;
             this.uom = uom;
-            this.displayStroke = displayStroke;
+            this.enableArea = enableArea;
             if (lc != null) {
                 this.geometryType = lc.getGeometryType();
             }
@@ -131,7 +160,7 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
                 glob.add(new AreaPanel(uniquePoint,
                         getPreview(),
                         I18N.tr(FILL_SETTINGS),
-                        displayStroke));
+                        enableArea));
 
                 glob.add(new PreviewPanel(getPreview()), "growx");
 

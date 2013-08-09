@@ -16,7 +16,7 @@ public abstract class PnlProportional extends PnlNonClassification {
     protected DataSource ds;
 
     /**
-     * Constructor
+     * Obtains the DataSource attached to the LegendContext's layer.
      *
      * @param lc LegendContext from which to obtain the DataSource.
      */

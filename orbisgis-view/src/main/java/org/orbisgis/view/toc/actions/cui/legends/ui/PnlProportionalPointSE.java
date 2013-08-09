@@ -69,10 +69,21 @@ public class PnlProportionalPointSE extends PnlProportional {
         private int geometryType = SimpleGeometryType.ALL;
         MouseListener l;
 
+        /**
+         * Builds a panel based on a new legend.
+         *
+         * @param lc LegendContext
+         */
         public PnlProportionalPointSE(LegendContext lc) {
             this(lc, new ProportionalPoint());
         }
 
+        /**
+         * Builds a panel based on the given legend.
+         *
+         * @param lc     LegendContext
+         * @param legend Legend
+         */
         public PnlProportionalPointSE(LegendContext lc, ProportionalPoint legend) {
             super(lc);
             this.proportionalPoint = legend;

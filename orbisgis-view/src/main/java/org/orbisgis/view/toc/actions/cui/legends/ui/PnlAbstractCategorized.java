@@ -50,6 +50,12 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
     private WideComboBox methodCombo;
     private DefaultComboBoxModel comboModel;
 
+    /**
+     * Contructor
+     *
+     * @param lc     LegendContext
+     * @param legend Legend
+     */
     public PnlAbstractCategorized(LegendContext lc,
                                   AbstractCategorizedLegend<U> legend) {
         super(lc, legend);

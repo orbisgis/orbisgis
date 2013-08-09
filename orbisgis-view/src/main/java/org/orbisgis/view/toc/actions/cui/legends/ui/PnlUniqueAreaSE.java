@@ -56,19 +56,40 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
         private boolean displayUOM;
         protected boolean isAreaOptional;
 
+        /**
+         * Builds a panel based on a new legend.
+         */
         public PnlUniqueAreaSE() {
             this(new UniqueSymbolArea());
         }
 
+        /**
+         * Builds a panel based on the given legend, displaying the UOM and the
+         * Enable Area checkbox.
+         *
+         * @param legend Legend
+         */
         public PnlUniqueAreaSE(UniqueSymbolArea legend) {
             this(legend, true, true);
         }
 
+        /**
+         * Builds a panel based on the given legend, hiding the UOM and optionally
+         * displaying the Enable Area checkbox.
+         *
+         * @param legend Legend
+         */
         public PnlUniqueAreaSE(UniqueSymbolArea legend,
                                boolean isAreaOptional){
             this(legend, false, isAreaOptional);
         }
 
+        /**
+         * Builds a panel based on the given legend, optionally displaying the
+         * UOM and the Enable Area checkbox.
+         *
+         * @param legend Legend
+         */
         private PnlUniqueAreaSE(UniqueSymbolArea legend,
                                 boolean uom,
                                 boolean isAreaOptional){

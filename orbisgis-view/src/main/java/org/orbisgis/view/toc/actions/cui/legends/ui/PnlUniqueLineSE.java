@@ -56,14 +56,29 @@ public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private UniqueSymbolLine uniqueLine;
         private final boolean displayUom;
 
+        /**
+         * Builds a panel based on a new legend.
+         */
         public PnlUniqueLineSE() {
             this(new UniqueSymbolLine());
         }
 
+        /**
+         * Builds a panel based on the given legend, displaying the UOM.
+         *
+         * @param legend Legend
+         */
         public PnlUniqueLineSE(UniqueSymbolLine legend) {
             this(legend, true);
         }
 
+        /**
+         * Builds a panel based on the given legend, optionally displaying the
+         * UOM.
+         *
+         * @param legend Legend
+         * @param uom    True if the UOM should be displayed
+         */
         public PnlUniqueLineSE(UniqueSymbolLine legend, boolean uom){
             this.uniqueLine = legend;
             this.displayUom = uom;

@@ -40,6 +40,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     public static final Logger LOGGER = Logger.getLogger(PnlAbstractTableAnalysis.class);
 
     private MappedLegend<K,U> legend;
+    private DataSource ds;
     private SettingsPanel<K, U> settingsPanel;
     protected CanvasSE fallbackPreview;
     protected TablePanel<K, U> tablePanel;
@@ -51,9 +52,15 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     public static final String ENABLE_BORDER = I18n.marktr("Enable border");
     protected static final String CLASSIFICATION_SETTINGS = I18n.marktr("Classification settings");
 
-    private DataSource ds;
-
-    public PnlAbstractTableAnalysis(LegendContext lc, MappedLegend<K,U> legend) {
+    /**
+     * Sets the DataSource to the LegendContext's layer's DataSource and keeps
+     * a reference to the given legend.
+     *
+     * @param lc     LegendContext
+     * @param legend Legend
+     */
+    public PnlAbstractTableAnalysis(LegendContext lc,
+                                    MappedLegend<K, U> legend) {
         this.ds = lc.getLayer().getDataSource();
         this.legend = legend;
     }
@@ -79,15 +86,6 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
      */
     public DataSource getDataSource() {
         return ds;
-    }
-
-    /**
-     * Used when the field against which the analysis is made changes.
-     *
-     * @param obj The new field.
-     */
-    public void updateField(String obj) {
-        legend.setLookupFieldName(obj);
     }
 
     @Override
@@ -365,5 +363,10 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
      */
     public String getFieldName() {
         return settingsPanel.getSelectedField();
+    }
+
+    @Override
+    public String validateInput() {
+        return null;
     }
 }

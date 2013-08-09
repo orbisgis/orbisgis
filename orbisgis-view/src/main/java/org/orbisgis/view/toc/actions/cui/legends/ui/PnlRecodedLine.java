@@ -75,19 +75,25 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlRecodedLine.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
 
+    /**
+     * Builds a panel with a new legend.
+     *
+     * @param lc     LegendContext
+     */
     public PnlRecodedLine(LegendContext lc) {
         this(lc, new RecodedLine());
     }
 
-    public PnlRecodedLine(LegendContext lc, RecodedLine leg) {
-        super(lc, leg);
+    /**
+     * Builds a panel based on the given legend.
+     *
+     * @param lc     LegendContext
+     * @param legend Legend
+     */
+    public PnlRecodedLine(LegendContext lc, RecodedLine legend) {
+        super(lc, legend);
         initPreview();
         initializeLegendFields();
-    }
-
-    @Override
-    public String validateInput() {
-        return "";
     }
 
     /**
@@ -110,7 +116,7 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
         usl.setStrokeUom(getLegend().getStrokeUom());
         PnlUniqueLineSE pls = new PnlUniqueLineSE(usl, false);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
-            usl = (UniqueSymbolLine) pls.getLegend();
+            usl = pls.getLegend();
             LineParameters nlp = usl.getLineParameters();
             cse.setSymbol(usl.getSymbolizer());
             return nlp;

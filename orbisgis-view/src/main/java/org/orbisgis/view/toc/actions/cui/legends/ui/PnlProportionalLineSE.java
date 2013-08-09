@@ -51,14 +51,25 @@ import javax.swing.*;
 public class PnlProportionalLineSE extends PnlProportional {
 
         private static final I18n I18N = I18nFactory.getI18n(PnlProportionalLineSE.class);
-        private static final Logger LOGGER = Logger.getLogger("gui."+PnlProportionalLineSE.class);
+        private static final Logger LOGGER = Logger.getLogger(PnlProportionalLineSE.class);
 
         private ProportionalLine proportionalLine;
 
+        /**
+         * Builds a panel based on a new legend.
+         *
+         * @param lc LegendContext
+         */
         public PnlProportionalLineSE(LegendContext lc) {
             this(lc, new ProportionalLine());
         }
 
+        /**
+         * Builds a panel based on the given legend.
+         *
+         * @param lc     LegendContext
+         * @param legend Legend
+         */
         public PnlProportionalLineSE(LegendContext lc, ProportionalLine legend) {
             super(lc);
             this.proportionalLine = legend;

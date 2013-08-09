@@ -82,9 +82,15 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
     private static final String COMPUTED = "Computed";
     protected final static String JOB_NAME = "recodeSelectDistinct";
 
+    /**
+     * Contructor
+     *
+     * @param lc     LegendContext
+     * @param legend Legend
+     */
     public PnlAbstractUniqueValue(LegendContext lc,
-                                  AbstractRecodedLegend<U> leg) {
-        super(lc, leg);
+                                  AbstractRecodedLegend<U> legend) {
+        super(lc, legend);
     }
 
     /**
@@ -94,7 +100,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
      * @return A fresh unique value analysis.
      */
     public AbstractRecodedLegend<U> createConstantClassification(TreeSet<String> set, ProgressMonitor pm) {
-        U lp = ((MappedLegend<String,U>)getLegend()).getFallbackParameters();
+        U lp = getLegend().getFallbackParameters();
         AbstractRecodedLegend<U> newRL = (AbstractRecodedLegend<U>) getEmptyAnalysis();
         newRL.setComparator(getComparator());
         newRL.setFallbackParameters(lp);
