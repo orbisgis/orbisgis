@@ -95,8 +95,14 @@ public class SettingsPanel<K, U extends LineParameters> extends JPanel {
         setBorder(BorderFactory.createTitledBorder(I18N.tr("General settings")));
 
         // Field chooser
-        add(new JLabel(I18N.tr(AbsPanel.FIELD)));
-
+        if (legend instanceof AbstractCategorizedLegend) {
+            add(new JLabel(I18N.tr(AbsPanel.NUMERIC_FIELD)));
+        } else if (legend instanceof AbstractRecodedLegend) {
+            add(new JLabel(I18N.tr(AbsPanel.NONSPATIAL_FIELD)));
+        } else {
+            throw new IllegalStateException("Settings panels are only available" +
+                    " for Classifications for now.");
+        }
         add(fieldComboBox, AbsPanel.COMBO_BOX_CONSTRAINTS);
 
         // Unit of measure - line width

@@ -79,7 +79,7 @@ public class ProportionalPointPanel extends AbsPanel {
     @Override
     protected void addComponents() {
         // Field
-        add(new JLabel(I18N.tr(FIELD)));
+        add(new JLabel(I18N.tr(NUMERIC_FIELD)));
         add(pPointFieldsComboBox, COMBO_BOX_CONSTRAINTS);
         // Unit of measure - symbol size
         add(new JLabel(I18N.tr(SYMBOL_SIZE_UNIT)));

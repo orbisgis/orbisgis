@@ -77,7 +77,7 @@ public class ProportionalLinePanel extends AbsPanel {
     @Override
     protected void addComponents() {
         // Field
-        add(new JLabel(I18N.tr(FIELD)));
+        add(new JLabel(I18N.tr(NUMERIC_FIELD)));
         add(pLineFieldsComboBox, COMBO_BOX_CONSTRAINTS);
         // Color
         add(new JLabel(I18N.tr("Color")));

@@ -2,16 +2,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-19 16:36+0100\n"
-"PO-Revision-Date: 2013-07-22 09:57+0100\n"
-"Last-Translator: Alexis Guéganno <alexis.gueganno@ec-nantes.fr>\n"
+"POT-Creation-Date: 2013-08-09 11:33+0100\n"
+"PO-Revision-Date: 2013-08-09 11:34+0100\n"
+"Last-Translator: Adam Gouge <adam.gouge@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.5.5\n"
 "X-Poedit-KeywordsList: tr;trc;trnc;marktr;trn\n"
 "X-Poedit-Basepath: ../../../../../..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -454,25 +454,16 @@ msgstr "Erreur pendant le dessin de l'objet"
 msgid "Cannot change the layer name"
 msgstr "Impossible de changer le nom de la couche"
 
-#: java/org/orbisgis/view/toc/actions/cui/NoPanel.java:55
-msgid "No suitable editor for this legend"
-msgstr "Aucun éditeur approprié pour cette légende"
-
-#: java/org/orbisgis/view/toc/actions/cui/NoPanel.java:64
-#: java/org/orbisgis/view/toc/actions/cui/NoPanel.java:69
-msgid "bug !"
-msgstr "Bug !"
-
-#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:192
+#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:188
 msgid "Add or select a legend."
 msgstr "Ajouter ou sélectionner une légende."
 
-#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:480
+#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:471
 #, java-format
 msgid "Simple Style Editor - {0}"
 msgstr "Éditeur de style simple - {0}"
 
-#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:486
+#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:477
 msgid "You must create at least one legend"
 msgstr "Vous devez créer au moins une légende"
 
@@ -496,22 +487,22 @@ msgstr "Symbole ponctuel"
 msgid "Text Symbolizer"
 msgstr "Symbole textuel"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:323
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:322
 msgid "Up"
 msgstr "Haut"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:331
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:330
 msgid "Down"
 msgstr "Bas"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:339
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractTableAnalysis.java:163
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:338
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/TablePanel.java:169
 #: java/org/orbisgis/view/geocatalog/Catalog.java:558
 #: java/org/orbisgis/view/components/gdms/ConstraintTableAction.java:194
 msgid "Add"
 msgstr "Ajouter"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:348
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:347
 #: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteMap.java:157
 #: java/org/orbisgis/view/map/mapsManager/TreeNodeMapCatalogServer.java:184
 #: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:123
@@ -521,20 +512,20 @@ msgstr "Ajouter"
 msgid "Delete"
 msgstr "Supprimer"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:356
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:355
 #: java/org/orbisgis/view/components/fstree/FileTree.java:166
 msgid "Rename"
 msgstr "Renommer"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:450
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:449
 msgid "Choose a name for your rule"
 msgstr "Choisissez un nom pour votre règle"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:451
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:450
 msgid "Name of the Rule : "
 msgstr "Nom de la règle :"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:458
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:457
 msgid "Rule name cannot be null or empty."
 msgstr "Le nom de règle ne peut pas être null ou vide"
 
@@ -554,272 +545,149 @@ msgstr "Vous devez sélectionner au moins une légende"
 msgid "Advanced Style Editor"
 msgstr "Éditeur de style avancé"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractTableAnalysis.java:56
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractTableAnalysis.java:53
 msgid "Enable border"
 msgstr "Activer le contour"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractTableAnalysis.java:57
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractTableAnalysis.java:54
 msgid "Classification settings"
 msgstr "Configuration de la classification"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractTableAnalysis.java:168
-msgid "Remove"
-msgstr "Supprimer"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractTableAnalysis.java:438
-msgid "General settings"
-msgstr "Paramètres généraux"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractTableAnalysis.java:453
-msgid "Fallback symbol"
-msgstr "Symbole par défaut"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRecodedPoint.java:199
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRecodedArea.java:263
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRecodedPoint.java:170
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRecodedArea.java:196
 msgid "You must use recognized RecodedArea instances inthis panel."
 msgstr ""
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRecodedPoint.java:260
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlCategorizedArea.java:220
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlCategorizedLine.java:191
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRecodedLine.java:136
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRecodedArea.java:147
-msgid "Classification field : "
-msgstr "Champs de classification : "
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlCategorizedPoint.java:159
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlCategorizedArea.java:145
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlCategorizedLine.java:126
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRecodedLine.java:239
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlCategorizedPoint.java:134
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlCategorizedArea.java:132
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlCategorizedLine.java:129
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRecodedLine.java:190
 msgid "You must use recognized RecodedLine instances inthis panel."
 msgstr ""
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:76
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlUniqueLineSE.java:54
 msgid "Line settings"
 msgstr "Configuration du contour"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:77
-msgid "Border settings"
-msgstr "Configuration du contour"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:78
-msgid "Mark settings"
-msgstr "Configuration du symbole"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:226
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueAreaSE.java:230
-msgid "Enable"
-msgstr "Activer"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueSymbolSE.java:86
-#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelUniqueValue.java:66
-#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelInterval.java:98
-msgid "Preview"
-msgstr "Aperçu"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueSymbolSE.java:160
-msgid "Could not validate your input."
-msgstr "Impossible de valider votre entrée."
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlStyle.java:77
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlStyle.java:74
 msgid "Style settings"
 msgstr "Configuration du style"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlStyle.java:79
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:88
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlStyle.java:76
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:98
 msgid "Title"
 msgstr "Titre"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLineSE.java:90
-msgid "The given legend isnot an instance of proportional line."
-msgstr "La légende spécifiée n'est pas une instance de ligne proportionnelle."
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLineSE.java:119
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlProportionalLineSE.java:100
 msgid "Could not copy the ProportionalLine."
 msgstr "Impossible de copier la ligne proportionnelle"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLineSE.java:188
-msgid "Color"
-msgstr "Couleur"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLineSE.java:198
-msgid "Max width"
-msgstr "Largeur max"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLineSE.java:201
-msgid "Min width"
-msgstr "Largeur min"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLineSE.java:222
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalPointSE.java:281
-msgid "Can't retrieve the maximum value of the symbol"
-msgstr "Impossible de retrouver la valeur maximale du symbole"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLineSE.java:240
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalPointSE.java:299
-msgid "Can't retrieve the minimum value of the symbol"
-msgstr "Impossible de retrouver la valeur minimale du symbole"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:71
-msgid "Unit of measure"
-msgstr "Unité de mesure"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:72
-msgid "Opacity"
-msgstr "Opacité"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:73
-msgid "Width"
-msgstr "Largeur"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:74
-msgid "Height"
-msgstr "Hauteur"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:75
-msgid "Symbol"
-msgstr "Symbole"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:76
-msgid "Dash array"
-msgstr "Tirets"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:77
-msgid "<html><b>Field</b></html>"
-msgstr "<html><p><b>Champs</b></p></html>"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:78
-msgid "Line width unit"
-msgstr "Unité (épaisseur)"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:79
-msgid "Symbol size unit"
-msgstr "Unité (symbole)"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:81
-msgid "<html><p style=\"text-align:right\">Place symbol<br>on</p></html>"
-msgstr ""
-"<html><p style=\"text-align:right\">Positionner le<br>symbole sur le</p></"
-"html>"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:99
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:75
 msgid "Interval classification"
 msgstr "Classification par intervalle"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:113
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:308
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:89
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:312
 msgid "The application has ended unexpectedly"
 msgstr "L'application a fermé de manière inattendue"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:128
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:180
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:103
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:189
 msgid "Create"
 msgstr "Créer"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:137
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:112
 msgid "Method"
 msgstr "Méthode"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:139
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:114
 msgid "Classes"
 msgstr "Classes"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:151
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:126
 msgid "Color scheme:"
 msgstr "Palette de couleurs :"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:127
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:138
 msgid "Can't build the analysis with an accurate comparator."
 msgstr "Aucun comparateur valable n'a pu être utilisé."
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:156
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:169
 msgid "Use the fallback color"
 msgstr "Couleur par défaut"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:160
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:173
 msgid "Use a color scheme:"
 msgstr "<html>Palette de couleurs :<html>"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:214
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:218
 msgid "Unique value classification"
 msgstr "Classification par valeur unique"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:287
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:291
 msgid "Retrieving classes"
 msgstr "Extraction des valeurs uniques"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:365
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:369
 msgid "Continue ?"
 msgstr "Continuer ?"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:378
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:382
 msgid "<html><p>The analysis seems to generate more than "
 msgstr "<html><p>L'analyse semble générer plus de"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:380
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:384
 msgid ""
 " different values...</p><p>Are you sure you want to continue ?</p></html>"
 msgstr ""
 " valeurs uniques.</p><p>Êtes-vous sûr de vouloir continuer ?</p></html>"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:406
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:410
 msgid "Operation in progress..."
 msgstr "Opération en cours ..."
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:85
-msgid "Rule settings"
-msgstr "Configuration de la règle"
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlNonClassification.java:17
+msgid "Border settings"
+msgstr "Configuration du contour"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:97
-msgid "Description"
-msgstr "Description"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:108
-msgid "Min. scale"
-msgstr "Échelle min"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:114
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:131
-msgid "Current"
-msgstr "Courante"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:127
-msgid "Max. scale"
-msgstr "Échelle max"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:230
-msgid "Min. scale is not a valid number"
-msgstr "L'échelle minimale n'est pas un chiffre valide"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:239
-msgid "Max. scale is not a valid number"
-msgstr "L'échelle maximale n'est pas un chiffre valide"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/OnVertexHelper.java:53
-msgid "Vertex"
-msgstr "Sommet"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/OnVertexHelper.java:54
-msgid "Centroid"
-msgstr "Centroïde"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueAreaSE.java:68
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlNonClassification.java:18
 msgid "Fill settings"
 msgstr "Configuration du remplissage"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalPointSE.java:166
-msgid "A valid numeric field must be selected !"
-msgstr "Un champ numérique valide doit être sélectionné !"
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlNonClassification.java:19
+msgid "Mark settings"
+msgstr "Configuration du symbole"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalPointSE.java:261
-msgid "Max. size"
-msgstr "Taille max"
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:95
+msgid "Rule settings"
+msgstr "Configuration de la règle"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalPointSE.java:264
-msgid "Min. size"
-msgstr "Taille min"
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:107
+msgid "Description"
+msgstr "Description"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalPointSE.java:363
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:132
+msgid "Min. scale"
+msgstr "Échelle min"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:138
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:155
+msgid "Current"
+msgstr "Courante"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:151
+msgid "Max. scale"
+msgstr "Échelle max"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:250
+msgid "Min. scale is not a valid number"
+msgstr "L'échelle minimale n'est pas un chiffre valide"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:259
+msgid "Max. scale is not a valid number"
+msgstr "L'échelle maximale n'est pas un chiffre valide"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlProportionalPointSE.java:195
 msgid "Stroke and fill settings"
 msgstr "Configuration de la ligne et du remplissage"
 
@@ -827,6 +695,12 @@ msgstr "Configuration de la ligne et du remplissage"
 #: java/org/orbisgis/view/components/gdms/ConstraintTableModel.java:114
 msgid "Value"
 msgstr "Valeur"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelUniqueValue.java:66
+#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelInterval.java:98
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/PreviewPanel.java:54
+msgid "Preview"
+msgstr "Aperçu"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelInterval.java:96
 msgid "Threshold"
@@ -836,15 +710,105 @@ msgstr "Seuil"
 msgid "Label"
 msgstr "Étiquette"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ColorConfigurationPanel.java:89
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/SettingsPanel.java:95
+msgid "General settings"
+msgstr "Paramètres généraux"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/SettingsPanel.java:116
+msgid "Fallback symbol"
+msgstr "Symbole par défaut"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsOptionalPanel.java:47
+msgid "Enable"
+msgstr "Activer"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/TablePanel.java:175
+msgid "Remove"
+msgstr "Supprimer"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ProportionalPointPanel.java:91
+msgid "Max. size"
+msgstr "Taille max"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ProportionalPointPanel.java:94
+msgid "Min. size"
+msgstr "Taille min"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:49
+msgid "Opacity"
+msgstr "Opacité"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:50
+msgid "Width"
+msgstr "Largeur"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:51
+msgid "Height"
+msgstr "Hauteur"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:52
+msgid "Symbol"
+msgstr "Symbole"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:53
+msgid "Dash array"
+msgstr "Tirets"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:54
+msgid "<html><b>Numeric field</b></html>"
+msgstr "<html><p><b>Champs numérique</b></p></html>"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:55
+msgid "<html><b>Nonspatial field</b></html>"
+msgstr "<html><p><b>Champs nonspatial</b></p></html>"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:56
+msgid "Line width unit"
+msgstr "Unité (épaisseur)"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:57
+msgid "Symbol size unit"
+msgstr "Unité (symbole)"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:59
+msgid "<html><p style=\"text-align:right\">Place symbol<br>on</p></html>"
+msgstr ""
+"<html><p style=\"text-align:right\">Positionner le<br>symbole sur le</p></"
+"html>"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ProportionalLinePanel.java:83
+msgid "Color"
+msgstr "Couleur"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ProportionalLinePanel.java:89
+msgid "Max width"
+msgstr "Largeur max"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ProportionalLinePanel.java:92
+msgid "Min width"
+msgstr "Largeur min"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/components/DashArrayField.java:77
+msgid "Could not validate your input."
+msgstr "Impossible de valider votre entrée."
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/components/ColorConfigurationPanel.java:119
 msgid "Gradient "
 msgstr "Dégradé de "
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ColorConfigurationPanel.java:92
+#: java/org/orbisgis/view/toc/actions/cui/legends/components/ColorConfigurationPanel.java:122
 msgid " to "
 msgstr "à"
 
-#: java/org/orbisgis/view/toc/wrapper/RuleWrapper.java:268
+#: java/org/orbisgis/view/toc/actions/cui/legends/components/OnVertexOnCentroidPanel.java:56
+msgid "Vertex"
+msgstr "Sommet"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/components/OnVertexOnCentroidPanel.java:57
+msgid "Centroid"
+msgstr "Centroïde"
+
+#: java/org/orbisgis/view/toc/wrapper/RuleWrapper.java:252
 #, java-format
 msgid "Min scale greater than max scale in rule {0}."
 msgstr "L''échelle minimum ne peut pas excéder l''échelle maximum (règle {0})."
@@ -3167,6 +3131,31 @@ msgstr "Impossible d'établir l'enveloppe de la sélection"
 #: java/org/orbisgis/view/table/jobs/OptimalWidthJob.java:123
 msgid "Computation of the optimal column width"
 msgstr "Détermination de largeur optimale de colonne"
+
+#~ msgid "No suitable editor for this legend"
+#~ msgstr "Aucun éditeur approprié pour cette légende"
+
+#~ msgid "bug !"
+#~ msgstr "Bug !"
+
+#~ msgid "Classification field : "
+#~ msgstr "Champs de classification : "
+
+#~ msgid "The given legend isnot an instance of proportional line."
+#~ msgstr ""
+#~ "La légende spécifiée n'est pas une instance de ligne proportionnelle."
+
+#~ msgid "Can't retrieve the maximum value of the symbol"
+#~ msgstr "Impossible de retrouver la valeur maximale du symbole"
+
+#~ msgid "Can't retrieve the minimum value of the symbol"
+#~ msgstr "Impossible de retrouver la valeur minimale du symbole"
+
+#~ msgid "Unit of measure"
+#~ msgstr "Unité de mesure"
+
+#~ msgid "A valid numeric field must be selected !"
+#~ msgstr "Un champ numérique valide doit être sélectionné !"
 
 #~ msgid "Docked Window"
 #~ msgstr "Fenêtre"

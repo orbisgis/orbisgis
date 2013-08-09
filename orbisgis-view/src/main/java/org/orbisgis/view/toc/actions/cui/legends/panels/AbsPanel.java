@@ -51,7 +51,8 @@ public abstract class AbsPanel extends JPanel {
     public static final String HEIGHT = I18n.marktr("Height");
     public static final String SYMBOL = I18n.marktr("Symbol");
     public static final String DASH_ARRAY = I18n.marktr("Dash array");
-    public static final String FIELD = I18n.marktr("<html><b>Field</b></html>");
+    public static final String NUMERIC_FIELD = I18n.marktr("<html><b>Numeric field</b></html>");
+    public static final String NONSPATIAL_FIELD = I18n.marktr("<html><b>Nonspatial field</b></html>");
     public static final String LINE_WIDTH_UNIT = I18n.marktr("Line width unit");
     public static final String SYMBOL_SIZE_UNIT = I18n.marktr("Symbol size unit");
     public static final String PLACE_SYMBOL_ON = I18n.marktr(
