@@ -29,7 +29,6 @@
 package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
-import org.apache.log4j.Logger;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
@@ -63,7 +62,6 @@ import java.net.URL;
  */
 public class PnlProportionalPointSE extends PnlProportional {
 
-        private static final Logger LOGGER = Logger.getLogger("gui."+PnlProportionalPointSE.class);
         private static final I18n I18N = I18nFactory.getI18n(PnlProportionalPointSE.class);
 
         private ProportionalPoint proportionalPoint;
@@ -124,7 +122,7 @@ public class PnlProportionalPointSE extends PnlProportional {
                 glob.add(new ProportionalPointPanel(
                     proportionalPoint,
                     getPreview(),
-                    I18N.tr(PnlUniqueLineSE.MARK_SETTINGS),
+                    I18N.tr(MARK_SETTINGS),
                     ds,
                     geometryType));
 
@@ -212,13 +210,13 @@ public class PnlProportionalPointSE extends PnlProportional {
 
             glob.add(new LinePanel(usp,
                     localPreview,
-                    I18N.tr(PnlUniqueLineSE.BORDER_SETTINGS),
+                    I18N.tr(BORDER_SETTINGS),
                     true,
                     true));
 
             glob.add(new AreaPanel(usp,
                     localPreview,
-                    I18N.tr(PnlUniqueAreaSE.FILL_SETTINGS),
+                    I18N.tr(FILL_SETTINGS),
                     true));
 
             glob.add(new PreviewPanel(localPreview));

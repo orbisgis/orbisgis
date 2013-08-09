@@ -52,8 +52,6 @@ public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueLineSE.class);
 
         public static final String LINE_SETTINGS = I18n.marktr("Line settings");
-        public static final String BORDER_SETTINGS = I18n.marktr("Border settings");
-        public static final String MARK_SETTINGS = I18n.marktr("Mark settings");
 
         private UniqueSymbolLine uniqueLine;
         private final boolean displayUom;

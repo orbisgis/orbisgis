@@ -56,8 +56,6 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
         private boolean displayUOM;
         protected boolean isAreaOptional;
 
-        public static final String FILL_SETTINGS = I18n.marktr("Fill settings");
-
         public PnlUniqueAreaSE() {
             this(new UniqueSymbolArea());
         }
@@ -124,7 +122,7 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
 
                 glob.add(new LinePanel(uniqueArea,
                         getPreview(),
-                        I18N.tr(PnlUniqueLineSE.BORDER_SETTINGS),
+                        I18N.tr(BORDER_SETTINGS),
                         true,
                         displayUOM),
                         "cell 0 0, span 1 2, aligny top");

@@ -71,14 +71,16 @@ import java.util.TreeSet;
  * @author alexis
  */
 public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends PnlAbstractTableAnalysis<String,U> {
-    private static final String COMPUTED = "Computed";
-    public static final String CREATE_CLASSIF = "Create classification";
-    public static final Logger LOGGER = Logger.getLogger(PnlAbstractUniqueValue.class);
+
     private static final I18n I18N = I18nFactory.getI18n(PnlAbstractUniqueValue.class);
+    public static final Logger LOGGER = Logger.getLogger(PnlAbstractUniqueValue.class);
+
     private ColorConfigurationPanel colorConfigPanel;
-    private BackgroundListener background;
-    protected final static String JOB_NAME = "recodeSelectDistinct";
     private JPanel classifPanel;
+    private BackgroundListener background;
+
+    private static final String COMPUTED = "Computed";
+    protected final static String JOB_NAME = "recodeSelectDistinct";
 
     public PnlAbstractUniqueValue(LegendContext lc,
                                   AbstractRecodedLegend<U> leg) {

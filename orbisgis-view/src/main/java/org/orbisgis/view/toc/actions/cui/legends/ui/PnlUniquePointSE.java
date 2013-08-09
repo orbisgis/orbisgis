@@ -118,19 +118,19 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
 
                 glob.add(new LinePanel(uniquePoint,
                         getPreview(),
-                        I18N.tr(PnlUniqueLineSE.BORDER_SETTINGS),
+                        I18N.tr(BORDER_SETTINGS),
                         true,
                         uom));
 
                 glob.add(new PointPanel(uniquePoint,
                         getPreview(),
-                        I18N.tr("New Mark"),
+                        I18N.tr(MARK_SETTINGS),
                         uom,
                         geometryType));
 
                 glob.add(new AreaPanel(uniquePoint,
                         getPreview(),
-                        I18N.tr(PnlUniqueAreaSE.FILL_SETTINGS),
+                        I18N.tr(FILL_SETTINGS),
                         displayStroke));
 
                 glob.add(new PreviewPanel(getPreview()), "growx");

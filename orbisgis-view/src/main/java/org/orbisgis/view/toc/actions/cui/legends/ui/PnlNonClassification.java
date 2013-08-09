@@ -2,6 +2,7 @@ package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import org.orbisgis.legend.Legend;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * Root class for non-classification UIs.
@@ -12,6 +13,10 @@ public abstract class PnlNonClassification extends AbstractFieldPanel {
 
     private String id;
     private CanvasSE preview;
+
+    public static final String BORDER_SETTINGS = I18n.marktr("Border settings");
+    public static final String FILL_SETTINGS = I18n.marktr("Fill settings");
+    public static final String MARK_SETTINGS = I18n.marktr("Mark settings");
 
     // *********************** AbstractFieldPanel *************************
     @Override
