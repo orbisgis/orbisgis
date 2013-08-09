@@ -72,7 +72,7 @@ public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        public Legend getLegend() {
+        public UniqueSymbolLine getLegend() {
                 return uniqueLine;
         }
 

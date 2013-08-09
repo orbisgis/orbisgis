@@ -86,7 +86,7 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        public IUniqueSymbolArea getLegend() {
+        public UniqueSymbolPoint getLegend() {
                 return uniquePoint;
         }
 

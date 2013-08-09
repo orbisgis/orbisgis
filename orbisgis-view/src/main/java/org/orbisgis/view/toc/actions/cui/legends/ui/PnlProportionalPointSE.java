@@ -82,7 +82,7 @@ public class PnlProportionalPointSE extends PnlProportional {
         }
 
         @Override
-        public IUniqueSymbolArea getLegend() {
+        public ProportionalPoint getLegend() {
                 return proportionalPoint;
         }
 
