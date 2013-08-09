@@ -30,18 +30,8 @@ package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
-import org.gdms.driver.DriverException;
-import org.orbisgis.core.renderer.classification.ClassificationUtils;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
-import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
-import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
@@ -49,7 +39,6 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -62,26 +51,24 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * "Proportional Point" UI.
  *
  * @author Alexis Guéganno
  */
-public class PnlProportionalPointSE extends PnlUniquePointSE {
+public class PnlProportionalPointSE extends PnlProportional {
 
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlProportionalPointSE.class);
         private static final I18n I18N = I18nFactory.getI18n(PnlProportionalPointSE.class);
 
         private ProportionalPoint proportionalPoint;
 
+        private int geometryType = SimpleGeometryType.ALL;
         MouseListener l;
 
         public PnlProportionalPointSE(LegendContext lc) {
@@ -89,9 +76,9 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
         }
 
         public PnlProportionalPointSE(LegendContext lc, ProportionalPoint legend) {
-            setDataSource(lc.getLayer().getDataSource());
-            setGeometryType(lc.getGeometryType());
-            proportionalPoint = legend;
+            super(lc);
+            this.proportionalPoint = legend;
+            this.geometryType = lc.getGeometryType();
             initPreview();
             initializeLegendFields();
         }
@@ -103,28 +90,8 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
 
         @Override
         public void setLegend(Legend legend) {
-                if (legend instanceof ProportionalPoint) {
-                        proportionalPoint = (ProportionalPoint) legend;
-                        ConstantPenStroke cps = proportionalPoint.getPenStroke();
-                        if(cps instanceof ConstantPenStrokeLegend ){
-                                setPenStrokeMemory((ConstantPenStrokeLegend) cps);
-                        } else {
-                                setPenStrokeMemory(new ConstantPenStrokeLegend(new PenStroke()));
-                        }
-                        ConstantSolidFill csf = proportionalPoint.getFillLegend();
-                        if(csf instanceof ConstantSolidFillLegend){
-                                setSolidFillMemory((ConstantSolidFillLegend) csf);
-                        } else {
-                                setSolidFillMemory(new ConstantSolidFillLegend(new SolidFill()));
-                        }
-                        initPreview();
-                        getPreview().setDisplayed(false);
-
-                        this.initializeLegendFields();
-                } else {
-                        throw new IllegalArgumentException("The given Legend is not"
-                                + "a ProportionalPoint");
-                }
+                throw new UnsupportedOperationException("No longer setting " +
+                        "legends this way for proportional points");
         }
 
         /**
@@ -157,9 +124,9 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 glob.add(new ProportionalPointPanel(
                     proportionalPoint,
                     getPreview(),
-                    I18N.tr(MARK_SETTINGS),
+                    I18N.tr(PnlUniqueLineSE.MARK_SETTINGS),
                     ds,
-                    getGeometryType()));
+                    geometryType));
 
                 // The preview is created only once while the other panels are
                 // created twice, currently. Adds a locally stored listener to
@@ -211,12 +178,6 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
             }
         }
 
-        // ************************* UIPanel ***************************
-        @Override
-        public String getTitle() {
-            return ProportionalPoint.NAME;
-        }
-
     private class ConfigPanel extends JPanel implements UIPanel {
 
         private UniqueSymbolPoint usp;
@@ -251,13 +212,13 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
 
             glob.add(new LinePanel(usp,
                     localPreview,
-                    I18N.tr(BORDER_SETTINGS),
+                    I18N.tr(PnlUniqueLineSE.BORDER_SETTINGS),
                     true,
                     true));
 
             glob.add(new AreaPanel(usp,
                     localPreview,
-                    I18N.tr(FILL_SETTINGS),
+                    I18N.tr(PnlUniqueAreaSE.FILL_SETTINGS),
                     true));
 
             glob.add(new PreviewPanel(localPreview));

@@ -57,8 +57,7 @@ public class ParametersEditorRecodedLine extends ParametersEditorMappedLegend<St
             RecodedLine rl = (RecodedLine) getMappedLegend();
             LineParameters lp = rl.get(getCellEditorValue());
             UniqueSymbolLine usl = new UniqueSymbolLine(lp);
-            PnlUniqueLineSE pls = new PnlUniqueLineSE(false);
-            pls.setLegend(usl);
+            PnlUniqueLineSE pls = new PnlUniqueLineSE(usl, false);
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 LineParameters edited = usl.getLineParameters();
                 rl.put((String)getCellEditorValue(), edited);

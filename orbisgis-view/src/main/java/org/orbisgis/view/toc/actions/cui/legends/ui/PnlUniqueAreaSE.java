@@ -29,16 +29,9 @@
 package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
-import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
-import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
-import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
@@ -48,7 +41,6 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import java.net.URL;
 
 /**
  * "Unique Symbol - Area" UI.
@@ -56,58 +48,37 @@ import java.net.URL;
  * This panel is used to configure a unique symbol configuration for an area symbolizer.
  * @author Alexis Guéganno
  */
-public class PnlUniqueAreaSE extends PnlUniqueLineSE {
+public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
 
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueAreaSE.class);
 
         private UniqueSymbolArea uniqueArea;
-        private ConstantSolidFillLegend solidFillMemory;
+        private boolean displayUOM;
         protected boolean isAreaOptional;
 
         public static final String FILL_SETTINGS = I18n.marktr("Fill settings");
 
-        public PnlUniqueAreaSE(LegendContext lc) {
-            this(lc, new UniqueSymbolArea());
+        public PnlUniqueAreaSE() {
+            this(new UniqueSymbolArea());
         }
 
-        public PnlUniqueAreaSE(LegendContext lc, UniqueSymbolArea legend) {
-            setDataSource(lc.getLayer().getDataSource());
-            uniqueArea = legend;
+        public PnlUniqueAreaSE(UniqueSymbolArea legend) {
+            this(legend, true, true);
+        }
+
+        public PnlUniqueAreaSE(UniqueSymbolArea legend,
+                               boolean isAreaOptional){
+            this(legend, false, isAreaOptional);
+        }
+
+        private PnlUniqueAreaSE(UniqueSymbolArea legend,
+                                boolean uom,
+                                boolean isAreaOptional){
+            this.uniqueArea = legend;
+            this.displayUOM = uom;
+            this.isAreaOptional = isAreaOptional;
             initPreview();
             initializeLegendFields();
-        }
-
-        /**
-         * Default constructor. UOM will be displayed as well as the stroke
-         * configuration and the check boxes used to enable or disable stroke
-         * and fill configuration panels.
-         */
-        public PnlUniqueAreaSE(){
-            this(true);
-        }
-
-        /**
-         * Constructor that is used to set if the UOM must be displayed or not.
-         *
-         * @param uom If true, the uom will be displayed.
-         */
-        public PnlUniqueAreaSE(boolean uom){
-            this(uom, true);
-        }
-
-        /**
-         * Builds the panel.
-         *
-         * @param uom            If true, the combo used to configure the
-         *                       symbolizer UOM will be displayed.
-         * @param isAreaOptional If true,  the two boxes that are used to enable
-         *                       and disable the stroke and fill of the symbol
-         *                       will be displayed.
-         */
-        public PnlUniqueAreaSE(boolean uom,
-                               boolean isAreaOptional){
-            super(uom);
-            this.isAreaOptional = isAreaOptional;
         }
 
         @Override
@@ -117,26 +88,8 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
 
         @Override
         public void setLegend(Legend legend) {
-                if (legend instanceof UniqueSymbolArea) {
-                        uniqueArea = (UniqueSymbolArea) legend;
-                        ConstantPenStroke cps = uniqueArea.getPenStroke();
-                        if(cps instanceof ConstantPenStrokeLegend ){
-                                setPenStrokeMemory((ConstantPenStrokeLegend) cps);
-                        } else {
-                                setPenStrokeMemory(new ConstantPenStrokeLegend(new PenStroke()));
-                        }
-                        ConstantSolidFill csf = uniqueArea.getFillLegend();
-                        if(csf instanceof ConstantSolidFillLegend){
-                                setSolidFillMemory((ConstantSolidFillLegend) csf);
-                        } else {
-                            setSolidFillMemory(new ConstantSolidFillLegend(new SolidFill()));
-                        }
-                        initPreview();
-                        this.initializeLegendFields();
-                } else {
-                        throw new IllegalArgumentException("The given Legend is not"
-                                + "a UniqueSymbolArea");
-                }
+                throw new UnsupportedOperationException("No longer setting " +
+                        "legends this way for unique areas.");
         }
 
         /**
@@ -171,9 +124,9 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
 
                 glob.add(new LinePanel(uniqueArea,
                         getPreview(),
-                        I18N.tr(BORDER_SETTINGS),
+                        I18N.tr(PnlUniqueLineSE.BORDER_SETTINGS),
                         true,
-                        true),
+                        displayUOM),
                         "cell 0 0, span 1 2, aligny top");
 
                 glob.add(new AreaPanel(uniqueArea,
@@ -185,17 +138,6 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 glob.add(new PreviewPanel(getPreview()),
                         "cell 1 1, growx");
                 this.add(glob);
-        }
-
-        /**
-         * In order to improve the user experience, it may be interesting to
-         * store the {@code ConstantSolidFillLegend} as a field before removing
-         * it. This way, we will be able to use it back directly... unless the
-         * editor as been closed before, of course.
-         * @param fill The fill we want to keep in memory.
-         */
-        protected void setSolidFillMemory(ConstantSolidFillLegend fill){
-                solidFillMemory = fill;
         }
 
         // ************************* UIPanel ***************************

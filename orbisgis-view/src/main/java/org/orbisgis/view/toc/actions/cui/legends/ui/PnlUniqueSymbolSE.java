@@ -28,51 +28,25 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.ui;
 
-import org.orbisgis.legend.Legend;
+import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+
+import java.net.URL;
 
 /**
  * Base class for "Unique Symbol" UIs.
  *
- * This class proposes some methods that will be common to all the panels built
- * for unique symbols.
  * @author Alexis Guéganno
+ * @author Adam Gouge
  */
-public abstract class PnlUniqueSymbolSE extends AbstractFieldPanel implements UIPanel {
+public abstract class PnlUniqueSymbolSE extends PnlNonClassification
+        implements UIPanel {
 
-        private String id;
-        private CanvasSE preview;
-
-        @Override
-        public void initPreview() {
-                Legend leg = getLegend();
-                if (leg != null) {
-                        preview = new CanvasSE(leg.getSymbolizer());
-                        preview.imageChanged();
-                }
-        }
-
-        /**
-         * Gets the {@code CanvasSE} instance used to display a preview of
-         * the current symbol.
-         *
-         * @return Preview of the symbol.
-         */
-        public CanvasSE getPreview(){
-            if (preview == null) {
-                initPreview();
-            }
-            return preview;
-        }
-
-        @Override
-        public String getId(){
-                return id;
-        }
-
-        @Override
-        public void setId(String id){
-                this.id = id;
-        }
+    // ************************** UIPanel ****************************
+    // Note: The validateInput() method of UIPanel is implemented in
+    // PnlNonClassification.
+    @Override
+    public URL getIconURL() {
+        return UIFactory.getDefaultIcon();
+    }
 }

@@ -122,8 +122,7 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
         if(leg.isStrokeEnabled()){
             usa.setStrokeUom(leg.getStrokeUom());
         }
-        PnlUniqueAreaSE pls = new PnlUniqueAreaSE(false, leg.isStrokeEnabled());
-        pls.setLegend(usa);
+        PnlUniqueAreaSE pls = new PnlUniqueAreaSE(usa, leg.isStrokeEnabled());
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
             usa = (UniqueSymbolArea) pls.getLegend();
             AreaParameters nlp = usa.getAreaParameters();

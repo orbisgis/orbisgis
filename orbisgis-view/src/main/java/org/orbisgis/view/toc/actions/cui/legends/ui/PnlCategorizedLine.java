@@ -69,8 +69,7 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
         LineParameters lps = getLegend().getFallbackParameters();
         UniqueSymbolLine usl = new UniqueSymbolLine(lps);
         usl.setStrokeUom(getLegend().getStrokeUom());
-        PnlUniqueLineSE pls = new PnlUniqueLineSE(false);
-        pls.setLegend(usl);
+        PnlUniqueLineSE pls = new PnlUniqueLineSE(usl, false);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
             usl = (UniqueSymbolLine) pls.getLegend();
             LineParameters nlp = usl.getLineParameters();

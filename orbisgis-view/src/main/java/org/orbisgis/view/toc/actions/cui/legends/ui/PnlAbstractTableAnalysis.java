@@ -53,9 +53,11 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     public static final String ENABLE_BORDER = I18n.marktr("Enable border");
     protected static final String CLASSIFICATION_SETTINGS = I18n.marktr("Classification settings");
 
+    private DataSource ds;
+
 
     public PnlAbstractTableAnalysis(LegendContext lc, MappedLegend<K,U> legend) {
-        setDataSource(lc.getLayer().getDataSource());
+        this.ds = lc.getLayer().getDataSource();
         this.legend = legend;
     }
 
@@ -66,7 +68,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
 
     @Override
     public void initialize(LegendContext lc, Legend l){
-        super.initialize(lc, l);
+        setLegend(l);
         initPreview();
     }
 
@@ -78,7 +80,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
      * Gets the associated DataSource
      * @return The inner DataSource.
      */
-    public DataSource getDataSource(){
+    public DataSource getDataSource() {
         return ds;
     }
 

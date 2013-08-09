@@ -56,8 +56,7 @@ public class ParametersEditorRecodedArea extends ParametersEditorMappedLegend<St
             String key = (String) getCellEditorValue();
             AreaParameters lp = rl.get(key);
             UniqueSymbolArea usl = new UniqueSymbolArea(lp);
-            PnlUniqueAreaSE pls = new PnlUniqueAreaSE(false, rl.isStrokeEnabled());
-            pls.setLegend(usl);
+            PnlUniqueAreaSE pls = new PnlUniqueAreaSE(usl, rl.isStrokeEnabled());
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 AreaParameters edited = usl.getAreaParameters();
                 rl.put((String)getCellEditorValue(), edited);

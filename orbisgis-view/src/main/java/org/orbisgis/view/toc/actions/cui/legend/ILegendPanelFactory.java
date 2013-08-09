@@ -62,9 +62,9 @@ public class ILegendPanelFactory {
         if (legend instanceof UniqueSymbolPoint) {
             return new PnlUniquePointSE(lc, (UniqueSymbolPoint) legend);
         } else if (legend instanceof UniqueSymbolLine) {
-            return new PnlUniqueLineSE(lc, (UniqueSymbolLine) legend);
+            return new PnlUniqueLineSE((UniqueSymbolLine) legend);
         } else if (legend instanceof UniqueSymbolArea) {
-            return new PnlUniqueAreaSE(lc, (UniqueSymbolArea) legend);
+            return new PnlUniqueAreaSE((UniqueSymbolArea) legend);
         } else if (legend instanceof ProportionalPoint) {
             return new PnlProportionalPointSE(lc, (ProportionalPoint) legend);
         } else if (legend instanceof ProportionalLine) {
@@ -101,9 +101,9 @@ public class ILegendPanelFactory {
         if (legendName.equals(UniqueSymbolPoint.NAME)) {
             return new PnlUniquePointSE(lc);
         } else if (legendName.equals(UniqueSymbolLine.NAME)) {
-            return new PnlUniqueLineSE(lc);
+            return new PnlUniqueLineSE();
         } else if (legendName.equals(UniqueSymbolArea.NAME)) {
-            return new PnlUniqueAreaSE(lc);
+            return new PnlUniqueAreaSE();
         } else if (legendName.equals(ProportionalPoint.NAME)) {
             return new PnlProportionalPointSE(lc);
         } else if (legendName.equals(ProportionalLine.NAME)) {

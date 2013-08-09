@@ -29,11 +29,8 @@
 package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
-import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
@@ -42,7 +39,6 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import java.net.URL;
 
 /**
  * "Unique Symbol - Line" UI.
@@ -52,7 +48,7 @@ import java.net.URL;
  * justof one simple {@code PenStroke}.
  * @author Alexis Guéganno
  */
-public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
+public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueLineSE.class);
 
         public static final String LINE_SETTINGS = I18n.marktr("Line settings");
@@ -60,43 +56,21 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         public static final String MARK_SETTINGS = I18n.marktr("Mark settings");
 
         private UniqueSymbolLine uniqueLine;
-        private ConstantPenStrokeLegend penStrokeMemory;
         private final boolean displayUom;
 
-        public PnlUniqueLineSE(LegendContext lc) {
-            this(lc, new UniqueSymbolLine());
+        public PnlUniqueLineSE() {
+            this(new UniqueSymbolLine());
         }
 
-        public PnlUniqueLineSE(LegendContext lc, UniqueSymbolLine legend) {
-            this(true);
-            setDataSource(lc.getLayer().getDataSource());
-            uniqueLine = legend;
+        public PnlUniqueLineSE(UniqueSymbolLine legend) {
+            this(legend, true);
+        }
+
+        public PnlUniqueLineSE(UniqueSymbolLine legend, boolean uom){
+            this.uniqueLine = legend;
+            this.displayUom = uom;
             initPreview();
             initializeLegendFields();
-        }
-
-        /**
-         * Default constructor. The UOM combo box is displayed.
-         */
-        public PnlUniqueLineSE() {
-            this(true);
-        }
-
-        /**
-         * Builds a new PnlUniqueLineSE choosing if we want to display the uom combo box.
-         *
-         * @param uom if true, the uom combo box will be displayed.
-         */
-        public PnlUniqueLineSE(boolean uom){
-            this.displayUom = uom;
-        }
-
-        /**
-         * Returns true if the combo box used to configure the unit of measures must be displayed, false if they must not.
-         * @return true if the combo box used to configure the unit of measures must be displayed, false if they must not.
-         */
-        protected boolean isUomEnabled(){
-            return displayUom;
         }
 
         @Override
@@ -106,19 +80,8 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         @Override
         public void setLegend(Legend legend) {
-                if (legend instanceof UniqueSymbolLine) {
-                        uniqueLine = (UniqueSymbolLine) legend;
-                        if(uniqueLine.getPenStroke() instanceof ConstantPenStrokeLegend){
-                                penStrokeMemory = (ConstantPenStrokeLegend) uniqueLine.getPenStroke();
-                        } else {
-                                penStrokeMemory = new ConstantPenStrokeLegend(new PenStroke());
-                        }
-                        initPreview();
-                        initializeLegendFields();
-                } else {
-                        throw new IllegalArgumentException("The given Legend is not"
-                                + "a UniqueSymbolLine");
-                }
+                throw new UnsupportedOperationException("No longer setting " +
+                        "legends this way for unique lines.");
         }
 
         /**
@@ -148,17 +111,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 return usl;
         }
 
-        /**
-         * In order to improve the user experience, it may be interesting to
-         * store the {@code ConstantPenStrokeLegend} as a field before removing
-         * it. This way, we will be able to use it back directly... unless the
-         * editor as been closed before, of course.
-         * @param cpsl
-         */
-        protected void setPenStrokeMemory(ConstantPenStrokeLegend cpsl){
-                penStrokeMemory = cpsl;
-        }
-
         @Override
         public void initializeLegendFields() {
                 this.removeAll();
@@ -172,18 +124,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 this.add(glob);
         }
 
-
         // ************************* UIPanel ***************************
-        @Override
-        public String validateInput() {
-            return null;
-        }
-
-        @Override
-        public URL getIconURL() {
-            return UIFactory.getDefaultIcon();
-        }
-
         @Override
         public String getTitle() {
             return UniqueSymbolLine.NAME;

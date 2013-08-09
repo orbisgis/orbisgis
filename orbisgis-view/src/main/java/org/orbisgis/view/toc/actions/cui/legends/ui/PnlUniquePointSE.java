@@ -29,16 +29,9 @@
 package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
-import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
-import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
-import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
@@ -49,53 +42,47 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import java.net.URL;
 
 /**
  * "Unique Symbol - Point" UI.
  *
  * @author Alexis Guéganno
  */
-public class PnlUniquePointSE extends PnlUniqueAreaSE {
+public class PnlUniquePointSE extends PnlUniqueSymbolSE {
 
         private static final I18n I18N = I18nFactory.getI18n(PnlUniquePointSE.class);
 
         private UniqueSymbolPoint uniquePoint;
         private int geometryType = SimpleGeometryType.ALL;
 
+        private boolean uom;
+        private boolean displayStroke;
 
         public PnlUniquePointSE(LegendContext lc) {
             this(lc, new UniqueSymbolPoint());
         }
 
         public PnlUniquePointSE(LegendContext lc, UniqueSymbolPoint legend) {
-            setDataSource(lc.getLayer().getDataSource());
-            setGeometryType(lc.getGeometryType());
-            uniquePoint = legend;
+            this(lc, legend, true, true);
+        }
+
+        public PnlUniquePointSE(UniqueSymbolPoint legend,
+                                boolean displayStroke) {
+            this(null, legend, false, displayStroke);
+        }
+
+        private PnlUniquePointSE(LegendContext lc,
+                                UniqueSymbolPoint legend,
+                                boolean uom,
+                                boolean displayStroke) {
+            this.uniquePoint = legend;
+            this.uom = uom;
+            this.displayStroke = displayStroke;
+            if (lc != null) {
+                this.geometryType = lc.getGeometryType();
+            }
             initPreview();
             initializeLegendFields();
-        }
-
-        /**
-         * Default constructor. UOM will be displayed as well as the stroke
-         * configuration and the check boxes used to enable or disable stroke
-         * and fill configuration panels.
-         */
-        public PnlUniquePointSE() {
-            this(true, true);
-        }
-
-        /**
-         * Builds the panel.
-         *
-         * @param uom           If true, the combo used to configure the
-         *                      symbolizer UOM will be displayed.
-         * @param displayStroke If true, the panel used to configure the
-         *                      symbol's stroke will be enabled.
-         */
-        public PnlUniquePointSE(boolean uom,
-                                boolean displayStroke) {
-            super(uom, displayStroke);
         }
 
         @Override
@@ -105,44 +92,8 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
 
         @Override
         public void setLegend(Legend legend) {
-                if (legend instanceof UniqueSymbolPoint) {
-                        uniquePoint = (UniqueSymbolPoint) legend;
-                        ConstantPenStroke cps = uniquePoint.getPenStroke();
-                        if(cps instanceof ConstantPenStrokeLegend ){
-                                setPenStrokeMemory((ConstantPenStrokeLegend) cps);
-                        } else {
-                                setPenStrokeMemory(new ConstantPenStrokeLegend(new PenStroke()));
-                        }
-                        ConstantSolidFill csf = uniquePoint.getFillLegend();
-                        if(csf instanceof ConstantSolidFillLegend){
-                                setSolidFillMemory((ConstantSolidFillLegend) csf);
-                        } else {
-                                setSolidFillMemory(new ConstantSolidFillLegend(new SolidFill()));
-                        }
-                        initPreview();
-                        this.initializeLegendFields();
-                } else {
-                        throw new IllegalArgumentException("The given Legend is not"
-                                + "a UniqueSymbolPoint");
-                }
-        }
-
-        /**
-         * Sets the type of the geometry field of the data that must be
-         * represented.
-         * @param type Geometry type
-         */
-        public void setGeometryType(int type) {
-                geometryType = type;
-        }
-
-        /**
-         * Gets the {@code SimpleGeometryType} that was used to build this
-         * {@code PnlUniquePointSE}.
-         * @return
-         */
-        public int getGeometryType() {
-                return geometryType;
+                throw new UnsupportedOperationException("No longer setting " +
+                        "legends this way for unique points.");
         }
 
         @Override
@@ -167,20 +118,20 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
 
                 glob.add(new LinePanel(uniquePoint,
                         getPreview(),
-                        I18N.tr(BORDER_SETTINGS),
+                        I18N.tr(PnlUniqueLineSE.BORDER_SETTINGS),
                         true,
-                        isUomEnabled()));
+                        uom));
 
                 glob.add(new PointPanel(uniquePoint,
                         getPreview(),
                         I18N.tr("New Mark"),
-                        isUomEnabled(),
+                        uom,
                         geometryType));
 
                 glob.add(new AreaPanel(uniquePoint,
                         getPreview(),
-                        I18N.tr(FILL_SETTINGS),
-                        isAreaOptional));
+                        I18N.tr(PnlUniqueAreaSE.FILL_SETTINGS),
+                        displayStroke));
 
                 glob.add(new PreviewPanel(getPreview()), "growx");
 

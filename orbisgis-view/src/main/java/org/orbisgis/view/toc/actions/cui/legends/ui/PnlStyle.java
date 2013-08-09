@@ -28,20 +28,17 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.ui;
 
-import java.awt.*;
-import java.awt.event.FocusListener;
-import java.beans.EventHandler;
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.FocusListener;
+import java.beans.EventHandler;
 
 /**
  * Style UI.

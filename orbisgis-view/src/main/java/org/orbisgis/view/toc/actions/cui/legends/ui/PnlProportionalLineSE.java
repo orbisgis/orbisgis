@@ -34,7 +34,6 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
-import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legends.panels.PreviewPanel;
@@ -43,14 +42,13 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import java.net.URL;
 
 /**
  * "Proportional Line" UI.
  *
  * @author Alexis Guéganno
  */
-public class PnlProportionalLineSE extends PnlUniqueLineSE {
+public class PnlProportionalLineSE extends PnlProportional {
 
         private static final I18n I18N = I18nFactory.getI18n(PnlProportionalLineSE.class);
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlProportionalLineSE.class);
@@ -62,8 +60,8 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
         }
 
         public PnlProportionalLineSE(LegendContext lc, ProportionalLine legend) {
-            setDataSource(lc.getLayer().getDataSource());
-            proportionalLine = legend;
+            super(lc);
+            this.proportionalLine = legend;
             initPreview();
             initializeLegendFields();
         }
@@ -75,14 +73,8 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
 
         @Override
         public void setLegend(Legend legend) {
-                if(legend instanceof ProportionalLine){
-                        this.proportionalLine = (ProportionalLine)legend;
-                        initPreview();
-                        initializeLegendFields();
-                } else {
-                        throw new IllegalArgumentException(I18N.tr("The given legend is"
-                                + "not an instance of proportional line."));
-                }
+                throw new UnsupportedOperationException("No longer setting " +
+                        "legends this way for proportional lines");
         }
 
         @Override
@@ -122,11 +114,5 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
                 glob.add(new ProportionalLinePanel(getLegend(), getPreview(), ds));
                 glob.add(new PreviewPanel(getPreview()));
                 this.add(glob);
-        }
-
-        // ************************* UIPanel ***************************
-        @Override
-        public String getTitle() {
-            return ProportionalLine.NAME;
         }
 }
