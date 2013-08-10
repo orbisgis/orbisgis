@@ -54,8 +54,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * "Value classification - Line" UI.
@@ -164,19 +162,6 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
                 return geometryType == SimpleGeometryType.LINE ||
                         geometryType == SimpleGeometryType.POLYGON||
                         geometryType == SimpleGeometryType.ALL;
-    }
-
-    @Override
-    public Legend copyLegend() {
-        RecodedLine rl = new RecodedLine();
-        RecodedLine leg = (RecodedLine) getLegend();
-        Set<Map.Entry<String,LineParameters>> entries = leg.entrySet();
-        for(Map.Entry<String,LineParameters> entry : entries){
-            rl.put(entry.getKey(),entry.getValue());
-        }
-        rl.setFallbackParameters(leg.getFallbackParameters());
-        rl.setLookupFieldName(leg.getLookupFieldName());
-        return rl;
     }
 
     @Override

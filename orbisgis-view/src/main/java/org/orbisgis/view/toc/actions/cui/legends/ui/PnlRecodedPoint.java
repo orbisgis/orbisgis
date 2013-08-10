@@ -53,8 +53,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * "Value classification - Point" UI.
@@ -186,20 +184,6 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     @Override
     public boolean acceptsGeometryType(int geometryType) {
         return (geometryType & SimpleGeometryType.ALL) != 0;
-    }
-
-    @Override
-    public Legend copyLegend() {
-        RecodedPoint rl = new RecodedPoint();
-        RecodedPoint leg = getLegend();
-        leg.setStrokeEnabled(rl.isStrokeEnabled());
-        Set<Map.Entry<String,PointParameters>> entries = leg.entrySet();
-        for(Map.Entry<String,PointParameters> entry : entries){
-            rl.put(entry.getKey(),entry.getValue());
-        }
-        rl.setFallbackParameters(leg.getFallbackParameters());
-        rl.setLookupFieldName(leg.getLookupFieldName());
-        return rl;
     }
 
     @Override

@@ -30,9 +30,7 @@ package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
@@ -93,24 +91,6 @@ public class PnlProportionalLineSE extends PnlProportional {
                 return geometryType == SimpleGeometryType.LINE ||
                         geometryType == SimpleGeometryType.POLYGON||
                         geometryType == SimpleGeometryType.ALL;
-        }
-
-        @Override
-        public Legend copyLegend() {
-                ProportionalLine usl = new ProportionalLine();
-                ProportionalStrokeLegend strokeLeg = proportionalLine.getStrokeLegend();
-                ProportionalStrokeLegend newLeg = usl.getStrokeLegend();
-                newLeg.setDashArray(strokeLeg.getDashArray());
-                try{
-                        newLeg.setFirstValue(strokeLeg.getFirstValue());
-                        newLeg.setFirstData(strokeLeg.getFirstData());
-                        newLeg.setSecondValue(strokeLeg.getSecondValue());
-                        newLeg.setSecondData(strokeLeg.getSecondData());
-                        newLeg.setLineColor(strokeLeg.getLineColor());
-                } catch(ParameterException pe){
-                        LOGGER.error(I18N.tr("Could not copy the ProportionalLine."), pe);
-                }
-                return usl;
         }
 
     @Override

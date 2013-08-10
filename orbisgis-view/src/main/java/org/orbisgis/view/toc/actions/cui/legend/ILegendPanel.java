@@ -68,11 +68,4 @@ public interface ILegendPanel extends ISELegendPanel {
 	 * @return
 	 */
 	boolean acceptsGeometryType(int geometryType);
-
-    /**
-     * Copy the {@code Legend} instance associated to this
-     * {@code ILegendPanel}. It is faster than copying the whole panel.
-     * @return
-     */
-    Legend copyLegend();
 }

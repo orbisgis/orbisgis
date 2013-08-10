@@ -115,14 +115,7 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
                         geometryType == SimpleGeometryType.ALL;
         }
 
-        @Override
-        public Legend copyLegend() {
-                UniqueSymbolArea ret = new UniqueSymbolArea();
-                ret.getFillLegend().setColor(uniqueArea.getFillLegend().getColor());
-                return ret;
-        }
-
-        @Override
+    @Override
         public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());

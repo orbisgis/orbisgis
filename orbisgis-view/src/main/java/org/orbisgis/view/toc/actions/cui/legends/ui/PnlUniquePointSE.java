@@ -130,12 +130,7 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
                 return (geometryType & SimpleGeometryType.ALL) != 0;
         }
 
-        @Override
-        public Legend copyLegend() {
-                return new UniqueSymbolPoint();
-        }
-
-        @Override
+    @Override
         public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));

@@ -54,8 +54,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * "Value classification - Area" UI.
@@ -201,16 +199,4 @@ public class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
                     geometryType == SimpleGeometryType.ALL;
     }
 
-    @Override
-    public Legend copyLegend() {
-        RecodedArea rl = new RecodedArea();
-        rl.setStrokeEnabled(((RecodedArea)getLegend()).isStrokeEnabled());
-        Set<Map.Entry<String,AreaParameters>> entries = getLegend().entrySet();
-        for(Map.Entry<String,AreaParameters> entry : entries){
-            rl.put(entry.getKey(),entry.getValue());
-        }
-        rl.setFallbackParameters(getLegend().getFallbackParameters());
-        rl.setLookupFieldName(getLegend().getLookupFieldName());
-        return rl;
-    }
 }

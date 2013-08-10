@@ -103,11 +103,6 @@ public class PnlProportionalPointSE extends PnlProportional {
         }
 
     @Override
-        public Legend copyLegend(){
-                return new ProportionalPoint();
-        }
-
-        @Override
         public boolean acceptsGeometryType(int geometryType) {
                 return (geometryType & SimpleGeometryType.ALL) != 0;
         }

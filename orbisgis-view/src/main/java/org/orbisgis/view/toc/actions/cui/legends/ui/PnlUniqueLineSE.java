@@ -103,16 +103,7 @@ public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                         geometryType == SimpleGeometryType.ALL;
         }
 
-        @Override
-        public Legend copyLegend() {
-                UniqueSymbolLine usl = new UniqueSymbolLine();
-                usl.getPenStroke().setDashArray(uniqueLine.getPenStroke().getDashArray());
-                usl.getPenStroke().setLineWidth(uniqueLine.getPenStroke().getLineWidth());
-                usl.getPenStroke().setLineColor(uniqueLine.getPenStroke().getLineColor());
-                return usl;
-        }
-
-        @Override
+    @Override
         public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());

@@ -24,8 +24,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * "Interval classification - Line" UI.
@@ -149,17 +147,4 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
                 geometryType == SimpleGeometryType.ALL;
     }
 
-    @Override
-    public Legend copyLegend() {
-        CategorizedLine cl = getLegend();
-        Set<Map.Entry<Double,LineParameters>> entries = cl.entrySet();
-        CategorizedLine ret = new CategorizedLine();
-        for(Map.Entry<Double,LineParameters> en : entries){
-            ret.put(en.getKey(),en.getValue());
-        }
-        ret.setStrokeUom(cl.getStrokeUom());
-        ret.setFallbackParameters(cl.getFallbackParameters());
-        ret.setLookupFieldName(cl.getLookupFieldName());
-        return ret;
-    }
 }

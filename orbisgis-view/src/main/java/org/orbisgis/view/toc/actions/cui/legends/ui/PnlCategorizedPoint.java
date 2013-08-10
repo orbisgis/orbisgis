@@ -24,8 +24,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * "Interval classification - Point" UI.
@@ -155,17 +153,4 @@ public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>
                 geometryType == SimpleGeometryType.ALL;
     }
 
-    @Override
-    public Legend copyLegend() {
-        CategorizedPoint cl = getLegend();
-        Set<Map.Entry<Double,PointParameters>> entries = cl.entrySet();
-        CategorizedPoint ret = new CategorizedPoint();
-        for(Map.Entry<Double,PointParameters> en : entries){
-            ret.put(en.getKey(),en.getValue());
-        }
-        ret.setStrokeUom(cl.getStrokeUom());
-        ret.setFallbackParameters(cl.getFallbackParameters());
-        ret.setLookupFieldName(cl.getLookupFieldName());
-        return ret;
-    }
 }

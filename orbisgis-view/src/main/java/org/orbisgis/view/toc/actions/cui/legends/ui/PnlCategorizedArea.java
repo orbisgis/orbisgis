@@ -24,8 +24,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * "Interval classification - Area" UI.
@@ -151,17 +149,4 @@ public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
                 geometryType == SimpleGeometryType.ALL;
     }
 
-    @Override
-    public Legend copyLegend() {
-        CategorizedArea cl = getLegend();
-        Set<Map.Entry<Double,AreaParameters>> entries = cl.entrySet();
-        CategorizedArea ret = new CategorizedArea();
-        for(Map.Entry<Double,AreaParameters> en : entries){
-            ret.put(en.getKey(),en.getValue());
-        }
-        ret.setStrokeUom(cl.getStrokeUom());
-        ret.setFallbackParameters(cl.getFallbackParameters());
-        ret.setLookupFieldName(cl.getLookupFieldName());
-        return ret;
-    }
 }
