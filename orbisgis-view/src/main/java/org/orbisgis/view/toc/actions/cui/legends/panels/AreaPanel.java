@@ -57,9 +57,9 @@ public class AreaPanel extends AbsOptionalPanel {
     /**
      * Constructor
      *
-     * @param legend     Legend
-     * @param preview    Preview
-     * @param title      Title
+     * @param legend         Legend
+     * @param preview        Preview
+     * @param title          Title
      * @param isAreaOptional Whether the enable area checkbox should be created.
      */
     public AreaPanel(IUniqueSymbolArea legend,

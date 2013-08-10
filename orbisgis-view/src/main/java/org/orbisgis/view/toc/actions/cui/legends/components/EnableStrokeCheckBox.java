@@ -53,7 +53,10 @@ public class EnableStrokeCheckBox extends JCheckBox {
      * Constructor
      *
      * @param legend          Legend
-     * @param lineUOMComboBox Line UOM combo box
+     * @param lineUOMComboBox Line UOM combo box, used for updating the preview
+     *                        according to the information it contains.
+     *
+     * @see LineUOMComboBox#updatePreview()
      */
     public EnableStrokeCheckBox(EnablesStroke legend,
                                 LineUOMComboBox lineUOMComboBox) {

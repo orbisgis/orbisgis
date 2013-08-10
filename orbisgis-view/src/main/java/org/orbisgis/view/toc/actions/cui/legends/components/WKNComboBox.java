@@ -37,7 +37,7 @@ import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
  *
  * @author Adam Gouge
  */
-public class WKNComboBox extends AbsComboBox {
+public class WKNComboBox extends PreviewComboBox {
 
     /**
      * Constructor

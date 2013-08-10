@@ -123,7 +123,7 @@ public class SettingsPanel<K, U extends LineParameters> extends JPanel {
                     AbsPanel.COMBO_BOX_CONSTRAINTS);
 
             add(new JLabel(I18N.tr(AbsPanel.PLACE_SYMBOL_ON)), "span 1 2");
-            add(new OnVertexOnCentroidPanel((OnVertexOnCentroid) legend, preview, tablePanel),
+            add(new OnVertexOnCentroidButtonGroup((OnVertexOnCentroid) legend, preview, tablePanel),
                     "span 1 2");
         }
         if (!line()) {

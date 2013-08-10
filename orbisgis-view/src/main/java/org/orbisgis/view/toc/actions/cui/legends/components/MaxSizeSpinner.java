@@ -9,7 +9,9 @@ import javax.swing.event.ChangeListener;
 import java.beans.EventHandler;
 
 /**
- * Spinner for the maximum symbol size in proportional legends.
+ * Spinner for the maximum symbol size in proportional legends. The max value
+ * must always be >= the min value, so {@link #setMinSizeSpinner} must be called
+ * after creating a new {@link MaxSizeSpinner} in order to ensure this.
  *
  * @author Adam Gouge
  */

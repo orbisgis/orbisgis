@@ -5,6 +5,7 @@ import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.classification.ClassificationUtils;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.legend.IInterpolationLegend;
+import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
 import java.util.HashMap;
@@ -48,7 +49,7 @@ public abstract class ProportionalFieldsComboBox extends NumericalFieldsComboBox
     @Override
     protected void updateField(String name) {
         // Set the lookup field name.
-        legend.setLookupFieldName(name);
+        ((LookupFieldName) legend).setLookupFieldName(name);
         try {
             // Set the first and second data
             double[] minAndMax = ClassificationUtils

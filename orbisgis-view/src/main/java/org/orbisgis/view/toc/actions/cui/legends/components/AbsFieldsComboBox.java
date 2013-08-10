@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
 import org.gdms.driver.DriverException;
+import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.sif.components.WideComboBox;
 
@@ -43,12 +44,11 @@ import java.awt.event.ActionListener;
  *
  * @author Adam Gouge
  */
-public abstract class AbsFieldsComboBox extends WideComboBox {
+public abstract class AbsFieldsComboBox extends AbsComboBox {
 
     private static final Logger LOGGER = Logger.getLogger(AbsFieldsComboBox.class);
 
     protected DataSource ds;
-    protected LookupFieldName legend;
 
     /**
      * Constructor
@@ -57,9 +57,12 @@ public abstract class AbsFieldsComboBox extends WideComboBox {
      * @param legend Legend
      */
     public AbsFieldsComboBox(DataSource ds, final LookupFieldName legend) {
-        super();
+        super((Legend) legend);
         this.ds = ds;
-        this.legend = legend;
+    }
+
+    private LookupFieldName getLegend() {
+        return (LookupFieldName) legend;
     }
 
     /**
@@ -79,7 +82,7 @@ public abstract class AbsFieldsComboBox extends WideComboBox {
                             .getSelectedItem());
                 }
             });
-            String field = legend.getLookupFieldName();
+            String field = getLegend().getLookupFieldName();
             if (field != null && !field.isEmpty()) {
                 setSelectedItem(field);
             }
@@ -118,6 +121,6 @@ public abstract class AbsFieldsComboBox extends WideComboBox {
      * @param name The new field.
      */
     protected void updateField(String name) {
-        legend.setLookupFieldName(name);
+        getLegend().setLookupFieldName(name);
     }
 }

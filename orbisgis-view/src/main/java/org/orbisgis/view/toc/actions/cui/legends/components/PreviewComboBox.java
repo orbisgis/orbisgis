@@ -29,37 +29,45 @@
 package org.orbisgis.view.toc.actions.cui.legends.components;
 
 import org.orbisgis.legend.Legend;
-import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Root class for combo boxes.
+ * Root class for combo boxes that update a preview.
  *
  * @author Adam Gouge
  */
-public abstract class AbsComboBox extends WideComboBox {
+public abstract class PreviewComboBox extends AbsComboBox {
 
-    protected Legend legend;
-
-    /**
-     * Constructor
-     *
-     * @param legend Legend
-     */
-    public AbsComboBox(Legend legend) {
-        super();
-        this.legend = legend;
-    }
+    protected CanvasSE preview;
 
     /**
      * Constructor
      *
-     * @param items Items to add, represented as Strings.
+     * @param items   Items to be contained in the combo box
+     * @param legend  Legend
+     * @param preview Preview
      */
-    public AbsComboBox(String[] items) {
+    public PreviewComboBox(String[] items,
+                           Legend legend,
+                           CanvasSE preview) {
         super(items);
+        this.legend = legend;
+        this.preview = preview;
+        if (preview != null) {
+            addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    updatePreview();
+                }
+            });
+        }
     }
+
+    /**
+     * Update the preview according to the item selected in the combo box.
+     */
+    protected abstract void updatePreview();
 }

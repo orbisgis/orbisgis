@@ -43,15 +43,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 26/07/13
- * Time: 15:04
- * To change this template use File | Settings | File Templates.
+ * Button group for choosing whether the symbol should be placed on the vertices
+ * or on the centroid.
+ *
+ * @author Adam Gouge
+ * @author Alexis Guéganno
  */
-public class OnVertexOnCentroidPanel extends JPanel {
+public class OnVertexOnCentroidButtonGroup extends JPanel {
 
-    private static final I18n I18N = I18nFactory.getI18n(OnVertexOnCentroidPanel.class);
+    private static final I18n I18N = I18nFactory.getI18n(OnVertexOnCentroidButtonGroup.class);
 
     private static final String VERTEX = I18n.marktr("Vertex");
     private static final String CENTROID = I18n.marktr("Centroid");
@@ -60,9 +60,9 @@ public class OnVertexOnCentroidPanel extends JPanel {
     private CanvasSE preview;
     private TablePanel tablePanel;
 
-    public OnVertexOnCentroidPanel(OnVertexOnCentroid legend,
-                                   CanvasSE preview,
-                                   TablePanel tablePanel) {
+    public OnVertexOnCentroidButtonGroup(OnVertexOnCentroid legend,
+                                         CanvasSE preview,
+                                         TablePanel tablePanel) {
         super(new MigLayout("wrap 1"));
         this.legend = legend;
         this.preview = preview;
@@ -70,8 +70,8 @@ public class OnVertexOnCentroidPanel extends JPanel {
         init();
     }
 
-    public OnVertexOnCentroidPanel(OnVertexOnCentroid legend,
-                                   CanvasSE preview) {
+    public OnVertexOnCentroidButtonGroup(OnVertexOnCentroid legend,
+                                         CanvasSE preview) {
         this(legend, preview, null);
     }
 

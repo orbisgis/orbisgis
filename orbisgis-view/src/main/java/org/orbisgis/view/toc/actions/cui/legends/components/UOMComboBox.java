@@ -42,7 +42,7 @@ import org.orbisgis.view.toc.actions.cui.legends.panels.Util;
  *
  * @author Adam Gouge
  */
-public abstract class UOMComboBox<K, U extends LineParameters> extends AbsComboBox {
+public abstract class UOMComboBox<K, U extends LineParameters> extends PreviewComboBox {
 
     private static final Logger LOGGER = Logger.getLogger(UOMComboBox.class);
 

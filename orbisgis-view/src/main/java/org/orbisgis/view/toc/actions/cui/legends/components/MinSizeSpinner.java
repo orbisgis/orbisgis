@@ -8,7 +8,9 @@ import javax.swing.event.ChangeListener;
 import java.beans.EventHandler;
 
 /**
- * Spinner for the minimum symbol size in proportional legends.
+ * Spinner for the minimum symbol size in proportional legends. We pass a
+ * {@link MaxSizeSpinner} to the constructor in order to make sure that the min
+ * value is always <= the max value.
  *
  * @author Adam Gouge
  */

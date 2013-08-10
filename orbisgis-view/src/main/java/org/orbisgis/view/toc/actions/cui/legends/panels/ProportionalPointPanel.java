@@ -29,7 +29,7 @@ public class ProportionalPointPanel extends AbsPanel {
     private MaxSizeSpinner maxSizeSpinner;
     private MinSizeSpinner minSizeSpinner;
 
-    private OnVertexOnCentroidPanel onVertexOnCentroidPanel;
+    private OnVertexOnCentroidButtonGroup onVertexOnCentroidButtonGroup;
 
     /**
      * Constructor
@@ -71,8 +71,8 @@ public class ProportionalPointPanel extends AbsPanel {
             e.printStackTrace();
         }
         if (geometryType != SimpleGeometryType.POINT) {
-            onVertexOnCentroidPanel =
-                    new OnVertexOnCentroidPanel(getLegend(), preview);
+            onVertexOnCentroidButtonGroup =
+                    new OnVertexOnCentroidButtonGroup(getLegend(), preview);
         }
     }
 
@@ -97,7 +97,7 @@ public class ProportionalPointPanel extends AbsPanel {
         // wants to draw symbols on centroid or on vertices.
         if (geometryType != SimpleGeometryType.POINT) {
             add(new JLabel(I18N.tr(PLACE_SYMBOL_ON)), "span 1 2");
-            add(onVertexOnCentroidPanel, "span 1 2");
+            add(onVertexOnCentroidButtonGroup, "span 1 2");
         }
     }
 }
