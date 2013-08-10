@@ -30,7 +30,6 @@ package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -84,11 +83,7 @@ public class PnlStyle extends JPanel implements ISELegendPanel {
                 return this;
         }
 
-        @Override
-        public void initialize(LegendContext lc) {
-        }
-
-        @Override
+    @Override
         public String getId() {
                 return id;
         }

@@ -31,7 +31,6 @@ package org.orbisgis.view.toc.actions.cui.legends.ui;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
-import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
@@ -110,19 +109,7 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
                         "legends this way for unique areas.");
         }
 
-        /**
-         * Initialize the panel. This method is called just after the panel
-         * creation.
-         *
-         * @param lc LegendContext is useful to get some information about the
-         * layer in edition.
-         */
-        @Override
-        public void initialize(LegendContext lc) {
-            initialize(lc, new UniqueSymbolArea());
-        }
-
-        @Override
+    @Override
         public boolean acceptsGeometryType(int geometryType) {
                 return geometryType == SimpleGeometryType.POLYGON||
                         geometryType == SimpleGeometryType.ALL;

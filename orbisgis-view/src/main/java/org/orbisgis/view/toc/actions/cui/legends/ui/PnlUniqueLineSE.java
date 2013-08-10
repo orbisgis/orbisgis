@@ -31,7 +31,6 @@ package org.orbisgis.view.toc.actions.cui.legends.ui;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
-import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.PreviewPanel;
@@ -97,18 +96,7 @@ public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                         "legends this way for unique lines.");
         }
 
-        /**
-         * Initialize the panel. This method is called just after the panel
-         * creation.
-         * @param lc LegendContext is useful to get some information about the
-         * layer in edition.
-         */
-        @Override
-        public void initialize(LegendContext lc) {
-            initialize(lc, new UniqueSymbolLine());
-        }
-
-        @Override
+    @Override
         public boolean acceptsGeometryType(int geometryType) {
                 return geometryType == SimpleGeometryType.LINE ||
                         geometryType == SimpleGeometryType.POLYGON||

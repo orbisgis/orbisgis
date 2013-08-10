@@ -113,12 +113,7 @@ public class PnlProportionalLineSE extends PnlProportional {
                 return usl;
         }
 
-        @Override
-        public void initialize(LegendContext lc) {
-            initialize(lc, new ProportionalLine());
-        }
-
-        @Override
+    @Override
         public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));

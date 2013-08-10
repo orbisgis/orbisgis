@@ -28,8 +28,6 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.ui;
 
-import org.orbisgis.legend.Legend;
-import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 
@@ -55,12 +53,6 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
      * the fallback symbol.
      */
     public abstract void initPreview();
-
-    // *********************** ILegendPanel ************************
-    @Override
-    public void initialize(LegendContext lc, Legend leg) {
-        setLegend(leg);
-    }
 
     // ************************* UIPanel ***************************
     @Override

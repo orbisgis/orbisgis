@@ -168,13 +168,7 @@ public class PnlRule extends JPanel implements ISELegendPanel {
                 return this;
         }
 
-        @Override
-        public void initialize(LegendContext lc) {
-            throw new UnsupportedOperationException("PnlRule is no longer " +
-                    "initialized this way.");
-        }
-
-        @Override
+    @Override
         public String getId() {
                 return id;
         }

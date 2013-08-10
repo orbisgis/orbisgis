@@ -4,7 +4,6 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.OnVertexOnCentroid;
@@ -63,17 +62,6 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
                                     MappedLegend<K, U> legend) {
         this.ds = lc.getLayer().getDataSource();
         this.legend = legend;
-    }
-
-    @Override
-    public void initialize(LegendContext lc) {
-        initialize(lc, getEmptyAnalysis());
-    }
-
-    @Override
-    public void initialize(LegendContext lc, Legend l){
-        setLegend(l);
-        initPreview();
     }
 
     protected void setLegendImpl(MappedLegend<K,U> leg){

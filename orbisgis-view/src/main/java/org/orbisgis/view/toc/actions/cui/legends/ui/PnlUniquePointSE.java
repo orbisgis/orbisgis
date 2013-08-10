@@ -125,12 +125,7 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
                         "legends this way for unique points.");
         }
 
-        @Override
-        public void initialize(LegendContext lc) {
-            initialize(lc, new UniqueSymbolPoint());
-        }
-
-        @Override
+    @Override
         public boolean acceptsGeometryType(int geometryType) {
                 return (geometryType & SimpleGeometryType.ALL) != 0;
         }

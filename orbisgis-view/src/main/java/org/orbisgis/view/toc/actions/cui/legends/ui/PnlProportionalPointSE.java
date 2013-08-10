@@ -102,19 +102,7 @@ public class PnlProportionalPointSE extends PnlProportional {
                         "legends this way for proportional points");
         }
 
-        /**
-         * Initialize the panel. This method is called just after the panel
-         * creation.
-         *
-         * @param lc LegendContext is useful to get some information about the
-         * layer in edition.
-         */
-        @Override
-        public void initialize(LegendContext lc) {
-                initialize(lc, new ProportionalPoint());
-        }
-
-        @Override
+    @Override
         public Legend copyLegend(){
                 return new ProportionalPoint();
         }

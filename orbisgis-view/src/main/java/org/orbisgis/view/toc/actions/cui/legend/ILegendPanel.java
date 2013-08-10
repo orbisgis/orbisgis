@@ -40,15 +40,6 @@ import org.orbisgis.view.toc.actions.cui.LegendContext;
 public interface ILegendPanel extends ISELegendPanel {
 
     /**
-     * Initialize this panel using the given context and legend. Both must
-     * be not null and {@code leg} must be acceptable by this panel
-     * @param lc The input context
-     * @param leg The input legend
-     * @throws IllegalArgumentException If the provided legend is not acceptable.
-     */
-    void initialize(LegendContext lc, Legend leg);
-
-    /**
      * Gets the legend we want to edit.
      *
      * @return The legend to edit.
