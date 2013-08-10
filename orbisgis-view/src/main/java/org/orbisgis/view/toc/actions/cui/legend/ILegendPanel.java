@@ -57,15 +57,4 @@ public interface ILegendPanel extends ISELegendPanel {
      * Initialize and layout the UI.
      */
     void initializeLegendFields();
-
-	/**
-	 * Returns true if this legend can be applied to the specified geometry
-	 * type.
-	 * 
-	 * @param geometryType
-	 *            Type of geometry in the layer. One bit-or of the constants
-	 *            POINT, LINE and POLYGON.
-	 * @return
-	 */
-	boolean acceptsGeometryType(int geometryType);
 }

@@ -126,11 +126,6 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
         }
 
     @Override
-        public boolean acceptsGeometryType(int geometryType) {
-                return (geometryType & SimpleGeometryType.ALL) != 0;
-        }
-
-    @Override
         public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));

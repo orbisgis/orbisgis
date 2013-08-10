@@ -10,7 +10,6 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
-import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorCategorizedLine;
 import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorCategorizedLine;
@@ -138,13 +137,6 @@ public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
             throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in"
                     + "this panel."));
         }
-    }
-
-    @Override
-    public boolean acceptsGeometryType(int geometryType) {
-        return geometryType == SimpleGeometryType.LINE ||
-                geometryType == SimpleGeometryType.POLYGON||
-                geometryType == SimpleGeometryType.ALL;
     }
 
 }

@@ -31,7 +31,6 @@ package org.orbisgis.view.toc.actions.cui.legends.ui;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
-import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.PreviewPanel;
 import org.xnap.commons.i18n.I18n;
@@ -94,13 +93,6 @@ public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         public void setLegend(Legend legend) {
                 throw new UnsupportedOperationException("No longer setting " +
                         "legends this way for unique lines.");
-        }
-
-    @Override
-        public boolean acceptsGeometryType(int geometryType) {
-                return geometryType == SimpleGeometryType.LINE ||
-                        geometryType == SimpleGeometryType.POLYGON||
-                        geometryType == SimpleGeometryType.ALL;
         }
 
     @Override

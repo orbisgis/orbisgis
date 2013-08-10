@@ -39,7 +39,6 @@ import org.orbisgis.legend.thematic.recode.RecodedLine;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
-import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorRecodedLine;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorUniqueValue;
@@ -155,13 +154,6 @@ public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     @Override
     public LineParameters getColouredParameters(LineParameters lp, Color newCol){
         return new LineParameters(newCol, lp.getLineOpacity(), lp.getLineWidth(), lp.getLineDash());
-    }
-
-    @Override
-    public boolean acceptsGeometryType(int geometryType) {
-                return geometryType == SimpleGeometryType.LINE ||
-                        geometryType == SimpleGeometryType.POLYGON||
-                        geometryType == SimpleGeometryType.ALL;
     }
 
     @Override

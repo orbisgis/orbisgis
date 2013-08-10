@@ -38,7 +38,6 @@ import org.orbisgis.legend.thematic.recode.RecodedPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
-import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorRecodedPoint;
 import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorUniqueValue;
@@ -179,11 +178,6 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
             throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedArea instances in"
                         + "this panel."));
         }
-    }
-
-    @Override
-    public boolean acceptsGeometryType(int geometryType) {
-        return (geometryType & SimpleGeometryType.ALL) != 0;
     }
 
     @Override

@@ -31,7 +31,6 @@ package org.orbisgis.view.toc.actions.cui.legends.ui;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
-import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.PreviewPanel;
@@ -107,12 +106,6 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
         public void setLegend(Legend legend) {
                 throw new UnsupportedOperationException("No longer setting " +
                         "legends this way for unique areas.");
-        }
-
-    @Override
-        public boolean acceptsGeometryType(int geometryType) {
-                return geometryType == SimpleGeometryType.POLYGON||
-                        geometryType == SimpleGeometryType.ALL;
         }
 
     @Override

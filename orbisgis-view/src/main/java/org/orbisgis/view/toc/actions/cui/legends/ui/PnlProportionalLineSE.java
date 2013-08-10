@@ -33,7 +33,6 @@ import org.apache.log4j.Logger;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
-import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legends.panels.PreviewPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ProportionalLinePanel;
 import org.xnap.commons.i18n.I18n;
@@ -84,13 +83,6 @@ public class PnlProportionalLineSE extends PnlProportional {
         public void setLegend(Legend legend) {
                 throw new UnsupportedOperationException("No longer setting " +
                         "legends this way for proportional lines");
-        }
-
-        @Override
-        public boolean acceptsGeometryType(int geometryType) {
-                return geometryType == SimpleGeometryType.LINE ||
-                        geometryType == SimpleGeometryType.POLYGON||
-                        geometryType == SimpleGeometryType.ALL;
         }
 
     @Override
