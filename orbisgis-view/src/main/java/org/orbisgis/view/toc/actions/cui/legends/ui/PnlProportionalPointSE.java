@@ -33,7 +33,6 @@ import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.PointParameters;
-import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
 import org.orbisgis.sif.UIFactory;

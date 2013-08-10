@@ -32,7 +32,6 @@ import net.miginfocom.swing.MigLayout;
 import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.ColorPicker;
-import org.orbisgis.view.toc.actions.cui.legends.ui.PnlUniqueSymbolSE;
 import org.orbisgis.sif.components.WideComboBox;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -43,7 +42,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**

@@ -32,9 +32,7 @@ import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
-import org.orbisgis.legend.IInterpolationLegend;
 import org.orbisgis.legend.LookupFieldName;
-import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
 /**
  * A JComboBox containing the numerical fields of the given {@link DataSource}.

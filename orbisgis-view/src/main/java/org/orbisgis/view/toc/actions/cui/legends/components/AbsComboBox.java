@@ -30,10 +30,6 @@ package org.orbisgis.view.toc.actions.cui.legends.components;
 
 import org.orbisgis.legend.Legend;
 import org.orbisgis.sif.components.WideComboBox;
-import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Root class for combo boxes.

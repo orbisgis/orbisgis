@@ -30,7 +30,6 @@ package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;

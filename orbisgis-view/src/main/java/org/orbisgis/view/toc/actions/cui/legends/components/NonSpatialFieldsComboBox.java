@@ -32,7 +32,6 @@ import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
-import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 
 /**

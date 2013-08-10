@@ -30,10 +30,11 @@
  * www.vividsolutions.com
  */
 package org.orbisgis.view.toc.actions.cui.legends.components;
-import java.awt.*;
-import javax.swing.*;
 
 import org.orbisgis.view.components.renderers.ListLaFRenderer;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * This dedicated ListCellRenderer intends to ease the embedding of ColorSchemes in list and combo box.</p>
