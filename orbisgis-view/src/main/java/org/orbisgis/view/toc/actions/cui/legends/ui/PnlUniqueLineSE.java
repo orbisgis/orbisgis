@@ -80,7 +80,7 @@ public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
             this.uniqueLine = legend;
             this.displayUom = uom;
             initPreview();
-            initializeLegendFields();
+            buildUI();
         }
 
         @Override
@@ -95,7 +95,7 @@ public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        public void initializeLegendFields() {
+        public void buildUI() {
                 JPanel glob = new JPanel(new MigLayout());
                 glob.add(new LinePanel(uniqueLine,
                         getPreview(),

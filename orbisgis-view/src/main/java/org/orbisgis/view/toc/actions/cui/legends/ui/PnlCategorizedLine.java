@@ -52,7 +52,7 @@ public final class PnlCategorizedLine extends PnlAbstractCategorized<LineParamet
     public PnlCategorizedLine(LegendContext lc, CategorizedLine legend) {
         super(lc, legend);
         initPreview();
-        initializeLegendFields();
+        buildUI();
     }
 
     @Override
@@ -133,7 +133,7 @@ public final class PnlCategorizedLine extends PnlAbstractCategorized<LineParamet
                 }
             }
             setLegendImpl((CategorizedLine)legend);
-            this.initializeLegendFields();
+            this.buildUI();
         } else {
             throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in"
                     + "this panel."));

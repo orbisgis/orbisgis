@@ -112,7 +112,7 @@ public final class PnlUniquePointSE extends PnlUniqueSymbolSE {
                 this.geometryType = lc.getGeometryType();
             }
             initPreview();
-            initializeLegendFields();
+            buildUI();
         }
 
         @Override
@@ -127,7 +127,7 @@ public final class PnlUniquePointSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        public void initializeLegendFields() {
+        public void buildUI() {
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
                 glob.add(new LinePanel(uniquePoint,

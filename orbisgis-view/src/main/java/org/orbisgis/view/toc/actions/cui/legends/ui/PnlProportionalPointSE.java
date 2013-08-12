@@ -89,7 +89,7 @@ public final class PnlProportionalPointSE extends PnlProportional {
             this.proportionalPoint = legend;
             this.geometryType = lc.getGeometryType();
             initPreview();
-            initializeLegendFields();
+            buildUI();
         }
 
         @Override
@@ -104,7 +104,7 @@ public final class PnlProportionalPointSE extends PnlProportional {
         }
 
         @Override
-        public void initializeLegendFields() {
+        public void buildUI() {
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
                 glob.add(new ProportionalPointPanel(
@@ -117,7 +117,7 @@ public final class PnlProportionalPointSE extends PnlProportional {
                 // The preview is created only once while the other panels are
                 // created twice, currently. Adds a locally stored listener to
                 // avoid having it twice because of this double call of
-                // initializeLegendFields.
+                // buildUI.
                 CanvasSE prev = getPreview();
                 if(l == null || prev.getMouseListeners().length == 0){
                     l = EventHandler.create(MouseListener.class, this,

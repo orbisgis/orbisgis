@@ -52,7 +52,7 @@ public final class PnlCategorizedPoint extends PnlAbstractCategorized<PointParam
     public PnlCategorizedPoint(LegendContext lc, CategorizedPoint legend) {
         super(lc, legend);
         initPreview();
-        initializeLegendFields();
+        buildUI();
     }
 
     @Override
@@ -138,7 +138,7 @@ public final class PnlCategorizedPoint extends PnlAbstractCategorized<PointParam
                 }
             }
             setLegendImpl((CategorizedPoint)legend);
-            this.initializeLegendFields();
+            this.buildUI();
         } else {
             throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in"
                     + "this panel."));

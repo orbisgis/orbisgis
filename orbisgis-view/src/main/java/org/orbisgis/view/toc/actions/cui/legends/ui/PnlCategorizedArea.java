@@ -52,7 +52,7 @@ public final class PnlCategorizedArea extends PnlAbstractCategorized<AreaParamet
     public PnlCategorizedArea(LegendContext lc, CategorizedArea legend) {
         super(lc, legend);
         initPreview();
-        initializeLegendFields();
+        buildUI();
     }
 
     @Override
@@ -136,7 +136,7 @@ public final class PnlCategorizedArea extends PnlAbstractCategorized<AreaParamet
                 }
             }
             setLegendImpl((CategorizedArea)legend);
-            this.initializeLegendFields();
+            this.buildUI();
         } else {
             throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in"
                     + "this panel."));

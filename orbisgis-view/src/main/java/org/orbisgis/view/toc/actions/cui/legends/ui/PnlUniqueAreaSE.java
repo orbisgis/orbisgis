@@ -94,7 +94,7 @@ public final class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
             this.displayUOM = uom;
             this.isAreaOptional = isAreaOptional;
             initPreview();
-            initializeLegendFields();
+            buildUI();
         }
 
         @Override
@@ -109,7 +109,7 @@ public final class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        public void initializeLegendFields() {
+        public void buildUI() {
                 JPanel glob = new JPanel(new MigLayout());
 
                 glob.add(new LinePanel(uniqueArea,

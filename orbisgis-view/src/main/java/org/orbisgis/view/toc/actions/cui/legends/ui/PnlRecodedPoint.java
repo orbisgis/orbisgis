@@ -82,7 +82,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
     public PnlRecodedPoint(LegendContext lc, RecodedPoint legend) {
         super(lc, legend);
         initPreview();
-        initializeLegendFields();
+        buildUI();
     }
 
     @Override
@@ -173,7 +173,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
                 }
             }
             setLegendImpl((RecodedPoint)legend);
-            this.initializeLegendFields();
+            this.buildUI();
         } else {
             throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedArea instances in"
                         + "this panel."));

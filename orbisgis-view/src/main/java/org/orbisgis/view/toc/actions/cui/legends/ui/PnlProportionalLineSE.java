@@ -29,14 +29,11 @@
 package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
-import org.apache.log4j.Logger;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legends.panels.PreviewPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.ProportionalLinePanel;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 
@@ -69,7 +66,7 @@ public final class PnlProportionalLineSE extends PnlProportional {
             super(lc);
             this.proportionalLine = legend;
             initPreview();
-            initializeLegendFields();
+            buildUI();
         }
 
         @Override
@@ -84,7 +81,7 @@ public final class PnlProportionalLineSE extends PnlProportional {
         }
 
         @Override
-        public void initializeLegendFields() {
+        public void buildUI() {
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
                 glob.add(new ProportionalLinePanel(getLegend(), getPreview(), ds));
                 glob.add(new PreviewPanel(getPreview()));

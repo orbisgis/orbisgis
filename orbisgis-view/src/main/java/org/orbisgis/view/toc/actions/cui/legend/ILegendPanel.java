@@ -56,5 +56,5 @@ public interface ILegendPanel extends ISELegendPanel {
     /**
      * Initialize and layout the UI.
      */
-    void initializeLegendFields();
+    void buildUI();
 }

@@ -87,7 +87,7 @@ public final class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>
     public PnlRecodedLine(LegendContext lc, RecodedLine legend) {
         super(lc, legend);
         initPreview();
-        initializeLegendFields();
+        buildUI();
     }
 
     /**
@@ -165,7 +165,7 @@ public final class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>
                 }
             }
             setLegendImpl((RecodedLine)legend);
-            this.initializeLegendFields();
+            this.buildUI();
         } else {
             throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in"
                         + "this panel."));

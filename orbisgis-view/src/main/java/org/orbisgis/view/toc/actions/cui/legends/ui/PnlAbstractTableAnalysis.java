@@ -258,7 +258,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     }
 
     @Override
-    public final void initializeLegendFields() {
+    public final void buildUI() {
         // TODO: Without this call to removeAll(), if the Simple Style Editor
         // is reopened, then the Classification UI is replaced by a Unique
         // Symbol UI. Also, this call is necessary because the whole UI is

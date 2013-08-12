@@ -89,7 +89,7 @@ public final class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>
     public PnlRecodedArea(LegendContext lc, RecodedArea legend) {
         super(lc, legend);
         initPreview();
-        initializeLegendFields();
+        buildUI();
     }
 
     @Override
@@ -183,7 +183,7 @@ public final class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>
                 }
             }
             setLegendImpl((RecodedArea)legend);
-            this.initializeLegendFields();
+            this.buildUI();
         } else {
             throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedArea instances in"
                         + "this panel."));
