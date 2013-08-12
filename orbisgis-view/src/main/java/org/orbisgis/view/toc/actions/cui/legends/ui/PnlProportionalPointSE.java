@@ -105,7 +105,6 @@ public final class PnlProportionalPointSE extends PnlProportional {
 
         @Override
         public void initializeLegendFields() {
-                this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
                 glob.add(new ProportionalPointPanel(

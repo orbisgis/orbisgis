@@ -110,7 +110,6 @@ public final class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
 
         @Override
         public void initializeLegendFields() {
-                this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());
 
                 glob.add(new LinePanel(uniqueArea,

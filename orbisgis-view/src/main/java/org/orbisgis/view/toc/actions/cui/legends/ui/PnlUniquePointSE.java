@@ -128,7 +128,6 @@ public final class PnlUniquePointSE extends PnlUniqueSymbolSE {
 
         @Override
         public void initializeLegendFields() {
-                this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
                 glob.add(new LinePanel(uniquePoint,

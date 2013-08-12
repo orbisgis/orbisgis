@@ -85,7 +85,6 @@ public final class PnlProportionalLineSE extends PnlProportional {
 
         @Override
         public void initializeLegendFields() {
-                this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
                 glob.add(new ProportionalLinePanel(getLegend(), getPreview(), ds));
                 glob.add(new PreviewPanel(getPreview()));
