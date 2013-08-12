@@ -121,12 +121,6 @@ public final class PnlUniquePointSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        public void setLegend(Legend legend) {
-                throw new UnsupportedOperationException("No longer setting " +
-                        "legends this way for unique points.");
-        }
-
-        @Override
         public void buildUI() {
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 

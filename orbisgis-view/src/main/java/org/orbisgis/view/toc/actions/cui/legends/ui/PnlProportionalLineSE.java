@@ -75,12 +75,6 @@ public final class PnlProportionalLineSE extends PnlProportional {
         }
 
         @Override
-        public void setLegend(Legend legend) {
-                throw new UnsupportedOperationException("No longer setting " +
-                        "legends this way for proportional lines");
-        }
-
-        @Override
         public void buildUI() {
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
                 glob.add(new ProportionalLinePanel(getLegend(), getPreview(), ds));

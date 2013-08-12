@@ -89,12 +89,6 @@ public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        public void setLegend(Legend legend) {
-                throw new UnsupportedOperationException("No longer setting " +
-                        "legends this way for unique lines.");
-        }
-
-        @Override
         public void buildUI() {
                 JPanel glob = new JPanel(new MigLayout());
                 glob.add(new LinePanel(uniqueLine,

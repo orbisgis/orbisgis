@@ -29,25 +29,18 @@
 package org.orbisgis.view.toc.actions.cui.legend;
 
 import org.orbisgis.legend.Legend;
-import org.orbisgis.view.toc.actions.cui.LegendContext;
 
 /**
- * Interface for Legend UI panels in the SimpleStyleEditor.
+ * Interface for classification legends.
  *
- * @author David Ortega
- * @author Alexis Guéganno
+ * @author Adam Gouge
  */
-public interface ILegendPanel extends ISELegendPanel {
+public interface IClassificationLegend extends ILegendPanel {
 
     /**
-     * Gets the legend we want to edit.
+     * Sets the legend to be edited by this component
      *
-     * @return The legend to edit.
+     * @param legend Legend
      */
-	Legend getLegend();
-
-    /**
-     * Initialize and layout the UI.
-     */
-    void buildUI();
+    void setLegend(Legend legend);
 }

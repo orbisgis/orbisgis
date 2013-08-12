@@ -12,6 +12,7 @@ import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.legend.thematic.uom.SymbolUom;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.legend.IClassificationLegend;
 import org.orbisgis.view.toc.actions.cui.legends.components.ColorScheme;
 import org.orbisgis.view.toc.actions.cui.legends.panels.SettingsPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.TablePanel;
@@ -34,7 +35,7 @@ import java.util.SortedSet;
  * @author Alexis Guéganno
  */
 public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
-        extends AbstractFieldPanel {
+        extends AbstractFieldPanel implements IClassificationLegend {
 
     public static final Logger LOGGER = Logger.getLogger(PnlAbstractTableAnalysis.class);
 

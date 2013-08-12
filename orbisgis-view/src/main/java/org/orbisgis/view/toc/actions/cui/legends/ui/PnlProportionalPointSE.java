@@ -98,12 +98,6 @@ public final class PnlProportionalPointSE extends PnlProportional {
         }
 
         @Override
-        public void setLegend(Legend legend) {
-                throw new UnsupportedOperationException("No longer setting " +
-                        "legends this way for proportional points");
-        }
-
-        @Override
         public void buildUI() {
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
