@@ -42,10 +42,10 @@ import javax.swing.*;
 /**
  * "Unique Symbol - Area" UI.
  *
- * This panel is used to configure a unique symbol configuration for an area symbolizer.
  * @author Alexis Guéganno
+ * @author Adam Gouge
  */
-public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
+public final class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
 
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueAreaSE.class);
 
@@ -108,7 +108,7 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
                         "legends this way for unique areas.");
         }
 
-    @Override
+        @Override
         public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());

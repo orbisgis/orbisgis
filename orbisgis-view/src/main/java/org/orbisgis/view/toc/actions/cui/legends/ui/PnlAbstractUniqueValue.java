@@ -68,6 +68,13 @@ import java.util.TreeSet;
 /**
  * Root class for Value Classifications.
  *
+ * <p>This panel proposes a way to build a classification from scratch. This
+ * feature comes fortunately with a ProgressMonitor that can be used to cancel
+ * the building. This way, if accidentally trying to build a classification on
+ * a field with a lot of different values, the user can still cancel the
+ * operation. The feeding of the underlying recoded analysis becomes in fact
+ * really inefficient when it manages a lot of elements.</p>
+ *
  * @author alexis
  */
 public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends PnlAbstractTableAnalysis<String,U> {

@@ -28,8 +28,9 @@ import java.beans.EventHandler;
  * "Interval classification - Point" UI.
  *
  * @author Alexis Guéganno
+ * @author Adam Gouge
  */
-public class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>{
+public final class PnlCategorizedPoint extends PnlAbstractCategorized<PointParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlCategorizedPoint.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlCategorizedPoint.class);
 

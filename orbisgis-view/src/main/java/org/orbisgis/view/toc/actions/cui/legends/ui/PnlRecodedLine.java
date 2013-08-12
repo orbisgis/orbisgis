@@ -61,14 +61,11 @@ import java.beans.EventHandler;
  * which is configured thanks to a "simple" recoded PenStroke. All the parameters
  * of the PenStroke must be configured either with a Recode or a Literal, all
  * the Recode must be done with the same analysis field.</p>
- * <p>This panel proposes a way to build a classification from scratch. This feature comes fortunately with a
- * ProgressMonitor that can be used to cancel the building. This way, if accidentally trying to build a classification
- * on a field with a lot of different values, the user can still cancel the operation. The feeding of the underlying
- * recoded analysis becomes in fact really inefficient when it manages a lot of elements.</p>
  *
  * @author Alexis Guéganno
+ * @author Adam Gouge
  */
-public class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
+public final class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlRecodedLine.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
 

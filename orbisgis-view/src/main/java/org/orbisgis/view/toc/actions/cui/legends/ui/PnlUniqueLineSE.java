@@ -41,12 +41,11 @@ import javax.swing.*;
 /**
  * "Unique Symbol - Line" UI.
  *
- * {@code JPanel} that ca nbe used to configure simple constant {@code
- * LineSymbolizer} instances that have been recognized as unique symbols made
- * justof one simple {@code PenStroke}.
  * @author Alexis Guéganno
+ * @author Adam Gouge
  */
 public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
+
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueLineSE.class);
 
         public static final String LINE_SETTINGS = I18n.marktr("Line settings");
@@ -95,7 +94,7 @@ public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                         "legends this way for unique lines.");
         }
 
-    @Override
+        @Override
         public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout());

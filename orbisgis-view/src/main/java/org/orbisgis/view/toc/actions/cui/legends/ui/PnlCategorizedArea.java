@@ -28,8 +28,9 @@ import java.beans.EventHandler;
  * "Interval classification - Area" UI.
  *
  * @author Alexis Guéganno
+ * @author Adam Gouge
  */
-public class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
+public final class PnlCategorizedArea extends PnlAbstractCategorized<AreaParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlCategorizedArea.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlCategorizedArea.class);
 

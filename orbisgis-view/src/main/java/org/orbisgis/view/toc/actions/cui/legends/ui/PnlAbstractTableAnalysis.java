@@ -263,8 +263,6 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
 
         JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
-        // Fallback symbol
-//        glob.add(getSettingsPanel());
         tablePanel = new TablePanel<K, U>(legend,
                 getTitleBorder(),
                 getTableModel(),
@@ -280,7 +278,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
                 tablePanel);
         glob.add(settingsPanel);
 
-        //Classification generator
+        // Classification generator
         glob.add(getCreateClassificationPanel());
 
         // Table
@@ -351,10 +349,5 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
      */
     public String getFieldName() {
         return settingsPanel.getSelectedField();
-    }
-
-    @Override
-    public String validateInput() {
-        return null;
     }
 }

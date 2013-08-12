@@ -59,4 +59,9 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
     public Component getComponent() {
         return this;
     }
+    // ********************* ISELegendPanel ************************
+    @Override
+    public String validateInput() {
+        return null;
+    }
 }

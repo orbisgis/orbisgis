@@ -58,8 +58,9 @@ import java.net.URL;
  * "Proportional Point" UI.
  *
  * @author Alexis Guéganno
+ * @author Adam Gouge
  */
-public class PnlProportionalPointSE extends PnlProportional {
+public final class PnlProportionalPointSE extends PnlProportional {
 
         private static final I18n I18N = I18nFactory.getI18n(PnlProportionalPointSE.class);
 
@@ -102,7 +103,7 @@ public class PnlProportionalPointSE extends PnlProportional {
                         "legends this way for proportional points");
         }
 
-    @Override
+        @Override
         public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));

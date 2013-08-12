@@ -47,9 +47,4 @@ public abstract class PnlNonClassification extends AbstractFieldPanel {
     public void setId(String id) {
         this.id = id;
     }
-
-    @Override
-    public String validateInput() {
-        return null;
-    }
 }

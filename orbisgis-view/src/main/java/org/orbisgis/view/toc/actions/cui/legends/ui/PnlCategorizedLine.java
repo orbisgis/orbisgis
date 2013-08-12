@@ -28,8 +28,9 @@ import java.beans.EventHandler;
  * "Interval classification - Line" UI.
  *
  * @author Alexis Guéganno
+ * @author Adam Gouge
  */
-public class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
+public final class PnlCategorizedLine extends PnlAbstractCategorized<LineParameters>{
     public static final Logger LOGGER = Logger.getLogger(PnlCategorizedLine.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlCategorizedLine.class);
 

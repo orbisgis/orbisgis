@@ -46,8 +46,9 @@ import javax.swing.*;
  * "Unique Symbol - Point" UI.
  *
  * @author Alexis Guéganno
+ * @author Adam Gouge
  */
-public class PnlUniquePointSE extends PnlUniqueSymbolSE {
+public final class PnlUniquePointSE extends PnlUniqueSymbolSE {
 
         private static final I18n I18N = I18nFactory.getI18n(PnlUniquePointSE.class);
 
@@ -125,7 +126,7 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
                         "legends this way for unique points.");
         }
 
-    @Override
+        @Override
         public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));

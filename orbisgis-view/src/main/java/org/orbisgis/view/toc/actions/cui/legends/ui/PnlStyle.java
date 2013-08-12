@@ -43,8 +43,9 @@ import java.beans.EventHandler;
  * Style UI.
  *
  * @author Alexis Guéganno
+ * @author Adam Gouge
  */
-public class PnlStyle extends JPanel implements ISELegendPanel {
+public final class PnlStyle extends JPanel implements ISELegendPanel {
         private static final I18n I18N = I18nFactory.getI18n(PnlStyle.class);
         private Style style;
         private JTextField txtName;
@@ -83,7 +84,7 @@ public class PnlStyle extends JPanel implements ISELegendPanel {
                 return this;
         }
 
-    @Override
+        @Override
         public String getId() {
                 return id;
         }

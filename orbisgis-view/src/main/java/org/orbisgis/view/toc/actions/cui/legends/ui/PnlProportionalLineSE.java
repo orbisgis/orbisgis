@@ -44,11 +44,9 @@ import javax.swing.*;
  * "Proportional Line" UI.
  *
  * @author Alexis Guéganno
+ * @author Adam Gouge
  */
-public class PnlProportionalLineSE extends PnlProportional {
-
-        private static final I18n I18N = I18nFactory.getI18n(PnlProportionalLineSE.class);
-        private static final Logger LOGGER = Logger.getLogger(PnlProportionalLineSE.class);
+public final class PnlProportionalLineSE extends PnlProportional {
 
         private ProportionalLine proportionalLine;
 
@@ -85,7 +83,7 @@ public class PnlProportionalLineSE extends PnlProportional {
                         "legends this way for proportional lines");
         }
 
-    @Override
+        @Override
         public void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));

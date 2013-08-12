@@ -44,15 +44,13 @@ import java.beans.EventHandler;
  * Rule UI.
  *
  * @author Alexis Guéganno
+ * @author Adam Gouge
  */
-public class PnlRule extends JPanel implements ISELegendPanel {
+public final class PnlRule extends JPanel implements ISELegendPanel {
         private static final I18n I18N = I18nFactory.getI18n(PnlRule.class);
-        private JButton btnCurrentScaleToMin;
-        private JButton btnCurrentScaleToMax;
         private JTextField txtMinScale;
         private JTextField txtMaxScale;
         private JTextField txtName;
-        private JTextArea txtDescription;
         private Rule rule;
         private LegendContext legendContext;
         private String id;
@@ -105,7 +103,7 @@ public class PnlRule extends JPanel implements ISELegendPanel {
 
                 // Description
                 panel.add(new JLabel(I18N.tr("Description")));
-                txtDescription = new JTextArea("");
+                JTextArea txtDescription = new JTextArea("");
                 txtDescription.setRows(6);
                 txtDescription.setLineWrap(true);
                 txtDescription.setWrapStyleWord(true);
@@ -135,15 +133,15 @@ public class PnlRule extends JPanel implements ISELegendPanel {
                         EventHandler.create(KeyListener.class, this, "applyScales");
                 txtMinScale.addKeyListener(keyAdapter);
                 panel.add(txtMinScale, "growx");
-                btnCurrentScaleToMin = new JButton(I18N.tr("Current"));
+                JButton btnCurrentScaleToMin = new JButton(I18N.tr("Current"));
                 btnCurrentScaleToMin.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                                txtMinScale.setText(Integer.toString(
-                                        (int) legendContext.getCurrentMapTransform()
-                                                .getScaleDenominator()));
-                                applyScales();
-                        }
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        txtMinScale.setText(Integer.toString(
+                                (int) legendContext.getCurrentMapTransform()
+                                        .getScaleDenominator()));
+                        applyScales();
+                    }
                 });
                 panel.add(btnCurrentScaleToMin);
 
@@ -152,15 +150,15 @@ public class PnlRule extends JPanel implements ISELegendPanel {
                 txtMaxScale = new JTextField(getMaxscale());
                 txtMaxScale.addKeyListener(keyAdapter);
                 panel.add(txtMaxScale, "growx");
-                btnCurrentScaleToMax = new JButton(I18N.tr("Current"));
+                JButton btnCurrentScaleToMax = new JButton(I18N.tr("Current"));
                 btnCurrentScaleToMax.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                                txtMaxScale.setText(Integer.toString(
-                                        (int) legendContext.getCurrentMapTransform()
-                                                .getScaleDenominator()));
-                                applyScales();
-                        }
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        txtMaxScale.setText(Integer.toString(
+                                (int) legendContext.getCurrentMapTransform()
+                                        .getScaleDenominator()));
+                        applyScales();
+                    }
                 });
                 panel.add(btnCurrentScaleToMax);
 
@@ -168,7 +166,7 @@ public class PnlRule extends JPanel implements ISELegendPanel {
                 return this;
         }
 
-    @Override
+        @Override
         public String getId() {
                 return id;
         }
