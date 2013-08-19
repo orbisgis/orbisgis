@@ -76,7 +76,7 @@ public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          * @param displayUOM    True if the UOM should be displayed
          */
         public PnlUniqueLineSE(UniqueSymbolLine legend, boolean displayUOM){
-            super(displayUOM);
+            super(false, displayUOM);
             this.uniqueLine = legend;
             initPreview();
             buildUI();

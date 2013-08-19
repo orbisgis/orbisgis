@@ -42,6 +42,7 @@ import java.net.URL;
 public abstract class PnlUniqueSymbolSE extends PnlNonClassification
         implements UIPanel {
 
+    protected boolean isOptional;
     protected boolean displayUOM;
 
     /**
@@ -49,7 +50,8 @@ public abstract class PnlUniqueSymbolSE extends PnlNonClassification
      *
      * @param displayUOM Whether the unit of measure should be displayed
      */
-    protected PnlUniqueSymbolSE(boolean displayUOM) {
+    protected PnlUniqueSymbolSE(boolean isOptional, boolean displayUOM) {
+        this.isOptional = isOptional;
         this.displayUOM = displayUOM;
     }
 

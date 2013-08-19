@@ -29,7 +29,6 @@
 package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
@@ -50,7 +49,6 @@ public final class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueAreaSE.class);
 
         private UniqueSymbolArea uniqueArea;
-        protected boolean isAreaOptional;
 
         /**
          * Builds a panel based on a new legend.
@@ -73,12 +71,12 @@ public final class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
          * Builds a panel based on the given legend, hiding the UOM and optionally
          * displaying the Enable Area checkbox.
          *
-         * @param legend Legend
+         * @param legend         Legend
          * @param isAreaOptional Draw enable checkbox?
          */
         public PnlUniqueAreaSE(UniqueSymbolArea legend,
                                boolean isAreaOptional){
-            this(legend, false, isAreaOptional);
+            this(legend, isAreaOptional, false);
         }
 
         /**
@@ -86,15 +84,14 @@ public final class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
          * UOM and the Enable Area checkbox.
          *
          * @param legend         Legend
+         * @param isOptional     Draw the Enable checkbox?
          * @param displayUOM     Display the unit of measure?
-         * @param isAreaOptional Draw the Enable checkbox?
          */
         private PnlUniqueAreaSE(UniqueSymbolArea legend,
-                                boolean displayUOM,
-                                boolean isAreaOptional){
-            super(displayUOM);
+                                boolean isOptional,
+                                boolean displayUOM){
+            super(isOptional, displayUOM);
             this.uniqueArea = legend;
-            this.isAreaOptional = isAreaOptional;
             initPreview();
             buildUI();
         }
@@ -118,7 +115,7 @@ public final class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
                 glob.add(new AreaPanel(uniqueArea,
                         getPreview(),
                         I18N.tr(FILL_SETTINGS),
-                        isAreaOptional),
+                        isOptional),
                         "cell 1 0, growx");
 
                 glob.add(new PreviewPanel(getPreview()),
