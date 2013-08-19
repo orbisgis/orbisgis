@@ -58,6 +58,10 @@ public abstract class AbsFieldsComboBox extends AbsComboBox {
      */
     public AbsFieldsComboBox(DataSource ds, final LookupFieldName legend) {
         super((Legend) legend);
+        if (ds == null) {
+            throw new IllegalStateException("A FieldsComboBox requires " +
+                    "a non-null DataSource.");
+        }
         this.ds = ds;
     }
 
@@ -66,31 +70,22 @@ public abstract class AbsFieldsComboBox extends AbsComboBox {
     }
 
     /**
-     * Creates and fill the combobox that will be used to compute the
-     * analysis.
-     *
-     * @return A ComboBox linked to the underlying MappedLegend that
-     *         configures the analysis field.
+     * Initializes the combo box.
      */
     protected void init() {
-        if (ds != null) {
-            addFields();
-            addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    updateField((String) ((WideComboBox) e.getSource())
-                            .getSelectedItem());
-                }
-            });
-            String field = getLegend().getLookupFieldName();
-            if (field != null && !field.isEmpty()) {
-                setSelectedItem(field);
+        addFields();
+        addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateField((String) ((WideComboBox) e.getSource())
+                        .getSelectedItem());
             }
-            updateField((String) getSelectedItem());
-        } else {
-            LOGGER.error("Cannot construct the field combo box because the " +
-                    "DataSource is null.");
+        });
+        String field = getLegend().getLookupFieldName();
+        if (field != null && !field.isEmpty()) {
+            setSelectedItem(field);
         }
+        updateField((String) getSelectedItem());
     }
 
     /**
