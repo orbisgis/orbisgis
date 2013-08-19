@@ -51,7 +51,6 @@ public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         public static final String LINE_SETTINGS = I18n.marktr("Line settings");
 
         private UniqueSymbolLine uniqueLine;
-        private final boolean displayUom;
 
         /**
          * Builds a panel based on a new legend.
@@ -73,12 +72,12 @@ public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          * Builds a panel based on the given legend, optionally displaying the
          * UOM.
          *
-         * @param legend Legend
-         * @param uom    True if the UOM should be displayed
+         * @param legend        Legend
+         * @param displayUOM    True if the UOM should be displayed
          */
-        public PnlUniqueLineSE(UniqueSymbolLine legend, boolean uom){
+        public PnlUniqueLineSE(UniqueSymbolLine legend, boolean displayUOM){
+            super(displayUOM);
             this.uniqueLine = legend;
-            this.displayUom = uom;
             initPreview();
             buildUI();
         }
@@ -95,7 +94,7 @@ public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                         getPreview(),
                         I18N.tr(LINE_SETTINGS),
                         false,
-                        displayUom));
+                        displayUOM));
                 glob.add(new PreviewPanel(getPreview()));
                 this.add(glob);
         }

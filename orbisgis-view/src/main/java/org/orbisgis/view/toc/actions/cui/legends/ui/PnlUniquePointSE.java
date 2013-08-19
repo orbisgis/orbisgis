@@ -55,7 +55,6 @@ public final class PnlUniquePointSE extends PnlUniqueSymbolSE {
         private UniqueSymbolPoint uniquePoint;
         private int geometryType = SimpleGeometryType.ALL;
 
-        private boolean uom;
         private boolean enableArea;
 
         /**
@@ -97,17 +96,16 @@ public final class PnlUniquePointSE extends PnlUniqueSymbolSE {
          *
          * @param lc            LegendContext
          * @param legend        Legend
-         * @param uom           True if the UOM should be displayed
-         * @param enableArea    True if the Enable Area checkbox should be
-         *                      displayed
+         * @param displayUOM    Display the unit of measure?
+         * @param isOptional    Draw the Enable checkbox?
          */
         private PnlUniquePointSE(LegendContext lc,
                                 UniqueSymbolPoint legend,
-                                boolean uom,
-                                boolean enableArea) {
+                                boolean displayUOM,
+                                boolean isOptional) {
+            super(displayUOM);
             this.uniquePoint = legend;
-            this.uom = uom;
-            this.enableArea = enableArea;
+            this.enableArea = isOptional;
             if (lc != null) {
                 this.geometryType = lc.getGeometryType();
             }
@@ -128,12 +126,12 @@ public final class PnlUniquePointSE extends PnlUniqueSymbolSE {
                         getPreview(),
                         I18N.tr(BORDER_SETTINGS),
                         true,
-                        uom));
+                        displayUOM));
 
                 glob.add(new PointPanel(uniquePoint,
                         getPreview(),
                         I18N.tr(MARK_SETTINGS),
-                        uom,
+                        displayUOM,
                         geometryType));
 
                 glob.add(new AreaPanel(uniquePoint,

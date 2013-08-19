@@ -42,6 +42,17 @@ import java.net.URL;
 public abstract class PnlUniqueSymbolSE extends PnlNonClassification
         implements UIPanel {
 
+    protected boolean displayUOM;
+
+    /**
+     * Constructor
+     *
+     * @param displayUOM Whether the unit of measure should be displayed
+     */
+    protected PnlUniqueSymbolSE(boolean displayUOM) {
+        this.displayUOM = displayUOM;
+    }
+
     // ************************** UIPanel ****************************
     // Note: The validateInput() method of UIPanel is implemented in
     // PnlNonClassification.

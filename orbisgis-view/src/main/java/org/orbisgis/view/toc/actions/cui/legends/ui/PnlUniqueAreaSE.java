@@ -50,7 +50,6 @@ public final class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueAreaSE.class);
 
         private UniqueSymbolArea uniqueArea;
-        private boolean displayUOM;
         protected boolean isAreaOptional;
 
         /**
@@ -75,6 +74,7 @@ public final class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
          * displaying the Enable Area checkbox.
          *
          * @param legend Legend
+         * @param isAreaOptional Draw enable checkbox?
          */
         public PnlUniqueAreaSE(UniqueSymbolArea legend,
                                boolean isAreaOptional){
@@ -85,13 +85,15 @@ public final class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
          * Builds a panel based on the given legend, optionally displaying the
          * UOM and the Enable Area checkbox.
          *
-         * @param legend Legend
+         * @param legend         Legend
+         * @param displayUOM     Display the unit of measure?
+         * @param isAreaOptional Draw the Enable checkbox?
          */
         private PnlUniqueAreaSE(UniqueSymbolArea legend,
-                                boolean uom,
+                                boolean displayUOM,
                                 boolean isAreaOptional){
+            super(displayUOM);
             this.uniqueArea = legend;
-            this.displayUOM = uom;
             this.isAreaOptional = isAreaOptional;
             initPreview();
             buildUI();
