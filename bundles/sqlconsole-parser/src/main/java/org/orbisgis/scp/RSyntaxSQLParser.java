@@ -28,10 +28,12 @@
  */
 package org.orbisgis.scp;
 
-import javax.sql.DataSource;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
+import com.akiban.sql.StandardException;
+import com.akiban.sql.parser.SQLParser;
+import com.akiban.sql.parser.StatementNode;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.parser.AbstractParser;
@@ -44,22 +46,22 @@ import java.io.Reader;
 
 /**
  * A parser for SQL syntax that provides error locations.
- * This parser use EXPLAIN SQL command, and parse SQLException.
+ * This parser use Akiban parser.
  * @author Antoine Gourlay
  * @author Nicolas Fortin
  */
-public class SQLParser extends AbstractParser {
+public class RSyntaxSQLParser extends AbstractParser {
     private RSyntaxTextArea textArea;
-    private DataSource dataSource;
+    SQLParser sqlParser = new SQLParser();
 
     /**
      * Constructor
-     * @param dataSource Active DataSOurce
+     * @param dataSource Active DataSource
      * @param textArea Component
      */
-    public SQLParser(DataSource dataSource, RSyntaxTextArea textArea) {
-        this.dataSource = dataSource;
+    public RSyntaxSQLParser(RSyntaxTextArea textArea) {
         this.textArea = textArea;
+        // Init parser with H2 and PostgreSQL features
     }
 
     @Override
@@ -72,9 +74,18 @@ public class SQLParser extends AbstractParser {
             }
             DocumentReader documentReader = new DocumentReader(doc);
             ScriptReader scriptReader = new ScriptReader(documentReader);
-
+            scriptReader.setSkipRemarks(true);
             long start = System.currentTimeMillis();
+            String statement = scriptReader.readStatement();
+            while(statement!=null) {
+                try {
+                    StatementNode st = sqlParser.parseStatement(statement);
+                } catch (StandardException ex) {
+                    // Fetch exception
 
+                }
+                statement = scriptReader.readStatement();
+            }
             long time = System.currentTimeMillis() - start;
             res.setParseTime(time);
 
