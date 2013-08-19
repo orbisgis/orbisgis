@@ -41,11 +41,12 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 29/07/13
- * Time: 16:50
- * To change this template use File | Settings | File Templates.
+ * A {@link JLabel} in a {@link JPanel} for choosing the color. If clicked, a
+ * dialog is opened to let the user choose a color. This {@code JLabel} is
+ * linked to the given {@code USParameter}.
+ *
+ * @author Adam Gouge
+ * @author Alexis Guéganno
  */
 public class ColorLabel extends JPanel {
 
@@ -59,31 +60,24 @@ public class ColorLabel extends JPanel {
     public final static int FILLED_LABEL_HEIGHT = 15;
 
     private CanvasSE preview;
-    private ConstantSolidFill fill;
 
+    /**
+     * Constructor
+     *
+     * @param legend  Legend
+     * @param preview Preview
+     */
     public ColorLabel(ConstantSolidFill legend, CanvasSE preview) {
         super();
         this.preview = preview;
-        this.fill = legend;
         add(getColorField(legend));
     }
 
     /**
-     * Get the fill.
+     * Get a {@code JLabel} for choosing the color.
      *
-     * @return The fill
-     */
-    public ConstantSolidFill getFill() {
-        return fill;
-    }
-
-    /**
-     * Get a {@code JPanel} that contains a {@code JLabel}. If the {@code
-     * JLabel} is clicked, a dialog is open to let the user choose a color.
-     * This {@code JLabel} is linked to the given {@code USParameter}.
-     *
-     * @param fill
-     * @return
+     * @param fill Legend
+     * @return Label for choosing the color
      */
     public JLabel getColorField(final ConstantSolidFill fill) {
         JLabel lblFill = getFilledLabel(fill.getColor());

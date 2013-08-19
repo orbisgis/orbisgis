@@ -53,7 +53,7 @@ import javax.swing.*;
  *
  * @author Adam Gouge
  */
-public class SettingsPanel<K, U extends LineParameters> extends JPanel {
+public final class SettingsPanel<K, U extends LineParameters> extends JPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(SettingsPanel.class);
 
@@ -64,6 +64,14 @@ public class SettingsPanel<K, U extends LineParameters> extends JPanel {
     private AbsFieldsComboBox fieldComboBox;
     private LineUOMComboBox<K, U> lineUOMComboBox;
 
+    /**
+     * Constructor
+     *
+     * @param legend     Legend
+     * @param dataSource DataSource for the fields combo box
+     * @param preview    Preview
+     * @param tablePanel Table Panel
+     */
     public SettingsPanel(MappedLegend<K, U> legend,
                          DataSource dataSource,
                          CanvasSE preview,
@@ -140,6 +148,11 @@ public class SettingsPanel<K, U extends LineParameters> extends JPanel {
         return legend instanceof CategorizedPoint || legend instanceof RecodedPoint;
     }
 
+    /**
+     * Gets the currently selected field from the fields combo box.
+     *
+     * @return The currently selected field from the fields combo box
+     */
     public String getSelectedField() {
         return (String) fieldComboBox.getSelectedItem();
     }

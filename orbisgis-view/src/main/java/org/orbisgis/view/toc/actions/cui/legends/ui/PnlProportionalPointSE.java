@@ -67,7 +67,7 @@ public final class PnlProportionalPointSE extends PnlProportional {
         private ProportionalPoint proportionalPoint;
 
         private int geometryType = SimpleGeometryType.ALL;
-        MouseListener l;
+        private MouseListener l;
 
         /**
          * Builds a panel based on a new legend.

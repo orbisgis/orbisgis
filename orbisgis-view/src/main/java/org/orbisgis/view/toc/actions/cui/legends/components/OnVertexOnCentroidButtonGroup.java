@@ -49,7 +49,7 @@ import java.awt.event.ActionListener;
  * @author Adam Gouge
  * @author Alexis Guéganno
  */
-public class OnVertexOnCentroidButtonGroup extends JPanel {
+public final class OnVertexOnCentroidButtonGroup extends JPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(OnVertexOnCentroidButtonGroup.class);
 
@@ -60,6 +60,13 @@ public class OnVertexOnCentroidButtonGroup extends JPanel {
     private CanvasSE preview;
     private TablePanel tablePanel;
 
+    /**
+     * Constructor.
+     *
+     * @param legend     Legend
+     * @param preview    Preview
+     * @param tablePanel Table panel
+     */
     public OnVertexOnCentroidButtonGroup(OnVertexOnCentroid legend,
                                          CanvasSE preview,
                                          TablePanel tablePanel) {
