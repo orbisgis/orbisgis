@@ -55,8 +55,10 @@ public final class PPointFieldsComboBox extends ProportionalFieldsComboBox {
 
     @Override
     protected void setFirstAndSecondValues(double[] minAndMax) {
-        // TODO: Why do we have to use Math.sqrt? (Otherwise the preview is
-        // too small.)
+        // We use sqrt because of the definition of a proportional symbol.
+        // We want the area to grow proportionally to the value, not the
+        // width/height. If we used the raw values, the area would be
+        // proportional to the square of the input values.
         getLegend().setFirstData(Math.sqrt(minAndMax[0]));
         getLegend().setSecondData(Math.sqrt(minAndMax[1]));
     }
