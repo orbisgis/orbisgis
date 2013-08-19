@@ -33,7 +33,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.legend.thematic.recode.RecodedPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.view.toc.actions.cui.legends.PnlUniquePointSE;
+import org.orbisgis.view.toc.actions.cui.legends.ui.PnlUniquePointSE;
 
 import java.awt.event.ActionEvent;
 
@@ -56,8 +56,7 @@ public class ParametersEditorRecodedPoint extends ParametersEditorMappedLegend<S
             String key = (String) getCellEditorValue();
             PointParameters lp = rl.get(key);
             UniqueSymbolPoint usl = new UniqueSymbolPoint(lp);
-            PnlUniquePointSE pls = new PnlUniquePointSE(false,rl.isStrokeEnabled(), false);
-            pls.setLegend(usl);
+            PnlUniquePointSE pls = new PnlUniquePointSE(usl, rl.isStrokeEnabled());
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 PointParameters edited = usl.getPointParameters();
                 rl.put((String)getCellEditorValue(), edited);

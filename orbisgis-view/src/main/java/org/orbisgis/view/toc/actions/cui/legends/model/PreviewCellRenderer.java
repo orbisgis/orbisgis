@@ -43,7 +43,7 @@ import java.util.Map;
  * @author alexis
  */
 public class PreviewCellRenderer extends TableLaFCellRenderer {
-    private final MappedLegend symbolizer;
+    private final MappedLegend legend;
 
     /**
      * Set listener to L&F events
@@ -54,7 +54,7 @@ public class PreviewCellRenderer extends TableLaFCellRenderer {
      */
     public PreviewCellRenderer(JTable table, Class<?> type, MappedLegend sym) {
         super(table, type);
-        symbolizer = sym;
+        legend = sym;
     }
 
 
@@ -63,9 +63,9 @@ public class PreviewCellRenderer extends TableLaFCellRenderer {
         JLabel lab = (JLabel)lookAndFeelRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         if(value instanceof String || value instanceof Double){
             lab.setText("");
-            CanvasSE cse = new CanvasSE(symbolizer.getSymbolizer(),CanvasSE.WIDTH/2, CanvasSE.HEIGHT/2);
+            CanvasSE cse = new CanvasSE(legend.getSymbolizer(),CanvasSE.WIDTH/2, CanvasSE.HEIGHT/2);
             Map<String,Object> map = new HashMap<String,Object>();
-            map.put(symbolizer.getLookupFieldName(), value);
+            map.put(legend.getLookupFieldName(), value);
             cse.setSampleDatasource(map);
             ImageIcon ii = new ImageIcon(cse.getImage());
             lab.setIcon(ii);

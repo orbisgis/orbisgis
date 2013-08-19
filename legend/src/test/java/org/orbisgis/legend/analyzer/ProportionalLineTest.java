@@ -58,11 +58,10 @@ public class ProportionalLineTest extends AnalyzerTest {
                 assertTrue(pl.getFirstValue() == 0);
                 assertTrue(pl.getSecondData() == 1);
                 assertTrue(pl.getSecondValue() == 1);
-                assertTrue(pl.getStrokeLegend() instanceof ProportionalStrokeLegend);
                 LineSymbolizer ls = (LineSymbolizer) pl.getSymbolizer();
                 PenStroke ps = (PenStroke) ls.getStroke();
                 assertTrue(ps.getWidth() instanceof Interpolate2Real);
-                assertTrue(ps == ((PenStrokeLegend)pl.getStrokeLegend()).getStroke());
+                assertTrue(ps == pl.getStrokeLegend().getStroke());
         }
 
         @Test

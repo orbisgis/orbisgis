@@ -28,6 +28,7 @@
  */
 package org.orbisgis.legend.thematic.map;
 
+import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.legend.structure.parameter.ParameterVisitor;
 import org.orbisgis.legend.structure.recode.FieldAggregatorVisitor;
 import org.orbisgis.legend.structure.recode.KeysRetriever;
@@ -42,7 +43,8 @@ import java.util.*;
  * classifications. It presents a mapping between the keys and configurations of the associated classification.
  * @author alexis
  */
-public abstract class MappedLegend<T,U extends SymbolParameters> extends SymbolizerLegend implements Map<T,U> {
+public abstract class MappedLegend<T,U extends SymbolParameters> extends SymbolizerLegend
+        implements Map<T,U>, LookupFieldName {
 
     private Comparator<T> comparator;
 
@@ -62,10 +64,7 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
      */
     public abstract T getNotUsedKey(T orig);
 
-    /**
-     * Gets the analysis field.
-     * @return The name of the analysis field.
-     */
+    @Override
     public String getLookupFieldName(){
         FieldAggregatorVisitor fav = new FieldAggregatorVisitor();
         applyGlobalVisitor(fav);
@@ -82,10 +81,7 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
         }
     }
 
-    /**
-     * Use {@code field} as the field name on which the analysis will be made.
-     * @param field The new field name.
-     */
+    @Override
     public void setLookupFieldName(String field) {
         SetFieldVisitor sfv = new SetFieldVisitor(field);
         applyGlobalVisitor(sfv);
