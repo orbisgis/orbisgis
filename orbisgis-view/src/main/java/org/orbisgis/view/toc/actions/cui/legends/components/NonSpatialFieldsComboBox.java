@@ -39,13 +39,20 @@ import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
  *
  * @author Adam Gouge
  */
-public class NonSpatialFieldsComboBox extends AbsFieldsComboBox {
+public final class NonSpatialFieldsComboBox extends AbsFieldsComboBox {
 
     private static final Logger LOGGER = Logger.getLogger(NonSpatialFieldsComboBox.class);
 
-    protected NonSpatialFieldsComboBox(DataSource ds,
-                                       AbstractRecodedLegend legend) {
+    /**
+     * Constructor
+     *
+     * @param ds     DataSource
+     * @param legend Legend
+     */
+    public NonSpatialFieldsComboBox(DataSource ds,
+                                    AbstractRecodedLegend legend) {
         super(ds, legend);
+        init();
     }
 
     @Override
@@ -59,13 +66,5 @@ public class NonSpatialFieldsComboBox extends AbsFieldsComboBox {
                     "could not be recovered.");
             return false;
         }
-    }
-
-    public static NonSpatialFieldsComboBox createInstance(
-            DataSource ds,
-            final AbstractRecodedLegend legend) {
-        NonSpatialFieldsComboBox box = new NonSpatialFieldsComboBox(ds, legend);
-        box.init();
-        return box;
     }
 }

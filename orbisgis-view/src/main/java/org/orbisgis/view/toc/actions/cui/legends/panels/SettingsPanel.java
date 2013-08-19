@@ -77,7 +77,7 @@ public class SettingsPanel<K, U extends LineParameters> extends JPanel {
                     dataSource,
                     (AbstractCategorizedLegend) legend);
         } else if (legend instanceof AbstractRecodedLegend) {
-            this.fieldComboBox = NonSpatialFieldsComboBox.createInstance(
+            this.fieldComboBox = new NonSpatialFieldsComboBox(
                     dataSource,
                     (AbstractRecodedLegend) legend);
         } else {

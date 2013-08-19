@@ -87,8 +87,7 @@ public class ProportionalLinePanel extends AbsPanel {
         ProportionalStrokeLegend strokeLegend = getLegend().getStrokeLegend();
         ConstantSolidFill fillAnalysis = (ConstantSolidFill) strokeLegend.getFillAnalysis();
 
-        pLineFieldsComboBox = PLineFieldsComboBox
-                .createInstance(dataSource, getLegend(), preview);
+        pLineFieldsComboBox = new PLineFieldsComboBox(dataSource, getLegend(), preview);
         colorLabel = new ColorLabel(fillAnalysis, preview);
         lineUOMComboBox = new LineUOMComboBox(getLegend(), preview);
         try {

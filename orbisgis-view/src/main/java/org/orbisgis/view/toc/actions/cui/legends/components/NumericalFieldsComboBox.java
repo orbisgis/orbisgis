@@ -61,6 +61,16 @@ public class NumericalFieldsComboBox extends AbsFieldsComboBox {
         }
     }
 
+    /**
+     * Create and initialize a new {@link NumericalFieldsComboBox}. This method
+     * must be used rather than a standard constructor because we can't call the
+     * {@link #init()} method in the constructor since this class is subclassed.
+     *
+     * @param ds     DataSource
+     * @param legend Legend
+     * @return A newly initialized numerical fields combo box (for Interval
+     *         Classifications)
+     */
     public static NumericalFieldsComboBox createInstance(
             DataSource ds,
             final LookupFieldName legend) {

@@ -37,38 +37,20 @@ import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
  *
  * @author Adam Gouge
  */
-public class PLineFieldsComboBox extends ProportionalFieldsComboBox {
+public final class PLineFieldsComboBox extends ProportionalFieldsComboBox {
 
     /**
-     * This constructor is private so that we use the {@link #createInstance}
-     * method to initialize the combo box properly.
+     * Constructor
      *
      * @param ds      DataSource
      * @param legend  Legend
      * @param preview Preview
      */
-    private PLineFieldsComboBox(DataSource ds,
+    public PLineFieldsComboBox(DataSource ds,
                                 ProportionalLine legend,
                                 CanvasSE preview) {
         super(ds, legend, preview);
-    }
-
-    /**
-     * Create and initialize a new {@link PLineFieldsComboBox}.
-     *
-     * @param ds      DataSource
-     * @param legend  Legend
-     * @param preview Preview
-     * @return A newly initialized field combo box for proportional lines
-     */
-    public static PLineFieldsComboBox createInstance(
-            DataSource ds,
-            ProportionalLine legend,
-            CanvasSE preview) {
-        PLineFieldsComboBox box =
-                new PLineFieldsComboBox(ds, legend, preview);
-        box.init();
-        return box;
+        init();
     }
 
     @Override

@@ -87,8 +87,7 @@ public class ProportionalPointPanel extends AbsPanel {
 
     @Override
     protected void init() {
-        pPointFieldsComboBox = PPointFieldsComboBox.
-                createInstance(dataSource, getLegend(), preview);
+        pPointFieldsComboBox = new PPointFieldsComboBox(dataSource, getLegend(), preview);
         symbolUOMComboBox = new SymbolUOMComboBox(getLegend(), preview);
         wknComboBox = new WKNComboBox(getLegend(), preview);
         try {
