@@ -29,6 +29,7 @@
 package org.orbisgis.legend.thematic.recode;
 
 import net.opengis.se._2_0.core.ParameterValueType;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.renderer.se.Symbolizer;
@@ -78,6 +79,7 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters>
     private RecodedReal height;
     private static final I18n I18N = I18nFactory.getI18n(RecodedPoint.class);
     public static final String NAME = I18N.tr("Value Classification - Point");
+    private static final Logger LOGGER = Logger.getLogger(RecodedPoint.class);
 
     /**
      * Default constructor : builds an empty classification based on the default {@link org.orbisgis.core.renderer.se.PointSymbolizer}.
@@ -292,20 +294,11 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters>
 
     @Override
     public void setStrokeUom(Uom u) {
-        if (pointSymbolizer == null) {
-            System.out.println("Null pointSymbolizer");
-        }
-        if(ps != null){
+        if(ps != null) {
             MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getChildren().get(0);
             mg.getStroke().setUom(u);
         } else {
-            System.out.println("Null ps. Trying another solution.");
-            Stroke stroke = ((MarkGraphic) pointSymbolizer.getGraphicCollection().getGraphic(0)).getStroke();
-            if (stroke != null){
-                stroke.setUom(u);
-            } else {
-                System.out.println("Null stroke");
-            }
+            LOGGER.error("Cannot set the stroke UOM because the ps is null.");
         }
     }
 
