@@ -42,17 +42,23 @@ import java.net.URL;
 public abstract class PnlUniqueSymbolSE extends PnlNonClassification
         implements UIPanel {
 
-    protected boolean isOptional;
-    protected boolean displayUOM;
+    protected final boolean showCheckbox;
+    protected final boolean displayUOM;
+    protected final boolean borderEnabled;
 
     /**
      * Constructor
      *
-     * @param displayUOM Whether the unit of measure should be displayed
+     * @param showCheckbox  Draw the Enable checkbox?
+     * @param displayUOM    Display the unit of measure?
+     * @param borderEnabled Is the border enabled?
      */
-    protected PnlUniqueSymbolSE(boolean isOptional, boolean displayUOM) {
-        this.isOptional = isOptional;
+    protected PnlUniqueSymbolSE(boolean showCheckbox,
+                                boolean displayUOM,
+                                boolean borderEnabled) {
+        this.showCheckbox = showCheckbox;
         this.displayUOM = displayUOM;
+        this.borderEnabled = borderEnabled;
     }
 
     // ************************** UIPanel ****************************

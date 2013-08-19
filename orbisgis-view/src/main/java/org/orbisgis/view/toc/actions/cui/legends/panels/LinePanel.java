@@ -63,17 +63,17 @@ public class LinePanel extends AbsOptionalPanel {
     /**
      * Constructor
      *
-     * @param legend         Legend
-     * @param preview        Preview
-     * @param title          Title
-     * @param isLineOptional Whether the enable line checkbox should be created.
+     * @param legend       Legend
+     * @param preview      Preview
+     * @param title        Title
+     * @param showCheckBox Draw the Enable checkbox?
      */
     public LinePanel(IUniqueSymbolLine legend,
                      CanvasSE preview,
                      String title,
-                     boolean isLineOptional,
+                     boolean showCheckBox,
                      boolean displayUom) {
-        super(legend, preview, title, isLineOptional);
+        super(legend, preview, title, showCheckBox);
         this.displayUom = displayUom;
         init();
         addComponents();
@@ -110,7 +110,7 @@ public class LinePanel extends AbsOptionalPanel {
     @Override
     protected void addComponents() {
         // Enable checkbox (if optional).
-        if (isOptional) {
+        if (showCheckBox) {
             add(enableCheckBox, "align l");
         } else {
             // Just add blank space

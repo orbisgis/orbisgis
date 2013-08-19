@@ -57,16 +57,16 @@ public class AreaPanel extends AbsOptionalPanel {
     /**
      * Constructor
      *
-     * @param legend         Legend
-     * @param preview        Preview
-     * @param title          Title
-     * @param isAreaOptional Whether the enable area checkbox should be created.
+     * @param legend       Legend
+     * @param preview      Preview
+     * @param title        Title
+     * @param showCheckBox Draw the Enable checkbox?
      */
     public AreaPanel(IUniqueSymbolArea legend,
                      CanvasSE preview,
                      String title,
-                     boolean isAreaOptional) {
-        super(legend, preview, title, isAreaOptional);
+                     boolean showCheckBox) {
+        super(legend, preview, title, showCheckBox);
         init();
         addComponents();
     }
@@ -85,7 +85,7 @@ public class AreaPanel extends AbsOptionalPanel {
 
     @Override
     public void addComponents() {
-        if (isOptional) {
+        if (showCheckBox) {
             add(enableCheckBox, "align l");
         } else {
             // Just add blank space

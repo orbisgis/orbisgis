@@ -75,8 +75,8 @@ public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          * @param legend        Legend
          * @param displayUOM    True if the UOM should be displayed
          */
-        public PnlUniqueLineSE(UniqueSymbolLine legend, boolean displayUOM){
-            super(false, displayUOM);
+        public PnlUniqueLineSE(UniqueSymbolLine legend, boolean displayUOM) {
+            super(false, displayUOM, true);
             this.uniqueLine = legend;
             initPreview();
             buildUI();
@@ -93,7 +93,7 @@ public final class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 glob.add(new LinePanel(uniqueLine,
                         getPreview(),
                         I18N.tr(LINE_SETTINGS),
-                        false,
+                        showCheckbox,
                         displayUOM));
                 glob.add(new PreviewPanel(getPreview()));
                 this.add(glob);

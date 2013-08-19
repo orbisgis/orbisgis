@@ -47,24 +47,24 @@ public abstract class AbsOptionalPanel extends AbsPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(AbsOptionalPanel.class);
 
-    protected final boolean isOptional;
+    protected final boolean showCheckBox;
     protected JCheckBox enableCheckBox;
 
     /**
      * Constructor
      *
-     * @param legend     Legend
-     * @param preview    Preview
-     * @param title      Title
-     * @param isOptional Whether the enable checkbox should be created.
+     * @param legend       Legend
+     * @param preview      Preview
+     * @param title        Title
+     * @param showCheckBox Draw the Enable checkbox?
      */
     public AbsOptionalPanel(LegendStructure legend,
                             CanvasSE preview,
                             String title,
-                            boolean isOptional) {
+                            boolean showCheckBox) {
         super(legend, preview, title);
-        this.isOptional = isOptional;
-        if (isOptional) {
+        this.showCheckBox = showCheckBox;
+        if (showCheckBox) {
             initEnableCheckBox();
         }
     }

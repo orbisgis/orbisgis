@@ -30,6 +30,7 @@ package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
+import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
@@ -71,7 +72,7 @@ public final class PnlUniquePointSE extends PnlUniqueSymbolSE {
          * @param legend Legend
          */
         public PnlUniquePointSE(LegendContext lc, UniqueSymbolPoint legend) {
-            this(lc, legend, true, true);
+            this(lc, legend, true, true, true);
         }
 
         /**
@@ -79,12 +80,11 @@ public final class PnlUniquePointSE extends PnlUniqueSymbolSE {
          * optionally displaying the Enable Area checkbox.
          *
          * @param legend        Legend
-         * @param enableArea    True if the Enable Area checkbox should be
-         *                      displayed
+         * @param borderEnabled Is the border enabled?
          */
         public PnlUniquePointSE(UniqueSymbolPoint legend,
-                                boolean enableArea) {
-            this(null, legend, enableArea, false);
+                                boolean borderEnabled) {
+            this(null, legend, false, false, borderEnabled);
         }
 
         /**
@@ -93,14 +93,16 @@ public final class PnlUniquePointSE extends PnlUniqueSymbolSE {
          *
          * @param lc            LegendContext
          * @param legend        Legend
-         * @param isOptional    Draw the Enable checkbox?
+         * @param showCheckbox  Draw the Enable checkbox?
          * @param displayUOM    Display the unit of measure?
+         * @param borderEnabled Is the border enabled?
          */
         private PnlUniquePointSE(LegendContext lc,
                                  UniqueSymbolPoint legend,
-                                 boolean isOptional,
-                                 boolean displayUOM) {
-            super(isOptional, displayUOM);
+                                 boolean showCheckbox,
+                                 boolean displayUOM,
+                                 boolean borderEnabled) {
+            super(showCheckbox, displayUOM, borderEnabled);
             this.uniquePoint = legend;
             if (lc != null) {
                 this.geometryType = lc.getGeometryType();
@@ -118,11 +120,13 @@ public final class PnlUniquePointSE extends PnlUniqueSymbolSE {
         public void buildUI() {
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
-                glob.add(new LinePanel(uniquePoint,
+                LinePanel linePanel = new LinePanel(uniquePoint,
                         getPreview(),
                         I18N.tr(BORDER_SETTINGS),
-                        true,
-                        displayUOM));
+                        showCheckbox,
+                        displayUOM);
+                ComponentUtil.setFieldState(borderEnabled, linePanel);
+                glob.add(linePanel);
 
                 glob.add(new PointPanel(uniquePoint,
                         getPreview(),
@@ -133,7 +137,7 @@ public final class PnlUniquePointSE extends PnlUniqueSymbolSE {
                 glob.add(new AreaPanel(uniquePoint,
                         getPreview(),
                         I18N.tr(FILL_SETTINGS),
-                        isOptional));
+                        showCheckbox));
 
                 glob.add(new PreviewPanel(getPreview()), "growx");
 
