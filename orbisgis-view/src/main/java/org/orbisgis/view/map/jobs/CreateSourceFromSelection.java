@@ -60,11 +60,32 @@ public class CreateSourceFromSelection implements BackgroundJob {
       
         private final DataSource original;
         private final Set<Integer> selectedRows;
+        private String newName;
 
+        /**
+         * Constructor used by the Map Editor.
+         *
+         * @param original     Original DataSource
+         * @param selectedRows Selected Rows
+         */
         public CreateSourceFromSelection(DataSource original,
                 Set<Integer> selectedRows) {
                 this.original = original;
                 this.selectedRows = selectedRows;
+        }
+
+        /**
+         * Constructor used by the TableEditor.
+         *
+         * @param original     Original DataSource
+         * @param selectedRows Selected Rows
+         * @param newName      New name to use to register the DataSource
+         */
+        public CreateSourceFromSelection(DataSource original,
+                                         Set<Integer> selectedRows,
+                                         String newName) {
+            this(original, selectedRows);
+            this.newName = newName;
         }
 
         @Override
@@ -81,14 +102,10 @@ public class CreateSourceFromSelection implements BackgroundJob {
                         FileSourceDefinition dsd = new FileSourceDefinition(file, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
 
                         // Find an unique name to register
-                        SourceManager sm = dm.getSourceManager();
-                        int index = -1;
-                        String newName;
-                        do {
-                                index++;
-                                newName = original.getName() + "_selection_" + index;
-                        } while (sm.getSource(newName) != null);
-                        sm.register(newName, dsd);
+                        if (newName == null) {
+                            newName = getNewUniqueName(original);
+                        }
+                        dm.getSourceManager().register(newName, dsd);
 
                         // Populate the new source
                         DataSource newds = dsf.getDataSource(newName);
@@ -116,7 +133,25 @@ public class CreateSourceFromSelection implements BackgroundJob {
 
         @Override
         public String getTaskName() {
-                return I18N.tr("Create the datasource from the selection");
+                return I18N.tr("Create a datasource from the current selection");
         }
-        
+
+        /**
+         * Returns a new unique name when registering a {@link DataSource}.
+         *
+         * @param original Original DataSource
+         * @return New unique name
+         */
+        public static String getNewUniqueName(DataSource original) {
+                String uniqueName;
+                int index = 0;
+                SourceManager sm = Services.getService(DataManager.class)
+                        .getSourceManager();
+                uniqueName = original.getName() + "_selection";
+                while (sm.getSource(uniqueName) != null) {
+                    index++;
+                    uniqueName = original.getName() + "_selection_" + index;
+                }
+                return uniqueName;
+        }
 }

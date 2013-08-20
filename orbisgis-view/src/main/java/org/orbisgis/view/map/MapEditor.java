@@ -392,10 +392,10 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         actions.addAction(new DefaultAction(MapEditorAction.A_ZOOM_SELECTION, I18N.tr("Zoom to selection"),
                 OrbisGISIcon.getIcon("zoom_selected"),EventHandler.create(ActionListener.class,this,"onZoomToSelection"))
                 .setToolTipText(I18N.tr("Zoom to visible selected geometries")).setLogicalGroup("selection"));
-        actions.addAction(new DefaultAction(MapEditorAction.A_DATA_SOURCE_FROM_SELECTION, I18N.tr("Create a datasource"),
+        actions.addAction(new DefaultAction(MapEditorAction.A_DATA_SOURCE_FROM_SELECTION, I18N.tr("Create datasource from selection"),
                 OrbisGISIcon.getIcon("table_go"),
                 EventHandler.create(ActionListener.class,this,"onCreateDataSourceFromSelection"))
-                .setToolTipText(I18N.tr("Create a datasource from a selection")).setLogicalGroup("selection"));
+                .setToolTipText(I18N.tr("Create a datasource from the current selection")).setLogicalGroup("selection"));
 
         // Measure tools
         actions.addAction(new DefaultAction(MapEditorAction.A_MEASURE_GROUP,I18N.tr("Mesure tools")).setMenuGroup(true));
