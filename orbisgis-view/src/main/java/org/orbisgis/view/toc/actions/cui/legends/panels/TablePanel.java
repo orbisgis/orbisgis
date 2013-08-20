@@ -125,12 +125,11 @@ public class TablePanel<K, U extends LineParameters> extends JPanel
         previews.setCellEditor(previewCellEditor);
         // We put a default editor on the keys.
         TableColumn keys = table.getColumnModel().getColumn(keyColumnIndex);
-        TableCellEditor ker = keyCellEditor;
         CellEditorListener cel = EventHandler.create(
                 CellEditorListener.class, tableModel, "fireTableDataChanged", null, "editingStopped");
-        ker.addCellEditorListener(cel);
-        keys.setCellEditor(ker);
-        keys.setCellRenderer(new KeyCellRenderer(table, previewClass, legend));
+        keyCellEditor.addCellEditorListener(cel);
+        keys.setCellEditor(keyCellEditor);
+        keys.setCellRenderer(new KeyCellRenderer(table, previewClass));
         JScrollPane jsp = new JScrollPane(table);
 
         // Set the viewport to view 6 rows with a width of 400 pixels.
