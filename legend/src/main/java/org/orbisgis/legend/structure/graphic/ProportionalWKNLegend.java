@@ -33,6 +33,8 @@ import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.legend.IInterpolationLegend;
+import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
@@ -46,7 +48,8 @@ import org.orbisgis.legend.structure.viewbox.ViewBoxLegendFactory;
  * simple proportional symbol configuration, associated to a WKN graphic.
  * @author Alexis Guéganno
  */
-public class ProportionalWKNLegend extends ConstantFormWKN {
+public class ProportionalWKNLegend extends ConstantFormWKN
+        implements IInterpolationLegend {
 
     /**
      * Builds a new {@code ProportionalWKNLegend} with a default {@link
@@ -77,100 +80,53 @@ public class ProportionalWKNLegend extends ConstantFormWKN {
         super(mark, wknLegend, viewBoxLegend, fillLegend, strokeLegend);
     }
 
-    /**
-     * Gets the data associated to the first interpolation point.
-     * @return
-     */
+    @Override
     public double getFirstData() {
         return ((MonovariateProportionalViewBox) getViewBoxLegend()).getFirstData();
     }
-    /**
-     * Gets the data associated to the second interpolation point.
-     * @return
-     */
+
+    @Override
     public double getSecondData() {
         return ((MonovariateProportionalViewBox) getViewBoxLegend()).getSecondData();
     }
 
-    /**
-     * Sets the data associated to the first interpolation point.
-     * @return
-     */
+    @Override
     public void setFirstData(double d) {
         ((MonovariateProportionalViewBox) getViewBoxLegend()).setFirstData(d);
     }
 
-    /**
-     * Sets the data associated to the second interpolation point.
-     * @return
-     */
+    @Override
     public void setSecondData(double d) {
         ((MonovariateProportionalViewBox) getViewBoxLegend()).setSecondData(d);
     }
 
-
-    /**
-     * Get the value of the first interpolation point as a double. We are not
-     * supposed to work here with {@code RealParameter} other than {@code
-     * RealLiteral}, so we retrieve directly the {@code double} it contains.
-     * @return
-     * @throws ParameterException
-     * If a problem is encountered while retrieving the double value.
-     */
+    @Override
     public double getFirstValue() throws ParameterException {
         return ((MonovariateProportionalViewBox) getViewBoxLegend()).getFirstValue();
     }
 
-    /**
-     * Set the value of the first interpolation point as a double. We are not
-     * supposed to work here with {@code RealParameter} other than {@code
-     * RealLiteral}, so we give directly the {@code double} it must contain.
-         * @param d
-     * @throws ParameterException
-     * If a problem is encountered while retrieving the double value.
-     */
+    @Override
     public void setFirstValue(double d) {
         ((MonovariateProportionalViewBox) getViewBoxLegend()).setFirstValue(d);
     }
     
-    /**
-     * Get the value of the second interpolation point as a double. We are not
-     * supposed to work here with {@code RealParameter} other than {@code
-     * RealLiteral}, so we retrieve directly the {@code double} it contains.
-     * @return
-     * @throws ParameterException
-     * If a problem is encountered while retrieving the double value.
-     */
+    @Override
     public double getSecondValue() throws ParameterException {
         return ((MonovariateProportionalViewBox) getViewBoxLegend()).getSecondValue();
     }
 
-    /**
-     * Set the value of the second interpolation point as a double. We are not
-     * supposed to work here with {@code RealParameter} other than {@code
-     * RealLiteral}, so we give directly the {@code double} it must contain.
-         * @param d
-     * @throws ParameterException
-     * If a problem is encountered while retrieving the double value.
-     */
+    @Override
     public void setSecondValue(double d) {
         ((MonovariateProportionalViewBox) getViewBoxLegend()).setSecondValue(d);
     }
 
-    /**
-     * Gets the name of the field where the values will be retrieved.
-     * @return
-     */
+    @Override
     public String getLookupFieldName() {
         return ((MonovariateProportionalViewBox)getViewBoxLegend()).getLookupFieldName();
     }
 
-    /**
-     * Sets the name of the field where values will be retrieved.
-     * @param name
-     */
+    @Override
     public void setLookupFieldName(String name){
         ((MonovariateProportionalViewBox)getViewBoxLegend()).setLookupFieldName(name);
     }
-
 }

@@ -33,7 +33,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 import org.orbisgis.legend.thematic.recode.RecodedArea;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueAreaSE;
+import org.orbisgis.view.toc.actions.cui.legends.ui.PnlUniqueAreaSE;
 
 import java.awt.event.ActionEvent;
 
@@ -56,8 +56,7 @@ public class ParametersEditorRecodedArea extends ParametersEditorMappedLegend<St
             String key = (String) getCellEditorValue();
             AreaParameters lp = rl.get(key);
             UniqueSymbolArea usl = new UniqueSymbolArea(lp);
-            PnlUniqueAreaSE pls = new PnlUniqueAreaSE(false, rl.isStrokeEnabled(), false);
-            pls.setLegend(usl);
+            PnlUniqueAreaSE pls = new PnlUniqueAreaSE(usl, rl.isStrokeEnabled());
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 AreaParameters edited = usl.getAreaParameters();
                 rl.put((String)getCellEditorValue(), edited);

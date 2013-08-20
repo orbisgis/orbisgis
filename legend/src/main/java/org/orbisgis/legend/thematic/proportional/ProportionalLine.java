@@ -31,11 +31,11 @@ package org.orbisgis.legend.thematic.proportional;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
-import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.IInterpolationLegend;
 import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
-import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -46,7 +46,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * raw value (i.e. we don't apply any mathematical function to the input values).
  * @author Alexis Guéganno
  */
-public class ProportionalLine extends ConstantColorAndDashesLine {
+public class ProportionalLine extends ConstantColorAndDashesLine
+    implements IInterpolationLegend {
 
     private ProportionalStrokeLegend strokeLegend;
     private static final I18n I18N = I18nFactory.getI18n(ProportionalLine.class);
@@ -84,93 +85,59 @@ public class ProportionalLine extends ConstantColorAndDashesLine {
         strokeLegend = legend;
     }
 
-    /**
-     * Gets the name of the field where values will be retrieved.
-     * @return
-     */
+    @Override
     public String getLookupFieldName(){
             return strokeLegend.getLookupFieldName();
     }
 
-    /**
-     * Sets the name of the field where values will be retrieved.
-     * @param name
-     */
+    @Override
     public void setLookupFieldName(String name){
             strokeLegend.setLookupFieldName(name);
     }
 
     @Override
-    public LegendStructure getStrokeLegend() {
+    public ProportionalStrokeLegend getStrokeLegend() {
         return strokeLegend;
     }
 
-    /**
-     * Get the data of the first interpolation point
-     * @return
-     */
+    @Override
     public double getFirstData() {
         return strokeLegend.getFirstData();
     }
 
-    /**
-     * Get the data of the second interpolation point
-     * @return
-     */
+    @Override
     public double getSecondData() {
         return strokeLegend.getSecondData();
     }
 
-    /**
-     * Set the data of the first interpolation point
-     * @param d
-     */
+    @Override
     public void setFirstData(double d) {
         strokeLegend.setFirstData(d);
     }
 
-    /**
-     * Set the data of the second interpolation point
-     * @param d
-     */
+    @Override
     public void setSecondData(double d) {
         strokeLegend.setSecondData(d);
     }
 
-    /**
-     * Get the value of the first interpolation point, as a {@code double}. The
-     * interpolation value is supposed to be a {@code RealLiteral} instance. If
-     * it is not, an exception should have been thrown at initialization.
-     * @return
-     */
+    @Override
     public double getFirstValue() throws ParameterException {
         return strokeLegend.getFirstValue();
     }
 
-    /**
-     * Set the value of the first interpolation point, as a {@code double}.
-     * @param d
-     */
-    public void setFirstValue(Number d) {
-        strokeLegend.setFirstValue(d.doubleValue());
+    @Override
+    public void setFirstValue(double d) {
+        strokeLegend.setFirstValue(d);
     }
 
-    /**
-     * Get the value of the second interpolation point, as a {@code double}. The
-     * interpolation value is supposed to be a {@code RealLiteral} instance. If
-     * it is not, an exception should have been thrown at initialization.
-     * @return
-     */
+    @Override
     public double getSecondValue() throws ParameterException {
         return strokeLegend.getSecondValue();
     }
 
-    /**
-     * Set the value of the second interpolation point, as a {@code double}.
-     * @param d
-     */
-    public void setSecondValue(Number d) {
-        strokeLegend.setSecondValue(d.doubleValue());
+    @Override
+    public void setSecondValue(double d) {
+        strokeLegend.setSecondValue(d);
     }
 
     @Override

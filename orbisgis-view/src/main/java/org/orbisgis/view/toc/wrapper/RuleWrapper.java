@@ -35,7 +35,7 @@ import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.view.toc.actions.cui.SimpleStyleEditor;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
-import org.orbisgis.view.toc.actions.cui.legends.PnlRule;
+import org.orbisgis.view.toc.actions.cui.legends.ui.PnlRule;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

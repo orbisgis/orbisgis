@@ -31,6 +31,7 @@ package org.orbisgis.legend.structure.interpolation;
 import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealFunction;
+import org.orbisgis.legend.LookupFieldName;
 
 /**
  * Analysis associated to an interpolation made on the square root of a numeric
@@ -49,18 +50,12 @@ public class SqrtInterpolationLegend extends InterpolationLegend {
                 super(inter);
         }
 
-        /**
-         * Gets the name of the field where values will be retrieved.
-         * @return
-         */
+        @Override
         public String getLookupFieldName(){
                 return getRealAttribute().getColumnName();
         }
 
-        /**
-         * Sets the name of the field where values will be retrieved.
-         * @param name
-         */
+        @Override
         public void setLookupFieldName(String name){
                 getRealAttribute().setColumnName(name);
         }

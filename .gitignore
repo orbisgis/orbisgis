@@ -7,3 +7,8 @@ nbactions.xml
 **/.ensime*
 **/nb-configuration.xml
 *mo
+.classpath
+.project
+.settings
+*.png
+*.ucls

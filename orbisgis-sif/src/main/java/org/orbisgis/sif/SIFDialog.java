@@ -51,7 +51,7 @@ public class SIFDialog extends AbstractOutsideFrame {
         private void init(boolean okCancel) {
                 this.setLayout(new BorderLayout());
 
-                btnOk = new JButton(I18N.tr("Ok"));
+                btnOk = new JButton(I18N.tr("OK"));
                 btnOk.setBorderPainted(false);
                 btnOk.addActionListener(new ActionListener() {
 

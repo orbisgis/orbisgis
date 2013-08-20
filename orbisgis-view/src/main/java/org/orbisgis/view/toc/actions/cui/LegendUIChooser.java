@@ -237,7 +237,8 @@ public class LegendUIChooser implements UIPanel {
     public ILegendPanel getSelectedPanel() {
         String selectedLegendTypeName = names[lst.getSelectedIndex()];
         ILegendPanel panel =
-                ILegendPanelFactory.getILegendPanel(editor, selectedLegendTypeName);
+                ILegendPanelFactory.getPanelForLegendUIChooser(
+                        editor, selectedLegendTypeName);
         return panel;
     }
 

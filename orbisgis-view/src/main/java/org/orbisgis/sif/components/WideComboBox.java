@@ -46,6 +46,7 @@ public class WideComboBox extends JComboBox {
      */
     public WideComboBox() {
         super();
+        align();
     }
 
     /**
@@ -55,6 +56,7 @@ public class WideComboBox extends JComboBox {
      */
     public WideComboBox(final Object items[]) {
         super(items);
+        align();
     }
 
     /**
@@ -66,6 +68,11 @@ public class WideComboBox extends JComboBox {
      */
     public WideComboBox(ComboBoxModel aModel) {
         super(aModel);
+        align();
+    }
+
+    private void align() {
+        ((JLabel) getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     @Override

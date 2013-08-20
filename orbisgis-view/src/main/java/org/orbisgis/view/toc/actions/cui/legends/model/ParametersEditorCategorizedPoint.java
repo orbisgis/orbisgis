@@ -33,7 +33,7 @@ import org.orbisgis.legend.thematic.categorize.CategorizedPoint;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.view.toc.actions.cui.legends.PnlUniquePointSE;
+import org.orbisgis.view.toc.actions.cui.legends.ui.PnlUniquePointSE;
 
 import java.awt.event.ActionEvent;
 
@@ -58,8 +58,7 @@ public class ParametersEditorCategorizedPoint extends ParametersEditorMappedLege
             Double key = (Double) getCellEditorValue();
             PointParameters lp = cp.get(key);
             UniqueSymbolPoint usl = new UniqueSymbolPoint(lp);
-            PnlUniquePointSE pls = new PnlUniquePointSE(false, cp.isStrokeEnabled(), false);
-            pls.setLegend(usl);
+            PnlUniquePointSE pls = new PnlUniquePointSE(usl, cp.isStrokeEnabled());
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 PointParameters edited = usl.getPointParameters();
                 cp.put((Double) getCellEditorValue(), edited);

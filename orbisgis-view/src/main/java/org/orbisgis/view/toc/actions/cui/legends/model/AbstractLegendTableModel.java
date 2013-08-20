@@ -2,8 +2,6 @@ package org.orbisgis.view.toc.actions.cui.legends.model;
 
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.Iterator;
