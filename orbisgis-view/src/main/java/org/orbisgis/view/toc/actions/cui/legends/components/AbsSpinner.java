@@ -57,7 +57,7 @@ public abstract class AbsSpinner extends JSpinner {
                 // The new value is the old one minus the wheel rotation
                 // times the spin step.
                 Double newValue = ((Double) getValue())
-                        - e.getPreciseWheelRotation() * getSpinStep();
+                        - e.getWheelRotation() * getSpinStep();
                 // Only update if we are within the given range.
                 if (model.getMaximum().compareTo(newValue) >= 0
                         && model.getMinimum().compareTo(newValue) <= 0) {
