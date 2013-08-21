@@ -393,7 +393,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                                 I18N.tr("Create a datasource from the current selection"));
                         createDataSourceSelection.addActionListener(
                                 EventHandler.create(ActionListener.class,
-                                this,"onCreateDataSourceFromSelection"));
+                                this, "onCreateDataSourceFromSelection"));
                         pop.add(createDataSourceSelection);
                         
                         
@@ -496,9 +496,12 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         public void onCreateDataSourceFromSelection() {
                 String newName = null;
                 boolean inputAccepted = false;
+                final String newNameMessage = I18N.marktr("New name for the datasource:");
+                JLabel message = new JLabel(I18N.tr(newNameMessage));
                 while (!inputAccepted) {
                     newName = JOptionPane.showInputDialog(
-                            I18N.tr("New name for the datasource"),
+                            this,
+                            message.getText(),
                             CreateSourceFromSelection.getNewUniqueName(
                                     tableModel.getDataSource()));
                     // Check if the user canceled the operation.
@@ -509,24 +512,21 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                     else {
                         // Check for an empty name.
                         if (newName.isEmpty()) {
-                            JOptionPane.showMessageDialog(null,
-                                    I18N.tr("You must enter a non-empty name."),
-                                    I18N.tr("Warning"),
-                                    JOptionPane.WARNING_MESSAGE);
+                            message.setText(I18N.tr("You must enter a non-empty name.")
+                            + "\n" + I18N.tr(newNameMessage));
                         } // Check for a source that already exists with that name.
                         else if (Services.getService(DataManager.class)
                                 .getSourceManager().getSource(newName) != null) {
-                            JOptionPane.showMessageDialog(null,
-                                    I18N.tr("A datasource with that name already exists."),
-                                    I18N.tr("Warning"),
-                                    JOptionPane.WARNING_MESSAGE);
+                            message.setText(I18N.tr("A datasource with that name already exists.")
+                            + "\n" + I18N.tr(newNameMessage));
                         } // The user entered a non-empty, unique name.
                         else {
                             inputAccepted = true;
                         }
                     }
                 }
-                // At this point, the user clicked OK and entered a valid name
+                // If newName is not null, then the user clicked OK and entered
+                // a valid name.
                 if (newName != null) {
                     Set<Integer> selection = getTableModelSelection();
                     if (!selection.isEmpty()) {
@@ -744,7 +744,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * Compute the optimal width for this column
          */
         public void onMenuOptimalWidth() {
-                launchJob(new OptimalWidthJob(table,popupCellAdress.x));
+                launchJob(new OptimalWidthJob(table, popupCellAdress.x));
         }
 
         /**
