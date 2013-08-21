@@ -392,7 +392,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         createDataSourceSelection.setToolTipText(
                                 I18N.tr("Create a datasource from the current selection"));
                         createDataSourceSelection.addActionListener(
-                                getCreateDataSourceFromSelectionActionListener());
+                                EventHandler.create(ActionListener.class,
+                                this,"onCreateDataSourceFromSelection"));
                         pop.add(createDataSourceSelection);
                         
                         
@@ -419,55 +420,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 return pop;
         }
 
-    /**
-     * Get an {@link ActionListener} for creating a datasource from a selection.
-     *
-     * @return An {@link ActionListener} for creating a datasource from a selection
-     */
-    private ActionListener getCreateDataSourceFromSelectionActionListener() {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String newName = null;
-                boolean inputAccepted = false;
-                while (!inputAccepted) {
-                    newName = JOptionPane.showInputDialog(
-                            I18N.tr("New name for the datasource"),
-                            CreateSourceFromSelection.getNewUniqueName(
-                                    tableModel.getDataSource()));
-                    // Check if the user canceled the operation.
-                    if (newName == null) {
-                        // Just exit
-                        inputAccepted = true;
-                    } // The user clicked OK.
-                    else {
-                        // Check for an empty name.
-                        if (newName.isEmpty()) {
-                            JOptionPane.showMessageDialog(null,
-                                    I18N.tr("You must enter a non-empty name."),
-                                    I18N.tr("Warning"),
-                                    JOptionPane.WARNING_MESSAGE);
-                        } // Check for a source that already exists with that name.
-                        else if (Services.getService(DataManager.class)
-                                .getSourceManager().getSource(newName) != null) {
-                            JOptionPane.showMessageDialog(null,
-                                    I18N.tr("A datasource with that name already exists."),
-                                    I18N.tr("Warning"),
-                                    JOptionPane.WARNING_MESSAGE);
-                        } // The user entered a non-empty, unique name.
-                        else {
-                            inputAccepted = true;
-                        }
-                    }
-                }
-                if (newName != null) {
-                    onCreateDataSourceFromSelection(newName);
-                }
-            }
-        };
-    }
-
-    /**
+        /**
          * Used by the function "Zoom to selection"
          * This menu is shown only if the current data is loaded and shown in the toc
          */
@@ -540,16 +493,50 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         /**
          * The user can export the selected rows into a new datasource
          */
-        public void onCreateDataSourceFromSelection(String newName) {
-                Set<Integer> selection = getTableModelSelection();
-                if (!selection.isEmpty()) {
+        public void onCreateDataSourceFromSelection() {
+                String newName = null;
+                boolean inputAccepted = false;
+                while (!inputAccepted) {
+                    newName = JOptionPane.showInputDialog(
+                            I18N.tr("New name for the datasource"),
+                            CreateSourceFromSelection.getNewUniqueName(
+                                    tableModel.getDataSource()));
+                    // Check if the user canceled the operation.
+                    if (newName == null) {
+                        // Just exit
+                        inputAccepted = true;
+                    } // The user clicked OK.
+                    else {
+                        // Check for an empty name.
+                        if (newName.isEmpty()) {
+                            JOptionPane.showMessageDialog(null,
+                                    I18N.tr("You must enter a non-empty name."),
+                                    I18N.tr("Warning"),
+                                    JOptionPane.WARNING_MESSAGE);
+                        } // Check for a source that already exists with that name.
+                        else if (Services.getService(DataManager.class)
+                                .getSourceManager().getSource(newName) != null) {
+                            JOptionPane.showMessageDialog(null,
+                                    I18N.tr("A datasource with that name already exists."),
+                                    I18N.tr("Warning"),
+                                    JOptionPane.WARNING_MESSAGE);
+                        } // The user entered a non-empty, unique name.
+                        else {
+                            inputAccepted = true;
+                        }
+                    }
+                }
+                // At this point, the user clicked OK and entered a valid name
+                if (newName != null) {
+                    Set<Integer> selection = getTableModelSelection();
+                    if (!selection.isEmpty()) {
                         BackgroundManager bm = Services.getService(BackgroundManager.class);
                         bm.backgroundOperation(
                                 new CreateSourceFromSelection(
                                         tableModel.getDataSource(),
                                         selection, newName));
+                    }
                 }
-
         }
         
         /**
