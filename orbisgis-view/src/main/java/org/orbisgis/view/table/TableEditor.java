@@ -494,37 +494,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * The user can export the selected rows into a new datasource
          */
         public void onCreateDataSourceFromSelection() {
-                String newName = null;
-                boolean inputAccepted = false;
-                final String newNameMessage = I18N.marktr("New name for the datasource:");
-                JLabel message = new JLabel(I18N.tr(newNameMessage));
-                while (!inputAccepted) {
-                    newName = JOptionPane.showInputDialog(
-                            this,
-                            message.getText(),
-                            CreateSourceFromSelection.getNewUniqueName(
-                                    tableModel.getDataSource()));
-                    // Check if the user canceled the operation.
-                    if (newName == null) {
-                        // Just exit
-                        inputAccepted = true;
-                    } // The user clicked OK.
-                    else {
-                        // Check for an empty name.
-                        if (newName.isEmpty()) {
-                            message.setText(I18N.tr("You must enter a non-empty name.")
-                            + "\n" + I18N.tr(newNameMessage));
-                        } // Check for a source that already exists with that name.
-                        else if (Services.getService(DataManager.class)
-                                .getSourceManager().getSource(newName) != null) {
-                            message.setText(I18N.tr("A datasource with that name already exists.")
-                            + "\n" + I18N.tr(newNameMessage));
-                        } // The user entered a non-empty, unique name.
-                        else {
-                            inputAccepted = true;
-                        }
-                    }
-                }
+                String newName = CreateSourceFromSelection.showNewNameDialog(
+                        this, tableModel.getDataSource());
                 // If newName is not null, then the user clicked OK and entered
                 // a valid name.
                 if (newName != null) {
@@ -538,8 +509,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                     }
                 }
         }
-        
-        /**
+
+    /**
          * Select all rows that have the same value of the selected cell
          */
         public void onMenuSelectSameCellValue() {

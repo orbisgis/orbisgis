@@ -489,10 +489,17 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             ILayer[] layers = mapContext.getSelectedLayers();
             if(layers!=null && layers.length>0){
                 for (ILayer layer : layers) {
-                    Set<Integer> selection = layer.getSelection();
-                    if(!selection.isEmpty()){
-                        BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.backgroundOperation(new CreateSourceFromSelection(layer.getDataSource(), selection));
+                    String newName = CreateSourceFromSelection.showNewNameDialog(
+                            this, layer.getDataSource());
+                    if (newName != null) {
+                        Set<Integer> selection = layer.getSelection();
+                        if(!selection.isEmpty()){
+                            BackgroundManager bm = Services.getService(BackgroundManager.class);
+                            bm.backgroundOperation(
+                                    new CreateSourceFromSelection(
+                                            layer.getDataSource(),
+                                            selection, newName));
+                        }
                     }
                 }
             }

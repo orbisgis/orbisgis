@@ -29,6 +29,7 @@
 
 package org.orbisgis.view.map.jobs;
 
+import java.awt.*;
 import java.io.File;
 import java.util.Set;
 import org.apache.log4j.Logger;
@@ -45,6 +46,8 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.swing.*;
 
 /**
  * A background job to create a source from a selection.
@@ -142,7 +145,7 @@ public class CreateSourceFromSelection implements BackgroundJob {
          * @param original Original DataSource
          * @return New unique name
          */
-        public static String getNewUniqueName(DataSource original) {
+        private static String getNewUniqueName(DataSource original) {
                 String uniqueName;
                 int index = 0;
                 SourceManager sm = Services.getService(DataManager.class)
@@ -153,5 +156,40 @@ public class CreateSourceFromSelection implements BackgroundJob {
                     uniqueName = I18N.tr("{0}_selection_{1}", original.getName(), index);
                 }
                 return uniqueName;
+        }
+
+        public static String showNewNameDialog(Component parent,
+                                               DataSource dataSource) {
+            String newName = null;
+            boolean inputAccepted = false;
+            final String newNameMessage = I18N.marktr("New name for the datasource:");
+            JLabel message = new JLabel(I18N.tr(newNameMessage));
+            while (!inputAccepted) {
+                newName = JOptionPane.showInputDialog(
+                        parent,
+                        message.getText(),
+                        getNewUniqueName(dataSource));
+                // Check if the user canceled the operation.
+                if (newName == null) {
+                    // Just exit
+                    inputAccepted = true;
+                } // The user clicked OK.
+                else {
+                    // Check for an empty name.
+                    if (newName.isEmpty()) {
+                        message.setText(I18N.tr("You must enter a non-empty name.")
+                                + "\n" + I18N.tr(newNameMessage));
+                    } // Check for a source that already exists with that name.
+                    else if (Services.getService(DataManager.class)
+                            .getSourceManager().getSource(newName) != null) {
+                        message.setText(I18N.tr("A datasource with that name already exists.")
+                                + "\n" + I18N.tr(newNameMessage));
+                    } // The user entered a non-empty, unique name.
+                    else {
+                        inputAccepted = true;
+                    }
+                }
+            }
+            return newName;
         }
 }
