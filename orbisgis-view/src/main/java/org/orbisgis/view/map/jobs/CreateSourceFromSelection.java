@@ -150,7 +150,7 @@ public class CreateSourceFromSelection implements BackgroundJob {
                 uniqueName = original.getName() + "_selection";
                 while (sm.getSource(uniqueName) != null) {
                     index++;
-                    uniqueName = original.getName() + "_selection_" + index;
+                    uniqueName = I18N.tr("{0}_selection_{1}", original.getName(), index);
                 }
                 return uniqueName;
         }

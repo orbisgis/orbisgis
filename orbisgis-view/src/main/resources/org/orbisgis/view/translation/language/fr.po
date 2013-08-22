@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-21 15:07+0100\n"
-"PO-Revision-Date: 2013-08-21 15:07+0100\n"
+"POT-Creation-Date: 2013-08-22 09:58+0100\n"
+"PO-Revision-Date: 2013-08-22 09:59+0100\n"
 "Last-Translator: Adam Gouge <adam.gouge@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
@@ -1925,6 +1925,11 @@ msgstr "Zoomer sur les géométries sélectionnées"
 msgid "Open the map context"
 msgstr "Ouvrir le contexte cartographique"
 
+#: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:153
+#, java-format
+msgid "{0}_selection_{1}"
+msgstr "{0}_sélection_{1}"
+
 #: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:112
 msgid "Save documents"
 msgstr "Sauver les documents"
@@ -2895,47 +2900,47 @@ msgstr "Sélectionner les lignes avec la même valeur"
 msgid "New name for the datasource:"
 msgstr "Enregistrer sous :"
 
-#: java/org/orbisgis/view/table/TableEditor.java:517
+#: java/org/orbisgis/view/table/TableEditor.java:515
 msgid "You must enter a non-empty name."
 msgstr "Le nom de la source de données ne peut être vide."
 
-#: java/org/orbisgis/view/table/TableEditor.java:522
+#: java/org/orbisgis/view/table/TableEditor.java:520
 msgid "A datasource with that name already exists."
 msgstr "Une source de données avec le nom spécifié existe déjà."
 
-#: java/org/orbisgis/view/table/TableEditor.java:597
+#: java/org/orbisgis/view/table/TableEditor.java:595
 msgid "Optimal width"
 msgstr "Largeur optimale"
 
-#: java/org/orbisgis/view/table/TableEditor.java:617
+#: java/org/orbisgis/view/table/TableEditor.java:615
 msgid "Sort ascending"
 msgstr "Tri croissant"
 
-#: java/org/orbisgis/view/table/TableEditor.java:626
+#: java/org/orbisgis/view/table/TableEditor.java:624
 msgid "Sort descending"
 msgstr "Tri décroissant"
 
-#: java/org/orbisgis/view/table/TableEditor.java:635
+#: java/org/orbisgis/view/table/TableEditor.java:633
 msgid "No sort"
 msgstr "Pas de tri"
 
-#: java/org/orbisgis/view/table/TableEditor.java:646
+#: java/org/orbisgis/view/table/TableEditor.java:644
 msgid "Show column informations"
 msgstr "Afficher les informations"
 
-#: java/org/orbisgis/view/table/TableEditor.java:655
+#: java/org/orbisgis/view/table/TableEditor.java:653
 msgid "Show column statistics"
 msgstr "Afficher les statistiques"
 
-#: java/org/orbisgis/view/table/TableEditor.java:657
+#: java/org/orbisgis/view/table/TableEditor.java:655
 msgid "Show column selection statistics"
 msgstr "Afficher les statistiques"
 
-#: java/org/orbisgis/view/table/TableEditor.java:659
+#: java/org/orbisgis/view/table/TableEditor.java:657
 msgid "Show filtered column statistics"
 msgstr "Afficher les statistiques des colonnes filtrées"
 
-#: java/org/orbisgis/view/table/TableEditor.java:708
+#: java/org/orbisgis/view/table/TableEditor.java:706
 #, java-format
 msgid ""
 "\n"
@@ -2944,36 +2949,36 @@ msgstr ""
 "\n"
 "Nom du champ :\t{0}\n"
 
-#: java/org/orbisgis/view/table/TableEditor.java:709
+#: java/org/orbisgis/view/table/TableEditor.java:707
 #, java-format
 msgid "Field type :\t{0}\n"
 msgstr "Type de champ :\t{0}\n"
 
-#: java/org/orbisgis/view/table/TableEditor.java:713
+#: java/org/orbisgis/view/table/TableEditor.java:711
 msgid "Constraints :\n"
 msgstr "Contraintes :\n"
 
-#: java/org/orbisgis/view/table/TableEditor.java:715
+#: java/org/orbisgis/view/table/TableEditor.java:713
 #, java-format
 msgid "\t{0} :\t{1}\n"
 msgstr "\t{0} :\t{1}\n"
 
-#: java/org/orbisgis/view/table/TableEditor.java:944
+#: java/org/orbisgis/view/table/TableEditor.java:942
 #, java-format
 msgid "Table Editor of {0} {1}/{2}"
 msgstr "{0} {1}/{2}"
 
-#: java/org/orbisgis/view/table/TableEditor.java:948
+#: java/org/orbisgis/view/table/TableEditor.java:946
 #, java-format
 msgid "Table Editor of {0} (Filtered) {1}/{2}"
 msgstr "{0} (Filtré) {1}/{2}"
 
+#: java/org/orbisgis/view/table/TableEditor.java:1041
 #: java/org/orbisgis/view/table/TableEditor.java:1043
-#: java/org/orbisgis/view/table/TableEditor.java:1045
 msgid "Error while loading the table editor"
 msgstr "Erreur lors du chargement de la table"
 
-#: java/org/orbisgis/view/table/TableEditor.java:1052
+#: java/org/orbisgis/view/table/TableEditor.java:1050
 #, java-format
 msgid "Open the data source {0}"
 msgstr "Ouvrir la source de données {0}"
