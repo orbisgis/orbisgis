@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-22 09:58+0100\n"
-"PO-Revision-Date: 2013-08-22 09:59+0100\n"
+"POT-Creation-Date: 2013-08-22 10:39+0100\n"
+"PO-Revision-Date: 2013-08-22 10:40+0100\n"
 "Last-Translator: Adam Gouge <adam.gouge@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
@@ -1924,6 +1924,11 @@ msgstr "Zoomer sur les géométries sélectionnées"
 #: java/org/orbisgis/view/map/jobs/ReadMapContextJob.java:62
 msgid "Open the map context"
 msgstr "Ouvrir le contexte cartographique"
+
+#: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:150
+#, java-format
+msgid "{0}_selection"
+msgstr "{0}_sélection"
 
 #: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:153
 #, java-format

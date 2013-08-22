@@ -147,7 +147,7 @@ public class CreateSourceFromSelection implements BackgroundJob {
                 int index = 0;
                 SourceManager sm = Services.getService(DataManager.class)
                         .getSourceManager();
-                uniqueName = original.getName() + "_selection";
+                uniqueName = I18N.tr("{0}_selection", original.getName());
                 while (sm.getSource(uniqueName) != null) {
                     index++;
                     uniqueName = I18N.tr("{0}_selection_{1}", original.getName(), index);
