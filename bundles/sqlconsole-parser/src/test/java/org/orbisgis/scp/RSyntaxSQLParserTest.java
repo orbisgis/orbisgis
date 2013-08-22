@@ -3,6 +3,7 @@ package org.orbisgis.scp;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
+import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
 import org.h2.util.OsgiDataSourceFactory;
 import org.junit.Test;
 
@@ -15,7 +16,7 @@ import static org.junit.Assert.assertEquals;
  * @author Nicolas Fortin
  */
 public class RSyntaxSQLParserTest {
-    private static final String DATABASE_PATH = "jdbc:h2:target/parserTest;LOCK_MODE=0;LOG=0";
+    private static final String DATABASE_PATH = "jdbc:h2:mem:syntax";
 
     @Test //(timeout = 500)
     public void testParseException() throws Exception {
@@ -28,11 +29,20 @@ public class RSyntaxSQLParserTest {
         // Create document
         RSyntaxDocument document = new RSyntaxDocument("sql");
         RSyntaxTextArea rSyntaxTextArea = new RSyntaxTextArea(document);
-        rSyntaxTextArea.setText("ALTER;SELECT * FROM;\nDELETE;");
+        rSyntaxTextArea.setText("ALTER;SELECT * FROM;\nDELETE;select * from bla;");
         RSyntaxSQLParser parser = new RSyntaxSQLParser(dataSourceFactory.createDataSource(properties), rSyntaxTextArea);
 
         ParseResult res = parser.parse((RSyntaxDocument)rSyntaxTextArea.getDocument(), "");
         List noticeList = res.getNotices();
         assertEquals(3, noticeList.size());
+        ParserNotice notice = (ParserNotice) noticeList.get(0);
+        assertEquals(0, notice.getLine());
+        assertEquals(6, notice.getOffset());
+        notice = (ParserNotice) noticeList.get(1);
+        assertEquals(0, notice.getLine());
+        assertEquals(14, notice.getOffset());
+        notice = (ParserNotice) noticeList.get(2);
+        assertEquals(1, notice.getLine());
+        assertEquals(8, notice.getOffset());
     }
 }

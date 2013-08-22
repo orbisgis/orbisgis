@@ -38,6 +38,7 @@ import org.fife.ui.rsyntaxtextarea.parser.AbstractParser;
 import org.fife.ui.rsyntaxtextarea.parser.DefaultParseResult;
 import org.fife.ui.rsyntaxtextarea.parser.DefaultParserNotice;
 import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
+import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
 import org.h2.api.SQLParseException;
 import org.h2.util.ScriptReader;
 import org.slf4j.Logger;
@@ -92,12 +93,14 @@ public class RSyntaxSQLParser extends AbstractParser {
                             if(ex instanceof SQLParseException) {
                                 // If we can obtain the parse error character index
                                 SQLParseException parseEx = (SQLParseException) ex;
-                                // TODO it is not the expected line, compute the length of the word before the error position
+                                // TODO compute the length of the word before the error position
                                 DefaultParserNotice notice = new DefaultParserNotice(this, ex.getLocalizedMessage(), textArea.getLineOfOffset(position),parseEx.getSyntaxErrorPosition(),1);
+                                notice.setLevel(ParserNotice.ERROR);
                                 res.addNotice(notice);
                             }
                         }
                     }
+                    position += 1; // add ; character
                     statement = scriptReader.readStatement();
                 }
             } finally {
