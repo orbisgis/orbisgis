@@ -35,12 +35,15 @@ public class RSyntaxSQLParserTest {
         ParseResult res = parser.parse((RSyntaxDocument)rSyntaxTextArea.getDocument(), "");
         List noticeList = res.getNotices();
         assertEquals(3, noticeList.size());
+
         ParserNotice notice = (ParserNotice) noticeList.get(0);
         assertEquals(0, notice.getLine());
         assertEquals(6, notice.getOffset());
+
         notice = (ParserNotice) noticeList.get(1);
         assertEquals(0, notice.getLine());
         assertEquals(14, notice.getOffset());
+
         notice = (ParserNotice) noticeList.get(2);
         assertEquals(1, notice.getLine());
         assertEquals(8, notice.getOffset());

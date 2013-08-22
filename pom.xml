@@ -40,7 +40,8 @@
                 <h2-version>1.0-SNAPSHOT</h2-version>
                 <h2-spatial-version>0.1-SNAPSHOT</h2-spatial-version>
                 <sl4j-version>1.6.0</sl4j-version>
-                <rsyntax-version>2.0.5.1</rsyntax-version>
+                <rsyntax-version>2.0.7</rsyntax-version>
+                <rsyntax-ls-version>r795</rsyntax-ls-version>
         </properties>
         <scm>
                 <connection>scm:git:https://github.com/irstv/orbisgis.git</connection>

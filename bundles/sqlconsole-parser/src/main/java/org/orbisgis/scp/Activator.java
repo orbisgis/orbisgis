@@ -1,5 +1,6 @@
 package org.orbisgis.scp;
 
+import org.fife.rsta.ac.LanguageSupport;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -14,11 +15,11 @@ public class Activator implements BundleActivator {
          */
         @Override
         public void start(BundleContext bc) throws Exception {
-                /*
-                bc.registerService(ServiceClass.class,
-                        new ServiceImplementation(),
+
+                bc.registerService(LanguageSupport.class,
+                        new SQLLanguageSupport(),
                         null);
-                */
+
         }
 
         /**

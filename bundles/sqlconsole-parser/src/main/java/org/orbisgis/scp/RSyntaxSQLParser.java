@@ -76,32 +76,27 @@ public class RSyntaxSQLParser extends AbstractParser {
         if (doc.getLength()==0) {
             return res;
         }
-        DocumentReader documentReader = new DocumentReader(doc);
-        ScriptReader scriptReader = new ScriptReader(documentReader);
+        DocumentSQLReader documentReader = new DocumentSQLReader(doc);
         long start = System.currentTimeMillis();
-        int position = 0;
-        String statement = scriptReader.readStatement();
         try {
             Connection connection = ds.getConnection();
             try {
-                while(statement!=null) {
-                    position += statement.length();
-                    if(!scriptReader.isInsideRemark()) {
+                while(documentReader.hasNext()) {
+                    String statement = documentReader.next();
+                    if(!documentReader.isInsideRemark()) {
                         try {
                             connection.prepareStatement(statement);
                         } catch (SQLException ex) {
                             if(ex instanceof SQLParseException) {
                                 // If we can obtain the parse error character index
                                 SQLParseException parseEx = (SQLParseException) ex;
-                                // TODO compute the length of the word before the error position
-                                DefaultParserNotice notice = new DefaultParserNotice(this, ex.getLocalizedMessage(), textArea.getLineOfOffset(position),parseEx.getSyntaxErrorPosition(),1);
+                                // TODO compute the length of the word before the error position, position may be position from the beginning of line
+                                DefaultParserNotice notice = new DefaultParserNotice(this, ex.getLocalizedMessage(), textArea.getLineOfOffset(documentReader.getPosition()),parseEx.getSyntaxErrorPosition(),1);
                                 notice.setLevel(ParserNotice.ERROR);
                                 res.addNotice(notice);
                             }
                         }
                     }
-                    position += 1; // add ; character
-                    statement = scriptReader.readStatement();
                 }
             } finally {
                 connection.close();
@@ -115,42 +110,5 @@ public class RSyntaxSQLParser extends AbstractParser {
         long time = System.currentTimeMillis() - start;
         res.setParseTime(time);
         return res;
-    }
-
-    /**
-     * Wrap a Document into a Reader.
-     */
-    private static class DocumentReader extends Reader {
-        private Document document;
-        private int offset=0;
-
-        /**
-         * @param document Document to read
-         */
-        public DocumentReader(Document document) {
-            this.document = document;
-        }
-
-        @Override
-        public void close() throws IOException {
-        }
-
-        @Override
-        public int read(char[] cbuf, int off, int len) throws IOException {
-            int totalLength = document.getLength();
-            if(offset >= totalLength) {
-                return -1;
-            }
-            int effectiveLen = Math.min(len, totalLength - offset);
-            try {
-                String text = document.getText(offset, effectiveLen);
-                text.getChars(off,text.length(),cbuf,0);
-            } catch (BadLocationException ex) {
-                throw new IOException(ex);
-            }
-            offset += effectiveLen;
-            // return -1 if end of document
-            return effectiveLen;
-        }
     }
 }
