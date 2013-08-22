@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-22 10:39+0100\n"
-"PO-Revision-Date: 2013-08-22 10:40+0100\n"
+"POT-Creation-Date: 2013-08-22 14:45+0100\n"
+"PO-Revision-Date: 2013-08-22 15:10+0100\n"
 "Last-Translator: Adam Gouge <adam.gouge@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
@@ -154,20 +154,35 @@ msgstr "&Outils"
 msgid "&Configuration"
 msgstr "&Configuration"
 
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:59
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:69
-msgid "Workspace folder"
-msgstr "Dossier d'espace de travail"
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:80
+msgid "Choose the workspace folder"
+msgstr "<html>Choisir le dossier d'espace de<br>travail</html>"
 
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:68
-msgid "Select an existing workspace or an empty folder."
-msgstr "Sélectionner un workspace ou un dossier vide."
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:86
+msgid "Choose a previous OrbisGIS workspace or create a new one"
+msgstr "Choisir ou créer un espace de travail"
 
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:70
-msgid "Default workspace"
-msgstr "Espace de travail par défaut"
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:94
+msgid "Set as default?"
+msgstr "Espace de travail par défaut ?"
 
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:115
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:96
+msgid ""
+"Setting this workspace as default will allow you to skip this<br>dialog next "
+"time"
+msgstr ""
+"Cochez cette case si vous souhaitez que cet espace de travail<br>s'ouvre de "
+"façon automatique au prochain démarrage."
+
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:111
+msgid "Workspace Manager"
+msgstr "Gestionnaire d'espace de travail"
+
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:124
+msgid "Problem updating the workspace. "
+msgstr "Problème lors de la mise à jour de l'espace de travail"
+
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:141
 #, java-format
 msgid ""
 "The workspace folder version is invalid (!=OrbisGIS {0}), or the folder is "
@@ -3162,6 +3177,12 @@ msgstr "Détermination de largeur optimale de colonne"
 #, fuzzy
 #~ msgid "Create a datasource from the selected rows"
 #~ msgstr "Chargement de la source de donnée"
+
+#~ msgid "Select an existing workspace or an empty folder."
+#~ msgstr "Sélectionner un workspace ou un dossier vide."
+
+#~ msgid "Default workspace"
+#~ msgstr "Espace de travail par défaut"
 
 #~ msgid "Could not copy the ProportionalLine."
 #~ msgstr "Impossible de copier la ligne proportionnelle"
