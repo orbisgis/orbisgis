@@ -28,11 +28,9 @@
  */
 package org.orbisgis.view.sqlconsole;
 
-import org.orbisgis.core.Services;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.SingleEditorFactory;
-import org.orbisgis.view.sqlconsole.language.SQLMetadataManager;
 import org.orbisgis.view.sqlconsole.ui.ext.SQLAction;
 import org.orbisgis.view.sqlconsole.ui.ext.SQLConsoleEditor;
 import org.osgi.framework.BundleContext;
@@ -50,7 +48,6 @@ public class SQLConsoleFactory implements SingleEditorFactory {
         public static final String factoryId = "SQLConsoleFactory";
         protected final static I18n I18N = I18nFactory.getI18n(SQLConsoleFactory.class);
         private SQLConsole sqlConsole;
-        private SQLMetadataManager sqlMetadataManager;
         private BundleContext hostBundle;
         private MenuItemServiceTracker<SQLConsoleEditor,SQLAction> actionTracker;
         /**
@@ -64,12 +61,6 @@ public class SQLConsoleFactory implements SingleEditorFactory {
         @Override
         public EditorDockable[] getSinglePanels() {
                 if(sqlConsole==null) {
-                        //Register the SQLMetadataManager
-                        sqlMetadataManager = new SQLMetadataManager();
-                        sqlMetadataManager.start();
-                        Services.registerService(SQLMetadataManager.class,
-                                I18N.tr("Handles all Metadata-related caching for the SQLLanguageSupport class"),
-                                sqlMetadataManager);
                         sqlConsole = new SQLConsole();
                         //Track Action plugin
                         actionTracker = new MenuItemServiceTracker<SQLConsoleEditor, SQLAction>(hostBundle,SQLAction.class,sqlConsole.getActions(),sqlConsole);
@@ -87,7 +78,6 @@ public class SQLConsoleFactory implements SingleEditorFactory {
         public void dispose() {
                 actionTracker.close();
                 sqlConsole.dispose();
-                sqlMetadataManager.stop();
         }
 
         

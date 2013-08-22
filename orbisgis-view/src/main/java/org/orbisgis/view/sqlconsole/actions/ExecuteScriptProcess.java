@@ -28,28 +28,17 @@
  */
 package org.orbisgis.view.sqlconsole.actions;
 
+import javax.sql.DataSource;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.driver.DriverException;
-import org.gdms.sql.engine.Engine;
-import org.gdms.sql.engine.ParseException;
-import org.gdms.sql.engine.SQLStatement;
-import org.gdms.sql.engine.SemanticException;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Execute SQL script in a background process
@@ -61,15 +50,16 @@ public class ExecuteScriptProcess implements BackgroundJob {
         protected final static I18n I18N = I18nFactory.getI18n(ExecuteScriptProcess.class);
                 
         private SQLConsolePanel panel;
-        private MapContext vc;
+        private DataSource ds;
 
-        public ExecuteScriptProcess(String script,MapContext mapContext) {
-                this(script,null,mapContext);
-        }
-
-        public ExecuteScriptProcess(String script, SQLConsolePanel panel, MapContext mapContext) {
+        /**
+         * @param script Script to execute
+         * @param panel Console panel (Can be null)
+         * @param ds DataSource to acquire DBMS Connection
+         */
+        public ExecuteScriptProcess(String script, SQLConsolePanel panel, DataSource ds) {
                 this.script = script;
-                this.vc = mapContext;
+                this.ds = ds;
                 this.panel = panel;
         }
 
@@ -91,119 +81,21 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
         @Override
         public void run(ProgressMonitor pm) {
-
-                DataManager dataManager = Services.getService(DataManager.class);
-                DataSourceFactory dsf = dataManager.getDataSourceFactory();
-                SQLStatement[] statements;
-
                 long t1 = System.currentTimeMillis();
                 try {
-                        try {
-                                statements = Engine.parseScript(script, dsf.getProperties()).getStatements();
-                        } catch (ParseException e) {
-                                LOGGER.error(I18N.tr("Cannot parse script"), e);
-                                showPanelMessage(I18N.tr("Failed to parse the script."));
-                                return;
-                        }
-
-                        for (int i = 0; i < statements.length; i++) {
-
-                                SQLStatement st = statements[i];
-                                boolean spatial;
-                                LOGGER.info(I18N.tr("Running instruction {0}/{1} :",(i + 1),statements.length));
-                                LOGGER.info(st.getSQL());
-                                try {
-                                        st.setDataSourceFactory(dsf);
-                                        st.setProgressMonitor(pm);
-                                        st.prepare();
-                                        Metadata metadata = st.getResultMetadata();
-                                        if (metadata != null) {
-                                                spatial = MetadataUtilities.isSpatial(metadata);
-
-                                                DataSource ds = dsf.getDataSource(st,
-                                                        DataSourceFactory.DEFAULT, pm);
-                                                if (pm.isCancelled()) {
-                                                        break;
-                                                }
-
-                                                if (spatial && vc != null) {
-                                                        //SQL request is a select with geometries
-                                                        //A new layer will be created and shown into the MapEditor
-                                                        try {
-                                                                final ILayer layer = dataManager.createLayer(ds);
-
-                                                                vc.getLayerModel().insertLayer(layer, 0);
-
-                                                        } catch (LayerException e) {
-                                                                LOGGER.error(
-                                                                        I18N.tr("Impossible to create the layer:{0}",ds.getName()), e);
-                                                                break;
-                                                        }
-                                                } else {
-                                                        //The select return only non-geometrical data
-                                                        //the result is shown in the GUI console
-                                                        ds.open();
-                                                        StringBuilder aux = new StringBuilder();
-                                                        int fc = ds.getMetadata().getFieldCount();
-                                                        int rc = (int) ds.getRowCount();
-
-                                                        for (int j = 0; j < fc; j++) {
-                                                                aux.append(ds.getFieldName(j));
-                                                                aux.append("\t");
-                                                        }
-                                                        aux.append("\n");
-                                                        for (int row = 0; row < rc; row++) {
-                                                                for (int j = 0; j < fc; j++) {
-                                                                        aux.append(ds.getFieldValue(row, j).toString());
-                                                                        aux.append("\t");
-                                                                }
-                                                                aux.append("\n");
-                                                                if (row > 100) {
-                                                                        aux.append("and more... total ");
-                                                                        aux.append(rc);
-                                                                        aux.append(" rows\n");
-                                                                        break;
-                                                                }
-                                                        }
-                                                        ds.close();
-                                                        LOGGER.info(aux.toString());
-                                                }
-                                        } else {
-                                                try {
-                                                        st.execute();
-                                                } finally {
-                                                        st.cleanUp();
-                                                }
-                                                if (pm.isCancelled()) {
-                                                        break;
-                                                }
-
-                                        }
-                                } catch (DataSourceCreationException e) {
-                                        LOGGER.error(
-                                                I18N.tr("Cannot create the DataSource:{0}"
-                                                , st.getSQL()), e);
-                                        break;
-                                }
-
-                                // DO NOT REMOVE
-                                // lets the GC remove a statement while the following ones are executed,
-                                // since we have no use for it now.
-                                statements[i] = null;
-
-                                pm.progressTo(100 * i / statements.length);
-                        }
-
-                } catch (DriverException e) {
-                        LOGGER.error(I18N.tr("Data access error:"), e);
-                } catch (SemanticException e) {
-                        LOGGER.error(I18N.tr("SQL Semantic Error"), e);
+                    Connection connection = ds.getConnection();
+                    try {
+                        connection.createStatement().execute(script);
+                    } finally {
+                        connection.close();
+                    }
+                } catch (SQLException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
-
                 long t2 = System.currentTimeMillis();
                 double lastExecTime = ((t2 - t1) / 1000.0);
                 String message = I18N.tr("Execution time: {0}",lastExecTime);
-                LOGGER.debug(message);
+                LOGGER.info(message);
                 showPanelMessage(message);
         }
 }

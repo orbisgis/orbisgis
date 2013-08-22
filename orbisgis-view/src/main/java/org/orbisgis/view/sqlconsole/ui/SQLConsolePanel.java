@@ -35,6 +35,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.EventHandler;
 import java.io.IOException;
+import javax.sql.DataSource;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -64,7 +65,6 @@ import org.orbisgis.view.sqlconsole.actions.ExecuteScriptProcess;
 import org.orbisgis.view.sqlconsole.blockComment.QuoteSQL;
 import org.orbisgis.view.sqlconsole.codereformat.CodeReformator;
 import org.orbisgis.view.sqlconsole.codereformat.CommentSpec;
-import org.orbisgis.view.sqlconsole.language.SQLLanguageSupport;
 import org.orbisgis.view.sqlconsole.ui.ext.SQLAction;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -92,7 +92,6 @@ public class SQLConsolePanel extends JPanel {
         private int line = 0;
         private int character = 0;
         private String message = "";
-        private SQLLanguageSupport lang;
         static CommentSpec[] COMMENT_SPECS = new CommentSpec[]{
                 new CommentSpec("/*", "*/"), new CommentSpec("--", "\n")};
         private FindReplaceDialog findReplaceDialog;
@@ -229,8 +228,7 @@ public class SQLConsolePanel extends JPanel {
                         scriptPanel.setClearWhitespaceLinesEnabled(true);
                         scriptPanel.setMarkOccurrences(false);
                         actions.setAccelerators(scriptPanel);
-                        lang = new SQLLanguageSupport();
-                        lang.install(scriptPanel);
+                        //TODO track language support bundles
 
                         codeReformator = new CodeReformator(";",
                                 COMMENT_SPECS);
@@ -256,7 +254,8 @@ public class SQLConsolePanel extends JPanel {
                     if(mapElement!=null) {
                         mapContext = mapElement.getMapContext();
                     }
-                    bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(getText(), this,mapContext));
+                    DataSource dataSource = Services.getService(DataSource.class);
+                    bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(getText(), this, dataSource));
                 }
         }
                
@@ -520,9 +519,7 @@ public class SQLConsolePanel extends JPanel {
         }
 
         public void freeResources() {
-                if (lang != null) {
-                        lang.uninstall(scriptPanel);
-                }
+                //TODO untrack and uninstall language support bundles
                 if(messageCleanTimer!=null) {
                         messageCleanTimer.stop();
                 }

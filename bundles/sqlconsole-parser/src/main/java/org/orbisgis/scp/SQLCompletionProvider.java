@@ -46,6 +46,9 @@ import org.fife.ui.autocomplete.AbstractCompletionProvider;
 public class SQLCompletionProvider extends AbstractCompletionProvider {
     @Override
     public String getAlreadyEnteredText(JTextComponent jTextComponent) {
+        //Returns the text just before the current caret position that could be the start of something auto-completable.
+
+
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -59,6 +62,6 @@ public class SQLCompletionProvider extends AbstractCompletionProvider {
         int pos = jTextComponent.getCaretPosition();
         // Extract the statement at this position
 
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 }

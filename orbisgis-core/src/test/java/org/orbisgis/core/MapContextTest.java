@@ -357,12 +357,13 @@ public class MapContextTest extends AbstractTest {
 
 		MapExportManager mem = Services.getService(MapExportManager.class);
 		Envelope envelope = mc.getLayerModel().getEnvelope();
-        File outFile = new File("/tmp/output.svg");
+        File outFile = new File("output.svg");
         if(outFile.exists()) {
             assertTrue(outFile.delete());
         } else {
             outFile.mkdir();
         }
+        assertTrue("Cannot write to ut folder:\n" +outFile.getAbsolutePath(), outFile.canWrite());
 		FileOutputStream outStream = new FileOutputStream(outFile);
 		mem.exportSVG(mc, outStream, 10, 10, new Envelope(new Coordinate(
 				306260, 2251944), new Coordinate(310000, 2253464)), null, 72);
