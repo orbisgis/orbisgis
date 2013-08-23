@@ -28,16 +28,7 @@
  */
 package org.orbisgis.sif.multiInputPanel;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import javax.swing.JButton;
-import javax.swing.JPanel;
+import net.miginfocom.swing.MigLayout;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.CustomButton;
@@ -46,33 +37,42 @@ import org.orbisgis.sif.icons.SifIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * A combo box of folder items with a folder dialog
  * @author Nicolas Fortin
  */
 public class DirectoryComboBoxChoice extends ComboBoxChoice {
-        private JPanel mainComponent = new JPanel(new BorderLayout());
+        private JPanel mainComponent = new JPanel(new MigLayout());
         private JButton browseFolders;
         private static final I18n I18N = I18nFactory.getI18n(DirectoryComboBoxChoice.class);
         private ActionListener browseButtonAction = EventHandler.create(ActionListener.class, this, "onBrowseFolders");
-        private String openFolderTitle;
         /**
          * 
          * @param folders Folder list
          */
-        public DirectoryComboBoxChoice(List<File> folders,String openFolderTitle) {
+        public DirectoryComboBoxChoice(List<File> folders) {
                 super(fileToStringArray(folders));
-                this.openFolderTitle = openFolderTitle;
-                mainComponent.add(comp,BorderLayout.WEST);
-                browseFolders = new CustomButton(SifIcon.getIcon("open"));                
+                browseFolders = new CustomButton(SifIcon.getIcon("open"));
                 browseFolders.setToolTipText(I18N.tr("Select folder"));
-                mainComponent.add(browseFolders,BorderLayout.EAST);
+                mainComponent.add(comp, "width 250!");
+                mainComponent.add(browseFolders, "width 16!");
         }
+
         /**
          * User click on browse folders button
          */
         public void onBrowseFolders() {
-                OpenFolderPanel openDialog = new OpenFolderPanel("DirectoryComboBoxChoice", openFolderTitle);
+                OpenFolderPanel openDialog = new OpenFolderPanel("DirectoryComboBoxChoice",
+                        I18N.tr("Select an existing workspace or an empty folder"));
                 openDialog.setSingleSelection(true);
                 if(!getValue().isEmpty()) {
                         openDialog.setCurrentDirectory(new File(getValue()));

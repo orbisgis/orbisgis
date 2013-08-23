@@ -49,8 +49,8 @@ public final class OrbisGISIcon {
      * This is a static class
      */
     private OrbisGISIcon() {
-        
     }
+
     /**
      * Retrieve icon awt Image by its name
      * @param iconName The icon name, without extension. All icons are stored in the png format.
