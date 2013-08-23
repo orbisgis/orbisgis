@@ -29,70 +29,74 @@
 package org.orbisgis.sif.multiInputPanel;
 
 import java.awt.Component;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
+import javax.swing.*;
+
 import org.orbisgis.sif.common.ContainerItemProperties;
+import org.orbisgis.sif.components.WideComboBox;
 
 public class ComboBoxChoice implements InputType {
 
-        private DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
-	protected JComboBox comp = new JComboBox(comboModel);
+    private DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
+    protected WideComboBox comp = new WideComboBox(comboModel);
 
-	public ComboBoxChoice(String... choices) {
-		this(choices, choices);
-	}
+    public ComboBoxChoice(String... choices) {
+        this(choices, choices);
+    }
 
-	public ComboBoxChoice(String[] ids, String[] texts) {
-		setChoices(ids, texts);
-	}
+    public ComboBoxChoice(String[] ids, String[] texts) {
+        setChoices(ids, texts);
+        ((JLabel) comp.getRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+    }
 
-	private void setChoices(String[] ids, String[] texts) {
-		for (int i = 0; i < texts.length; i++) {
-                        comboModel.addElement(new ContainerItemProperties(ids[i], texts[i]));
-		}
-		if (comp.getItemCount()>0) {
-			comp.setSelectedIndex(0);
-		}
-	}
-
-        @Override
-	public Component getComponent() {
-		return comp;
-	}
-        
-
-        @Override
-	public String getValue() {
-                if(comp.getSelectedIndex()!=-1) {
-                        return ((ContainerItemProperties) comp.getSelectedItem()).getKey();
-                } else {
-                        return "";
-                }
-	}
-        /**
-         * Find the key in combo items
-         * @param key Combo Item key
-         * @return Index in the combo or -1 if not found
-         */
-        private int getIndexByKey(String key) {
-                for(int id=0;id<comboModel.getSize();id++) {
-                        ContainerItemProperties item =
-                                (ContainerItemProperties) comboModel.getElementAt(id);
-                        if(item.getKey().equals(key)) {
-                                return id;
-                        }
-                }
-                return -1;
+    private void setChoices(String[] ids, String[] texts) {
+        for (int i = 0; i < texts.length; i++) {
+            comboModel.addElement(new ContainerItemProperties(ids[i], texts[i]));
         }
+        if (comp.getItemCount() > 0) {
+            comp.setSelectedIndex(0);
+        }
+    }
 
-        @Override
-	public void setValue(String value) {
-                int valueIndex = getIndexByKey(value);
-                if(valueIndex>=0) {
-                        comp.setSelectedIndex(valueIndex);
-                } else {
-                        comp.addItem(new ContainerItemProperties(value,value));
-                        comp.setSelectedIndex(comp.getItemCount()-1);
-                }
-	}
+    @Override
+    public Component getComponent() {
+        return comp;
+    }
+
+
+    @Override
+    public String getValue() {
+        if (comp.getSelectedIndex() != -1) {
+            return ((ContainerItemProperties) comp.getSelectedItem()).getKey();
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * Find the key in combo items
+     *
+     * @param key Combo Item key
+     * @return Index in the combo or -1 if not found
+     */
+    private int getIndexByKey(String key) {
+        for (int id = 0; id < comboModel.getSize(); id++) {
+            ContainerItemProperties item =
+                    (ContainerItemProperties) comboModel.getElementAt(id);
+            if (item.getKey().equals(key)) {
+                return id;
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    public void setValue(String value) {
+        int valueIndex = getIndexByKey(value);
+        if (valueIndex >= 0) {
+            comp.setSelectedIndex(valueIndex);
+        } else {
+            comp.addItem(new ContainerItemProperties(value, value));
+            comp.setSelectedIndex(comp.getItemCount() - 1);
+        }
+    }
 }

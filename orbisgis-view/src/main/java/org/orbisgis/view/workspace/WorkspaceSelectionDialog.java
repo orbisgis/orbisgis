@@ -28,94 +28,155 @@
  */
 package org.orbisgis.view.workspace;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.workspace.CoreWorkspace;
-import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.multiInputPanel.CheckBoxChoice;
 import org.orbisgis.sif.multiInputPanel.DirectoryComboBoxChoice;
-import org.orbisgis.sif.multiInputPanel.MIPValidation;
-import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 /**
  * GUI for Workspace selection.
+ *
  * @author Nicolas Fortin
+ * @author Adam Gouge
  */
-public class WorkspaceSelectionDialog implements MIPValidation {
-        private static final I18n I18N = I18nFactory.getI18n(WorkspaceSelectionDialog.class);
-        private static final Logger LOGGER = Logger.getLogger(WorkspaceSelectionDialog.class);
-        private static final String FOLDER_COMBO_FIELD = "foldersCombo";
-        private static final String DEFAULT_WORKSPACE_FIELD = "default workspace";
+public class WorkspaceSelectionDialog {
 
-        /**
-         * Show a dialog to choose the workspace folder
-         * @return The user selected workspace folder
-         */
-        public static File showWorkspaceFolderSelection(CoreWorkspace coreWorkspace, boolean showCancelButton) {
-                MultiInputPanel panel = new MultiInputPanel(I18N.tr("Workspace folder"));
-                panel.addValidation(new WorkspaceSelectionDialog());
-                List<File> knownWorkspaces = coreWorkspace.readKnownWorkspacesPath();
-                // Remove the loaded one
-                String workspaceFolder = coreWorkspace.getWorkspaceFolder();
-                if(workspaceFolder!=null && !workspaceFolder.isEmpty()) {
-                    knownWorkspaces.remove(new File(workspaceFolder));
-                }
-                DirectoryComboBoxChoice comboDir = new DirectoryComboBoxChoice(knownWorkspaces,
-                        I18N.tr("Select an existing workspace or an empty folder."));
-                panel.addInput(FOLDER_COMBO_FIELD, I18N.tr("Workspace folder"),comboDir );
-                panel.addInput(DEFAULT_WORKSPACE_FIELD, I18N.tr("Default workspace"),
-                        new CheckBoxChoice(false));
-                // Select default workspace on the combo box
-                if(!knownWorkspaces.isEmpty()) {
-                        comboDir.setValue(knownWorkspaces.get(0).getAbsolutePath());
-                }
-                if(UIFactory.showDialog(panel, showCancelButton, true)) {
-                        String workspacePath = panel.getInput(FOLDER_COMBO_FIELD);
-                        boolean isDefault = Boolean.valueOf(panel.getInput(DEFAULT_WORKSPACE_FIELD));
-                        try {
-                                if(isDefault) {
-                                        coreWorkspace.setDefaultWorkspace(new File(workspacePath));
-                                } else {
-                                        coreWorkspace.setDefaultWorkspace(null);
-                                }
-                                // Save workspace list
-                                List<File> workspaces = comboDir.getValues();
-                                // Add old workspace
-                                if(workspaceFolder!=null && !workspaceFolder.isEmpty()) {
-                                    workspaces.add(new File(workspaceFolder));
-                                }
-                                coreWorkspace.writeKnownWorkspaces(workspaces);
-                                // Initialize the workspace if empty or not exists
-                                File wkFile = new File(workspacePath);
-                                File[] files = wkFile.listFiles();
-                                if(!wkFile.exists() || (files!=null && files.length==0)) {
-                                        ViewWorkspace.initWorkspaceFolder(wkFile);
-                                }
-                        } catch (IOException ex) {
-                                LOGGER.error(ex.getLocalizedMessage(),ex);
-                                return null;
-                        }
-                        return new File(workspacePath);
-                }
+    private static final I18n I18N = I18nFactory.getI18n(WorkspaceSelectionDialog.class);
+    private static final Logger LOGGER = Logger.getLogger(WorkspaceSelectionDialog.class);
+
+    /**
+     * Shows a dialog to choose the workspace folder
+     *
+     * @param parent        Parent component
+     * @param coreWorkspace Core workspace
+     *
+     * @return The user-selected workspace folder
+     */
+    public static File showWorkspaceFolderSelection(Component parent,
+                                                    CoreWorkspace coreWorkspace) {
+
+        // Get the list of known workspaces
+        List<File> knownWorkspaces = coreWorkspace.readKnownWorkspacesPath();
+
+        // Remove the currently loaded workspace from the list
+        String currentWorkspacePath = coreWorkspace.getWorkspaceFolder();
+        if (currentWorkspacePath != null && !currentWorkspacePath.isEmpty()) {
+            knownWorkspaces.remove(new File(currentWorkspacePath));
+        }
+
+        // Initialize a panel to contain the dialog
+        JPanel panel = new JPanel(new MigLayout("wrap 1"));
+
+        // Initialize components
+        JLabel chooseLabel = new JLabel(I18N.tr("Choose the workspace folder"));
+        String defaultFontName = chooseLabel.getFont().getName();
+        Font largeFont = new Font(defaultFontName, Font.BOLD, 16);
+        Font smallFont = new Font(defaultFontName, Font.PLAIN, 10);
+        chooseLabel.setFont(largeFont);
+        JLabel subChooseLabel = new JLabel(
+                I18N.tr("Choose a previous OrbisGIS workspace or create a new one"));
+        subChooseLabel.setFont(smallFont);
+        DirectoryComboBoxChoice comboBox =
+                new DirectoryComboBoxChoice(knownWorkspaces);
+        if (!knownWorkspaces.isEmpty()) {
+            // Select the default workspace on the combo box
+            comboBox.setValue(knownWorkspaces.get(0).getAbsolutePath());
+        }
+        JCheckBox defaultCheckBox = new JCheckBox(I18N.tr("Set as default?"));
+        JLabel subCheckBox = new JLabel("<html>" +
+                I18N.tr("Setting this workspace as default will allow you to " +
+                        "skip this<br>dialog next time") + "</html>");
+        subCheckBox.setFont(smallFont);
+
+        // Add components
+        panel.add(chooseLabel);
+        panel.add(subChooseLabel);
+        panel.add(comboBox.getComponent());
+        panel.add(Box.createGlue());
+        panel.add(defaultCheckBox);
+        panel.add(subCheckBox);
+
+        // Show the dialog and get the user's choice.
+        int userChoice = JOptionPane.showConfirmDialog(parent,
+                panel,
+                I18N.tr("Workspace Manager"),
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                OrbisGISIcon.getIcon("sidebar"));
+
+        // If the user clicked OK, then update the workspace.
+        if (userChoice == JOptionPane.OK_OPTION) {
+            String chosenWorkspacePath = comboBox.getValue();
+            validate(chosenWorkspacePath);
+            try {
+                updateWorkspace(coreWorkspace, comboBox, currentWorkspacePath,
+                        chosenWorkspacePath, defaultCheckBox.isSelected());
+            } catch (IOException ex) {
+                LOGGER.error(I18N.tr("Problem updating the workspace. ")
+                        + ex.getLocalizedMessage(), ex);
                 return null;
+            }
+            return new File(chosenWorkspacePath);
         }
-        /**
-         * Validation of user input
-         * @param mid
-         * @return 
-         */
-        @Override
-        public String validate(MultiInputPanel mid) {
-                String workspacePath = mid.getInput(FOLDER_COMBO_FIELD);
-                if(!ViewWorkspace.isWorkspaceValid(new File(workspacePath))) {
-                        return I18N.tr("The workspace folder version is invalid (!=OrbisGIS {0}), or the folder is not empty",CoreWorkspace.MAJOR_VERSION);
-                } else {
-                        return null;
-                }
+
+        return null;
+    }
+
+    /**
+     * Makes sure the chosen workspace is valid.
+     *
+     * @param chosenWorkspacePath Workspace path
+     */
+    private static void validate(String chosenWorkspacePath) {
+        if (!ViewWorkspace.isWorkspaceValid(new File(chosenWorkspacePath))) {
+            LOGGER.error(I18N.tr("The workspace folder version is invalid " +
+                    "(!=OrbisGIS {0}), or the folder is not empty",
+                    CoreWorkspace.MAJOR_VERSION));
         }
-        
+    }
+
+    /**
+     * Update and/or initialize the user-selected workspace as necessary.
+     *
+     *
+     * @param coreWorkspace       Core workspace
+     * @param comboBox            ComboBox with possible workspace directories
+     * @param oldWorkspacePath    Path of the previous workspace
+     * @param chosenWorkspacePath Path of the workspace the user chose
+     * @param isDefault           True if the user set the workspace as default
+     * @throws IOException during certain workspace operations.
+     */
+    private static void updateWorkspace(CoreWorkspace coreWorkspace,
+                                        DirectoryComboBoxChoice comboBox,
+                                        String oldWorkspacePath,
+                                        String chosenWorkspacePath,
+                                        boolean isDefault) throws IOException {
+        // Set as default workspace if necessary
+        if (isDefault) {
+            coreWorkspace.setDefaultWorkspace(new File(chosenWorkspacePath));
+        } else {
+            coreWorkspace.setDefaultWorkspace(null);
+        }
+        // Save the workspace list, including the previous one
+        List<File> workspaces = comboBox.getValues();
+        if (oldWorkspacePath != null && !oldWorkspacePath.isEmpty()) {
+            workspaces.add(new File(oldWorkspacePath));
+        }
+        coreWorkspace.writeKnownWorkspaces(workspaces);
+        // Initialize the workspace if empty or new
+        File wkFile = new File(chosenWorkspacePath);
+        File[] files = wkFile.listFiles();
+        if (!wkFile.exists() || (files != null && files.length == 0)) {
+            ViewWorkspace.initWorkspaceFolder(wkFile);
+        }
+    }
 }

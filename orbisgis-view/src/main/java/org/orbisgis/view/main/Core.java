@@ -211,7 +211,7 @@ public class Core {
                 @Override
                 public void run() {
                         // Ask the user to select a workspace folder
-                        File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(coreWorkspace,true);
+                        File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, coreWorkspace);
                         if(newWorkspace!=null) {
                             coreWorkspace.setWorkspaceFolder(newWorkspace.getAbsolutePath());
                             ok = true;
