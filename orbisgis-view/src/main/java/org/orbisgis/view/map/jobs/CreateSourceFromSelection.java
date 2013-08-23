@@ -29,6 +29,7 @@
 
 package org.orbisgis.view.map.jobs;
 
+import java.awt.*;
 import java.io.File;
 import java.util.Set;
 import org.apache.log4j.Logger;
@@ -46,6 +47,8 @@ import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.swing.*;
+
 /**
  * A background job to create a source from a selection.
  *
@@ -60,11 +63,32 @@ public class CreateSourceFromSelection implements BackgroundJob {
       
         private final DataSource original;
         private final Set<Integer> selectedRows;
+        private String newName;
 
+        /**
+         * Constructor used by the Map Editor.
+         *
+         * @param original     Original DataSource
+         * @param selectedRows Selected Rows
+         */
         public CreateSourceFromSelection(DataSource original,
                 Set<Integer> selectedRows) {
                 this.original = original;
                 this.selectedRows = selectedRows;
+        }
+
+        /**
+         * Constructor used by the TableEditor.
+         *
+         * @param original     Original DataSource
+         * @param selectedRows Selected Rows
+         * @param newName      New name to use to register the DataSource
+         */
+        public CreateSourceFromSelection(DataSource original,
+                                         Set<Integer> selectedRows,
+                                         String newName) {
+            this(original, selectedRows);
+            this.newName = newName;
         }
 
         @Override
@@ -81,14 +105,10 @@ public class CreateSourceFromSelection implements BackgroundJob {
                         FileSourceDefinition dsd = new FileSourceDefinition(file, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
 
                         // Find an unique name to register
-                        SourceManager sm = dm.getSourceManager();
-                        int index = -1;
-                        String newName;
-                        do {
-                                index++;
-                                newName = original.getName() + "_selection_" + index;
-                        } while (sm.getSource(newName) != null);
-                        sm.register(newName, dsd);
+                        if (newName == null) {
+                            newName = getNewUniqueName(original);
+                        }
+                        dm.getSourceManager().register(newName, dsd);
 
                         // Populate the new source
                         DataSource newds = dsf.getDataSource(newName);
@@ -116,7 +136,60 @@ public class CreateSourceFromSelection implements BackgroundJob {
 
         @Override
         public String getTaskName() {
-                return I18N.tr("Create the datasource from the selection");
+                return I18N.tr("Create a datasource from the current selection");
         }
-        
+
+        /**
+         * Returns a new unique name when registering a {@link DataSource}.
+         *
+         * @param original Original DataSource
+         * @return New unique name
+         */
+        private static String getNewUniqueName(DataSource original) {
+                String uniqueName;
+                int index = 0;
+                SourceManager sm = Services.getService(DataManager.class)
+                        .getSourceManager();
+                uniqueName = I18N.tr("{0}_selection", original.getName());
+                while (sm.getSource(uniqueName) != null) {
+                    index++;
+                    uniqueName = I18N.tr("{0}_selection_{1}", original.getName(), index);
+                }
+                return uniqueName;
+        }
+
+        public static String showNewNameDialog(Component parent,
+                                               DataSource dataSource) {
+            String newName = null;
+            boolean inputAccepted = false;
+            final String newNameMessage = I18N.marktr("New name for the datasource:");
+            JLabel message = new JLabel(I18N.tr(newNameMessage));
+            while (!inputAccepted) {
+                newName = JOptionPane.showInputDialog(
+                        parent,
+                        message.getText(),
+                        getNewUniqueName(dataSource));
+                // Check if the user canceled the operation.
+                if (newName == null) {
+                    // Just exit
+                    inputAccepted = true;
+                } // The user clicked OK.
+                else {
+                    // Check for an empty name.
+                    if (newName.isEmpty()) {
+                        message.setText(I18N.tr("You must enter a non-empty name.")
+                                + "\n" + I18N.tr(newNameMessage));
+                    } // Check for a source that already exists with that name.
+                    else if (Services.getService(DataManager.class)
+                            .getSourceManager().getSource(newName) != null) {
+                        message.setText(I18N.tr("A datasource with that name already exists.")
+                                + "\n" + I18N.tr(newNameMessage));
+                    } // The user entered a non-empty, unique name.
+                    else {
+                        inputAccepted = true;
+                    }
+                }
+            }
+            return newName;
+        }
 }

@@ -29,6 +29,7 @@
 package org.orbisgis.view.table;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -386,12 +387,13 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         pop.add(inverseSelection);
                         
                         JMenuItem createDataSourceSelection = new JMenuItem(
-                                I18N.tr("Create a datasource"),
+                                I18N.tr("Create datasource from selection"),
                                 OrbisGISIcon.getIcon("table_go"));
-                        createDataSourceSelection.setToolTipText(I18N.tr("Create a datasource from a selection"));
+                        createDataSourceSelection.setToolTipText(
+                                I18N.tr("Create a datasource from the current selection"));
                         createDataSourceSelection.addActionListener(
                                 EventHandler.create(ActionListener.class,
-                                this,"onCreateDataSourceFromSelection"));
+                                this, "onCreateDataSourceFromSelection"));
                         pop.add(createDataSourceSelection);
                         
                         
@@ -417,7 +419,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 popupActions.copyEnabledActions(pop);
                 return pop;
         }
-        
+
         /**
          * Used by the function "Zoom to selection"
          * This menu is shown only if the current data is loaded and shown in the toc
@@ -492,15 +494,23 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * The user can export the selected rows into a new datasource
          */
         public void onCreateDataSourceFromSelection() {
-                Set<Integer> selection = getTableModelSelection();
-                if (!selection.isEmpty()) {
+                String newName = CreateSourceFromSelection.showNewNameDialog(
+                        this, tableModel.getDataSource());
+                // If newName is not null, then the user clicked OK and entered
+                // a valid name.
+                if (newName != null) {
+                    Set<Integer> selection = getTableModelSelection();
+                    if (!selection.isEmpty()) {
                         BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.backgroundOperation(new CreateSourceFromSelection(tableModel.getDataSource(), selection));
+                        bm.backgroundOperation(
+                                new CreateSourceFromSelection(
+                                        tableModel.getDataSource(),
+                                        selection, newName));
+                    }
                 }
-
         }
-        
-        /**
+
+    /**
          * Select all rows that have the same value of the selected cell
          */
         public void onMenuSelectSameCellValue() {
@@ -705,7 +715,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * Compute the optimal width for this column
          */
         public void onMenuOptimalWidth() {
-                launchJob(new OptimalWidthJob(table,popupCellAdress.x));
+                launchJob(new OptimalWidthJob(table, popupCellAdress.x));
         }
 
         /**
