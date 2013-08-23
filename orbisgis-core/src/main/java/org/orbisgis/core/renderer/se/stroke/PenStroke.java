@@ -101,7 +101,7 @@ public final class PenStroke extends Stroke implements FillNode {
 
         /**
          * Build a {@link ParameterValueType} from this {@code LineCap}.
-         * @return
+         * @return This LineCap in a ParameterValueType.
          */
         public ParameterValueType getParameterValueType() {
             return SeParameterFactory.createParameterValueType(this.name().toLowerCase());
@@ -117,7 +117,7 @@ public final class PenStroke extends Stroke implements FillNode {
 
         /**
          * Build a {@link ParameterValueType} from this {@code LineJoin}.
-         * @return
+         * @return This LineJoin in a ParameterValueType.
          */
         public ParameterValueType getParameterValueType() {
             return SeParameterFactory.createParameterValueType(this.name().toLowerCase());
@@ -125,7 +125,7 @@ public final class PenStroke extends Stroke implements FillNode {
     }
 
     /**
-     * Create a standard undashed 0.1mm-wide opaque black stroke
+     * Create a standard 0.1mm-wide opaque black stroke without dash.
      */
     public PenStroke() {
         super();
@@ -139,8 +139,8 @@ public final class PenStroke extends Stroke implements FillNode {
     }
 
     /**
-     * Build a PenStroke from the Jaxb type given in argument.
-     * @param t
+     * Build a PenStroke from the JaXB type given in argument.
+     * @param t The input JaXB element
      */
     public PenStroke(PenStrokeType t) throws InvalidStyle {
         super(t);
@@ -188,7 +188,7 @@ public final class PenStroke extends Stroke implements FillNode {
 
     /**
      * Build a {@code PenStroke} from the JAXBElement given in argument.
-     * @param s
+     * @param s The input JaXB element.
      * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
      */
     public PenStroke(JAXBElement<PenStrokeType> s) throws InvalidStyle {
@@ -199,29 +199,30 @@ public final class PenStroke extends Stroke implements FillNode {
     public Double getNaturalLength(Map<String,Object> map, Shape shp, MapTransform mt) {
 
         if (dashArray != null) {
-            // A dashed penstroke has a length
-            // This is requiered to compute hatches tile but will break the compound stroke natural length logic 
+            // A dashed PenStroke has a length
+            // This is required to compute hatches tile but will break the compound stroke natural length logic
             // for infinite PenStroke element ! For this reason, compound stroke use getNaturalLengthForCompound
             try {
                 double sum = 0.0;
                 String sDash = this.dashArray.getValue(map);
-                String[] splitedDash = sDash.split(" ");
-                int size = splitedDash.length;
-                for (int i = 0; i < size; i++) {
-                    sum += Uom.toPixel(Double.parseDouble(splitedDash[i]), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                }
+                if(!sDash.isEmpty()){
+                String[] splitDash = sDash.split(" ");
+                    int size = splitDash.length;
+                    for (int i = 0; i < size; i++) {
+                        sum += Uom.toPixel(Double.parseDouble(splitDash[i]), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                    }
 
-                if (size % 2 == 1) {
-                    // # pattern item is odd -> 2* to close the pattern
-                    sum *= 2;
+                    if (size % 2 == 1) {
+                        // # pattern item is odd -> 2* to close the pattern
+                        sum *= 2;
+                    }
+                    return sum;
                 }
-                return sum;
             } catch (ParameterException ex) {
                 return Double.POSITIVE_INFINITY;
             }
-        } else {
-            return Double.POSITIVE_INFINITY;
         }
+        return Double.POSITIVE_INFINITY;
     }
 
     @Override

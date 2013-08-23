@@ -31,10 +31,9 @@ package org.orbisgis.view.toc.actions.cui.legends.model;
 import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.categorize.CategorizedArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
-import org.orbisgis.legend.thematic.recode.RecodedArea;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueAreaSE;
+import org.orbisgis.view.toc.actions.cui.legends.ui.PnlUniqueAreaSE;
 
 import java.awt.event.ActionEvent;
 
@@ -59,8 +58,7 @@ public class ParametersEditorCategorizedArea extends ParametersEditorMappedLegen
             Double key = (Double) getCellEditorValue();
             AreaParameters lp = ca.get(key);
             UniqueSymbolArea usl = new UniqueSymbolArea(lp);
-            PnlUniqueAreaSE pls = new PnlUniqueAreaSE(false, ca.isStrokeEnabled(), false);
-            pls.setLegend(usl);
+            PnlUniqueAreaSE pls = new PnlUniqueAreaSE(usl, ca.isStrokeEnabled());
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 AreaParameters edited = usl.getAreaParameters();
                 ca.put((Double) getCellEditorValue(), edited);

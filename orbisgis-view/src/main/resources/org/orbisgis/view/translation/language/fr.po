@@ -2,16 +2,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-19 16:36+0100\n"
-"PO-Revision-Date: 2013-07-22 09:57+0100\n"
-"Last-Translator: Alexis Guéganno <alexis.gueganno@ec-nantes.fr>\n"
+"POT-Creation-Date: 2013-08-22 10:39+0100\n"
+"PO-Revision-Date: 2013-08-22 10:40+0100\n"
+"Last-Translator: Adam Gouge <adam.gouge@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.5.7\n"
 "X-Poedit-KeywordsList: tr;trc;trnc;marktr;trn\n"
 "X-Poedit-Basepath: ../../../../../..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -218,7 +218,7 @@ msgstr "Zoomer sur l'emprise de la couche"
 
 #: java/org/orbisgis/view/toc/Toc.java:162
 #: java/org/orbisgis/view/map/MapEditor.java:392
-#: java/org/orbisgis/view/table/TableEditor.java:400
+#: java/org/orbisgis/view/table/TableEditor.java:402
 #: java/org/orbisgis/view/table/jobs/ZoomToSelectionJob.java:118
 msgid "Zoom to selection"
 msgstr "Zoomer sur la sélection"
@@ -229,7 +229,7 @@ msgstr "Zoomer sur les géométries sélectionnées"
 
 #: java/org/orbisgis/view/toc/Toc.java:168
 #: java/org/orbisgis/view/map/MapEditor.java:389
-#: java/org/orbisgis/view/table/TableEditor.java:373
+#: java/org/orbisgis/view/table/TableEditor.java:374
 msgid "Clear selection"
 msgstr "Déselectionner"
 
@@ -416,7 +416,7 @@ msgstr ""
 
 #: java/org/orbisgis/view/toc/Toc.java:839
 #: java/org/orbisgis/view/map/MapElement.java:212
-#: java/org/orbisgis/view/table/TableEditor.java:194
+#: java/org/orbisgis/view/table/TableEditor.java:195
 msgid "Errors on data source save process"
 msgstr ""
 
@@ -454,25 +454,16 @@ msgstr "Erreur pendant le dessin de l'objet"
 msgid "Cannot change the layer name"
 msgstr "Impossible de changer le nom de la couche"
 
-#: java/org/orbisgis/view/toc/actions/cui/NoPanel.java:55
-msgid "No suitable editor for this legend"
-msgstr "Aucun éditeur approprié pour cette légende"
-
-#: java/org/orbisgis/view/toc/actions/cui/NoPanel.java:64
-#: java/org/orbisgis/view/toc/actions/cui/NoPanel.java:69
-msgid "bug !"
-msgstr "Bug !"
-
-#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:192
+#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:188
 msgid "Add or select a legend."
 msgstr "Ajouter ou sélectionner une légende."
 
-#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:480
+#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:471
 #, java-format
 msgid "Simple Style Editor - {0}"
 msgstr "Éditeur de style simple - {0}"
 
-#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:486
+#: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:477
 msgid "You must create at least one legend"
 msgstr "Vous devez créer au moins une légende"
 
@@ -496,22 +487,22 @@ msgstr "Symbole ponctuel"
 msgid "Text Symbolizer"
 msgstr "Symbole textuel"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:323
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:322
 msgid "Up"
 msgstr "Haut"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:331
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:330
 msgid "Down"
 msgstr "Bas"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:339
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractTableAnalysis.java:163
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:338
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/TablePanel.java:169
 #: java/org/orbisgis/view/geocatalog/Catalog.java:558
 #: java/org/orbisgis/view/components/gdms/ConstraintTableAction.java:194
 msgid "Add"
 msgstr "Ajouter"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:348
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:347
 #: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteMap.java:157
 #: java/org/orbisgis/view/map/mapsManager/TreeNodeMapCatalogServer.java:184
 #: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:123
@@ -521,20 +512,20 @@ msgstr "Ajouter"
 msgid "Delete"
 msgstr "Supprimer"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:356
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:355
 #: java/org/orbisgis/view/components/fstree/FileTree.java:166
 msgid "Rename"
 msgstr "Renommer"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:450
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:449
 msgid "Choose a name for your rule"
 msgstr "Choisissez un nom pour votre règle"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:451
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:450
 msgid "Name of the Rule : "
 msgstr "Nom de la règle :"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:458
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:457
 msgid "Rule name cannot be null or empty."
 msgstr "Le nom de règle ne peut pas être null ou vide"
 
@@ -550,276 +541,149 @@ msgstr "Sélectionner une légende"
 msgid "You must select a legend."
 msgstr "Vous devez sélectionner au moins une légende"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendUIMainPanel.java:168
+#: java/org/orbisgis/view/toc/actions/cui/LegendUIMainPanel.java:170
 msgid "Advanced Style Editor"
 msgstr "Éditeur de style avancé"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractTableAnalysis.java:56
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractTableAnalysis.java:80
 msgid "Enable border"
 msgstr "Activer le contour"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractTableAnalysis.java:57
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractTableAnalysis.java:81
 msgid "Classification settings"
 msgstr "Configuration de la classification"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractTableAnalysis.java:168
-msgid "Remove"
-msgstr "Supprimer"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractTableAnalysis.java:438
-msgid "General settings"
-msgstr "Paramètres généraux"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractTableAnalysis.java:453
-msgid "Fallback symbol"
-msgstr "Symbole par défaut"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRecodedPoint.java:199
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRecodedArea.java:263
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRecodedPoint.java:178
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRecodedArea.java:188
 msgid "You must use recognized RecodedArea instances inthis panel."
 msgstr ""
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRecodedPoint.java:260
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlCategorizedArea.java:220
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlCategorizedLine.java:191
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRecodedLine.java:136
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRecodedArea.java:147
-msgid "Classification field : "
-msgstr "Champs de classification : "
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlCategorizedPoint.java:159
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlCategorizedArea.java:145
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlCategorizedLine.java:126
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRecodedLine.java:239
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlCategorizedPoint.java:171
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlCategorizedArea.java:169
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlCategorizedLine.java:166
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRecodedLine.java:170
 msgid "You must use recognized RecodedLine instances inthis panel."
 msgstr ""
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:76
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlUniqueLineSE.java:51
 msgid "Line settings"
 msgstr "Configuration du contour"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:77
-msgid "Border settings"
-msgstr "Configuration du contour"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:78
-msgid "Mark settings"
-msgstr "Configuration du symbole"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:226
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueAreaSE.java:230
-msgid "Enable"
-msgstr "Activer"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueSymbolSE.java:86
-#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelUniqueValue.java:66
-#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelInterval.java:98
-msgid "Preview"
-msgstr "Aperçu"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueSymbolSE.java:160
-msgid "Could not validate your input."
-msgstr "Impossible de valider votre entrée."
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlStyle.java:77
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlStyle.java:74
 msgid "Style settings"
 msgstr "Configuration du style"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlStyle.java:79
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:88
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlStyle.java:76
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:96
 msgid "Title"
 msgstr "Titre"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLineSE.java:90
-msgid "The given legend isnot an instance of proportional line."
-msgstr "La légende spécifiée n'est pas une instance de ligne proportionnelle."
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLineSE.java:119
-msgid "Could not copy the ProportionalLine."
-msgstr "Impossible de copier la ligne proportionnelle"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLineSE.java:188
-msgid "Color"
-msgstr "Couleur"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLineSE.java:198
-msgid "Max width"
-msgstr "Largeur max"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLineSE.java:201
-msgid "Min width"
-msgstr "Largeur min"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLineSE.java:222
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalPointSE.java:281
-msgid "Can't retrieve the maximum value of the symbol"
-msgstr "Impossible de retrouver la valeur maximale du symbole"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLineSE.java:240
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalPointSE.java:299
-msgid "Can't retrieve the minimum value of the symbol"
-msgstr "Impossible de retrouver la valeur minimale du symbole"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:71
-msgid "Unit of measure"
-msgstr "Unité de mesure"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:72
-msgid "Opacity"
-msgstr "Opacité"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:73
-msgid "Width"
-msgstr "Largeur"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:74
-msgid "Height"
-msgstr "Hauteur"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:75
-msgid "Symbol"
-msgstr "Symbole"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:76
-msgid "Dash array"
-msgstr "Tirets"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:77
-msgid "<html><b>Field</b></html>"
-msgstr "<html><p><b>Champs</b></p></html>"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:78
-msgid "Line width unit"
-msgstr "Unité (épaisseur)"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:79
-msgid "Symbol size unit"
-msgstr "Unité (symbole)"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/AbstractFieldPanel.java:81
-msgid "<html><p style=\"text-align:right\">Place symbol<br>on</p></html>"
-msgstr ""
-"<html><p style=\"text-align:right\">Positionner le<br>symbole sur le</p></"
-"html>"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:99
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:109
 msgid "Interval classification"
 msgstr "Classification par intervalle"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:113
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:308
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:123
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:325
 msgid "The application has ended unexpectedly"
 msgstr "L'application a fermé de manière inattendue"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:128
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:180
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:137
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:202
 msgid "Create"
 msgstr "Créer"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:137
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:146
 msgid "Method"
 msgstr "Méthode"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:139
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:148
 msgid "Classes"
 msgstr "Classes"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractCategorized.java:151
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:160
 msgid "Color scheme:"
 msgstr "Palette de couleurs :"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:127
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:151
 msgid "Can't build the analysis with an accurate comparator."
 msgstr "Aucun comparateur valable n'a pu être utilisé."
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:156
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:182
 msgid "Use the fallback color"
 msgstr "Couleur par défaut"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:160
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:186
 msgid "Use a color scheme:"
 msgstr "<html>Palette de couleurs :<html>"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:214
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:231
 msgid "Unique value classification"
 msgstr "Classification par valeur unique"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:287
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:304
 msgid "Retrieving classes"
 msgstr "Extraction des valeurs uniques"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:365
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:382
 msgid "Continue ?"
 msgstr "Continuer ?"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:378
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:395
 msgid "<html><p>The analysis seems to generate more than "
 msgstr "<html><p>L'analyse semble générer plus de"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:380
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:397
 msgid ""
 " different values...</p><p>Are you sure you want to continue ?</p></html>"
 msgstr ""
 " valeurs uniques.</p><p>Êtes-vous sûr de vouloir continuer ?</p></html>"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlAbstractUniqueValue.java:406
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:423
 msgid "Operation in progress..."
 msgstr "Opération en cours ..."
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:85
-msgid "Rule settings"
-msgstr "Configuration de la règle"
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlNonClassification.java:46
+msgid "Border settings"
+msgstr "Configuration du contour"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:97
-msgid "Description"
-msgstr "Description"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:108
-msgid "Min. scale"
-msgstr "Échelle min"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:114
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:131
-msgid "Current"
-msgstr "Courante"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:127
-msgid "Max. scale"
-msgstr "Échelle max"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:230
-msgid "Min. scale is not a valid number"
-msgstr "L'échelle minimale n'est pas un chiffre valide"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlRule.java:239
-msgid "Max. scale is not a valid number"
-msgstr "L'échelle maximale n'est pas un chiffre valide"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/OnVertexHelper.java:53
-msgid "Vertex"
-msgstr "Sommet"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/OnVertexHelper.java:54
-msgid "Centroid"
-msgstr "Centroïde"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueAreaSE.java:68
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlNonClassification.java:47
 msgid "Fill settings"
 msgstr "Configuration du remplissage"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalPointSE.java:166
-msgid "A valid numeric field must be selected !"
-msgstr "Un champ numérique valide doit être sélectionné !"
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlNonClassification.java:48
+msgid "Mark settings"
+msgstr "Configuration du symbole"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalPointSE.java:261
-msgid "Max. size"
-msgstr "Taille max"
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:93
+msgid "Rule settings"
+msgstr "Configuration de la règle"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalPointSE.java:264
-msgid "Min. size"
-msgstr "Taille min"
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:105
+msgid "Description"
+msgstr "Description"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalPointSE.java:363
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:130
+msgid "Min. scale"
+msgstr "Échelle min"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:136
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:153
+msgid "Current"
+msgstr "Courante"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:149
+msgid "Max. scale"
+msgstr "Échelle max"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:242
+msgid "Min. scale is not a valid number"
+msgstr "L'échelle minimale n'est pas un chiffre valide"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:251
+msgid "Max. scale is not a valid number"
+msgstr "L'échelle maximale n'est pas un chiffre valide"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlProportionalPointSE.java:177
 msgid "Stroke and fill settings"
 msgstr "Configuration de la ligne et du remplissage"
 
@@ -827,6 +691,12 @@ msgstr "Configuration de la ligne et du remplissage"
 #: java/org/orbisgis/view/components/gdms/ConstraintTableModel.java:114
 msgid "Value"
 msgstr "Valeur"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelUniqueValue.java:66
+#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelInterval.java:98
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/PreviewPanel.java:54
+msgid "Preview"
+msgstr "Aperçu"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelInterval.java:96
 msgid "Threshold"
@@ -836,15 +706,105 @@ msgstr "Seuil"
 msgid "Label"
 msgstr "Étiquette"
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ColorConfigurationPanel.java:89
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/SettingsPanel.java:103
+msgid "General settings"
+msgstr "Paramètres généraux"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/SettingsPanel.java:124
+msgid "Fallback symbol"
+msgstr "Symbole par défaut"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsOptionalPanel.java:76
+msgid "Enable"
+msgstr "Activer"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/TablePanel.java:175
+msgid "Remove"
+msgstr "Supprimer"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ProportionalPointPanel.java:118
+msgid "Max. size"
+msgstr "Taille max"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ProportionalPointPanel.java:121
+msgid "Min. size"
+msgstr "Taille min"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:49
+msgid "Opacity"
+msgstr "Opacité"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:50
+msgid "Width"
+msgstr "Largeur"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:51
+msgid "Height"
+msgstr "Hauteur"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:52
+msgid "Symbol"
+msgstr "Symbole"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:53
+msgid "Dash array"
+msgstr "Tirets"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:54
+msgid "<html><b>Numeric field</b></html>"
+msgstr "<html><p><b>Champs numérique</b></p></html>"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:55
+msgid "<html><b>Nonspatial field</b></html>"
+msgstr "<html><p><b>Champs nonspatial</b></p></html>"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:56
+msgid "Line width unit"
+msgstr "Unité (épaisseur)"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:57
+msgid "Symbol size unit"
+msgstr "Unité (symbole)"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:59
+msgid "<html><p style=\"text-align:right\">Place symbol<br>on</p></html>"
+msgstr ""
+"<html><p style=\"text-align:right\">Positionner le<br>symbole sur le</p></"
+"html>"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ProportionalLinePanel.java:110
+msgid "Color"
+msgstr "Couleur"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ProportionalLinePanel.java:116
+msgid "Max width"
+msgstr "Largeur max"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ProportionalLinePanel.java:119
+msgid "Min width"
+msgstr "Largeur min"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/components/DashArrayField.java:77
+msgid "Could not validate your input."
+msgstr "Impossible de valider votre entrée."
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/components/ColorConfigurationPanel.java:118
 msgid "Gradient "
 msgstr "Dégradé de "
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ColorConfigurationPanel.java:92
+#: java/org/orbisgis/view/toc/actions/cui/legends/components/ColorConfigurationPanel.java:121
 msgid " to "
 msgstr "à"
 
-#: java/org/orbisgis/view/toc/wrapper/RuleWrapper.java:268
+#: java/org/orbisgis/view/toc/actions/cui/legends/components/OnVertexOnCentroidButtonGroup.java:56
+msgid "Vertex"
+msgstr "Sommet"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/components/OnVertexOnCentroidButtonGroup.java:57
+msgid "Centroid"
+msgstr "Centroïde"
+
+#: java/org/orbisgis/view/toc/wrapper/RuleWrapper.java:252
 #, java-format
 msgid "Min scale greater than max scale in rule {0}."
 msgstr "L''échelle minimum ne peut pas excéder l''échelle maximum (règle {0})."
@@ -1172,15 +1132,15 @@ msgid "Zoom to visible selected geometries"
 msgstr "Zoomer sur les objets sélectionnés"
 
 #: java/org/orbisgis/view/map/MapEditor.java:395
-#: java/org/orbisgis/view/table/TableEditor.java:389
-#, fuzzy
-msgid "Create a datasource"
-msgstr "Ouvrir la source de données {0}"
+#: java/org/orbisgis/view/table/TableEditor.java:390
+msgid "Create datasource from selection"
+msgstr "Créer une source de données"
 
 #: java/org/orbisgis/view/map/MapEditor.java:398
-#: java/org/orbisgis/view/table/TableEditor.java:391
-msgid "Create a datasource from a selection"
-msgstr ""
+#: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:136
+#: java/org/orbisgis/view/table/TableEditor.java:393
+msgid "Create a datasource from the current selection"
+msgstr "Créer une source de données à partir des lignes sélectionnées"
 
 #: java/org/orbisgis/view/map/MapEditor.java:401
 msgid "Mesure tools"
@@ -1965,10 +1925,15 @@ msgstr "Zoomer sur les géométries sélectionnées"
 msgid "Open the map context"
 msgstr "Ouvrir le contexte cartographique"
 
-#: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:119
-#, fuzzy
-msgid "Create the datasource from the selection"
-msgstr "Chargement de la source de donnée"
+#: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:150
+#, java-format
+msgid "{0}_selection"
+msgstr "{0}_sélection"
+
+#: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:153
+#, java-format
+msgid "{0}_selection_{1}"
+msgstr "{0}_sélection_{1}"
 
 #: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:112
 msgid "Save documents"
@@ -2867,108 +2832,120 @@ msgstr ""
 msgid "New row"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:185
+#: java/org/orbisgis/view/table/TableEditor.java:186
 msgid ""
 "This table use modified data source, do you want to save these modifications "
 "before closing it ?"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:186
+#: java/org/orbisgis/view/table/TableEditor.java:187
 msgid "Unsaved modifications"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:193
+#: java/org/orbisgis/view/table/TableEditor.java:194
 #, fuzzy, java-format
 msgid ""
 "The data source {0} can not be saved, are you sure you want to continue ?"
 msgstr "Le document {0} ne peut être sauvé à cause de l'erreur suivante {1}"
 
-#: java/org/orbisgis/view/table/TableEditor.java:197
-#: java/org/orbisgis/view/table/TableEditor.java:201
+#: java/org/orbisgis/view/table/TableEditor.java:198
+#: java/org/orbisgis/view/table/TableEditor.java:202
 #, fuzzy
 msgid "Canceled by user"
 msgstr "Interrompu par l'utilisateur"
 
-#: java/org/orbisgis/view/table/TableEditor.java:285
+#: java/org/orbisgis/view/table/TableEditor.java:286
 msgid ""
 "Searching request is already launched. Please wait a moment, or cancel it."
 msgstr ""
 "Le demande de recherche est déjà en cours. Veuillez patienter ou bien "
 "annulez-la."
 
-#: java/org/orbisgis/view/table/TableEditor.java:352
+#: java/org/orbisgis/view/table/TableEditor.java:353
 msgid "Filter selected rows"
 msgstr "Filtrer les lignes sélectionnées"
 
-#: java/org/orbisgis/view/table/TableEditor.java:353
+#: java/org/orbisgis/view/table/TableEditor.java:354
 msgid "Show only the selected rows"
 msgstr "Afficher uniquement les lignes sélectionnées"
 
-#: java/org/orbisgis/view/table/TableEditor.java:361
+#: java/org/orbisgis/view/table/TableEditor.java:362
 msgid "Clear row filter"
 msgstr "Effacer le filtre de ligne"
 
-#: java/org/orbisgis/view/table/TableEditor.java:362
+#: java/org/orbisgis/view/table/TableEditor.java:363
 msgid "Show all rows"
 msgstr "Afficher toutes les lignes"
 
-#: java/org/orbisgis/view/table/TableEditor.java:374
+#: java/org/orbisgis/view/table/TableEditor.java:375
 msgid "Deselect all lines"
 msgstr "Désélectionner toutes les couches"
 
-#: java/org/orbisgis/view/table/TableEditor.java:380
+#: java/org/orbisgis/view/table/TableEditor.java:381
 msgid "Reverse selection"
 msgstr "Inverser la sélection"
 
-#: java/org/orbisgis/view/table/TableEditor.java:382
+#: java/org/orbisgis/view/table/TableEditor.java:383
 msgid "Reverse the current selection"
 msgstr "Inverser la sélection courante"
 
-#: java/org/orbisgis/view/table/TableEditor.java:402
+#: java/org/orbisgis/view/table/TableEditor.java:404
 msgid "In the map editor, zoom to the selected rows"
 msgstr "Dans la carte, zoomer vers les lignes sélectionnées"
 
-#: java/org/orbisgis/view/table/TableEditor.java:411
+#: java/org/orbisgis/view/table/TableEditor.java:413
 msgid "Select same cell"
 msgstr "Sélectionner les mêmes cellules"
 
-#: java/org/orbisgis/view/table/TableEditor.java:412
+#: java/org/orbisgis/view/table/TableEditor.java:414
 msgid "Select all rows that match this cell value"
 msgstr "Sélectionner les lignes avec la même valeur"
 
-#: java/org/orbisgis/view/table/TableEditor.java:556
+#: java/org/orbisgis/view/table/TableEditor.java:499
+msgid "New name for the datasource:"
+msgstr "Enregistrer sous :"
+
+#: java/org/orbisgis/view/table/TableEditor.java:515
+msgid "You must enter a non-empty name."
+msgstr "Le nom de la source de données ne peut être vide."
+
+#: java/org/orbisgis/view/table/TableEditor.java:520
+msgid "A datasource with that name already exists."
+msgstr "Une source de données avec le nom spécifié existe déjà."
+
+#: java/org/orbisgis/view/table/TableEditor.java:595
 msgid "Optimal width"
 msgstr "Largeur optimale"
 
-#: java/org/orbisgis/view/table/TableEditor.java:576
+#: java/org/orbisgis/view/table/TableEditor.java:615
 msgid "Sort ascending"
 msgstr "Tri croissant"
 
-#: java/org/orbisgis/view/table/TableEditor.java:585
+#: java/org/orbisgis/view/table/TableEditor.java:624
 msgid "Sort descending"
 msgstr "Tri décroissant"
 
-#: java/org/orbisgis/view/table/TableEditor.java:594
+#: java/org/orbisgis/view/table/TableEditor.java:633
 msgid "No sort"
 msgstr "Pas de tri"
 
-#: java/org/orbisgis/view/table/TableEditor.java:605
+#: java/org/orbisgis/view/table/TableEditor.java:644
 msgid "Show column informations"
 msgstr "Afficher les informations"
 
-#: java/org/orbisgis/view/table/TableEditor.java:614
+#: java/org/orbisgis/view/table/TableEditor.java:653
 msgid "Show column statistics"
 msgstr "Afficher les statistiques"
 
-#: java/org/orbisgis/view/table/TableEditor.java:616
+#: java/org/orbisgis/view/table/TableEditor.java:655
 msgid "Show column selection statistics"
 msgstr "Afficher les statistiques"
 
-#: java/org/orbisgis/view/table/TableEditor.java:618
+#: java/org/orbisgis/view/table/TableEditor.java:657
 msgid "Show filtered column statistics"
 msgstr "Afficher les statistiques des colonnes filtrées"
 
-#: java/org/orbisgis/view/table/TableEditor.java:667
+#: java/org/orbisgis/view/table/TableEditor.java:706
 #, java-format
 msgid ""
 "\n"
@@ -2977,36 +2954,36 @@ msgstr ""
 "\n"
 "Nom du champ :\t{0}\n"
 
-#: java/org/orbisgis/view/table/TableEditor.java:668
+#: java/org/orbisgis/view/table/TableEditor.java:707
 #, java-format
 msgid "Field type :\t{0}\n"
 msgstr "Type de champ :\t{0}\n"
 
-#: java/org/orbisgis/view/table/TableEditor.java:672
+#: java/org/orbisgis/view/table/TableEditor.java:711
 msgid "Constraints :\n"
 msgstr "Contraintes :\n"
 
-#: java/org/orbisgis/view/table/TableEditor.java:674
+#: java/org/orbisgis/view/table/TableEditor.java:713
 #, java-format
 msgid "\t{0} :\t{1}\n"
 msgstr "\t{0} :\t{1}\n"
 
-#: java/org/orbisgis/view/table/TableEditor.java:903
+#: java/org/orbisgis/view/table/TableEditor.java:942
 #, java-format
 msgid "Table Editor of {0} {1}/{2}"
 msgstr "{0} {1}/{2}"
 
-#: java/org/orbisgis/view/table/TableEditor.java:907
+#: java/org/orbisgis/view/table/TableEditor.java:946
 #, java-format
 msgid "Table Editor of {0} (Filtered) {1}/{2}"
 msgstr "{0} (Filtré) {1}/{2}"
 
-#: java/org/orbisgis/view/table/TableEditor.java:1002
-#: java/org/orbisgis/view/table/TableEditor.java:1004
+#: java/org/orbisgis/view/table/TableEditor.java:1041
+#: java/org/orbisgis/view/table/TableEditor.java:1043
 msgid "Error while loading the table editor"
 msgstr "Erreur lors du chargement de la table"
 
-#: java/org/orbisgis/view/table/TableEditor.java:1011
+#: java/org/orbisgis/view/table/TableEditor.java:1050
 #, java-format
 msgid "Open the data source {0}"
 msgstr "Ouvrir la source de données {0}"
@@ -3167,6 +3144,52 @@ msgstr "Impossible d'établir l'enveloppe de la sélection"
 #: java/org/orbisgis/view/table/jobs/OptimalWidthJob.java:123
 msgid "Computation of the optimal column width"
 msgstr "Détermination de largeur optimale de colonne"
+
+#~ msgid "New name for the datasource"
+#~ msgstr "Enregistrer sous"
+
+#~ msgid "Warning"
+#~ msgstr "Avertissement"
+
+#, fuzzy
+#~ msgid "Create the datasource from the selection"
+#~ msgstr "Chargement de la source de donnée"
+
+#, fuzzy
+#~ msgid "Create a datasource"
+#~ msgstr "Ouvrir la source de données {0}"
+
+#, fuzzy
+#~ msgid "Create a datasource from the selected rows"
+#~ msgstr "Chargement de la source de donnée"
+
+#~ msgid "Could not copy the ProportionalLine."
+#~ msgstr "Impossible de copier la ligne proportionnelle"
+
+#~ msgid "No suitable editor for this legend"
+#~ msgstr "Aucun éditeur approprié pour cette légende"
+
+#~ msgid "bug !"
+#~ msgstr "Bug !"
+
+#~ msgid "Classification field : "
+#~ msgstr "Champs de classification : "
+
+#~ msgid "The given legend isnot an instance of proportional line."
+#~ msgstr ""
+#~ "La légende spécifiée n'est pas une instance de ligne proportionnelle."
+
+#~ msgid "Can't retrieve the maximum value of the symbol"
+#~ msgstr "Impossible de retrouver la valeur maximale du symbole"
+
+#~ msgid "Can't retrieve the minimum value of the symbol"
+#~ msgstr "Impossible de retrouver la valeur minimale du symbole"
+
+#~ msgid "Unit of measure"
+#~ msgstr "Unité de mesure"
+
+#~ msgid "A valid numeric field must be selected !"
+#~ msgstr "Un champ numérique valide doit être sélectionné !"
 
 #~ msgid "Docked Window"
 #~ msgstr "Fenêtre"

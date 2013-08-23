@@ -40,55 +40,14 @@ import org.orbisgis.view.toc.actions.cui.LegendContext;
 public interface ILegendPanel extends ISELegendPanel {
 
     /**
-     * Initialize this panel using the given context and legend. Both must
-     * be not null and {@code leg} must be acceptable by this panel
-     * @param lc The input context
-     * @param leg The input legend
-     * @throws IllegalArgumentException If the provided legend is not acceptable.
+     * Gets the legend we want to edit.
+     *
+     * @return The legend to edit.
      */
-    void initialize(LegendContext lc, Legend leg);
-
-	/**
-	 * It will return the Legend created by all the variables in the panel.
-	 * 
-	 * @return Legend
-	 */
 	Legend getLegend();
-
-	/**
-	 * Sets the legend to be edited by this component
-	 * 
-	 * @param legend
-	 */
-	void setLegend(Legend legend);
 
     /**
      * Initialize and layout the UI.
      */
-    void initializeLegendFields();
-
-    /**
-     * Sets the type of the geometry field of the data that must be
-     * represented.
-     * @param type
-     */
-    void setGeometryType(int type);
-
-	/**
-	 * Returns true if this legend can be applied to the specified geometry
-	 * type.
-	 * 
-	 * @param geometryType
-	 *            Type of geometry in the layer. One bit-or of the constants
-	 *            POINT, LINE and POLYGON.
-	 * @return
-	 */
-	boolean acceptsGeometryType(int geometryType);
-
-    /**
-     * Copy the {@code Legend} instance associated to this
-     * {@code ILegendPanel}. It is faster than copying the whole panel.
-     * @return
-     */
-    Legend copyLegend();
+    void buildUI();
 }

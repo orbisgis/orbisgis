@@ -29,27 +29,22 @@
 package org.orbisgis.legend.structure.parameter;
 
 import org.orbisgis.core.renderer.se.parameter.ValueReference;
+import org.orbisgis.legend.LookupFieldName;
 
 /**
  * Basic methods for parameters that are dependent upon a parameter.
  * @author Alexis Guéganno
  */
-public abstract class AbstractAttributeLegend {
+public abstract class AbstractAttributeLegend implements LookupFieldName {
 
         public abstract ValueReference getValueReference();
 
-        /**
-         * Gets the name of the field where values will be retrieved.
-         * @return
-         */
+        @Override
         public String getLookupFieldName(){
                 return getValueReference().getColumnName();
         }
 
-        /**
-         * Sets the name of the field where values will be retrieved.
-         * @param name
-         */
+        @Override
         public void setLookupFieldName(String name){
                 getValueReference().setColumnName(name);
         }

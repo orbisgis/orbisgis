@@ -33,7 +33,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.view.toc.actions.cui.legends.PnlUniqueLineSE;
+import org.orbisgis.view.toc.actions.cui.legends.ui.PnlUniqueLineSE;
 
 import java.awt.event.ActionEvent;
 
@@ -57,8 +57,7 @@ public class ParametersEditorRecodedLine extends ParametersEditorMappedLegend<St
             RecodedLine rl = (RecodedLine) getMappedLegend();
             LineParameters lp = rl.get(getCellEditorValue());
             UniqueSymbolLine usl = new UniqueSymbolLine(lp);
-            PnlUniqueLineSE pls = new PnlUniqueLineSE(false);
-            pls.setLegend(usl);
+            PnlUniqueLineSE pls = new PnlUniqueLineSE(usl, false);
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 LineParameters edited = usl.getLineParameters();
                 rl.put((String)getCellEditorValue(), edited);
