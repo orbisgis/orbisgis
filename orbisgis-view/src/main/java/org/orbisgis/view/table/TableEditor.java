@@ -489,28 +489,29 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 }                
                 setViewRowSelection(invertedSelection);
         }
-        
+
         /**
          * The user can export the selected rows into a new datasource
          */
         public void onCreateDataSourceFromSelection() {
+            Set<Integer> selection = getTableModelSelection();
+            // If there is a nonempty selection, then ask the user to name it.
+            if (!selection.isEmpty()) {
                 String newName = CreateSourceFromSelection.showNewNameDialog(
                         this, tableModel.getDataSource());
                 // If newName is not null, then the user clicked OK and entered
                 // a valid name.
                 if (newName != null) {
-                    Set<Integer> selection = getTableModelSelection();
-                    if (!selection.isEmpty()) {
-                        BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.backgroundOperation(
-                                new CreateSourceFromSelection(
-                                        tableModel.getDataSource(),
-                                        selection, newName));
-                    }
+                    BackgroundManager bm = Services.getService(BackgroundManager.class);
+                    bm.backgroundOperation(
+                            new CreateSourceFromSelection(
+                                    tableModel.getDataSource(),
+                                    selection, newName));
                 }
+            }
         }
 
-    /**
+        /**
          * Select all rows that have the same value of the selected cell
          */
         public void onMenuSelectSameCellValue() {
