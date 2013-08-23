@@ -43,6 +43,7 @@ import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
@@ -57,6 +58,7 @@ import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
@@ -482,27 +484,44 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     }
 
 
-     /**
+    /**
      * The user can export the selected features into a new datasource
      */
     public void onCreateDataSourceFromSelection() {
-            ILayer[] layers = mapContext.getSelectedLayers();
-            if(layers!=null && layers.length>0){
-                for (ILayer layer : layers) {
+        // Get the selected layer(s)
+        ILayer[] selectedLayers = mapContext.getSelectedLayers();
+        // If no layer is selected, but exactly one style is selected, then
+        // set the selected layers to the layer corresponding to that style.
+        // See #514 (as well as #124, #359).
+        if (selectedLayers.length == 0) {
+            Style[] selectedStyles = mapContext.getSelectedStyles();
+            if (selectedStyles.length == 1) {
+                ArrayList<ILayer> selectedLayerList = new ArrayList<ILayer>();
+                selectedLayerList.add(selectedStyles[0].getLayer());
+                selectedLayers = selectedLayerList.toArray(new ILayer[1]);
+            }
+        }
+        // Loop through all selected layers.
+        if (selectedLayers != null && selectedLayers.length > 0) {
+            for (ILayer layer : selectedLayers) {
+                Set<Integer> selection = layer.getSelection();
+                // If there is a nonempty selection, then ask the user to name it.
+                if (!selection.isEmpty()) {
                     String newName = CreateSourceFromSelection.showNewNameDialog(
                             this, layer.getDataSource());
+                    // If newName is not null, then the user clicked OK and
+                    // entered a valid name.
                     if (newName != null) {
-                        Set<Integer> selection = layer.getSelection();
-                        if(!selection.isEmpty()){
-                            BackgroundManager bm = Services.getService(BackgroundManager.class);
-                            bm.backgroundOperation(
-                                    new CreateSourceFromSelection(
-                                            layer.getDataSource(),
-                                            selection, newName));
-                        }
+                        BackgroundManager bm = Services.getService(
+                                BackgroundManager.class);
+                        bm.backgroundOperation(
+                                new CreateSourceFromSelection(
+                                        layer.getDataSource(),
+                                        selection, newName));
                     }
                 }
             }
+        }
     }
 
     /**
