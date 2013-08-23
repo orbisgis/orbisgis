@@ -219,6 +219,11 @@
                         <version>${h2-spatial-version}</version>
                 </dependency>
                 <dependency>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.enterprise</artifactId>
+                    <version>5.0.0</version>
+                </dependency>
+                <dependency>
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
                     <version>${h2-version}</version>
