@@ -490,19 +490,20 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     public void onCreateDataSourceFromSelection() {
         // Get the selected layer(s)
         ILayer[] selectedLayers = mapContext.getSelectedLayers();
-        // If no layer is selected, but exactly one style is selected, then
-        // set the selected layers to the layer corresponding to that style.
+        // If no layers are selected, but one or more styles are selected, then
+        // set the selected layers to the layers of those styles.
         // See #514 (as well as #124, #359).
         if (selectedLayers.length == 0) {
-            Style[] selectedStyles = mapContext.getSelectedStyles();
-            if (selectedStyles.length == 1) {
-                ArrayList<ILayer> selectedLayerList = new ArrayList<ILayer>();
-                selectedLayerList.add(selectedStyles[0].getLayer());
-                selectedLayers = selectedLayerList.toArray(new ILayer[1]);
+            ArrayList<ILayer> selectedLayerList = new ArrayList<ILayer>();
+            for (Style style : mapContext.getSelectedStyles()) {
+                selectedLayerList.add(style.getLayer());
             }
+            selectedLayers = selectedLayerList.toArray(new ILayer[1]);
         }
         // Loop through all selected layers.
-        if (selectedLayers != null && selectedLayers.length > 0) {
+        if (selectedLayers == null || selectedLayers.length == 0) {
+            GUILOGGER.warn(I18N.tr("No layers are selected."));
+        } else {
             for (ILayer layer : selectedLayers) {
                 Set<Integer> selection = layer.getSelection();
                 // If there is a nonempty selection, then ask the user to name it.
@@ -519,6 +520,10 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                                         layer.getDataSource(),
                                         selection, newName));
                     }
+                } else {
+                    GUILOGGER.warn(
+                            I18N.tr("Layer {0} has no selected geometries.",
+                                    layer.getName()));
                 }
             }
         }
