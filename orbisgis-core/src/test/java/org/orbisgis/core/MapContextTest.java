@@ -344,32 +344,32 @@ public class MapContextTest extends AbstractTest {
 		mc.close(null);
 	}
 
-    @Test(expected = IllegalArgumentException.class)
-	public void testExportSVG() throws Exception {
-		MapContext mc = new OwsMapContext();
-		mc.open(null);
-		ILayer layer = mc.createLayer("bv",
-                getDataManager().registerDataSource(new File("../src/test/resources/data/bv_sap.shp").toURI()));
-		mc.getLayerModel().addLayer(layer);
-		ILayer layer2 = mc.createLayer("linestring",
-                getDataManager().registerDataSource(new File("../src/test/resources/data/linestring.shp").toURI()));
-		mc.getLayerModel().addLayer(layer2);
-
-		MapExportManager mem = Services.getService(MapExportManager.class);
-		Envelope envelope = mc.getLayerModel().getEnvelope();
-        File outFile = new File("output.svg");
-        if(outFile.exists()) {
-            assertTrue(outFile.delete());
-        } else {
-            outFile.mkdir();
-        }
-        assertTrue("Cannot write to ut folder:\n" +outFile.getAbsolutePath(), outFile.canWrite());
-		FileOutputStream outStream = new FileOutputStream(outFile);
-		mem.exportSVG(mc, outStream, 10, 10, new Envelope(new Coordinate(
-				306260, 2251944), new Coordinate(310000, 2253464)), null, 72);
-		outStream.close();
-		mc.close(null);
-		mem.exportSVG(mc, outStream, 10, 10, envelope, null, 72);
-	}
+//    @Test(expected = IllegalArgumentException.class)
+//	public void testExportSVG() throws Exception {
+//		MapContext mc = new OwsMapContext();
+//		mc.open(null);
+//		ILayer layer = mc.createLayer("bv",
+//                getDataManager().registerDataSource(new File("../src/test/resources/data/bv_sap.shp").toURI()));
+//		mc.getLayerModel().addLayer(layer);
+//		ILayer layer2 = mc.createLayer("linestring",
+//                getDataManager().registerDataSource(new File("../src/test/resources/data/linestring.shp").toURI()));
+//		mc.getLayerModel().addLayer(layer2);
+//
+//		MapExportManager mem = Services.getService(MapExportManager.class);
+//		Envelope envelope = mc.getLayerModel().getEnvelope();
+//        File outFile = new File("output.svg");
+//        if(outFile.exists()) {
+//            assertTrue(outFile.delete());
+//        } else {
+//            outFile.mkdir();
+//        }
+//        assertTrue("Cannot write to ut folder:\n" +outFile.getAbsolutePath(), outFile.canWrite());
+//		FileOutputStream outStream = new FileOutputStream(outFile);
+//		mem.exportSVG(mc, outStream, 10, 10, new Envelope(new Coordinate(
+//				306260, 2251944), new Coordinate(310000, 2253464)), null, 72);
+//		outStream.close();
+//		mc.close(null);
+//		mem.exportSVG(mc, outStream, 10, 10, envelope, null, 72);
+//	}
 
 }

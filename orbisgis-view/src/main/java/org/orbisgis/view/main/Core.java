@@ -40,6 +40,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -138,25 +139,21 @@ public class Core {
         progressInfo.progressTo(11);
         //Load plugin host
         progressInfo.init(I18N.tr("Load the plugin framework.."), 100);
-        startPluginHost();
+        mainContext.startBundleHost(BundleFromResources.SPECIFIC_BEHAVIOUR_BUNDLES);
+        this.pluginFramework = mainContext.getPluginHost();
         progressInfo.progressTo(18);
+        // Init database
+        try {
+            mainContext.initDataBase("","");
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex.getLocalizedMessage(), ex);
+        }
         // Init jobqueue
         initSwingJobs();
         initSIF();
         progressInfo.progressTo(20);
     }
-    private void startPluginHost() {
-        try {
-            pluginFramework = new PluginHost(new File(mainContext.getCoreWorkspace().getPluginCache()));
-            pluginFramework.init();
-            // Install built-in bundles
-            BundleFromResources.installResourceBundles(pluginFramework.getHostBundleContext());
-            // Start bundles
-            pluginFramework.start();
-        } catch (Exception ex) {
-            LOGGER.error(I18N.tr("Loading of plugins is aborted"),ex);
-        }
-    }
+
     /**
      * Find the workspace folder or addDockingPanel a dialog to select one
      */
