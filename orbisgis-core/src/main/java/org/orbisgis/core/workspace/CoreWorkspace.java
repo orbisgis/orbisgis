@@ -82,7 +82,7 @@ public class CoreWorkspace implements Serializable {
                 loadCurrentWorkSpace();
         }
         private String getDefaultJDBCConnectionString() {
-            return new StringBuilder().append("jdbc:h2:").append(getWorkspaceFolder()).append(File.separator).append("database").toString();
+            return "jdbc:h2:" + getWorkspaceFolder() + File.separator + "database";
         }
         /**
          * Read the file located at {@link #getDataBaseUriFilePath()}
@@ -98,7 +98,7 @@ public class CoreWorkspace implements Serializable {
                 try {
                     BufferedReader fileReader = new BufferedReader(new FileReader(dbUriFile));
                     String line;
-                    while ((line = fileReader.readLine()) != null) {
+                    if ((line = fileReader.readLine()) != null) {
                         return line;
                     }
                 } catch (IOException ex) {
