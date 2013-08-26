@@ -61,6 +61,7 @@ public class TableModelInterval<U extends LineParameters> extends AbstractLegend
             Double d = getKeyAt(rowIndex);
             SortedSet<Double> tail = ts.tailSet(d);
             StringBuilder sb = new StringBuilder();
+            sb.append("  ");
             if(Double.isInfinite(d)){
                 sb.append("]");
                 sb.append("-").append(Character.toString('\u221e')) ;
@@ -84,7 +85,7 @@ public class TableModelInterval<U extends LineParameters> extends AbstractLegend
                         formatter.format(nd);
                 sb.append(numS);
             }
-            sb.append("[");
+            sb.append("[  ");
             return sb.toString();
         }
         throw new IndexOutOfBoundsException("We did not found a column at index "+columnIndex+" !");
