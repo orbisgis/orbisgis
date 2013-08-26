@@ -28,12 +28,15 @@
  */
 package org.orbisgis.view.sqlconsole;
 
+import org.fife.rsta.ac.LanguageSupport;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.SingleEditorFactory;
 import org.orbisgis.view.sqlconsole.ui.ext.SQLAction;
 import org.orbisgis.view.sqlconsole.ui.ext.SQLConsoleEditor;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -50,6 +53,7 @@ public class SQLConsoleFactory implements SingleEditorFactory {
         private SQLConsole sqlConsole;
         private BundleContext hostBundle;
         private MenuItemServiceTracker<SQLConsoleEditor,SQLAction> actionTracker;
+        private ServiceTracker<LanguageSupport,LanguageSupport> st;
         /**
          * Constructor
          * @param hostBundle The SQLConsole buttons can be extended.
@@ -65,6 +69,12 @@ public class SQLConsoleFactory implements SingleEditorFactory {
                         //Track Action plugin
                         actionTracker = new MenuItemServiceTracker<SQLConsoleEditor, SQLAction>(hostBundle,SQLAction.class,sqlConsole.getActions(),sqlConsole);
                         actionTracker.open(); //begin the track
+                        //Track language service
+                        if(sqlConsole.getTextArea() instanceof RSyntaxTextArea) {
+                            LanguageSupportTracker tracker = new LanguageSupportTracker(hostBundle, (RSyntaxTextArea)sqlConsole.getTextArea());
+                            st = new ServiceTracker<LanguageSupport, LanguageSupport>(hostBundle, LanguageSupport.class, tracker);
+                            st.open();
+                        }
                 }
                 return new EditorDockable[] {sqlConsole};
         }
@@ -76,9 +86,14 @@ public class SQLConsoleFactory implements SingleEditorFactory {
 
         @Override
         public void dispose() {
-                actionTracker.close();
-                sqlConsole.dispose();
+                if(actionTracker!=null) {
+                    actionTracker.close();
+                }
+                if(sqlConsole!=null) {
+                    sqlConsole.dispose();
+                }
+                if(st!=null) {
+                    st.close();
+                }
         }
-
-        
 }

@@ -29,8 +29,6 @@
 package org.orbisgis.scp;
 
 import javax.sql.DataSource;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -39,15 +37,14 @@ import org.fife.ui.rsyntaxtextarea.parser.DefaultParseResult;
 import org.fife.ui.rsyntaxtextarea.parser.DefaultParserNotice;
 import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
 import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
-import org.h2.api.SQLParseException;
-import org.h2.util.ScriptReader;
+import org.h2.api.JdbcParseSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A parser for SQL syntax that provides error locations.
@@ -73,7 +70,8 @@ public class RSyntaxSQLParser extends AbstractParser {
     @Override
     public ParseResult parse(RSyntaxDocument doc, String style) {
         DefaultParseResult res = new DefaultParseResult(this);
-        if (doc.getLength()==0) {
+        int docLength = doc.getLength();
+        if (docLength==0) {
             return res;
         }
         DocumentSQLReader documentReader = new DocumentSQLReader(doc);
@@ -87,11 +85,24 @@ public class RSyntaxSQLParser extends AbstractParser {
                         try {
                             connection.prepareStatement(statement);
                         } catch (SQLException ex) {
-                            if(ex instanceof SQLParseException) {
+                            if(ex instanceof JdbcParseSQLException) {
                                 // If we can obtain the parse error character index
-                                SQLParseException parseEx = (SQLParseException) ex;
+                                JdbcParseSQLException parseEx = (JdbcParseSQLException) ex;
+                                // H2 error position is in the right side of the unexpected word
+                                // Notice want the left position of the word, and the length of this word
+                                // Find the beginning of the rightmost word in error
+                                int syntaxErrorPosition = parseEx.getSyntaxErrorPosition();
+                                int syntaxErrorLength = 1;
+                                Pattern p = Pattern.compile("\\w+");
+                                Matcher m = p.matcher(statement);
+                                while(m.find() && m.start() < parseEx.getSyntaxErrorPosition()) {
+                                    syntaxErrorPosition = m.start();
+                                    syntaxErrorLength = m.group().length();
+                                }
+                                // Compute syntax error position from the beginning of the document, (-1 is length of ; char)
+                                int syntaxErrorPositionOffset = Math.min(docLength, documentReader.getPosition() + syntaxErrorPosition);
                                 // TODO compute the length of the word before the error position, position may be position from the beginning of line
-                                DefaultParserNotice notice = new DefaultParserNotice(this, ex.getLocalizedMessage(), textArea.getLineOfOffset(documentReader.getPosition()),parseEx.getSyntaxErrorPosition(),1);
+                                DefaultParserNotice notice = new DefaultParserNotice(this, ex.getLocalizedMessage(), documentReader.getLineIndex(syntaxErrorPositionOffset),syntaxErrorPositionOffset, syntaxErrorLength);
                                 notice.setLevel(ParserNotice.ERROR);
                                 res.addNotice(notice);
                             }
@@ -104,8 +115,6 @@ public class RSyntaxSQLParser extends AbstractParser {
         } catch (SQLException ex) {
             log.trace(ex.getLocalizedMessage(), ex);
             // ignore
-        } catch (BadLocationException ex) {
-            log.error(ex.getLocalizedMessage(), ex);
         }
         long time = System.currentTimeMillis() - start;
         res.setParseTime(time);

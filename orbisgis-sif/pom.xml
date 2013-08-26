@@ -7,9 +7,8 @@
                 <groupId>org.orbisgis</groupId>
                 <version>4.0-SNAPSHOT</version>
         </parent>
-        <groupId>org.orbisgis</groupId>
         <artifactId>orbisgis-sif</artifactId>
-        <version>4.0-SNAPSHOT</version>
+        <version>4.0.2-SNAPSHOT</version>
         <packaging>bundle</packaging>
         <name>orbisgis-sif</name>
         <url>http://maven.apache.org</url>

@@ -23,19 +23,19 @@ public class DocumentSQLReaderTest {
 
         assertTrue(documentSQLReader.hasNext());
         assertEquals("ALTER",documentSQLReader.next());
-        assertEquals(6, documentSQLReader.getPosition());
+        assertEquals(0, documentSQLReader.getPosition());
         assertEquals(0, documentSQLReader.getLineIndex());
         assertTrue(documentSQLReader.hasNext());
         assertEquals("SELECT * FROM",documentSQLReader.next());
-        assertEquals(20, documentSQLReader.getPosition());
+        assertEquals(6, documentSQLReader.getPosition());
         assertEquals(0, documentSQLReader.getLineIndex());
         assertTrue(documentSQLReader.hasNext());
         assertEquals("\nDELETE",documentSQLReader.next());
-        assertEquals(28, documentSQLReader.getPosition());
-        assertEquals(1, documentSQLReader.getLineIndex());
+        assertEquals(20, documentSQLReader.getPosition());
+        assertEquals(0, documentSQLReader.getLineIndex());
         assertTrue(documentSQLReader.hasNext());
         assertEquals("select * from bla",documentSQLReader.next());
-        assertEquals(46, documentSQLReader.getPosition());
+        assertEquals(28, documentSQLReader.getPosition());
         assertEquals(1, documentSQLReader.getLineIndex());
     }
     @Test
@@ -49,10 +49,10 @@ public class DocumentSQLReaderTest {
 
         assertTrue(documentSQLReader.hasNext());
         assertEquals("\n\n\nINSERT INTO BLA VALUES(';hello;')",documentSQLReader.next());
+        assertEquals(0, documentSQLReader.getPosition());
+        assertEquals(0, documentSQLReader.getLineIndex());
+        assertEquals("\nSELECT * from test",documentSQLReader.next());
         assertEquals(37, documentSQLReader.getPosition());
         assertEquals(3, documentSQLReader.getLineIndex());
-        assertEquals("\nSELECT * from test",documentSQLReader.next());
-        assertEquals(57, documentSQLReader.getPosition());
-        assertEquals(4, documentSQLReader.getLineIndex());
     }
 }

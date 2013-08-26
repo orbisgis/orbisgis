@@ -40,8 +40,16 @@ public class DocumentSQLReader implements Iterator<String> {
      * @return Line index [0-n]
      */
     public int getLineIndex() {
+        return getLineIndex(position);
+    }
+
+    /**
+     * @param charOffset Character index (from the beginning of the document)
+     * @return Line index [0-n]
+     */
+    public int getLineIndex(int charOffset) {
         Element map = document.getDefaultRootElement();
-        return map.getElementIndex(position);
+        return map.getElementIndex(charOffset);
     }
 
     public boolean isInsideRemark() {
@@ -49,7 +57,7 @@ public class DocumentSQLReader implements Iterator<String> {
     }
 
     /**
-     * @return The current position of the statement
+     * @return The start position of the statement
      */
     public int getPosition() {
         return position;
@@ -57,9 +65,11 @@ public class DocumentSQLReader implements Iterator<String> {
 
     @Override
     public String next() {
+        if(statement != null) {
+            position += statement.length() + 1;
+        }
         statement = nextStatement;
         commentStatement = nextCommentStatement;
-        position += statement.length() + 1;
         nextStatement = scriptReader.readStatement();
         nextCommentStatement = scriptReader.isInsideRemark();
         return statement;
