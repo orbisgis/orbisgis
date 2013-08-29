@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
  * @author Nicolas Fortin
  */
 public class RSyntaxSQLParserTest {
-    private static final String DATABASE_PATH = "jdbc:h2:mem:syntax";
+    public static final String DATABASE_PATH = "jdbc:h2:mem:syntax";
 
     @Test //(timeout = 500)
     public void testParseException() throws Exception {
@@ -31,7 +31,7 @@ public class RSyntaxSQLParserTest {
         RSyntaxTextArea rSyntaxTextArea = new RSyntaxTextArea(document);
         rSyntaxTextArea.setText("ALTER;SELECT * FROM;\n" +
                                 "DELETE;select * from bla;");
-        RSyntaxSQLParser parser = new RSyntaxSQLParser(dataSourceFactory.createDataSource(properties), rSyntaxTextArea);
+        RSyntaxSQLParser parser = new RSyntaxSQLParser(dataSourceFactory.createDataSource(properties));
 
         ParseResult res = parser.parse((RSyntaxDocument)rSyntaxTextArea.getDocument(), "");
         List noticeList = res.getNotices();
@@ -63,7 +63,7 @@ public class RSyntaxSQLParserTest {
         RSyntaxDocument document = new RSyntaxDocument("sql");
         RSyntaxTextArea rSyntaxTextArea = new RSyntaxTextArea(document);
         rSyntaxTextArea.setText("alter");
-        RSyntaxSQLParser parser = new RSyntaxSQLParser(dataSourceFactory.createDataSource(properties), rSyntaxTextArea);
+        RSyntaxSQLParser parser = new RSyntaxSQLParser(dataSourceFactory.createDataSource(properties));
 
         ParseResult res = parser.parse((RSyntaxDocument)rSyntaxTextArea.getDocument(), "");
         List noticeList = res.getNotices();

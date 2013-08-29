@@ -107,9 +107,12 @@ public class DocumentSQLReader implements Iterator<String> {
             int effectiveLen = Math.min(len, totalLength - offset);
             try {
                 String text = document.getText(offset, effectiveLen);
-                text.getChars(off,text.length(),cbuf,0);
+                text.getChars(0,text.length(),cbuf,off);
             } catch (BadLocationException ex) {
                 throw new IOException(ex);
+            } catch(ArrayIndexOutOfBoundsException ex) {
+                // Should not happen, this error give more information than stack trace
+                throw new IOException("DocumentReader.read(buff,"+off+","+len+") offset="+offset, ex);
             }
             offset += effectiveLen;
             // return -1 if end of document

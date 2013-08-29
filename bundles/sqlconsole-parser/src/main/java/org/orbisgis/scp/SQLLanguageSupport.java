@@ -29,6 +29,7 @@
 package org.orbisgis.scp;
 
 import org.fife.rsta.ac.AbstractLanguageSupport;
+import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.parser.Parser;
 import org.h2.util.OsgiDataSourceFactory;
@@ -36,6 +37,7 @@ import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -69,14 +71,21 @@ public class SQLLanguageSupport extends AbstractLanguageSupport {
                 
                 // install parser
                 try {
-                    RSyntaxSQLParser parser = new RSyntaxSQLParser(dataSourceFactory.createDataSource(properties), textArea);
+                    DataSource dataSource = dataSourceFactory.createDataSource(properties);
+
+                    RSyntaxSQLParser parser = new RSyntaxSQLParser(dataSource);
                     textArea.putClientProperty(PROPERTY_LANGUAGE_PARSER, parser);
                     textArea.addParser(parser);
+
+                    // install autocompletion
+                    SQLCompletionProvider provider = new SQLCompletionProvider(dataSource);
+                    AutoCompletion autoCompletion = createAutoCompletion(provider);
+                    autoCompletion.install(textArea);
+                    installImpl(textArea, autoCompletion);
                 } catch (SQLException ex) {
                     log.error(ex.getLocalizedMessage(), ex);
                 }
 
-                // install autocompletion
         }
 
 
@@ -84,7 +93,6 @@ public class SQLLanguageSupport extends AbstractLanguageSupport {
         @Override
         public void uninstall(RSyntaxTextArea textArea) {
                 // remove completion
-                //compl.freeExternalResources();
                 uninstallImpl(textArea);
                 
                 // remove parser
