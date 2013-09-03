@@ -33,12 +33,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.sql.DataSource;
 import javax.swing.text.JTextComponent;
 import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.Completion;
 import org.fife.ui.autocomplete.CompletionProviderBase;
-import org.h2.api.JdbcParseSQLException;
+import org.h2.bnf.Bnf;
+import org.h2.server.web.DbContents;
+import org.h2.server.web.DbContextRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,10 +54,66 @@ import org.slf4j.LoggerFactory;
  */
 public class SQLCompletionProvider extends CompletionProviderBase {
     private DataSource ds;
+    private Bnf parser;
     private Logger log = LoggerFactory.getLogger(SQLCompletionProvider.class);
+    private static final int UPDATE_INTERVAL = 30000; // ms, metadata update interval
+    private long lastUpdate = 0;
 
     public SQLCompletionProvider(DataSource ds) {
         this.ds = ds;
+        try {
+            // Use h2 internal grammar
+            parser = Bnf.getInstance(null);
+            updateParser(ds);
+        } catch (Exception ex) {
+            log.warn("Could not load auto-completion engine", ex);
+        }
+    }
+
+    /**
+     * Set the DataSource used by this Parser
+     * @param ds
+     */
+    public void setDataSource(DataSource ds) {
+
+    }
+
+    /**
+     * Unset the DataSource, it will use basic SQL auto-completion.
+     * @param ds
+     */
+    public void unsetDataSource(DataSource ds) {
+
+    }
+
+    /***
+     * Read the data source in order to update parser grammar.
+     * @param dataSource New DataSource, to extract meta data, can be null
+     */
+    public void updateParser(DataSource dataSource) throws SQLException {
+        if(dataSource != null) {
+            lastUpdate = System.currentTimeMillis();
+            Connection connection = dataSource.getConnection();
+            try {
+                DbContents contents = new DbContents();
+                contents.readContents(connection.getMetaData());
+                DbContextRule columnRule = new DbContextRule(contents, DbContextRule.COLUMN);
+                DbContextRule newAliasRule = new DbContextRule(contents, DbContextRule.NEW_TABLE_ALIAS);
+                DbContextRule aliasRule = new DbContextRule(contents, DbContextRule.TABLE_ALIAS);
+                DbContextRule tableRule = new DbContextRule(contents, DbContextRule.TABLE);
+                DbContextRule schemaRule = new DbContextRule(contents, DbContextRule.SCHEMA);
+                DbContextRule columnAliasRule = new DbContextRule(contents, DbContextRule.COLUMN_ALIAS);
+                parser.updateTopic("column_name", columnRule);
+                parser.updateTopic("new_table_alias", newAliasRule);
+                parser.updateTopic("table_alias", aliasRule);
+                parser.updateTopic("column_alias", columnAliasRule);
+                parser.updateTopic("table_name", tableRule);
+                parser.updateTopic("schema_name", schemaRule);
+                parser.linkStatements();
+            } finally {
+                connection.close();
+            }
+        }
     }
 
     @Override
@@ -74,7 +133,7 @@ public class SQLCompletionProvider extends CompletionProviderBase {
         }
         int completionPosition = charIndex - documentReader.getPosition();
         String partialStatement = statement.substring(0, completionPosition);
-        int[] lastWord = RSyntaxSQLParser.getLastWordPositionAndLength(statement, completionPosition);
+        int[] lastWord = RSyntaxSQLParser.getLastWordPositionAndLength(partialStatement, completionPosition);
         if(lastWord != null && !partialStatement.endsWith(" ")) {
             return partialStatement.substring(lastWord[RSyntaxSQLParser.WORD_POSITION],
                     lastWord[RSyntaxSQLParser.WORD_POSITION]+lastWord[RSyntaxSQLParser.WORD_LENGTH]);
@@ -83,7 +142,18 @@ public class SQLCompletionProvider extends CompletionProviderBase {
         }
     }
 
+
     public List<Completion> getCompletionsAtIndex(JTextComponent jTextComponent, int charIndex) {
+        long now = System.currentTimeMillis();
+        if(lastUpdate + UPDATE_INTERVAL < now) {
+            try {
+                updateParser(ds);
+            } catch (Exception ex) {
+                log.warn("Could not update auto-completion engine", ex);
+            }
+        }
+
+        //Completion completion = new BasicCompletion(this, token);
         List<Completion> completionList = new LinkedList<Completion>();
 
         // Extract the statement at this position
@@ -92,37 +162,23 @@ public class SQLCompletionProvider extends CompletionProviderBase {
         while(documentReader.hasNext() && documentReader.getPosition() + statement.length() < charIndex) {
             statement = documentReader.next();
         }
-        try {
-            Connection connection = ds.getConnection();
-            try {
-                String wordBegin = "";
-                try {
-                    int completionPosition = charIndex - documentReader.getPosition();
-                    String partialStatement = statement.substring(0, completionPosition);
-                    int[] lastWord = RSyntaxSQLParser.getLastWordPositionAndLength(statement, completionPosition);
-                    if(lastWord != null && !partialStatement.endsWith(" ")) {
-                        wordBegin = partialStatement.substring(lastWord[RSyntaxSQLParser.WORD_POSITION],
-                                lastWord[RSyntaxSQLParser.WORD_POSITION]+lastWord[RSyntaxSQLParser.WORD_LENGTH]);
-                    }
-                    connection.prepareStatement(partialStatement);
-                } catch (SQLException ex) {
-                    if(ex instanceof JdbcParseSQLException) {
-                        // If we can obtain the parse error character index
-                        JdbcParseSQLException parseEx = (JdbcParseSQLException) ex;
-                        for(String token : parseEx.getExpectedTokens()) {
-                            if(token.toUpperCase().startsWith(wordBegin.toUpperCase())) {
-                                Completion completion = new BasicCompletion(this, token);
-                                completionList.add(completion);
-                            }
-                        }
-                    }
-                }
-            } finally {
-                connection.close();
+        // Last word for filtering results
+        String wordBegin = "";
+        int completionPosition = charIndex - documentReader.getPosition();
+        String partialStatement = statement.substring(0, completionPosition);
+        int[] lastWord = RSyntaxSQLParser.getLastWordPositionAndLength(statement, completionPosition);
+        if(lastWord != null && !statement.endsWith(" ")) {
+            wordBegin = statement.substring(lastWord[RSyntaxSQLParser.WORD_POSITION],
+                    lastWord[RSyntaxSQLParser.WORD_POSITION]+lastWord[RSyntaxSQLParser.WORD_LENGTH]).toUpperCase();
+        }
+        // Ask parser for completion list
+        Map<String,String> autoComplete = parser.getNextTokenList(partialStatement);
+        for(String key : autoComplete.keySet()) {
+            String token =  key.substring(key.indexOf("#") + 1);
+            if(token.toUpperCase().startsWith(wordBegin)) {
+                Completion completion = new BasicCompletion(this, token);
+                completionList.add(completion);
             }
-        } catch (SQLException ex) {
-            // Cannot establish a connection
-            log.warn(ex.getLocalizedMessage(), ex);
         }
         return completionList;
     }

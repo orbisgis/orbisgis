@@ -29,10 +29,12 @@
 package org.orbisgis.scp;
 
 import org.fife.rsta.ac.AbstractLanguageSupport;
+import org.fife.rsta.ac.LanguageSupport;
 import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.parser.Parser;
 import org.h2.util.OsgiDataSourceFactory;
+import org.osgi.service.component.annotations.Component;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,18 +54,18 @@ import java.util.Properties;
  * 
  * This class installs the following on the text area
  *  - a Parser implementation that highlight error in the SQL
- *  - a CompletionProvider that autocompletes SQL queries
+ *  - a CompletionProvider that auto-completes SQL queries
  * 
  * @author Antoine Gourlay
  * @author Nicolas Fortin
  */
+@Component
 public class SQLLanguageSupport extends AbstractLanguageSupport {
         private Logger log = LoggerFactory.getLogger(SQLLanguageSupport.class);
 
         @Override
         public void install(RSyntaxTextArea textArea) {
                 // Create H2 DataSource
-                // TODO use it only if a DataSource service is not found
                 org.h2.Driver driver = org.h2.Driver.load();
                 OsgiDataSourceFactory dataSourceFactory = new OsgiDataSourceFactory(driver);
                 Properties properties = new Properties();
@@ -87,8 +89,6 @@ public class SQLLanguageSupport extends AbstractLanguageSupport {
                 }
 
         }
-
-
 
         @Override
         public void uninstall(RSyntaxTextArea textArea) {

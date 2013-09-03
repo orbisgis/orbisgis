@@ -6,6 +6,7 @@
                 <artifactId>orbisgis-monomap</artifactId>
                 <groupId>org.orbisgis</groupId>
                 <version>4.0.2-SNAPSHOT</version>
+                <relativePath>../</relativePath>
         </parent>
         <artifactId>orbisgis-view</artifactId>
         <name>orbisgis-view</name>
