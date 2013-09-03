@@ -51,17 +51,17 @@ import java.util.regex.Pattern;
  * @author Nicolas Fortin
  */
 public class RSyntaxSQLParser extends AbstractParser {
-    private DataSource ds;
+    private DataSource dataSource;
     private Logger log = LoggerFactory.getLogger(RSyntaxSQLParser.class);
     public static int WORD_POSITION = 0;
     public static int WORD_LENGTH = 1;
 
     /**
      * Constructor
-     * @param ds Active DataSource
+     * @param dataSource Active DataSource
      */
-    public RSyntaxSQLParser(DataSource ds) {
-        this.ds = ds;
+    public RSyntaxSQLParser(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     /**     *
@@ -85,6 +85,14 @@ public class RSyntaxSQLParser extends AbstractParser {
             return null;
         }
     }
+
+    /**
+     * @param dataSource Linked DataSource
+     */
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     @Override
     public ParseResult parse(RSyntaxDocument doc, String style) {
         DefaultParseResult res = new DefaultParseResult(this);
@@ -95,7 +103,7 @@ public class RSyntaxSQLParser extends AbstractParser {
         DocumentSQLReader documentReader = new DocumentSQLReader(doc);
         long start = System.currentTimeMillis();
         try {
-            Connection connection = ds.getConnection();
+            Connection connection = dataSource.getConnection();
             try {
                 while(documentReader.hasNext()) {
                     String statement = documentReader.next();

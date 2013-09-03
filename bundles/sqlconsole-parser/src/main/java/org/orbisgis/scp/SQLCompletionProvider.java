@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import javax.swing.text.JTextComponent;
+
 import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.Completion;
 import org.fife.ui.autocomplete.CompletionProviderBase;
@@ -53,37 +54,33 @@ import org.slf4j.LoggerFactory;
  * @since 4.0
  */
 public class SQLCompletionProvider extends CompletionProviderBase {
-    private DataSource ds;
+    private DataSource dataSource;
     private Bnf parser;
     private Logger log = LoggerFactory.getLogger(SQLCompletionProvider.class);
     private static final int UPDATE_INTERVAL = 30000; // ms, metadata update interval
     private long lastUpdate = 0;
 
-    public SQLCompletionProvider(DataSource ds) {
-        this.ds = ds;
+    public SQLCompletionProvider(DataSource dataSource) {
+        this.dataSource = dataSource;
         try {
             // Use h2 internal grammar
             parser = Bnf.getInstance(null);
-            updateParser(ds);
+            updateParser(dataSource);
         } catch (Exception ex) {
             log.warn("Could not load auto-completion engine", ex);
         }
     }
-
     /**
      * Set the DataSource used by this Parser
      * @param ds
      */
     public void setDataSource(DataSource ds) {
-
-    }
-
-    /**
-     * Unset the DataSource, it will use basic SQL auto-completion.
-     * @param ds
-     */
-    public void unsetDataSource(DataSource ds) {
-
+        this.dataSource = ds;
+        try {
+            updateParser(null);
+        } catch (SQLException ex) {
+            log.error(ex.getLocalizedMessage(), ex);
+        }
     }
 
     /***
@@ -147,7 +144,7 @@ public class SQLCompletionProvider extends CompletionProviderBase {
         long now = System.currentTimeMillis();
         if(lastUpdate + UPDATE_INTERVAL < now) {
             try {
-                updateParser(ds);
+                updateParser(dataSource);
             } catch (Exception ex) {
                 log.warn("Could not update auto-completion engine", ex);
             }

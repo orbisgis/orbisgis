@@ -29,12 +29,12 @@
 package org.orbisgis.scp;
 
 import org.fife.rsta.ac.AbstractLanguageSupport;
-import org.fife.rsta.ac.LanguageSupport;
 import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.parser.Parser;
 import org.h2.util.OsgiDataSourceFactory;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +59,11 @@ import java.util.Properties;
  * @author Antoine Gourlay
  * @author Nicolas Fortin
  */
-@Component
+@Component(servicefactory = true)
 public class SQLLanguageSupport extends AbstractLanguageSupport {
         private Logger log = LoggerFactory.getLogger(SQLLanguageSupport.class);
+        private RSyntaxSQLParser parser;
+        private SQLCompletionProvider sqlCompletionProvider;
 
         @Override
         public void install(RSyntaxTextArea textArea) {
@@ -75,13 +77,13 @@ public class SQLLanguageSupport extends AbstractLanguageSupport {
                 try {
                     DataSource dataSource = dataSourceFactory.createDataSource(properties);
 
-                    RSyntaxSQLParser parser = new RSyntaxSQLParser(dataSource);
+                    parser = new RSyntaxSQLParser(dataSource);
                     textArea.putClientProperty(PROPERTY_LANGUAGE_PARSER, parser);
                     textArea.addParser(parser);
 
                     // install autocompletion
-                    SQLCompletionProvider provider = new SQLCompletionProvider(dataSource);
-                    AutoCompletion autoCompletion = createAutoCompletion(provider);
+                    sqlCompletionProvider = new SQLCompletionProvider(dataSource);
+                    AutoCompletion autoCompletion = createAutoCompletion(sqlCompletionProvider);
                     autoCompletion.install(textArea);
                     installImpl(textArea, autoCompletion);
                 } catch (SQLException ex) {
@@ -89,6 +91,32 @@ public class SQLLanguageSupport extends AbstractLanguageSupport {
                 }
 
         }
+
+        /**
+         * @param dataSource DataSource to use in auto completion
+         */
+        @Reference
+        public void setDataSource(DataSource dataSource) {
+            if( parser!=null ) {
+                parser.setDataSource(dataSource);
+            }
+            if(sqlCompletionProvider!=null) {
+                sqlCompletionProvider.setDataSource(dataSource);
+            }
+        }
+
+        /**
+         * @param dataSource DataSource to unset
+         */
+        public void unsetDataSource(DataSource dataSource) {
+            if( parser!=null ) {
+                parser.setDataSource(null);
+            }
+            if(sqlCompletionProvider!=null) {
+                sqlCompletionProvider.setDataSource(null);
+            }
+        }
+
 
         @Override
         public void uninstall(RSyntaxTextArea textArea) {
