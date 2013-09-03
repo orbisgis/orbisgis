@@ -77,7 +77,7 @@ public class SQLCompletionProvider extends CompletionProviderBase {
     public void setDataSource(DataSource ds) {
         this.dataSource = ds;
         try {
-            updateParser(null);
+            updateParser(ds);
         } catch (SQLException ex) {
             log.error(ex.getLocalizedMessage(), ex);
         }
@@ -128,7 +128,7 @@ public class SQLCompletionProvider extends CompletionProviderBase {
         while(documentReader.hasNext() && documentReader.getPosition() + statement.length() < charIndex) {
             statement = documentReader.next();
         }
-        int completionPosition = charIndex - documentReader.getPosition();
+        int completionPosition = Math.min(charIndex - documentReader.getPosition(), statement.length());
         String partialStatement = statement.substring(0, completionPosition);
         int[] lastWord = RSyntaxSQLParser.getLastWordPositionAndLength(partialStatement, completionPosition);
         if(lastWord != null && !partialStatement.endsWith(" ")) {

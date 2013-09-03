@@ -64,28 +64,29 @@ public class SQLLanguageSupport extends AbstractLanguageSupport {
         private Logger log = LoggerFactory.getLogger(SQLLanguageSupport.class);
         private RSyntaxSQLParser parser;
         private SQLCompletionProvider sqlCompletionProvider;
+        private DataSource dataSource;
 
         @Override
         public void install(RSyntaxTextArea textArea) {
-                // Create H2 DataSource
-                org.h2.Driver driver = org.h2.Driver.load();
-                OsgiDataSourceFactory dataSourceFactory = new OsgiDataSourceFactory(driver);
-                Properties properties = new Properties();
-                properties.setProperty(DataSourceFactory.JDBC_URL, "jdbc:h2:mem:syntax");
-                
                 // install parser
                 try {
-                    DataSource dataSource = dataSourceFactory.createDataSource(properties);
+                        if(dataSource == null) {
+                            // Create H2 memory DataSource
+                            org.h2.Driver driver = org.h2.Driver.load();
+                            OsgiDataSourceFactory dataSourceFactory = new OsgiDataSourceFactory(driver);
+                            Properties properties = new Properties();
+                            properties.setProperty(DataSourceFactory.JDBC_URL, "jdbc:h2:mem:syntax");
+                            dataSource = dataSourceFactory.createDataSource(properties);
+                        }
+                        parser = new RSyntaxSQLParser(dataSource);
+                        textArea.putClientProperty(PROPERTY_LANGUAGE_PARSER, parser);
+                        textArea.addParser(parser);
 
-                    parser = new RSyntaxSQLParser(dataSource);
-                    textArea.putClientProperty(PROPERTY_LANGUAGE_PARSER, parser);
-                    textArea.addParser(parser);
-
-                    // install autocompletion
-                    sqlCompletionProvider = new SQLCompletionProvider(dataSource);
-                    AutoCompletion autoCompletion = createAutoCompletion(sqlCompletionProvider);
-                    autoCompletion.install(textArea);
-                    installImpl(textArea, autoCompletion);
+                        // install auto-completion
+                        sqlCompletionProvider = new SQLCompletionProvider(dataSource);
+                        AutoCompletion autoCompletion = createAutoCompletion(sqlCompletionProvider);
+                        autoCompletion.install(textArea);
+                        installImpl(textArea, autoCompletion);
                 } catch (SQLException ex) {
                     log.error(ex.getLocalizedMessage(), ex);
                 }
@@ -97,6 +98,7 @@ public class SQLLanguageSupport extends AbstractLanguageSupport {
          */
         @Reference
         public void setDataSource(DataSource dataSource) {
+            this.dataSource = dataSource;
             if( parser!=null ) {
                 parser.setDataSource(dataSource);
             }
@@ -109,6 +111,7 @@ public class SQLLanguageSupport extends AbstractLanguageSupport {
          * @param dataSource DataSource to unset
          */
         public void unsetDataSource(DataSource dataSource) {
+            this.dataSource = null;
             if( parser!=null ) {
                 parser.setDataSource(null);
             }
