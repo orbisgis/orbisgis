@@ -29,9 +29,8 @@
 package org.orbisgis.view.map;
 
 import com.vividsolutions.jts.geom.Envelope;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Point;
+
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseMotionListener;
@@ -42,12 +41,17 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
 import javax.swing.event.TreeExpansionListener;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
@@ -58,9 +62,20 @@ import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
+import org.orbisgis.core.map.export.MapImageWriter;
 import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.progress.*;
+import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
+import org.orbisgis.sif.components.ColorPicker;
+import org.orbisgis.sif.components.SaveFilePanel;
+import org.orbisgis.sif.multiInputPanel.CheckBoxChoice;
+import org.orbisgis.sif.multiInputPanel.ComboBoxChoice;
+import org.orbisgis.sif.multiInputPanel.MIPValidationDouble;
+import org.orbisgis.sif.multiInputPanel.MIPValidationInteger;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
+import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
@@ -464,7 +479,67 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
      */
     public void onExportMapRendering() {
         // Show Dialog to select image size
-        //MultiInputPanel inputPanel =
+        final String WIDTH_T = "width";
+        final String HEIGHT_T = "height";
+        final String RATIO_T = "ratio";
+        final String TRANSPARENT_BACKGROUND_T = "background";
+        final int textWidth = 8;
+        String[] RATIO = new String[] {"UPDATE_EXTENT", "FIX_WIDTH", "FIX_HEIGHT"};
+        String[] RATIO_LABELS = new String[] {I18N.tr("Change extent"), "Update height to keep ratio", "Update width to keep ratio"};
+        MultiInputPanel inputPanel = new MultiInputPanel(I18N.tr("Export parameters"));
+        inputPanel.addInput(WIDTH_T, I18N.tr("Width (pixels)") ,String.valueOf(mapControl.getImage().getWidth()), new TextBoxType(textWidth));
+        inputPanel.addInput(HEIGHT_T, I18N.tr("Height (pixels)") ,String.valueOf(mapControl.getImage().getHeight()), new TextBoxType(textWidth));
+        ComboBoxChoice comboBoxChoice = new ComboBoxChoice(RATIO, RATIO_LABELS);
+        comboBoxChoice.setValue(RATIO[0]);
+        inputPanel.addInput(RATIO_T, I18N.tr("Ratio"), comboBoxChoice);
+        inputPanel.addValidation(new MIPValidationInteger(WIDTH_T, I18N.tr("Width (pixels)")));
+        inputPanel.addValidation(new MIPValidationInteger(HEIGHT_T, I18N.tr("Height (pixels)")));
+        inputPanel.addInput(TRANSPARENT_BACKGROUND_T, I18N.tr("Transparent Background"), "True", new CheckBoxChoice(true));
+        // Show parameter dialog
+        if(UIFactory.showDialog(inputPanel, true, true)) {
+            MapImageWriter mapImageWriter = new MapImageWriter(mapContext.getLayerModel());
+            // If the user want a background color, let him choose one
+            if(!Boolean.valueOf(inputPanel.getInput(TRANSPARENT_BACKGROUND_T))) {
+                ColorPicker colorPicker = new ColorPicker(Color.white);
+                if(!UIFactory.showDialog(colorPicker, true, true)) {
+                    return;
+                }
+                mapImageWriter.setBackgroundColor(colorPicker.getColor());
+            }
+            // Save the picture in which location
+            final SaveFilePanel outfilePanel = new SaveFilePanel(
+                    "MapEditor.ExportInFile",
+                    I18N.tr("Save the map as image : " + mapContext.getTitle()));
+            outfilePanel.addFilter("png", I18N.tr("Portable Network Graphics"));
+            outfilePanel.addFilter("tiff", I18N.tr("Tagged Image File Format"));
+            outfilePanel.loadState(); // Load last use path
+            // Show save into dialog
+            if (UIFactory.showDialog(outfilePanel, true, true)) {
+                File outFile = outfilePanel.getSelectedFile();
+                String fileName = FilenameUtils.getExtension(outFile.getName());
+                if(fileName.equalsIgnoreCase("png")) {
+                    mapImageWriter.setFormat(MapImageWriter.Format.PNG);
+                } else {
+                    mapImageWriter.setFormat(MapImageWriter.Format.TIFF);
+                }
+                mapImageWriter.setBoundingBox(mapContext.getBoundingBox());
+                int width = Integer.valueOf(inputPanel.getInput(WIDTH_T));
+                int height = Integer.valueOf(inputPanel.getInput(HEIGHT_T));
+                if(comboBoxChoice.getValue().equals(RATIO[1])) {
+                    // Change image height to keep ratio
+                    height = (int)(width * (mapContext.getBoundingBox().getHeight() / mapContext.getBoundingBox().getWidth()));
+                    mapImageWriter.setAdjustExtent(false);
+                } else if(comboBoxChoice.getValue().equals(RATIO[2])) {
+                    width = (int)(height * (mapContext.getBoundingBox().getWidth() / mapContext.getBoundingBox().getHeight()));
+                    mapImageWriter.setAdjustExtent(false);
+                }
+                mapImageWriter.setWidth(width);
+                mapImageWriter.setHeight(height);
+                ExportRenderingIntoFile renderingIntoFile = new ExportRenderingIntoFile(mapImageWriter, outFile);
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.nonBlockingBackgroundOperation(renderingIntoFile);
+            }
+        }
     }
 
     /**
@@ -625,6 +700,35 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     public ToolManager getToolManager() {
         return mapControl.getToolManager();
     }
+
+    /**
+     * This task draw the image into an external file
+     */
+    private static class ExportRenderingIntoFile  implements BackgroundJob {
+        private MapImageWriter mapImageWriter;
+        private File outFile;
+
+        private ExportRenderingIntoFile(MapImageWriter mapImageWriter, File outFile) {
+            this.mapImageWriter = mapImageWriter;
+            this.outFile = outFile;
+        }
+
+        @Override
+        public String getTaskName() {
+            return I18N.tr("Drawing into file");
+        }
+
+        @Override
+        public void run(ProgressMonitor pm) {
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream(outFile);
+                mapImageWriter.write(fileOutputStream, pm);
+            } catch (IOException ex) {
+                GUILOGGER.error("Error while saving map editor image", ex);
+            }
+        }
+    }
+
     /**
      * This task is created when the user Drag Source from GeoCatalog
      * to the map directly. The layer is created directly on the root.
