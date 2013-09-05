@@ -60,6 +60,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
@@ -420,6 +421,10 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 OrbisGISIcon.getIcon("map"),
                 EventHandler.create(ActionListener.class,this,"onShowHideMapsTree"))
                 .setToolTipText(I18N.tr("Show/Hide maps tree")));
+        actions.addAction(new DefaultAction(MapEditorAction.A_MAP_EXPORT_IMAGE, I18N.tr("Export image as file"),
+                OrbisGISIcon.getIcon("export_image"),
+                EventHandler.create(ActionListener.class,this,"onExportMapRendering"))
+                .setToolTipText(I18N.tr("Export image as file")));
     }
 
     /**
@@ -452,6 +457,14 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
      */
     public void onFullExtent() {
         mapControl.getMapTransform().setExtent(mapContext.getLayerModel().getEnvelope());
+    }
+
+    /**
+     * The use want to export the rendering into a file.
+     */
+    public void onExportMapRendering() {
+        // Show Dialog to select image size
+        //MultiInputPanel inputPanel =
     }
 
     /**
