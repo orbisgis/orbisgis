@@ -483,6 +483,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         final String HEIGHT_T = "height";
         final String RATIO_T = "ratio";
         final String TRANSPARENT_BACKGROUND_T = "background";
+        final String DPI_T = "dpi";
         final int textWidth = 8;
         String[] RATIO = new String[] {"UPDATE_EXTENT", "FIX_WIDTH", "FIX_HEIGHT"};
         String[] RATIO_LABELS = new String[] {I18N.tr("Change extent"), "Update height to keep ratio", "Update width to keep ratio"};
@@ -495,9 +496,12 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         inputPanel.addValidation(new MIPValidationInteger(WIDTH_T, I18N.tr("Width (pixels)")));
         inputPanel.addValidation(new MIPValidationInteger(HEIGHT_T, I18N.tr("Height (pixels)")));
         inputPanel.addInput(TRANSPARENT_BACKGROUND_T, I18N.tr("Transparent Background"), "True", new CheckBoxChoice(true));
+        inputPanel.addInput(DPI_T, I18N.tr("DPI"), String.valueOf((int)(MapImageWriter.MILLIMETERS_BY_INCH / MapImageWriter.DEFAULT_PIXEL_SIZE)) ,new TextBoxType(textWidth));
+        inputPanel.addValidation(new MIPValidationInteger(DPI_T, I18N.tr("DPI")));
         // Show parameter dialog
         if(UIFactory.showDialog(inputPanel, true, true)) {
             MapImageWriter mapImageWriter = new MapImageWriter(mapContext.getLayerModel());
+            mapImageWriter.setPixelSize(MapImageWriter.MILLIMETERS_BY_INCH / Double.valueOf(inputPanel.getInput(DPI_T)));
             // If the user want a background color, let him choose one
             if(!Boolean.valueOf(inputPanel.getInput(TRANSPARENT_BACKGROUND_T))) {
                 ColorPicker colorPicker = new ColorPicker(Color.white);
@@ -525,13 +529,12 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 mapImageWriter.setBoundingBox(mapContext.getBoundingBox());
                 int width = Integer.valueOf(inputPanel.getInput(WIDTH_T));
                 int height = Integer.valueOf(inputPanel.getInput(HEIGHT_T));
+                Envelope adjExtent = mapControl.getMapTransform().getAdjustedExtent();
                 if(comboBoxChoice.getValue().equals(RATIO[1])) {
                     // Change image height to keep ratio
-                    height = (int)(width * (mapContext.getBoundingBox().getHeight() / mapContext.getBoundingBox().getWidth()));
-                    mapImageWriter.setAdjustExtent(false);
+                    height = (int)(width * (adjExtent.getHeight() / adjExtent.getWidth()));
                 } else if(comboBoxChoice.getValue().equals(RATIO[2])) {
-                    width = (int)(height * (mapContext.getBoundingBox().getWidth() / mapContext.getBoundingBox().getHeight()));
-                    mapImageWriter.setAdjustExtent(false);
+                    width = (int)(height * (adjExtent.getWidth() / adjExtent.getHeight()));
                 }
                 mapImageWriter.setWidth(width);
                 mapImageWriter.setHeight(height);
