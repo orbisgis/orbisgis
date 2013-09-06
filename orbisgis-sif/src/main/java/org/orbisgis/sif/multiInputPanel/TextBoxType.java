@@ -28,8 +28,8 @@
  */
 package org.orbisgis.sif.multiInputPanel;
 
-import java.awt.Component;
-import javax.swing.JTextField;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * {@code InputType} dedicated to text inputs.
@@ -41,16 +41,17 @@ public final class TextBoxType implements InputType {
         private JTextField comp = new JTextField();
 
         public TextBoxType(int columns, boolean isEditable) {
-                comp.setColumns(columns);
+                this(columns);
                 comp.setEditable(isEditable);
         }
 
         public TextBoxType(int columns) {
                 comp.setColumns(columns);
+                comp.setHorizontalAlignment(SwingConstants.RIGHT);
         }
 
         public TextBoxType() {
-                comp.setColumns(5);
+                this(5);
         }
 
         @Override

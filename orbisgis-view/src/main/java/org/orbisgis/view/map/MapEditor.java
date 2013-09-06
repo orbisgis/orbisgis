@@ -436,7 +436,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 OrbisGISIcon.getIcon("map"),
                 EventHandler.create(ActionListener.class,this,"onShowHideMapsTree"))
                 .setToolTipText(I18N.tr("Show/Hide maps tree")));
-        actions.addAction(new DefaultAction(MapEditorAction.A_MAP_EXPORT_IMAGE, I18N.tr("Export image as file"),
+        actions.addAction(new DefaultAction(MapEditorAction.A_MAP_EXPORT_IMAGE, I18N.tr("Export map as image"),
                 OrbisGISIcon.getIcon("export_image"),
                 EventHandler.create(ActionListener.class,this,"onExportMapRendering"))
                 .setToolTipText(I18N.tr("Export image as file")));
@@ -488,18 +488,43 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         String[] RATIO = new String[] {"UPDATE_EXTENT", "FIX_WIDTH", "FIX_HEIGHT"};
         String[] RATIO_LABELS = new String[] {I18N.tr("Change extent"), "Update height to keep ratio", "Update width to keep ratio"};
         MultiInputPanel inputPanel = new MultiInputPanel(I18N.tr("Export parameters"));
-        inputPanel.addInput(WIDTH_T, I18N.tr("Width (pixels)") ,String.valueOf(mapControl.getImage().getWidth()), new TextBoxType(textWidth));
-        inputPanel.addInput(HEIGHT_T, I18N.tr("Height (pixels)") ,String.valueOf(mapControl.getImage().getHeight()), new TextBoxType(textWidth));
+
+        inputPanel.addInput(WIDTH_T,
+                I18N.tr("Width (pixels)"),
+                String.valueOf(mapControl.getImage().getWidth()),
+                new TextBoxType(textWidth));
+        inputPanel.addInput(HEIGHT_T,
+                I18N.tr("Height (pixels)"),
+                String.valueOf(mapControl.getImage().getHeight()),
+                new TextBoxType(textWidth));
+
         ComboBoxChoice comboBoxChoice = new ComboBoxChoice(RATIO, RATIO_LABELS);
         comboBoxChoice.setValue(RATIO[0]);
         inputPanel.addInput(RATIO_T, I18N.tr("Ratio"), comboBoxChoice);
+
+        inputPanel.addInput(DPI_T,
+                I18N.tr("DPI"),
+                String.valueOf((int) (MapImageWriter.MILLIMETERS_BY_INCH / MapImageWriter.DEFAULT_PIXEL_SIZE)),
+                new TextBoxType(textWidth));
+        inputPanel.addInput(TRANSPARENT_BACKGROUND_T,
+                "",
+                "True",
+                new CheckBoxChoice(true, "<html>" + I18N.tr("Transparent\nbackground") + "</html>"));
+
         inputPanel.addValidation(new MIPValidationInteger(WIDTH_T, I18N.tr("Width (pixels)")));
         inputPanel.addValidation(new MIPValidationInteger(HEIGHT_T, I18N.tr("Height (pixels)")));
-        inputPanel.addInput(TRANSPARENT_BACKGROUND_T, I18N.tr("Transparent Background"), "True", new CheckBoxChoice(true));
-        inputPanel.addInput(DPI_T, I18N.tr("DPI"), String.valueOf((int)(MapImageWriter.MILLIMETERS_BY_INCH / MapImageWriter.DEFAULT_PIXEL_SIZE)) ,new TextBoxType(textWidth));
         inputPanel.addValidation(new MIPValidationInteger(DPI_T, I18N.tr("DPI")));
-        // Show parameter dialog
-        if(UIFactory.showDialog(inputPanel, true, true)) {
+
+        // Show the dialog and get the user's choice.
+        int userChoice = JOptionPane.showConfirmDialog(this,
+                        inputPanel.getComponent(),
+                        I18N.tr("Export map as image"),
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        OrbisGISIcon.getIcon("map_catalog"));
+
+        // If the user clicked OK, then show the save image dialog.
+        if (userChoice == JOptionPane.OK_OPTION) {
             MapImageWriter mapImageWriter = new MapImageWriter(mapContext.getLayerModel());
             mapImageWriter.setPixelSize(MapImageWriter.MILLIMETERS_BY_INCH / Double.valueOf(inputPanel.getInput(DPI_T)));
             // If the user want a background color, let him choose one
