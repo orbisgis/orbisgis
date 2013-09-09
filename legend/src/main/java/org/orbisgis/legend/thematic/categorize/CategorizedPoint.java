@@ -428,7 +428,7 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
     public void setStrokeUom(Uom u) {
         Stroke stroke = ((MarkGraphic) symbolizer.getGraphicCollection().getGraphic(0)).getStroke();
         if(stroke != null){
-            symbolizer.setUom(u);
+            stroke.setUom(u);
         }
     }
 

@@ -183,7 +183,7 @@ public final class ViewBox extends  AbstractSymbolizerNode {
                 dx = Uom.toPixel(dx, ((UomNode)getParent()).getUom(), dpi, scale, width);
                 dy = Uom.toPixel(dy, ((UomNode)getParent()).getUom(), dpi, scale, height);
 
-                if (dx <= 0.00021 || dy <= 0.00021) {
+                if (Math.abs(dx) <= 0.00021 || Math.abs(dy) <= 0.00021) {
                         dx=0;
                         dy=0;
                 }
