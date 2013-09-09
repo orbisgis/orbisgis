@@ -77,6 +77,7 @@ public class SIFDialog extends AbstractOutsideFrame {
                 }
                 this.add(pnlButtons, BorderLayout.SOUTH);
 
+                add(errorLabel, BorderLayout.NORTH);
 
                 this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         }
