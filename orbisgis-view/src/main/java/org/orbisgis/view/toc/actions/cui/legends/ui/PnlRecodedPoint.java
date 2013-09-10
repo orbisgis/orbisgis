@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.legend.thematic.recode.RecodedPoint;
@@ -115,6 +116,11 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         RecodedPoint leg = getLegend();
         PointParameters lps = leg.getFallbackParameters();
         UniqueSymbolPoint usa = getFallBackLegend();
+        if(leg.isStrokeEnabled()){
+            usa.setStrokeUom(leg.getStrokeUom());
+        } else {
+            usa.setPenStroke(new NullPenStrokeLegend());
+        }
         PnlUniquePointSE pls = new PnlUniquePointSE(usa, leg.isStrokeEnabled());
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
             usa = pls.getLegend();
