@@ -42,7 +42,7 @@
                 <rsyntax-version>2.0.7</rsyntax-version>
                 <rsyntax-ls-version>r795</rsyntax-ls-version>
                 <gettext-commons-version>0.9.7</gettext-commons-version>
-                <cts-version>1.2.4-SNAPSHOT</cts-version>
+                <cts-version>1.3</cts-version>
         </properties>
         <scm>
                 <connection>scm:git:https://github.com/irstv/orbisgis.git</connection>

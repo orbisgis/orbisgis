@@ -29,6 +29,7 @@
 package org.orbisgis.scp;
 
 import java.awt.Point;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -39,10 +40,11 @@ import javax.swing.text.JTextComponent;
 
 import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.Completion;
+import org.fife.ui.autocomplete.CompletionProvider;
 import org.fife.ui.autocomplete.CompletionProviderBase;
 import org.h2.bnf.Bnf;
-import org.h2.server.web.DbContents;
-import org.h2.server.web.DbContextRule;
+import org.h2.bnf.context.DbContents;
+import org.h2.bnf.context.DbContextRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +66,6 @@ public class SQLCompletionProvider extends CompletionProviderBase {
         this.dataSource = dataSource;
         try {
             // Use h2 internal grammar
-            parser = Bnf.getInstance(null);
             updateParser(dataSource);
         } catch (Exception ex) {
             log.warn("Could not load auto-completion engine", ex);
@@ -78,7 +79,7 @@ public class SQLCompletionProvider extends CompletionProviderBase {
         this.dataSource = ds;
         try {
             updateParser(ds);
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             log.error(ex.getLocalizedMessage(), ex);
         }
     }
@@ -87,9 +88,10 @@ public class SQLCompletionProvider extends CompletionProviderBase {
      * Read the data source in order to update parser grammar.
      * @param dataSource New DataSource, to extract meta data, can be null
      */
-    public void updateParser(DataSource dataSource) throws SQLException {
+    public void updateParser(DataSource dataSource) throws SQLException, IOException {
         if(dataSource != null) {
             lastUpdate = System.currentTimeMillis();
+            parser = Bnf.getInstance(null);
             Connection connection = dataSource.getConnection();
             try {
                 DbContents contents = new DbContents();
@@ -100,12 +102,14 @@ public class SQLCompletionProvider extends CompletionProviderBase {
                 DbContextRule tableRule = new DbContextRule(contents, DbContextRule.TABLE);
                 DbContextRule schemaRule = new DbContextRule(contents, DbContextRule.SCHEMA);
                 DbContextRule columnAliasRule = new DbContextRule(contents, DbContextRule.COLUMN_ALIAS);
+                DbContextRule procedureRule = new DbContextRule(contents, DbContextRule.PROCEDURE);
                 parser.updateTopic("column_name", columnRule);
                 parser.updateTopic("new_table_alias", newAliasRule);
                 parser.updateTopic("table_alias", aliasRule);
                 parser.updateTopic("column_alias", columnAliasRule);
                 parser.updateTopic("table_name", tableRule);
                 parser.updateTopic("schema_name", schemaRule);
+                parser.updateTopic("expression", procedureRule);
                 parser.linkStatements();
             } finally {
                 connection.close();
@@ -120,23 +124,7 @@ public class SQLCompletionProvider extends CompletionProviderBase {
 
     @Override
     public String getAlreadyEnteredText(JTextComponent jTextComponent) {
-        //Returns the text just before the current caret position that could be the start of something auto-completable.
-        int charIndex = jTextComponent.getCaretPosition();
-        // Extract the statement at this position
-        DocumentSQLReader documentReader = new DocumentSQLReader(jTextComponent.getDocument());
-        String statement = "";
-        while(documentReader.hasNext() && documentReader.getPosition() + statement.length() < charIndex) {
-            statement = documentReader.next();
-        }
-        int completionPosition = Math.min(charIndex - documentReader.getPosition(), statement.length());
-        String partialStatement = statement.substring(0, completionPosition);
-        int[] lastWord = RSyntaxSQLParser.getLastWordPositionAndLength(partialStatement, completionPosition);
-        if(lastWord != null && !partialStatement.endsWith(" ")) {
-            return partialStatement.substring(lastWord[RSyntaxSQLParser.WORD_POSITION],
-                    lastWord[RSyntaxSQLParser.WORD_POSITION]+lastWord[RSyntaxSQLParser.WORD_LENGTH]);
-        } else {
-            return "";
-        }
+        return "";
     }
 
 
@@ -163,19 +151,12 @@ public class SQLCompletionProvider extends CompletionProviderBase {
         String wordBegin = "";
         int completionPosition = charIndex - documentReader.getPosition();
         String partialStatement = statement.substring(0, completionPosition);
-        int[] lastWord = RSyntaxSQLParser.getLastWordPositionAndLength(statement, completionPosition);
-        if(lastWord != null && !statement.endsWith(" ")) {
-            wordBegin = statement.substring(lastWord[RSyntaxSQLParser.WORD_POSITION],
-                    lastWord[RSyntaxSQLParser.WORD_POSITION]+lastWord[RSyntaxSQLParser.WORD_LENGTH]).toUpperCase();
-        }
         // Ask parser for completion list
         Map<String,String> autoComplete = parser.getNextTokenList(partialStatement);
-        for(String key : autoComplete.keySet()) {
-            String token =  key.substring(key.indexOf("#") + 1);
-            if(token.toUpperCase().startsWith(wordBegin)) {
-                Completion completion = new BasicCompletion(this, token);
-                completionList.add(completion);
-            }
+        for(Map.Entry<String, String> entry : autoComplete.entrySet()) {
+            String token =  entry.getKey().substring(entry.getKey().indexOf("#") + 1);
+            Completion completion = new BnfAutoCompletion(this, token, entry.getValue());
+            completionList.add(completion);
         }
         return completionList;
     }
@@ -193,5 +174,20 @@ public class SQLCompletionProvider extends CompletionProviderBase {
     @Override
     public List getParameterizedCompletions(JTextComponent jTextComponent) {
         return null;
+    }
+
+    private static class BnfAutoCompletion extends BasicCompletion {
+        private String append;
+
+        private BnfAutoCompletion(CompletionProvider provider, String completeToken, String append) {
+            super(provider, completeToken);
+            this.append = append;
+        }
+
+        @Override
+        public String getAlreadyEntered(JTextComponent comp) {
+            String completeToken = getReplacementText();
+            return completeToken.substring(0, completeToken.length() - append.length());
+        }
     }
 }
