@@ -28,8 +28,10 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolLine;
@@ -59,6 +61,7 @@ public class LinePanel extends AbsOptionalPanel {
     private LineWidthSpinner lineWidthSpinner;
     private LineOpacitySpinner lineOpacitySpinner;
     private DashArrayField dashArrayField;
+    private boolean strokeWasSet;
 
     /**
      * Constructor
@@ -87,6 +90,16 @@ public class LinePanel extends AbsOptionalPanel {
     @Override
     protected void init() {
         penStrokeMemory = getLegend().getPenStroke();
+        //If the stroke was not set, we want to store a default
+        //ConstantPenStrokeLegend in penStrokeMemory in order to be able
+        //to retrieve it later.
+        strokeWasSet = !(penStrokeMemory == null || penStrokeMemory instanceof NullPenStrokeLegend);
+        if(!strokeWasSet ){
+            if(showCheckBox){
+                enableCheckBox.setSelected(false);
+            }
+            penStrokeMemory = new ConstantPenStrokeLegend();
+        }
         colorLabel = new ColorLabel(penStrokeMemory.getFillLegend(), preview);
         if (displayUom) {
             lineUOMComboBox =
@@ -132,6 +145,7 @@ public class LinePanel extends AbsOptionalPanel {
         // Dash array
         add(new JLabel(I18N.tr(DASH_ARRAY)));
         add(dashArrayField, "growx");
+        setFieldsState(strokeWasSet);
     }
 
     @Override

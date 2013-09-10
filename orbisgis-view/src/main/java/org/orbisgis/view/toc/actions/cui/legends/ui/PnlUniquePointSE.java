@@ -30,7 +30,6 @@ package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
-import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
@@ -40,7 +39,7 @@ import org.orbisgis.view.toc.actions.cui.legends.panels.PreviewPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 
 /**
  * "Unique Symbol - Point" UI.
@@ -125,7 +124,6 @@ public final class PnlUniquePointSE extends PnlUniqueSymbolSE {
                         I18N.tr(BORDER_SETTINGS),
                         showCheckbox,
                         displayUOM);
-                ComponentUtil.setFieldState(borderEnabled, linePanel);
                 glob.add(linePanel);
 
                 glob.add(new PointPanel(uniquePoint,

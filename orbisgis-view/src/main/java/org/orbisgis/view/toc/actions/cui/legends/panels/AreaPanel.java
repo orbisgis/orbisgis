@@ -28,7 +28,9 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.panels;
 
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.sif.ComponentUtil;
@@ -53,6 +55,7 @@ public class AreaPanel extends AbsOptionalPanel {
 
     private ColorLabel colorLabel;
     private LineOpacitySpinner fillOpacitySpinner;
+    private boolean stateActive = true;
 
     /**
      * Constructor
@@ -79,6 +82,13 @@ public class AreaPanel extends AbsOptionalPanel {
     @Override
     protected void init() {
         fillLegendMemory = getLegend().getFillLegend();
+        if(fillLegendMemory == null || fillLegendMemory instanceof NullSolidFillLegend){
+            if(showCheckBox){
+                enableCheckBox.setSelected(false);
+            }
+            stateActive = false;
+            fillLegendMemory = new ConstantSolidFillLegend(new SolidFill());
+        }
         colorLabel = new ColorLabel(fillLegendMemory, preview);
         fillOpacitySpinner = new LineOpacitySpinner(fillLegendMemory, preview);
     }
@@ -96,6 +106,7 @@ public class AreaPanel extends AbsOptionalPanel {
         // Opacity
         add(new JLabel(I18N.tr(OPACITY)));
         add(fillOpacitySpinner, "growx");
+        setFieldsState(stateActive);
     }
 
     @Override
