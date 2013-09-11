@@ -62,6 +62,7 @@ import org.orbisgis.view.docking.internals.DockingPanelTracker;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.edition.dialogs.SaveDocuments;
+import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.main.bundles.BundleFromResources;
 import org.orbisgis.view.main.frames.MainFrame;
@@ -88,6 +89,8 @@ public class Core {
     //view package
     private EditorManager editors;         /*!< Management of editors */
     private MainFrame mainFrame = new MainFrame();     /*!< The main window */
+    private Catalog geoCatalog;
+
     //private Catalog geoCatalog= null;      /*!< The GeoCatalog frame */
     private ViewWorkspace viewWorkspace;
     private OutputManager loggerCollection;    /*!< Loggings panels */
@@ -273,11 +276,11 @@ public class Core {
      */
     private void makeGeoCatalogPanel() {
         //The geo-catalog view content is read from the SourceContext
-        //geoCatalog = new Catalog();
+        geoCatalog = new Catalog();
         // Catalog extensions
-        //geoCatalog.registerActionTrackers(pluginFramework.getHostBundleContext());
+        geoCatalog.registerActionTrackers(pluginFramework.getHostBundleContext());
         //Add the view as a new Docking Panel
-        //dockManager.addDockingPanel(geoCatalog);
+        dockManager.addDockingPanel(geoCatalog);
     }
 
     /**
