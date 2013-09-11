@@ -260,13 +260,19 @@ public class Description {
     /**
      * Adds a title to this {@code Description}, associated to the given {@code
      * Locale}.
-     * @param text
-     * @param locale
+     * @param locale The locale we are managing
+     * @param text The new title. If null or empty, the entry is removed.
      * @return
      * The title that was previously associated to {@code Locale}, if any.
      */
     public String addTitle(Locale locale,String text){
-        return titles.put(locale, text);
+        String ret;
+        if(text == null || text.isEmpty()){
+            ret = titles.remove(locale);
+        } else {
+            ret = titles.put(locale, text);
+        }
+        return ret;
     }
 
     /**
@@ -282,13 +288,19 @@ public class Description {
     /**
      * Adds an abstract to this {@code Description}, associated to the given
      * {@code Locale}.
-     * @param text
      * @param locale
+     * @param text  The new abstract. If null or empty, the entry is removed.
      * @return
      * The title that was previously associated to {@code Locale}, if any.
      */
     public String addAbstract(Locale locale,String text){
-        return abstractTexts.put(locale, text);
+        String ret;
+        if(text == null || text.isEmpty()){
+            ret = abstractTexts.remove(locale);
+        } else {
+            ret = abstractTexts.put(locale, text);
+        }
+        return ret;
     }
 
     /**
