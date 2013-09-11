@@ -142,7 +142,7 @@ public class MainFrameStatusBar extends StatusBar {
         public void onChangeWorkspace() {
                 CoreWorkspace coreWK = Services.getService(CoreWorkspace.class);
                 if(coreWK!=null) {
-                        File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(coreWK,true);
+                        File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(this.owner, coreWK);
                         if(newWorkspace!= null) {
                                 // Switching workspace..
                                 coreWK.setWorkspaceFolder(newWorkspace.getAbsolutePath());

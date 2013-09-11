@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-22 10:39+0100\n"
-"PO-Revision-Date: 2013-08-22 10:40+0100\n"
+"POT-Creation-Date: 2013-08-23 16:37+0100\n"
+"PO-Revision-Date: 2013-08-23 16:47+0100\n"
 "Last-Translator: Adam Gouge <adam.gouge@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
@@ -154,20 +154,35 @@ msgstr "&Outils"
 msgid "&Configuration"
 msgstr "&Configuration"
 
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:59
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:69
-msgid "Workspace folder"
-msgstr "Dossier d'espace de travail"
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:80
+msgid "Choose the workspace folder"
+msgstr "<html>Choisir le dossier d'espace de<br>travail</html>"
 
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:68
-msgid "Select an existing workspace or an empty folder."
-msgstr "Sélectionner un workspace ou un dossier vide."
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:86
+msgid "Choose a previous OrbisGIS workspace or create a new one"
+msgstr "Choisir ou créer un espace de travail"
 
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:70
-msgid "Default workspace"
-msgstr "Espace de travail par défaut"
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:94
+msgid "Set as default?"
+msgstr "Espace de travail par défaut ?"
 
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:115
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:96
+msgid ""
+"Setting this workspace as default will allow you to skip this<br>dialog next "
+"time"
+msgstr ""
+"Cochez cette case si vous souhaitez que cet espace de travail<br>s'ouvre de "
+"façon automatique au prochain démarrage."
+
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:111
+msgid "Workspace Manager"
+msgstr "Gestionnaire d'espace de travail"
+
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:124
+msgid "Problem updating the workspace. "
+msgstr "Problème lors de la mise à jour de l'espace de travail"
+
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:141
 #, java-format
 msgid ""
 "The workspace folder version is invalid (!=OrbisGIS {0}), or the folder is "
@@ -217,7 +232,7 @@ msgid "Zoom to the layer bounding box"
 msgstr "Zoomer sur l'emprise de la couche"
 
 #: java/org/orbisgis/view/toc/Toc.java:162
-#: java/org/orbisgis/view/map/MapEditor.java:392
+#: java/org/orbisgis/view/map/MapEditor.java:394
 #: java/org/orbisgis/view/table/TableEditor.java:402
 #: java/org/orbisgis/view/table/jobs/ZoomToSelectionJob.java:118
 msgid "Zoom to selection"
@@ -228,7 +243,7 @@ msgid "Zoom to selected geometries"
 msgstr "Zoomer sur les géométries sélectionnées"
 
 #: java/org/orbisgis/view/toc/Toc.java:168
-#: java/org/orbisgis/view/map/MapEditor.java:389
+#: java/org/orbisgis/view/map/MapEditor.java:391
 #: java/org/orbisgis/view/table/TableEditor.java:374
 msgid "Clear selection"
 msgstr "Déselectionner"
@@ -383,7 +398,7 @@ msgstr "Impossible de sauvegarder l'interface"
 #: java/org/orbisgis/view/toc/Toc.java:546
 #, java-format
 msgid "Cannot drop layer on {0}"
-msgstr "Impossible d'enlever la couche sur {0}"
+msgstr "Impossible d''enlever la couche sur {0}"
 
 #: java/org/orbisgis/view/toc/Toc.java:549
 #, java-format
@@ -970,7 +985,7 @@ msgstr "Impossible d'analyser le script."
 #: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:113
 #, java-format
 msgid "Running instruction {0}/{1} :"
-msgstr "Lancer l'instruction {0}/{1} :"
+msgstr "Lancer l''instruction {0}/{1} :"
 
 #: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:139
 #, java-format
@@ -1086,87 +1101,97 @@ msgstr "Dessin"
 msgid "Tool error {0}"
 msgstr "Erreur d''outil {0}"
 
-#: java/org/orbisgis/view/map/MapEditor.java:159
+#: java/org/orbisgis/view/map/MapEditor.java:161
 msgid "Map"
 msgstr "Carte"
 
-#: java/org/orbisgis/view/map/MapEditor.java:162
+#: java/org/orbisgis/view/map/MapEditor.java:164
 #, java-format
 msgid "Map Editor \"{0}\" [Modified]"
 msgstr ""
 
-#: java/org/orbisgis/view/map/MapEditor.java:164
+#: java/org/orbisgis/view/map/MapEditor.java:166
 #, java-format
 msgid "Map Editor \"{0}\""
 msgstr ""
 
-#: java/org/orbisgis/view/map/MapEditor.java:177
+#: java/org/orbisgis/view/map/MapEditor.java:179
 msgid "The value of the scale denominator must be equal or greater than 1"
 msgstr ""
 "La valeur du dénominateur de l'échelle doit être égale ou plus grande que 1"
 
-#: java/org/orbisgis/view/map/MapEditor.java:221
+#: java/org/orbisgis/view/map/MapEditor.java:223
 #, fuzzy
 msgid "Fail to load the map context, starting with an empty map context"
 msgstr ""
 "Le contexte cartographique ne peut pas être lu. Démarrage avec une carte vide"
 
-#: java/org/orbisgis/view/map/MapEditor.java:239
+#: java/org/orbisgis/view/map/MapEditor.java:241
 msgid "MyMap.ows"
 msgstr "MaCarte.ows"
 
-#: java/org/orbisgis/view/map/MapEditor.java:378
+#: java/org/orbisgis/view/map/MapEditor.java:380
 msgid "Full extent"
 msgstr "Zoom étendu"
 
-#: java/org/orbisgis/view/map/MapEditor.java:380
+#: java/org/orbisgis/view/map/MapEditor.java:382
 msgid "Zoom to show all geometries"
 msgstr "Zoom étendu"
 
-#: java/org/orbisgis/view/map/MapEditor.java:391
+#: java/org/orbisgis/view/map/MapEditor.java:393
 msgid "Clear all selected geometries of all layers"
 msgstr "Déselectionner les géométries de toutes les couches"
 
-#: java/org/orbisgis/view/map/MapEditor.java:394
+#: java/org/orbisgis/view/map/MapEditor.java:396
 msgid "Zoom to visible selected geometries"
 msgstr "Zoomer sur les objets sélectionnés"
 
-#: java/org/orbisgis/view/map/MapEditor.java:395
+#: java/org/orbisgis/view/map/MapEditor.java:397
 #: java/org/orbisgis/view/table/TableEditor.java:390
 msgid "Create datasource from selection"
 msgstr "Créer une source de données"
 
-#: java/org/orbisgis/view/map/MapEditor.java:398
-#: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:136
+#: java/org/orbisgis/view/map/MapEditor.java:400
+#: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:139
 #: java/org/orbisgis/view/table/TableEditor.java:393
 msgid "Create a datasource from the current selection"
 msgstr "Créer une source de données à partir des lignes sélectionnées"
 
-#: java/org/orbisgis/view/map/MapEditor.java:401
+#: java/org/orbisgis/view/map/MapEditor.java:403
 msgid "Mesure tools"
 msgstr "Outils de mesure"
 
-#: java/org/orbisgis/view/map/MapEditor.java:410
+#: java/org/orbisgis/view/map/MapEditor.java:412
 msgid "Graphic tools"
 msgstr ""
 
-#: java/org/orbisgis/view/map/MapEditor.java:417
+#: java/org/orbisgis/view/map/MapEditor.java:419
 msgid "Maps tree"
 msgstr "Arbre des cartes"
 
-#: java/org/orbisgis/view/map/MapEditor.java:420
+#: java/org/orbisgis/view/map/MapEditor.java:422
 msgid "Show/Hide maps tree"
 msgstr "Afficher/Cacher le gestionnaire de cartes"
 
-#: java/org/orbisgis/view/map/MapEditor.java:612
+#: java/org/orbisgis/view/map/MapEditor.java:505
+#, fuzzy
+msgid "No layers are selected."
+msgstr "Au moins une couche doit être sélectionnée"
+
+#: java/org/orbisgis/view/map/MapEditor.java:525
+#, java-format
+msgid "Layer {0} has no selected geometries."
+msgstr "Aucune géométrie n''est sélectionnée dans la couche {0}."
+
+#: java/org/orbisgis/view/map/MapEditor.java:643
 msgid "Unable to create and drop the layer"
 msgstr "Impossible de créer et supprimer la couche"
 
-#: java/org/orbisgis/view/map/MapEditor.java:614
+#: java/org/orbisgis/view/map/MapEditor.java:645
 msgid "A problem occurred while opening the DataSource :"
 msgstr ""
 
-#: java/org/orbisgis/view/map/MapEditor.java:633
+#: java/org/orbisgis/view/map/MapEditor.java:664
 msgid "Load the data source droped into the map editor."
 msgstr "Chargement de la source de donnée déposée dans l'éditeur de carte."
 
@@ -1409,7 +1434,7 @@ msgstr "Télécharger l'espace de travail de {0}"
 #: java/org/orbisgis/view/map/mapsManager/jobs/DownloadWorkspaces.java:82
 #, java-format
 msgid "Download the workspaces of {0}"
-msgstr "Télécharger l'espace de travail de {0}"
+msgstr "Télécharger l''espace de travail de {0}"
 
 #: java/org/orbisgis/view/map/toolbar/ActionSave.java:57
 msgid "Save unsaved modifications of this layer"
@@ -1862,19 +1887,19 @@ msgstr "Impossible d'utiliser l'outil wand {0}"
 #: java/org/orbisgis/view/map/tools/raster/WandTool.java:132
 #, java-format
 msgid "Cannot apply the legend {0}"
-msgstr "Impossible d'appliquer la légende {0}"
+msgstr "Impossible d''appliquer la légende {0}"
 
 #: java/org/orbisgis/view/map/tools/raster/WandTool.java:135
 #, java-format
 msgid "Error accessing the GeoRaster {0}"
-msgstr "Erreur d'accès au GéoRaster {0}"
+msgstr "Erreur d''accès au GéoRaster {0}"
 
 #: java/org/orbisgis/view/map/tools/raster/WandTool.java:137
 #: java/org/orbisgis/view/map/tools/raster/WandTool.java:139
 #: java/org/orbisgis/view/map/tools/raster/WandTool.java:141
 #, java-format
 msgid "Error accessing the wand layer datasource {0}"
-msgstr "Impossible de charger la source de donnée de l'outil wand {0}"
+msgstr "Impossible de charger la source de donnée de l''outil wand {0}"
 
 #: java/org/orbisgis/view/map/tools/raster/WandTool.java:144
 #, java-format
@@ -1915,7 +1940,7 @@ msgstr "Impossible de réaliser le zoom étendu"
 #: java/org/orbisgis/view/map/jobs/ZoomToSelection.java:86
 #, java-format
 msgid "Compute envelope of {0}"
-msgstr "Calculer l'enveloppe de {0}"
+msgstr "Calculer l''enveloppe de {0}"
 
 #: java/org/orbisgis/view/map/jobs/ZoomToSelection.java:138
 msgid "Zoom to the selected geometries"
@@ -1925,15 +1950,27 @@ msgstr "Zoomer sur les géométries sélectionnées"
 msgid "Open the map context"
 msgstr "Ouvrir le contexte cartographique"
 
-#: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:150
+#: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:153
 #, java-format
 msgid "{0}_selection"
 msgstr "{0}_sélection"
 
-#: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:153
+#: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:156
 #, java-format
 msgid "{0}_selection_{1}"
 msgstr "{0}_sélection_{1}"
+
+#: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:165
+msgid "New name for the datasource:"
+msgstr "Enregistrer sous :"
+
+#: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:180
+msgid "You must enter a non-empty name."
+msgstr "Le nom de la source de données ne peut être vide."
+
+#: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:185
+msgid "A datasource with that name already exists."
+msgstr "Une source de données avec le nom spécifié existe déjà."
 
 #: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:112
 msgid "Save documents"
@@ -1978,7 +2015,7 @@ msgstr "Ne rien faire et ne rien perdre"
 #: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:253
 #, java-format
 msgid "The document {0} cannot be saved due to the following error {1}"
-msgstr "Le document {0} ne peut être sauvé à cause de l'erreur suivante {1}"
+msgstr "Le document {0} ne peut être sauvé à cause de l''erreur suivante {1}"
 
 #: java/org/orbisgis/view/docking/DockingManagerImpl.java:161
 msgid "&Look And Feel"
@@ -2901,51 +2938,39 @@ msgstr "Sélectionner les mêmes cellules"
 msgid "Select all rows that match this cell value"
 msgstr "Sélectionner les lignes avec la même valeur"
 
-#: java/org/orbisgis/view/table/TableEditor.java:499
-msgid "New name for the datasource:"
-msgstr "Enregistrer sous :"
-
-#: java/org/orbisgis/view/table/TableEditor.java:515
-msgid "You must enter a non-empty name."
-msgstr "Le nom de la source de données ne peut être vide."
-
-#: java/org/orbisgis/view/table/TableEditor.java:520
-msgid "A datasource with that name already exists."
-msgstr "Une source de données avec le nom spécifié existe déjà."
-
-#: java/org/orbisgis/view/table/TableEditor.java:595
+#: java/org/orbisgis/view/table/TableEditor.java:567
 msgid "Optimal width"
 msgstr "Largeur optimale"
 
-#: java/org/orbisgis/view/table/TableEditor.java:615
+#: java/org/orbisgis/view/table/TableEditor.java:587
 msgid "Sort ascending"
 msgstr "Tri croissant"
 
-#: java/org/orbisgis/view/table/TableEditor.java:624
+#: java/org/orbisgis/view/table/TableEditor.java:596
 msgid "Sort descending"
 msgstr "Tri décroissant"
 
-#: java/org/orbisgis/view/table/TableEditor.java:633
+#: java/org/orbisgis/view/table/TableEditor.java:605
 msgid "No sort"
 msgstr "Pas de tri"
 
-#: java/org/orbisgis/view/table/TableEditor.java:644
+#: java/org/orbisgis/view/table/TableEditor.java:616
 msgid "Show column informations"
 msgstr "Afficher les informations"
 
-#: java/org/orbisgis/view/table/TableEditor.java:653
+#: java/org/orbisgis/view/table/TableEditor.java:625
 msgid "Show column statistics"
 msgstr "Afficher les statistiques"
 
-#: java/org/orbisgis/view/table/TableEditor.java:655
+#: java/org/orbisgis/view/table/TableEditor.java:627
 msgid "Show column selection statistics"
 msgstr "Afficher les statistiques"
 
-#: java/org/orbisgis/view/table/TableEditor.java:657
+#: java/org/orbisgis/view/table/TableEditor.java:629
 msgid "Show filtered column statistics"
 msgstr "Afficher les statistiques des colonnes filtrées"
 
-#: java/org/orbisgis/view/table/TableEditor.java:706
+#: java/org/orbisgis/view/table/TableEditor.java:678
 #, java-format
 msgid ""
 "\n"
@@ -2954,36 +2979,36 @@ msgstr ""
 "\n"
 "Nom du champ :\t{0}\n"
 
-#: java/org/orbisgis/view/table/TableEditor.java:707
+#: java/org/orbisgis/view/table/TableEditor.java:679
 #, java-format
 msgid "Field type :\t{0}\n"
 msgstr "Type de champ :\t{0}\n"
 
-#: java/org/orbisgis/view/table/TableEditor.java:711
+#: java/org/orbisgis/view/table/TableEditor.java:683
 msgid "Constraints :\n"
 msgstr "Contraintes :\n"
 
-#: java/org/orbisgis/view/table/TableEditor.java:713
+#: java/org/orbisgis/view/table/TableEditor.java:685
 #, java-format
 msgid "\t{0} :\t{1}\n"
 msgstr "\t{0} :\t{1}\n"
 
-#: java/org/orbisgis/view/table/TableEditor.java:942
+#: java/org/orbisgis/view/table/TableEditor.java:914
 #, java-format
 msgid "Table Editor of {0} {1}/{2}"
 msgstr "{0} {1}/{2}"
 
-#: java/org/orbisgis/view/table/TableEditor.java:946
+#: java/org/orbisgis/view/table/TableEditor.java:918
 #, java-format
 msgid "Table Editor of {0} (Filtered) {1}/{2}"
 msgstr "{0} (Filtré) {1}/{2}"
 
-#: java/org/orbisgis/view/table/TableEditor.java:1041
-#: java/org/orbisgis/view/table/TableEditor.java:1043
+#: java/org/orbisgis/view/table/TableEditor.java:1013
+#: java/org/orbisgis/view/table/TableEditor.java:1015
 msgid "Error while loading the table editor"
 msgstr "Erreur lors du chargement de la table"
 
-#: java/org/orbisgis/view/table/TableEditor.java:1050
+#: java/org/orbisgis/view/table/TableEditor.java:1022
 #, java-format
 msgid "Open the data source {0}"
 msgstr "Ouvrir la source de données {0}"
@@ -3034,7 +3059,7 @@ msgid ""
 "In a consequence of an unreachable data source {0},the associated data "
 "editor could not be recovered."
 msgstr ""
-"En conséquence d'une source de données inaccessible {0}, l'éditeur de "
+"En conséquence d''une source de données inaccessible {0}, l''éditeur de "
 "données associé n'a pas pu être récupéré."
 
 #: java/org/orbisgis/view/table/TableEditableElement.java:69
@@ -3162,6 +3187,12 @@ msgstr "Détermination de largeur optimale de colonne"
 #, fuzzy
 #~ msgid "Create a datasource from the selected rows"
 #~ msgstr "Chargement de la source de donnée"
+
+#~ msgid "Select an existing workspace or an empty folder."
+#~ msgstr "Sélectionner un workspace ou un dossier vide."
+
+#~ msgid "Default workspace"
+#~ msgstr "Espace de travail par défaut"
 
 #~ msgid "Could not copy the ProportionalLine."
 #~ msgstr "Impossible de copier la ligne proportionnelle"

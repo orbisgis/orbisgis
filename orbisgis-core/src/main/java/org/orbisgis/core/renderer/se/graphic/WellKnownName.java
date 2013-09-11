@@ -167,9 +167,13 @@ public enum WellKnownName implements MarkGraphicSource {
 
         switch (this) {
             case HALFCIRCLE:
-                return new Arc2D.Double(-x2, -y2, x, y, -90, -180, Arc2D.CHORD);
+                if(x2>=0){
+                    return new Arc2D.Double(-x2, -Math.abs(y2), Math.abs(x), Math.abs(y), -90, -180, Arc2D.CHORD);
+                } else {
+                    return new Arc2D.Double(x2, -Math.abs(y2), Math.abs(x), Math.abs(y), -90, 180, Arc2D.CHORD);
+                }
             case CIRCLE:
-                return new Ellipse2D.Double(-x2, -y2, x, y);
+                return new Ellipse2D.Double(-Math.abs(x2), -Math.abs(y2), Math.abs(x), Math.abs(y));
             case TRIANGLE: {
                 int h3 = (int) (y / 3);
                 Polygon polygon = new Polygon();
@@ -284,7 +288,7 @@ public enum WellKnownName implements MarkGraphicSource {
 				return xShape;
             case SQUARE:
             default:
-                return new Rectangle2D.Double(-x2, -y2, x, y);
+                return new Rectangle2D.Double(-Math.abs(x2), -Math.abs(y2), Math.abs(x), Math.abs(y));
         }
     }
 

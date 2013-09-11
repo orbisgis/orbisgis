@@ -419,13 +419,6 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
         Shape atShp = at.createTransformedShape(shp);
 
-        //If both of the fill and stroke are null, we must apply a default
-        //behaviour (as we can't draw a mark graphic without both of them...).
-        if (this.getFill() == null && this.getStroke() == null) {
-            this.setFill(new SolidFill());
-            this.setStroke(new PenStroke());
-        }
-
         //We give the raw shape to the drawHalo method in order not to lose the 
         //type of the original Shape - It will be easier to compute the halo.
         //We give the transformed shape too... This way we are sure we won't

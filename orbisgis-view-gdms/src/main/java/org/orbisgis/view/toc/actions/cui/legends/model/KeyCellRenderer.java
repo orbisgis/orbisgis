@@ -14,7 +14,6 @@ import java.util.Locale;
  */
 public class KeyCellRenderer extends TableLaFCellRenderer {
     private NumberFormat formatter;
-    private final MappedLegend symbolizer;
 
     /**
      * Set listener to L&F events
@@ -23,9 +22,8 @@ public class KeyCellRenderer extends TableLaFCellRenderer {
      * @param table Where the listener has to be installed
      * @param type  Default cell renderer for this columnClass
      */
-    public KeyCellRenderer(JTable table, Class<?> type, MappedLegend sym) {
+    public KeyCellRenderer(JTable table, Class<?> type) {
         super(table, type);
-        symbolizer = sym;
         formatter = NumberFormat.getInstance(Locale.getDefault());
         formatter.setGroupingUsed(false);
         formatter.setMaximumFractionDigits(TableModelInterval.DIGITS_NUMBER);
@@ -55,6 +53,7 @@ public class KeyCellRenderer extends TableLaFCellRenderer {
                 lab.setText(formatter.format(value));
             }
         }
+        lab.setHorizontalAlignment(SwingConstants.CENTER);
         return lab;
     }
 
