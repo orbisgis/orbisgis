@@ -7,7 +7,7 @@
         <name>legend</name>
         <url>http://www.orbisgis.org</url>
         <parent>
-                <artifactId>orbisgis-monomap</artifactId>
+                <artifactId>orbisgis-h2</artifactId>
                 <groupId>org.orbisgis</groupId>
                 <version>4.0.2-SNAPSHOT</version>
         </parent>

@@ -5,7 +5,7 @@
     <name>sqlconsole-parser</name>
     <description>SQL Parser for RSyntaxArea</description>
     <parent>
-        <artifactId>orbisgis-monomap</artifactId>
+        <artifactId>orbisgis-h2</artifactId>
         <groupId>org.orbisgis</groupId>
         <version>4.0.2-SNAPSHOT</version>
         <relativePath>../..</relativePath>

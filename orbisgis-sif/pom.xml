@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <modelVersion>4.0.0</modelVersion>
         <parent>
-                <artifactId>orbisgis-monomap</artifactId>
+                <artifactId>orbisgis-h2</artifactId>
                 <groupId>org.orbisgis</groupId>
                 <version>4.0.2-SNAPSHOT</version>
                 <relativePath>../</relativePath>
