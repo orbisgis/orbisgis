@@ -36,12 +36,12 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 /**
  * This class intends to store a description of a {@code Rule}. It is made of
- * lists of title and abstract, and of sets of keywords. This class is support
+ * lists of title and abstract, and of sets of keywords. This class is built
  * to manage internationalization. As there can be only one title and one
  * abstract per language, we use a {@code HashMap} to manage them. Keywords are
  * stored in a dedicated class.</p>
  * <p>According to 0GC 06-121r9, there shall be at most one title and/or
- * abstract per language. However, they may be many keywords associated to the
+ * abstract per language. However, there may be many keywords associated to the
  * same language in a {@code Keywords} instance. In a {@code Description}
  * instance, there shall be at most one {@code Keywords} instance associated
  * to an authority.</p>
