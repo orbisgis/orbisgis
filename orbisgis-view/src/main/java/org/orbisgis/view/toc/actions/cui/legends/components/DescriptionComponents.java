@@ -1,6 +1,8 @@
 package org.orbisgis.view.toc.actions.cui.legends.components;
 
 import org.orbisgis.core.renderer.se.common.Description;
+import org.orbisgis.sif.common.ContainerItem;
+import org.orbisgis.sif.components.WideComboBox;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Builds and offer a way to retrieve components that can be used together
@@ -48,10 +51,10 @@ public class DescriptionComponents {
      * Builds the components that will be used to edit the inner Description
      */
     private void buildDescriptionComponents(){
-        Set<Locale> locales = retrieveLocales();
+        TreeSet<ContainerItem<Locale>> locales = retrieveLocales();
         Locale suit = getSuitableLocale();
-        locCombo = new JComboBox(locales.toArray());
-        locCombo.setSelectedItem(suit);
+        locCombo = new WideComboBox(locales.toArray());
+        locCombo.setSelectedItem(new ContainerItem<Locale>(suit, suit.getDisplayName()));
         txtTitle = new JTextArea();
         txtAbstract = new JTextArea("");
         txtAbstract.setRows(6);
@@ -71,14 +74,14 @@ public class DescriptionComponents {
      * Description's abstract for the currently selected Locale looses focus.
      */
     public void onAbstractFocusLost(FocusEvent fe){
-        Locale loc = (Locale) locCombo.getSelectedItem();
+        ContainerItem<Locale> loc = (ContainerItem<Locale>) locCombo.getSelectedItem();
         String abs = txtAbstract.getText();
-        String current = description.getAbstract(loc);
+        String current = description.getAbstract(loc.getKey());
         boolean cond = current == null && (abs == null || abs.isEmpty());
         if(cond){
-            description.addAbstract(loc, "");
+            description.addAbstract(loc.getKey(), "");
         } else {
-            description.addAbstract(loc, abs);
+            description.addAbstract(loc.getKey(), abs);
         }
     }
 
@@ -87,14 +90,14 @@ public class DescriptionComponents {
      * Description's Title for the currently selected Locale looses focus.
      */
     public void onTitleFocusLost(FocusEvent fe){
-        Locale loc = (Locale) locCombo.getSelectedItem();
+        ContainerItem<Locale> loc = (ContainerItem<Locale>) locCombo.getSelectedItem();
         String abs = txtTitle.getText();
-        String current = description.getTitle(loc);
+        String current = description.getTitle(loc.getKey());
         boolean cond = current == null && (abs == null || abs.isEmpty());
         if(cond){
-            description.addTitle(loc, "");
+            description.addTitle(loc.getKey(), "");
         } else {
-            description.addTitle(loc, abs);
+            description.addTitle(loc.getKey(), abs);
         }
     }
 
@@ -103,7 +106,8 @@ public class DescriptionComponents {
      * combo box managing the Locale whose values are currently edited.
      */
     public void onSelectedItem(){
-        Locale loc = (Locale) locCombo.getSelectedItem();
+        ContainerItem<Locale> ci = (ContainerItem<Locale>) locCombo.getSelectedItem();
+        Locale loc = ci.getKey() ;
         setTitleAndAbstractTexts(loc);
     }
 
@@ -116,9 +120,6 @@ public class DescriptionComponents {
     private void setTitleAndAbstractTexts(Locale loc) {
         String abs = description.getAbstract(loc);
         String t = description.getTitle(loc);
-        System.out.println("Locale "+loc);
-        System.out.println("Abstract "+abs);
-        System.out.println("Title "+t);
         txtAbstract.setText(abs == null ? "" : abs);
         txtTitle.setText(t == null ? "" : t);
     }
@@ -187,13 +188,15 @@ public class DescriptionComponents {
      * itself. These sets are merged and returned.
      * @return The Set with all the Locale instances we want.
      */
-    private Set<Locale> retrieveLocales(){
-        HashSet<Locale> ret = new HashSet<Locale>();
+    private TreeSet<ContainerItem<Locale>> retrieveLocales(){
+        TreeSet<ContainerItem<Locale>> ret = new TreeSet<ContainerItem<Locale>>();
         Set<Locale> embeddedLocales = getEmbeddedLocales();
         Locale[] locales = Locale.getAvailableLocales();
-        ret.addAll(embeddedLocales);
         for(Locale l : locales){
-            ret.add(l);
+            ret.add(new ContainerItem<Locale>(l,l.getDisplayName()));
+        }
+        for(Locale l : embeddedLocales){
+            ret.add(new ContainerItem<Locale>(l,l.getDisplayName()));
         }
         return ret;
     }
