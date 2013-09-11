@@ -8,7 +8,9 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -35,8 +37,9 @@ public class DescriptionComponents {
     public static final String ABSTRACT = I18n.marktr("Abstract");
     private Description description;
     private JComboBox locCombo;
-    private JTextArea txtTitle;
+    private JTextField txtTitle;
     private JTextArea txtAbstract;
+    private JScrollPane abstractComponent;
 
     /**
      * Builds a new DescriptionComponents object associated to {@code description}.
@@ -55,11 +58,12 @@ public class DescriptionComponents {
         Locale suit = getSuitableLocale();
         locCombo = new WideComboBox(locales.toArray());
         locCombo.setSelectedItem(new ContainerItem<Locale>(suit, suit.getDisplayName()));
-        txtTitle = new JTextArea();
+        txtTitle = new JTextField("");
         txtAbstract = new JTextArea("");
         txtAbstract.setRows(6);
         txtAbstract.setLineWrap(true);
         txtAbstract.setWrapStyleWord(true);
+        abstractComponent = new JScrollPane(txtAbstract);
         setTitleAndAbstractTexts(suit);
         FocusListener titleListener = EventHandler.create(FocusListener.class, this, "onTitleFocusLost", "", "focusLost");
         FocusListener abstractListener = EventHandler.create(FocusListener.class, this, "onAbstractFocusLost", "", "focusLost");
@@ -152,7 +156,7 @@ public class DescriptionComponents {
         } else if(TITLE.equals(s)){
             return txtTitle;
         } else if(ABSTRACT.equals(s)){
-            return txtAbstract;
+            return abstractComponent;
         } else {
             return null;
         }
