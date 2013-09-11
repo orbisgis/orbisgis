@@ -44,8 +44,12 @@ public class CheckBoxChoice implements InputType {
         private JCheckBox jCheckBox;
 
         public CheckBoxChoice(boolean b) {
-                jCheckBox = new JCheckBox();
-                jCheckBox.setSelected(b);
+                this(b, "");
+        }
+
+        public CheckBoxChoice(boolean b, String text) {
+            jCheckBox = new JCheckBox(text);
+            jCheckBox.setSelected(b);
         }
 
         @Override
