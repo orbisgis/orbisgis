@@ -191,23 +191,4 @@ public class MultiInputPanel implements UIPanel {
                         return null;
                 }
         }
-
-        /**
-         *
-         * @param title of the group
-         * @param inputs name of the components that you want to group.
-         *
-         * Example :
-         *
-         * addInput("AddValue1", "Value to add", "1", new IntType());
-         * addInput("AddValue2", "Value to add", "1", new IntType());
-         *
-         * group("Values", new String[]{"AddValue1","AddValue2"});
-         *
-         */
-        public void group(String title, String... inputs) {
-                for (String inputName : inputs) {
-                        nameInput.get(inputName).setGroup(title);
-                }
-        }
 }

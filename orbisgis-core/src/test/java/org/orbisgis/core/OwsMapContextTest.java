@@ -30,14 +30,19 @@ package org.orbisgis.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Locale;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.OwsMapContext;
+import org.orbisgis.core.map.export.MapImageWriter;
 import org.orbisgis.core.renderer.se.common.Description;
+import org.orbisgis.progress.NullProgressMonitor;
 
 /**
  *
@@ -96,4 +101,17 @@ public class OwsMapContextTest extends AbstractTest  {
                 assertTrue(mc2.getDescription().getAbstract(locale).equals(mapAbstract));
                 mc2.close(null);
         }
+
+    @Test
+    public void exportToImage() throws Exception {
+        MapContext mc = new OwsMapContext();
+        mc.open(null);
+        ILayer layer = mc.createLayer(
+                getDataSourceFromPath("src/test/resources/data/landcover2000.shp"));
+        mc.getLayerModel().addLayer(layer);
+        MapImageWriter mapImageWriter = new MapImageWriter(mc.getLayerModel());
+        FileOutputStream out = new FileOutputStream(new File("target/mapExportTest.png"));
+        mapImageWriter.setFormat(MapImageWriter.Format.PNG);
+        mapImageWriter.write(out, new NullProgressMonitor());
+    }
 }

@@ -28,13 +28,11 @@
  */
 package org.orbisgis.sif.multiInputPanel;
 
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import net.miginfocom.swing.MigLayout;
+
+import java.awt.*;
 import java.util.List;
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 /**
  * {@code InputPanel} is intended to build a {@code JPanel} that will present
@@ -51,57 +49,24 @@ public class InputPanel extends JPanel {
          * @param inputs
          */
         public InputPanel(List<Input> inputs) {
-                JPanel margin = new JPanel();
-                GridLayout gl = new GridLayout(0, 2);
-                margin.setLayout(gl);
-                FlowLayout lfl = new FlowLayout();
-                lfl.setAlignment(FlowLayout.LEFT);
-                FlowLayout rfl = new FlowLayout();
-                rfl.setAlignment(FlowLayout.RIGHT);
-                String currentGroup = null;
-                JPanel currentPanel = null;
+                super(new MigLayout("wrap 2", "[align r][align l]"));
                 for (Input input : inputs) {
-                        JPanel labelPanel = new JPanel();
-                        labelPanel.setLayout(rfl);
-                        //We retrieve the descriptive text
-                        JLabel label = new JLabel(input.getText());
-                        labelPanel.add(label);
-                        //We retrieve the component where the user will set his inputs.
-                        JPanel compPanel = new JPanel();
-                        compPanel.setLayout(lfl);
-                        Component comp = input.getType().getComponent();
-                        if (comp != null) {
-                                compPanel.add(comp);
-                        }
-                        //If we have an init value, we set it.
+
+                        // If we have an init value, we set it.
                         String initialValue = input.getInitialValue();
                         if (initialValue != null) {
                                 input.getType().setValue(initialValue);
                         }
 
-                        String group = input.getGroup();
-                        if ((group == null) || !group.equals(currentGroup)) {
-                                //Here we have a basic mechanism to group inputs :
-                                //If the group value changes, we create a new Panel
-                                //with a dedicated border. We can't come back to
-                                //an existing group, apparently...
-                                gl.setColumns(1);
-                                if (currentPanel != null) {
-                                        margin.add(currentPanel);
-                                }
-                                currentGroup = group;
-                                currentPanel = new JPanel();
-                                currentPanel.setLayout(new GridLayout(0, 2));
-                                if (group != null) {
-                                        currentPanel.setBorder(BorderFactory.createTitledBorder(currentGroup));
-                                }
+                        // We retrieve the descriptive text
+                        add(new JLabel(input.getText()));
+                        // We retrieve the component where the user will set his inputs.
+                        Component comp = input.getType().getComponent();
+                        if (comp != null) {
+                            add(comp, "width 125!");
+                        } else {
+                            add(Box.createGlue());
                         }
-                        currentPanel.add(labelPanel);
-                        currentPanel.add(compPanel);
                 }
-                if (currentPanel != null) {
-                        margin.add(currentPanel);
-                }
-                this.add(margin);
         }
 }

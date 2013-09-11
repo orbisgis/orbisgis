@@ -63,4 +63,5 @@ public interface MapEditorAction extends ActionFactoryService<MapEditorExtension
     public static final String A_CLEAR_SELECTION = "A_CLEAR_SELECTION";
     public static final String A_DATA_SOURCE_FROM_SELECTION = "A_DATA_SOURCE_FROM_SELECTION";
     public static final String A_MAP_TREE = "A_MAP_TREE";
+    public static final String A_MAP_EXPORT_IMAGE = "A_MAP_EXPORT_IMAGE";
 }

@@ -56,6 +56,7 @@ public class SIFWizard extends AbstractOutsideFrame {
                 this.setLayout(new BorderLayout());
 
                 this.add(getWizardButtons(), BorderLayout.SOUTH);
+                add(errorLabel, BorderLayout.NORTH);
 
                 this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         }

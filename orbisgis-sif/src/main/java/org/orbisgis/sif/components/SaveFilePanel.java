@@ -29,20 +29,38 @@
 package org.orbisgis.sif.components;
 
 import java.io.File;
-import javax.swing.JFileChooser;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FileChooserUI;
 import javax.swing.plaf.basic.BasicFileChooserUI;
 import org.orbisgis.sif.UIFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 public class SaveFilePanel extends OpenFilePanel {
 
+        private static final I18n I18N = I18nFactory.getI18n(SaveFilePanel.class);
         private boolean fileMustNotExist;
+        private boolean confirmOverwrite = false;
 
         public SaveFilePanel(String id, String title) {
                 super(id, title);
                 getFileChooser().setDialogType(JFileChooser.SAVE_DIALOG);
                 setAcceptAllFileFilterUsed(false);
+        }
+
+        /**
+         * @return True if this dialog will ask a confirmation for overwriting file.
+         */
+        public boolean isConfirmOverwrite() {
+            return confirmOverwrite;
+        }
+
+        /**
+         * @param confirmOverwrite This dialog will ask a confirmation for overwriting file.
+         */
+        public void setConfirmOverwrite(boolean confirmOverwrite) {
+            this.confirmOverwrite = confirmOverwrite;
         }
 
         @Override
@@ -81,16 +99,19 @@ public class SaveFilePanel extends OpenFilePanel {
         public String validateInput() {
                 File file = getSelectedFile();
                 if (file == null) {
-                        return UIFactory.getI18n().tr("A file must be selected");
-                } else if (fileMustNotExist) {
-                        if (getSelectedFile().exists()) {
-                                return UIFactory.getI18n().tr("The file already exists");
-                        } else {
-                                return null;
-                        }
-                } else {
-                        return null;
+                        return I18N.tr("A file must be selected");
                 }
+                boolean exists = getSelectedFile().exists();
+                if (exists && fileMustNotExist) {
+                    return UIFactory.getI18n().tr("The file already exists");
+                } else if(exists && confirmOverwrite) {
+                    if(JOptionPane.showConfirmDialog(getComponent(),
+                            I18N.tr("The file {0} already exists do you confirm overwrite ?", getSelectedFile()) ,
+                            I18N.tr("Overwrite confirmation"), JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
+                        return I18N.tr("Overwrite canceled");
+                    }
+                }
+                return null;
         }
 
         @Override
