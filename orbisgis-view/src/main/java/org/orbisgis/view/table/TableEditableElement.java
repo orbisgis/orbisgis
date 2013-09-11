@@ -66,7 +66,7 @@ public class TableEditableElement extends EditableSource {
 
         @Override
         public String toString() {
-            return i18n.tr("Table \"{0}\"",getSourceName());
+            return i18n.tr("Table \"{0}\"", getTableReference());
         }
         /**
          * {@link EditableSource#EditableSource(org.gdms.data.DataSource)}

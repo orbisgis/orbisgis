@@ -27,10 +27,6 @@
  */
 package org.orbisgis.view.geocatalog;
 
-import com.vividsolutions.wms.Capabilities;
-import com.vividsolutions.wms.MapImageFormatChooser;
-import com.vividsolutions.wms.MapLayer;
-import com.vividsolutions.wms.WMService;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -40,12 +36,14 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.SaveFilePanel;
@@ -200,10 +198,13 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          * @param uriDrop Uniform Resource Identifier
          */
         public void onDropURI(List<URI> uriDrop) {
-                SourceManager src = getDataManager().getSourceManager();
+                DataManager src = getDataManager();
                 for (URI uri : uriDrop) {
-                        String sourceName = src.getUniqueName(FileUtils.getNameFromURI(uri));
-                        src.register(sourceName, uri);
+                        try {
+                            src.registerDataSource(uri);
+                        } catch (SQLException ex) {
+                            LOGGER.error("Cannot load dropped data source", ex);
+                        }
                 }
         }
 
@@ -221,7 +222,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          */
         private void registerFilterFactories() {
                 filterFactoryManager.registerFilterFactory(new NameContains());
-                filterFactoryManager.registerFilterFactory(new SourceTypeIs());
                 filterFactoryManager.registerFilterFactory(new NameNotContains());
         }
 
@@ -236,7 +236,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                         int itemUnderMouse = -1; //Item under the position of the mouse event
                         //Find the Item under the position of the mouse cursor
                         for (int i = 0; i < sourceListContent.getSize(); i++) {
-                                //If the coordinate of the cursor cover the cell bouding box
+                                //If the coordinate of the cursor cover the cell bounding box
                                 if (sourceList.getCellBounds(i, i).contains(e.getPoint())) {
                                         itemUnderMouse = i;
                                         break;
@@ -345,6 +345,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         public void onMenuRemoveSource() {
                 SourceManager sm = getDataManager().getSourceManager();
                 String[] res = getSelectedSources();
+                //TODO show confirmation dialog
                 for (String resource : res) {
                         try {
                                 sm.remove(resource);
