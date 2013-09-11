@@ -46,7 +46,7 @@ import org.orbisgis.core.renderer.se.label.StyledText;
  * the list of keywords contained in the {@code Keywords} instance.</p>
  * <p>Note that
  * the authority is defined only with the code space (returned by the {@link
- * Keywords#getSpace() } method). The URI is not stored here. As it is used to
+ * Keywords#getSpace } method). The URI is not stored here. As it is used to
  * distinguish {@code Keywords} instances, this would duplicate data.
  * @author Alexis Guéganno
  */

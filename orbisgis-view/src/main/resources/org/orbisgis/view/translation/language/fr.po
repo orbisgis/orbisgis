@@ -2,192 +2,65 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-23 16:37+0100\n"
-"PO-Revision-Date: 2013-08-23 16:47+0100\n"
-"Last-Translator: Adam Gouge <adam.gouge@ec-nantes.fr>\n"
+"POT-Creation-Date: 2013-09-11 14:36+0100\n"
+"PO-Revision-Date: 2013-09-11 14:40+0100\n"
+"Last-Translator: Alexis Guéganno <alexis.gueganno@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 1.5.7\n"
+"X-Generator: Poedit 1.5.4\n"
 "X-Poedit-KeywordsList: tr;trc;trnc;marktr;trn\n"
 "X-Poedit-Basepath: ../../../../../..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: java\n"
 
-#: java/org/orbisgis/view/output/OutputManager.java:115
-#: java/org/orbisgis/view/table/filters/FieldsContainsFilterFactory.java:103
-msgid "All"
-msgstr "Tout"
+#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:112
+msgid "Save documents"
+msgstr "Sauver les documents"
 
-#: java/org/orbisgis/view/output/OutputManager.java:138
-msgid "Errors"
-msgstr "Erreurs"
+#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:130
+msgid "&Save"
+msgstr "&Sauver"
 
-#: java/org/orbisgis/view/output/OutputManager.java:160
-msgid "Infos"
-msgstr "Infos"
-
-#: java/org/orbisgis/view/output/OutputManager.java:177
-msgid "Warnings"
-msgstr "Avertissements"
-
-#: java/org/orbisgis/view/output/OutputManager.java:193
-msgid "Debug"
-msgstr "Debug"
-
-#: java/org/orbisgis/view/output/OutputPanel.java:92
-msgid "&Copy"
-msgstr "&Copier"
-
-#: java/org/orbisgis/view/output/OutputPanel.java:97
-msgid "Clea&r"
-msgstr "Nettoye&r"
-
-#: java/org/orbisgis/view/output/OutputPanel.java:201
-msgid "Cannot show the log message"
-msgstr "Impossible d'afficher le message de log"
-
-#: java/org/orbisgis/view/output/MainOutputPanel.java:63
-msgid "Output"
-msgstr "Sortie"
-
-#: java/org/orbisgis/view/output/MainOutputPanel.java:68
-msgid "Clear all"
-msgstr "Effacer tout"
-
-#: java/org/orbisgis/view/output/MainOutputPanel.java:69
-msgid "Clear all log panels"
-msgstr "Effacer tous les logs"
-
-#: java/org/orbisgis/view/main/Core.java:139
-msgid "Loading GDMS.."
-msgstr "Chargement de GDMS ..."
-
-#: java/org/orbisgis/view/main/Core.java:143
-msgid "Contains view folders path"
-msgstr "Contient les chemins liés à l'interface graphique"
-
-#: java/org/orbisgis/view/main/Core.java:145
-msgid "Register GUI Sql functions.."
-msgstr ""
-
-#: java/org/orbisgis/view/main/Core.java:149
-msgid "Load the plugin framework.."
-msgstr "Chargement du gestionnaire de plugins"
-
-#: java/org/orbisgis/view/main/Core.java:166
-msgid "Loading of plugins is aborted"
-msgstr "Le chargement des plugins a été annulé"
-
-#: java/org/orbisgis/view/main/Core.java:237
-#, fuzzy
-msgid "Error while loading dialogs informations."
-msgstr "Erreur lors du chargement de la table"
-
-#: java/org/orbisgis/view/main/Core.java:311
+#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:132
 msgid ""
-"Execute tasks in background processes, showing progress bars. Gives access "
-"to the job queue"
+"Save the selected documents, and close this dialog if there is no more "
+"modifed documents"
 msgstr ""
-"Exécuter la tâche en arrière-plan, afficher la barre de progression. Donne "
-"accès à la file d'attente des processus"
+"Sauver les documents sélectionnés, et fermer cette fenêtre s'il n'y a plus "
+"de documents modifiés."
 
-#: java/org/orbisgis/view/main/Core.java:331
-msgid "Use this instance to open an editable element (map,data source..)"
-msgstr ""
-"Utiliser cette instance pour ouvrir un document (carte, source de "
-"donnée, ...)"
+#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:138
+msgid "Save &All"
+msgstr "Sauver &tout"
 
-#: java/org/orbisgis/view/main/Core.java:361
-msgid "Loading the main window"
-msgstr "Chargement de la fenêtre principale"
+#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:141
+msgid "Save all documents and close this dialog"
+msgstr "Sauver tous les documents et fermer cette fenêtre"
 
-#: java/org/orbisgis/view/main/Core.java:365
-msgid "Loading docking system and frames"
-msgstr ""
+#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:145
+msgid "Save &None"
+msgstr "Ne r&ien sauvegarder"
 
-#: java/org/orbisgis/view/main/Core.java:393
-msgid "Restore the former layout.."
-msgstr "Restauration de la disposition des éléments"
+#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:148
+msgid "Discard all changes and close this dialog"
+msgstr "Annuler toutes les modifications et fermer cette boîte de dialogue"
 
-#: java/org/orbisgis/view/main/Core.java:422
-#: java/org/orbisgis/view/main/Core.java:424
-#: java/org/orbisgis/view/main/Core.java:429
-#: java/org/orbisgis/view/docking/DockingManagerImpl.java:297
-msgid "Unable to save the docking layout."
-msgstr "Impossible de sauvegarder l'interface"
+#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:152
+msgid "&Cancel"
+msgstr "&Annuler"
 
-#: java/org/orbisgis/view/main/Core.java:550
-#, fuzzy
-msgid "Error while saving dialogs informations."
-msgstr "Erreur lors du chargement de la table"
+#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:153
+msgid "Do nothing and lose nothing"
+msgstr "Ne rien faire et ne rien perdre"
 
-#: java/org/orbisgis/view/main/Main.java:76
-msgid "OrbisGIS needs at least a java 1.6+"
-msgstr "OrbisGIS exige l'installation de java 1.6+"
-
-#: java/org/orbisgis/view/main/frames/MainFrameStatusBar.java:118
-msgid "Switch to another workspace"
-msgstr "Basculer vers un nouvel espace de travail"
-
-#: java/org/orbisgis/view/main/frames/MainFrame.java:70
-#, fuzzy, java-format
-msgid "OrbisGIS version {0} {1} {2}"
-msgstr "OrbisGIS version {0} La Rochelle {1}"
-
-#: java/org/orbisgis/view/main/frames/MainFrame.java:121
-msgid "&File"
-msgstr "&Fichier"
-
-#: java/org/orbisgis/view/main/frames/MainFrame.java:122
-msgid "&Exit"
-msgstr "&Quitter"
-
-#: java/org/orbisgis/view/main/frames/MainFrame.java:126
-msgid "&Tools"
-msgstr "&Outils"
-
-#: java/org/orbisgis/view/main/frames/MainFrame.java:127
-msgid "&Configuration"
-msgstr "&Configuration"
-
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:80
-msgid "Choose the workspace folder"
-msgstr "<html>Choisir le dossier d'espace de<br>travail</html>"
-
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:86
-msgid "Choose a previous OrbisGIS workspace or create a new one"
-msgstr "Choisir ou créer un espace de travail"
-
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:94
-msgid "Set as default?"
-msgstr "Espace de travail par défaut ?"
-
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:96
-msgid ""
-"Setting this workspace as default will allow you to skip this<br>dialog next "
-"time"
-msgstr ""
-"Cochez cette case si vous souhaitez que cet espace de travail<br>s'ouvre de "
-"façon automatique au prochain démarrage."
-
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:111
-msgid "Workspace Manager"
-msgstr "Gestionnaire d'espace de travail"
-
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:124
-msgid "Problem updating the workspace. "
-msgstr "Problème lors de la mise à jour de l'espace de travail"
-
-#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:141
+#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:253
 #, java-format
-msgid ""
-"The workspace folder version is invalid (!=OrbisGIS {0}), or the folder is "
-"not empty"
-msgstr ""
+msgid "The document {0} cannot be saved due to the following error {1}"
+msgstr "Le document {0} ne peut être sauvé à cause de l''erreur suivante {1}"
 
 #: java/org/orbisgis/view/toc/TocTransferHandler.java:121
 #, fuzzy
@@ -204,17 +77,27 @@ msgstr "Problème lors de l'ajout de la nouvelle couche"
 msgid "Layer:{0} DataSource :({1})"
 msgstr "{0} ({1})"
 
+#: java/org/orbisgis/view/toc/TocAbstractRenderer.java:105
+#, java-format
+msgid "Unable to find appropriate icon for typeCode {0}"
+msgstr "Incapable de trouver l’icône approprié pour le code de type {0}"
+
+#: java/org/orbisgis/view/toc/TocAbstractRenderer.java:118
+#, fuzzy
+msgid "Error while drawing the Toc tree"
+msgstr "Erreur pendant le dessin de l'objet"
+
 #: java/org/orbisgis/view/toc/Toc.java:137
 msgid "Toc"
 msgstr "Toc"
 
 #: java/org/orbisgis/view/toc/Toc.java:147
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:192
 #: java/org/orbisgis/view/map/toolbar/ActionSave.java:56
 #: java/org/orbisgis/view/beanshell/BshConsolePanel.java:242
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:192
+#: java/org/orbisgis/view/table/ActionSave.java:55
 #: java/org/orbisgis/view/geocatalog/Catalog.java:582
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:148
-#: java/org/orbisgis/view/table/ActionSave.java:55
 msgid "Save"
 msgstr "Sauver"
 
@@ -455,19 +338,45 @@ msgstr "Impossible d'ajouter la couche vers la destination"
 msgid "Load the data source droped into the toc."
 msgstr "Chargement de la source de donnée"
 
-#: java/org/orbisgis/view/toc/TocAbstractRenderer.java:105
-#, java-format
-msgid "Unable to find appropriate icon for typeCode {0}"
-msgstr "Incapable de trouver l’icône approprié pour le code de type {0}"
-
-#: java/org/orbisgis/view/toc/TocAbstractRenderer.java:118
-#, fuzzy
-msgid "Error while drawing the Toc tree"
-msgstr "Erreur pendant le dessin de l'objet"
-
 #: java/org/orbisgis/view/toc/TocTreeNodeLayer.java:169
 msgid "Cannot change the layer name"
 msgstr "Impossible de changer le nom de la couche"
+
+#: java/org/orbisgis/view/toc/actions/cui/LegendUITOCPanel.java:120
+#: java/org/orbisgis/view/toc/actions/cui/LegendUIController.java:102
+msgid "Area Symbolizer"
+msgstr "Symbole surfacique"
+
+#: java/org/orbisgis/view/toc/actions/cui/LegendUITOCPanel.java:122
+#: java/org/orbisgis/view/toc/actions/cui/LegendUIController.java:105
+msgid "Line Symbolizer"
+msgstr "Symbole linéaire"
+
+#: java/org/orbisgis/view/toc/actions/cui/LegendUITOCPanel.java:124
+#: java/org/orbisgis/view/toc/actions/cui/LegendUIController.java:108
+msgid "Point Symbolizer"
+msgstr "Symbole ponctuel"
+
+#: java/org/orbisgis/view/toc/actions/cui/LegendUITOCPanel.java:126
+#: java/org/orbisgis/view/toc/actions/cui/LegendUIController.java:111
+msgid "Text Symbolizer"
+msgstr "Symbole textuel"
+
+#: java/org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:253
+msgid "Couldn't find file"
+msgstr "Le ficher n'a pas été trouvé"
+
+#: java/org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:267
+msgid "Select Legend"
+msgstr "Sélectionner une légende"
+
+#: java/org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:273
+msgid "You must select a legend."
+msgstr "Vous devez sélectionner au moins une légende"
+
+#: java/org/orbisgis/view/toc/actions/cui/LegendUIMainPanel.java:170
+msgid "Advanced Style Editor"
+msgstr "Éditeur de style avancé"
 
 #: java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:188
 msgid "Add or select a legend."
@@ -482,26 +391,6 @@ msgstr "Éditeur de style simple - {0}"
 msgid "You must create at least one legend"
 msgstr "Vous devez créer au moins une légende"
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendUIController.java:102
-#: java/org/orbisgis/view/toc/actions/cui/LegendUITOCPanel.java:120
-msgid "Area Symbolizer"
-msgstr "Symbole surfacique"
-
-#: java/org/orbisgis/view/toc/actions/cui/LegendUIController.java:105
-#: java/org/orbisgis/view/toc/actions/cui/LegendUITOCPanel.java:122
-msgid "Line Symbolizer"
-msgstr "Symbole linéaire"
-
-#: java/org/orbisgis/view/toc/actions/cui/LegendUIController.java:108
-#: java/org/orbisgis/view/toc/actions/cui/LegendUITOCPanel.java:124
-msgid "Point Symbolizer"
-msgstr "Symbole ponctuel"
-
-#: java/org/orbisgis/view/toc/actions/cui/LegendUIController.java:111
-#: java/org/orbisgis/view/toc/actions/cui/LegendUITOCPanel.java:126
-msgid "Text Symbolizer"
-msgstr "Symbole textuel"
-
 #: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:322
 msgid "Up"
 msgstr "Haut"
@@ -511,17 +400,17 @@ msgid "Down"
 msgstr "Bas"
 
 #: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:338
-#: java/org/orbisgis/view/toc/actions/cui/legends/panels/TablePanel.java:169
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/TablePanel.java:168
 #: java/org/orbisgis/view/geocatalog/Catalog.java:558
 #: java/org/orbisgis/view/components/gdms/ConstraintTableAction.java:194
 msgid "Add"
 msgstr "Ajouter"
 
 #: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:347
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteMap.java:157
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeMapCatalogServer.java:184
-#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:123
 #: java/org/orbisgis/view/map/toolbar/ActionDelete.java:65
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeMapCatalogServer.java:184
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteMap.java:157
+#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:123
 #: java/org/orbisgis/view/components/gdms/ConstraintTableAction.java:214
 #: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:236
 msgid "Delete"
@@ -543,207 +432,6 @@ msgstr "Nom de la règle :"
 #: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:457
 msgid "Rule name cannot be null or empty."
 msgstr "Le nom de règle ne peut pas être null ou vide"
-
-#: java/org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:253
-msgid "Couldn't find file"
-msgstr "Le ficher n'a pas été trouvé"
-
-#: java/org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:267
-msgid "Select Legend"
-msgstr "Sélectionner une légende"
-
-#: java/org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:273
-msgid "You must select a legend."
-msgstr "Vous devez sélectionner au moins une légende"
-
-#: java/org/orbisgis/view/toc/actions/cui/LegendUIMainPanel.java:170
-msgid "Advanced Style Editor"
-msgstr "Éditeur de style avancé"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractTableAnalysis.java:80
-msgid "Enable border"
-msgstr "Activer le contour"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractTableAnalysis.java:81
-msgid "Classification settings"
-msgstr "Configuration de la classification"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRecodedPoint.java:178
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRecodedArea.java:188
-msgid "You must use recognized RecodedArea instances inthis panel."
-msgstr ""
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlCategorizedPoint.java:171
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlCategorizedArea.java:169
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlCategorizedLine.java:166
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRecodedLine.java:170
-msgid "You must use recognized RecodedLine instances inthis panel."
-msgstr ""
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlUniqueLineSE.java:51
-msgid "Line settings"
-msgstr "Configuration du contour"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlStyle.java:74
-msgid "Style settings"
-msgstr "Configuration du style"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlStyle.java:76
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:96
-msgid "Title"
-msgstr "Titre"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:109
-msgid "Interval classification"
-msgstr "Classification par intervalle"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:123
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:325
-msgid "The application has ended unexpectedly"
-msgstr "L'application a fermé de manière inattendue"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:137
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:202
-msgid "Create"
-msgstr "Créer"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:146
-msgid "Method"
-msgstr "Méthode"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:148
-msgid "Classes"
-msgstr "Classes"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:160
-msgid "Color scheme:"
-msgstr "Palette de couleurs :"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:151
-msgid "Can't build the analysis with an accurate comparator."
-msgstr "Aucun comparateur valable n'a pu être utilisé."
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:182
-msgid "Use the fallback color"
-msgstr "Couleur par défaut"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:186
-msgid "Use a color scheme:"
-msgstr "<html>Palette de couleurs :<html>"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:231
-msgid "Unique value classification"
-msgstr "Classification par valeur unique"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:304
-msgid "Retrieving classes"
-msgstr "Extraction des valeurs uniques"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:382
-msgid "Continue ?"
-msgstr "Continuer ?"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:395
-msgid "<html><p>The analysis seems to generate more than "
-msgstr "<html><p>L'analyse semble générer plus de"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:397
-msgid ""
-" different values...</p><p>Are you sure you want to continue ?</p></html>"
-msgstr ""
-" valeurs uniques.</p><p>Êtes-vous sûr de vouloir continuer ?</p></html>"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:423
-msgid "Operation in progress..."
-msgstr "Opération en cours ..."
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlNonClassification.java:46
-msgid "Border settings"
-msgstr "Configuration du contour"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlNonClassification.java:47
-msgid "Fill settings"
-msgstr "Configuration du remplissage"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlNonClassification.java:48
-msgid "Mark settings"
-msgstr "Configuration du symbole"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:93
-msgid "Rule settings"
-msgstr "Configuration de la règle"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:105
-msgid "Description"
-msgstr "Description"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:130
-msgid "Min. scale"
-msgstr "Échelle min"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:136
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:153
-msgid "Current"
-msgstr "Courante"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:149
-msgid "Max. scale"
-msgstr "Échelle max"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:242
-msgid "Min. scale is not a valid number"
-msgstr "L'échelle minimale n'est pas un chiffre valide"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:251
-msgid "Max. scale is not a valid number"
-msgstr "L'échelle maximale n'est pas un chiffre valide"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlProportionalPointSE.java:177
-msgid "Stroke and fill settings"
-msgstr "Configuration de la ligne et du remplissage"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelUniqueValue.java:64
-#: java/org/orbisgis/view/components/gdms/ConstraintTableModel.java:114
-msgid "Value"
-msgstr "Valeur"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelUniqueValue.java:66
-#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelInterval.java:98
-#: java/org/orbisgis/view/toc/actions/cui/legends/panels/PreviewPanel.java:54
-msgid "Preview"
-msgstr "Aperçu"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelInterval.java:96
-msgid "Threshold"
-msgstr "Seuil"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelInterval.java:100
-msgid "Label"
-msgstr "Étiquette"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/panels/SettingsPanel.java:103
-msgid "General settings"
-msgstr "Paramètres généraux"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/panels/SettingsPanel.java:124
-msgid "Fallback symbol"
-msgstr "Symbole par défaut"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsOptionalPanel.java:76
-msgid "Enable"
-msgstr "Activer"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/panels/TablePanel.java:175
-msgid "Remove"
-msgstr "Supprimer"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ProportionalPointPanel.java:118
-msgid "Max. size"
-msgstr "Taille max"
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ProportionalPointPanel.java:121
-msgid "Min. size"
-msgstr "Taille min"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsPanel.java:49
 msgid "Opacity"
@@ -799,17 +487,202 @@ msgstr "Largeur max"
 msgid "Min width"
 msgstr "Largeur min"
 
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ProportionalPointPanel.java:118
+msgid "Max. size"
+msgstr "Taille max"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/ProportionalPointPanel.java:121
+msgid "Min. size"
+msgstr "Taille min"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/TablePanel.java:174
+msgid "Remove"
+msgstr "Supprimer"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/SettingsPanel.java:103
+msgid "General settings"
+msgstr "Paramètres généraux"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/SettingsPanel.java:124
+msgid "Fallback symbol"
+msgstr "Symbole par défaut"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/PreviewPanel.java:54
+#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelUniqueValue.java:66
+#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelInterval.java:99
+msgid "Preview"
+msgstr "Aperçu"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/panels/AbsOptionalPanel.java:76
+msgid "Enable"
+msgstr "Activer"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRecodedPoint.java:178
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRecodedArea.java:188
+msgid "You must use recognized RecodedArea instances inthis panel."
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlStyle.java:75
+msgid "Style settings"
+msgstr "Configuration du style"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlStyle.java:77
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:102
+msgid "Name"
+msgstr "Nom"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlCategorizedLine.java:166
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRecodedLine.java:170
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlCategorizedPoint.java:171
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlCategorizedArea.java:169
+msgid "You must use recognized RecodedLine instances inthis panel."
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlNonClassification.java:46
+msgid "Border settings"
+msgstr "Configuration du contour"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlNonClassification.java:47
+msgid "Fill settings"
+msgstr "Configuration du remplissage"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlNonClassification.java:48
+msgid "Mark settings"
+msgstr "Configuration du symbole"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:100
+msgid "Rule settings"
+msgstr "Configuration de la règle"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:123
+msgid "Min. scale"
+msgstr "Échelle min"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:129
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:146
+msgid "Current"
+msgstr "Courante"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:142
+msgid "Max. scale"
+msgstr "Échelle max"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:235
+msgid "Min. scale is not a valid number"
+msgstr "L'échelle minimale n'est pas un chiffre valide"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlRule.java:244
+msgid "Max. scale is not a valid number"
+msgstr "L'échelle maximale n'est pas un chiffre valide"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlUniqueLineSE.java:51
+msgid "Line settings"
+msgstr "Configuration du contour"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:151
+msgid "Can't build the analysis with an accurate comparator."
+msgstr "Aucun comparateur valable n'a pu être utilisé."
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:182
+msgid "Use the fallback color"
+msgstr "Couleur par défaut"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:186
+msgid "Use a color scheme:"
+msgstr "<html>Palette de couleurs :<html>"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:202
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:137
+msgid "Create"
+msgstr "Créer"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:231
+msgid "Unique value classification"
+msgstr "Classification par valeur unique"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:304
+msgid "Retrieving classes"
+msgstr "Extraction des valeurs uniques"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:325
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:123
+msgid "The application has ended unexpectedly"
+msgstr "L'application a fermé de manière inattendue"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:382
+msgid "Continue ?"
+msgstr "Continuer ?"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:395
+msgid "<html><p>The analysis seems to generate more than "
+msgstr "<html><p>L'analyse semble générer plus de"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:397
+msgid ""
+" different values...</p><p>Are you sure you want to continue ?</p></html>"
+msgstr ""
+" valeurs uniques.</p><p>Êtes-vous sûr de vouloir continuer ?</p></html>"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractUniqueValue.java:423
+msgid "Operation in progress..."
+msgstr "Opération en cours ..."
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractTableAnalysis.java:80
+msgid "Enable border"
+msgstr "Activer le contour"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractTableAnalysis.java:81
+msgid "Classification settings"
+msgstr "Configuration de la classification"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlProportionalPointSE.java:177
+msgid "Stroke and fill settings"
+msgstr "Configuration de la ligne et du remplissage"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:109
+msgid "Interval classification"
+msgstr "Classification par intervalle"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:146
+msgid "Method"
+msgstr "Méthode"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:148
+msgid "Classes"
+msgstr "Classes"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/ui/PnlAbstractCategorized.java:160
+msgid "Color scheme:"
+msgstr "Palette de couleurs :"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelUniqueValue.java:64
+#: java/org/orbisgis/view/components/gdms/ConstraintTableModel.java:114
+msgid "Value"
+msgstr "Valeur"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelInterval.java:97
+msgid "Threshold"
+msgstr "Seuil"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/model/TableModelInterval.java:101
+msgid "Label"
+msgstr "Étiquette"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/components/DescriptionComponents.java:35
+msgid "Locale"
+msgstr "Régionalisation"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/components/DescriptionComponents.java:36
+msgid "Title"
+msgstr "Titre"
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/components/DescriptionComponents.java:37
+msgid "Abstract"
+msgstr "Résumé"
+
 #: java/org/orbisgis/view/toc/actions/cui/legends/components/DashArrayField.java:77
 msgid "Could not validate your input."
 msgstr "Impossible de valider votre entrée."
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/components/ColorConfigurationPanel.java:118
-msgid "Gradient "
-msgstr "Dégradé de "
-
-#: java/org/orbisgis/view/toc/actions/cui/legends/components/ColorConfigurationPanel.java:121
-msgid " to "
-msgstr "à"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/components/OnVertexOnCentroidButtonGroup.java:56
 msgid "Vertex"
@@ -819,204 +692,77 @@ msgstr "Sommet"
 msgid "Centroid"
 msgstr "Centroïde"
 
+#: java/org/orbisgis/view/toc/actions/cui/legends/components/ColorConfigurationPanel.java:118
+msgid "Gradient "
+msgstr "Dégradé de "
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/components/ColorConfigurationPanel.java:121
+msgid " to "
+msgstr "à"
+
 #: java/org/orbisgis/view/toc/wrapper/RuleWrapper.java:252
 #, java-format
 msgid "Min scale greater than max scale in rule {0}."
 msgstr "L''échelle minimum ne peut pas excéder l''échelle maximum (règle {0})."
 
-#: java/org/orbisgis/view/sqlconsole/SQLConsoleFactory.java:71
-msgid "Handles all Metadata-related caching for the SQLLanguageSupport class"
+#: java/org/orbisgis/view/sql/MapContext_AddLayer.java:79
+#, fuzzy
+msgid "Cannot import the style"
+msgstr "Impossible de créer le fichier"
+
+#: java/org/orbisgis/view/sql/MapContext_AddLayer.java:81
+#, fuzzy
+msgid "Cannot add the layer to the mapcontext"
+msgstr "Impossible d'ajouter la couche vers la destination"
+
+#: java/org/orbisgis/view/sql/MapContext_AddLayer.java:94
+msgid ""
+"A function to add a layer based on a table name\n"
+"The second argument is optional. It permits to set a style to the layer."
 msgstr ""
 
-#: java/org/orbisgis/view/sqlconsole/SQLConsole.java:55
-msgid "SQL Console"
-msgstr "Console SQL"
+#: java/org/orbisgis/view/sql/MapContext_Share.java:74
+#, fuzzy
+msgid "The URL is not valid."
+msgstr "La géométrie n'est pas valide"
 
-#: java/org/orbisgis/view/sqlconsole/ui/SQLFunctionsPanel.java:88
+#: java/org/orbisgis/view/sql/MapContext_Share.java:93
+msgid ""
+"The workspace doesn't exist. Please contactthe administrator of the service."
+msgstr ""
+
+#: java/org/orbisgis/view/sql/MapContext_Share.java:99
+msgid "The URL is not valid or the service not available."
+msgstr ""
+
+#: java/org/orbisgis/view/sql/MapContext_Share.java:114
+msgid ""
+"A function to share the current mapcontext in the mapcatalog service\n"
+"The second permits to set the workspace name. If the workspace doesn't exist "
+"a message appears."
+msgstr ""
+
+#: java/org/orbisgis/view/sql/MapContext_ZoomTo.java:73
+#, fuzzy
+msgid "Cannot compute the full extent"
+msgstr "Impossible de réaliser le zoom étendu"
+
+#: java/org/orbisgis/view/sql/MapContext_ZoomTo.java:84
+msgid "Zoom to according a dataset"
+msgstr ""
+
+#: java/org/orbisgis/view/sql/MapContext_BBox.java:78
+msgid "Return the current mapcontext bounding box as a geometry"
+msgstr ""
+
+#: java/org/orbisgis/view/background/RunnableBackgroundJob.java:73
 #, java-format
-msgid "Functions count = {0}"
-msgstr "Nombre de fonctions = {0}"
+msgid "Fatal error on the job named {0}"
+msgstr "Erreur fatale lors du processus {0}"
 
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:134
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:217
-msgid "Execute"
-msgstr "Exécuter"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:135
-msgid "Run SQL statements"
-msgstr "Exécuter le traitement SQL"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:143
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:226
-msgid "Clear"
-msgstr "Effacer"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:144
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:227
-msgid "Erase the content of the editor"
-msgstr "Effacer le contenu de l''éditeur"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:152
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:250
-msgid "Search.."
-msgstr "Chercher..."
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:153
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:251
-msgid "Search text in the document"
-msgstr "Chercher du texte dans l'éditeur"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:163
-msgid "Quote"
-msgstr "Passer en texte"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:164
-msgid "Quote selected text"
-msgstr "Passer en texte la sélection"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:172
-msgid "Un Quote"
-msgstr "Enlever les guillemets"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:173
-msgid "Un Quote selected text"
-msgstr "Enlever les guillemets de la sélection"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:182
-msgid "Format"
-msgstr "Formater"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:183
-msgid "Format editor content"
-msgstr "Formater le contenu de l'éditeur"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:193
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:243
-msgid "Save the editor content into a file"
-msgstr "Sauver le contenu de l'éditeur dans un fichier"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:201
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:235
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:97
-msgid "Open"
-msgstr "Ouvrir"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:202
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:236
-msgid "Load a file in this editor"
-msgstr "Charger un fichier dans cet éditeur"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:209
-msgid "SQL list"
-msgstr "Liste SQL"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:210
-msgid "Show/Hide SQL function list"
-msgstr "Afficher/Cacher la liste des fonctions SQL"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:269
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:265
-msgid "Save script"
-msgstr "Sauver le script"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:270
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:293
-msgid "SQL script (*.sql)"
-msgstr "Script SQL (*.sql)"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:276
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:309
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:272
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:303
-msgid "IO error."
-msgstr "Erreur d'entrée/sortie."
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:279
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:275
-msgid "The file has been saved."
-msgstr "Le fichier a été sauvé."
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:292
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:286
-msgid "Open script"
-msgstr "Ouvrir un script"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:300
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:294
-msgid "Do you want to clear all before loading the file ?"
-msgstr "Voulez-vous tout effacer avant de charger le fichier ?"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:301
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:295
-msgid "Open file"
-msgstr "Ouvrir un fichier"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:348
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:193
-msgid "Do you want to clear the contents of the console?"
-msgstr "Voulez-vous effacer le contenu de la console ?"
-
-#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:349
-#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:194
-msgid "Clear script"
-msgstr "Effacer le script"
-
-#: java/org/orbisgis/view/sqlconsole/ui/functionFilters/NameFilterFactory.java:56
-#: java/org/orbisgis/view/geocatalog/filters/factories/NameContains.java:65
-msgid "Contains"
-msgstr "Contient"
-
-#: java/org/orbisgis/view/sqlconsole/codereformat/CodeReformator.java:128
-msgid "Reformat failed, normalised strings differ"
-msgstr "Échec du formatage automatique du code"
-
-#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:78
-msgid "Executing script"
-msgstr "Exécuter le script"
-
-#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:104
-msgid "Cannot parse script"
-msgstr "Ne peut pas analyser le script"
-
-#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:105
-msgid "Failed to parse the script."
-msgstr "Impossible d'analyser le script."
-
-#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:113
-#, java-format
-msgid "Running instruction {0}/{1} :"
-msgstr "Lancer l''instruction {0}/{1} :"
-
-#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:139
-#, java-format
-msgid "Impossible to create the layer:{0}"
-msgstr "Impossible de créer la couche :{0}"
-
-#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:184
-#, java-format
-msgid "Cannot create the DataSource:{0}"
-msgstr "Impossible de créer la source de données :{0}"
-
-#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:198
-msgid "Data access error:"
-msgstr "Erreur d'accès à la donnée"
-
-#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:200
-msgid "SQL Semantic Error"
-msgstr "Erreur sémantique SQL"
-
-#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:205
-#, java-format
-msgid "Execution time: {0}"
-msgstr "Temps d’exécution: {0}"
-
-#: java/org/orbisgis/view/map/MapTransferHandler.java:112
-msgid "Error while drop Editable"
-msgstr "Erreur pendant le \"glisser/déposer\" du document"
-
-#: java/org/orbisgis/view/map/MapTransferHandler.java:117
-msgid "The map editor accept only map and geometry data source."
-msgstr "La carte n'accepte que des source de donnée de type carte ou géométrie"
+#: java/org/orbisgis/view/background/Job.java:189
+msgid "Progressing..."
+msgstr ""
 
 #: java/org/orbisgis/view/map/MapStatusBar.java:96
 msgid "Change coordinate reference system"
@@ -1049,45 +795,6 @@ msgstr "Le format de l'échelle est 1:nombre"
 msgid "The only accepted value on nominator is 1"
 msgstr "La seule valeur de nominateur acceptée est 1"
 
-#: java/org/orbisgis/view/map/MapElement.java:103
-#: java/org/orbisgis/view/map/MapElement.java:105
-msgid ""
-"The saved map context cannot be read, starting with an empty map context."
-msgstr ""
-"Le contexte cartographique ne peut pas être lu. Démarrage avec une carte vide"
-
-#: java/org/orbisgis/view/map/MapElement.java:193
-msgid ""
-"Some layers use temporary data source, are you sure to save this map and "
-"loose layers with temporary data sources ?"
-msgstr ""
-
-#: java/org/orbisgis/view/map/MapElement.java:194
-msgid "Temporary layers data source"
-msgstr ""
-
-#: java/org/orbisgis/view/map/MapElement.java:202
-msgid ""
-"Some layers use modified data source, do you want to save also these "
-"modifications ?"
-msgstr ""
-
-#: java/org/orbisgis/view/map/MapElement.java:211
-msgid ""
-"Some layers data source modifications can not be saved, are you sure you "
-"want to continue ?"
-msgstr ""
-
-#: java/org/orbisgis/view/map/MapElement.java:247
-#: java/org/orbisgis/view/map/MapElement.java:249
-msgid "Unable to load the map context"
-msgstr "Incapable de charger le contexte cartographique"
-
-#: java/org/orbisgis/view/map/MapElement.java:324
-#, java-format
-msgid "MapContext - {0}"
-msgstr "Contexte cartographique -{0}"
-
 #: java/org/orbisgis/view/map/MapControl.java:181
 msgid "The MapEditor cannot listen to source modifications"
 msgstr ""
@@ -1100,6 +807,14 @@ msgstr "Dessin"
 #, java-format
 msgid "Tool error {0}"
 msgstr "Erreur d''outil {0}"
+
+#: java/org/orbisgis/view/map/MapTransferHandler.java:112
+msgid "Error while drop Editable"
+msgstr "Erreur pendant le \"glisser/déposer\" du document"
+
+#: java/org/orbisgis/view/map/MapTransferHandler.java:117
+msgid "The map editor accept only map and geometry data source."
+msgstr "La carte n'accepte que des source de donnée de type carte ou géométrie"
 
 #: java/org/orbisgis/view/map/MapEditor.java:161
 msgid "Map"
@@ -1195,324 +910,142 @@ msgstr ""
 msgid "Load the data source droped into the map editor."
 msgstr "Chargement de la source de donnée déposée dans l'éditeur de carte."
 
-#: java/org/orbisgis/view/map/tool/PointHandler.java:107
-#: java/org/orbisgis/view/map/tool/PointHandler.java:136
-#: java/org/orbisgis/view/map/tool/PolygonHandler.java:103
-#: java/org/orbisgis/view/map/tool/PolygonHandler.java:116
-#: java/org/orbisgis/view/map/tool/PolygonHandler.java:150
-#: java/org/orbisgis/view/map/tool/PolygonHandler.java:166
-msgid "The geometry is not valid"
-msgstr "La géométrie n'est pas valide"
+#: java/org/orbisgis/view/map/MapElement.java:103
+#: java/org/orbisgis/view/map/MapElement.java:105
+msgid ""
+"The saved map context cannot be read, starting with an empty map context."
+msgstr ""
+"Le contexte cartographique ne peut pas être lu. Démarrage avec une carte vide"
 
-#: java/org/orbisgis/view/map/tool/PointHandler.java:130
-msgid "Cannot remove a vertex from a point geometry"
-msgstr "Impossible de supprimer un sommet à une géométrie de type point"
+#: java/org/orbisgis/view/map/MapElement.java:193
+msgid ""
+"Some layers use temporary data source, are you sure to save this map and "
+"loose layers with temporary data sources ?"
+msgstr ""
 
-#: java/org/orbisgis/view/map/tool/MultiPolygonHandler.java:95
-#: java/org/orbisgis/view/map/tool/MultiPolygonHandler.java:122
+#: java/org/orbisgis/view/map/MapElement.java:194
+msgid "Temporary layers data source"
+msgstr ""
+
+#: java/org/orbisgis/view/map/MapElement.java:202
+msgid ""
+"Some layers use modified data source, do you want to save also these "
+"modifications ?"
+msgstr ""
+
+#: java/org/orbisgis/view/map/MapElement.java:211
+msgid ""
+"Some layers data source modifications can not be saved, are you sure you "
+"want to continue ?"
+msgstr ""
+
+#: java/org/orbisgis/view/map/MapElement.java:247
+#: java/org/orbisgis/view/map/MapElement.java:249
+msgid "Unable to load the map context"
+msgstr "Incapable de charger le contexte cartographique"
+
+#: java/org/orbisgis/view/map/MapElement.java:324
+#, java-format
+msgid "MapContext - {0}"
+msgstr "Contexte cartographique -{0}"
+
+#: java/org/orbisgis/view/map/tools/AbstractLineTool.java:78
+#: java/org/orbisgis/view/map/tools/AbstractMultilineTool.java:59
+#: java/org/orbisgis/view/map/tools/AbstractMultilineTool.java:101
+msgid "Lines must have at least two points"
+msgstr "Les lignes doivent avoir au moins deux points"
+
+#: java/org/orbisgis/view/map/tools/AbstractLineTool.java:83
+#: java/org/orbisgis/view/map/tools/AbstractLineTool.java:101
+msgid "Invalid line"
+msgstr "Ligne invalide"
+
+#: java/org/orbisgis/view/map/tools/VertexAdditionTool.java:140
+#: java/org/orbisgis/view/map/tools/generated/VertexAddition.java:182
+msgid "Add a new vertex"
+msgstr "Ajouter un sommet"
+
+#: java/org/orbisgis/view/map/tools/AbstractMultilineTool.java:68
+#: java/org/orbisgis/view/map/tools/AbstractMultilineTool.java:112
+#: java/org/orbisgis/view/map/tools/AbstractMultilineTool.java:156
+msgid "Invalid multiline"
+msgstr "Multi-ligne invalide"
+
+#: java/org/orbisgis/view/map/tools/AbstractSelectionTool.java:245
+msgid "Cannot modify the theme"
+msgstr "Impossible de modifier le thème"
+
+#: java/org/orbisgis/view/map/tools/AbstractSelectionTool.java:347
+#, java-format
+msgid "Cannot move {0}"
+msgstr "Impossible de bouger {0}"
+
+#: java/org/orbisgis/view/map/tools/ZoomInTool.java:125
+msgid "Zoom in"
+msgstr "Zoomer"
+
+#: java/org/orbisgis/view/map/tools/ZoomInTool.java:130
+msgid "Click on the map to zoom in"
+msgstr "Cliquer sur la carte pour zoomer"
+
+#: java/org/orbisgis/view/map/tools/PolygonTool.java:98
+#: java/org/orbisgis/view/map/tools/PolygonTool.java:103
+msgid "Draw a polygon"
+msgstr "Dessiner un polygone"
+
+#: java/org/orbisgis/view/map/tools/SplitLineByLineTool.java:70
+#, fuzzy
+msgid "Split line by line"
+msgstr "Découper la ligne"
+
+#: java/org/orbisgis/view/map/tools/SplitLineByLineTool.java:75
+msgid "Split a line by drawing a line"
+msgstr ""
+
+#: java/org/orbisgis/view/map/tools/SplitLineByLineTool.java:108
+#, fuzzy
+msgid "Cannot split the line"
+msgstr "Impossible découper la ligne"
+
+#: java/org/orbisgis/view/map/tools/AbstractPolygonTool.java:76
+#: java/org/orbisgis/view/map/tools/AbstractMultipolygonTool.java:76
+#: java/org/orbisgis/view/map/tools/AbstractMultipolygonTool.java:116
+msgid "Polygons must have more than two points"
+msgstr "Les polygones doivent avoir plus de deux points"
+
+#: java/org/orbisgis/view/map/tools/AbstractPolygonTool.java:87
+#: java/org/orbisgis/view/map/tools/AbstractPolygonTool.java:132
+msgid "Invalid polygon"
+msgstr "Polygone invalide"
+
+#: java/org/orbisgis/view/map/tools/PickCoordinatesPointTool.java:81
+#, fuzzy, java-format
+msgid "Coordinate : {0}"
+msgstr "Nombre de ligne : {0}\n"
+
+#: java/org/orbisgis/view/map/tools/PickCoordinatesPointTool.java:87
+#: java/org/orbisgis/view/map/tools/PickCoordinatesPointTool.java:92
+#, fuzzy
+msgid "Pick a point"
+msgstr "Dessiner un point"
+
 #: java/org/orbisgis/view/map/tools/AbstractMultipolygonTool.java:92
 #: java/org/orbisgis/view/map/tools/AbstractMultipolygonTool.java:124
 #: java/org/orbisgis/view/map/tools/AbstractMultipolygonTool.java:174
+#: java/org/orbisgis/view/map/tool/MultiPolygonHandler.java:95
+#: java/org/orbisgis/view/map/tool/MultiPolygonHandler.java:122
 msgid "Invalid multipolygon"
 msgstr "Multi-polygone invalide"
-
-#: java/org/orbisgis/view/map/tool/AbstractHandler.java:128
-msgid "Invalid geometry. Too few vertex"
-msgstr "Géométrie invalide. Trop peu de sommet"
-
-#: java/org/orbisgis/view/map/tool/ToolManager.java:194
-msgid "The ToolManager cannot listen to source modifications"
-msgstr "Le manager d'outil ne peut pas écouter les modifications de source"
-
-#: java/org/orbisgis/view/map/tool/ToolManager.java:415
-msgid "Error while drawing the feature, "
-msgstr "Erreur pendant le dessin de l'objet"
-
-#: java/org/orbisgis/view/map/tool/ToolManager.java:417
-#: java/org/orbisgis/view/map/tool/ToolManager.java:419
-msgid "Error while accessing data, "
-msgstr "Erreur pendant l'accès à la donnée"
-
-#: java/org/orbisgis/view/map/tool/ToolManager.java:520
-#, fuzzy
-msgid "The current tool is not enabled"
-msgstr "La géométrie n'est pas valide"
-
-#: java/org/orbisgis/view/map/tool/ToolManager.java:570
-msgid "Error in the tool."
-msgstr "Erreur dans l'outil"
-
-#: java/org/orbisgis/view/map/tool/ToolManager.java:676
-msgid "Cannot recalculate the handlers"
-msgstr "Impossible de calculer les gestionnaires"
-
-#: java/org/orbisgis/view/map/tool/MultipointHandler.java:96
-#: java/org/orbisgis/view/map/tool/MultipointHandler.java:112
-msgid "Invalid MultiPoint"
-msgstr "Multi-point invalide"
-
-#: java/org/orbisgis/view/map/tool/MultilineHandler.java:93
-#: java/org/orbisgis/view/map/tool/MultilineHandler.java:119
-msgid "Invalid MultiLineString"
-msgstr "Multi-ligne invalide"
-
-#: java/org/orbisgis/view/map/mapsManager/TransferableRemoteMap.java:102
-#, fuzzy
-msgid "Error while downloading the map content"
-msgstr "Erreur lors du chargement de la table"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeOwsMapContextFactory.java:73
-msgid "Enter the Map file name"
-msgstr "Entrer le nom du fichier de carte"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeOwsMapContextFactory.java:73
-msgid "MyMap"
-msgstr "MaCarte"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeOwsMapContextFactory.java:81
-msgid "The specified file name already exist"
-msgstr "Le nom de fichier spécifié existe déjà"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeOwsMapContextFactory.java:88
-msgid "The map creation has failed"
-msgstr "La création de la carte a échoué"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeOwsMapContextFactory.java:97
-msgid "New empty map"
-msgstr "Nouvelle carte vide"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeOwsMapContextFactory.java:99
-msgid "Create a new OWS Map in this folder"
-msgstr "Créer une nouvelle carte OWS dans ce dossier"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteMap.java:128
-#, fuzzy
-msgid "Are you sure you want to replace the remote map context ?"
-msgstr ""
-"Êtes-vous sûr de vouloir supprimer définitivement les fichiers sélectionnés ?"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteMap.java:128
-msgid "Overwrite map context confirmation"
-msgstr ""
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteMap.java:159
-#, fuzzy
-msgid "Remove this map on the server"
-msgstr "Supprimer ce style à partir de la couche associée."
-
-#: java/org/orbisgis/view/map/mapsManager/MapsManager.java:96
-msgid "Local"
-msgstr "Local"
-
-#: java/org/orbisgis/view/map/mapsManager/MapsManager.java:103
-msgid "Maps manager"
-msgstr ""
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeMapCatalogServer.java:180
-#, fuzzy
-msgid "Edit the URL"
-msgstr "Entrer l'URL du serveur"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeMapCatalogServer.java:186
-#, fuzzy
-msgid "Remove this server"
-msgstr "Supprimer la source"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeMapCatalogServer.java:193
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeWorkspace.java:155
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:216
-msgid "Update"
-msgstr "Mettre à jour"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeMapCatalogServer.java:195
-#, fuzzy
-msgid "Download the server content"
-msgstr "Recharger la connexion au serveur"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapElement.java:117
-msgid "Open the map"
-msgstr "Ouvrir la carte"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeWorkspace.java:157
-#, fuzzy
-msgid "Download the workspace content"
-msgstr "Télécharger l'espace de travail de {0}"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteRoot.java:70
-msgid "Remote"
-msgstr "Distant"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteRoot.java:122
-#, java-format
-msgid "Cannot load map catalog server {0}"
-msgstr "Impossible de charger le serveur de catalogue de carte {0}"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteRoot.java:157
-msgid "Enter the server URL"
-msgstr "Entrer l'URL du serveur"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteRoot.java:163
-#, java-format
-msgid "You type an incorrect URL {0}"
-msgstr "Vous entrez une URL incorrecte {0}"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteRoot.java:170
-msgid "Add Map Catalog server"
-msgstr "Ajouter un serveur de catalogue de carte"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteRoot.java:172
-msgid "Add a new remote map catalog"
-msgstr "Ajouter un nouveau catalogue de carte distant"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeNodeBusy.java:57
-msgid "Downloading.."
-msgstr "Téléchargement ..."
-
-#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:90
-#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:93
-msgid "Map creation failed"
-msgstr "Création de la carte échouée"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:102
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:172
-msgid "Are you sure you want to delete permanently the selected files ?"
-msgstr ""
-"Êtes-vous sûr de vouloir supprimer définitivement les fichiers sélectionnés ?"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:103
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:173
-msgid "Remove the files"
-msgstr "Supprimer les fichiers"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:108
-msgid "Cannot remove the file"
-msgstr "Impossible de supprimer le fichier"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:111
-#, java-format
-msgid "Cannot remove the file {0}"
-msgstr "Impossible de supprimer le fichier {0}"
-
-#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:125
-msgid "Remove permanently the map"
-msgstr "Supprimer définitivement la carte"
-
-#: java/org/orbisgis/view/map/mapsManager/jobs/DeleteRemoteMapContext.java:73
-#, fuzzy
-msgid "The map cannot be removed"
-msgstr "Le mot de passe ne peut pas être vide."
-
-#: java/org/orbisgis/view/map/mapsManager/jobs/DeleteRemoteMapContext.java:79
-#, fuzzy
-msgid "Delete the remote map context"
-msgstr "Supprimer la couche du contexte cartographique"
-
-#: java/org/orbisgis/view/map/mapsManager/jobs/DownloadRemoteMapContext.java:72
-#, fuzzy
-msgid "Cannot download the server's contexts of {0}"
-msgstr "Télécharger l'espace de travail de {0}"
-
-#: java/org/orbisgis/view/map/mapsManager/jobs/DownloadRemoteMapContext.java:82
-#, fuzzy, java-format
-msgid "Download the context of {0}"
-msgstr "Télécharger l'espace de travail de {0}"
-
-#: java/org/orbisgis/view/map/mapsManager/jobs/UploadMapContext.java:96
-#, fuzzy
-msgid "Uploading the map context.."
-msgstr "Ouvrir le contexte cartographique"
-
-#: java/org/orbisgis/view/map/mapsManager/jobs/ReadStoredMap.java:82
-msgid "Parse maps title and description"
-msgstr "Analyser le titre et la description des cartes"
-
-#: java/org/orbisgis/view/map/mapsManager/jobs/DownloadWorkspaces.java:72
-#, fuzzy
-msgid "Cannot download the server's workspaces of {0}"
-msgstr "Télécharger l'espace de travail de {0}"
-
-#: java/org/orbisgis/view/map/mapsManager/jobs/DownloadWorkspaces.java:82
-#, java-format
-msgid "Download the workspaces of {0}"
-msgstr "Télécharger l''espace de travail de {0}"
-
-#: java/org/orbisgis/view/map/toolbar/ActionSave.java:57
-msgid "Save unsaved modifications of this layer"
-msgstr ""
-
-#: java/org/orbisgis/view/map/toolbar/ActionCancel.java:60
-#: java/org/orbisgis/view/map/tools/CompassTool.java:283
-#: java/org/orbisgis/view/map/tools/generated/Polygon.java:41
-#: java/org/orbisgis/view/map/tools/generated/Multiline.java:44
-#: java/org/orbisgis/view/map/tools/generated/Multiline.java:46
-#: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:44
-#: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:46
-#: java/org/orbisgis/view/map/tools/generated/Multipoint.java:41
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:101
-#: java/org/orbisgis/view/table/ActionCancel.java:56
-msgid "Cancel"
-msgstr "Annuler"
-
-#: java/org/orbisgis/view/map/toolbar/ActionCancel.java:61
-msgid "Cancel all unsaved modifications of this layer"
-msgstr ""
-
-#: java/org/orbisgis/view/map/toolbar/ActionStop.java:58
-msgid "Stop"
-msgstr ""
-
-#: java/org/orbisgis/view/map/toolbar/ActionStop.java:59
-msgid "Close the drawing toolbar"
-msgstr ""
-
-#: java/org/orbisgis/view/map/toolbar/ActionUndo.java:57
-#: java/org/orbisgis/view/table/ActionUndo.java:46
-msgid "Undo"
-msgstr ""
-
-#: java/org/orbisgis/view/map/toolbar/ActionUndo.java:58
-#: java/org/orbisgis/view/table/ActionUndo.java:48
-msgid "Undo the last modification"
-msgstr ""
-
-#: java/org/orbisgis/view/map/toolbar/ActionRedo.java:58
-#: java/org/orbisgis/view/table/ActionRedo.java:45
-msgid "Redo"
-msgstr ""
-
-#: java/org/orbisgis/view/map/toolbar/ActionRedo.java:59
-#: java/org/orbisgis/view/table/ActionRedo.java:46
-msgid "Redo the last modification"
-msgstr ""
-
-#: java/org/orbisgis/view/map/toolbar/ActionDelete.java:66
-#: java/org/orbisgis/view/map/toolbar/ActionDelete.java:129
-#, fuzzy
-msgid "Delete selected geometries"
-msgstr "Désélectionner les géométries"
-
-#: java/org/orbisgis/view/map/toolbar/ActionDelete.java:128
-#, fuzzy, java-format
-msgid "Are you sure to remove the {0} selected geometries ?"
-msgstr "Zoomer sur les géométries sélectionnées"
 
 #: java/org/orbisgis/view/map/tools/PointTool.java:114
 #: java/org/orbisgis/view/map/tools/PointTool.java:119
 msgid "Draw a point"
 msgstr "Dessiner un point"
 
-#: java/org/orbisgis/view/map/tools/MesurePolygonTool.java:54
-#, java-format
-msgid "Area : {0} Perimeter : {1}"
-msgstr "Aire : {0} Périmètre : {1}"
-
-#: java/org/orbisgis/view/map/tools/MesurePolygonTool.java:87
-msgid "Mesure area"
-msgstr "Calculer l'aire"
-
-#: java/org/orbisgis/view/map/tools/MesurePolygonTool.java:92
-msgid "This tool mesure the area"
-msgstr "Cet outil calcule l'aire"
+#: java/org/orbisgis/view/map/tools/InfoTool.java:197
+#: java/org/orbisgis/view/map/tools/InfoTool.java:202
+msgid "Get feature attributes"
+msgstr "Obtenir les attributs"
 
 #: java/org/orbisgis/view/map/tools/FencePolygonTool.java:101
 msgid "Cannot use fence tool"
@@ -1533,175 +1066,6 @@ msgstr "Impossible de créer le fence"
 msgid "Draw a fence"
 msgstr "Dessiner un fence"
 
-#: java/org/orbisgis/view/map/tools/MoveVertexTool.java:111
-#, java-format
-msgid "Cannot update the geometry {0}"
-msgstr "Impossible de mettre à jour la géométrie {0}"
-
-#: java/org/orbisgis/view/map/tools/MoveVertexTool.java:117
-#: java/org/orbisgis/view/map/tools/MoveVertexTool.java:122
-msgid "Move vertex"
-msgstr "Déplacer le sommet"
-
-#: java/org/orbisgis/view/map/tools/AbstractLineTool.java:78
-#: java/org/orbisgis/view/map/tools/AbstractMultilineTool.java:59
-#: java/org/orbisgis/view/map/tools/AbstractMultilineTool.java:101
-msgid "Lines must have at least two points"
-msgstr "Les lignes doivent avoir au moins deux points"
-
-#: java/org/orbisgis/view/map/tools/AbstractLineTool.java:83
-#: java/org/orbisgis/view/map/tools/AbstractLineTool.java:101
-msgid "Invalid line"
-msgstr "Ligne invalide"
-
-#: java/org/orbisgis/view/map/tools/ZoomInTool.java:125
-msgid "Zoom in"
-msgstr "Zoomer"
-
-#: java/org/orbisgis/view/map/tools/ZoomInTool.java:130
-msgid "Click on the map to zoom in"
-msgstr "Cliquer sur la carte pour zoomer"
-
-#: java/org/orbisgis/view/map/tools/AbstractSelectionTool.java:245
-msgid "Cannot modify the theme"
-msgstr "Impossible de modifier le thème"
-
-#: java/org/orbisgis/view/map/tools/AbstractSelectionTool.java:347
-#, java-format
-msgid "Cannot move {0}"
-msgstr "Impossible de bouger {0}"
-
-#: java/org/orbisgis/view/map/tools/SplitPolygonTool.java:82
-msgid "Split polygon"
-msgstr "Découper un polygone"
-
-#: java/org/orbisgis/view/map/tools/SplitPolygonTool.java:87
-msgid "Split a polygon by drawing a line"
-msgstr ""
-
-#: java/org/orbisgis/view/map/tools/SplitPolygonTool.java:135
-msgid "Cannot split the polygon"
-msgstr "Impossible de découper un polygone"
-
-#: java/org/orbisgis/view/map/tools/MesureLineTool.java:68
-#, java-format
-msgid "Distance : {0}"
-msgstr "Distance : {0}"
-
-#: java/org/orbisgis/view/map/tools/MesureLineTool.java:90
-msgid "This tool mesure the length on the map"
-msgstr "Cet outil mesure la longueur"
-
-#: java/org/orbisgis/view/map/tools/MesureLineTool.java:94
-msgid "Mesure length"
-msgstr "Mesurer la longueur"
-
-#: java/org/orbisgis/view/map/tools/VertexAdditionTool.java:140
-#: java/org/orbisgis/view/map/tools/generated/VertexAddition.java:182
-msgid "Add a new vertex"
-msgstr "Ajouter un sommet"
-
-#: java/org/orbisgis/view/map/tools/AbstractMultilineTool.java:68
-#: java/org/orbisgis/view/map/tools/AbstractMultilineTool.java:112
-#: java/org/orbisgis/view/map/tools/AbstractMultilineTool.java:156
-msgid "Invalid multiline"
-msgstr "Multi-ligne invalide"
-
-#: java/org/orbisgis/view/map/tools/PanTool.java:128
-msgid "Pan"
-msgstr "Déplacement"
-
-#: java/org/orbisgis/view/map/tools/PanTool.java:133
-msgid "The Pan Tool"
-msgstr "Outil de déplacement"
-
-#: java/org/orbisgis/view/map/tools/VertexDeletionTool.java:108
-msgid "Cannot delete vertex"
-msgstr "Impossible de supprimer le sommet"
-
-#: java/org/orbisgis/view/map/tools/VertexDeletionTool.java:137
-#: java/org/orbisgis/view/map/tools/generated/VertexDeletion.java:157
-msgid "Delete vertex"
-msgstr "Supprimer le sommet"
-
-#: java/org/orbisgis/view/map/tools/PickCoordinatesPointTool.java:81
-#, fuzzy, java-format
-msgid "Coordinate : {0}"
-msgstr "Nombre de ligne : {0}\n"
-
-#: java/org/orbisgis/view/map/tools/PickCoordinatesPointTool.java:87
-#: java/org/orbisgis/view/map/tools/PickCoordinatesPointTool.java:92
-#, fuzzy
-msgid "Pick a point"
-msgstr "Dessiner un point"
-
-#: java/org/orbisgis/view/map/tools/AbstractPolygonTool.java:76
-#: java/org/orbisgis/view/map/tools/AbstractMultipolygonTool.java:76
-#: java/org/orbisgis/view/map/tools/AbstractMultipolygonTool.java:116
-msgid "Polygons must have more than two points"
-msgstr "Les polygones doivent avoir plus de deux points"
-
-#: java/org/orbisgis/view/map/tools/AbstractPolygonTool.java:87
-#: java/org/orbisgis/view/map/tools/AbstractPolygonTool.java:132
-msgid "Invalid polygon"
-msgstr "Polygone invalide"
-
-#: java/org/orbisgis/view/map/tools/SelectionTool.java:109
-msgid "Select a geometry"
-msgstr "Sélectionner une géométrie"
-
-#: java/org/orbisgis/view/map/tools/AutoCompletePolygonTool.java:100
-msgid "Cannot Autocomplete the polygon"
-msgstr "Impossible d'auto-compléter le polygone"
-
-#: java/org/orbisgis/view/map/tools/AutoCompletePolygonTool.java:181
-msgid "Autocomplete a polygon"
-msgstr "Auto-compléter un polygone"
-
-#: java/org/orbisgis/view/map/tools/ZoomOutTool.java:135
-msgid "Zoom out"
-msgstr "Dézoomer"
-
-#: java/org/orbisgis/view/map/tools/ZoomOutTool.java:140
-msgid "This tool zoom out on click"
-msgstr "Cet outil dézoome avec un clic de la souris"
-
-#: java/org/orbisgis/view/map/tools/MultipointTool.java:88
-#: java/org/orbisgis/view/map/tools/generated/Multipoint.java:207
-msgid "Draw a multipoint"
-msgstr "Dessiner un multi-point"
-
-#: java/org/orbisgis/view/map/tools/CutPolygonTool.java:89
-msgid "Cannot cut the polygon"
-msgstr "Impossible de découper le polygone"
-
-#: java/org/orbisgis/view/map/tools/CutPolygonTool.java:117
-msgid "Cut a polygon"
-msgstr "Découper un polygone"
-
-#: java/org/orbisgis/view/map/tools/CutPolygonTool.java:122
-msgid "Select a polygon then draw another polygon to subtract the first one"
-msgstr ""
-
-#: java/org/orbisgis/view/map/tools/MultilineTool.java:91
-#: java/org/orbisgis/view/map/tools/generated/Multiline.java:268
-msgid "Draw a multiline"
-msgstr "Dessiner une multi-ligne"
-
-#: java/org/orbisgis/view/map/tools/SplitLineByLineTool.java:70
-#, fuzzy
-msgid "Split line by line"
-msgstr "Découper la ligne"
-
-#: java/org/orbisgis/view/map/tools/SplitLineByLineTool.java:75
-msgid "Split a line by drawing a line"
-msgstr ""
-
-#: java/org/orbisgis/view/map/tools/SplitLineByLineTool.java:108
-#, fuzzy
-msgid "Cannot split the line"
-msgstr "Impossible découper la ligne"
-
 #: java/org/orbisgis/view/map/tools/SplitLineByPointTool.java:105
 msgid "Cannot split line"
 msgstr "Impossible découper la ligne"
@@ -1714,10 +1078,54 @@ msgstr "Découper la ligne"
 msgid "Split a line by selecting a vertex"
 msgstr ""
 
-#: java/org/orbisgis/view/map/tools/PolygonTool.java:98
-#: java/org/orbisgis/view/map/tools/PolygonTool.java:103
-msgid "Draw a polygon"
-msgstr "Dessiner un polygone"
+#: java/org/orbisgis/view/map/tools/MultipolygonTool.java:89
+#, fuzzy
+msgid "Draw multi-polygon"
+msgstr "Dessiner un multi-polygone"
+
+#: java/org/orbisgis/view/map/tools/MoveVertexTool.java:111
+#, java-format
+msgid "Cannot update the geometry {0}"
+msgstr "Impossible de mettre à jour la géométrie {0}"
+
+#: java/org/orbisgis/view/map/tools/MoveVertexTool.java:117
+#: java/org/orbisgis/view/map/tools/MoveVertexTool.java:122
+msgid "Move vertex"
+msgstr "Déplacer le sommet"
+
+#: java/org/orbisgis/view/map/tools/MesurePolygonTool.java:54
+#, java-format
+msgid "Area : {0} Perimeter : {1}"
+msgstr "Aire : {0} Périmètre : {1}"
+
+#: java/org/orbisgis/view/map/tools/MesurePolygonTool.java:87
+msgid "Mesure area"
+msgstr "Calculer l'aire"
+
+#: java/org/orbisgis/view/map/tools/MesurePolygonTool.java:92
+msgid "This tool mesure the area"
+msgstr "Cet outil calcule l'aire"
+
+#: java/org/orbisgis/view/map/tools/MultilineTool.java:91
+#: java/org/orbisgis/view/map/tools/generated/Multiline.java:268
+msgid "Draw a multiline"
+msgstr "Dessiner une multi-ligne"
+
+#: java/org/orbisgis/view/map/tools/ZoomOutTool.java:135
+msgid "Zoom out"
+msgstr "Dézoomer"
+
+#: java/org/orbisgis/view/map/tools/ZoomOutTool.java:140
+msgid "This tool zoom out on click"
+msgstr "Cet outil dézoome avec un clic de la souris"
+
+#: java/org/orbisgis/view/map/tools/PanTool.java:128
+msgid "Pan"
+msgstr "Déplacement"
+
+#: java/org/orbisgis/view/map/tools/PanTool.java:133
+msgid "The Pan Tool"
+msgstr "Outil de déplacement"
 
 #: java/org/orbisgis/view/map/tools/CompassTool.java:67
 #, java-format
@@ -1732,10 +1140,27 @@ msgstr "Mesure d'angle"
 msgid "This tool mesure the angle"
 msgstr "Cet outil mesure l'angle"
 
-#: java/org/orbisgis/view/map/tools/InfoTool.java:197
-#: java/org/orbisgis/view/map/tools/InfoTool.java:202
-msgid "Get feature attributes"
-msgstr "Obtenir les attributs"
+#: java/org/orbisgis/view/map/tools/CompassTool.java:283
+#: java/org/orbisgis/view/map/tools/generated/Multipoint.java:41
+#: java/org/orbisgis/view/map/tools/generated/Multiline.java:44
+#: java/org/orbisgis/view/map/tools/generated/Multiline.java:46
+#: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:44
+#: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:46
+#: java/org/orbisgis/view/map/tools/generated/Polygon.java:41
+#: java/org/orbisgis/view/map/toolbar/ActionCancel.java:60
+#: java/org/orbisgis/view/table/ActionCancel.java:56
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:101
+msgid "Cancel"
+msgstr "Annuler"
+
+#: java/org/orbisgis/view/map/tools/VertexDeletionTool.java:108
+msgid "Cannot delete vertex"
+msgstr "Impossible de supprimer le sommet"
+
+#: java/org/orbisgis/view/map/tools/VertexDeletionTool.java:137
+#: java/org/orbisgis/view/map/tools/generated/VertexDeletion.java:157
+msgid "Delete vertex"
+msgstr "Supprimer le sommet"
 
 #: java/org/orbisgis/view/map/tools/LineTool.java:116
 msgid "Cannot insert linestring"
@@ -1746,133 +1171,59 @@ msgstr "Impossible d'insérer un ligne"
 msgid "Draw a line"
 msgstr "Dessiner une ligne"
 
-#: java/org/orbisgis/view/map/tools/MultipolygonTool.java:89
-#, fuzzy
-msgid "Draw multi-polygon"
-msgstr "Dessiner un multi-polygone"
+#: java/org/orbisgis/view/map/tools/AutoCompletePolygonTool.java:100
+msgid "Cannot Autocomplete the polygon"
+msgstr "Impossible d'auto-compléter le polygone"
 
-#: java/org/orbisgis/view/map/tools/generated/VertexDeletion.java:146
-msgid "Click a selected vertex to remove it"
-msgstr "Cliquer sur un sommet pour le supprimer"
+#: java/org/orbisgis/view/map/tools/AutoCompletePolygonTool.java:181
+msgid "Autocomplete a polygon"
+msgstr "Auto-compléter un polygone"
 
-#: java/org/orbisgis/view/map/tools/generated/Polygon.java:41
-#: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:46
-msgid "Terminate polygon"
-msgstr "Terminer le polygone"
+#: java/org/orbisgis/view/map/tools/CutPolygonTool.java:89
+msgid "Cannot cut the polygon"
+msgstr "Impossible de découper le polygone"
 
-#: java/org/orbisgis/view/map/tools/generated/Polygon.java:190
-#: java/org/orbisgis/view/map/tools/generated/Line.java:194
-msgid "Select the first point"
-msgstr "Sélectionner le premier point"
+#: java/org/orbisgis/view/map/tools/CutPolygonTool.java:117
+msgid "Cut a polygon"
+msgstr "Découper un polygone"
 
-#: java/org/orbisgis/view/map/tools/generated/Polygon.java:192
-msgid "Select the next point or [T]erminate polygon"
-msgstr "Sélection le point suivant ou [T]erminer le polygone"
-
-#: java/org/orbisgis/view/map/tools/generated/Multiline.java:44
-#: java/org/orbisgis/view/map/tools/generated/Multiline.java:46
-msgid "Terminate multiline"
-msgstr "Terminer la multi-ligne"
-
-#: java/org/orbisgis/view/map/tools/generated/Multiline.java:46
-#: java/org/orbisgis/view/map/tools/generated/Line.java:46
-msgid "Terminate line"
-msgstr "Terminer la ligne"
-
-#: java/org/orbisgis/view/map/tools/generated/Multiline.java:253
-msgid "Select the first point terminate multiline"
-msgstr "Sélectionner le premier point / terminer la multi-ligne"
-
-#: java/org/orbisgis/view/map/tools/generated/Multiline.java:255
-msgid "Select the next point terminate line terminate multiline"
+#: java/org/orbisgis/view/map/tools/CutPolygonTool.java:122
+msgid "Select a polygon then draw another polygon to subtract the first one"
 msgstr ""
-"Sélectionner le point suivant / terminer la ligne / terminer la multi-ligne"
 
-#: java/org/orbisgis/view/map/tools/generated/ZoomOut.java:146
-msgid "Select the center of the zoom"
-msgstr "Sélectionner le centre du zoom"
+#: java/org/orbisgis/view/map/tools/MesureLineTool.java:68
+#, java-format
+msgid "Distance : {0}"
+msgstr "Distance : {0}"
 
-#: java/org/orbisgis/view/map/tools/generated/Selection.java:338
-msgid "Select a geometry or draw a selection rectangle"
-msgstr "Sélectionner une géométrie ou bien dessiner un rectangle de sélection"
+#: java/org/orbisgis/view/map/tools/MesureLineTool.java:90
+msgid "This tool mesure the length on the map"
+msgstr "Cet outil mesure la longueur"
 
-#: java/org/orbisgis/view/map/tools/generated/Selection.java:340
-#: java/org/orbisgis/view/map/tools/generated/ZoomIn.java:174
-msgid "Select the second point"
-msgstr "Sélectionner le second point"
+#: java/org/orbisgis/view/map/tools/MesureLineTool.java:94
+msgid "Mesure length"
+msgstr "Mesurer la longueur"
 
-#: java/org/orbisgis/view/map/tools/generated/Selection.java:342
-msgid "Click a handler to move it or select another geometry"
-msgstr "Maintenir le clic pour bouger ou bien sélectionner une autre géométrie"
+#: java/org/orbisgis/view/map/tools/MultipointTool.java:88
+#: java/org/orbisgis/view/map/tools/generated/Multipoint.java:207
+msgid "Draw a multipoint"
+msgstr "Dessiner un multi-point"
 
-#: java/org/orbisgis/view/map/tools/generated/Selection.java:344
-msgid "Place the handler in its new position"
-msgstr "Placer le curseur vers sa nouvelle position"
+#: java/org/orbisgis/view/map/tools/SplitPolygonTool.java:82
+msgid "Split polygon"
+msgstr "Découper un polygone"
 
-#: java/org/orbisgis/view/map/tools/generated/Selection.java:351
-msgid "Can't find the status of this tool."
-msgstr "Impossible de trouver le statut de cet outil"
-
-#: java/org/orbisgis/view/map/tools/generated/Selection.java:357
-msgid "Select a feature"
-msgstr "Sélectionner un objet"
-
-#: java/org/orbisgis/view/map/tools/generated/Line.java:45
-msgid "Cancel (transition)"
-msgstr "Annuler"
-
-#: java/org/orbisgis/view/map/tools/generated/Line.java:196
-msgid "Select the next point or terminate line"
-msgstr "Sélectionner le point suivant, ou terminer la ligne"
-
-#: java/org/orbisgis/view/map/tools/generated/VertexAddition.java:171
-msgid "Click on an edge to insert a vertex"
-msgstr "Cliquer sur un arc pour ajouter un sommet"
-
-#: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:44
-#: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:46
-msgid "Terminate multipolygon"
-msgstr "Terminer le multi-polygone"
-
-#: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:265
-msgid "Select the first point/terminate multipolygon"
-msgstr "Sélectionner le premier point / terminer le multi-polygone"
-
-#: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:267
-msgid "Select the next point/terminate polygon/terminate multipolygon"
+#: java/org/orbisgis/view/map/tools/SplitPolygonTool.java:87
+msgid "Split a polygon by drawing a line"
 msgstr ""
-"Sélectionner le point suivant/ terminer le polygone / terminer le multi-"
-"polygone"
 
-#: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:280
-msgid "Draw a multipolygon"
-msgstr "Dessiner un multi-polygone"
+#: java/org/orbisgis/view/map/tools/SplitPolygonTool.java:135
+msgid "Cannot split the polygon"
+msgstr "Impossible de découper un polygone"
 
-#: java/org/orbisgis/view/map/tools/generated/Drag.java:163
-msgid "Select start point"
-msgstr "Sélectionner le point de départ"
-
-#: java/org/orbisgis/view/map/tools/generated/Drag.java:165
-msgid "Drag to destination point"
-msgstr "Déplacer vers le point de destination"
-
-#: java/org/orbisgis/view/map/tools/generated/ZoomIn.java:172
-msgid "Select the first point of the zooming rectangle"
-msgstr "Sélectionnez le premier point du rectangle de zoom"
-
-#: java/org/orbisgis/view/map/tools/generated/Point.java:150
-#: java/org/orbisgis/view/map/tools/generated/Multipoint.java:192
-msgid "Select the point location"
-msgstr "Sélectionner la localisation du point"
-
-#: java/org/orbisgis/view/map/tools/generated/Multipoint.java:41
-msgid "Terminate multipoint"
-msgstr "Terminer le multi-point"
-
-#: java/org/orbisgis/view/map/tools/generated/Multipoint.java:194
-msgid "Select the next point location or terminate multipoint"
-msgstr ""
-"Sélectionner la localisation du prochain point ou terminer le multi-point"
+#: java/org/orbisgis/view/map/tools/SelectionTool.java:109
+msgid "Select a geometry"
+msgstr "Sélectionner une géométrie"
 
 #: java/org/orbisgis/view/map/tools/raster/WandTool.java:62
 #, fuzzy
@@ -1933,6 +1284,409 @@ msgstr "Impossible de déduire la couche correspondant au type raster"
 msgid "Compute a watershed"
 msgstr "Calculer le bassin versant"
 
+#: java/org/orbisgis/view/map/tools/generated/Multipoint.java:41
+msgid "Terminate multipoint"
+msgstr "Terminer le multi-point"
+
+#: java/org/orbisgis/view/map/tools/generated/Multipoint.java:192
+#: java/org/orbisgis/view/map/tools/generated/Point.java:150
+msgid "Select the point location"
+msgstr "Sélectionner la localisation du point"
+
+#: java/org/orbisgis/view/map/tools/generated/Multipoint.java:194
+msgid "Select the next point location or terminate multipoint"
+msgstr ""
+"Sélectionner la localisation du prochain point ou terminer le multi-point"
+
+#: java/org/orbisgis/view/map/tools/generated/ZoomOut.java:146
+msgid "Select the center of the zoom"
+msgstr "Sélectionner le centre du zoom"
+
+#: java/org/orbisgis/view/map/tools/generated/Multiline.java:44
+#: java/org/orbisgis/view/map/tools/generated/Multiline.java:46
+msgid "Terminate multiline"
+msgstr "Terminer la multi-ligne"
+
+#: java/org/orbisgis/view/map/tools/generated/Multiline.java:46
+#: java/org/orbisgis/view/map/tools/generated/Line.java:46
+msgid "Terminate line"
+msgstr "Terminer la ligne"
+
+#: java/org/orbisgis/view/map/tools/generated/Multiline.java:253
+msgid "Select the first point terminate multiline"
+msgstr "Sélectionner le premier point / terminer la multi-ligne"
+
+#: java/org/orbisgis/view/map/tools/generated/Multiline.java:255
+msgid "Select the next point terminate line terminate multiline"
+msgstr ""
+"Sélectionner le point suivant / terminer la ligne / terminer la multi-ligne"
+
+#: java/org/orbisgis/view/map/tools/generated/ZoomIn.java:172
+msgid "Select the first point of the zooming rectangle"
+msgstr "Sélectionnez le premier point du rectangle de zoom"
+
+#: java/org/orbisgis/view/map/tools/generated/ZoomIn.java:174
+#: java/org/orbisgis/view/map/tools/generated/Selection.java:340
+msgid "Select the second point"
+msgstr "Sélectionner le second point"
+
+#: java/org/orbisgis/view/map/tools/generated/Drag.java:163
+msgid "Select start point"
+msgstr "Sélectionner le point de départ"
+
+#: java/org/orbisgis/view/map/tools/generated/Drag.java:165
+msgid "Drag to destination point"
+msgstr "Déplacer vers le point de destination"
+
+#: java/org/orbisgis/view/map/tools/generated/VertexDeletion.java:146
+msgid "Click a selected vertex to remove it"
+msgstr "Cliquer sur un sommet pour le supprimer"
+
+#: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:44
+#: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:46
+msgid "Terminate multipolygon"
+msgstr "Terminer le multi-polygone"
+
+#: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:46
+#: java/org/orbisgis/view/map/tools/generated/Polygon.java:41
+msgid "Terminate polygon"
+msgstr "Terminer le polygone"
+
+#: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:265
+msgid "Select the first point/terminate multipolygon"
+msgstr "Sélectionner le premier point / terminer le multi-polygone"
+
+#: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:267
+msgid "Select the next point/terminate polygon/terminate multipolygon"
+msgstr ""
+"Sélectionner le point suivant/ terminer le polygone / terminer le multi-"
+"polygone"
+
+#: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:280
+msgid "Draw a multipolygon"
+msgstr "Dessiner un multi-polygone"
+
+#: java/org/orbisgis/view/map/tools/generated/VertexAddition.java:171
+msgid "Click on an edge to insert a vertex"
+msgstr "Cliquer sur un arc pour ajouter un sommet"
+
+#: java/org/orbisgis/view/map/tools/generated/Polygon.java:190
+#: java/org/orbisgis/view/map/tools/generated/Line.java:194
+msgid "Select the first point"
+msgstr "Sélectionner le premier point"
+
+#: java/org/orbisgis/view/map/tools/generated/Polygon.java:192
+msgid "Select the next point or [T]erminate polygon"
+msgstr "Sélection le point suivant ou [T]erminer le polygone"
+
+#: java/org/orbisgis/view/map/tools/generated/Selection.java:338
+msgid "Select a geometry or draw a selection rectangle"
+msgstr "Sélectionner une géométrie ou bien dessiner un rectangle de sélection"
+
+#: java/org/orbisgis/view/map/tools/generated/Selection.java:342
+msgid "Click a handler to move it or select another geometry"
+msgstr "Maintenir le clic pour bouger ou bien sélectionner une autre géométrie"
+
+#: java/org/orbisgis/view/map/tools/generated/Selection.java:344
+msgid "Place the handler in its new position"
+msgstr "Placer le curseur vers sa nouvelle position"
+
+#: java/org/orbisgis/view/map/tools/generated/Selection.java:351
+msgid "Can't find the status of this tool."
+msgstr "Impossible de trouver le statut de cet outil"
+
+#: java/org/orbisgis/view/map/tools/generated/Selection.java:357
+msgid "Select a feature"
+msgstr "Sélectionner un objet"
+
+#: java/org/orbisgis/view/map/tools/generated/Line.java:45
+msgid "Cancel (transition)"
+msgstr "Annuler"
+
+#: java/org/orbisgis/view/map/tools/generated/Line.java:196
+msgid "Select the next point or terminate line"
+msgstr "Sélectionner le point suivant, ou terminer la ligne"
+
+#: java/org/orbisgis/view/map/tool/MultipointHandler.java:96
+#: java/org/orbisgis/view/map/tool/MultipointHandler.java:112
+msgid "Invalid MultiPoint"
+msgstr "Multi-point invalide"
+
+#: java/org/orbisgis/view/map/tool/ToolManager.java:194
+msgid "The ToolManager cannot listen to source modifications"
+msgstr "Le manager d'outil ne peut pas écouter les modifications de source"
+
+#: java/org/orbisgis/view/map/tool/ToolManager.java:415
+msgid "Error while drawing the feature, "
+msgstr "Erreur pendant le dessin de l'objet"
+
+#: java/org/orbisgis/view/map/tool/ToolManager.java:417
+#: java/org/orbisgis/view/map/tool/ToolManager.java:419
+msgid "Error while accessing data, "
+msgstr "Erreur pendant l'accès à la donnée"
+
+#: java/org/orbisgis/view/map/tool/ToolManager.java:520
+#, fuzzy
+msgid "The current tool is not enabled"
+msgstr "La géométrie n'est pas valide"
+
+#: java/org/orbisgis/view/map/tool/ToolManager.java:570
+msgid "Error in the tool."
+msgstr "Erreur dans l'outil"
+
+#: java/org/orbisgis/view/map/tool/ToolManager.java:676
+msgid "Cannot recalculate the handlers"
+msgstr "Impossible de calculer les gestionnaires"
+
+#: java/org/orbisgis/view/map/tool/AbstractHandler.java:128
+msgid "Invalid geometry. Too few vertex"
+msgstr "Géométrie invalide. Trop peu de sommet"
+
+#: java/org/orbisgis/view/map/tool/PolygonHandler.java:103
+#: java/org/orbisgis/view/map/tool/PolygonHandler.java:116
+#: java/org/orbisgis/view/map/tool/PolygonHandler.java:150
+#: java/org/orbisgis/view/map/tool/PolygonHandler.java:166
+#: java/org/orbisgis/view/map/tool/PointHandler.java:107
+#: java/org/orbisgis/view/map/tool/PointHandler.java:136
+msgid "The geometry is not valid"
+msgstr "La géométrie n'est pas valide"
+
+#: java/org/orbisgis/view/map/tool/MultilineHandler.java:93
+#: java/org/orbisgis/view/map/tool/MultilineHandler.java:119
+msgid "Invalid MultiLineString"
+msgstr "Multi-ligne invalide"
+
+#: java/org/orbisgis/view/map/tool/PointHandler.java:130
+msgid "Cannot remove a vertex from a point geometry"
+msgstr "Impossible de supprimer un sommet à une géométrie de type point"
+
+#: java/org/orbisgis/view/map/toolbar/ActionRedo.java:58
+#: java/org/orbisgis/view/table/ActionRedo.java:45
+msgid "Redo"
+msgstr ""
+
+#: java/org/orbisgis/view/map/toolbar/ActionRedo.java:59
+#: java/org/orbisgis/view/table/ActionRedo.java:46
+msgid "Redo the last modification"
+msgstr ""
+
+#: java/org/orbisgis/view/map/toolbar/ActionStop.java:58
+msgid "Stop"
+msgstr ""
+
+#: java/org/orbisgis/view/map/toolbar/ActionStop.java:59
+msgid "Close the drawing toolbar"
+msgstr ""
+
+#: java/org/orbisgis/view/map/toolbar/ActionCancel.java:61
+msgid "Cancel all unsaved modifications of this layer"
+msgstr ""
+
+#: java/org/orbisgis/view/map/toolbar/ActionDelete.java:66
+#: java/org/orbisgis/view/map/toolbar/ActionDelete.java:129
+#, fuzzy
+msgid "Delete selected geometries"
+msgstr "Désélectionner les géométries"
+
+#: java/org/orbisgis/view/map/toolbar/ActionDelete.java:128
+#, fuzzy, java-format
+msgid "Are you sure to remove the {0} selected geometries ?"
+msgstr "Zoomer sur les géométries sélectionnées"
+
+#: java/org/orbisgis/view/map/toolbar/ActionUndo.java:57
+#: java/org/orbisgis/view/table/ActionUndo.java:46
+msgid "Undo"
+msgstr ""
+
+#: java/org/orbisgis/view/map/toolbar/ActionUndo.java:58
+#: java/org/orbisgis/view/table/ActionUndo.java:48
+msgid "Undo the last modification"
+msgstr ""
+
+#: java/org/orbisgis/view/map/toolbar/ActionSave.java:57
+msgid "Save unsaved modifications of this layer"
+msgstr ""
+
+#: java/org/orbisgis/view/map/mapsManager/MapsManager.java:96
+msgid "Local"
+msgstr "Local"
+
+#: java/org/orbisgis/view/map/mapsManager/MapsManager.java:103
+msgid "Maps manager"
+msgstr ""
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeMapCatalogServer.java:180
+#, fuzzy
+msgid "Edit the URL"
+msgstr "Entrer l'URL du serveur"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeMapCatalogServer.java:186
+#, fuzzy
+msgid "Remove this server"
+msgstr "Supprimer la source"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeMapCatalogServer.java:193
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeWorkspace.java:155
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:216
+msgid "Update"
+msgstr "Mettre à jour"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeMapCatalogServer.java:195
+#, fuzzy
+msgid "Download the server content"
+msgstr "Recharger la connexion au serveur"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteMap.java:128
+#, fuzzy
+msgid "Are you sure you want to replace the remote map context ?"
+msgstr ""
+"Êtes-vous sûr de vouloir supprimer définitivement les fichiers sélectionnés ?"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteMap.java:128
+msgid "Overwrite map context confirmation"
+msgstr ""
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteMap.java:159
+#, fuzzy
+msgid "Remove this map on the server"
+msgstr "Supprimer ce style à partir de la couche associée."
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeWorkspace.java:157
+#, fuzzy
+msgid "Download the workspace content"
+msgstr "Télécharger l'espace de travail de {0}"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapElement.java:117
+msgid "Open the map"
+msgstr "Ouvrir la carte"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteRoot.java:70
+msgid "Remote"
+msgstr "Distant"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteRoot.java:122
+#, java-format
+msgid "Cannot load map catalog server {0}"
+msgstr "Impossible de charger le serveur de catalogue de carte {0}"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteRoot.java:157
+msgid "Enter the server URL"
+msgstr "Entrer l'URL du serveur"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteRoot.java:163
+#, java-format
+msgid "You type an incorrect URL {0}"
+msgstr "Vous entrez une URL incorrecte {0}"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteRoot.java:170
+msgid "Add Map Catalog server"
+msgstr "Ajouter un serveur de catalogue de carte"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeRemoteRoot.java:172
+msgid "Add a new remote map catalog"
+msgstr "Ajouter un nouveau catalogue de carte distant"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeOwsMapContextFactory.java:73
+msgid "Enter the Map file name"
+msgstr "Entrer le nom du fichier de carte"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeOwsMapContextFactory.java:73
+msgid "MyMap"
+msgstr "MaCarte"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeOwsMapContextFactory.java:81
+msgid "The specified file name already exist"
+msgstr "Le nom de fichier spécifié existe déjà"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeOwsMapContextFactory.java:88
+msgid "The map creation has failed"
+msgstr "La création de la carte a échoué"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeOwsMapContextFactory.java:97
+msgid "New empty map"
+msgstr "Nouvelle carte vide"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeOwsMapContextFactory.java:99
+msgid "Create a new OWS Map in this folder"
+msgstr "Créer une nouvelle carte OWS dans ce dossier"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:90
+#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:93
+msgid "Map creation failed"
+msgstr "Création de la carte échouée"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:102
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:172
+msgid "Are you sure you want to delete permanently the selected files ?"
+msgstr ""
+"Êtes-vous sûr de vouloir supprimer définitivement les fichiers sélectionnés ?"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:103
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:173
+msgid "Remove the files"
+msgstr "Supprimer les fichiers"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:108
+msgid "Cannot remove the file"
+msgstr "Impossible de supprimer le fichier"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:111
+#, java-format
+msgid "Cannot remove the file {0}"
+msgstr "Impossible de supprimer le fichier {0}"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeLeafMapContextFile.java:125
+msgid "Remove permanently the map"
+msgstr "Supprimer définitivement la carte"
+
+#: java/org/orbisgis/view/map/mapsManager/TransferableRemoteMap.java:102
+#, fuzzy
+msgid "Error while downloading the map content"
+msgstr "Erreur lors du chargement de la table"
+
+#: java/org/orbisgis/view/map/mapsManager/TreeNodeBusy.java:57
+msgid "Downloading.."
+msgstr "Téléchargement ..."
+
+#: java/org/orbisgis/view/map/mapsManager/jobs/UploadMapContext.java:96
+#, fuzzy
+msgid "Uploading the map context.."
+msgstr "Ouvrir le contexte cartographique"
+
+#: java/org/orbisgis/view/map/mapsManager/jobs/ReadStoredMap.java:82
+msgid "Parse maps title and description"
+msgstr "Analyser le titre et la description des cartes"
+
+#: java/org/orbisgis/view/map/mapsManager/jobs/DeleteRemoteMapContext.java:73
+#, fuzzy
+msgid "The map cannot be removed"
+msgstr "Le mot de passe ne peut pas être vide."
+
+#: java/org/orbisgis/view/map/mapsManager/jobs/DeleteRemoteMapContext.java:79
+#, fuzzy
+msgid "Delete the remote map context"
+msgstr "Supprimer la couche du contexte cartographique"
+
+#: java/org/orbisgis/view/map/mapsManager/jobs/DownloadWorkspaces.java:72
+#, fuzzy
+msgid "Cannot download the server's workspaces of {0}"
+msgstr "Télécharger l'espace de travail de {0}"
+
+#: java/org/orbisgis/view/map/mapsManager/jobs/DownloadWorkspaces.java:82
+#, java-format
+msgid "Download the workspaces of {0}"
+msgstr "Télécharger l''espace de travail de {0}"
+
+#: java/org/orbisgis/view/map/mapsManager/jobs/DownloadRemoteMapContext.java:72
+#, fuzzy
+msgid "Cannot download the server's contexts of {0}"
+msgstr "Télécharger l'espace de travail de {0}"
+
+#: java/org/orbisgis/view/map/mapsManager/jobs/DownloadRemoteMapContext.java:82
+#, fuzzy, java-format
+msgid "Download the context of {0}"
+msgstr "Télécharger l'espace de travail de {0}"
+
 #: java/org/orbisgis/view/map/jobs/ZoomToSelection.java:73
 msgid "Unable to compute the zoom extent"
 msgstr "Impossible de réaliser le zoom étendu"
@@ -1972,50 +1726,97 @@ msgstr "Le nom de la source de données ne peut être vide."
 msgid "A datasource with that name already exists."
 msgstr "Une source de données avec le nom spécifié existe déjà."
 
-#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:112
-msgid "Save documents"
-msgstr "Sauver les documents"
+#: java/org/orbisgis/view/main/Main.java:76
+msgid "OrbisGIS needs at least a java 1.6+"
+msgstr "OrbisGIS exige l'installation de java 1.6+"
 
-#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:130
-msgid "&Save"
-msgstr "&Sauver"
+#: java/org/orbisgis/view/main/Core.java:139
+msgid "Loading GDMS.."
+msgstr "Chargement de GDMS ..."
 
-#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:132
-msgid ""
-"Save the selected documents, and close this dialog if there is no more "
-"modifed documents"
+#: java/org/orbisgis/view/main/Core.java:143
+msgid "Contains view folders path"
+msgstr "Contient les chemins liés à l'interface graphique"
+
+#: java/org/orbisgis/view/main/Core.java:145
+msgid "Register GUI Sql functions.."
 msgstr ""
-"Sauver les documents sélectionnés, et fermer cette fenêtre s'il n'y a plus "
-"de documents modifiés."
 
-#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:138
-msgid "Save &All"
-msgstr "Sauver &tout"
+#: java/org/orbisgis/view/main/Core.java:149
+msgid "Load the plugin framework.."
+msgstr "Chargement du gestionnaire de plugins"
 
-#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:141
-msgid "Save all documents and close this dialog"
-msgstr "Sauver tous les documents et fermer cette fenêtre"
+#: java/org/orbisgis/view/main/Core.java:166
+msgid "Loading of plugins is aborted"
+msgstr "Le chargement des plugins a été annulé"
 
-#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:145
-msgid "Save &None"
-msgstr "Ne r&ien sauvegarder"
+#: java/org/orbisgis/view/main/Core.java:237
+#, fuzzy
+msgid "Error while loading dialogs informations."
+msgstr "Erreur lors du chargement de la table"
 
-#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:148
-msgid "Discard all changes and close this dialog"
-msgstr "Annuler toutes les modifications et fermer cette boîte de dialogue"
+#: java/org/orbisgis/view/main/Core.java:311
+msgid ""
+"Execute tasks in background processes, showing progress bars. Gives access "
+"to the job queue"
+msgstr ""
+"Exécuter la tâche en arrière-plan, afficher la barre de progression. Donne "
+"accès à la file d'attente des processus"
 
-#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:152
-msgid "&Cancel"
-msgstr "&Annuler"
+#: java/org/orbisgis/view/main/Core.java:331
+msgid "Use this instance to open an editable element (map,data source..)"
+msgstr ""
+"Utiliser cette instance pour ouvrir un document (carte, source de "
+"donnée, ...)"
 
-#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:153
-msgid "Do nothing and lose nothing"
-msgstr "Ne rien faire et ne rien perdre"
+#: java/org/orbisgis/view/main/Core.java:361
+msgid "Loading the main window"
+msgstr "Chargement de la fenêtre principale"
 
-#: java/org/orbisgis/view/edition/dialogs/SaveDocuments.java:253
-#, java-format
-msgid "The document {0} cannot be saved due to the following error {1}"
-msgstr "Le document {0} ne peut être sauvé à cause de l''erreur suivante {1}"
+#: java/org/orbisgis/view/main/Core.java:365
+msgid "Loading docking system and frames"
+msgstr ""
+
+#: java/org/orbisgis/view/main/Core.java:393
+msgid "Restore the former layout.."
+msgstr "Restauration de la disposition des éléments"
+
+#: java/org/orbisgis/view/main/Core.java:422
+#: java/org/orbisgis/view/main/Core.java:424
+#: java/org/orbisgis/view/main/Core.java:429
+#: java/org/orbisgis/view/docking/DockingManagerImpl.java:297
+msgid "Unable to save the docking layout."
+msgstr "Impossible de sauvegarder l'interface"
+
+#: java/org/orbisgis/view/main/Core.java:550
+#, fuzzy
+msgid "Error while saving dialogs informations."
+msgstr "Erreur lors du chargement de la table"
+
+#: java/org/orbisgis/view/main/frames/MainFrameStatusBar.java:118
+msgid "Switch to another workspace"
+msgstr "Basculer vers un nouvel espace de travail"
+
+#: java/org/orbisgis/view/main/frames/MainFrame.java:70
+#, fuzzy, java-format
+msgid "OrbisGIS version {0} {1} {2}"
+msgstr "OrbisGIS version {0} La Rochelle {1}"
+
+#: java/org/orbisgis/view/main/frames/MainFrame.java:121
+msgid "&File"
+msgstr "&Fichier"
+
+#: java/org/orbisgis/view/main/frames/MainFrame.java:122
+msgid "&Exit"
+msgstr "&Quitter"
+
+#: java/org/orbisgis/view/main/frames/MainFrame.java:126
+msgid "&Tools"
+msgstr "&Outils"
+
+#: java/org/orbisgis/view/main/frames/MainFrame.java:127
+msgid "&Configuration"
+msgstr "&Configuration"
 
 #: java/org/orbisgis/view/docking/DockingManagerImpl.java:161
 msgid "&Look And Feel"
@@ -2064,60 +1865,6 @@ msgstr "Configuration internet"
 msgid "Proxy"
 msgstr "Proxy"
 
-#: java/org/orbisgis/view/sql/MapContext_Share.java:74
-#, fuzzy
-msgid "The URL is not valid."
-msgstr "La géométrie n'est pas valide"
-
-#: java/org/orbisgis/view/sql/MapContext_Share.java:93
-msgid ""
-"The workspace doesn't exist. Please contactthe administrator of the service."
-msgstr ""
-
-#: java/org/orbisgis/view/sql/MapContext_Share.java:99
-msgid "The URL is not valid or the service not available."
-msgstr ""
-
-#: java/org/orbisgis/view/sql/MapContext_Share.java:114
-msgid ""
-"A function to share the current mapcontext in the mapcatalog service\n"
-"The second permits to set the workspace name. If the workspace doesn't exist "
-"a message appears."
-msgstr ""
-
-#: java/org/orbisgis/view/sql/MapContext_ZoomTo.java:73
-#, fuzzy
-msgid "Cannot compute the full extent"
-msgstr "Impossible de réaliser le zoom étendu"
-
-#: java/org/orbisgis/view/sql/MapContext_ZoomTo.java:84
-msgid "Zoom to according a dataset"
-msgstr ""
-
-#: java/org/orbisgis/view/sql/MapContext_BBox.java:78
-msgid "Return the current mapcontext bounding box as a geometry"
-msgstr ""
-
-#: java/org/orbisgis/view/sql/MapContext_AddLayer.java:79
-#, fuzzy
-msgid "Cannot import the style"
-msgstr "Impossible de créer le fichier"
-
-#: java/org/orbisgis/view/sql/MapContext_AddLayer.java:81
-#, fuzzy
-msgid "Cannot add the layer to the mapcontext"
-msgstr "Impossible d'ajouter la couche vers la destination"
-
-#: java/org/orbisgis/view/sql/MapContext_AddLayer.java:94
-msgid ""
-"A function to add a layer based on a table name\n"
-"The second argument is optional. It permits to set a style to the layer."
-msgstr ""
-
-#: java/org/orbisgis/view/beanshell/BeanShellFrame.java:55
-msgid "BeanShell"
-msgstr ""
-
 #: java/org/orbisgis/view/beanshell/BshConsolePanel.java:115
 msgid "Cannot initialize beanshell"
 msgstr ""
@@ -2126,16 +1873,99 @@ msgstr ""
 msgid "Cannot initialize beanshell script folder"
 msgstr ""
 
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:193
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:348
+msgid "Do you want to clear the contents of the console?"
+msgstr "Voulez-vous effacer le contenu de la console ?"
+
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:194
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:349
+msgid "Clear script"
+msgstr "Effacer le script"
+
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:217
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:134
+msgid "Execute"
+msgstr "Exécuter"
+
 #: java/org/orbisgis/view/beanshell/BshConsolePanel.java:218
 #, fuzzy
 msgid "Execute the java script"
 msgstr "Exécuter le script"
+
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:226
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:143
+msgid "Clear"
+msgstr "Effacer"
+
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:227
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:144
+msgid "Erase the content of the editor"
+msgstr "Effacer le contenu de l''éditeur"
+
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:235
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:201
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:97
+msgid "Open"
+msgstr "Ouvrir"
+
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:236
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:202
+msgid "Load a file in this editor"
+msgstr "Charger un fichier dans cet éditeur"
+
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:243
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:193
+msgid "Save the editor content into a file"
+msgstr "Sauver le contenu de l'éditeur dans un fichier"
+
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:250
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:152
+msgid "Search.."
+msgstr "Chercher..."
+
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:251
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:153
+msgid "Search text in the document"
+msgstr "Chercher du texte dans l'éditeur"
+
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:265
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:269
+msgid "Save script"
+msgstr "Sauver le script"
 
 #: java/org/orbisgis/view/beanshell/BshConsolePanel.java:266
 #: java/org/orbisgis/view/beanshell/BshConsolePanel.java:287
 #, fuzzy
 msgid "BeanShell Script (*.bsh)"
 msgstr "Script SQL (*.sql)"
+
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:272
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:303
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:276
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:309
+msgid "IO error."
+msgstr "Erreur d'entrée/sortie."
+
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:275
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:279
+msgid "The file has been saved."
+msgstr "Le fichier a été sauvé."
+
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:286
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:292
+msgid "Open script"
+msgstr "Ouvrir un script"
+
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:294
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:300
+msgid "Do you want to clear all before loading the file ?"
+msgstr "Voulez-vous tout effacer avant de charger le fichier ?"
+
+#: java/org/orbisgis/view/beanshell/BshConsolePanel.java:295
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:301
+msgid "Open file"
+msgstr "Ouvrir un fichier"
 
 #: java/org/orbisgis/view/beanshell/BshConsolePanel.java:424
 #, fuzzy
@@ -2147,702 +1977,44 @@ msgstr "Ne peut pas analyser le script"
 msgid "The script is not valid"
 msgstr "La géométrie n'est pas valide"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:145
-msgid "GeoCatalog"
-msgstr "GeoCatalogue"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:167
-msgid "Add filter"
-msgstr "Ajouter un filtre"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:167
-msgid "Add a new data source filter"
-msgstr "Ajouter un nouveau filtre"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:311
-msgid "Select the file to add"
-msgstr "Sélectionner le fichier à ajouter"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:327
-msgid "This source was already registered"
-msgstr "Cette source est déjà enregistrée"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:350
-msgid "All data source of the GeoCatalog will be removed. Are you sure ?"
-msgstr ""
-"Toutes les sources de données du GeoCatalogue seront supprimées. Voulez-vous "
-"poursuivre ?"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:351
-#: java/org/orbisgis/view/geocatalog/Catalog.java:604
-msgid "Clear the GeoCatalog"
-msgstr "Nettoyer le GeoCatalogue"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:368
-#, java-format
-msgid "Cannot remove the source {0}"
-msgstr "Impossible de supprimer la source {0}"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:386
-msgid "Save the source : "
-msgstr "Sauver la source :"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:441
-msgid "Add files from a folder"
-msgstr "Ajouter à partir d'un dossier"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:454
-msgid "Add from folder"
-msgstr "Ajouter à partir d'un dossier"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:484
-msgid "Cannot find a valid image format for this WMS server"
-msgstr "Impossible de trouver un format d'image valide pour ce serveur WMS"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:513
-#, fuzzy
-msgid "Can't read the given URI: "
-msgstr "Impossible de lire la source"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:515
-msgid "The given URI contains illegal character"
+#: java/org/orbisgis/view/beanshell/BeanShellFrame.java:55
+msgid "BeanShell"
 msgstr ""
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:551
-msgid "The source is already registered : "
-msgstr "La source est déjà enregistrée :"
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:80
+msgid "Choose the workspace folder"
+msgstr "<html>Choisir le dossier d'espace de<br>travail</html>"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:560
-#: java/org/orbisgis/view/geocatalog/Catalog.java:587
-msgid "File"
-msgstr "Fichier"
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:86
+msgid "Choose a previous OrbisGIS workspace or create a new one"
+msgstr "Choisir ou créer un espace de travail"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:561
-#, fuzzy
-msgid "Add a file from hard drive."
-msgstr "Ajouter à partir d'un dossier"
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:94
+msgid "Set as default?"
+msgstr "Espace de travail par défaut ?"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:565
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:251
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:367
-msgid "Folder"
-msgstr "Dossier"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:566
-#, fuzzy
-msgid "Add a set of file from an hard drive folder."
-msgstr "Ajouter à partir d'un dossier"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:571
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:78
-msgid "DataBase"
-msgstr "Base de données"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:572
-msgid "Add one or more tables from a DataBase"
-msgstr ""
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:576
-msgid "WMS server"
-msgstr "Serveur WMS"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:577
-#, fuzzy
-msgid "Add a WebMapService"
-msgstr "Web Map Services"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:588
-#, fuzzy
-msgid "Save selected sources in files"
-msgstr "Sauver la source dans un fichier."
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:591
-msgid "Database"
-msgstr "Base de données"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:592
-#, fuzzy
-msgid "Save selected sources in a data base"
-msgstr "Sauver les sources dans une base de données"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:596
-#, fuzzy
-msgid "Open the data source table"
-msgstr "Ouvrir la source de données {0}"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:599
-msgid "Remove the source"
-msgstr "Supprimer la source"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:600
-#, fuzzy
-msgid "Remove from this list the selected sources."
-msgstr "Zoomer sur les géométries sélectionnées"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:605
-msgid "Remove all sources in this list"
-msgstr ""
-
-#: java/org/orbisgis/view/geocatalog/EditableSource.java:99
-#, fuzzy, java-format
-msgid "Source {0}"
-msgstr "Tri {0}"
-
-#: java/org/orbisgis/view/geocatalog/EditableSource.java:218
-#, fuzzy
-msgid "Cannot save the source modifications"
-msgstr "Le manager d'outil ne peut pas écouter les modifications de source"
-
-#: java/org/orbisgis/view/geocatalog/SourceListModel.java:218
-#: java/org/orbisgis/view/geocatalog/SourceListModel.java:221
-msgid "Data source schema could not be read"
-msgstr "Le schéma de la source de donnée ne peut pas être lu"
-
-#: java/org/orbisgis/view/geocatalog/io/ExportInFileOperation.java:79
-msgid "Save the source in a file."
-msgstr "Sauver la source dans un fichier."
-
-#: java/org/orbisgis/view/geocatalog/io/ExportInFileOperation.java:95
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:96
 msgid ""
-"The datasource has been exported and added to the geocatalog with the name "
+"Setting this workspace as default will allow you to skip this<br>dialog next "
+"time"
 msgstr ""
-"La source de donnée a été exportée et ajoutée au GeoCatalogue avec le nom"
+"Cochez cette case si vous souhaitez que cet espace de travail<br>s'ouvre de "
+"façon automatique au prochain démarrage."
 
-#: java/org/orbisgis/view/geocatalog/io/ExportInFileOperation.java:97
-#: java/org/orbisgis/view/geocatalog/io/ExportInFileOperation.java:99
-#: java/org/orbisgis/view/geocatalog/io/ExportInFileOperation.java:101
-msgid "Cannot create the file"
-msgstr "Impossible de créer le fichier"
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:111
+msgid "Workspace Manager"
+msgstr "Gestionnaire d'espace de travail"
 
-#: java/org/orbisgis/view/geocatalog/io/ExportInFileOperation.java:103
-msgid "Cannot read the source"
-msgstr "Impossible de lire la source"
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:124
+msgid "Problem updating the workspace. "
+msgstr "Problème lors de la mise à jour de l'espace de travail"
 
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:96
-msgid "Save sources in a database"
-msgstr "Sauver les sources dans une base de données"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:153
-#, fuzzy
-msgid "Close"
-msgstr "&Fermer"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:174
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:229
-msgid "Please connect to a database"
-msgstr "Veuillez vous connecter à la base de données"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:176
-msgid "At least one row must be checked."
-msgstr "Au moins une ligne doit être cochée"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:253
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:145
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DataBaseTableModel.java:145
-msgid "Cannot connect to the database."
-msgstr "Impossible de se connecter à la base de données"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:265
-msgid "Please set a password"
-msgstr "Veuillez spécifier un mot de passe"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:266
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:161
-msgid "Login"
-msgstr ""
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:267
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:162
-msgid "Password"
-msgstr "Mot de passe"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:273
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:168
-#, fuzzy
-msgid "The login cannot be empty."
-msgstr "Le mot de passe ne peut pas être vide."
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:276
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:171
-msgid "The password cannot be empty."
-msgstr "Le mot de passe ne peut pas être vide."
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:292
-msgid "Cannot connect the database"
-msgstr "Impossible de connecter à la base de données"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DataBaseRow.java:200
+#: java/org/orbisgis/view/workspace/WorkspaceSelectionDialog.java:141
+#, java-format
 msgid ""
-"-1 is not allowed .\n"
-"The input code will be used."
+"The workspace folder version is invalid (!=OrbisGIS {0}), or the folder is "
+"not empty"
 msgstr ""
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DataBaseRow.java:211
-msgid ""
-"Cannot format the EPSG code into an int.\n"
-"The default code will be used."
-msgstr ""
-"Impossible de formater le code EPSG en un int.\n"
-"Le code par défaut sera utilisé."
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ExportToDatabase.java:93
-msgid "Saving the source in a database."
-msgstr "Sauver la source dans une base de données"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:85
-msgid "Open tables or views from a database"
-msgstr "Ouvrir les tables ou vues d'une base de données"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:160
-#, fuzzy
-msgid "Please set the user name and a password "
-msgstr "Veuillez spécifier un mot de passe"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:234
-msgid "The database contains any tables or views."
-msgstr "La base de données ne contient aucunes tables ou vues"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:239
-msgid "At least one table or view must be selected."
-msgstr "Au moins une table ou une vue doit être sélectionnée."
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:317
-msgid "Tables"
-msgstr "Tables"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:337
-msgid "Views"
-msgstr "Vues"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:351
-#, fuzzy
-msgid "Cannot list the tables and views"
-msgstr "Impossible de lister le contenu du dossier"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:353
-#, fuzzy
-msgid "Cannot open the connection"
-msgstr "Supprimer la connexion"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:359
-msgid "Populating the database list..."
-msgstr ""
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:62
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:125
-msgid "Connection parameters"
-msgstr "Paramètres de connexion"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:64
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:127
-msgid "Connexion name"
-msgstr "Nom de la connexion"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:64
-msgid "MyConnexion"
-msgstr "MyConnexion"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:67
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:130
-msgid "Type of database"
-msgstr "Type de base de données"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:69
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:132
-msgid "Host"
-msgstr "Hôte"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:71
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:134
-msgid "Default port"
-msgstr "Port par défaut"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:73
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:136
-msgid "Database name"
-msgstr "Nom de la base de données"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:76
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:140
-msgid "SSL"
-msgstr "SSL"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:84
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:148
-msgid "Please specify a connexion name"
-msgstr "Veuillez spécifier un nom de connexion"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:88
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:152
-msgid "The database name is mandatory"
-msgstr "Le nom de la base de données est obligatoire"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:92
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:156
-msgid "The host cannot be null"
-msgstr "L'hôte ne peut être null"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:97
-#, fuzzy
-msgid "The port field is mandatory"
-msgstr "Le nom de la base de données est obligatoire"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:102
-#, fuzzy
-msgid "The port number must lie between 0 and 32767."
-msgstr "Le numéro de port doit être compris entre 0 et 32767"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:105
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:168
-msgid "Cannot format the port code into an int"
-msgstr "Impossible de formater le code du port dans un int"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:164
-msgid "The port number must be comprise between 0 and 32767"
-msgstr "Le numéro de port doit être compris entre 0 et 32767"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionToolBar.java:108
-msgid "Connect to the database"
-msgstr "Connecter à la base de données"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionToolBar.java:114
-msgid "Disconnect"
-msgstr "Déconnecter"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionToolBar.java:120
-msgid "Add a new connection"
-msgstr "Ajouter une nouvelle connexion"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionToolBar.java:125
-msgid "Edit the connection"
-msgstr "Éditer la connexion"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionToolBar.java:131
-msgid "Remove the connection"
-msgstr "Supprimer la connexion"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionToolBar.java:167
-msgid "Saved with the OrbisGIS database panel"
-msgstr "Sauver via l'interface de base de données"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionToolBar.java:310
-msgid "There is already a connection with this name."
-msgstr "Il y a déjà une connexion avec ce nom"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DataBaseTableModel.java:141
-msgid "This table does not exist."
-msgstr "Cette table n'existe pas."
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DataBaseTableModel.java:143
-msgid "The required DataSource could not be created."
-msgstr "La source de données requise ne peut pas être crée."
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/LayerConfigurationPanel.java:221
-msgid "Choose a list of layers"
-msgstr "Choissir une liste de couches"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/LayerConfigurationPanel.java:270
-msgid "At least a layer must be selected"
-msgstr "Au moins une couche doit être sélectionnée"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/SRSPanel.java:75
-msgid "Select a SRS"
-msgstr "Sélectionner un SRS"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/SRSPanel.java:116
-msgid "Search a SRS :"
-msgstr "Chercher un SRS :"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/SRSPanel.java:153
-msgid "Please select a SRS."
-msgstr "Veuillez sélectionner un SRS."
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:91
-msgid "WMS server URL"
-msgstr "URL du serveur WMS"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:104
-msgid "Connect to the server."
-msgstr "Connecter au serveur"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:115
-msgid "Delete the server connection."
-msgstr "Supprimer la connexion au serveur"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:131
-msgid "Reload the server connection."
-msgstr "Recharger la connexion au serveur"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:148
-msgid "Cannot update and save the URL list"
-msgstr "Impossible de mettre à jour et de sauver la liste d'URL"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:168
-msgid "Information"
-msgstr "Information"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:171
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:382
-msgid "Version :"
-msgstr "Version :"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:172
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:384
-msgid "Nom :"
-msgstr "Nom :"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:201
-msgid "Cannot load the list of WMS url"
-msgstr "Impossible de charger la liste d'URL WMS"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:248
-msgid "Cannot save the list of WMS url"
-msgstr "Impossible de sauver la liste d'URL WMS"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:282
-msgid "WMS server connection"
-msgstr "Connection au serveur WMS"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:288
-msgid "Please connect to the WMS server"
-msgstr "Veuillez vous connecter au serveur WMS"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:398
-#, fuzzy
-msgid "orbisgis.errorMessages.wms.CannotConnect "
-msgstr "Impossible de se connecter"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:402
-msgid "orbisgis.errorMessages.wms.CannotGetCapabilities "
-msgstr "Impossible d'obtenir les capacités du flux WMS"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:409
-msgid "Connecting to the server..."
-msgstr "Connexion au serveur..."
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/NameNotContains.java:65
-msgid "Not contains"
-msgstr "Ne contient pas"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:75
-msgid "Alphanumeric"
-msgstr "Alphanumérique"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:82
-msgid "Files"
-msgstr "Fichier"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:86
-msgid "Geometry"
-msgstr "Géométrie"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:90
-msgid "Raster"
-msgstr "Raster"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:94
-msgid "Vectorial"
-msgstr "Vecteur"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:98
-msgid "Web Map Services"
-msgstr "Web Map Services"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:102
-msgid "System Table"
-msgstr "Table système"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:123
-msgid "Source type is"
-msgstr "Le type de source est"
-
-#: java/org/orbisgis/view/background/Job.java:189
-msgid "Progressing..."
-msgstr ""
-
-#: java/org/orbisgis/view/background/RunnableBackgroundJob.java:73
-#, java-format
-msgid "Fatal error on the job named {0}"
-msgstr "Erreur fatale lors du processus {0}"
-
-#: java/org/orbisgis/view/components/gdms/ConstraintTableAction.java:88
-#, java-format
-msgid "Enter the {0} constraint parameter"
-msgstr ""
-
-#: java/org/orbisgis/view/components/gdms/ConstraintTableAction.java:111
-msgid "Raster not supported"
-msgstr ""
-
-#: java/org/orbisgis/view/components/gdms/ConstraintTableAction.java:175
-#, fuzzy
-msgid "Select the constraint"
-msgstr "Sélectionner le second point"
-
-#: java/org/orbisgis/view/components/gdms/ConstraintTableAction.java:233
-msgid "Edit"
-msgstr ""
-
-#: java/org/orbisgis/view/components/gdms/ConstraintTableModel.java:112
-msgid "Type"
-msgstr ""
-
-#: java/org/orbisgis/view/components/gdms/FieldEditor.java:87
-#, fuzzy
-msgid "Constraints"
-msgstr "Contraintes :\n"
-
-#: java/org/orbisgis/view/components/gdms/FieldEditor.java:162
-msgid "Changing the type will remove all constraints. Do you want to continue?"
-msgstr ""
-
-#: java/org/orbisgis/view/components/gdms/FieldEditor.java:165
-#, fuzzy
-msgid "Continue?"
-msgstr "Contient"
-
-#: java/org/orbisgis/view/components/gdms/DeleteRows.java:92
-#: java/org/orbisgis/view/table/ActionRemoveRow.java:73
-#: java/org/orbisgis/view/table/ActionRemoveRow.java:99
-#, fuzzy
-msgid "Delete selected rows"
-msgstr "Filtrer les lignes sélectionnées"
-
-#: java/org/orbisgis/view/components/gdms/ValueInputVerifier.java:99
-#, fuzzy
-msgid "The entered value cannot be parsed"
-msgstr "La source de données requise ne peut pas être crée."
-
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:110
-msgid "Cannot list the directory content"
-msgstr "Impossible de lister le contenu du dossier"
-
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:179
-#, java-format
-msgid "Cannot remove the folder {0}"
-msgstr "Impossible de supprimer le dossier {0}"
-
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:196
-#, java-format
-msgid "The path {0} has been copied to the clipboard"
-msgstr "Le chemin {0} a été copié dans le presse-papier"
-
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:198
-msgid "Could not copy the folder path to the clipboard"
-msgstr "Impossible de copier le dossier dans le presse-papier"
-
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:208
-msgid "Copy the path"
-msgstr "Copier le chemin"
-
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:209
-msgid "Copy the folder path in the clipboard"
-msgstr "Copier le chemin du dossier dans le presse-papier"
-
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:218
-msgid "Update the content of this folder from the file system"
-msgstr "Rafraîchir le contenu de ce dossier"
-
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:225
-msgid "New folder"
-msgstr "Nouveau dossier"
-
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:227
-msgid "Create a sub-folder"
-msgstr "Créer un sous-dossier"
-
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:238
-msgid "Remove permanently the folder"
-msgstr "Supprimer définitivement le dossier"
-
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:251
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:367
-msgid "Enter the folder name"
-msgstr "Entrer le nom du dossier"
-
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:256
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:261
-msgid "The folder creation has failed"
-msgstr "La création du dossier à échoué"
-
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:441
-#, java-format
-msgid "Destination file {0} already exists, cannot move {1}"
-msgstr "Le fichier de destination {0} existe déjà, impossible de bouger {1}"
-
-#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:497
-#, fuzzy
-msgid "Drop the content in the folder.."
-msgstr "Effacer le contenu de l'éditeur"
-
-#: java/org/orbisgis/view/components/filter/FilterFactoryManager.java:248
-msgid "The provided filter factory name has not been registered"
-msgstr "Le filtre n'a pas été enregistré"
-
-#: java/org/orbisgis/view/components/filter/FilterFactoryManager.java:422
-msgid "Delete this filter"
-msgstr "Supprimer ce filtre"
-
-#: java/org/orbisgis/view/components/filter/FilterFactoryManager.java:437
-msgid "Add a new filter"
-msgstr "Ajouter un nouveau filtre"
-
-#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:91
-msgid "Search replace"
-msgstr "Chercher et remplacer"
-
-#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:155
-#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:182
-msgid "Text not found !"
-msgstr "Texte non trouvé !"
-
-#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:252
-msgid "&Find"
-msgstr "&Chercher"
-
-#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:256
-msgid "&Replace"
-msgstr "&Remplacer"
-
-#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:260
-msgid "Replace &All"
-msgstr "Remplacer &tout"
-
-#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:264
-msgid "&Close"
-msgstr "&Fermer"
-
-#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:278
-msgid "&Match Case"
-msgstr "&Même casse"
-
-#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:281
-msgid "&Whole Words"
-msgstr "Mots &entier"
-
-#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:284
-msgid "Regular E&xpressions"
-msgstr "E&xpressions régulière"
-
-#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:288
-msgid "M&ark all"
-msgstr "M&arquer tout"
-
-#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:293
-msgid "Search &up"
-msgstr "Chercher en &haut"
-
-#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:297
-msgid "Search &down"
-msgstr "Chercher en &bas"
-
-#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:317
-msgid "Find what:"
-msgstr "Chercher :"
-
-#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:328
-msgid "Replace with:"
-msgstr "Remplacer par:"
 
 #: java/org/orbisgis/view/joblist/JobsPanel.java:59
 msgid "Running jobs"
@@ -2853,13 +2025,175 @@ msgstr "Processus en cours"
 msgid "Running jobs ({0})"
 msgstr "Processus en cours ({0})"
 
-#: java/org/orbisgis/view/table/DataSourceTableModel.java:79
-msgid "The TableEditor cannot listen to source modifications"
-msgstr "L'éditeur ne peut suivre les modifications de la source"
+#: java/org/orbisgis/view/sqlconsole/SQLConsole.java:55
+msgid "SQL Console"
+msgstr "Console SQL"
 
-#: java/org/orbisgis/view/table/DataSourceTableModel.java:256
-msgid "Cannot parse number"
-msgstr "Impossible d'analyser le nombre"
+#: java/org/orbisgis/view/sqlconsole/SQLConsoleFactory.java:71
+msgid "Handles all Metadata-related caching for the SQLLanguageSupport class"
+msgstr ""
+
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:135
+msgid "Run SQL statements"
+msgstr "Exécuter le traitement SQL"
+
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:163
+msgid "Quote"
+msgstr "Passer en texte"
+
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:164
+msgid "Quote selected text"
+msgstr "Passer en texte la sélection"
+
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:172
+msgid "Un Quote"
+msgstr "Enlever les guillemets"
+
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:173
+msgid "Un Quote selected text"
+msgstr "Enlever les guillemets de la sélection"
+
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:182
+msgid "Format"
+msgstr "Formater"
+
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:183
+msgid "Format editor content"
+msgstr "Formater le contenu de l'éditeur"
+
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:209
+msgid "SQL list"
+msgstr "Liste SQL"
+
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:210
+msgid "Show/Hide SQL function list"
+msgstr "Afficher/Cacher la liste des fonctions SQL"
+
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:270
+#: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:293
+msgid "SQL script (*.sql)"
+msgstr "Script SQL (*.sql)"
+
+#: java/org/orbisgis/view/sqlconsole/ui/SQLFunctionsPanel.java:88
+#, java-format
+msgid "Functions count = {0}"
+msgstr "Nombre de fonctions = {0}"
+
+#: java/org/orbisgis/view/sqlconsole/ui/functionFilters/NameFilterFactory.java:56
+#: java/org/orbisgis/view/geocatalog/filters/factories/NameContains.java:65
+msgid "Contains"
+msgstr "Contient"
+
+#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:78
+msgid "Executing script"
+msgstr "Exécuter le script"
+
+#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:104
+msgid "Cannot parse script"
+msgstr "Ne peut pas analyser le script"
+
+#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:105
+msgid "Failed to parse the script."
+msgstr "Impossible d'analyser le script."
+
+#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:113
+#, java-format
+msgid "Running instruction {0}/{1} :"
+msgstr "Lancer l''instruction {0}/{1} :"
+
+#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:139
+#, java-format
+msgid "Impossible to create the layer:{0}"
+msgstr "Impossible de créer la couche :{0}"
+
+#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:184
+#, java-format
+msgid "Cannot create the DataSource:{0}"
+msgstr "Impossible de créer la source de données :{0}"
+
+#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:198
+msgid "Data access error:"
+msgstr "Erreur d'accès à la donnée"
+
+#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:200
+msgid "SQL Semantic Error"
+msgstr "Erreur sémantique SQL"
+
+#: java/org/orbisgis/view/sqlconsole/actions/ExecuteScriptProcess.java:205
+#, java-format
+msgid "Execution time: {0}"
+msgstr "Temps d’exécution: {0}"
+
+#: java/org/orbisgis/view/sqlconsole/codereformat/CodeReformator.java:128
+msgid "Reformat failed, normalised strings differ"
+msgstr "Échec du formatage automatique du code"
+
+#: java/org/orbisgis/view/output/MainOutputPanel.java:63
+msgid "Output"
+msgstr "Sortie"
+
+#: java/org/orbisgis/view/output/MainOutputPanel.java:68
+msgid "Clear all"
+msgstr "Effacer tout"
+
+#: java/org/orbisgis/view/output/MainOutputPanel.java:69
+msgid "Clear all log panels"
+msgstr "Effacer tous les logs"
+
+#: java/org/orbisgis/view/output/OutputManager.java:115
+#: java/org/orbisgis/view/table/filters/FieldsContainsFilterFactory.java:103
+msgid "All"
+msgstr "Tout"
+
+#: java/org/orbisgis/view/output/OutputManager.java:138
+msgid "Errors"
+msgstr "Erreurs"
+
+#: java/org/orbisgis/view/output/OutputManager.java:160
+msgid "Infos"
+msgstr "Infos"
+
+#: java/org/orbisgis/view/output/OutputManager.java:177
+msgid "Warnings"
+msgstr "Avertissements"
+
+#: java/org/orbisgis/view/output/OutputManager.java:193
+msgid "Debug"
+msgstr "Debug"
+
+#: java/org/orbisgis/view/output/OutputPanel.java:92
+msgid "&Copy"
+msgstr "&Copier"
+
+#: java/org/orbisgis/view/output/OutputPanel.java:97
+msgid "Clea&r"
+msgstr "Nettoye&r"
+
+#: java/org/orbisgis/view/output/OutputPanel.java:201
+msgid "Cannot show the log message"
+msgstr "Impossible d'afficher le message de log"
+
+#: java/org/orbisgis/view/table/ActionRemoveRow.java:73
+#: java/org/orbisgis/view/table/ActionRemoveRow.java:99
+#: java/org/orbisgis/view/components/gdms/DeleteRows.java:92
+#, fuzzy
+msgid "Delete selected rows"
+msgstr "Filtrer les lignes sélectionnées"
+
+#: java/org/orbisgis/view/table/ActionRemoveRow.java:98
+#, fuzzy, java-format
+msgid "Are you sure to remove the {0} selected rows ?"
+msgstr ""
+"Êtes-vous sûr de vouloir supprimer définitivement les fichiers sélectionnés ?"
+
+#: java/org/orbisgis/view/table/ActionAddColumn.java:63
+msgid "Add a column"
+msgstr ""
+
+#: java/org/orbisgis/view/table/TableEditableElement.java:69
+#, java-format
+msgid "Table \"{0}\""
+msgstr ""
 
 #: java/org/orbisgis/view/table/ActionAddRow.java:66
 msgid "Add a row"
@@ -2868,6 +2202,44 @@ msgstr ""
 #: java/org/orbisgis/view/table/ActionAddRow.java:86
 msgid "New row"
 msgstr ""
+
+#: java/org/orbisgis/view/table/ActionRemoveColumn.java:58
+#, fuzzy
+msgid "Remove a column"
+msgstr "Supprimer la source"
+
+#: java/org/orbisgis/view/table/ActionRemoveColumn.java:75
+#, fuzzy, java-format
+msgid "Are you sure you want to remove the column {0} ?"
+msgstr ""
+"Êtes-vous sûr de vouloir supprimer définitivement les fichiers sélectionnés ?"
+
+#: java/org/orbisgis/view/table/ActionRemoveColumn.java:76
+msgid "Deletion of a column"
+msgstr ""
+
+#: java/org/orbisgis/view/table/DataSourceTableModel.java:79
+msgid "The TableEditor cannot listen to source modifications"
+msgstr "L'éditeur ne peut suivre les modifications de la source"
+
+#: java/org/orbisgis/view/table/DataSourceTableModel.java:256
+msgid "Cannot parse number"
+msgstr "Impossible d'analyser le nombre"
+
+#: java/org/orbisgis/view/table/TableEditorFactory.java:59
+#, java-format
+msgid "This data source ({0}) is already shown in an editor."
+msgstr "Cette source de donnée ({0}) est déjà affichée dans un éditeur."
+
+#: java/org/orbisgis/view/table/TableEditorFactory.java:65
+#: java/org/orbisgis/view/table/TableEditorFactory.java:119
+#, java-format
+msgid ""
+"In a consequence of an unreachable data source {0},the associated data "
+"editor could not be recovered."
+msgstr ""
+"En conséquence d''une source de données inaccessible {0}, l''éditeur de "
+"données associé n'a pas pu être récupéré."
 
 #: java/org/orbisgis/view/table/TableEditor.java:186
 msgid ""
@@ -3013,31 +2385,6 @@ msgstr "Erreur lors du chargement de la table"
 msgid "Open the data source {0}"
 msgstr "Ouvrir la source de données {0}"
 
-#: java/org/orbisgis/view/table/ActionRemoveColumn.java:58
-#, fuzzy
-msgid "Remove a column"
-msgstr "Supprimer la source"
-
-#: java/org/orbisgis/view/table/ActionRemoveColumn.java:75
-#, fuzzy, java-format
-msgid "Are you sure you want to remove the column {0} ?"
-msgstr ""
-"Êtes-vous sûr de vouloir supprimer définitivement les fichiers sélectionnés ?"
-
-#: java/org/orbisgis/view/table/ActionRemoveColumn.java:76
-msgid "Deletion of a column"
-msgstr ""
-
-#: java/org/orbisgis/view/table/ActionRemoveRow.java:98
-#, fuzzy, java-format
-msgid "Are you sure to remove the {0} selected rows ?"
-msgstr ""
-"Êtes-vous sûr de vouloir supprimer définitivement les fichiers sélectionnés ?"
-
-#: java/org/orbisgis/view/table/ActionAddColumn.java:63
-msgid "Add a column"
-msgstr ""
-
 #: java/org/orbisgis/view/table/TablePanelLayout.java:109
 #: java/org/orbisgis/view/table/TablePanelLayout.java:111
 msgid "Selection deserialisation failed"
@@ -3047,25 +2394,18 @@ msgstr "La désérialisation de la sélection a échoué"
 msgid "Selection serialisation failed"
 msgstr "La sérialisation de la sélection a échoué"
 
-#: java/org/orbisgis/view/table/TableEditorFactory.java:59
-#, java-format
-msgid "This data source ({0}) is already shown in an editor."
-msgstr "Cette source de donnée ({0}) est déjà affichée dans un éditeur."
+#: java/org/orbisgis/view/table/filters/WhereSQLFilterFactory.java:74
+msgid "SQL"
+msgstr "SQL"
 
-#: java/org/orbisgis/view/table/TableEditorFactory.java:65
-#: java/org/orbisgis/view/table/TableEditorFactory.java:119
-#, java-format
-msgid ""
-"In a consequence of an unreachable data source {0},the associated data "
-"editor could not be recovered."
-msgstr ""
-"En conséquence d''une source de données inaccessible {0}, l''éditeur de "
-"données associé n'a pas pu être récupéré."
+#: java/org/orbisgis/view/table/filters/WhereSQLFilterFactory.java:89
+#: java/org/orbisgis/view/table/filters/FieldsContainsFilterFactory.java:119
+msgid "Search"
+msgstr "Rechercher"
 
-#: java/org/orbisgis/view/table/TableEditableElement.java:69
-#, java-format
-msgid "Table \"{0}\""
-msgstr ""
+#: java/org/orbisgis/view/table/filters/WhereSQLFilterFactory.java:117
+msgid "Run SQL request"
+msgstr "Exécuter la requête SQL"
 
 #: java/org/orbisgis/view/table/filters/FieldsContainsFilterFactory.java:78
 msgid "Find"
@@ -3079,45 +2419,9 @@ msgstr "Respecter la casse"
 msgid "Whole words"
 msgstr "Mots entiers"
 
-#: java/org/orbisgis/view/table/filters/FieldsContainsFilterFactory.java:119
-#: java/org/orbisgis/view/table/filters/WhereSQLFilterFactory.java:89
-msgid "Search"
-msgstr "Rechercher"
-
 #: java/org/orbisgis/view/table/filters/FieldsContainsFilterFactory.java:181
 msgid "Filter driver error"
 msgstr "Erreur de filtre"
-
-#: java/org/orbisgis/view/table/filters/WhereSQLFilterFactory.java:74
-msgid "SQL"
-msgstr "SQL"
-
-#: java/org/orbisgis/view/table/filters/WhereSQLFilterFactory.java:117
-msgid "Run SQL request"
-msgstr "Exécuter la requête SQL"
-
-#: java/org/orbisgis/view/table/jobs/SearchJob.java:118
-msgid "Selecting rows"
-msgstr "Lignes sélectionnées"
-
-#: java/org/orbisgis/view/table/jobs/SortJob.java:85
-#: java/org/orbisgis/view/table/jobs/SortJob.java:169
-#: java/org/orbisgis/view/table/jobs/SortJob.java:171
-msgid "Driver error"
-msgstr "Erreur de driver"
-
-#: java/org/orbisgis/view/table/jobs/SortJob.java:103
-msgid "Aborted by user"
-msgstr "Interrompu par l'utilisateur"
-
-#: java/org/orbisgis/view/table/jobs/SortJob.java:136
-msgid "Cache table values"
-msgstr "Mise en cache des valeurs de la table"
-
-#: java/org/orbisgis/view/table/jobs/SortJob.java:177
-#, java-format
-msgid "Sorting {0}"
-msgstr "Tri {0}"
 
 #: java/org/orbisgis/view/table/jobs/ComputeFieldStatistics.java:106
 #, java-format
@@ -3166,9 +2470,716 @@ msgstr "Calculer les statistiques de la colonne"
 msgid "Unable to establish the selection bounding box"
 msgstr "Impossible d'établir l'enveloppe de la sélection"
 
+#: java/org/orbisgis/view/table/jobs/SearchJob.java:118
+msgid "Selecting rows"
+msgstr "Lignes sélectionnées"
+
+#: java/org/orbisgis/view/table/jobs/SortJob.java:85
+#: java/org/orbisgis/view/table/jobs/SortJob.java:169
+#: java/org/orbisgis/view/table/jobs/SortJob.java:171
+msgid "Driver error"
+msgstr "Erreur de driver"
+
+#: java/org/orbisgis/view/table/jobs/SortJob.java:103
+msgid "Aborted by user"
+msgstr "Interrompu par l'utilisateur"
+
+#: java/org/orbisgis/view/table/jobs/SortJob.java:136
+msgid "Cache table values"
+msgstr "Mise en cache des valeurs de la table"
+
+#: java/org/orbisgis/view/table/jobs/SortJob.java:177
+#, java-format
+msgid "Sorting {0}"
+msgstr "Tri {0}"
+
 #: java/org/orbisgis/view/table/jobs/OptimalWidthJob.java:123
 msgid "Computation of the optimal column width"
 msgstr "Détermination de largeur optimale de colonne"
+
+#: java/org/orbisgis/view/geocatalog/EditableSource.java:99
+#, fuzzy, java-format
+msgid "Source {0}"
+msgstr "Tri {0}"
+
+#: java/org/orbisgis/view/geocatalog/EditableSource.java:218
+#, fuzzy
+msgid "Cannot save the source modifications"
+msgstr "Le manager d'outil ne peut pas écouter les modifications de source"
+
+#: java/org/orbisgis/view/geocatalog/SourceListModel.java:218
+#: java/org/orbisgis/view/geocatalog/SourceListModel.java:221
+msgid "Data source schema could not be read"
+msgstr "Le schéma de la source de donnée ne peut pas être lu"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:145
+msgid "GeoCatalog"
+msgstr "GeoCatalogue"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:167
+msgid "Add filter"
+msgstr "Ajouter un filtre"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:167
+msgid "Add a new data source filter"
+msgstr "Ajouter un nouveau filtre"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:311
+msgid "Select the file to add"
+msgstr "Sélectionner le fichier à ajouter"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:327
+msgid "This source was already registered"
+msgstr "Cette source est déjà enregistrée"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:350
+msgid "All data source of the GeoCatalog will be removed. Are you sure ?"
+msgstr ""
+"Toutes les sources de données du GeoCatalogue seront supprimées. Voulez-vous "
+"poursuivre ?"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:351
+#: java/org/orbisgis/view/geocatalog/Catalog.java:604
+msgid "Clear the GeoCatalog"
+msgstr "Nettoyer le GeoCatalogue"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:368
+#, java-format
+msgid "Cannot remove the source {0}"
+msgstr "Impossible de supprimer la source {0}"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:386
+msgid "Save the source : "
+msgstr "Sauver la source :"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:441
+msgid "Add files from a folder"
+msgstr "Ajouter à partir d'un dossier"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:454
+msgid "Add from folder"
+msgstr "Ajouter à partir d'un dossier"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:484
+msgid "Cannot find a valid image format for this WMS server"
+msgstr "Impossible de trouver un format d'image valide pour ce serveur WMS"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:513
+#, fuzzy
+msgid "Can't read the given URI: "
+msgstr "Impossible de lire la source"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:515
+msgid "The given URI contains illegal character"
+msgstr ""
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:551
+msgid "The source is already registered : "
+msgstr "La source est déjà enregistrée :"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:560
+#: java/org/orbisgis/view/geocatalog/Catalog.java:587
+msgid "File"
+msgstr "Fichier"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:561
+#, fuzzy
+msgid "Add a file from hard drive."
+msgstr "Ajouter à partir d'un dossier"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:565
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:251
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:367
+msgid "Folder"
+msgstr "Dossier"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:566
+#, fuzzy
+msgid "Add a set of file from an hard drive folder."
+msgstr "Ajouter à partir d'un dossier"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:571
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:78
+msgid "DataBase"
+msgstr "Base de données"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:572
+msgid "Add one or more tables from a DataBase"
+msgstr ""
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:576
+msgid "WMS server"
+msgstr "Serveur WMS"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:577
+#, fuzzy
+msgid "Add a WebMapService"
+msgstr "Web Map Services"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:588
+#, fuzzy
+msgid "Save selected sources in files"
+msgstr "Sauver la source dans un fichier."
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:591
+msgid "Database"
+msgstr "Base de données"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:592
+#, fuzzy
+msgid "Save selected sources in a data base"
+msgstr "Sauver les sources dans une base de données"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:596
+#, fuzzy
+msgid "Open the data source table"
+msgstr "Ouvrir la source de données {0}"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:599
+msgid "Remove the source"
+msgstr "Supprimer la source"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:600
+#, fuzzy
+msgid "Remove from this list the selected sources."
+msgstr "Zoomer sur les géométries sélectionnées"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:605
+msgid "Remove all sources in this list"
+msgstr ""
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:85
+msgid "Open tables or views from a database"
+msgstr "Ouvrir les tables ou vues d'une base de données"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:145
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DataBaseTableModel.java:145
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:253
+msgid "Cannot connect to the database."
+msgstr "Impossible de se connecter à la base de données"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:160
+#, fuzzy
+msgid "Please set the user name and a password "
+msgstr "Veuillez spécifier un mot de passe"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:161
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:266
+msgid "Login"
+msgstr ""
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:162
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:267
+msgid "Password"
+msgstr "Mot de passe"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:168
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:273
+#, fuzzy
+msgid "The login cannot be empty."
+msgstr "Le mot de passe ne peut pas être vide."
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:171
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:276
+msgid "The password cannot be empty."
+msgstr "Le mot de passe ne peut pas être vide."
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:229
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:174
+msgid "Please connect to a database"
+msgstr "Veuillez vous connecter à la base de données"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:234
+msgid "The database contains any tables or views."
+msgstr "La base de données ne contient aucunes tables ou vues"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:239
+msgid "At least one table or view must be selected."
+msgstr "Au moins une table ou une vue doit être sélectionnée."
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:317
+msgid "Tables"
+msgstr "Tables"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:337
+msgid "Views"
+msgstr "Vues"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:351
+#, fuzzy
+msgid "Cannot list the tables and views"
+msgstr "Impossible de lister le contenu du dossier"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:353
+#, fuzzy
+msgid "Cannot open the connection"
+msgstr "Supprimer la connexion"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:359
+msgid "Populating the database list..."
+msgstr ""
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DataBaseTableModel.java:141
+msgid "This table does not exist."
+msgstr "Cette table n'existe pas."
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DataBaseTableModel.java:143
+msgid "The required DataSource could not be created."
+msgstr "La source de données requise ne peut pas être crée."
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:96
+msgid "Save sources in a database"
+msgstr "Sauver les sources dans une base de données"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:153
+#, fuzzy
+msgid "Close"
+msgstr "&Fermer"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:176
+msgid "At least one row must be checked."
+msgstr "Au moins une ligne doit être cochée"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:265
+msgid "Please set a password"
+msgstr "Veuillez spécifier un mot de passe"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:292
+msgid "Cannot connect the database"
+msgstr "Impossible de connecter à la base de données"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ExportToDatabase.java:93
+msgid "Saving the source in a database."
+msgstr "Sauver la source dans une base de données"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DataBaseRow.java:200
+msgid ""
+"-1 is not allowed .\n"
+"The input code will be used."
+msgstr ""
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DataBaseRow.java:211
+msgid ""
+"Cannot format the EPSG code into an int.\n"
+"The default code will be used."
+msgstr ""
+"Impossible de formater le code EPSG en un int.\n"
+"Le code par défaut sera utilisé."
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionToolBar.java:108
+msgid "Connect to the database"
+msgstr "Connecter à la base de données"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionToolBar.java:114
+msgid "Disconnect"
+msgstr "Déconnecter"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionToolBar.java:120
+msgid "Add a new connection"
+msgstr "Ajouter une nouvelle connexion"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionToolBar.java:125
+msgid "Edit the connection"
+msgstr "Éditer la connexion"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionToolBar.java:131
+msgid "Remove the connection"
+msgstr "Supprimer la connexion"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionToolBar.java:167
+msgid "Saved with the OrbisGIS database panel"
+msgstr "Sauver via l'interface de base de données"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionToolBar.java:310
+msgid "There is already a connection with this name."
+msgstr "Il y a déjà une connexion avec ce nom"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:62
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:125
+msgid "Connection parameters"
+msgstr "Paramètres de connexion"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:64
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:127
+msgid "Connexion name"
+msgstr "Nom de la connexion"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:64
+msgid "MyConnexion"
+msgstr "MyConnexion"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:67
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:130
+msgid "Type of database"
+msgstr "Type de base de données"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:69
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:132
+msgid "Host"
+msgstr "Hôte"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:71
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:134
+msgid "Default port"
+msgstr "Port par défaut"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:73
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:136
+msgid "Database name"
+msgstr "Nom de la base de données"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:76
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:140
+msgid "SSL"
+msgstr "SSL"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:84
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:148
+msgid "Please specify a connexion name"
+msgstr "Veuillez spécifier un nom de connexion"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:88
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:152
+msgid "The database name is mandatory"
+msgstr "Le nom de la base de données est obligatoire"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:92
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:156
+msgid "The host cannot be null"
+msgstr "L'hôte ne peut être null"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:97
+#, fuzzy
+msgid "The port field is mandatory"
+msgstr "Le nom de la base de données est obligatoire"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:102
+#, fuzzy
+msgid "The port number must lie between 0 and 32767."
+msgstr "Le numéro de port doit être compris entre 0 et 32767"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:105
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:168
+msgid "Cannot format the port code into an int"
+msgstr "Impossible de formater le code du port dans un int"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:164
+msgid "The port number must be comprise between 0 and 32767"
+msgstr "Le numéro de port doit être compris entre 0 et 32767"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:91
+msgid "WMS server URL"
+msgstr "URL du serveur WMS"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:104
+msgid "Connect to the server."
+msgstr "Connecter au serveur"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:115
+msgid "Delete the server connection."
+msgstr "Supprimer la connexion au serveur"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:131
+msgid "Reload the server connection."
+msgstr "Recharger la connexion au serveur"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:148
+msgid "Cannot update and save the URL list"
+msgstr "Impossible de mettre à jour et de sauver la liste d'URL"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:168
+msgid "Information"
+msgstr "Information"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:171
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:382
+msgid "Version :"
+msgstr "Version :"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:172
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:384
+msgid "Nom :"
+msgstr "Nom :"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:201
+msgid "Cannot load the list of WMS url"
+msgstr "Impossible de charger la liste d'URL WMS"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:248
+msgid "Cannot save the list of WMS url"
+msgstr "Impossible de sauver la liste d'URL WMS"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:282
+msgid "WMS server connection"
+msgstr "Connection au serveur WMS"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:288
+msgid "Please connect to the WMS server"
+msgstr "Veuillez vous connecter au serveur WMS"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:398
+#, fuzzy
+msgid "orbisgis.errorMessages.wms.CannotConnect "
+msgstr "Impossible de se connecter"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:402
+msgid "orbisgis.errorMessages.wms.CannotGetCapabilities "
+msgstr "Impossible d'obtenir les capacités du flux WMS"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/WMSConnectionPanel.java:409
+msgid "Connecting to the server..."
+msgstr "Connexion au serveur..."
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/SRSPanel.java:75
+msgid "Select a SRS"
+msgstr "Sélectionner un SRS"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/SRSPanel.java:116
+msgid "Search a SRS :"
+msgstr "Chercher un SRS :"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/SRSPanel.java:153
+msgid "Please select a SRS."
+msgstr "Veuillez sélectionner un SRS."
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/LayerConfigurationPanel.java:221
+msgid "Choose a list of layers"
+msgstr "Choissir une liste de couches"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/wms/LayerConfigurationPanel.java:270
+msgid "At least a layer must be selected"
+msgstr "Au moins une couche doit être sélectionnée"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/NameNotContains.java:65
+msgid "Not contains"
+msgstr "Ne contient pas"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:75
+msgid "Alphanumeric"
+msgstr "Alphanumérique"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:82
+msgid "Files"
+msgstr "Fichier"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:86
+msgid "Geometry"
+msgstr "Géométrie"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:90
+msgid "Raster"
+msgstr "Raster"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:94
+msgid "Vectorial"
+msgstr "Vecteur"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:98
+msgid "Web Map Services"
+msgstr "Web Map Services"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:102
+msgid "System Table"
+msgstr "Table système"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:123
+msgid "Source type is"
+msgstr "Le type de source est"
+
+#: java/org/orbisgis/view/geocatalog/io/ExportInFileOperation.java:79
+msgid "Save the source in a file."
+msgstr "Sauver la source dans un fichier."
+
+#: java/org/orbisgis/view/geocatalog/io/ExportInFileOperation.java:95
+msgid ""
+"The datasource has been exported and added to the geocatalog with the name "
+msgstr ""
+"La source de donnée a été exportée et ajoutée au GeoCatalogue avec le nom"
+
+#: java/org/orbisgis/view/geocatalog/io/ExportInFileOperation.java:97
+#: java/org/orbisgis/view/geocatalog/io/ExportInFileOperation.java:99
+#: java/org/orbisgis/view/geocatalog/io/ExportInFileOperation.java:101
+msgid "Cannot create the file"
+msgstr "Impossible de créer le fichier"
+
+#: java/org/orbisgis/view/geocatalog/io/ExportInFileOperation.java:103
+msgid "Cannot read the source"
+msgstr "Impossible de lire la source"
+
+#: java/org/orbisgis/view/components/filter/FilterFactoryManager.java:248
+msgid "The provided filter factory name has not been registered"
+msgstr "Le filtre n'a pas été enregistré"
+
+#: java/org/orbisgis/view/components/filter/FilterFactoryManager.java:422
+msgid "Delete this filter"
+msgstr "Supprimer ce filtre"
+
+#: java/org/orbisgis/view/components/filter/FilterFactoryManager.java:437
+msgid "Add a new filter"
+msgstr "Ajouter un nouveau filtre"
+
+#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:91
+msgid "Search replace"
+msgstr "Chercher et remplacer"
+
+#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:155
+#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:182
+msgid "Text not found !"
+msgstr "Texte non trouvé !"
+
+#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:252
+msgid "&Find"
+msgstr "&Chercher"
+
+#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:256
+msgid "&Replace"
+msgstr "&Remplacer"
+
+#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:260
+msgid "Replace &All"
+msgstr "Remplacer &tout"
+
+#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:264
+msgid "&Close"
+msgstr "&Fermer"
+
+#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:278
+msgid "&Match Case"
+msgstr "&Même casse"
+
+#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:281
+msgid "&Whole Words"
+msgstr "Mots &entier"
+
+#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:284
+msgid "Regular E&xpressions"
+msgstr "E&xpressions régulière"
+
+#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:288
+msgid "M&ark all"
+msgstr "M&arquer tout"
+
+#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:293
+msgid "Search &up"
+msgstr "Chercher en &haut"
+
+#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:297
+msgid "Search &down"
+msgstr "Chercher en &bas"
+
+#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:317
+msgid "Find what:"
+msgstr "Chercher :"
+
+#: java/org/orbisgis/view/components/findReplace/FindReplaceDialog.java:328
+msgid "Replace with:"
+msgstr "Remplacer par:"
+
+#: java/org/orbisgis/view/components/gdms/FieldEditor.java:87
+#, fuzzy
+msgid "Constraints"
+msgstr "Contraintes :\n"
+
+#: java/org/orbisgis/view/components/gdms/FieldEditor.java:162
+msgid "Changing the type will remove all constraints. Do you want to continue?"
+msgstr ""
+
+#: java/org/orbisgis/view/components/gdms/FieldEditor.java:165
+#, fuzzy
+msgid "Continue?"
+msgstr "Contient"
+
+#: java/org/orbisgis/view/components/gdms/ConstraintTableAction.java:88
+#, java-format
+msgid "Enter the {0} constraint parameter"
+msgstr ""
+
+#: java/org/orbisgis/view/components/gdms/ConstraintTableAction.java:111
+msgid "Raster not supported"
+msgstr ""
+
+#: java/org/orbisgis/view/components/gdms/ConstraintTableAction.java:175
+#, fuzzy
+msgid "Select the constraint"
+msgstr "Sélectionner le second point"
+
+#: java/org/orbisgis/view/components/gdms/ConstraintTableAction.java:233
+msgid "Edit"
+msgstr ""
+
+#: java/org/orbisgis/view/components/gdms/ValueInputVerifier.java:99
+#, fuzzy
+msgid "The entered value cannot be parsed"
+msgstr "La source de données requise ne peut pas être crée."
+
+#: java/org/orbisgis/view/components/gdms/ConstraintTableModel.java:112
+msgid "Type"
+msgstr ""
+
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:110
+msgid "Cannot list the directory content"
+msgstr "Impossible de lister le contenu du dossier"
+
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:179
+#, java-format
+msgid "Cannot remove the folder {0}"
+msgstr "Impossible de supprimer le dossier {0}"
+
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:196
+#, java-format
+msgid "The path {0} has been copied to the clipboard"
+msgstr "Le chemin {0} a été copié dans le presse-papier"
+
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:198
+msgid "Could not copy the folder path to the clipboard"
+msgstr "Impossible de copier le dossier dans le presse-papier"
+
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:208
+msgid "Copy the path"
+msgstr "Copier le chemin"
+
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:209
+msgid "Copy the folder path in the clipboard"
+msgstr "Copier le chemin du dossier dans le presse-papier"
+
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:218
+msgid "Update the content of this folder from the file system"
+msgstr "Rafraîchir le contenu de ce dossier"
+
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:225
+msgid "New folder"
+msgstr "Nouveau dossier"
+
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:227
+msgid "Create a sub-folder"
+msgstr "Créer un sous-dossier"
+
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:238
+msgid "Remove permanently the folder"
+msgstr "Supprimer définitivement le dossier"
+
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:251
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:367
+msgid "Enter the folder name"
+msgstr "Entrer le nom du dossier"
+
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:256
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:261
+msgid "The folder creation has failed"
+msgstr "La création du dossier à échoué"
+
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:441
+#, java-format
+msgid "Destination file {0} already exists, cannot move {1}"
+msgstr "Le fichier de destination {0} existe déjà, impossible de bouger {1}"
+
+#: java/org/orbisgis/view/components/fstree/TreeNodeFolder.java:497
+#, fuzzy
+msgid "Drop the content in the folder.."
+msgstr "Effacer le contenu de l'éditeur"
+
+#~ msgid "Description"
+#~ msgstr "Description"
 
 #~ msgid "New name for the datasource"
 #~ msgstr "Enregistrer sous"
