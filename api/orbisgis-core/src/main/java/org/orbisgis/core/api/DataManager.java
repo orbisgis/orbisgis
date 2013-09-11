@@ -29,37 +29,19 @@
 package org.orbisgis.core.api;
 
 import javax.sql.DataSource;
-import javax.sql.RowSet;
+import javax.sql.rowset.RowSetFactory;
 import java.net.URI;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
  * DataManager has been created in order to minimize the usage of JDBC transaction when the ResultSet is
  * frequently read or updated. It can also manage a local modification history, in order to listen modifications.
  */
-public interface DataManager {
+public interface DataManager extends RowSetFactory {
     /**
      * Free DataManager instance resources
      */
     void dispose();
-
-    /**
-     * Return the result set corresponding to the content of a table or view.
-     * @param sourceName Table reference (can include schema and/or database)
-     * @return RowSet implementation.Do not hold an active connection to the DataBase, it is a partial cached view of a ResultSet.
-     * @throws SQLException If the table does not exists
-     */
-    RowSet getDataSource(String sourceName) throws SQLException;
-
-    /**
-     * Return the result set corresponding to the result of a statement.
-     * This function never return the same ResultSet for the same statement.
-     * @param statement Query method statement
-     * @return RowSet implementation.Do not hold an active connection to the DataBase, it is a partial cached view of a ResultSet.
-     * @throws SQLException Error while executing the statement.
-     */
-    RowSet getDataSource(PreparedStatement statement) throws SQLException;
 
     /**
      * This method use the URI in order to upload or link a data source.
@@ -69,13 +51,6 @@ public interface DataManager {
      * @throws SQLException Error while transaction with JDBC
      */
     String registerDataSource(URI uri) throws SQLException;
-
-    /**
-     * Some tables are linked with
-     * @param tableReference Table reference (can include schema and/or database)
-     * @return The URI of the DataSource
-     */
-    URI getDataSourceUri(String tableReference) throws SQLException;
 
     /**
      * @param tableReference Table reference [[catalog.]schema.]table

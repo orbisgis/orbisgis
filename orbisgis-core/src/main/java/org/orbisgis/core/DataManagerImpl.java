@@ -1,11 +1,16 @@
 package org.orbisgis.core;
-import com.sun.rowset.JdbcRowSetImpl;
+
 import org.orbisgis.core.api.DataManager;
 import org.orbisgis.utils.FileUtils;
 
-
+import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.FilteredRowSet;
+import javax.sql.rowset.JoinRowSet;
+import javax.sql.rowset.RowSetFactory;
+import javax.sql.rowset.RowSetProvider;
 import javax.sql.DataSource;
-import javax.sql.RowSet;
+import javax.sql.rowset.JdbcRowSet;
+import javax.sql.rowset.WebRowSet;
 import java.io.File;
 import java.net.URI;
 import java.sql.Connection;
@@ -18,7 +23,36 @@ import java.sql.SQLException;
  * @author Nicolas Fortin
  */
 public class DataManagerImpl implements DataManager {
-    DataSource dataSource;
+    private DataSource dataSource;
+
+    @Override
+    public CachedRowSet createCachedRowSet() throws SQLException {
+        RowSetFactory factory = RowSetProvider.newFactory();
+        return factory.createCachedRowSet();
+    }
+
+    @Override
+    public FilteredRowSet createFilteredRowSet() throws SQLException {
+        RowSetFactory factory = RowSetProvider.newFactory();
+        return factory.createFilteredRowSet();
+    }
+
+    @Override
+    public JdbcRowSet createJdbcRowSet() throws SQLException {
+        return getRowSet();
+    }
+
+    @Override
+    public JoinRowSet createJoinRowSet() throws SQLException {
+        RowSetFactory factory = RowSetProvider.newFactory();
+        return factory.createJoinRowSet();
+    }
+
+    @Override
+    public WebRowSet createWebRowSet() throws SQLException {
+        RowSetFactory factory = RowSetProvider.newFactory();
+        return factory.createWebRowSet();
+    }
 
     /**
      * @param dataSource Active DataSource
@@ -32,16 +66,11 @@ public class DataManagerImpl implements DataManager {
 
     }
 
-    @Override
-    public RowSet getDataSource(String sourceName) throws SQLException {
-        JdbcRowSetImpl rowSet = new JdbcRowSetImpl(dataSource.getConnection());
-        rowSet.setCommand("SELECT * FROM "+sourceName);
+    private JdbcRowSet getRowSet() throws SQLException {
+        RowSetFactory factory = RowSetProvider.newFactory();
+        JdbcRowSet rowSet = factory.createJdbcRowSet();
+        rowSet.setDataSourceName(dataSource.toString());
         return rowSet;
-    }
-
-    @Override
-    public RowSet getDataSource(PreparedStatement statement) throws SQLException {
-        return new JdbcRowSetImpl(statement.executeQuery());
     }
 
     private String findUniqueTableName(String originalTableName) throws SQLException{
@@ -78,28 +107,19 @@ public class DataManagerImpl implements DataManager {
     }
 
     @Override
-    public URI getDataSourceUri(String tableReference) throws SQLException {
-        // TODO Compute DataSource and table URI
-        return null;
-    }
-
-    @Override
     public DataSource getDataSource() {
         return dataSource;
     }
 
     @Override
     public boolean isTableExists(String tableName) throws SQLException {
-        Connection connection = dataSource.getConnection();
-        boolean exists = false;
-        try {
+        boolean exists;
+        try (Connection connection = dataSource.getConnection()) {
             PreparedStatement st = connection.prepareStatement("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE UPPER(TABLE_NAME) = ?");
             st.setString(1, tableName.toUpperCase());
             ResultSet rs = st.executeQuery();
             exists = rs.next();
             rs.close();
-        } finally {
-            connection.close();
         }
         return exists;
     }
