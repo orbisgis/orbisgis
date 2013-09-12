@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-11 16:39+0100\n"
-"PO-Revision-Date: 2013-09-11 17:13+0100\n"
+"POT-Creation-Date: 2013-09-12 09:06+0100\n"
+"PO-Revision-Date: 2013-09-12 09:08+0100\n"
 "Last-Translator: Alexis Guéganno <alexis.gueganno@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
@@ -111,7 +111,7 @@ msgid "Zoom to the layer bounding box"
 msgstr "Zoomer sur l'emprise de la couche"
 
 #: java/org/orbisgis/view/toc/Toc.java:162
-#: java/org/orbisgis/view/map/MapEditor.java:394
+#: java/org/orbisgis/view/map/MapEditor.java:410
 #: java/org/orbisgis/view/table/TableEditor.java:402
 #: java/org/orbisgis/view/table/jobs/ZoomToSelectionJob.java:118
 msgid "Zoom to selection"
@@ -122,7 +122,7 @@ msgid "Zoom to selected geometries"
 msgstr "Zoomer sur les géométries sélectionnées"
 
 #: java/org/orbisgis/view/toc/Toc.java:168
-#: java/org/orbisgis/view/map/MapEditor.java:391
+#: java/org/orbisgis/view/map/MapEditor.java:407
 #: java/org/orbisgis/view/table/TableEditor.java:374
 msgid "Clear selection"
 msgstr "Déselectionner"
@@ -819,96 +819,164 @@ msgstr "Erreur pendant le \"glisser/déposer\" du document"
 msgid "The map editor accept only map and geometry data source."
 msgstr "La carte n'accepte que des source de donnée de type carte ou géométrie"
 
-#: java/org/orbisgis/view/map/MapEditor.java:161
+#: java/org/orbisgis/view/map/MapEditor.java:177
 msgid "Map"
 msgstr "Carte"
 
-#: java/org/orbisgis/view/map/MapEditor.java:164
+#: java/org/orbisgis/view/map/MapEditor.java:180
 #, java-format
 msgid "Map Editor \"{0}\" [Modified]"
 msgstr "Éditeur de carte \"{0}\" [Modifiée]"
 
-#: java/org/orbisgis/view/map/MapEditor.java:166
+#: java/org/orbisgis/view/map/MapEditor.java:182
 #, java-format
 msgid "Map Editor \"{0}\""
 msgstr "Éditeur de carte \"{0}\""
 
-#: java/org/orbisgis/view/map/MapEditor.java:179
+#: java/org/orbisgis/view/map/MapEditor.java:195
 msgid "The value of the scale denominator must be equal or greater than 1"
 msgstr ""
 "La valeur du dénominateur de l'échelle doit être égale ou plus grande que 1"
 
-#: java/org/orbisgis/view/map/MapEditor.java:223
+#: java/org/orbisgis/view/map/MapEditor.java:239
 msgid "Fail to load the map context, starting with an empty map context"
 msgstr ""
 "Le contexte cartographique ne peut pas être lu. Démarrage avec une carte "
 "vide."
 
-#: java/org/orbisgis/view/map/MapEditor.java:241
+#: java/org/orbisgis/view/map/MapEditor.java:257
 msgid "MyMap.ows"
 msgstr "MaCarte.ows"
 
-#: java/org/orbisgis/view/map/MapEditor.java:380
+#: java/org/orbisgis/view/map/MapEditor.java:396
 msgid "Full extent"
 msgstr "Zoom étendu"
 
-#: java/org/orbisgis/view/map/MapEditor.java:382
+#: java/org/orbisgis/view/map/MapEditor.java:398
 msgid "Zoom to show all geometries"
 msgstr "Zoom étendu"
 
-#: java/org/orbisgis/view/map/MapEditor.java:393
+#: java/org/orbisgis/view/map/MapEditor.java:409
 msgid "Clear all selected geometries of all layers"
 msgstr "Déselectionner les géométries de toutes les couches"
 
-#: java/org/orbisgis/view/map/MapEditor.java:396
+#: java/org/orbisgis/view/map/MapEditor.java:412
 msgid "Zoom to visible selected geometries"
 msgstr "Zoomer sur les objets sélectionnés"
 
-#: java/org/orbisgis/view/map/MapEditor.java:397
+#: java/org/orbisgis/view/map/MapEditor.java:413
 #: java/org/orbisgis/view/table/TableEditor.java:390
 msgid "Create datasource from selection"
 msgstr "Créer une source de données"
 
-#: java/org/orbisgis/view/map/MapEditor.java:400
+#: java/org/orbisgis/view/map/MapEditor.java:416
 #: java/org/orbisgis/view/map/jobs/CreateSourceFromSelection.java:139
 #: java/org/orbisgis/view/table/TableEditor.java:393
 msgid "Create a datasource from the current selection"
 msgstr "Créer une source de données à partir des lignes sélectionnées"
 
-#: java/org/orbisgis/view/map/MapEditor.java:403
+#: java/org/orbisgis/view/map/MapEditor.java:419
 msgid "Mesure tools"
 msgstr "Outils de mesure"
 
-#: java/org/orbisgis/view/map/MapEditor.java:412
+#: java/org/orbisgis/view/map/MapEditor.java:428
 msgid "Graphic tools"
 msgstr "Outils graphiques"
 
-#: java/org/orbisgis/view/map/MapEditor.java:419
+#: java/org/orbisgis/view/map/MapEditor.java:435
 msgid "Maps tree"
 msgstr "Arbre des cartes"
 
-#: java/org/orbisgis/view/map/MapEditor.java:422
+#: java/org/orbisgis/view/map/MapEditor.java:438
 msgid "Show/Hide maps tree"
 msgstr "Afficher/Cacher le gestionnaire de cartes"
 
+#: java/org/orbisgis/view/map/MapEditor.java:439
+#: java/org/orbisgis/view/map/MapEditor.java:523
+msgid "Export map as image"
+msgstr "Exporter la carte dans une image"
+
+#: java/org/orbisgis/view/map/MapEditor.java:442
+msgid "Export image as file"
+msgstr "Exporter l'image dans un fichier"
+
+#: java/org/orbisgis/view/map/MapEditor.java:489
+msgid "Change extent"
+msgstr "Changer l'étendue"
+
+#: java/org/orbisgis/view/map/MapEditor.java:490
+msgid "Update height to keep ratio"
+msgstr "Mettre à jour la hauteur pour conserver le rapport"
+
+#: java/org/orbisgis/view/map/MapEditor.java:491
+msgid "Update width to keep ratio"
+msgstr "Mettre à jour la largeur pour conserver le rapport"
+
+#: java/org/orbisgis/view/map/MapEditor.java:492
+msgid "Export parameters"
+msgstr "Exporter les paramètres"
+
+#: java/org/orbisgis/view/map/MapEditor.java:495
+#: java/org/orbisgis/view/map/MapEditor.java:516
+msgid "Width (pixels)"
+msgstr "Largeur (pixels)"
+
+#: java/org/orbisgis/view/map/MapEditor.java:499
+#: java/org/orbisgis/view/map/MapEditor.java:517
+msgid "Height (pixels)"
+msgstr "Hauteur (pixels)"
+
 #: java/org/orbisgis/view/map/MapEditor.java:505
+msgid "Ratio"
+msgstr "Rapport"
+
+#: java/org/orbisgis/view/map/MapEditor.java:508
+#: java/org/orbisgis/view/map/MapEditor.java:518
+msgid "DPI"
+msgstr "PPP"
+
+#: java/org/orbisgis/view/map/MapEditor.java:514
+msgid ""
+"Transparent\n"
+"background"
+msgstr ""
+"Arrière plan\n"
+"transparent"
+
+#: java/org/orbisgis/view/map/MapEditor.java:543
+msgid "Save the map as image : "
+msgstr "Sauver la carte en tant qu'image :"
+
+#: java/org/orbisgis/view/map/MapEditor.java:545
+msgid "Portable Network Graphics"
+msgstr "Portable Network Graphics"
+
+#: java/org/orbisgis/view/map/MapEditor.java:546
+msgid "Tagged Image File Format"
+msgstr "Tagged Image File Format"
+
+#: java/org/orbisgis/view/map/MapEditor.java:624
 msgid "No layers are selected."
 msgstr "Aucune couche n'est sélectionnée"
 
-#: java/org/orbisgis/view/map/MapEditor.java:525
+#: java/org/orbisgis/view/map/MapEditor.java:644
 #, java-format
 msgid "Layer {0} has no selected geometries."
 msgstr "Aucune géométrie n''est sélectionnée dans la couche {0}."
 
-#: java/org/orbisgis/view/map/MapEditor.java:643
+#: java/org/orbisgis/view/map/MapEditor.java:749
+msgid "Drawing into file"
+msgstr "Dessin dans le fichier"
+
+#: java/org/orbisgis/view/map/MapEditor.java:791
 msgid "Unable to create and drop the layer"
 msgstr "Impossible de créer et supprimer la couche"
 
-#: java/org/orbisgis/view/map/MapEditor.java:645
+#: java/org/orbisgis/view/map/MapEditor.java:793
 msgid "A problem occurred while opening the DataSource :"
 msgstr "Un problème est survenu lors de l'ouverture de la source de donnée."
 
-#: java/org/orbisgis/view/map/MapEditor.java:664
+#: java/org/orbisgis/view/map/MapEditor.java:812
 msgid "Load the data source droped into the map editor."
 msgstr "Chargement de la source de donnée déposée dans l'éditeur de carte."
 

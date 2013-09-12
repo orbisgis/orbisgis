@@ -486,7 +486,9 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         final String DPI_T = "dpi";
         final int textWidth = 8;
         String[] RATIO = new String[] {"UPDATE_EXTENT", "FIX_WIDTH", "FIX_HEIGHT"};
-        String[] RATIO_LABELS = new String[] {I18N.tr("Change extent"), "Update height to keep ratio", "Update width to keep ratio"};
+        String[] RATIO_LABELS = new String[] {I18N.tr("Change extent"),
+                I18N.tr("Update height to keep ratio"),
+                I18N.tr("Update width to keep ratio")};
         MultiInputPanel inputPanel = new MultiInputPanel(I18N.tr("Export parameters"));
 
         inputPanel.addInput(WIDTH_T,
