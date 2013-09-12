@@ -51,8 +51,8 @@ public class LocalizedText {
     /**
      * Builds a new instance of {@code LocalizedText} with the given {@code
      * String} and {@code Locale}.
-     * @param string
-     * @param l
+     * @param string The data string
+     * @param l The Locale associated to {@code string}
      */
     LocalizedText(String string, Locale l) {
         content = string;
@@ -61,7 +61,7 @@ public class LocalizedText {
 
     /**
      * Gets the content of this {@code LocalizedText}.
-     * @return
+     * @return The value contained in this {@code LocalizedText}.
      */
     public String getValue() {
         return content;
@@ -69,7 +69,7 @@ public class LocalizedText {
 
     /**
      * Sets the content of this {@code LocalizedText}.
-     * @param content
+     * @param content The new content of this {@code LocalizedText}.
      */
     public void setValue(String content) {
         this.content = content;
@@ -77,7 +77,7 @@ public class LocalizedText {
 
     /**
      * Gets the {@code Locale} associated to this text.
-     * @return
+     * @return The {@link Locale} associated to this {@code LocalizedText}
      */
     public Locale getLocale() {
         return locale;
@@ -86,7 +86,7 @@ public class LocalizedText {
             
     /**
      * Sets the {@code Locale} associated to this text.
-     * @param locale
+     * @param locale The new Locale for this {@code LocalizedText}.
      */
     public void setLocale(Locale locale) {
         this.locale = locale;
@@ -94,9 +94,9 @@ public class LocalizedText {
     
     /**
      * Separate a Locale from one to three parts
+     * Note: ([a-zA-Z]{2,8})-?([a-zA-Z]{2}|[0-9]{3})?-?([0-9a-zA-Z]*)? regex should work
      * @param localeRepresentation A string that conforms to the IETF BCP 47 standard
      * @return An array of [Language,Country,Variant]
-     * @note ([a-zA-Z]{2,8})-?([a-zA-Z]{2}|[0-9]{3})?-?([0-9a-zA-Z]*)? regex should work
      */
     public static String[] separateLocale(String localeRepresentation) {
             List<String> ret = new ArrayList<String>(3);
@@ -118,7 +118,7 @@ public class LocalizedText {
     /**
      * @param localeRepresentation  a string that conforms to the IETF BCP 47 standard
      * @return Locale instance or null if the specified string is not a valid Locale representation
-     * @see http://docs.oracle.com/javase/tutorial/i18n/locale/create.html#factory
+     * @link http://docs.oracle.com/javase/tutorial/i18n/locale/create.html#factory
      */
     public static Locale forLanguageTag(String localeRepresentation) {
             String[] parts = separateLocale(localeRepresentation);
@@ -139,8 +139,9 @@ public class LocalizedText {
     
     /**
      * Validation of the language part of the java.util.Locale
-     * @see http://docs.oracle.com/javase/7/docs/api/java/util/Locale.html#def_region
-     * @return 
+     * @link http://docs.oracle.com/javase/7/docs/api/java/util/Locale.html#def_region
+     * @param language the String we analyse
+     * @return true if the input String is a valid language
      */
     public static boolean validateLanguage(String language) {
             return language.matches("[a-zA-Z]{2,8}");
@@ -148,8 +149,9 @@ public class LocalizedText {
     
     /**
      * Validation of the country part of the java.util.Locale
-     * @see http://docs.oracle.com/javase/7/docs/api/java/util/Locale.html#def_region
-     * @return 
+     * @link http://docs.oracle.com/javase/7/docs/api/java/util/Locale.html#def_region
+     * @param country the String we analyse
+     * @return true if the input String is a valid country
      */
     public static boolean validateCountry(String country) {
             return country.matches("[a-zA-Z]{2}|[0-9]{3}");
@@ -157,8 +159,9 @@ public class LocalizedText {
     
     /**
      * Validation of the variant part of the java.util.Locale
-     * @see http://docs.oracle.com/javase/7/docs/api/java/util/Locale.html#def_region
-     * @return 
+     * @link http://docs.oracle.com/javase/7/docs/api/java/util/Locale.html#def_region
+     * @param variant the String we analyse
+     * @return true if the input String is a valid variant
      */
     public static boolean validateVariant(String variant) {
             return true;
@@ -168,7 +171,7 @@ public class LocalizedText {
      * Serialisation of a Locale, simple version of the java 7 function
      * @param locale A locale instance
      * @return A string that conforms to the IETF BCP 47 standard
-     * @see http://docs.oracle.com/javase/7/docs/api/java/util/Locale.html#toLanguageTag%28%29
+     * @link http://docs.oracle.com/javase/7/docs/api/java/util/Locale.html#toLanguageTag%28%29
      */
     public static String toLanguageTag(Locale locale) {
             String[] parts = locale.toString().split("_");
@@ -206,8 +209,8 @@ public class LocalizedText {
     }
     
     /**
-     * Gets the JAXB representation of this object.
-     * @return
+     * Gets the JaXB representation of this object.
+     * @return The JaXB representation of this object.
      */
     public LanguageStringType getJAXBType(){
         ObjectFactory of = new ObjectFactory();
@@ -222,7 +225,7 @@ public class LocalizedText {
      * {@code Locale} and content are equal.
      * @param obj
      * Hopefully a {@code LocalizedText} instance.
-     * @return
+     * @return true if the input and this are equal.
      */
     @Override
     public boolean equals(Object obj){

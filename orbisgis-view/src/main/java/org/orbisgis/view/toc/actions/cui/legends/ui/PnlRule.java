@@ -30,8 +30,10 @@ package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
+import org.orbisgis.view.toc.actions.cui.legends.components.DescriptionComponents;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -39,6 +41,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.EventHandler;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Rule UI.
@@ -91,9 +98,8 @@ public final class PnlRule extends JPanel implements ISELegendPanel {
                 JPanel panel = new JPanel(new MigLayout("wrap 3", "[align r][95][]"));
                 panel.setBorder(BorderFactory.createTitledBorder(
                         I18N.tr("Rule settings")));
-
-                // Title
-                panel.add(new JLabel(I18N.tr("Title")));
+                // Name
+                panel.add(new JLabel(I18N.tr("Name")));
 
                 txtName = new JTextField(rule.getName());
                 txtName.addFocusListener(
@@ -102,29 +108,16 @@ public final class PnlRule extends JPanel implements ISELegendPanel {
                 panel.add(txtName, "span 2, growx");
 
                 // Description
-                panel.add(new JLabel(I18N.tr("Description")));
-                JTextArea txtDescription = new JTextArea("");
-                txtDescription.setRows(6);
-                txtDescription.setLineWrap(true);
-                txtDescription.setWrapStyleWord(true);
-                txtDescription.addFocusListener(new FocusAdapter() {
-                    @Override
-                    public void focusGained(FocusEvent e) {
-                        if (!descriptionAlreadyFocused) {
-                            JOptionPane.showMessageDialog(
-                                    null,
-                                    "It is not yet possible to save descriptions.\n" +
-                                            "See https://github.com/irstv/orbisgis/issues/486.",
-                                    "Warning",
-                                    JOptionPane.WARNING_MESSAGE);
-                            descriptionAlreadyFocused = true;
-                        }
-                    }
-                });
-                txtDescription.addFocusListener(
-                        EventHandler.create(FocusListener.class, this,
-                                "setDescription", "source.text", "focusLost"));
-                panel.add(new JScrollPane(txtDescription), "span 2, growx");
+                //Locale
+                DescriptionComponents dc = new DescriptionComponents(rule.getDescription());
+                panel.add(dc.getFieldLabel(DescriptionComponents.LOCALE));
+                panel.add(dc.getFieldComponent(DescriptionComponents.LOCALE), "span 2, growx");
+                //Title
+                panel.add(dc.getFieldLabel(DescriptionComponents.TITLE));
+                panel.add(dc.getFieldComponent(DescriptionComponents.TITLE), "span 2, growx");
+                //Abstract
+                panel.add(dc.getFieldLabel(DescriptionComponents.ABSTRACT));
+                panel.add(dc.getFieldComponent(DescriptionComponents.ABSTRACT), "span 2, growx");
 
                 // Min scale
                 panel.add(new JLabel(I18N.tr("Min. scale")));
