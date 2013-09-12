@@ -28,6 +28,8 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.model;
 
+import org.orbisgis.core.renderer.se.AreaSymbolizer;
+import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 import org.orbisgis.legend.thematic.recode.RecodedArea;
@@ -56,6 +58,9 @@ public class ParametersEditorRecodedArea extends ParametersEditorMappedLegend<St
             String key = (String) getCellEditorValue();
             AreaParameters lp = rl.get(key);
             UniqueSymbolArea usl = new UniqueSymbolArea(lp);
+            if(!rl.isStrokeEnabled()){
+                usl.setPenStroke(new NullPenStrokeLegend());
+            }
             PnlUniqueAreaSE pls = new PnlUniqueAreaSE(usl, rl.isStrokeEnabled());
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 AreaParameters edited = usl.getAreaParameters();

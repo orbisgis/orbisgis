@@ -29,8 +29,11 @@
 package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
@@ -147,16 +150,41 @@ public final class PnlProportionalPointSE extends PnlProportional {
             usp.setSymbolUom(proportionalPoint.getSymbolUom());
             ConfigPanel cp = new ConfigPanel(usp);
             if(UIFactory.showDialog(cp)){
-                proportionalPoint.getPenStroke().setLineColor(usp.getPenStroke().getLineColor());
-                proportionalPoint.getPenStroke().setLineOpacity(usp.getPenStroke().getLineOpacity());
-                proportionalPoint.getPenStroke().setLineWidth(usp.getPenStroke().getLineWidth());
-                proportionalPoint.getPenStroke().setDashArray(usp.getPenStroke().getDashArray());
-                proportionalPoint.getFillLegend().setColor(usp.getFillLegend().getColor());
-                proportionalPoint.getFillLegend().setOpacity(usp.getFillLegend().getOpacity());
-                proportionalPoint.setWellKnownName(usp.getWellKnownName());
+                affectValues(usp);
                 getPreview().imageChanged();
             }
         }
+
+    /**
+     * Uses the configuration found in the given {@link UniqueSymbolPoint} to configure the
+     * Stroke, Fill and WKN of the attached ProportionalPoint.
+     * @param usp The input {@link UniqueSymbolPoint}.
+     */
+    private void affectValues(UniqueSymbolPoint usp){
+        boolean strokeNotNull = !(usp.getPenStroke() instanceof NullPenStrokeLegend);
+        boolean fillNotNull = !(usp.getFillLegend() instanceof NullSolidFillLegend);
+        if(strokeNotNull){
+            if(proportionalPoint.getPenStroke() instanceof NullPenStrokeLegend){
+                proportionalPoint.setPenStroke(new ConstantPenStrokeLegend());
+            }
+            proportionalPoint.getPenStroke().setLineColor(usp.getPenStroke().getLineColor());
+            proportionalPoint.getPenStroke().setLineOpacity(usp.getPenStroke().getLineOpacity());
+            proportionalPoint.getPenStroke().setLineWidth(usp.getPenStroke().getLineWidth());
+            proportionalPoint.getPenStroke().setDashArray(usp.getPenStroke().getDashArray());
+        } else {
+            proportionalPoint.setPenStroke(new NullPenStrokeLegend());
+        }
+        if(fillNotNull){
+            if(proportionalPoint.getFillLegend() instanceof NullSolidFillLegend){
+                proportionalPoint.setFillLegend(new ConstantSolidFillLegend(new SolidFill()));
+            }
+            proportionalPoint.getFillLegend().setColor(usp.getFillLegend().getColor());
+            proportionalPoint.getFillLegend().setOpacity(usp.getFillLegend().getOpacity());
+        } else {
+            proportionalPoint.setFillLegend(new NullSolidFillLegend());
+        }
+        proportionalPoint.setWellKnownName(usp.getWellKnownName());
+    }
 
     private class ConfigPanel extends JPanel implements UIPanel {
 

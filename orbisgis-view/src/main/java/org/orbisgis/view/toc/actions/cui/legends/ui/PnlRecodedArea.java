@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
@@ -122,6 +123,8 @@ public final class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>
         UniqueSymbolArea usa = new UniqueSymbolArea(lps);
         if(leg.isStrokeEnabled()){
             usa.setStrokeUom(leg.getStrokeUom());
+        } else {
+            usa.setStrokeLegend(new NullPenStrokeLegend());
         }
         PnlUniqueAreaSE pls = new PnlUniqueAreaSE(usa, leg.isStrokeEnabled());
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
