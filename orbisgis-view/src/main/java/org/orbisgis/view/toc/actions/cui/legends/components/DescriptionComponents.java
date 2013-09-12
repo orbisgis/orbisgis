@@ -26,8 +26,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Builds and offer a way to retrieve components that can be used together
- * to display and edits the properties of a {@link Description} object.
+ * Builds and offers a way to retrieve components that can be used together
+ * to display and edit the properties of a {@link Description} object.
  * @author Alexis Guéganno
  */
 public class DescriptionComponents {
