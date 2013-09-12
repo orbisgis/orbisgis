@@ -52,6 +52,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.common.Description;
 
 /**
  * Usable representation of SE styles. This is the upper node of the symbology
@@ -69,6 +70,7 @@ public final class Style extends AbstractSymbolizerNode {
     private ArrayList<Rule> rules;
     private ILayer layer;
     private boolean visible = true;
+    private Description description = new Description();
 
     protected PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);    
     
@@ -182,6 +184,17 @@ public final class Style extends AbstractSymbolizerNode {
                 this.addRule(new Rule(rt, this.layer));
             }
         }
+        if(fts.getDescription() != null){
+            description = new Description(fts.getDescription());
+        }
+    }
+
+    /**
+     * Gets the description associated to this style.
+     * @return The description associated to this style.
+     */
+    public Description getDescription(){
+        return description;
     }
 
     /**
@@ -257,6 +270,9 @@ public final class Style extends AbstractSymbolizerNode {
         List<RuleType> ruleTypes = ftst.getRule();
         for (Rule r : rules) {
             ruleTypes.add(r.getJAXBType());
+        }
+        if(description != null){
+            ftst.setDescription(description.getJAXBType());
         }
 
         ObjectFactory of = new ObjectFactory();
