@@ -4,6 +4,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.sif.SIFWizard;
 import org.orbisgis.sif.UIFactory;
@@ -80,6 +81,14 @@ public class LegendWizard {
         st.addRule(r);
         st.setName(wp.getName());
         return st;
+    }
+
+    /**
+     * Gets the Symbolizer contained in the configured Legend
+     * @return The configured Symbolizer.
+     */
+    public Symbolizer getSymbolizer(){
+        return wp.getInnerLegend().getLegend().getSymbolizer();
     }
 
 }

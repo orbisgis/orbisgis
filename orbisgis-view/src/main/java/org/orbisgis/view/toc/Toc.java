@@ -60,8 +60,11 @@ import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.classification.ClassificationMethodException;
+import org.orbisgis.core.renderer.se.CompositeSymbolizer;
+import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.SIFWizard;
 import org.orbisgis.sif.UIFactory;
@@ -234,6 +237,10 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         EventHandler.create(ActionListener.class, this, "onDeleteLayer"),null)
                         .setLogicalGroup(TocActionFactory.G_REMOVE));
             // Style actions
+            popupActions.addAction(new StyleAction(this,TocActionFactory.A_ADD_LEGEND,
+                    I18N.tr("Add legend"), I18N.tr("Add a legend in this style"),
+                    OrbisGISIcon.getIcon("add"),
+                    EventHandler.create(ActionListener.class, this, "onAddLegend"),null).setOnSingleStyleSelection(true));
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_SIMPLE_EDITION,
                     I18N.tr("Simple style editor"), I18N.tr("Open the simple editor for SE styles"),
                     OrbisGISIcon.getIcon("pencil"),
@@ -941,6 +948,32 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                 style.export(seFile);
                         }
                 }
+        }
+
+        /**
+         * Called by EventHandler. This methods opens a wizard for the configuration
+         * of a legend that will be added to the selected style in a dedicated Rule.
+         */
+        public void onAddLegend(){
+            Style[] styles = mapContext.getSelectedStyles();
+            if(styles.length == 1){
+                Style base = styles[0];
+                BeanLayer l = (BeanLayer) base.getLayer();
+                MapEditor editor = mapElement.getMapEditor();
+                MapTransform mt = editor.getMapControl().getMapTransform();
+                LegendWizard lw = new LegendWizard();
+                SIFWizard wizard = lw.getSIFWizard(l, mt);
+                if(UIFactory.showWizard(wizard)){
+                    Symbolizer sym = lw.getSymbolizer();
+                    Rule r = new Rule(l);
+                    CompositeSymbolizer cs = r.getCompositeSymbolizer();
+                    Symbolizer def = cs.getSymbolizerList().get(0);
+                    cs.removeSymbolizer(def);
+                    cs.addSymbolizer(sym);
+                    base.addRule(r);
+                    l.onStyleChanged(new PropertyChangeEvent(base, ILayer.PROP_STYLES, base, base));
+                }
+            }
         }
 
         /**
