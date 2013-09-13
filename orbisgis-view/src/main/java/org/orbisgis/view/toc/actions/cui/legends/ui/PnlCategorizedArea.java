@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.categorize.CategorizedArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
@@ -108,6 +109,8 @@ public final class PnlCategorizedArea extends PnlAbstractCategorized<AreaParamet
         UniqueSymbolArea usa = new UniqueSymbolArea(lps);
         if(leg.isStrokeEnabled()){
             usa.setStrokeUom(leg.getStrokeUom());
+        } else {
+            usa.setStrokeLegend(new NullPenStrokeLegend());
         }
         PnlUniqueAreaSE pls = new PnlUniqueAreaSE(usa, leg.isStrokeEnabled());
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
