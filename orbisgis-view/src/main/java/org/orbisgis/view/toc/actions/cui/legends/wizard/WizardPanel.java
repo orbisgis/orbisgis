@@ -13,7 +13,10 @@ import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import java.awt.Component;
 import java.net.URL;
 
@@ -31,6 +34,7 @@ public class WizardPanel implements UIPanel, LegendContext {
     private JPanel jp;
     private ILayer layer;
     private MapTransform mt;
+    private JTextField field;
 
     /**
      * Builds the WizardPanel. The objects it will create will be linked to {@code l}.
@@ -46,7 +50,6 @@ public class WizardPanel implements UIPanel, LegendContext {
                     ? SimpleGeometryType.ALL
                     : SimpleGeometryType.getSimpleType(type);
             mt = m;
-
         } catch (DriverException e) {
             LOGGER.error("Error while reading the data source");
         }
@@ -65,18 +68,46 @@ public class WizardPanel implements UIPanel, LegendContext {
 
     @Override
     public String validateInput() {
-        return null;
+        StringBuilder sb = new StringBuilder();
+        if(field.getText().isEmpty()){
+            sb.append(I18N.tr("The name shall not be empty."));
+        }
+        if(inner != null){
+            String s = inner.validateInput();
+            if(s!=null){
+                sb.append("\n");
+                sb.append(s);
+            }
+        }
+        String ret = sb.toString();
+        return ret.isEmpty() ? null : ret;
     }
 
     @Override
     public Component getComponent() {
         if(jp == null){
-            jp = new JPanel();
-            if(inner != null){
-                jp.add(inner.getComponent());
-            }
+            prepareJPanel();
         }
         return jp;
+    }
+
+    /**
+     * Prepare the inner JPanel.
+     */
+    private void prepareJPanel(){
+        jp = new JPanel();
+        BoxLayout layout = new BoxLayout(jp, BoxLayout.PAGE_AXIS);
+        jp.setLayout(layout);
+        JPanel text = new JPanel();
+        text.add(new JLabel(I18N.tr("Name")));
+        field = new JTextField(25);
+        text.add(field);
+        text.setAlignmentX(Component.CENTER_ALIGNMENT);
+        jp.add(text);
+        if(inner != null){
+            jp.add(inner.getComponent());
+        }
+
     }
 
     /**
@@ -86,7 +117,7 @@ public class WizardPanel implements UIPanel, LegendContext {
      */
     public void setInnerLegend(ILegendPanel ilp){
         if(jp==null){
-            jp = new JPanel();
+            prepareJPanel();
         }
         if(inner != null){
             Component comp = inner.getComponent();
@@ -98,6 +129,14 @@ public class WizardPanel implements UIPanel, LegendContext {
         if(ilp !=null){
             jp.add(inner.getComponent());
         }
+    }
+
+    /**
+     * Gets the name that has been entered by the user.
+     * @return The name entered by the user.
+     */
+    public String getName(){
+        return field.getText();
     }
 
     /**

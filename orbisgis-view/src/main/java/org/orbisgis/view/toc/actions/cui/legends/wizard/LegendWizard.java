@@ -78,6 +78,7 @@ public class LegendWizard {
         Rule r = new Rule();
         r.getCompositeSymbolizer().addSymbolizer(legend.getSymbolizer());
         st.addRule(r);
+        st.setName(wp.getName());
         return st;
     }
 
