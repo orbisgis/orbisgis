@@ -63,6 +63,7 @@ import org.orbisgis.core.renderer.classification.ClassificationMethodException;
 import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sif.SIFWizard;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.OpenFilePanel;
@@ -87,6 +88,7 @@ import org.orbisgis.view.table.TableEditableElement;
 import org.orbisgis.view.toc.actions.*;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.SimpleStyleEditor;
+import org.orbisgis.view.toc.actions.cui.legends.wizard.LegendWizard;
 import org.orbisgis.view.toc.ext.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -947,10 +949,16 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         public void onAddStyle() {
                 ILayer[] layers = mapContext.getSelectedLayers();
                 if (layers.length == 1) {
+                    LegendWizard lw = new LegendWizard();
                     ILayer layer = layers[0];
                     if (isStyleAllowed(layer)) {
-                        Style s = new Style(layer, true);
-                        layer.addStyle(s);
+                        MapEditor editor = mapElement.getMapEditor();
+                        MapTransform mt = editor.getMapControl().getMapTransform();
+                        SIFWizard wizard = lw.getSIFWizard(layer, mt);
+                        if(UIFactory.showWizard(wizard)){
+                            Style s = lw.getStyle();
+                            layer.addStyle(s);
+                        }
                     } else {
                         LOGGER.info("This functionality is not supported.");
                     }
@@ -1034,7 +1042,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                 final Layer layer = (Layer) style.getLayer();
                                 if(isStyleAllowed(layer)){
                                     final int index = layer.indexOf(style);
-
                                     //In order to be able to cancel all of our modifications,
                                     //we produce a copy of our style.
                                     MapEditor editor = mapElement.getMapEditor();
