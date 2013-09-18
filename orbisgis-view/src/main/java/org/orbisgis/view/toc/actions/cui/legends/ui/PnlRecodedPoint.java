@@ -181,7 +181,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
             setLegendImpl((RecodedPoint)legend);
             this.buildUI();
         } else {
-            throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedArea instances in"
+            throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedArea instances in "
                         + "this panel."));
         }
     }
