@@ -220,7 +220,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
 
 
             popupActions.addAction(new LayerAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
-                    I18N.tr("Add layer group"),I18N.tr("Add a the layer group to the map context"),
+                    I18N.tr("Add layer group"),I18N.tr("Add layer group to the map context"),
                     OrbisGISIcon.getIcon("add"),
                     EventHandler.create(ActionListener.class, this, "onAddGroup"),null)
                         .setOnLayerGroup(true)
