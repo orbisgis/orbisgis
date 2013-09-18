@@ -169,7 +169,7 @@ public final class PnlCategorizedArea extends PnlAbstractCategorized<AreaParamet
             setLegendImpl((CategorizedArea)legend);
             this.buildUI();
         } else {
-            throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in"
+            throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in "
                     + "this panel."));
         }
     }
