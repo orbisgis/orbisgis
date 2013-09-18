@@ -1055,7 +1055,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                                 Style s2 = new Style(jaxbElement, layer);
                                                 layer.setStyle(index, s2);
                                             } catch (SeExceptions.InvalidStyle invalidStyle) {
-                                                LOGGER.error(I18N.tr("You produced an invalid style while copying" +
+                                                LOGGER.error(I18N.tr("You produced an invalid style while copying " +
                                                         "a valid one. Things are getting really wrong here."));
                                             }
                                         }
