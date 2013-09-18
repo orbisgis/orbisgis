@@ -163,7 +163,7 @@ public final class PnlCategorizedLine extends PnlAbstractCategorized<LineParamet
             setLegendImpl((CategorizedLine)legend);
             this.buildUI();
         } else {
-            throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in"
+            throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in "
                     + "this panel."));
         }
     }
