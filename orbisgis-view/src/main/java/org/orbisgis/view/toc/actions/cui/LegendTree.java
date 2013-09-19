@@ -370,7 +370,7 @@ public class LegendTree extends JPanel {
     private void addLegend() {
         LegendUIChooser legendPicker = new LegendUIChooser(simpleStyleEditor);
 
-        if (UIFactory.showDialog(legendPicker)) {
+        if (UIFactory.showDialog(legendPicker, true, true)) {
             // Recover the panel that was selected when the user clicked OK.
             ILegendPanel ilp = legendPicker.getSelectedPanel();
 
