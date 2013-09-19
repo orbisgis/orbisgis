@@ -462,6 +462,10 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters>
             PenStroke stroke = new PenStroke();
             mg.setStroke(stroke);
             ps = new RecodedPenStroke(stroke);
+            String lfn = fill.getRecodedLegends().get(0).getValueReference().getColumnName();
+            for( RecodedLegend rl : ps.getRecodedLegends()){
+                rl.setField(lfn);
+            }
         } else if(!enable && ps != null){
             mg.setStroke(null);
             ps = null;
