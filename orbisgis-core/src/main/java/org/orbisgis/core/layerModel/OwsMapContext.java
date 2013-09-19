@@ -51,6 +51,8 @@ import net.opengis.ows_context.OWSContextType;
 import net.opengis.ows_context.ObjectFactory;
 import net.opengis.ows_context.OnlineResourceType;
 import net.opengis.ows_context.ResourceListType;
+import net.opengis.ows_context.SLDType;
+import net.opengis.ows_context.StyleListType;
 import net.opengis.ows_context.StyleType;
 import net.opengis.ows_context.URLType;
 import org.apache.log4j.Logger;
@@ -58,8 +60,8 @@ import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.driver.DriverException;
+import org.gdms.source.Source;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
@@ -75,7 +77,6 @@ import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.core.renderer.se.common.LocalizedText;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.utils.FileUtils;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -406,11 +407,67 @@ public final class OwsMapContext extends BeanMapContext {
                         ILayer[] rootLayers = layerModel.getChildren();
                         for (ILayer layer : rootLayers) {
                                 if(layer.isSerializable()){
-                                        rootLayerList.add(layer.getJAXBElement());
+                                        rootLayerList.add(createJAXBFromLayer(layer, this));
                                 }
                         }
                 }
                 return mapContextSerialisation;
+        }
+
+        private static LayerType createJAXBFromLayer(ILayer layer, MapContext mapContext) {
+            ObjectFactory ows_context_factory = new ObjectFactory();
+            LayerType layerType = ows_context_factory.createLayerType();
+            Description description = layer.getDescription();
+            description.initJAXBType(layerType);
+            layerType.setHidden(!layer.isVisible());
+            ILayer[] childrens = layer.getChildren();
+            for(ILayer child : childrens) {
+                if(child.isSerializable()){
+                    layerType.getLayer().add(createJAXBFromLayer(child, mapContext));
+                }
+            }
+            // If not a Layer Collection
+            if(layer.getStyles()!=null) {
+                StyleListType slt = ows_context_factory.createStyleListType();
+                layerType.setStyleList(slt);
+                for(Style style : layer.getStyles()) {
+                    StyleType st = ows_context_factory.createStyleType();
+                    slt.getStyle().add(st);
+                    SLDType sltType = ows_context_factory.createSLDType();
+                    st.setSLD(sltType);
+                    sltType.setAbstractStyle(style.getJAXBElement());
+                }
+            }
+            DataSource dataSource = layer.getDataSource();
+            //Serialisation of dataSource as a DataUrl string
+            if(dataSource!=null) {
+                //Create jaxb instances
+                URLType dataURL = ows_context_factory.createURLType();
+                OnlineResourceType resource = ows_context_factory.createOnlineResourceType();
+                dataURL.setOnlineResource(resource);
+                //Retrieve data source properties
+                Source src = dataSource.getSource();
+                //Serialisation of the data source into a single string
+                String resourceSerialisation = "";
+                try {
+                    URI srcUri = src.getURI();
+                    if(srcUri!=null) {
+                        // If file, use MapContext relative path
+                        if(srcUri.getScheme().equalsIgnoreCase("file") && mapContext.getLocation() != null) {
+                            srcUri = srcUri.relativize(mapContext.getLocation());
+                        }
+                        resourceSerialisation = srcUri.toString();
+                    }
+                } catch (DriverException ex) {
+                    LOGGER.error(I18N.tr("Unable to serialise the data source of layer {0}",layer.getName()),ex);
+                }
+
+                resource.setHref(resourceSerialisation);
+                if(!resourceSerialisation.isEmpty()) {
+                    layerType.setDataURL(dataURL);
+                }
+            }
+            return layerType;
         }
 
         @Override

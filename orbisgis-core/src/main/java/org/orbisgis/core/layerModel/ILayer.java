@@ -128,17 +128,11 @@ public interface ILayer {
 
 	ILayer getParent();
 
-        /**
-         * Create a jaxb instance of this layer for serialisation
-         * @return The layer serialisation object
-         */
-        LayerType getJAXBElement();
-
-        /**
-         * Returns true if and only if we can serialize this layer in a map context.
-         * @return
-         */
-        boolean isSerializable();
+    /**
+     * Returns true if and only if we can serialize this layer in a map context.
+     * @return
+     */
+    boolean isSerializable();
                 
 	/**
 	 * Removes the specified child layer.
