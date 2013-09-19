@@ -128,5 +128,6 @@ public class OwsMapContextTest extends AbstractTest  {
         assertEquals(1, layers.length);
         assertEquals(1, layers[0].getStyles().size());
         assertEquals("ColorByType", layers[0].getStyle(0).getName());
+        assertEquals(1234, layers[0].getDataSource().getRowCount());
     }
 }
