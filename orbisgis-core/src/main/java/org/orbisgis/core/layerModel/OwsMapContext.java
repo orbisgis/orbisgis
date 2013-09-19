@@ -427,7 +427,7 @@ public final class OwsMapContext extends BeanMapContext {
                 }
             }
             // If not a Layer Collection
-            if(layer.getStyles()!=null) {
+            if(!(layer instanceof LayerCollection) && layer.getStyles()!=null) {
                 StyleListType slt = ows_context_factory.createStyleListType();
                 layerType.setStyleList(slt);
                 for(Style style : layer.getStyles()) {
@@ -582,7 +582,7 @@ public final class OwsMapContext extends BeanMapContext {
                                         // Resolve the relative resource ex: new Uri("myFile.shp")
                                         layerURI = getLocation().resolve(layerURI);
                                     } catch (IllegalArgumentException ex) {
-                                        LOGGER.warn("Error while trying to find an absolute path for an external resource", ex);
+                                        LOGGER.warn(I18N.tr("Error while trying to find an absolute path for an external resource"), ex);
                                     }
                                 }
                                 //Get table name
