@@ -29,6 +29,8 @@
 package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
+
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -454,7 +456,10 @@ public final class OwsMapContext extends BeanMapContext {
                     if(srcUri!=null) {
                         // If file, use MapContext relative path
                         if(srcUri.getScheme().equalsIgnoreCase("file") && mapContext.getLocation() != null) {
-                            srcUri = srcUri.relativize(mapContext.getLocation());
+                            URI parentFolderURI = new File(mapContext.getLocation()).getParentFile().toURI();
+                            srcUri = parentFolderURI.relativize(srcUri);
+                        } else {
+                            resourceSerialisation = srcUri.toString();
                         }
                         resourceSerialisation = srcUri.toString();
                     }

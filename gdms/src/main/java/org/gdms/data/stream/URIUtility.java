@@ -30,11 +30,15 @@
 package org.gdms.data.stream;
 
 import org.apache.log4j.Logger;
+import scala.actors.threadpool.Arrays;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -92,5 +96,50 @@ public class URIUtility {
             }
         }
         return keyValues.toString();
+    }
+
+    /**
+     *
+     * @param base
+     * @param target
+     * @return
+     * @throws IllegalArgumentException
+     */
+    public static URI relativize(URI base,URI target) {
+        if(!base.getScheme().equals(target.getScheme())) {
+            return target;
+        }
+        StringBuilder rel = new StringBuilder();
+        String path = base.getPath();
+        String separator = "/";
+        if(base.getScheme().equalsIgnoreCase("file")) {
+            separator = File.separator;
+        }
+        String[] targetProcess = target.getPath().split(separator);
+        int partId = 0;
+        for(String basePart : path.split(separator)) {
+            if(!basePart.isEmpty()) {
+                String targetPart = targetProcess[partId];
+                while(targetPart.isEmpty() && partId < targetProcess.length) {
+                    partId++;
+                    targetPart = targetProcess[partId];
+                }
+                if(!basePart.equals(targetPart)) {
+                    rel.append("..");
+                    rel.append(separator);
+                } else {
+                    partId++;
+                }
+            }
+        }
+        // Add unprocessed parts
+        for(; partId < targetProcess.length; partId++) {
+            String targetPart = targetProcess[partId];
+            rel.append(targetPart);
+            if(partId+1 < targetProcess.length) {
+                rel.append(separator);
+            }
+        }
+        return URI.create(rel.toString());
     }
 }

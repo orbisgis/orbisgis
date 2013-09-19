@@ -52,4 +52,21 @@ public class URIUtilityTest {
         assertEquals("EPSG:27572",query.get("crs"));
         assertEquals("image/png",query.get("format"));
     }
+
+    @Test
+    public void testRelativize() throws Exception {
+        URI rel = new URI("file:///home/user/OrbisGIS/maps/landcover/bla/text.txt");
+        URI folder = new URI("file:///home/user/OrbisGIS/maps/landcover/folder/");
+        assertEquals("../bla/text.txt", URIUtility.relativize(folder, rel).toString());
+        rel = new URI("file:///home/user/OrbisGIS/maps/landcover/text.txt");
+        assertEquals("../text.txt", URIUtility.relativize(folder, rel).toString());
+        rel = new URI("file:///home/user/OrbisGIS/maps/text.txt");
+        assertEquals("../../text.txt", URIUtility.relativize(folder, rel).toString());
+        rel = new URI("file:///home/user/OrbisGIS/maps/landcover/folder/text.txt");
+        assertEquals("text.txt", URIUtility.relativize(folder, rel).toString());
+        rel = new URI("file:///home/user/OrbisGIS/maps/landcover/folder/sub/text.txt");
+        assertEquals("sub/text.txt", URIUtility.relativize(folder, rel).toString());
+        rel = new URI("file:///home/user/OrbisGIS/text.txt");
+        assertEquals("../../../text.txt", URIUtility.relativize(folder, rel).toString());
+    }
 }
