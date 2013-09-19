@@ -515,7 +515,46 @@ public final class OwsMapContext extends BeanMapContext {
                         //it corresponding to a leaf layer
                         //We need to read the data declaration and create the layer
                         URLType dataUrl = lt.getDataURL();
-                        DataSource layerSource = null;
+                        if (dataUrl != null) {
+                            OnlineResourceType resType = dataUrl.getOnlineResource();
+                            try {
+                                URI layerURI = new URI(resType.getHref());
+                                // The resource is given as relative to MapContext location
+                                if(!layerURI.isAbsolute() && getLocation()!=null) {
+                                    try {
+                                        // Resolve the relative resource ex: new Uri("myFile.shp")
+                                        layerURI = getLocation().resolve(layerURI);
+                                    } catch (IllegalArgumentException ex) {
+                                        LOGGER.warn("Error while trying to find an absolute path for an external resource", ex);
+                                    }
+                                }
+                                //Get table name
+                                ILayer leafLayer;
+                                try {
+                                    leafLayer = createLayer(registerLayerResource(layerURI));
+                                } catch (Exception ex) {
+                                    throw new LayerException(I18N.tr("Unable to load the data source uri {0}.", resType.getHref()), ex);
+                                }
+                                leafLayer.setDescription(new Description(lt));
+                                leafLayer.setVisible(!lt.isHidden());
+                                //Parse styles
+                                if(lt.isSetStyleList()) {
+                                    for(StyleType st : lt.getStyleList().getStyle()) {
+                                        if(st.isSetSLD()) {
+                                            if(st.getSLD().isSetAbstractStyle()) {
+                                                leafLayer.addStyle(new Style((JAXBElement<net.opengis.se._2_0.core.StyleType>)st.getSLD().getAbstractStyle(), leafLayer));
+                                            }
+                                        }
+                                    }
+                                }
+                                parentLayer.addLayer(leafLayer);
+                            } catch (URISyntaxException ex) {
+                                throw new LayerException(I18N.tr("Unable to parse the href URI {0}.", resType.getHref()), ex);
+                            } catch (InvalidStyle ex) {
+                                throw new LayerException(I18N.tr("Unable to load the description of the layer {0}", lt.getTitle().toString()), ex);
+                            }
+                        }
+                        /*
                         if (dataUrl != null) {
                                 OnlineResourceType resType = dataUrl.getOnlineResource();
                                 if (resType != null) {
@@ -549,6 +588,7 @@ public final class OwsMapContext extends BeanMapContext {
                                         throw new LayerException(I18N.tr("Unable to load the description of the layer {0}", lt.getTitle().toString()), ex);
                                 }
                         }
+                        */
                 }
         }
 

@@ -155,6 +155,7 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
         private OwsMapContext getMapContext() throws FileNotFoundException {
                 OwsMapContext mapContext = new OwsMapContext();
                 mapContext.read(new FileInputStream(getFilePath()));
+                mapContext.setLocation(getFilePath().toURI());
                 return mapContext;
         }
 

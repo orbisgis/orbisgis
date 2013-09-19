@@ -31,6 +31,8 @@ package org.orbisgis.core.layerModel;
 import com.vividsolutions.jts.geom.Envelope;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.net.URI;
+
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.common.Description;
 
@@ -50,6 +52,20 @@ public abstract class BeanMapContext implements MapContext {
         protected ILayer layerModel;
         protected int epsg_code = -1;
         protected Description description = new Description();
+        protected URI location;
+
+
+        @Override
+        public URI getLocation() {
+            return location;
+        }
+
+        @Override
+        public void setLocation(URI location) {
+            URI oldLocation = this.location;
+            this.location = location;
+            propertyChangeSupport.firePropertyChange(PROP_LOCATION, oldLocation, this.location);
+        }
         
         @Override
         public Description getDescription() {
