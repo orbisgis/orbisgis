@@ -297,8 +297,6 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters>
         if(ps != null) {
             MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getChildren().get(0);
             mg.getStroke().setUom(u);
-        } else {
-            LOGGER.error("Cannot set the stroke UOM because the ps is null.");
         }
     }
 
