@@ -32,6 +32,8 @@ import com.vividsolutions.jts.geom.Envelope;
 import java.beans.PropertyChangeListener;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+
 import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Style;
@@ -52,6 +54,17 @@ public interface MapContext {
         public static final String PROP_LAYERMODEL = "layerModel";
         public static final String PROP_COORDINATEREFERENCESYSTEM = "coordinateReferenceSystem";
         public static final String PROP_DESCRIPTION = "description";
+        public static final String PROP_LOCATION = "location";
+
+        /**
+         * @param location Location of this resource, it is used to find non-absolute URI of OnlineResource in the map context.
+         */
+        public void setLocation(URI location);
+
+        /**
+         * @return Location where this map context is (about to be) stored
+         */
+        public URI getLocation();
 
         /**
          * Get the value of description
