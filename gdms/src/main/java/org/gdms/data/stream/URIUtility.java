@@ -99,9 +99,9 @@ public class URIUtility {
     }
 
     /**
-     *
-     * @param base
-     * @param target
+     * Enhanced version of URI.relativize, the target can now be in parent folder of base URI.
+     * @param base Base uri, location from where to relativize.
+     * @param target Target uri, final destination of returned URI.
      * @return Non-absolute URI, or target if target scheme is different than base scheme.
      * @throws IllegalArgumentException
      */
