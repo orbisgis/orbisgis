@@ -31,9 +31,13 @@ package org.orbisgis.view.map.mapsManager;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -66,11 +70,14 @@ public class MapsManager extends JPanel {
         private static final long serialVersionUID = 1L;
         private static final I18n I18N = I18nFactory.getI18n(MapsManager.class);
         private FileTree tree;
+        private DefaultTreeModel treeModel;
         private MutableTreeNode rootNode = new DefaultMutableTreeNode();
         private TreeNodeFolder rootFolder;
         private TreeNodeRemoteRoot rootRemote;
         private JScrollPane scrollPane;
         private File loadedMap;
+        private MapsManagerPersistence mapsManagerPersistence;
+
         // Store all the compatible map context
         
         private AtomicBoolean initialized = new AtomicBoolean(false);
@@ -79,7 +86,7 @@ public class MapsManager extends JPanel {
          */
         public MapsManager() {
                 super(new BorderLayout());
-            DefaultTreeModel treeModel = new FileTreeModel(rootNode, true);
+                treeModel = new FileTreeModel(rootNode, true);
                 treeModel.setAsksAllowsChildren(true);
                 // Add the tree in the panel                
                 tree = new FileTree(treeModel);
@@ -114,7 +121,49 @@ public class MapsManager extends JPanel {
          */
         public void setMapsManagerPersistence(MapsManagerPersistence mapsManagerPersistence) {
             rootRemote.setMapsManagerPersistence(mapsManagerPersistence);
+            this.mapsManagerPersistence = mapsManagerPersistence;
+            // Track property change
+            mapsManagerPersistence.addPropertyChangeListener(MapsManagerPersistence.PROP_FOLDER_LIST,
+                    EventHandler.create(PropertyChangeListener.class, this, "onFolderListPropertyChange","newValue"));
+            onFolderListPropertyChange(mapsManagerPersistence.getMapCatalogFolderList());
         }
+
+        /**
+         * Sync shown user map folders with provided list of folder absolute path.
+         * A lister raise this event when the GUI persistence properties change.
+         */
+        public void onFolderListPropertyChange(List<String> userMapFolders) {
+            // Build list of shown user root folder
+            List<TreeNodeFolder> userRootFolders = new ArrayList<TreeNodeFolder>(rootNode.getChildCount());
+            for(int childId = 0; childId < rootNode.getChildCount(); childId ++) {
+                TreeNode node = rootNode.getChildAt(childId);
+                if(node instanceof TreeNodeFolder && !node.equals(rootFolder)) {
+                    userRootFolders.add((TreeNodeFolder)node);
+                }
+            }
+            Map<File, TreeNodeFolder> currentShownUserFolder = new HashMap<File, TreeNodeFolder>(userRootFolders.size());
+            for(TreeNodeFolder treeNodeFolder : userRootFolders) {
+                currentShownUserFolder.put(treeNodeFolder.getFilePath(), treeNodeFolder);
+            }
+            for(String userMapFolder : userMapFolders) {
+                File userMapPath = new File(userMapFolder);
+                if(currentShownUserFolder.containsKey(userMapPath)) {
+                    // This folder was already shown in the GUI
+                    // Elements in currentShownUserFolder will be removed from gui after
+                    // Then remove from the map in order to keep them in the gui
+                    currentShownUserFolder.remove(userMapPath);
+                } else if(userMapPath.exists()) {
+                    // This folder was not shown in the GUI
+                    TreeNodeFolder subDir = new TreeNodeFolder(userMapPath, tree);
+                    treeModel.insertNodeInto(subDir, rootNode, 0);
+                }
+            }
+            // Remove user dir not anymore in GUI
+            for(TreeNodeFolder removeFolder : currentShownUserFolder.values()) {
+                treeModel.removeNodeFromParent(removeFolder);
+            }
+        }
+
         /**
          * Used by the UI to convert a File into a MapElement
          * @return The Map file factory manager
@@ -126,7 +175,12 @@ public class MapsManager extends JPanel {
          * Update the shown elements in the disk tree
          */
         public void updateDiskTree() {
-                rootFolder.updateTree();
+                for(int childId = 0; childId < rootNode.getChildCount(); childId ++) {
+                    TreeNode node = rootNode.getChildAt(childId);
+                    if(node instanceof TreeNodeFolder && !node.equals(rootFolder)) {
+                        ((TreeNodeFolder)node).updateTree();
+                    }
+                }
                 applyLoadedMapHint();
         }
         private List<TreeLeafMapElement> getAllMapElements(TreeNode parentNode) {
