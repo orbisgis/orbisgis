@@ -73,9 +73,10 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTreeNode, TreeNodePath, DropDestinationTreeNode, DragTreeNode {
         private File folderPath;
-        private static final Logger LOGGER = Logger.getLogger("gui." + TreeNodeFolder.class);
-        private static final I18n I18N = I18nFactory.getI18n(TreeNodeFolder.class);
+        protected static final Logger LOGGER = Logger.getLogger("gui." + TreeNodeFolder.class);
+        protected static final I18n I18N = I18nFactory.getI18n(TreeNodeFolder.class);
         private TreeNodeFileFactoryManager factoryManager;
+        private boolean loaded = false;
 
         /**
          * @param folderPath
@@ -97,12 +98,19 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                 // Only sub folder can be renamed
                 setEditable(mtn instanceof TreeNodeFolder);
         }
-        
-        
+
+        /**
+         * @param loaded If false, it will be refresh on request
+         */
+        public void setLoaded(boolean loaded) {
+            this.loaded = loaded;
+        }
+
         /**
          * Read the file system and insert the new files and folders
          */
-        public void updateTree() {    
+        public void updateTree() {
+                loaded = true;
                 List<String> fsList;
                 try {
                         fsList = new ArrayList<String>(Arrays.asList(getFilePath().list()));
@@ -121,7 +129,8 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                                 } else {
                                         fsList.remove(childFileName);
                                         if(child instanceof TreeNodeFolder) {
-                                                ((TreeNodeFolder)child).updateTree();
+                                                ((TreeNodeFolder)child).setLoaded(false);
+                                                model.nodeChanged(child);
                                         }
                                 }
                         }
@@ -135,18 +144,26 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                         File newChild = new File(getFilePath(), childPath);
                         if (newChild.isDirectory()) {
                                 TreeNodeFolder subDir = new TreeNodeFolder(newChild, factoryManager);
-                                model.insertNodeInto(subDir, this, getChildCount());
-                                subDir.updateTree();
+                                model.insertNodeInto(subDir, this, children.size());
                         } else {
                                 AbstractTreeNode child = factoryManager.create(newChild);
                                 if (child != null) {
-                                        model.insertNodeInto(child, this, getChildCount());
+                                        model.insertNodeInto(child, this, children.size());
                                 }
                         }
                 }
-        }        
+        }
 
         @Override
+        public int getChildCount() {
+            if(!loaded) {
+                // Load from disk
+                updateTree();
+            }
+            return super.getChildCount();
+        }
+
+    @Override
         public void setUserObject(Object o) {
                 //User set the folder name
                 File curPath = getFilePath();
