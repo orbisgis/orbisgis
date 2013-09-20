@@ -31,13 +31,15 @@ package org.orbisgis.core;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Locale;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.core.map.export.MapImageWriter;
@@ -113,5 +115,19 @@ public class OwsMapContextTest extends AbstractTest  {
         FileOutputStream out = new FileOutputStream(new File("target/mapExportTest.png"));
         mapImageWriter.setFormat(MapImageWriter.Format.PNG);
         mapImageWriter.write(out, new NullProgressMonitor());
+    }
+
+    @Test
+    public void testRelativeResources() throws Exception {
+        MapContext mc = new OwsMapContext();
+        File mapPath = new File("src/test/resources/data/landcover2000.ows");
+        mc.read(new FileInputStream(mapPath));
+        mc.setLocation(mapPath.toURI());
+        mc.open(null);
+        ILayer[] layers = mc.getLayers();
+        assertEquals(1, layers.length);
+        assertEquals(1, layers[0].getStyles().size());
+        assertEquals("ColorByType", layers[0].getStyle(0).getName());
+        assertEquals(1234, layers[0].getDataSource().getRowCount());
     }
 }

@@ -29,6 +29,8 @@
 package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
+
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -51,6 +53,8 @@ import net.opengis.ows_context.OWSContextType;
 import net.opengis.ows_context.ObjectFactory;
 import net.opengis.ows_context.OnlineResourceType;
 import net.opengis.ows_context.ResourceListType;
+import net.opengis.ows_context.SLDType;
+import net.opengis.ows_context.StyleListType;
 import net.opengis.ows_context.StyleType;
 import net.opengis.ows_context.URLType;
 import org.apache.log4j.Logger;
@@ -58,8 +62,9 @@ import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SourceAlreadyExistsException;
+import org.gdms.data.stream.URIUtility;
 import org.gdms.driver.DriverException;
+import org.gdms.source.Source;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
@@ -75,7 +80,6 @@ import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.core.renderer.se.common.LocalizedText;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.utils.FileUtils;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -406,11 +410,69 @@ public final class OwsMapContext extends BeanMapContext {
                         ILayer[] rootLayers = layerModel.getChildren();
                         for (ILayer layer : rootLayers) {
                                 if(layer.isSerializable()){
-                                        rootLayerList.add(layer.getJAXBElement());
+                                        rootLayerList.add(createJAXBFromLayer(layer, this));
                                 }
                         }
                 }
                 return mapContextSerialisation;
+        }
+
+        private static LayerType createJAXBFromLayer(ILayer layer, MapContext mapContext) {
+            ObjectFactory ows_context_factory = new ObjectFactory();
+            LayerType layerType = ows_context_factory.createLayerType();
+            Description description = layer.getDescription();
+            description.initJAXBType(layerType);
+            layerType.setHidden(!layer.isVisible());
+            ILayer[] childrens = layer.getChildren();
+            for(ILayer child : childrens) {
+                if(child.isSerializable()){
+                    layerType.getLayer().add(createJAXBFromLayer(child, mapContext));
+                }
+            }
+            // If not a Layer Collection
+            if(!(layer instanceof LayerCollection) && layer.getStyles()!=null) {
+                StyleListType slt = ows_context_factory.createStyleListType();
+                layerType.setStyleList(slt);
+                for(Style style : layer.getStyles()) {
+                    StyleType st = ows_context_factory.createStyleType();
+                    slt.getStyle().add(st);
+                    SLDType sltType = ows_context_factory.createSLDType();
+                    st.setSLD(sltType);
+                    sltType.setAbstractStyle(style.getJAXBElement());
+                }
+            }
+            DataSource dataSource = layer.getDataSource();
+            //Serialisation of dataSource as a DataUrl string
+            if(dataSource!=null) {
+                //Create jaxb instances
+                URLType dataURL = ows_context_factory.createURLType();
+                OnlineResourceType resource = ows_context_factory.createOnlineResourceType();
+                dataURL.setOnlineResource(resource);
+                //Retrieve data source properties
+                Source src = dataSource.getSource();
+                //Serialisation of the data source into a single string
+                String resourceSerialisation = "";
+                try {
+                    URI srcUri = src.getURI();
+                    if(srcUri!=null) {
+                        // If file, use MapContext relative path
+                        if(srcUri.getScheme().equalsIgnoreCase("file") && mapContext.getLocation() != null) {                            URI parentFolderURI = new File(mapContext.getLocation()).getParentFile().toURI();
+                            srcUri = URIUtility.relativize(mapContext.getLocation(), srcUri);
+                        } else {
+                            resourceSerialisation = srcUri.toString();
+                        }
+                        resourceSerialisation = srcUri.toString();
+                    }
+                } catch (DriverException ex) {
+                    LOGGER.error(I18N.tr("Unable to serialise the data source of layer {0}",layer.getName()),ex);
+                }
+
+                resource.setHref(resourceSerialisation);
+                if(!resourceSerialisation.isEmpty()) {
+                    layerType.setDataURL(dataURL);
+                }
+            }
+            return layerType;
         }
 
         @Override
@@ -515,7 +577,46 @@ public final class OwsMapContext extends BeanMapContext {
                         //it corresponding to a leaf layer
                         //We need to read the data declaration and create the layer
                         URLType dataUrl = lt.getDataURL();
-                        DataSource layerSource = null;
+                        if (dataUrl != null) {
+                            OnlineResourceType resType = dataUrl.getOnlineResource();
+                            try {
+                                URI layerURI = new URI(resType.getHref());
+                                // The resource is given as relative to MapContext location
+                                if(!layerURI.isAbsolute() && getLocation()!=null) {
+                                    try {
+                                        // Resolve the relative resource ex: new Uri("myFile.shp")
+                                        layerURI = getLocation().resolve(layerURI);
+                                    } catch (IllegalArgumentException ex) {
+                                        LOGGER.warn(I18N.tr("Error while trying to find an absolute path for an external resource"), ex);
+                                    }
+                                }
+                                //Get table name
+                                ILayer leafLayer;
+                                try {
+                                    leafLayer = createLayer(registerLayerResource(layerURI));
+                                } catch (Exception ex) {
+                                    throw new LayerException(I18N.tr("Unable to load the data source uri {0}.", resType.getHref()), ex);
+                                }
+                                leafLayer.setDescription(new Description(lt));
+                                leafLayer.setVisible(!lt.isHidden());
+                                //Parse styles
+                                if(lt.isSetStyleList()) {
+                                    for(StyleType st : lt.getStyleList().getStyle()) {
+                                        if(st.isSetSLD()) {
+                                            if(st.getSLD().isSetAbstractStyle()) {
+                                                leafLayer.addStyle(new Style((JAXBElement<net.opengis.se._2_0.core.StyleType>)st.getSLD().getAbstractStyle(), leafLayer));
+                                            }
+                                        }
+                                    }
+                                }
+                                parentLayer.addLayer(leafLayer);
+                            } catch (URISyntaxException ex) {
+                                throw new LayerException(I18N.tr("Unable to parse the href URI {0}.", resType.getHref()), ex);
+                            } catch (InvalidStyle ex) {
+                                throw new LayerException(I18N.tr("Unable to load the description of the layer {0}", lt.getTitle().toString()), ex);
+                            }
+                        }
+                        /*
                         if (dataUrl != null) {
                                 OnlineResourceType resType = dataUrl.getOnlineResource();
                                 if (resType != null) {
@@ -549,6 +650,7 @@ public final class OwsMapContext extends BeanMapContext {
                                         throw new LayerException(I18N.tr("Unable to load the description of the layer {0}", lt.getTitle().toString()), ex);
                                 }
                         }
+                        */
                 }
         }
 
