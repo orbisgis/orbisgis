@@ -73,8 +73,8 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTreeNode, TreeNodePath, DropDestinationTreeNode, DragTreeNode {
         private File folderPath;
-        private static final Logger LOGGER = Logger.getLogger("gui." + TreeNodeFolder.class);
-        private static final I18n I18N = I18nFactory.getI18n(TreeNodeFolder.class);
+        protected static final Logger LOGGER = Logger.getLogger("gui." + TreeNodeFolder.class);
+        protected static final I18n I18N = I18nFactory.getI18n(TreeNodeFolder.class);
         private TreeNodeFileFactoryManager factoryManager;
 
         /**
