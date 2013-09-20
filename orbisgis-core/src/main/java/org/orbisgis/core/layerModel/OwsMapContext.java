@@ -62,6 +62,7 @@ import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.stream.URIUtility;
 import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceEvent;
@@ -455,9 +456,8 @@ public final class OwsMapContext extends BeanMapContext {
                     URI srcUri = src.getURI();
                     if(srcUri!=null) {
                         // If file, use MapContext relative path
-                        if(srcUri.getScheme().equalsIgnoreCase("file") && mapContext.getLocation() != null) {
-                            URI parentFolderURI = new File(mapContext.getLocation()).getParentFile().toURI();
-                            srcUri = parentFolderURI.relativize(srcUri);
+                        if(srcUri.getScheme().equalsIgnoreCase("file") && mapContext.getLocation() != null) {                            URI parentFolderURI = new File(mapContext.getLocation()).getParentFile().toURI();
+                            srcUri = URIUtility.relativize(mapContext.getLocation(), srcUri);
                         } else {
                             resourceSerialisation = srcUri.toString();
                         }

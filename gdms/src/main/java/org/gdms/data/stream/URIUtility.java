@@ -102,7 +102,7 @@ public class URIUtility {
      *
      * @param base
      * @param target
-     * @return
+     * @return Non-absolute URI, or target if target scheme is different than base scheme.
      * @throws IllegalArgumentException
      */
     public static URI relativize(URI base,URI target) {
