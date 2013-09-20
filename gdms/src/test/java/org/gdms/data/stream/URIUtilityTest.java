@@ -68,5 +68,13 @@ public class URIUtilityTest {
         assertEquals("sub/text.txt", URIUtility.relativize(folder, rel).toString());
         rel = new URI("file:///home/user/OrbisGIS/text.txt");
         assertEquals("../../../text.txt", URIUtility.relativize(folder, rel).toString());
+        rel = new URI("file:///home/user/OrbisGIS/maps/landcover/test/folder/text.txt");
+        assertEquals("../test/folder/text.txt", URIUtility.relativize(folder, rel).toString());
+        rel = new URI("file:///");
+        assertEquals("../../../../../../", URIUtility.relativize(folder, rel).toString());
+        // This with a file in the base part, file is ignored by relativize
+        folder = new URI("file:///home/user/OrbisGIS/maps/landcover/folder/bla.ows");
+        rel = new URI("file:///home/user/OrbisGIS/maps/landcover/data/data.shp");
+        assertEquals("../data/data.shp", URIUtility.relativize(folder, rel).toString());
     }
 }

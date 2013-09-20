@@ -115,30 +115,39 @@ public class URIUtility {
         if(base.getScheme().equalsIgnoreCase("file")) {
             separator = File.separator;
         }
-        String[] targetProcess = target.getPath().split(separator);
-        int partId = 0;
-        for(String basePart : path.split(separator)) {
-            if(!basePart.isEmpty()) {
-                String targetPart = targetProcess[partId];
-                while(targetPart.isEmpty() && partId < targetProcess.length) {
-                    partId++;
-                    targetPart = targetProcess[partId];
-                }
-                if(!basePart.equals(targetPart)) {
-                    rel.append("..");
-                    rel.append(separator);
-                } else {
-                    partId++;
+        StringTokenizer tokenizer = new StringTokenizer(target.getPath(), separator);
+        String targetPart = "";
+        if(tokenizer.hasMoreTokens()) {
+            targetPart = tokenizer.nextToken();
+        }
+        if(path.startsWith(separator)) {
+            path = path.substring(1);
+        }
+        StringTokenizer baseTokenizer = new StringTokenizer(path, separator, true);
+        while(baseTokenizer.hasMoreTokens()) {
+            String basePart = baseTokenizer.nextToken();
+            if(baseTokenizer.hasMoreTokens()) {
+                // Has a / after this folder name
+                baseTokenizer.nextToken(); // return separator
+                if(!basePart.isEmpty()) {
+                    while(targetPart.isEmpty() && tokenizer.hasMoreTokens()) {
+                        targetPart = tokenizer.nextToken();
+                    }
+                    if(!basePart.equals(targetPart)) {
+                        rel.append("..");
+                        rel.append(separator);
+                    } else if(tokenizer.hasMoreTokens()) {
+                        targetPart = tokenizer.nextToken();
+                    }
                 }
             }
         }
-        // Add unprocessed parts
-        for(; partId < targetProcess.length; partId++) {
-            String targetPart = targetProcess[partId];
+        // Add part of target path that is not in base path
+        rel.append(targetPart);
+        while (tokenizer.hasMoreTokens()) {
+            targetPart = tokenizer.nextToken();
+            rel.append(separator);
             rel.append(targetPart);
-            if(partId+1 < targetProcess.length) {
-                rel.append(separator);
-            }
         }
         return URI.create(rel.toString());
     }
