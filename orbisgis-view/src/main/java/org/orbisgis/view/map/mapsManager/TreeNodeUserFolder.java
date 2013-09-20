@@ -19,6 +19,13 @@ import java.util.List;
 public class TreeNodeUserFolder extends TreeNodeFolder {
     private MapsManagerPersistence mapsManagerPersistence;
 
+    /**
+     * Constructor
+     * @param folderPath Path of this folder
+     * @param factoryManager File factory
+     * @param mapsManagerPersistence Container of other TreeNodeUserFolder references
+     * @throws IllegalArgumentException If the provided path represent a file
+     */
     public TreeNodeUserFolder(File folderPath, TreeNodeFileFactoryManager factoryManager, MapsManagerPersistence mapsManagerPersistence) {
         super(folderPath, factoryManager);
         this.mapsManagerPersistence = mapsManagerPersistence;
