@@ -1,5 +1,12 @@
 package org.orbisgis.core.map.export;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfTemplate;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.sun.media.jai.codec.PNGEncodeParam;
 import com.sun.media.jai.codec.TIFFEncodeParam;
 import com.sun.media.jai.codec.TIFFField;
@@ -14,11 +21,14 @@ import javax.media.jai.JAI;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import javax.imageio.ImageIO;
+import org.orbisgis.core.renderer.PdfRenderer;
 
 /**
- * Utility class to save the image provided by the renderer into a PNG or TIFF binary stream.
+ * Utility class to save the image provided by the renderer into a PNG or TIFF
+ * binary stream.
  *
  * @author Maxence Laurent
  * @author Tony MARTIN
@@ -26,7 +36,11 @@ import java.io.OutputStream;
  * @author Nicolas Fortin
  */
 public class MapImageWriter {
-    public enum Format {TIFF, PNG}
+
+    public static enum Format {
+
+        TIFF, PNG, JPEG, PDF
+    }
     // Static properties
     public static final double DEFAULT_PIXEL_SIZE = 0.35;
     public static final int DEFAULT_WITH = 1280;
@@ -36,7 +50,6 @@ public class MapImageWriter {
     public static Format DEFAULT_FORMAT = Format.PNG;
     private static final int X_RES_TAG = 282; // Binary file code index
     private static final int Y_RES_TAG = 283;
-
     // Properties
     private double pixelSize = DEFAULT_PIXEL_SIZE;
     private int width = DEFAULT_WITH;
@@ -44,12 +57,13 @@ public class MapImageWriter {
     private Format format = DEFAULT_FORMAT;
     private boolean adjustExtent = DEFAULT_ADJUST_EXTENT;
     private Color backgroundColor;
-
     // Properties without default values
     private Envelope boundingBox;
     private final ILayer rootLayer;
+
     /**
      * Constructor
+     *
      * @param rootLayer
      */
     public MapImageWriter(ILayer rootLayer) {
@@ -58,7 +72,8 @@ public class MapImageWriter {
     }
 
     /**
-     * @return Get the envelope of the final image, in the projection system used by layers data.
+     * @return Get the envelope of the final image, in the projection system
+     * used by layers data.
      */
     public Envelope getBoundingBox() {
         return boundingBox;
@@ -72,7 +87,8 @@ public class MapImageWriter {
     }
 
     /**
-     * @param boundingBox Set the bounding box of the final image, in the projection system used by layers data.
+     * @param boundingBox Set the bounding box of the final image, in the
+     * projection system used by layers data.
      */
     public void setBoundingBox(Envelope boundingBox) {
         this.boundingBox = boundingBox;
@@ -114,7 +130,8 @@ public class MapImageWriter {
     }
 
     /**
-     * @param adjustExtent If true, it avoid image distortion by updating the Envelope of rendering according to width and height.
+     * @param adjustExtent If true, it avoid image distortion by updating the
+     * Envelope of rendering according to width and height.
      */
     public void setAdjustExtent(boolean adjustExtent) {
         this.adjustExtent = adjustExtent;
@@ -155,7 +172,7 @@ public class MapImageWriter {
         this.width = width;
     }
 
-    public void write(OutputStream out, ProgressMonitor pm) throws IOException {
+    public void write(FileOutputStream out, ProgressMonitor pm) throws IOException {
         MapTransform mt = new MapTransform();
         mt.setAdjustExtent(adjustExtent);
         double dpi = MILLIMETERS_BY_INCH / pixelSize;
@@ -164,31 +181,66 @@ public class MapImageWriter {
         mt.setImage(img);
         mt.setExtent(boundingBox);
         Graphics2D g2 = img.createGraphics();
-        if(backgroundColor != null) {
+        if (backgroundColor != null) {
             g2.setBackground(backgroundColor);
             g2.clearRect(0, 0, width, height);
         }
         Renderer renderer = new ImageRenderer();
         renderer.draw(mt, g2, width, height, rootLayer, pm);
         int dpm = (int) (1000 / pixelSize + 1);
-        if (format == Format.PNG) {
-            // Encode in PNG
-            PNGEncodeParam pEnc = PNGEncodeParam.getDefaultEncodeParam(img);
-            pEnc.setPhysicalDimension(dpm, dpm, 1);
+        
+        switch (format) {
+            case PNG:
+                // Encode in PNG
+                PNGEncodeParam pEnc = PNGEncodeParam.getDefaultEncodeParam(img);
+                pEnc.setPhysicalDimension(dpm, dpm, 1);
+                JAI.create("Encode", img, out, "PNG", pEnc);
+                out.close();
+                break;
+            case JPEG:
+                ImageIO.write(img, "jpeg", out);
+                out.close();
+                break;
+            case PDF:
+                Document document = new Document(new Rectangle(width, height));                
+                try {
+                    PdfWriter writer = PdfWriter.getInstance(document, out);
+                    document.open();
 
-            JAI.create("Encode", img, out, "PNG", pEnc);
-            out.close();
-        } else {
-            // Encode in TIFF
-            long[] resolution = { dpm, 1 };
-            TIFFField xRes = new TIFFField(X_RES_TAG,
-                    TIFFField.TIFF_RATIONAL, 1, new long[][] { resolution });
-            TIFFField yRes = new TIFFField(Y_RES_TAG,
-                    TIFFField.TIFF_RATIONAL, 1, new long[][] { resolution });
-            TIFFEncodeParam tep = new TIFFEncodeParam();
-            tep.setExtraFields(new TIFFField[] { xRes, yRes });
-            JAI.create("Encode", img, out, "TIFF", tep);
-            out.close();
+                    PdfContentByte cb = writer.getDirectContent();
+
+                  
+                    PdfTemplate templateMap = cb.createTemplate(width,
+                            height);
+
+                    Graphics2D g2dMap = templateMap.createGraphics(width,
+                            height);
+                    
+                    PdfRenderer renderer2 = new PdfRenderer(templateMap, width, height);
+                    
+                    renderer2.draw(mt, g2dMap, width, height, rootLayer, pm);
+                    g2dMap.dispose();
+
+                    cb.addTemplate(templateMap, 0, 0);
+
+                    
+                } catch (DocumentException ex) {
+                    throw new IOException("Cannot create the pdf", ex);
+                }
+                                    document.close();
+
+                break;
+            default:
+                // Encode in TIFF
+                long[] resolution = {dpm, 1};
+                TIFFField xRes = new TIFFField(X_RES_TAG,
+                        TIFFField.TIFF_RATIONAL, 1, new long[][]{resolution});
+                TIFFField yRes = new TIFFField(Y_RES_TAG,
+                        TIFFField.TIFF_RATIONAL, 1, new long[][]{resolution});
+                TIFFEncodeParam tep = new TIFFEncodeParam();
+                tep.setExtraFields(new TIFFField[]{xRes, yRes});
+                JAI.create("Encode", img, out, "TIFF", tep);
+                out.close();
         }
         g2.dispose();
     }
