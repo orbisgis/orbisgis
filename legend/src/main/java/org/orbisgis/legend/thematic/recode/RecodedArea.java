@@ -306,7 +306,7 @@ public class RecodedArea extends AbstractRecodedLegend<AreaParameters>
             PenStroke stroke = new PenStroke();
             areaSymbolizer.setStroke(stroke);
             ps = new RecodedPenStroke(stroke);
-            String lfn = fill.getRecodedLegends().get(0).getValueReference().getColumnName();
+            String lfn = fill.getRecodedLegends().get(0).field();
             for( RecodedLegend rl : ps.getRecodedLegends()){
                 rl.setField(lfn);
             }
