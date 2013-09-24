@@ -1,8 +1,34 @@
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
+ *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly: info_at_ orbisgis.org
+ */
 package org.orbisgis.core.map.export;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfTemplate;
@@ -14,7 +40,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.ImageRenderer;
-import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.progress.ProgressMonitor;
 
 import javax.media.jai.JAI;
@@ -180,17 +205,11 @@ public class MapImageWriter {
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
         mt.setImage(img);
         mt.setExtent(boundingBox);
-        Graphics2D g2 = img.createGraphics();
-        if (backgroundColor != null) {
-            g2.setBackground(backgroundColor);
-            g2.clearRect(0, 0, width, height);
-        }
-        Renderer renderer = new ImageRenderer();
-        renderer.draw(mt, g2, width, height, rootLayer, pm);
         int dpm = (int) (1000 / pixelSize + 1);
-        
+        Graphics2D g2 = null;
         switch (format) {
             case PNG:
+                g2 = prepareImageRenderer(mt, img, pm);
                 // Encode in PNG
                 PNGEncodeParam pEnc = PNGEncodeParam.getDefaultEncodeParam(img);
                 pEnc.setPhysicalDimension(dpm, dpm, 1);
@@ -198,39 +217,15 @@ public class MapImageWriter {
                 out.close();
                 break;
             case JPEG:
+                g2 = prepareImageRenderer(mt, img, pm);
                 ImageIO.write(img, "jpeg", out);
                 out.close();
                 break;
             case PDF:
-                Document document = new Document(new Rectangle(width, height));                
-                try {
-                    PdfWriter writer = PdfWriter.getInstance(document, out);
-                    document.open();
-
-                    PdfContentByte cb = writer.getDirectContent();
-
-                  
-                    PdfTemplate templateMap = cb.createTemplate(width,
-                            height);
-
-                    Graphics2D g2dMap = templateMap.createGraphics(width,
-                            height);
-                    
-                    PdfRenderer renderer2 = new PdfRenderer(templateMap, width, height);
-                    
-                    renderer2.draw(mt, g2dMap, width, height, rootLayer, pm);
-                    g2dMap.dispose();
-
-                    cb.addTemplate(templateMap, 0, 0);
-
-                    
-                } catch (DocumentException ex) {
-                    throw new IOException("Cannot create the pdf", ex);
-                }
-                                    document.close();
-
+                exportAsPDF(out, mt, pm);
                 break;
             default:
+                g2 = prepareImageRenderer(mt, img, pm);
                 // Encode in TIFF
                 long[] resolution = {dpm, 1};
                 TIFFField xRes = new TIFFField(X_RES_TAG,
@@ -242,6 +237,66 @@ public class MapImageWriter {
                 JAI.create("Encode", img, out, "TIFF", tep);
                 out.close();
         }
-        g2.dispose();
+        if (g2 != null) {
+            g2.dispose();
+        }
+    }
+
+    /**
+     * Prepare the renderer to export the map as an image
+     *
+     *
+     * @param mt
+     * @param img
+     * @param pm
+     * @return a {@link Graphics2D} used to renderer the data
+     */
+    public Graphics2D prepareImageRenderer(MapTransform mt, BufferedImage img, ProgressMonitor pm) {
+        Graphics2D g2 = img.createGraphics();
+        if (backgroundColor != null) {
+            g2.setBackground(backgroundColor);
+            g2.clearRect(0, 0, width, height);
+        }
+        ImageRenderer renderer = new ImageRenderer();
+        renderer.draw(mt, g2, width, height, rootLayer, pm);
+        return g2;
+    }
+
+    /**
+     * Export the layer in vectorial PDF
+     * 
+     * @param out
+     * @param mt
+     * @param pm
+     * @throws IOException
+     */
+    public void exportAsPDF(FileOutputStream out, MapTransform mt, ProgressMonitor pm) throws IOException {
+        Document document = new Document(new Rectangle(width, height));
+        try {
+            PdfWriter writer = PdfWriter.getInstance(document, out);
+            document.open();
+
+            PdfContentByte cb = writer.getDirectContent();
+
+            PdfTemplate templateMap = cb.createTemplate(width,
+                    height);
+
+            Graphics2D g2dMap = templateMap.createGraphics(width,
+                    height);
+            if (backgroundColor != null) {
+                g2dMap.setBackground(backgroundColor);
+                g2dMap.clearRect(0, 0, width, height);
+            }
+            PdfRenderer renderer2 = new PdfRenderer(templateMap, width, height);
+
+            renderer2.draw(mt, g2dMap, width, height, rootLayer, pm);
+            g2dMap.dispose();
+
+            cb.addTemplate(templateMap, 0, 0);
+
+        } catch (DocumentException ex) {
+            throw new IOException("Cannot create the pdf", ex);
+        }
+        document.close();
     }
 }
