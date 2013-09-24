@@ -107,7 +107,7 @@ public class OwsMapContextTest extends AbstractTest {
      * @param format
      * @throws Exception
      */
-    private void exporter(String imagePath, MapImageWriter.Format format) throws Exception {
+    private void saveAs(String imagePath, MapImageWriter.Format format) throws Exception {
         MapContext mc = new OwsMapContext();
         mc.open(null);
         ILayer layer = mc.createLayer(
@@ -121,21 +121,21 @@ public class OwsMapContextTest extends AbstractTest {
 
     @Test
     public void exportToPNG() throws Exception {
-        exporter("target/mapExportTest.png", MapImageWriter.Format.PNG);
+        saveAs("target/mapExportTest.png", MapImageWriter.Format.PNG);
     }
 
     @Test
     public void exportToJEPG() throws Exception {
-        exporter("target/mapExportTest.jpg", MapImageWriter.Format.JPEG);
+        saveAs("target/mapExportTest.jpg", MapImageWriter.Format.JPEG);
     }
 
     @Test
     public void exportToTIFF() throws Exception {
-        exporter("target/mapExportTest.tiff", MapImageWriter.Format.TIFF);
+        saveAs("target/mapExportTest.tiff", MapImageWriter.Format.TIFF);
     }
     
     @Test
     public void exportToPDF() throws Exception {
-        exporter("target/mapExportTest.pdf", MapImageWriter.Format.PDF);
+        saveAs("target/mapExportTest.pdf", MapImageWriter.Format.PDF);
     }
 }

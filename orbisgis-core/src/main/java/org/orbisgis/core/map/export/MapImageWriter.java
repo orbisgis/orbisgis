@@ -3,8 +3,8 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier
- * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
@@ -23,7 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly: info_at_ orbisgis.org
+ * or contact directly:
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.map.export;
 
@@ -46,8 +47,8 @@ import javax.media.jai.JAI;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import javax.imageio.ImageIO;
 import org.orbisgis.core.renderer.PdfRenderer;
 
@@ -197,7 +198,7 @@ public class MapImageWriter {
         this.width = width;
     }
 
-    public void write(FileOutputStream out, ProgressMonitor pm) throws IOException {
+    public void write(OutputStream out, ProgressMonitor pm) throws IOException {
         MapTransform mt = new MapTransform();
         mt.setAdjustExtent(adjustExtent);
         double dpi = MILLIMETERS_BY_INCH / pixelSize;
@@ -251,7 +252,7 @@ public class MapImageWriter {
      * @param pm
      * @return a {@link Graphics2D} used to renderer the data
      */
-    public Graphics2D prepareImageRenderer(MapTransform mt, BufferedImage img, ProgressMonitor pm) {
+    private Graphics2D prepareImageRenderer(MapTransform mt, BufferedImage img, ProgressMonitor pm) {
         Graphics2D g2 = img.createGraphics();
         if (backgroundColor != null) {
             g2.setBackground(backgroundColor);
@@ -270,7 +271,7 @@ public class MapImageWriter {
      * @param pm
      * @throws IOException
      */
-    public void exportAsPDF(FileOutputStream out, MapTransform mt, ProgressMonitor pm) throws IOException {
+    private void exportAsPDF(OutputStream out, MapTransform mt, ProgressMonitor pm) throws IOException {
         Document document = new Document(new Rectangle(width, height));
         try {
             PdfWriter writer = PdfWriter.getInstance(document, out);
