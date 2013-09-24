@@ -544,13 +544,19 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             outfilePanel.setConfirmOverwrite(true);
             outfilePanel.addFilter("png", I18N.tr("Portable Network Graphics"));
             outfilePanel.addFilter("tiff", I18N.tr("Tagged Image File Format"));
+            outfilePanel.addFilter("jpg", I18N.tr("Joint Photographic Experts Group"));
+            outfilePanel.addFilter("pdf", I18N.tr("Portable Document Format"));
             outfilePanel.loadState(); // Load last use path
             // Show save into dialog
             if (UIFactory.showDialog(outfilePanel, true, true)) {
                 File outFile = outfilePanel.getSelectedFile();
                 String fileName = FilenameUtils.getExtension(outFile.getName());
-                if(fileName.equalsIgnoreCase("png")) {
+                if (fileName.equalsIgnoreCase("png")) {
                     mapImageWriter.setFormat(MapImageWriter.Format.PNG);
+                } else if (fileName.equalsIgnoreCase("jpg")) {
+                    mapImageWriter.setFormat(MapImageWriter.Format.JPEG);
+                } else if (fileName.equalsIgnoreCase("pdf")) {
+                    mapImageWriter.setFormat(MapImageWriter.Format.PDF);
                 } else {
                     mapImageWriter.setFormat(MapImageWriter.Format.TIFF);
                 }
