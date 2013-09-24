@@ -263,7 +263,7 @@ public class MapImageWriter {
     }
 
     /**
-     * Export the layer in vectorial PDF
+     * Export the layer as a vectorial PDF file
      * 
      * @param out
      * @param mt
