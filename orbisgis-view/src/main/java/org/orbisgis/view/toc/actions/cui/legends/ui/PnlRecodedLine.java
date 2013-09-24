@@ -167,7 +167,7 @@ public final class PnlRecodedLine extends PnlAbstractUniqueValue<LineParameters>
             setLegendImpl((RecodedLine)legend);
             this.buildUI();
         } else {
-            throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in"
+            throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in "
                         + "this panel."));
         }
     }

@@ -30,11 +30,15 @@
 package org.gdms.data.stream;
 
 import org.apache.log4j.Logger;
+import scala.actors.threadpool.Arrays;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -92,5 +96,59 @@ public class URIUtility {
             }
         }
         return keyValues.toString();
+    }
+
+    /**
+     * Enhanced version of URI.relativize, the target can now be in parent folder of base URI.
+     * @param base Base uri, location from where to relativize.
+     * @param target Target uri, final destination of returned URI.
+     * @return Non-absolute URI, or target if target scheme is different than base scheme.
+     * @throws IllegalArgumentException
+     */
+    public static URI relativize(URI base,URI target) {
+        if(!base.getScheme().equals(target.getScheme())) {
+            return target;
+        }
+        StringBuilder rel = new StringBuilder();
+        String path = base.getPath();
+        String separator = "/";
+        if(base.getScheme().equalsIgnoreCase("file")) {
+            separator = File.separator;
+        }
+        StringTokenizer tokenizer = new StringTokenizer(target.getPath(), separator);
+        String targetPart = "";
+        if(tokenizer.hasMoreTokens()) {
+            targetPart = tokenizer.nextToken();
+        }
+        if(path.startsWith(separator)) {
+            path = path.substring(1);
+        }
+        StringTokenizer baseTokenizer = new StringTokenizer(path, separator, true);
+        while(baseTokenizer.hasMoreTokens()) {
+            String basePart = baseTokenizer.nextToken();
+            if(baseTokenizer.hasMoreTokens()) {
+                // Has a / after this folder name
+                baseTokenizer.nextToken(); // return separator
+                if(!basePart.isEmpty()) {
+                    while(targetPart.isEmpty() && tokenizer.hasMoreTokens()) {
+                        targetPart = tokenizer.nextToken();
+                    }
+                    if(!basePart.equals(targetPart)) {
+                        rel.append("..");
+                        rel.append(separator);
+                    } else if(tokenizer.hasMoreTokens()) {
+                        targetPart = tokenizer.nextToken();
+                    }
+                }
+            }
+        }
+        // Add part of target path that is not in base path
+        rel.append(targetPart);
+        while (tokenizer.hasMoreTokens()) {
+            targetPart = tokenizer.nextToken();
+            rel.append(separator);
+            rel.append(targetPart);
+        }
+        return URI.create(rel.toString());
     }
 }

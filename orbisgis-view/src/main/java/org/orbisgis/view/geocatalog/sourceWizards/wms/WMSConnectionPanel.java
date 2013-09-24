@@ -169,7 +169,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
                 JPanel pnlNorth = new JPanel();
                 pnlNorth.setLayout(new CRFlowLayout());
                 lblVersion = new JLabel(I18N.tr("Version :"));
-                lblTitle = new JLabel(I18N.tr("Nom :"));
+                lblTitle = new JLabel(I18N.tr("Name :"));
                 pnlNorth.add(lblVersion);
                 pnlNorth.add(new CarriageReturn());
                 pnlNorth.add(lblTitle);
@@ -381,7 +381,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
                                         public void run() {
                                                 lblVersion.setText(I18N.tr("Version :")
                                                         + changeNullForEmptyString(service.getVersion()));
-                                                lblTitle.setText(I18N.tr("Nom :")
+                                                lblTitle.setText(I18N.tr("Name :")
                                                         + changeNullForEmptyString(service.getTitle()));
                                                 txtDescription.setText(service.getTitle());
                                                 txtDescription.setCaretPosition(0);
@@ -395,12 +395,10 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
                                 }
 
                         } catch (ConnectException e) {
-                                LOGGER.error(I18N.tr("orbisgis.errorMessages.wms.CannotConnect"
-                                        + " " + wmsURL), e);
+                                LOGGER.error(I18N.tr("Cannot connect to {0}",wmsURL), e);
                         } catch (IOException e) {
                                 LOGGER.error(
-                                        I18N.tr("orbisgis.errorMessages.wms.CannotGetCapabilities"
-                                        + " " + wmsURL), e);
+                                        I18N.tr("Cannot get capabilities of {0}",wmsURL), e);
                         }
                 }
 
