@@ -199,6 +199,7 @@ public class MapImageWriter {
         int imgType = BufferedImage.TYPE_4BYTE_ABGR;
         if (format.equals(Format.JPEG)) {
             imgType = BufferedImage.TYPE_3BYTE_BGR;
+            setBackgroundColor(Color.WHITE);
         }
         BufferedImage img = new BufferedImage(width, height, imgType);
         mt.setImage(img);
