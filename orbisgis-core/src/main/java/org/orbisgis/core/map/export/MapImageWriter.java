@@ -55,6 +55,8 @@ import javax.imageio.ImageIO;
  */
 public class MapImageWriter {
 
+   
+
     public static enum Format {
 
         TIFF, PNG, JPEG, PDF
@@ -139,6 +141,14 @@ public class MapImageWriter {
     public void setBackgroundColor(Color backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
+    
+    /**
+     * Gets the background color of the image.
+     * @return backgroundColor 
+     */
+    private Color getBackgroundColor() {
+        return backgroundColor;
+    }
 
     /**
      * Unset background color in order to use transparency
@@ -199,7 +209,9 @@ public class MapImageWriter {
         int imgType = BufferedImage.TYPE_4BYTE_ABGR;
         if (format.equals(Format.JPEG)) {
             imgType = BufferedImage.TYPE_3BYTE_BGR;
-            setBackgroundColor(Color.WHITE);
+            if (getBackgroundColor() == null) {
+                setBackgroundColor(Color.WHITE);
+            }
         }
         BufferedImage img = new BufferedImage(width, height, imgType);
         mt.setImage(img);
