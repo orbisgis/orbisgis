@@ -31,6 +31,7 @@ package org.orbisgis.view.map;
 import com.vividsolutions.jts.geom.Envelope;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseMotionListener;
@@ -70,8 +71,10 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.ColorPicker;
 import org.orbisgis.sif.components.SaveFilePanel;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.sif.multiInputPanel.CheckBoxChoice;
 import org.orbisgis.sif.multiInputPanel.ComboBoxChoice;
+import org.orbisgis.sif.multiInputPanel.MIPValidation;
 import org.orbisgis.sif.multiInputPanel.MIPValidationDouble;
 import org.orbisgis.sif.multiInputPanel.MIPValidationInteger;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
@@ -485,11 +488,11 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         final String TRANSPARENT_BACKGROUND_T = "background";
         final String DPI_T = "dpi";
         final int textWidth = 8;
-        String[] RATIO = new String[] {"UPDATE_EXTENT", "FIX_WIDTH", "FIX_HEIGHT"};
+        final String[] RATIO = new String[] {"UPDATE_EXTENT", "FIX_WIDTH", "FIX_HEIGHT"};
         String[] RATIO_LABELS = new String[] {I18N.tr("Change extent"),
                 I18N.tr("Update height to keep ratio"),
                 I18N.tr("Update width to keep ratio")};
-        MultiInputPanel inputPanel = new MultiInputPanel(I18N.tr("Export parameters"));
+        final MultiInputPanel inputPanel = new MultiInputPanel(I18N.tr("Export parameters"));
 
         inputPanel.addInput(WIDTH_T,
                 I18N.tr("Width (pixels)"),
@@ -500,8 +503,31 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 String.valueOf(mapControl.getImage().getHeight()),
                 new TextBoxType(textWidth));
 
-        ComboBoxChoice comboBoxChoice = new ComboBoxChoice(RATIO, RATIO_LABELS);
+        final ComboBoxChoice comboBoxChoice = new ComboBoxChoice(RATIO, RATIO_LABELS);
         comboBoxChoice.setValue(RATIO[0]);
+        
+        
+        //Use to refresh the ratio when the user select an item in the combobox.
+        final Envelope adjExtent = mapControl.getMapTransform().getAdjustedExtent();
+        WideComboBox combo = (WideComboBox)comboBoxChoice.getComponent();
+        combo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int width = Integer.valueOf(inputPanel.getInput(WIDTH_T));
+                int height = Integer.valueOf(inputPanel.getInput(HEIGHT_T));
+                String ratioCB = inputPanel.getInput(RATIO_T);                
+                if(ratioCB.equals(RATIO[1])){
+                    // Change image height to keep ratio
+                    height = (int)(width * (adjExtent.getHeight() / adjExtent.getWidth()));
+                    inputPanel.setValue(HEIGHT_T, String.valueOf(height));
+                }
+                else if (ratioCB.equals(RATIO[2])) {
+                    width = (int)(height * (adjExtent.getWidth() / adjExtent.getHeight()));
+                    inputPanel.setValue(HEIGHT_T, String.valueOf(width));
+                }               
+                       
+            }
+        });
         inputPanel.addInput(RATIO_T, I18N.tr("Ratio"), comboBoxChoice);
 
         inputPanel.addInput(DPI_T,
@@ -515,7 +541,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
         inputPanel.addValidation(new MIPValidationInteger(WIDTH_T, I18N.tr("Width (pixels)")));
         inputPanel.addValidation(new MIPValidationInteger(HEIGHT_T, I18N.tr("Height (pixels)")));
-        inputPanel.addValidation(new MIPValidationInteger(DPI_T, I18N.tr("DPI")));
+        inputPanel.addValidation(new MIPValidationInteger(DPI_T, I18N.tr("DPI")));       
 
         // Show the dialog and get the user's choice.
         int userChoice = JOptionPane.showConfirmDialog(this,
@@ -557,13 +583,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 mapImageWriter.setBoundingBox(mapContext.getBoundingBox());
                 int width = Integer.valueOf(inputPanel.getInput(WIDTH_T));
                 int height = Integer.valueOf(inputPanel.getInput(HEIGHT_T));
-                Envelope adjExtent = mapControl.getMapTransform().getAdjustedExtent();
-                if(comboBoxChoice.getValue().equals(RATIO[1])) {
-                    // Change image height to keep ratio
-                    height = (int)(width * (adjExtent.getHeight() / adjExtent.getWidth()));
-                } else if(comboBoxChoice.getValue().equals(RATIO[2])) {
-                    width = (int)(height * (adjExtent.getWidth() / adjExtent.getHeight()));
-                }
+                
                 mapImageWriter.setWidth(width);
                 mapImageWriter.setHeight(height);
                 ExportRenderingIntoFile renderingIntoFile = new ExportRenderingIntoFile(mapImageWriter, outFile);
