@@ -3,8 +3,8 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
@@ -23,17 +23,10 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * or contact directly: info_at_ orbisgis.org
  */
 package org.orbisgis.core.map.export;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfTemplate;
-import com.itextpdf.text.pdf.PdfWriter;
 import com.sun.media.jai.codec.PNGEncodeParam;
 import com.sun.media.jai.codec.TIFFEncodeParam;
 import com.sun.media.jai.codec.TIFFField;
@@ -50,7 +43,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.imageio.ImageIO;
-import org.orbisgis.core.renderer.PdfRenderer;
 
 /**
  * Utility class to save the image provided by the renderer into a PNG or TIFF
@@ -203,7 +195,12 @@ public class MapImageWriter {
         mt.setAdjustExtent(adjustExtent);
         double dpi = MILLIMETERS_BY_INCH / pixelSize;
         mt.setDpi(dpi);
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+
+        int imgType = BufferedImage.TYPE_4BYTE_ABGR;
+        if (format.equals(Format.JPEG)) {
+            imgType = BufferedImage.TYPE_3BYTE_BGR;
+        }
+        BufferedImage img = new BufferedImage(width, height, imgType);
         mt.setImage(img);
         mt.setExtent(boundingBox);
         int dpm = (int) (1000 / pixelSize + 1);
@@ -223,7 +220,7 @@ public class MapImageWriter {
                 out.close();
                 break;
             case PDF:
-                exportAsPDF(out, mt, pm);
+                new GeoSpatialPDF(rootLayer, width, height).createPDF(out, mt, pm);
                 break;
             default:
                 g2 = prepareImageRenderer(mt, img, pm);
@@ -261,43 +258,5 @@ public class MapImageWriter {
         ImageRenderer renderer = new ImageRenderer();
         renderer.draw(mt, g2, width, height, rootLayer, pm);
         return g2;
-    }
-
-    /**
-     * Export the layer as a vectorial PDF file
-     * 
-     * @param out
-     * @param mt
-     * @param pm
-     * @throws IOException
-     */
-    private void exportAsPDF(OutputStream out, MapTransform mt, ProgressMonitor pm) throws IOException {
-        Document document = new Document(new Rectangle(width, height));
-        try {
-            PdfWriter writer = PdfWriter.getInstance(document, out);
-            document.open();
-
-            PdfContentByte cb = writer.getDirectContent();
-
-            PdfTemplate templateMap = cb.createTemplate(width,
-                    height);
-
-            Graphics2D g2dMap = templateMap.createGraphics(width,
-                    height);
-            if (backgroundColor != null) {
-                g2dMap.setBackground(backgroundColor);
-                g2dMap.clearRect(0, 0, width, height);
-            }
-            PdfRenderer renderer2 = new PdfRenderer(templateMap, width, height);
-
-            renderer2.draw(mt, g2dMap, width, height, rootLayer, pm);
-            g2dMap.dispose();
-
-            cb.addTemplate(templateMap, 0, 0);
-
-        } catch (DocumentException ex) {
-            throw new IOException("Cannot create the pdf", ex);
-        }
-        document.close();
     }
 }
