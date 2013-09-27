@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.map.export;
+package org.orbisgis.core.map.export.material;
 
 public abstract class AbstractScale implements Scale {
 	protected int partCount = 1;
