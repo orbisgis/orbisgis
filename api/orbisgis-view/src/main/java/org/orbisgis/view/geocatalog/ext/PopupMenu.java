@@ -41,6 +41,10 @@ public interface PopupMenu extends ActionFactoryService<PopupTarget> {
     public static final String M_ADD_FOLDER = "M_ADD_FOLDER";
     public static final String M_ADD_DB = "M_ADD_DB";
     public static final String M_ADD_WMS = "M_ADD_WMS";
+    // The import menu group
+    public static final String M_IMPORT = "M_IMPORT";
+    public static final String M_IMPORT_FILE = "M_IMPORT_FILE";
+
     // Save menu group
     public static final String M_SAVE = "M_SAVE";
     public static final String M_SAVE_FILE = "M_SAVE_FILE";
@@ -55,6 +59,10 @@ public interface PopupMenu extends ActionFactoryService<PopupTarget> {
      * Grouping keys : Group of menus used to add sources
      */
     public static final String GROUP_ADD = "ADD";
+    /**
+     * Grouping keys : Group of menus used to import sources
+     */
+    public static final String GROUP_IMPORT = "IMPORT";
     /**
      * Grouping keys : Group of menus used to display table of sources
      */

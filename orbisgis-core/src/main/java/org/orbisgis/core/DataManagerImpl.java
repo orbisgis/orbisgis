@@ -94,11 +94,11 @@ public class DataManagerImpl implements DataManager {
             if(!path.exists()) {
                 throw new SQLException("Specified source does not exists");
             }
-            Connection connection = dataSource.getConnection();
-            try {
-                connection.createStatement().execute("CALL FILE_TABLE('"+path.getAbsolutePath()+"','"+tableName+"')");
-            } finally {
-                connection.close();
+            try (Connection connection = dataSource.getConnection()) {
+                PreparedStatement st = connection.prepareStatement("CALL FILE_TABLE(?,?)");
+                st.setString(1, path.getAbsolutePath());
+                st.setString(2, tableName);
+                st.execute();
             }
             return tableName;
         } else {
