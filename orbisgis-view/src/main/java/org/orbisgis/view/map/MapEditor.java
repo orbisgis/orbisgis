@@ -51,11 +51,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
 import javax.swing.event.TreeExpansionListener;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
@@ -68,14 +66,11 @@ import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.progress.*;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.ColorPicker;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.sif.multiInputPanel.CheckBoxChoice;
 import org.orbisgis.sif.multiInputPanel.ComboBoxChoice;
-import org.orbisgis.sif.multiInputPanel.MIPValidation;
-import org.orbisgis.sif.multiInputPanel.MIPValidationDouble;
 import org.orbisgis.sif.multiInputPanel.MIPValidationInteger;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
@@ -541,8 +536,8 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
         inputPanel.addValidation(new MIPValidationInteger(WIDTH_T, I18N.tr("Width (pixels)")));
         inputPanel.addValidation(new MIPValidationInteger(HEIGHT_T, I18N.tr("Height (pixels)")));
-        inputPanel.addValidation(new MIPValidationInteger(DPI_T, I18N.tr("DPI")));       
-
+        inputPanel.addValidation(new MIPValidationInteger(DPI_T, I18N.tr("DPI")));
+        
         // Show the dialog and get the user's choice.
         int userChoice = JOptionPane.showConfirmDialog(this,
                         inputPanel.getComponent(),
