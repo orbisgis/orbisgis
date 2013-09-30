@@ -125,8 +125,7 @@ public class MainFrame extends JFrame implements MainWindow {
             actions.addAction(new DefaultAction(MainFrameAction.MENU_FILE,I18N.tr("&File")).setMenuGroup(true));
             actions.addAction(new DefaultAction(MainFrameAction.MENU_EXIT, I18N.tr("&Exit"), OrbisGISIcon.getIcon("exit"),
                     EventHandler.create(ActionListener.class, this, "onMenuExitApplication"))
-                    .setParent(MainFrameAction.MENU_FILE));        
-            
+                    .setParent(MainFrameAction.MENU_FILE));
             actions.addAction(new DefaultAction(MainFrameAction.MENU_TOOLS,I18N.tr("&Tools")).setMenuGroup(true));
             actions.addAction(new DefaultAction(MainFrameAction.MENU_CONFIGURE,I18N.tr("&Configuration"),
                     OrbisGISIcon.getIcon("preferences-system"),

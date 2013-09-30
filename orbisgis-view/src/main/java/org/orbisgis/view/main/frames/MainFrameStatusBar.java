@@ -111,7 +111,7 @@ public class MainFrameStatusBar extends StatusBar {
                         // - The user should be able to enable/disable this feature
                         // messagePopup = new PopupMessageDialog(this, owner);
                         // messagePopup.init();
-               // }
+               //}
         }
 
         private void makeJobList() {
@@ -260,7 +260,7 @@ public class MainFrameStatusBar extends StatusBar {
          * @param component
          * @param orientation 
          */
-        public void addComponent(JComponent component, String orientation){
+        protected void addComponent(JComponent component, String orientation){
             workspaceBar.add(component, orientation);
         }
 }

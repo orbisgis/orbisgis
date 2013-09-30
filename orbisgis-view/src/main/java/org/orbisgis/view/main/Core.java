@@ -93,22 +93,28 @@ import org.xnap.commons.i18n.I18nFactory;
  * This is the main UIContext
  */
 public class Core {
+
     private static final I18n I18N = I18nFactory.getI18n(Core.class);
     private static final Logger LOGGER = Logger.getLogger(Core.class);
-    /** Buffer to copy resource to file */
+    /**
+     * Buffer to copy resource to file
+     */
     private static final int BUFFER_LENGTH = 4096;
     /////////////////////
     //view package
     private EditorManager editors;         /*!< Management of editors */
+
     private MainFrame mainFrame = new MainFrame();     /*!< The main window */
-    private Catalog geoCatalog= null;      /*!< The GeoCatalog frame */
+
+    private Catalog geoCatalog = null;      /*!< The GeoCatalog frame */
+
     private ViewWorkspace viewWorkspace;
     private OutputManager loggerCollection;    /*!< Loggings panels */
+
     private BackgroundManager backgroundManager;
+    public static final Dimension MAIN_VIEW_SIZE = new Dimension(800, 600);/*!< Bounds of mainView, x,y and width height*/
 
-    public static final Dimension MAIN_VIEW_SIZE = new Dimension(800,600);/*!< Bounds of mainView, x,y and width height*/
     private DockingManager dockManager = null; /*!< The DockStation manager */
-
 
     /////////////////////
     //base package :
@@ -118,36 +124,37 @@ public class Core {
     // Plugins
     private PluginHost pluginFramework;
     private DockingPanelTracker singleFrameTracker;
-    private MenuItemServiceTracker<MainWindow,ToolBarAction> toolBarTracker;
+    private MenuItemServiceTracker<MainWindow, ToolBarAction> toolBarTracker;
 
     /**
      * Core constructor, init Model instances
+     *
      * @param debugMode Show additional information for debugging purposes
      * @note Call startup() to init Swing
      */
-    public Core(CoreWorkspace coreWorkspace,boolean debugMode,ProgressMonitor progressInfo) throws InvocationTargetException, InterruptedException {
+    public Core(CoreWorkspace coreWorkspace, boolean debugMode, ProgressMonitor progressInfo) throws InvocationTargetException, InterruptedException {
         MainContext.initConsoleLogger(debugMode);
         // Declare empty main frame
         //Set the main frame position and size
         mainFrame.setSize(MAIN_VIEW_SIZE);
         // Try to set the frame at the center of the default screen
         try {
-                GraphicsDevice device = GraphicsEnvironment.
-                        getLocalGraphicsEnvironment().getDefaultScreenDevice();
-                Rectangle screenBounds = device.getDefaultConfiguration().getBounds();
-                mainFrame.setLocation(screenBounds.x + screenBounds.width / 2 - MAIN_VIEW_SIZE.width / 2,
-                        screenBounds.y + screenBounds.height / 2 - MAIN_VIEW_SIZE.height / 2);
+            GraphicsDevice device = GraphicsEnvironment.
+                    getLocalGraphicsEnvironment().getDefaultScreenDevice();
+            Rectangle screenBounds = device.getDefaultConfiguration().getBounds();
+            mainFrame.setLocation(screenBounds.x + screenBounds.width / 2 - MAIN_VIEW_SIZE.width / 2,
+                    screenBounds.y + screenBounds.height / 2 - MAIN_VIEW_SIZE.height / 2);
         } catch (Throwable ex) {
-                LOGGER.error(ex.getLocalizedMessage(), ex);
+            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
         UIFactory.setMainFrame(mainFrame);
-        progressInfo.init(I18N.tr("Loading GDMS.."),100);
-        initMainContext(debugMode,coreWorkspace);
+        progressInfo.init(I18N.tr("Loading GDMS.."), 100);
+        initMainContext(debugMode, coreWorkspace);
         progressInfo.progressTo(10);
         this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());
         Services.registerService(ViewWorkspace.class, I18N.tr("Contains view folders path"),
-                        viewWorkspace);
-        progressInfo.init(I18N.tr("Register GUI Sql functions.."),100);
+                viewWorkspace);
+        progressInfo.init(I18N.tr("Register GUI Sql functions.."), 100);
         addSQLFunctions();
         progressInfo.progressTo(11);
         //Load plugin host
@@ -159,6 +166,7 @@ public class Core {
         initSIF();
         progressInfo.progressTo(20);
     }
+
     private void startPluginHost() {
         try {
             pluginFramework = new PluginHost(new File(mainContext.getCoreWorkspace().getPluginCache()));
@@ -168,41 +176,42 @@ public class Core {
             // Start bundles
             pluginFramework.start();
         } catch (Exception ex) {
-            LOGGER.error(I18N.tr("Loading of plugins is aborted"),ex);
+            LOGGER.error(I18N.tr("Loading of plugins is aborted"), ex);
         }
     }
+
     /**
      * Find the workspace folder or addDockingPanel a dialog to select one
      */
-    private void initMainContext(boolean debugMode,CoreWorkspace coreWorkspace) throws InterruptedException, InvocationTargetException, RuntimeException {
+    private void initMainContext(boolean debugMode, CoreWorkspace coreWorkspace) throws InterruptedException, InvocationTargetException, RuntimeException {
         String workspaceFolder = coreWorkspace.getWorkspaceFolder();
-        if(workspaceFolder==null) {
-                File defaultWorkspace = coreWorkspace.readDefaultWorkspacePath();
-                if(defaultWorkspace==null || !ViewWorkspace.isWorkspaceValid(defaultWorkspace)) {
-                        try {
-                                PromptUserForSelectingWorkspace dial = new PromptUserForSelectingWorkspace(coreWorkspace);
-                                SwingUtilities.invokeAndWait(dial);
-                                if(!dial.isOk()) {
-                                    throw new InterruptedException("Canceled by user.");
-                                }
-                        } catch(InvocationTargetException ex) {
-                                mainFrame.dispose();
-                                throw ex;
-                        }
-                } else {
-                        coreWorkspace.setWorkspaceFolder(defaultWorkspace.getAbsolutePath());
+        if (workspaceFolder == null) {
+            File defaultWorkspace = coreWorkspace.readDefaultWorkspacePath();
+            if (defaultWorkspace == null || !ViewWorkspace.isWorkspaceValid(defaultWorkspace)) {
+                try {
+                    PromptUserForSelectingWorkspace dial = new PromptUserForSelectingWorkspace(coreWorkspace);
+                    SwingUtilities.invokeAndWait(dial);
+                    if (!dial.isOk()) {
+                        throw new InterruptedException("Canceled by user.");
+                    }
+                } catch (InvocationTargetException ex) {
+                    mainFrame.dispose();
+                    throw ex;
                 }
+            } else {
+                coreWorkspace.setWorkspaceFolder(defaultWorkspace.getAbsolutePath());
+            }
         }
-        this.mainContext = new MainContext(debugMode,coreWorkspace,true);
+        this.mainContext = new MainContext(debugMode, coreWorkspace, true);
     }
 
     /**
      * Add new menu to the OrbisGIS core
      */
-    private void addCoreMenu() {       
+    private void addCoreMenu() {
         DefaultAction def = new DefaultAction(MainFrameAction.MENU_SAVE, I18N.tr("&Save"), OrbisGISIcon.getIcon("save"),
-                EventHandler.create(ActionListener.class, this, "onMenuSaveApplication"));
-        def.setParent(MainFrameAction.MENU_FILE);
+                EventHandler.create(ActionListener.class, this, "onMenuSaveApplication"));  
+        def.setParent(MainFrameAction.MENU_FILE).setBefore(MainFrameAction.MENU_EXIT);
         mainFrame.addMenu(def);
         def.setToolTipText(I18N.tr("Save the workspace"));
         JButton saveBt = new CustomButton(def);
@@ -211,34 +220,40 @@ public class Core {
     }
 
     private static class PromptUserForSelectingWorkspace implements Runnable {
-                private CoreWorkspace coreWorkspace;
-                /** User do not cancel workspace selection */
-                private boolean ok = false;
 
-                public PromptUserForSelectingWorkspace(CoreWorkspace coreWorkspace) {
-                        this.coreWorkspace = coreWorkspace;
-                }
+        private CoreWorkspace coreWorkspace;
+        /**
+         * User do not cancel workspace selection
+         */
+        private boolean ok = false;
 
-                /**
-                 * Does the user accept a new workspace folder.
-                 * @return False if action is canceled by user
-                 */
-                private boolean isOk() {
-                    return ok;
-                }
+        public PromptUserForSelectingWorkspace(CoreWorkspace coreWorkspace) {
+            this.coreWorkspace = coreWorkspace;
+        }
 
-                @Override
-                public void run() {
-                        // Ask the user to select a workspace folder
-                        File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, coreWorkspace);
-                        if(newWorkspace!=null) {
-                            coreWorkspace.setWorkspaceFolder(newWorkspace.getAbsolutePath());
-                            ok = true;
-                        }
-                }
+        /**
+         * Does the user accept a new workspace folder.
+         *
+         * @return False if action is canceled by user
+         */
+        private boolean isOk() {
+            return ok;
+        }
+
+        @Override
+        public void run() {
+            // Ask the user to select a workspace folder
+            File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, coreWorkspace);
+            if (newWorkspace != null) {
+                coreWorkspace.setWorkspaceFolder(newWorkspace.getAbsolutePath());
+                ok = true;
+            }
+        }
     }
+
     /**
      * For UnitTest purpose
+     *
      * @return The Catalog instance
      */
     public Catalog getGeoCatalog() {
@@ -251,9 +266,9 @@ public class Core {
     private void initSIF() {
         UIFactory.setDefaultImageIcon(OrbisGISIcon.getIcon("mini_orbisgis"));        // Load SIF properties
         try {
-                UIFactory.loadState(new File(viewWorkspace.getSIFPath()));
-        } catch(IOException ex) {
-                LOGGER.error(I18N.tr("Error while loading dialogs informations."),ex);
+            UIFactory.loadState(new File(viewWorkspace.getSIFPath()));
+        } catch (IOException ex) {
+            LOGGER.error(I18N.tr("Error while loading dialogs informations."), ex);
         }
     }
 
@@ -264,8 +279,10 @@ public class Core {
     public MainContext getMainContext() {
         return mainContext;
     }
+
     /**
      * Instance of main frame, null if startup() has not be called.
+     *
      * @return MainFrame instance
      */
     public MainFrame getMainFrame() {
@@ -283,21 +300,21 @@ public class Core {
         //Thanks to EventHandler we don't have to build a listener class
         mainFrame.addWindowListener(EventHandler.create(
                 WindowListener.class, //The listener class
-                this,                 //The event target object
+                this, //The event target object
                 "onMainWindowClosing",//The event target method to call
-                null,                 //the event parameter to pass(none)
+                null, //the event parameter to pass(none)
                 "windowClosing"));    //The listener method to use
     }
 
     /**
-     * Create the logging panels
-     * All,Info,Warning,Error
+     * Create the logging panels All,Info,Warning,Error
      */
     private void makeLoggingPanels() {
         loggerCollection = new OutputManager(mainContext.isDebugMode());
         //Show Panel
         dockManager.addDockingPanel(loggerCollection.getPanel());
     }
+
     /**
      * Create the GeoCatalog view
      */
@@ -314,12 +331,13 @@ public class Core {
      * Load the built-ins editors factories
      */
     private void loadEditorFactories() {
-            editors.addEditorFactory(new TocEditorFactory(pluginFramework.getHostBundleContext()));
-            editors.addEditorFactory(new MapEditorFactory(pluginFramework.getHostBundleContext()));
-            editors.addEditorFactory(new SQLConsoleFactory(pluginFramework.getHostBundleContext()));
-            editors.addEditorFactory(new TableEditorFactory());
-            editors.addEditorFactory(new BeanShellFrameFactory());
+        editors.addEditorFactory(new TocEditorFactory(pluginFramework.getHostBundleContext()));
+        editors.addEditorFactory(new MapEditorFactory(pluginFramework.getHostBundleContext()));
+        editors.addEditorFactory(new SQLConsoleFactory(pluginFramework.getHostBundleContext()));
+        editors.addEditorFactory(new TableEditorFactory());
+        editors.addEditorFactory(new BeanShellFrameFactory());
     }
+
     /**
      * Initialisation of the BackGroundManager Service
      */
@@ -328,55 +346,56 @@ public class Core {
         Services.registerService(
                 BackgroundManager.class,
                 I18N.tr("Execute tasks in background processes, showing progress bars. Gives access to the job queue"),
-               backgroundManager);        
+                backgroundManager);
     }
+
     /**
-     * The user want to close the main window
-     * Then the application has to be closed
+     * The user want to close the main window Then the application has to be
+     * closed
      */
     public void onMainWindowClosing() {
         this.shutdown(true);
     }
 
     /**
-     * Create the central place for editor factories.
-     * This manager will retrieve panel editors and
-     * use the docking manager to addDockingPanel them
+     * Create the central place for editor factories. This manager will retrieve
+     * panel editors and use the docking manager to addDockingPanel them
+     *
      * @param dm Instance of docking manager
      */
     private void makeEditorManager(DockingManager dm) {
         editors = new EditorManager(dm);
         Services.registerService(EditorManager.class,
-                                 I18N.tr("Use this instance to open an editable element (map,data source..)"),
-                                 editors);
+                I18N.tr("Use this instance to open an editable element (map,data source..)"),
+                editors);
 
     }
 
     /**
-    * Starts the application. This method creates the {@link MainFrame},
-    * and manage the Look And Feel declarations
-    */
-    public void startup(ProgressMonitor progress) throws Exception{
+     * Starts the application. This method creates the {@link MainFrame}, and
+     * manage the Look And Feel declarations
+     */
+    public void startup(ProgressMonitor progress) throws Exception {
         // Show the application when Swing will be ready
         try {
-                initialize(progress);
+            initialize(progress);
         } catch (Exception ex) {
-                mainFrame.dispose();
-                throw ex;
+            mainFrame.dispose();
+            throw ex;
         }
         SwingUtilities.invokeLater(new ShowSwingApplication(progress));
     }
+
     /**
      * For unit test purpose, expose the plugin framework
+     *
      * @return
      */
     public PluginHost getPluginFramework() {
         return pluginFramework;
     }
 
-
     private void initialize(ProgressMonitor progress) {
-
         progress.init(I18N.tr("Loading the main window"), 100);
         makeMainFrame();
         progress.progressTo(30);
@@ -389,7 +408,7 @@ public class Core {
         // Initiate the docking panel tracker
         singleFrameTracker = new DockingPanelTracker(pluginFramework.getHostBundleContext(), dockManager);
         singleFrameTracker.open();
-        toolBarTracker = new MenuItemServiceTracker<MainWindow, ToolBarAction>(pluginFramework.getHostBundleContext(),ToolBarAction.class,dockManagerImpl,mainFrame);
+        toolBarTracker = new MenuItemServiceTracker<MainWindow, ToolBarAction>(pluginFramework.getHostBundleContext(), ToolBarAction.class, dockManagerImpl, mainFrame);
         toolBarTracker.open();
         progress.progressTo(35);
 
@@ -412,81 +431,85 @@ public class Core {
         progress.init(I18N.tr("Restore the former layout.."), 100);
         //Load the docking layout and editors opened in last OrbisGis instance
         File savedDockingLayout = new File(viewWorkspace.getDockingLayoutPath());
-        if(!savedDockingLayout.exists()) {
-                // Copy the default docking layout
-                // First OrbisGIS start
-                copyDefaultDockingLayout(savedDockingLayout);
+        if (!savedDockingLayout.exists()) {
+            // Copy the default docking layout
+            // First OrbisGIS start
+            copyDefaultDockingLayout(savedDockingLayout);
         }
         dockManager.setDockingLayoutPersistanceFilePath(viewWorkspace.getDockingLayoutPath());
-        progress.progressTo(70);        
+        progress.progressTo(70);
         addCoreMenu();
     }
+
     /**
      * Copy the default docking layout to the specified file path.
+     *
      * @param savedDockingLayout
      */
     private void copyDefaultDockingLayout(File savedDockingLayout) {
-                InputStream xmlFileStream = DockingManager.class.getResourceAsStream("default_docking_layout.xml");
-                if (xmlFileStream != null) {
-                        try {
-                                FileOutputStream writer = new FileOutputStream(savedDockingLayout);
-                                try {
-                                        byte[] buffer = new byte[BUFFER_LENGTH];
-                                        for (int n; (n = xmlFileStream.read(buffer)) != -1;) {
-                                                writer.write(buffer, 0, n);
-                                        }
-                                } finally {
-                                        writer.close();
-                                }
-                        } catch (FileNotFoundException ex) {
-                                LOGGER.error(I18N.tr("Unable to save the docking layout."), ex);
-                        } catch (IOException ex) {
-                                LOGGER.error(I18N.tr("Unable to save the docking layout."), ex);
-                        } finally {
-                                try {
-                                        xmlFileStream.close();
-                                } catch (IOException ex) {
-                                        LOGGER.error(I18N.tr("Unable to save the docking layout."), ex);
-                                }
-                        }
+        InputStream xmlFileStream = DockingManager.class.getResourceAsStream("default_docking_layout.xml");
+        if (xmlFileStream != null) {
+            try {
+                FileOutputStream writer = new FileOutputStream(savedDockingLayout);
+                try {
+                    byte[] buffer = new byte[BUFFER_LENGTH];
+                    for (int n; (n = xmlFileStream.read(buffer)) != -1;) {
+                        writer.write(buffer, 0, n);
+                    }
+                } finally {
+                    writer.close();
                 }
+            } catch (FileNotFoundException ex) {
+                LOGGER.error(I18N.tr("Unable to save the docking layout."), ex);
+            } catch (IOException ex) {
+                LOGGER.error(I18N.tr("Unable to save the docking layout."), ex);
+            } finally {
+                try {
+                    xmlFileStream.close();
+                } catch (IOException ex) {
+                    LOGGER.error(I18N.tr("Unable to save the docking layout."), ex);
+                }
+            }
         }
+    }
 
     /**
      * Add SQL functions to interact with OrbisGIS UI
      */
-        private void addSQLFunctions() {
-                mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_AddLayer.class);
-                mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_BBox.class);
-                mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_ZoomTo.class);
-                mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_Share.class);
-        }
+    private void addSQLFunctions() {
+        mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_AddLayer.class);
+        mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_BBox.class);
+        mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_ZoomTo.class);
+        mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_Share.class);
+    }
 
     /**
      * Change the state of the main frame in the swing thread
      */
     private class ShowSwingApplication implements Runnable {
+
         ProgressMonitor progress;
 
         public ShowSwingApplication(ProgressMonitor progress) {
-                this.progress = progress;
+            this.progress = progress;
         }
 
         /**
-        * Change the state of the main frame in the swing thread
-        */
+         * Change the state of the main frame in the swing thread
+         */
         @Override
-        public void run(){
-                try {
-                        mainFrame.setVisible( true );
-                } finally {
-                        progress.setCancelled(true);
-                }
+        public void run() {
+            try {
+                mainFrame.setVisible(true);
+            } finally {
+                progress.setCancelled(true);
+            }
         }
     }
 
     /**
      * Return the docking manager. This function is used by Unit Tests.
+     *
      * @return The Docking Manager
      */
     public DockingManager getDockManager() {
@@ -498,23 +521,23 @@ public class Core {
      */
     public void dispose() {
         //Close all running jobs
-        for(Job job : backgroundManager.getActiveJobs()) {
-                try {
-                        job.cancel();
-                } catch (Throwable ex) {
-                        LOGGER.error(ex.getLocalizedMessage(),ex);
-                        //Cancel the next job
-                }
+        for (Job job : backgroundManager.getActiveJobs()) {
+            try {
+                job.cancel();
+            } catch (Throwable ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+                //Cancel the next job
+            }
         }
 
         //Free UI resources
         editors.dispose();
         geoCatalog.dispose();
         mainFrame.dispose();
-        if(singleFrameTracker!=null) {
-                singleFrameTracker.close();
+        if (singleFrameTracker != null) {
+            singleFrameTracker.close();
         }
-        if(toolBarTracker!=null) {
+        if (toolBarTracker != null) {
             toolBarTracker.close();
         }
         dockManager.dispose();
@@ -528,96 +551,99 @@ public class Core {
         // Shutdown the plugin framework
         try {
             pluginFramework.stop();
-        }catch(InterruptedException ex) {
-            LOGGER.error(ex.getLocalizedMessage(),ex);
-        }catch(BundleException ex) {
-            LOGGER.error(ex.getLocalizedMessage(),ex);
+        } catch (InterruptedException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
+        } catch (BundleException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
     }
+
     /**
-     * Save or discard editable element modification.
-     * Show a dialog if there is at least one unsaved editable element.
+     * Save or discard editable element modification. Show a dialog if there is
+     * at least one unsaved editable element.
+     *
      * @return True if the application must cancel the close shutdown operation
      */
-        private boolean isShutdownVetoed() {
-                List<EditableElement> modifiedElements = new ArrayList<EditableElement>();
-                Collection<EditableElement> editableElement = editors.getEditableElements();
-                for(EditableElement editable : editableElement) {
-                        if(editable.isModified()) {
-                                modifiedElements.add(editable);
-                        }
-                }
-                if (!modifiedElements.isEmpty()) {
-                        SaveDocuments.CHOICE userChoice = SaveDocuments.showModal(mainFrame, modifiedElements);
-                        // If the user do not want to save the editable elements
-                        // Then cancel the modifications
-                        if(userChoice==SaveDocuments.CHOICE.SAVE_NONE) {
-                            for(EditableElement element : modifiedElements) {
-                                element.setModified(false);
-                            }
-                        }
-                        return userChoice==SaveDocuments.CHOICE.CANCEL;
-                } else {
-                        return false;
-                }
+    private boolean isShutdownVetoed() {
+        List<EditableElement> modifiedElements = new ArrayList<EditableElement>();
+        Collection<EditableElement> editableElement = editors.getEditableElements();
+        for (EditableElement editable : editableElement) {
+            if (editable.isModified()) {
+                modifiedElements.add(editable);
+            }
         }
+        if (!modifiedElements.isEmpty()) {
+            SaveDocuments.CHOICE userChoice = SaveDocuments.showModal(mainFrame, modifiedElements);
+            // If the user do not want to save the editable elements
+            // Then cancel the modifications
+            if (userChoice == SaveDocuments.CHOICE.SAVE_NONE) {
+                for (EditableElement element : modifiedElements) {
+                    element.setModified(false);
+                }
+            }
+            return userChoice == SaveDocuments.CHOICE.CANCEL;
+        } else {
+            return false;
+        }
+    }
 
-        private void saveSIFState() {
-                // Load SIF properties
-                try {
-                        UIFactory.saveState(new File(viewWorkspace.getSIFPath()));
-                } catch (IOException ex) {
-                        LOGGER.error(I18N.tr("Error while saving dialogs informations."), ex);
-                }
+    private void saveSIFState() {
+        // Load SIF properties
+        try {
+            UIFactory.saveState(new File(viewWorkspace.getSIFPath()));
+        } catch (IOException ex) {
+            LOGGER.error(I18N.tr("Error while saving dialogs informations."), ex);
         }
-        /**
-         * Stops this application, closes the {@link MainFrame} and saves all
-         * properties.
-         * This method is called through the MainFrame.MAIN_FRAME_CLOSING event
-         * listener.
-         */
-        public boolean shutdown(boolean stopVM) {
-                if (!isShutdownVetoed()) {
-                        try {
-                                mainFrame.setVisible(false); //Hide the main panel
-                                mainContext.saveStatus(); //Save the services status
-                                // Save dialogs status
-                                saveSIFState();
-                                // Save layout
-                                dockManager.saveLayout();
-                                this.dispose();
-                        } finally {
-                                //While public Plugins are not implemented do not close the VM in finally clause
-                                // if(stopVM) {
-                                //SwingUtilities.invokeLater( new Runnable(){
-                                //   /** If an error occur while unload resources, java machine
-                                //    * may continue to run. In this case, the following command
-                                //    * would terminate the application.
-                                //    */
-                                //    public void run(){
-                                //            System.exit(0);
-                                //    }
-                                //   } );
-                                // }
-                        }
-                        return true;
-                } else {
-                        return false;
-                }
-        }
-        
-        /**
-         * A method to save the workspace : documents and layout
-         */
-        public void onMenuSaveApplication(){
-            if(!isShutdownVetoed()){
+    }
+
+    /**
+     * Stops this application, closes the {@link MainFrame} and saves all
+     * properties. This method is called through the
+     * MainFrame.MAIN_FRAME_CLOSING event listener.
+     */
+    public boolean shutdown(boolean stopVM) {
+        if (!isShutdownVetoed()) {
+            try {
+                mainFrame.setVisible(false); //Hide the main panel
                 mainContext.saveStatus(); //Save the services status
                 // Save dialogs status
                 saveSIFState();
                 // Save layout
                 dockManager.saveLayout();
-                LOGGER.info(I18N.tr("The workspace has been saved."));
+                this.dispose();
+            } finally {
+                //While public Plugins are not implemented do not close the VM in finally clause
+                // if(stopVM) {
+                //SwingUtilities.invokeLater( new Runnable(){
+                //   /** If an error occur while unload resources, java machine
+                //    * may continue to run. In this case, the following command
+                //    * would terminate the application.
+                //    */
+                //    public void run(){
+                //            System.exit(0);
+                //    }
+                //   } );
+                // }
             }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * A method to save the workspace : documents and layout
+     */
+    public void onMenuSaveApplication() {
+        if (!isShutdownVetoed()) {
+            mainContext.saveStatus(); //Save the services status
+            // Save dialogs status
+            saveSIFState();
+            // Save layout
+            dockManager.saveLayout();
+            LOGGER.info(I18N.tr("The workspace has been saved."));
+        } else {
             LOGGER.info(I18N.tr("The workspace hasn't been saved."));
         }
+    }
 }
