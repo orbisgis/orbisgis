@@ -518,7 +518,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 }
                 else if (ratioCB.equals(RATIO[2])) {
                     width = (int)(height * (adjExtent.getWidth() / adjExtent.getHeight()));
-                    inputPanel.setValue(HEIGHT_T, String.valueOf(width));
+                    inputPanel.setValue(WIDTH_T, String.valueOf(width));
                 }               
                        
             }
