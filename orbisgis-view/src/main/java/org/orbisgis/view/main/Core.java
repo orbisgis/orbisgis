@@ -32,6 +32,7 @@ import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
 import java.io.File;
@@ -43,6 +44,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
@@ -51,10 +53,12 @@ import org.orbisgis.core.plugin.PluginHost;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
 import org.orbisgis.view.beanshell.BeanShellFrameFactory;
+import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.docking.DockingManagerImpl;
@@ -66,6 +70,7 @@ import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.main.bundles.BundleFromResources;
 import org.orbisgis.view.main.frames.MainFrame;
+import org.orbisgis.view.main.frames.ext.MainFrameAction;
 import org.orbisgis.view.main.frames.ext.MainWindow;
 import org.orbisgis.view.main.frames.ext.ToolBarAction;
 import org.orbisgis.view.map.MapEditorFactory;
@@ -191,6 +196,20 @@ public class Core {
         this.mainContext = new MainContext(debugMode,coreWorkspace,true);
     }
 
+    /**
+     * Add new menu to the OrbisGIS core
+     */
+    private void addCoreMenu() {       
+        DefaultAction def = new DefaultAction(MainFrameAction.MENU_SAVE, I18N.tr("&Save"), OrbisGISIcon.getIcon("save"),
+                EventHandler.create(ActionListener.class, this, "onMenuSaveApplication"));
+        def.setParent(MainFrameAction.MENU_FILE);
+        mainFrame.addMenu(def);
+        def.setToolTipText(I18N.tr("Save the workspace"));
+        JButton saveBt = new CustomButton(def);
+        saveBt.setHideActionText(true);
+        mainFrame.addToolBarComponent(saveBt, "align left");
+    }
+
     private static class PromptUserForSelectingWorkspace implements Runnable {
                 private CoreWorkspace coreWorkspace;
                 /** User do not cancel workspace selection */
@@ -309,7 +328,7 @@ public class Core {
         Services.registerService(
                 BackgroundManager.class,
                 I18N.tr("Execute tasks in background processes, showing progress bars. Gives access to the job queue"),
-               backgroundManager);
+               backgroundManager);        
     }
     /**
      * The user want to close the main window
@@ -399,7 +418,8 @@ public class Core {
                 copyDefaultDockingLayout(savedDockingLayout);
         }
         dockManager.setDockingLayoutPersistanceFilePath(viewWorkspace.getDockingLayoutPath());
-        progress.progressTo(70);
+        progress.progressTo(70);        
+        addCoreMenu();
     }
     /**
      * Copy the default docking layout to the specified file path.
@@ -584,5 +604,20 @@ public class Core {
                 } else {
                         return false;
                 }
+        }
+        
+        /**
+         * A method to save the workspace : documents and layout
+         */
+        public void onMenuSaveApplication(){
+            if(!isShutdownVetoed()){
+                mainContext.saveStatus(); //Save the services status
+                // Save dialogs status
+                saveSIFState();
+                // Save layout
+                dockManager.saveLayout();
+                LOGGER.info(I18N.tr("The workspace has been saved."));
+            }
+            LOGGER.info(I18N.tr("The workspace hasn't been saved."));
         }
 }

@@ -33,6 +33,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.beans.EventHandler;
 import java.util.Locale;
+import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -61,6 +63,7 @@ public class MainFrame extends JFrame implements MainWindow {
         private ActionCommands actions = new ActionCommands();
         private JMenuBar menuBar = new JMenuBar();
         private MenuItemServiceTracker<MainWindow,MainFrameAction> menuBarActionTracker;
+        private MainFrameStatusBar mainFrameStatusBar = new MainFrameStatusBar(this);
         /**
          * Creates a new frame. The content of the frame is not created by
          * this constructor, clients must call {@link #init}.
@@ -85,14 +88,15 @@ public class MainFrame extends JFrame implements MainWindow {
         }
 
         public void init(BundleContext context) {
-                initActions();
-                // Add actions in menu bar
-                actions.registerContainer(menuBar);
-                this.setJMenuBar(menuBar);
-                getContentPane().add(new MainFrameStatusBar(this),BorderLayout.SOUTH);
-                // Track for new menu items
-                menuBarActionTracker = new MenuItemServiceTracker<MainWindow, MainFrameAction>(context,MainFrameAction.class,actions,this);
-                menuBarActionTracker.open();
+            initActions();
+            // Add actions in menu bar
+            actions.registerContainer(menuBar);
+            this.setJMenuBar(menuBar);
+            getContentPane().add(mainFrameStatusBar, BorderLayout.SOUTH);
+            // Track for new menu items
+            menuBarActionTracker = new MenuItemServiceTracker<MainWindow, MainFrameAction>(context, MainFrameAction.class, actions, this);
+            menuBarActionTracker.open();
+            mainFrameStatusBar.init();
         }
 
         public static String getVersion() {
@@ -121,14 +125,13 @@ public class MainFrame extends JFrame implements MainWindow {
             actions.addAction(new DefaultAction(MainFrameAction.MENU_FILE,I18N.tr("&File")).setMenuGroup(true));
             actions.addAction(new DefaultAction(MainFrameAction.MENU_EXIT, I18N.tr("&Exit"), OrbisGISIcon.getIcon("exit"),
                     EventHandler.create(ActionListener.class, this, "onMenuExitApplication"))
-                    .setParent(MainFrameAction.MENU_FILE));
-
+                    .setParent(MainFrameAction.MENU_FILE));        
+            
             actions.addAction(new DefaultAction(MainFrameAction.MENU_TOOLS,I18N.tr("&Tools")).setMenuGroup(true));
             actions.addAction(new DefaultAction(MainFrameAction.MENU_CONFIGURE,I18N.tr("&Configuration"),
                     OrbisGISIcon.getIcon("preferences-system"),
                     EventHandler.create(ActionListener.class,this,"onMenuShowPreferences"))
-                    .setParent(MainFrameAction.MENU_TOOLS));
-
+                    .setParent(MainFrameAction.MENU_TOOLS));     
         }
 
         /**
@@ -149,4 +152,23 @@ public class MainFrame extends JFrame implements MainWindow {
         public JFrame getMainFrame() {
             return this;
         }
+        
+        /**
+         * Extend the mainframe with a new menu
+         * @param action 
+         */
+        public void addMenu(Action action){
+            actions.addAction(action);
+        }
+        
+        /**
+         * Extend the main status bar with a new component
+         * @param component
+         * @param orientation 
+         */
+        public void addToolBarComponent(JComponent component, String orientation){
+            mainFrameStatusBar.addComponent(component, orientation);
+        }
+        
+       
 }

@@ -30,6 +30,7 @@ package org.orbisgis.view.main.frames;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentListener;
@@ -40,11 +41,13 @@ import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListDataListener;
+import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.sif.components.CustomButton;
@@ -78,15 +81,23 @@ public class MainFrameStatusBar extends StatusBar {
         private JFrame owner;
         //
         private AtomicBoolean listenToLogger = new AtomicBoolean(false);
+        private JPanel workspaceBar;
 
         public MainFrameStatusBar(JFrame frame) {
                 super(OUTER_BAR_BORDER, HORIZONTAL_EMPTY_BORDER);
                 this.owner = frame;
                 setPreferredSize(new Dimension(-1, STATUS_BAR_HEIGHT));
                 setMinimumSize(new Dimension(1, STATUS_BAR_HEIGHT));
-                //Add the JobList
-                makeJobList();
-                makeWorkspaceManager();
+                
+        }
+        
+        /**
+         * Initialize swing components
+         */
+        public void init() {
+            //Add the JobList               
+            makeJobList();
+            makeWorkspaceManager();
         }
 
         @Override
@@ -94,12 +105,13 @@ public class MainFrameStatusBar extends StatusBar {
                 super.addNotify();
                 // Popup disabled
                 //if(!listenToLogger.getAndSet(true)) {
+                  
                         // - At the current state this popup is too aggressive, and keep all logs message
                         // - Only the last message should be shown without keeping all non displayed messages.
                         // - The user should be able to enable/disable this feature
                         // messagePopup = new PopupMessageDialog(this, owner);
                         // messagePopup.init();
-                //}
+               // }
         }
 
         private void makeJobList() {
@@ -113,16 +125,16 @@ public class MainFrameStatusBar extends StatusBar {
         }
 
         private void makeWorkspaceManager() {
-                JPanel workspaceBar = new JPanel(new BorderLayout());
-                JButton btnChangeWorkspace = new CustomButton(OrbisGISIcon.getIcon("application_go"));
-                btnChangeWorkspace.setToolTipText(I18N.tr("Switch to another workspace"));
-                btnChangeWorkspace.addActionListener(EventHandler.create(ActionListener.class,this,"onChangeWorkspace"));
-                workspaceBar.add(btnChangeWorkspace,BorderLayout.WEST);
+                workspaceBar = new JPanel(new MigLayout("insets 0 0 0 0"));                
                 CoreWorkspace coreWorkspace = Services.getService(CoreWorkspace.class);
                 if(coreWorkspace!=null) {
                         JLabel workspacePath = new JLabel(coreWorkspace.getWorkspaceFolder());
-                        workspaceBar.add(workspacePath,BorderLayout.CENTER);
+                        workspaceBar.add(workspacePath);
                 }
+                JButton btnChangeWorkspace = new CustomButton(OrbisGISIcon.getIcon("application_go"));
+                btnChangeWorkspace.setToolTipText(I18N.tr("Switch to another workspace"));
+                btnChangeWorkspace.addActionListener(EventHandler.create(ActionListener.class,this,"onChangeWorkspace"));
+                workspaceBar.add(btnChangeWorkspace);
                 addComponent(workspaceBar, SwingConstants.LEFT);
         }
 
@@ -241,5 +253,14 @@ public class MainFrameStatusBar extends StatusBar {
                         clearJobTitle();
                         closeJobPopup();
                 }
+        }
+        
+        /**
+         * Method to extend the mainframe status bar with a new component
+         * @param component
+         * @param orientation 
+         */
+        public void addComponent(JComponent component, String orientation){
+            workspaceBar.add(component, orientation);
         }
 }
