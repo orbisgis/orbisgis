@@ -97,46 +97,7 @@ public abstract class BeanLayer extends AbstractLayer {
                 //Deprecated listener
                 fireVisibilityChanged();
         }
-        @Override
-        public LayerType getJAXBElement() {
-                ObjectFactory ows_context_factory = new ObjectFactory();
-                LayerType layerType = ows_context_factory.createLayerType();
-                description.initJAXBType(layerType);
-                layerType.setHidden(!visible);
-                ILayer[] childrens = getChildren();
-                for(ILayer child : childrens) {
-                        if(child.isSerializable()){
-                                layerType.getLayer().add(child.getJAXBElement());
-                        }
-                }
-                // If not a Layer Collection
-                if(styleList!=null) {
-                        StyleListType slt = ows_context_factory.createStyleListType();
-                        layerType.setStyleList(slt);
-                        for(Style style : styleList) {
-                                StyleType st = ows_context_factory.createStyleType();
-                                slt.getStyle().add(st);
-                                SLDType sltType = ows_context_factory.createSLDType();
-                                st.setSLD(sltType);
-                                sltType.setAbstractStyle(style.getJAXBElement());
-                        }                        
-                }
-                //Serialisation of dataSource as a DataUrl string
-                //Create jaxb instances
-                URLType dataURL = ows_context_factory.createURLType();
-                if(!(this instanceof LayerCollection)) {
-                    OnlineResourceType resource = ows_context_factory.createOnlineResourceType();
-                    dataURL.setOnlineResource(resource);
-                    resource.setHref(getDataUri().toString());
-                    if(resource.isSetHref()) {
-                        layerType.setDataURL(dataURL);
-                    }
-                }
-                return layerType;
-        }
-        
-        
-        
+
         /**
          * Get the value of description
          *

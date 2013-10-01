@@ -30,6 +30,8 @@ package org.orbisgis.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URI;
 import java.util.Locale;
 import static org.junit.Assert.assertTrue;
@@ -37,7 +39,9 @@ import org.junit.Test;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.OwsMapContext;
+import org.orbisgis.core.map.export.MapImageWriter;
 import org.orbisgis.core.renderer.se.common.Description;
+import org.orbisgis.progress.NullProgressMonitor;
 
 /**
  *
@@ -97,8 +101,7 @@ public class OwsMapContextTest extends AbstractTest  {
     private void saveAs(String imagePath, MapImageWriter.Format format) throws Exception {
         MapContext mc = new OwsMapContext();
         mc.open(null);
-        ILayer layer = mc.createLayer(
-                getDataSourceFromPath("src/test/resources/data/landcover2000.shp"));
+        ILayer layer = mc.createLayer(URI.create("../src/test/resources/data/landcover2000.shp"));
         mc.getLayerModel().addLayer(layer);
         MapImageWriter mapImageWriter = new MapImageWriter(mc.getLayerModel());
         FileOutputStream out = new FileOutputStream(new File(imagePath));
@@ -108,21 +111,21 @@ public class OwsMapContextTest extends AbstractTest  {
 
     @Test
     public void exportToPNG() throws Exception {
-        saveAs("target/mapExportTest.png", MapImageWriter.Format.PNG);
+        saveAs("mapExportTest.png", MapImageWriter.Format.PNG);
     }
 
     @Test
     public void exportToJEPG() throws Exception {
-        saveAs("target/mapExportTest.jpg", MapImageWriter.Format.JPEG);
+        saveAs("mapExportTest.jpg", MapImageWriter.Format.JPEG);
     }
 
     @Test
     public void exportToTIFF() throws Exception {
-        saveAs("target/mapExportTest.tiff", MapImageWriter.Format.TIFF);
+        saveAs("mapExportTest.tiff", MapImageWriter.Format.TIFF);
     }
 
     @Test
     public void exportToPDF() throws Exception {
-        saveAs("target/mapExportTest.pdf", MapImageWriter.Format.PDF);
+        saveAs("mapExportTest.pdf", MapImageWriter.Format.PDF);
     }
 }

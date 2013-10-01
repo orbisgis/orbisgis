@@ -56,6 +56,8 @@ import net.opengis.ows_context.OWSContextType;
 import net.opengis.ows_context.ObjectFactory;
 import net.opengis.ows_context.OnlineResourceType;
 import net.opengis.ows_context.ResourceListType;
+import net.opengis.ows_context.SLDType;
+import net.opengis.ows_context.StyleListType;
 import net.opengis.ows_context.StyleType;
 import net.opengis.ows_context.URLType;
 import org.apache.log4j.Logger;
@@ -71,6 +73,7 @@ import org.orbisgis.core.renderer.se.common.LocalizedText;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sputilities.SFSUtilities;
+import org.orbisgis.sputilities.URIUtility;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -436,34 +439,25 @@ public final class OwsMapContext extends BeanMapContext {
                     sltType.setAbstractStyle(style.getJAXBElement());
                 }
             }
-            DataSource dataSource = layer.getDataSource();
+
             //Serialisation of dataSource as a DataUrl string
-            if(dataSource!=null) {
-                //Create jaxb instances
-                URLType dataURL = ows_context_factory.createURLType();
+            //Create jaxb instances
+            URLType dataURL = ows_context_factory.createURLType();
+            if(!(layer instanceof LayerCollection)) {
                 OnlineResourceType resource = ows_context_factory.createOnlineResourceType();
                 dataURL.setOnlineResource(resource);
-                //Retrieve data source properties
-                Source src = dataSource.getSource();
-                //Serialisation of the data source into a single string
-                String resourceSerialisation = "";
-                try {
-                    URI srcUri = src.getURI();
-                    if(srcUri!=null) {
-                        // If file, use MapContext relative path
-                        if(srcUri.getScheme().equalsIgnoreCase("file") && mapContext.getLocation() != null) {                            URI parentFolderURI = new File(mapContext.getLocation()).getParentFile().toURI();
-                            srcUri = URIUtility.relativize(mapContext.getLocation(), srcUri);
-                        } else {
-                            resourceSerialisation = srcUri.toString();
-                        }
-                        resourceSerialisation = srcUri.toString();
-                    }
-                } catch (DriverException ex) {
-                    LOGGER.error(I18N.tr("Unable to serialise the data source of layer {0}",layer.getName()),ex);
-                }
 
+                String resourceSerialisation = "";
+                URI srcUri = layer.getDataUri();
+                if(srcUri!=null) {
+                    // If file, use MapContext relative path
+                    if(srcUri.getScheme().equalsIgnoreCase("file") && mapContext.getLocation() != null) {
+                        srcUri = URIUtility.relativize(mapContext.getLocation(), srcUri);
+                    }
+                    resourceSerialisation = srcUri.toString();
+                }
                 resource.setHref(resourceSerialisation);
-                if(!resourceSerialisation.isEmpty()) {
+                if(resource.isSetHref()) {
                     layerType.setDataURL(dataURL);
                 }
             }
