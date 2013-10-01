@@ -1,10 +1,9 @@
 package org.orbisgis.view.geocatalog.actions;
 
-import org.gdms.source.SourceManager;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
+import org.apache.log4j.Logger;
+import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.components.actions.DefaultAction;
-import javax.swing.Icon;
+import javax.swing.*;
 import java.awt.event.ActionListener;
 
 /**
@@ -12,6 +11,9 @@ import java.awt.event.ActionListener;
  * @author Nicolas Fortin
  */
 public class ActionOnNonEmptySourceList extends DefaultAction {
+    private static Logger LOG = Logger.getLogger(ActionOnNonEmptySourceList.class);
+    private ListModel<ContainerItemProperties> srcModel;
+
     /**
      * @param actionId Action identifier, should be unique for ActionCommands
      * @param actionLabel I18N label short label
@@ -19,14 +21,13 @@ public class ActionOnNonEmptySourceList extends DefaultAction {
      * @param icon Icon
      * @param actionListener Fire the event to this listener
      */
-    public ActionOnNonEmptySourceList(String actionId, String actionLabel,String actionToolTip, Icon icon,ActionListener actionListener) {
+    public ActionOnNonEmptySourceList(String actionId, String actionLabel,String actionToolTip, Icon icon,ActionListener actionListener, ListModel<ContainerItemProperties> model) {
         super(actionId, actionLabel, actionToolTip, icon, actionListener, null);
+        this.srcModel = model;
     }
 
     @Override
     public boolean isEnabled() {
-        DataManager dm = Services.getService(DataManager.class);
-        SourceManager dr = dm.getSourceManager();
-        return super.isEnabled() && !dr.isEmpty(true);
+        return super.isEnabled() && srcModel.getSize()!=0;
     }
 }

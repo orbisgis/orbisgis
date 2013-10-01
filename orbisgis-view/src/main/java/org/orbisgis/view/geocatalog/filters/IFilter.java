@@ -28,16 +28,20 @@
  */
 package org.orbisgis.view.geocatalog.filters;
 
-import org.gdms.source.SourceManager;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * A filter reject or accept DataSource according to properties.
  */
 public interface IFilter {
         /**
             * Does this filter reject or accept this Source
-            * @param sm Source Manager instance
+            * @param connection Active connection, do not close
             * @param sourceName Source name
+            * @param tableProperties Table metadata, {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
             * @return True if the Source should be shown
             */
-	boolean accepts(SourceManager sm, String sourceName);
+	boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException;
 }

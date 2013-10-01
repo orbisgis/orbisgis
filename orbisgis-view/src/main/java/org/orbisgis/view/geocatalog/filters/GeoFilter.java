@@ -28,22 +28,20 @@
  */
 package org.orbisgis.view.geocatalog.filters;
 
-import org.gdms.source.SourceManager;
+import org.orbisgis.sputilities.SFSUtilities;
+import org.orbisgis.sputilities.TableLocation;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * DataSource is vectorial, raster or wms
  */
 public class GeoFilter implements IFilter {
-       /**
-        * Does this filter reject or accept this Source
-        * @param sm Source Manager instance
-        * @param sourceName Source name
-        * @return True if the Source should be shown
-        */
-	public boolean accepts(SourceManager sm, String sourceName) {
-		int type = sm.getSource(sourceName).getType();
-		int spatial = SourceManager.VECTORIAL | SourceManager.RASTER
-				| SourceManager.STREAM;
-		return (type & spatial) != 0;
-	}
 
+    @Override
+    public boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException {
+        return !SFSUtilities.getGeometryFields(connection, TableLocation.parse(sourceName)).isEmpty();
+    }
 }

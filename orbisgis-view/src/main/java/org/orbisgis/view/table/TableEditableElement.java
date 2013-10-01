@@ -31,7 +31,6 @@ package org.orbisgis.view.table;
 import java.util.Collections;
 import java.util.Set;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.xnap.commons.i18n.I18n;
@@ -68,20 +67,14 @@ public class TableEditableElement extends EditableSource {
         public String toString() {
             return i18n.tr("Table \"{0}\"", getTableReference());
         }
-        /**
-         * {@link EditableSource#EditableSource(org.gdms.data.DataSource)}
-         */
-        public TableEditableElement(DataSource ds) {
-            super(ds);
-            this.selectedGeometries = new IntegerUnion();
-        }
+
 
         /**
-	 * Get the selected geometries in the table
-	 * @return
-	 */
-	public Set<Integer> getSelection() {
-                return Collections.unmodifiableSet(selectedGeometries);
+         * Get the selected geometries in the table
+         * @return
+         */
+        public Set<Integer> getSelection() {
+            return Collections.unmodifiableSet(selectedGeometries);
         }
 
         /**

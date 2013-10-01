@@ -54,10 +54,8 @@ import org.apache.log4j.Logger;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.api.DataManager;
-import org.orbisgis.progress.*;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.sputilities.TableLocation;
@@ -77,7 +75,6 @@ import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.actions.ActionOnNonEmptySourceList;
 import org.orbisgis.view.geocatalog.actions.ActionOnSelection;
-import org.orbisgis.view.geocatalog.dialogs.OpenGdmsFolderPanel;
 import org.orbisgis.view.geocatalog.ext.GeoCatalogMenu;
 import org.orbisgis.view.geocatalog.ext.PopupMenu;
 import org.orbisgis.view.geocatalog.ext.PopupTarget;
@@ -85,11 +82,13 @@ import org.orbisgis.view.geocatalog.ext.TitleActionBar;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.factories.NameContains;
 import org.orbisgis.view.geocatalog.filters.factories.NameNotContains;
+import org.orbisgis.view.geocatalog.filters.factories.SourceTypeIs;
 import org.orbisgis.view.geocatalog.io.ExportInFileOperation;
 import org.orbisgis.view.geocatalog.renderer.DataSourceListCellRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.table.TableEditableElement;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -102,7 +101,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * eventSourceListPopupMenuCreating listener container to add more items in the
  * source list pop-up menu.
  */
-public class Catalog extends JPanel implements DockingPanel,TitleActionBar,PopupTarget {
+public class Catalog extends JPanel implements DockingPanel,TitleActionBar,PopupTarget,DriverFunctionContainer {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
 
         private static final long serialVersionUID = 1L;
@@ -123,6 +122,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         // Action trackers
         private MenuItemServiceTracker<PopupTarget,PopupMenu> popupActionTracker;
         private MenuItemServiceTracker<TitleActionBar,GeoCatalogMenu> dockingActionTracker;
+        private ServiceTracker<DriverFunction, DriverFunction> driverFunctionTracker;
         private List<DriverFunction> fileDrivers = new LinkedList<>();
 
         /**
@@ -132,6 +132,16 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          */
         public JList getSourceList() {
                 return sourceList;
+        }
+
+        @Override
+        public void addDriverFunction(DriverFunction driverFunction) {
+            fileDrivers.add(driverFunction);
+        }
+
+        @Override
+        public void removeDriverFunction(DriverFunction driverFunction) {
+            fileDrivers.remove(driverFunction);
         }
 
         /**
@@ -174,14 +184,18 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 // Register built-ins popup actions
                 createPopupActions();
         }
-        public void registerActionTrackers(BundleContext hostContext) {
+
+        public void registeTrackers(BundleContext hostContext) {
             popupActionTracker = new MenuItemServiceTracker<PopupTarget, PopupMenu>(hostContext,PopupMenu.class,
                     popupActions,this);
             dockingActionTracker = new MenuItemServiceTracker<TitleActionBar, GeoCatalogMenu>(hostContext,
                     GeoCatalogMenu.class,dockingActions,this);
+            DriverFunctionTracker driverFunctionTrackerCustom = new DriverFunctionTracker(hostContext, this);
+            driverFunctionTracker = new ServiceTracker<>(hostContext, DriverFunction.class ,driverFunctionTrackerCustom);
             // Begin the track
             popupActionTracker.open();
             dockingActionTracker.open();
+            driverFunctionTracker.open();
         }
         /**
          * Get the actions related to frame title.
@@ -239,6 +253,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         private void registerFilterFactories() {
                 filterFactoryManager.registerFilterFactory(new NameContains());
                 filterFactoryManager.registerFilterFactory(new NameNotContains());
+                filterFactoryManager.registerFilterFactory(new SourceTypeIs());
         }
 
         /**
@@ -407,7 +422,11 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                         I18N.tr("Clear the GeoCatalog"),
                         JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (option == JOptionPane.YES_OPTION) {
-                        sourceListContent.clearAllSourceExceptSystemTables();
+                        try {
+                            sourceListContent.clearAllSourceExceptSystemTables();
+                        } catch (SQLException ex) {
+                            LOGGER.error(I18N.tr("Could not remove tables"), ex);
+                        }
                 }
         }
 
@@ -473,17 +492,20 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          * The user can save a source in a database
          */
         public void onMenuSaveInDB() {
+                /*
                 DataManager dm = Services.getService(DataManager.class);
                 SourceManager sm = dm.getSourceManager();
                 String[] res = getSelectedSources();
                 TableExportPanel tableExportPanel = new TableExportPanel(res, sm);
                 tableExportPanel.setVisible(true);
+                */
         }
 
         /**
          * The user can load several files from a folder
          */
         public void onMenuAddFilesFromFolder() {
+                /*
                 final OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(I18N.tr("Add files from a folder"));
                 folderPanel.loadState();
                 if (UIFactory.showDialog(folderPanel, true, true)) {
@@ -508,6 +530,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
 
                         }
                 }
+                */
         }
 
         /**
@@ -575,6 +598,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          * @param pm Progress manager
          */
         private void processFolder(File file, FileFilter filter, org.orbisgis.progress.ProgressMonitor pm) {
+                /*
                 if (file.isDirectory()) {
                         pm.startTask(file.getName(), 100);
                         File[] files = file.listFiles();
@@ -600,6 +624,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                                 }
                         }
                 }
+                */
         }
         private void createPopupActions() {
             //Popup:Add
@@ -659,7 +684,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             //Clear Geo-catalog
             popupActions.addAction(new ActionOnNonEmptySourceList(PopupMenu.M_CLEAR_CATALOG,I18N.tr("Clear the GeoCatalog"),
                     I18N.tr("Remove all sources in this list"),OrbisGISIcon.getIcon("bin_closed"),
-                    EventHandler.create(ActionListener.class,this,"onMenuClearGeoCatalog")).setLogicalGroup(PopupMenu.GROUP_CLOSE));
+                    EventHandler.create(ActionListener.class,this,"onMenuClearGeoCatalog"), sourceListContent).setLogicalGroup(PopupMenu.GROUP_CLOSE));
         }
 
         /**
@@ -675,7 +700,8 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                         "onMouseActionOnSourceList",
                         "")); //This method ask the event data as argument
                 //Create the list content manager
-                sourceListContent = new SourceListModel();
+                DataSource dataSource = Services.getService(DataSource.class);
+                sourceListContent = new SourceListModel(dataSource);
                 //Replace the default model by the GeoCatalog model
                 sourceList.setModel(sourceListContent);
                 SourceListTransferHandler transferHandler = new SourceListTransferHandler();
@@ -704,6 +730,9 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 }
                 if(dockingActionTracker!=null) {
                     dockingActionTracker.close();
+                }
+                if(driverFunctionTracker!=null) {
+                    driverFunctionTracker.close();
                 }
         }
 

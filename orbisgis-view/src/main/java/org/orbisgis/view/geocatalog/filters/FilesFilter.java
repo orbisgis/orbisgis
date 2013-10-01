@@ -28,20 +28,17 @@
  */
 package org.orbisgis.view.geocatalog.filters;
 
-import org.gdms.source.SourceManager;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * Accept only file data source.
  */
 public class FilesFilter implements IFilter {
-       /**
-        * Does this filter reject or accept this Source
-        * @param sm Source Manager instance
-        * @param sourceName Source name
-        * @return True if the Source should be shown
-        */
-	public boolean accepts(SourceManager sm, String sourceName) {
-		int type = sm.getSource(sourceName).getType();
-		return (type & SourceManager.FILE) == SourceManager.FILE;
-	}
 
+    @Override
+    public boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException {
+        return tableProperties.getString("REMARKS").startsWith("file://");
+    }
 }
