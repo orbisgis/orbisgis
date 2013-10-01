@@ -30,14 +30,13 @@ package org.orbisgis.view.toc.actions.cui.legends.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
-import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
 import org.orbisgis.view.toc.actions.cui.legends.panels.PreviewPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 
 /**
  * "Unique Symbol - Area" UI.
@@ -113,7 +112,6 @@ public final class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
                         I18N.tr(BORDER_SETTINGS),
                         showCheckbox,
                         displayUOM);
-                ComponentUtil.setFieldState(borderEnabled, linePanel);
                 glob.add(linePanel,
                         "cell 0 0, span 1 2, aligny top");
 

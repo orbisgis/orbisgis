@@ -70,7 +70,6 @@ public class ImageRenderer extends Renderer {
         return graphics.get(symbols.indexOf(s));
     }
 
-
     @Override
     protected void releaseGraphics2D(Graphics2D g2) {
     }
@@ -103,5 +102,7 @@ public class ImageRenderer extends Renderer {
     @Override
     protected void endFeature(long id, ResultSet rs) {
     }
+    
+    
 
 }

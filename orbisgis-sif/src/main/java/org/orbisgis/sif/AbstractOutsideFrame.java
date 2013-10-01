@@ -28,11 +28,10 @@
  */
 package org.orbisgis.sif;
 
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -42,9 +41,16 @@ public abstract class AbstractOutsideFrame extends JDialog implements
 
         protected static final I18n I18N = I18nFactory.getI18n(AbstractOutsideFrame.class);
         private boolean accepted = false;
+        protected JLabel errorLabel = new JLabel();
 
+        /**
+         * Implementation have to place the errorLabel
+         * @param owner Parent window
+         */
         public AbstractOutsideFrame(Window owner) {
                 super(owner);
+                errorLabel.setForeground(Color.RED.darker());
+                errorLabel.setVisible(false);
         }
 
         @Override
@@ -82,10 +88,12 @@ public abstract class AbstractOutsideFrame extends JDialog implements
         public boolean validateInput() {
                 String err = getSimplePanel().getUIPanel().validateInput();
                 if (err != null) {
-                        JOptionPane.showMessageDialog(rootPane, err,
-                                I18N.tr("Error"), JOptionPane.ERROR_MESSAGE);
+                        errorLabel.setText(err);
+                        errorLabel.setVisible(true);
                         return false;
                 } else {
+                        errorLabel.setText("");
+                        errorLabel.setVisible(false);
                         return true;
                 }
         }

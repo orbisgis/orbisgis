@@ -2,67 +2,99 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0 SIF\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-22 14:53+0100\n"
-"PO-Revision-Date: 2013-08-22 14:54+0100\n"
-"Last-Translator: Adam Gouge <adam.gouge@ec-nantes.fr>\n"
+"POT-Creation-Date: 2013-09-09 09:33+0100\n"
+"PO-Revision-Date: 2013-09-12 09:11+0100\n"
+"Last-Translator: Alexis Guéganno <alexis.gueganno@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 1.5.7\n"
+"X-Generator: Poedit 1.5.4\n"
 "X-Poedit-KeywordsList: tr\n"
 "X-Poedit-Basepath: ../../../../../..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: java\n"
 
-#: java/org/orbisgis/sif/SIFDialog.java:54
-msgid "OK"
-msgstr ""
-
-#: java/org/orbisgis/sif/SIFDialog.java:64
-#: java/org/orbisgis/sif/SIFWizard.java:148
-#, fuzzy
-msgid "Cancel"
-msgstr "Annuler"
-
-#: java/org/orbisgis/sif/SIFWizard.java:85
-#, fuzzy
+#: java/org/orbisgis/sif/SIFWizard.java:86
 msgid "Previous"
 msgstr "Précédent"
 
-#: java/org/orbisgis/sif/SIFWizard.java:104
+#: java/org/orbisgis/sif/SIFWizard.java:105
 msgid "Next"
-msgstr ""
+msgstr "Suivant"
 
-#: java/org/orbisgis/sif/SIFWizard.java:133
-#, fuzzy
+#: java/org/orbisgis/sif/SIFWizard.java:134
 msgid "Finish"
 msgstr "Terminer"
 
-#: java/org/orbisgis/sif/AbstractOutsideFrame.java:86
-msgid "Error"
-msgstr ""
+#: java/org/orbisgis/sif/SIFWizard.java:149
+#: java/org/orbisgis/sif/SIFDialog.java:64
+msgid "Cancel"
+msgstr "Annuler"
+
+#: java/org/orbisgis/sif/SIFDialog.java:54
+msgid "OK"
+msgstr "Valider"
 
 #: java/org/orbisgis/sif/UIFactory.java:164
 msgid "sif.uIFactory.atLeastAPanelHasToBeSpecified"
-msgstr ""
+msgstr "Au moins une fenêtre doit être spécifié"
 
-#: java/org/orbisgis/sif/multiInputPanel/MIPValidationNumeric.java:89
-#, java-format
-msgid "The {0} field must be greater or equal than {1}"
-msgstr ""
+#: java/org/orbisgis/sif/components/OpenFilePanel.java:58
+#: java/org/orbisgis/sif/components/SaveFilePanel.java:102
+msgid "A file must be selected"
+msgstr "Un fichier doit être sélectionné"
 
-#: java/org/orbisgis/sif/multiInputPanel/MIPValidationNumeric.java:91
-#, java-format
-msgid "The {0} field must be lower or equal than {1}"
-msgstr ""
-
-#: java/org/orbisgis/sif/multiInputPanel/MIPValidationNumeric.java:94
-#, fuzzy, java-format
-msgid "The {0} field must be {1}"
+#: java/org/orbisgis/sif/components/OpenFilePanel.java:60
+msgid "The file must exists"
 msgstr "Le fichier doit exister"
+
+#: java/org/orbisgis/sif/components/SaveFilePanel.java:106
+msgid "The file already exists"
+msgstr "Le fichier existe déjà !"
+
+#: java/org/orbisgis/sif/components/SaveFilePanel.java:109
+#, java-format
+msgid "The file {0} already exists do you confirm overwrite ?"
+msgstr "Le fichier {0} existe déjà, voulez-vous l''écraser ?"
+
+#: java/org/orbisgis/sif/components/SaveFilePanel.java:110
+msgid "Overwrite confirmation"
+msgstr "Confirmation de remplacement"
+
+#: java/org/orbisgis/sif/components/SaveFilePanel.java:111
+msgid "Overwrite canceled"
+msgstr "Remplacement annulé"
+
+#: java/org/orbisgis/sif/components/ColorPicker.java:113
+msgid "Choose a color."
+msgstr "Choisissez une couleur"
+
+#: java/org/orbisgis/sif/components/OpenFolderPanel.java:66
+msgid "sif.folderMustBeSelected"
+msgstr "Un dossier doit être choisi"
+
+#: java/org/orbisgis/sif/components/OpenFolderPanel.java:68
+msgid "sif.folderMustExist"
+msgstr "Le dossier doit exister"
+
+#: java/org/orbisgis/sif/components/OpenFolderPanel.java:70
+msgid "sif.folderMustBeDirectory"
+msgstr "La sélection doit être un dossier"
+
+#: java/org/orbisgis/sif/components/CategorizedChoosePanel.java:129
+msgid "An item must be selected."
+msgstr "Un élément doit être sélectionné"
+
+#: java/org/orbisgis/sif/components/ChoosePanel.java:124
+msgid "An item must be selected. "
+msgstr "Un élément doit être sélectionné"
+
+#: java/org/orbisgis/sif/components/RadioButtonPanel.java:75
+msgid "Must not contain null Strings"
+msgstr "Ne doit pas contenir de chaine de caractère à null"
 
 #: java/org/orbisgis/sif/multiInputPanel/DirectoryComboBoxChoice.java:65
 msgid "Select folder"
@@ -72,53 +104,25 @@ msgstr "Choisir un dossier"
 msgid "Select an existing workspace or an empty folder"
 msgstr "Choisir un espace de travail ou un dossier vide"
 
+#: java/org/orbisgis/sif/multiInputPanel/MIPValidationNumeric.java:89
+#, java-format
+msgid "The {0} field must be greater or equal than {1}"
+msgstr "Le champ {0} doit être supérieur ou égal à {1}"
+
+#: java/org/orbisgis/sif/multiInputPanel/MIPValidationNumeric.java:91
+#, java-format
+msgid "The {0} field must be lower or equal than {1}"
+msgstr "Le champ {0} doit être inférieur ou égal à {1}"
+
+#: java/org/orbisgis/sif/multiInputPanel/MIPValidationNumeric.java:94
+#, java-format
+msgid "The {0} field must be {1}"
+msgstr "Le champ {0} doit être {1}"
+
 #: java/org/orbisgis/sif/icons/BaseIcon.java:90
 #, java-format
 msgid "The following icon is not found : {0}"
 msgstr "L'icône suivante n'a pas été trouvée : {0}"
-
-#: java/org/orbisgis/sif/components/RadioButtonPanel.java:75
-msgid "Must not contain null Strings"
-msgstr ""
-
-#: java/org/orbisgis/sif/components/OpenFolderPanel.java:66
-msgid "sif.folderMustBeSelected"
-msgstr "Un dossier doit être choisi"
-
-#: java/org/orbisgis/sif/components/OpenFolderPanel.java:68
-msgid "sif.folderMustExist"
-msgstr ""
-
-#: java/org/orbisgis/sif/components/OpenFolderPanel.java:70
-msgid "sif.folderMustBeDirectory"
-msgstr ""
-
-#: java/org/orbisgis/sif/components/SaveFilePanel.java:84
-#: java/org/orbisgis/sif/components/OpenFilePanel.java:58
-msgid "A file must be selected"
-msgstr "Un fichier doit être sélectionné"
-
-#: java/org/orbisgis/sif/components/SaveFilePanel.java:87
-msgid "The file already exists"
-msgstr "Le fichier existe déjà !"
-
-#: java/org/orbisgis/sif/components/ChoosePanel.java:124
-#, fuzzy
-msgid "An item must be selected. "
-msgstr "Un fichier doit être sélectionné"
-
-#: java/org/orbisgis/sif/components/ColorPicker.java:113
-msgid "Choose a color."
-msgstr ""
-
-#: java/org/orbisgis/sif/components/OpenFilePanel.java:60
-msgid "The file must exists"
-msgstr "Le fichier doit exister"
-
-#: java/org/orbisgis/sif/components/CategorizedChoosePanel.java:129
-#, fuzzy
-msgid "An item must be selected."
-msgstr "Un fichier doit être sélectionné"
 
 #~ msgid "sif.ControlPanel.Favorites"
 #~ msgstr "Favoris"

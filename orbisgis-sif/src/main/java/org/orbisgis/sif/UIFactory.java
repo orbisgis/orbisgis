@@ -29,6 +29,7 @@
 package org.orbisgis.sif;
 
 import java.awt.Window;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -48,7 +49,6 @@ public class UIFactory {
         private static final I18n I18N = I18nFactory.getI18n(UIFactory.class);
         private static URL defaultIconURL;
         private static ImageIcon defaultIcon;
-        private static String okMessage;
         private static Window mainFrame = null;
         private static Properties fileDialogPersistence = new Properties();
         private static final String OPEN_DIALOG_PROPERTIES_FILENAME = "opendialog.ini";
@@ -189,6 +189,27 @@ public class UIFactory {
         }
 
         /**
+         * Builds an apply dialog. It places the given UIPanel in a dialog that has
+         * three buttons : OK, Apply and Cancel. The action associated to the Apply
+         * button is configured thanks to the provided ActionListener.
+         * @param panel The main panel of the dialog
+         * @param applyListener The action associated to the Apply button
+         * @return true if the dialog has been accepted, false if it has been cancelled.
+         */
+        public static boolean showApplyDialog(UIPanel panel, ActionListener applyListener){
+            ApplyDialog dlg = new ApplyDialog(mainFrame, applyListener);
+            SimplePanel sp = new SimplePanel(dlg, panel);
+            dlg.setComponent(sp);
+            dlg.setModal(true);
+            dlg.pack();
+            dlg.setLocationRelativeTo(mainFrame);
+            dlg.setAlwaysOnTop(true);
+            dlg.setVisible(true);
+            dlg.setTitle(panel.getTitle());
+            return dlg.isAccepted();
+        }
+
+        /**
          * Create a dialog and specify if the dialog shows the ok cancel buttons
          * and if its on top of all swing GUI.
          *
@@ -237,14 +258,6 @@ public class UIFactory {
 
         public static void setDefaultImageIcon(ImageIcon icon) {
                 UIFactory.defaultIcon = icon;
-        }
-
-        public static String getDefaultOkMessage() {
-                return okMessage;
-        }
-
-        public static void setDefaultOkMessage(String msg) {
-                okMessage = msg;
         }
 
         public static void setMainFrame(Window wnd) {

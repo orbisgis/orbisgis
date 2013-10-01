@@ -69,7 +69,7 @@ public final class Rule extends AbstractSymbolizerNode {
      */
     public static final String DEFAULT_NAME = "Default Rule";
     private String name = "";
-    private Description description;
+    private Description description = new Description();
     private String where;
     private boolean fallbackRule = false;
     private Double minScaleDenom = null;

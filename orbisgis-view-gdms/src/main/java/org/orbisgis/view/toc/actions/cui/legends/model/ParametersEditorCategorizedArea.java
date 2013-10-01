@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.model;
 
+import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.AreaParameters;
 import org.orbisgis.legend.thematic.categorize.CategorizedArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
@@ -58,6 +59,9 @@ public class ParametersEditorCategorizedArea extends ParametersEditorMappedLegen
             Double key = (Double) getCellEditorValue();
             AreaParameters lp = ca.get(key);
             UniqueSymbolArea usl = new UniqueSymbolArea(lp);
+            if(!ca.isStrokeEnabled()){
+                usl.setPenStroke(new NullPenStrokeLegend());
+            }
             PnlUniqueAreaSE pls = new PnlUniqueAreaSE(usl, ca.isStrokeEnabled());
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 AreaParameters edited = usl.getAreaParameters();

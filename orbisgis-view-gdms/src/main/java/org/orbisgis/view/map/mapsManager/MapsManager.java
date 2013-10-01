@@ -31,9 +31,13 @@ package org.orbisgis.view.map.mapsManager;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -66,11 +70,13 @@ public class MapsManager extends JPanel {
         private static final long serialVersionUID = 1L;
         private static final I18n I18N = I18nFactory.getI18n(MapsManager.class);
         private FileTree tree;
+        private DefaultTreeModel treeModel;
         private MutableTreeNode rootNode = new DefaultMutableTreeNode();
-        private TreeNodeFolder rootFolder;
         private TreeNodeRemoteRoot rootRemote;
         private JScrollPane scrollPane;
         private File loadedMap;
+        private TreeNodeLocalRoot rootFolder;
+
         // Store all the compatible map context
         
         private AtomicBoolean initialized = new AtomicBoolean(false);
@@ -79,7 +85,7 @@ public class MapsManager extends JPanel {
          */
         public MapsManager() {
                 super(new BorderLayout());
-            DefaultTreeModel treeModel = new FileTreeModel(rootNode, true);
+                treeModel = new FileTreeModel(rootNode, true);
                 treeModel.setAsksAllowsChildren(true);
                 // Add the tree in the panel                
                 tree = new FileTree(treeModel);
@@ -92,11 +98,13 @@ public class MapsManager extends JPanel {
                 if(!rootFolderPath.exists()) {
                     rootFolderPath.mkdirs();
                 }
-                rootFolder = new TreeNodeFolder(rootFolderPath,tree);
-                rootFolder.setLabel(I18N.tr("Local")); 
+                TreeNodeFolder workspaceFolder = new TreeNodeFolder(rootFolderPath,tree);
+                workspaceFolder.setLabel(I18N.tr("default"));
+                rootFolder = new TreeNodeLocalRoot(tree);
                 rootRemote = new TreeNodeRemoteRoot();
                 initInternalFactories(); // Init file readers
                 treeModel.insertNodeInto(rootFolder, rootNode, rootNode.getChildCount());
+                treeModel.insertNodeInto(workspaceFolder, rootFolder, rootFolder.getChildCount());
                 treeModel.insertNodeInto(rootRemote, rootNode, rootNode.getChildCount());
                 tree.setRootVisible(false);
                 scrollPane = new JScrollPane(tree);
@@ -114,7 +122,9 @@ public class MapsManager extends JPanel {
          */
         public void setMapsManagerPersistence(MapsManagerPersistence mapsManagerPersistence) {
             rootRemote.setMapsManagerPersistence(mapsManagerPersistence);
+            rootFolder.setMapsManagerPersistence(mapsManagerPersistence);
         }
+
         /**
          * Used by the UI to convert a File into a MapElement
          * @return The Map file factory manager
@@ -150,7 +160,7 @@ public class MapsManager extends JPanel {
                 if(visible && !initialized.getAndSet(true)) {
                         // Set a listener to the root folder
                         rootFolder.updateTree(); //Read the file system tree
-                        // Expand Local and remote folder
+                        // Expand Local and remote nodes
                         tree.expandPath(new TreePath(new Object[] {rootNode,rootFolder}));  
                         tree.expandPath(new TreePath(new Object[] {rootNode,rootRemote}));  
                         updateMapsTitle();

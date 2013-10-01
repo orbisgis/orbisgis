@@ -37,7 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import net.opengis.ows_context.*;
+import net.opengis.ows_context.LayerType;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.Style;

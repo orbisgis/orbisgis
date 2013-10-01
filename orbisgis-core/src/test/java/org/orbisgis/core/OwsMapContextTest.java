@@ -87,4 +87,42 @@ public class OwsMapContextTest extends AbstractTest  {
         assertTrue(mc2.getDescription().getAbstract(locale).equals(mapAbstract));
         mc2.close(null);
     }
+
+    /**
+     * Method to export the mapcontext as a file image
+     * @param imagePath
+     * @param format
+     * @throws Exception
+     */
+    private void saveAs(String imagePath, MapImageWriter.Format format) throws Exception {
+        MapContext mc = new OwsMapContext();
+        mc.open(null);
+        ILayer layer = mc.createLayer(
+                getDataSourceFromPath("src/test/resources/data/landcover2000.shp"));
+        mc.getLayerModel().addLayer(layer);
+        MapImageWriter mapImageWriter = new MapImageWriter(mc.getLayerModel());
+        FileOutputStream out = new FileOutputStream(new File(imagePath));
+        mapImageWriter.setFormat(format);
+        mapImageWriter.write(out, new NullProgressMonitor());
+    }
+
+    @Test
+    public void exportToPNG() throws Exception {
+        saveAs("target/mapExportTest.png", MapImageWriter.Format.PNG);
+    }
+
+    @Test
+    public void exportToJEPG() throws Exception {
+        saveAs("target/mapExportTest.jpg", MapImageWriter.Format.JPEG);
+    }
+
+    @Test
+    public void exportToTIFF() throws Exception {
+        saveAs("target/mapExportTest.tiff", MapImageWriter.Format.TIFF);
+    }
+
+    @Test
+    public void exportToPDF() throws Exception {
+        saveAs("target/mapExportTest.pdf", MapImageWriter.Format.PDF);
+    }
 }

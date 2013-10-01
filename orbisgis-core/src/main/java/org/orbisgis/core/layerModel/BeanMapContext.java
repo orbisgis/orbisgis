@@ -52,7 +52,7 @@ public abstract class BeanMapContext implements MapContext {
         protected ILayer layerModel;
         protected int epsg_code = -1;
         protected Description description = new Description();
-        private URI location;
+        protected URI location;
 
 
         @Override
@@ -66,7 +66,7 @@ public abstract class BeanMapContext implements MapContext {
             this.location = location;
             propertyChangeSupport.firePropertyChange(PROP_LOCATION, oldLocation, this.location);
         }
-
+        
         @Override
         public Description getDescription() {
                 return description;

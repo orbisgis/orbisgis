@@ -33,7 +33,6 @@ import java.beans.PropertyChangeListener;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
-import net.opengis.ows_context.LayerType;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
@@ -127,17 +126,12 @@ public interface ILayer {
 
 	ILayer getParent();
 
-        /**
-         * Create a jaxb instance of this layer for serialisation
-         * @return The layer serialisation object
-         */
-        LayerType getJAXBElement();
-
-        /**
-         * Returns true if and only if we can serialize this layer in a map context.
-         * @return
-         */
-        boolean isSerializable();
+    /**
+     * Returns true if and only if we can serialize this layer in a map context.
+     *
+     * @return
+     */
+    boolean isSerializable();
                 
 	/**
 	 * Removes the specified child layer.
@@ -199,22 +193,51 @@ public interface ILayer {
 	 */
 	ILayer getLayerByName(String layerName);
 
+        /**
+         * Gets the envelope of the layer
+         * @return 
+         */
 	public Envelope getEnvelope();
 
+        /**
+         * Return true if the layer accepts childs.
+         * This means it's a group of layer
+         * @return 
+         */
 	boolean acceptsChilds();
 
+        /**
+         * Gets all layer childs under this layer.
+         * If the layer doesn't accept childs return an empty layer
+         * @return 
+         */
 	ILayer[] getChildren();
 
+        /**
+         * Insert a layer at a specific position
+         * @param layer
+         * @param index
+         * @throws LayerException 
+         */
 	void insertLayer(ILayer layer, int index) throws LayerException;
 
+        /**
+         * Gets the position index of the layer
+         * @param targetLayer
+         * @return 
+         */
 	int getIndex(ILayer targetLayer);
 
+        /**
+         * Return all the layers from tree layer model.
+         * @return 
+         */
 	ILayer[] getLayersRecursively();
 
 	ILayer[] getLayerPath();
 
         /**
-         * Inserts this in {@code layer} at index {@code index}.
+         * Moves this in {@code layer} at index {@code index}.
          * @param layer
          * @param index
          * @throws LayerException
@@ -230,6 +253,10 @@ public interface ILayer {
 	void insertLayer(ILayer layer, int index, boolean isMoving)
 			throws LayerException;
 
+        /**
+         * Gets the number of layers under this layer
+         * @return 
+         */
 	int getLayerCount();
 
 	/**

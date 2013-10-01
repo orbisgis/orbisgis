@@ -36,12 +36,12 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 /**
  * This class intends to store a description of a {@code Rule}. It is made of
- * lists of title and abstract, and of sets of keywords. This class is support
+ * lists of title and abstract, and of sets of keywords. This class is built
  * to manage internationalization. As there can be only one title and one
  * abstract per language, we use a {@code HashMap} to manage them. Keywords are
  * stored in a dedicated class.</p>
  * <p>According to 0GC 06-121r9, there shall be at most one title and/or
- * abstract per language. However, they may be many keywords associated to the
+ * abstract per language. However, there may be many keywords associated to the
  * same language in a {@code Keywords} instance. In a {@code Description}
  * instance, there shall be at most one {@code Keywords} instance associated
  * to an authority.</p>
@@ -260,13 +260,19 @@ public class Description {
     /**
      * Adds a title to this {@code Description}, associated to the given {@code
      * Locale}.
-     * @param text
-     * @param locale
+     * @param locale The locale we are managing
+     * @param text The new title. If null or empty, the entry is removed.
      * @return
      * The title that was previously associated to {@code Locale}, if any.
      */
     public String addTitle(Locale locale,String text){
-        return titles.put(locale, text);
+        String ret;
+        if(text == null || text.isEmpty()){
+            ret = titles.remove(locale);
+        } else {
+            ret = titles.put(locale, text);
+        }
+        return ret;
     }
 
     /**
@@ -282,13 +288,19 @@ public class Description {
     /**
      * Adds an abstract to this {@code Description}, associated to the given
      * {@code Locale}.
-     * @param text
      * @param locale
+     * @param text  The new abstract. If null or empty, the entry is removed.
      * @return
      * The title that was previously associated to {@code Locale}, if any.
      */
     public String addAbstract(Locale locale,String text){
-        return abstractTexts.put(locale, text);
+        String ret;
+        if(text == null || text.isEmpty()){
+            ret = abstractTexts.remove(locale);
+        } else {
+            ret = abstractTexts.put(locale, text);
+        }
+        return ret;
     }
 
     /**

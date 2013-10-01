@@ -41,8 +41,9 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Symbolizer;
 
 /**
- * This renderer is a prototype. The aim is to generate rendered-layers in a way
+ * This renderer is used to generate rendered-layers in a way
  * that a GeoPDF can use to offer interactivity
+ *
  * @author Maxence Laurent
  */
 public class PdfRenderer extends Renderer {
@@ -52,10 +53,7 @@ public class PdfRenderer extends Renderer {
     private float width;
     //private MapTransform mt;
     private Map<Integer, Graphics2D> g2Levels;
-
     private Graphics2D baseG2;
-
-    //private Graphics2D tg;
 
     public PdfRenderer(PdfTemplate pdfTemplate, float width, float height) {
         super();
@@ -68,15 +66,12 @@ public class PdfRenderer extends Renderer {
 
     @Override
     protected Graphics2D getGraphics2D(Symbolizer s) {
-        //return tg;
         Graphics2D get = g2Levels.get(s.getLevel());
-        //pdfTemplate.saveState();
         return get;
     }
 
     @Override
     protected void initGraphics2D(List<Symbolizer> symbs, Graphics2D g2, MapTransform mt) {
-        //this.mt = mt;
         g2Levels = new HashMap<Integer, Graphics2D>();
 
         baseG2 = pdfTemplate.createGraphics(width, height);
@@ -85,8 +80,9 @@ public class PdfRenderer extends Renderer {
         List<Integer> levels = new LinkedList<Integer>();
 
         /**
-         * Create one buffered image for each level present in the style. This way allows
-         * to render all symbolizer in one pass without encountering layer level issues
+         * Create one buffered image for each level present in the style. This
+         * way allows to render all symbolizer in one pass without encountering
+         * layer level issues
          */
         for (Symbolizer s : symbs) {
             //Graphics2D sG2;
@@ -104,28 +100,18 @@ public class PdfRenderer extends Renderer {
             sg2.addRenderingHints(mt.getRenderingHints());
             g2Levels.put(level, sg2);
         }
-
-        //tg = pdfTemplate.createGraphics(width, height);
     }
 
     @Override
     public void disposeLayer(Graphics2D g2) {
         baseG2.dispose();
-        //for (Graphics2D sg2 : g2Levels.values()){
-        //    sg2.dispose();
-        //}
-
         g2Levels.clear();
-        //tg.dispose();
     }
 
     @Override
     protected void releaseGraphics2D(Graphics2D g2) {
-        //g2.setPaint(null);
-        //g2.setStroke(null);
-        //pdfTemplate.restoreState();
     }
-    
+
     @Override
     public void beginLayer(String name) {
     }

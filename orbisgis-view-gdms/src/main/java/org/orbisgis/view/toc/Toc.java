@@ -31,6 +31,7 @@ package org.orbisgis.view.toc;
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -219,7 +220,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
 
 
             popupActions.addAction(new LayerAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
-                    I18N.tr("Add layer group"),I18N.tr("Add a the layer group to the map context"),
+                    I18N.tr("Add layer group"),I18N.tr("Add layer group to the map context"),
                     OrbisGISIcon.getIcon("add"),
                     EventHandler.create(ActionListener.class, this, "onAddGroup"),null)
                         .setOnLayerGroup(true)
@@ -1030,31 +1031,45 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 if (selObjs.getLastPathComponent() instanceof TocTreeNodeStyle) {
                         try {
                                 Style style = ((TocTreeNodeStyle) selObjs.getLastPathComponent()).getStyle();
-                                Layer layer = (Layer) style.getLayer();
-                                 if(isStyleAllowed(layer)){
-                                    int index = layer.indexOf(style);
-                                    
+                                final Layer layer = (Layer) style.getLayer();
+                                if(isStyleAllowed(layer)){
+                                    final int index = layer.indexOf(style);
+
                                     //In order to be able to cancel all of our modifications,
                                     //we produce a copy of our style.
                                     MapEditor editor = mapElement.getMapEditor();
                                     JAXBElement<StyleType> jest = style.getJAXBElement();
-                                    
+
                                     MapTransform mt = editor.getMapControl().getMapTransform();
                                     Type typ = layer.getDataSource().getMetadata().getFieldType(
                                             layer.getDataSource().getSpatialFieldIndex());
                                     Style copy = new Style(jest, layer);
-                                    
-                                    SimpleStyleEditor pan = new SimpleStyleEditor(mt, typ, layer, copy);
-                                    if (UIFactory.showDialog(pan)) {
+
+                                    final SimpleStyleEditor pan = new SimpleStyleEditor(mt, typ, layer, copy);
+                                    ActionListener apply = new ActionListener() {
+                                        @Override
+                                        public void actionPerformed(ActionEvent actionEvent) {
+                                            Style s1 = pan.getStyleWrapper().getStyle();
+                                            JAXBElement<StyleType> jaxbElement = s1.getJAXBElement();
+                                            try {
+                                                Style s2 = new Style(jaxbElement, layer);
+                                                layer.setStyle(index, s2);
+                                            } catch (SeExceptions.InvalidStyle invalidStyle) {
+                                                LOGGER.error(I18N.tr("You produced an invalid style while copying " +
+                                                        "a valid one. Things are getting really wrong here."));
+                                            }
+                                        }
+                                    };
+                                    if (UIFactory.showApplyDialog(pan, apply)) {
                                             try {
                                                     layer.setStyle(index, pan.getStyleWrapper().getStyle());
                                             } catch (ClassificationMethodException e) {
                                                     LOGGER.error(e.getMessage());
                                             }
                                     }
-                                 }else{
-                                      LOGGER.info("This functionality is not supported."); 
-                                 }
+                                }else{
+                                    LOGGER.info("Styles can be set only on vector layers.");
+                                }
                         } catch (SeExceptions.InvalidStyle sis) {
                                 //I don't know how this could happen : we are creating a style
                                 //from a valid style. Should be valid too, consequently...

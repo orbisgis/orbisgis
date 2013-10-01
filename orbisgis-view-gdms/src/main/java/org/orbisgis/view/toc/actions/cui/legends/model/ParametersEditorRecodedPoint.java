@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.model;
 
+import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.legend.thematic.recode.RecodedPoint;
@@ -56,6 +57,9 @@ public class ParametersEditorRecodedPoint extends ParametersEditorMappedLegend<S
             String key = (String) getCellEditorValue();
             PointParameters lp = rl.get(key);
             UniqueSymbolPoint usl = new UniqueSymbolPoint(lp);
+            if(!rl.isStrokeEnabled()){
+                usl.setPenStroke(new NullPenStrokeLegend());
+            }
             PnlUniquePointSE pls = new PnlUniquePointSE(usl, rl.isStrokeEnabled());
             if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
                 PointParameters edited = usl.getPointParameters();

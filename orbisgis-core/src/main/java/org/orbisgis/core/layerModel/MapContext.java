@@ -55,7 +55,6 @@ public interface MapContext {
         public static final String PROP_DESCRIPTION = "description";
         public static final String PROP_LOCATION = "location";
 
-
         /**
          * @param location Location of this resource, it is used to find non-absolute URI of OnlineResource in the map context.
          */

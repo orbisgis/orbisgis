@@ -97,6 +97,7 @@ public final class MapElement extends AbstractEditableElement {
         mapContext = new OwsMapContext();
         try {
             mapContext.read(new FileInputStream(mapContextFile));
+            mapContext.setLocation(mapContextFile.toURI());
         } catch (FileNotFoundException ex) {
             LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
         } catch (IllegalArgumentException ex) {

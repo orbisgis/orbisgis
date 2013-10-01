@@ -31,6 +31,7 @@ package org.orbisgis.view.toc.actions.cui.legends.ui;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
+import org.orbisgis.view.toc.actions.cui.legends.components.DescriptionComponents;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -73,12 +74,19 @@ public final class PnlStyle extends JPanel implements ISELegendPanel {
                 JPanel panel = new JPanel(new MigLayout("wrap 2", "[align r][170]"));
                 panel.setBorder(BorderFactory.createTitledBorder(I18N.tr("Style settings")));
 
-                panel.add(new JLabel(I18N.tr("Title")));
+                panel.add(new JLabel(I18N.tr("Name")));
                 txtName = new JTextField(style.getName());
                 txtName.addFocusListener(
                         EventHandler.create(FocusListener.class, this,
                                 "setTitle","source.text","focusLost"));
                 panel.add(txtName, "growx");
+                DescriptionComponents dcs = new DescriptionComponents(style.getDescription());
+                panel.add(dcs.getFieldLabel(DescriptionComponents.LOCALE));
+                panel.add(dcs.getFieldComponent(DescriptionComponents.LOCALE),"growx");
+                panel.add(dcs.getFieldLabel(DescriptionComponents.TITLE));
+                panel.add(dcs.getFieldComponent(DescriptionComponents.TITLE),"growx");
+                panel.add(dcs.getFieldLabel(DescriptionComponents.ABSTRACT));
+                panel.add(dcs.getFieldComponent(DescriptionComponents.ABSTRACT),"growx");
 
                 this.add(panel);
                 return this;

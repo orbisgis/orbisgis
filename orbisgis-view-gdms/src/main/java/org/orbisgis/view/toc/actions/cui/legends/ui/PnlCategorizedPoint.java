@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.categorize.CategorizedPoint;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
@@ -108,6 +109,8 @@ public final class PnlCategorizedPoint extends PnlAbstractCategorized<PointParam
         UniqueSymbolPoint usa = new UniqueSymbolPoint(lps);
         if(leg.isStrokeEnabled()){
             usa.setStrokeUom(leg.getStrokeUom());
+        } else {
+            usa.setPenStroke(new NullPenStrokeLegend());
         }
         PnlUniquePointSE pls = new PnlUniquePointSE(usa, leg.isStrokeEnabled());
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
@@ -168,7 +171,7 @@ public final class PnlCategorizedPoint extends PnlAbstractCategorized<PointParam
             setLegendImpl((CategorizedPoint)legend);
             this.buildUI();
         } else {
-            throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in"
+            throw new IllegalArgumentException(I18N.tr("You must use recognized RecodedLine instances in "
                     + "this panel."));
         }
     }

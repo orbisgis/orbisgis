@@ -98,11 +98,11 @@ public class MapTransform implements PointTransformation {
 
         public MapTransform() {
                 adjustExtent = true;
-                try {
-                        this.dpi = Toolkit.getDefaultToolkit().getScreenResolution();
-                } catch (HeadlessException e) {
-                        LOGGER.warn(I18N.tr("Could not retrieve current DPI. Use 96.0!"), e);
-                        this.dpi = DEFAULT_DPI;
+                if(!GraphicsEnvironment.isHeadless()) {
+                    this.dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+                } else {
+                    LOGGER.trace(I18N.tr("Headless graphics environment, set current DPI to 96.0"));
+                    this.dpi = DEFAULT_DPI;
                 }
         }
 
