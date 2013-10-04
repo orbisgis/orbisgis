@@ -96,10 +96,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * This is the GeoCatalog panel. That Panel show the list of available
  * DataSource
  *
- * This is connected with the SourceManager model. @note If you want to add new
- * functionality to data source items without change this class you can use the
- * eventSourceListPopupMenuCreating listener container to add more items in the
- * source list pop-up menu.
+ * This is connected with the DataSource model.
  */
 public class Catalog extends JPanel implements DockingPanel,TitleActionBar,PopupTarget,DriverFunctionContainer {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
@@ -374,31 +371,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          */
         public void onMenuAddLinkedFile() {
             importFile(DriverFunction.IMPORT_DRIVER_TYPE.LINK);
-            /*
-                //Create the SIF panel
-                OpenGdmsFilePanel openDialog = new OpenGdmsFilePanel(I18N.tr("Select the file to add"),
-                        sourceManager.getDriverManager());
-                openDialog.loadState();
-                //Ask SIF to open the dialog
-                if (UIFactory.showDialog(openDialog, true, true)) {
-                        // We can retrieve the files that have been selected by the user
-                        File[] files = openDialog.getSelectedFiles();
-                        for (File file : files) {
-                            //If there is a driver compatible with
-                            //this file extensions
-                            if (sourceManager.getDriverManager().isDriverFileSupported(file)) {
-                                //Try to add the data source
-                                try {
-                                    String name = sourceManager.getUniqueName(FilenameUtils.removeExtension(file.getName()));
-                                    sourceManager.register(name, file);
-                                } catch (SourceAlreadyExistsException e) {
-                                    LOGGER.error(I18N.tr("This source was already registered"), e);
-                                }
-                            }
-                        }
-                }
-                */
-
         }
 
         /**
@@ -681,6 +653,12 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                     I18N.tr("Remove from this list the selected sources."),OrbisGISIcon.getIcon("remove"),
                     EventHandler.create(ActionListener.class,this,"onMenuRemoveSource"),getListSelectionModel())
                         .setLogicalGroup(PopupMenu.GROUP_CLOSE));
+            //Popup:Refresh
+            popupActions.addAction(new DefaultAction(PopupMenu.M_REFRESH,I18N.tr("Refresh"),
+                    I18N.tr("Read the content of the database"),
+                    OrbisGISIcon.getIcon("arrow_refresh"),EventHandler.create(ActionListener.class,
+                    sourceListContent,"onDataManagerChange"),null).setLogicalGroup(PopupMenu.GROUP_OPEN));
+
             //Clear Geo-catalog
             popupActions.addAction(new ActionOnNonEmptySourceList(PopupMenu.M_CLEAR_CATALOG,I18N.tr("Clear the GeoCatalog"),
                     I18N.tr("Remove all sources in this list"),OrbisGISIcon.getIcon("bin_closed"),

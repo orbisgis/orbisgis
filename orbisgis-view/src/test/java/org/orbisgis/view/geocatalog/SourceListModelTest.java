@@ -40,13 +40,18 @@ public class SourceListModelTest {
     public void testSourceList() throws SQLException {
         try( Statement st = connection.createStatement()) {
             st.execute("create table userTable1 ( id integer primary key, pt POINT)");
+            st.execute("create schema myschema");
+            st.execute("create table myschema.userTable2 ( id integer primary key, pt POINT)");
+            st.execute("create table `TABLE.USERTABLE3` ( id integer primary key, pt POINT)");
         }
         SourceListModel sourceListModel = new SourceListModel(dataSource);
         List<IFilter> filters = new ArrayList<>();
         filters.add(new VectorialFilter());
         sourceListModel.setFilters(filters);
-        assertEquals(1, sourceListModel.getSize());
-        assertEquals("USERTABLE1", TableLocation.parse(sourceListModel.getElementAt(0).getKey()).getTable());
-        assertEquals("", TableLocation.parse(sourceListModel.getElementAt(0).getLabel()).getSchema());
+        assertEquals(3, sourceListModel.getSize());
+        assertEquals("`TABLE.USERTABLE3`", sourceListModel.getElementAt(0).getLabel());
+        assertEquals("USERTABLE1", TableLocation.parse(sourceListModel.getElementAt(1).getKey()).getTable());
+        assertEquals("", TableLocation.parse(sourceListModel.getElementAt(1).getLabel()).getSchema());
+        assertEquals("MYSCHEMA.USERTABLE2", sourceListModel.getElementAt(2).getLabel());
     }
 }

@@ -32,9 +32,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -51,6 +50,8 @@ import org.orbisgis.view.geocatalog.filters.TableSystemFilter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import static org.apache.commons.collections.ComparatorUtils.NATURAL_COMPARATOR;
+
 /**
  * Manage entries of GeoCatalog according to a GDMS SourceManager
  * SourceListModel is a swing component that update the content of the geocatalog
@@ -63,9 +64,11 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
 
     private ContainerItemProperties[] sourceList = new ContainerItemProperties[0];/*!< Sources */
     private List<IFilter> filters = new ArrayList<IFilter>(); /*!< Active filters */
+    private DefaultFilter defaultFilter = new DefaultFilter();
     private AtomicBoolean awaitingRefresh=new AtomicBoolean(false); /*!< If true a swing runnable
          * is pending to refresh the content of SourceListModel*/
     private DataSource dataSource;
+    private CatalogComparator catalogComparator = new CatalogComparator();
 
     /**
      * Read filters components and generate filter instances
@@ -161,11 +164,11 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
         // information_geo // Unknown
     }
 
-    private static String removeQuotesIfNecessary(String tableLocationPart) {
+    private static String addQuotesIfNecessary(String tableLocationPart) {
         if(tableLocationPart.contains(".")) {
-            return tableLocationPart;
+            return "`"+tableLocationPart+"`";
         } else {
-            return tableLocationPart.replace("`", "");
+            return tableLocationPart;
         }
     }
 
@@ -178,26 +181,31 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
                 ResultSet rs = connection.getMetaData().getTables(null, null, null, null)) {
             final String defaultCatalog = connection.getCatalog();
             final String defaultSchema = "PUBLIC";
+            boolean checkForDefaultFilter = true;
+            for(IFilter filter : filters) {
+                if(filter instanceof TableSystemFilter) {
+                    checkForDefaultFilter = false;
+                }
+            }
             while(rs.next()) {
-                String tableName = rs.getString("TABLE_NAME");
+                TableLocation location = new TableLocation(rs);
                 boolean accepts = true;
                 for(IFilter filter : filters) {
-                    if(!filter.accepts(connection, tableName, rs)) {
+                    if(!filter.accepts(connection, location.toString(), rs)) {
                         accepts = false;
                         break;
                     }
                 }
-                if(accepts) {
-                    TableLocation location = new TableLocation(rs);
+                if(accepts && (!checkForDefaultFilter || defaultFilter.accepts(connection, location.toString(), rs))) {
                     // Make Label
-                    StringBuilder label = new StringBuilder(removeQuotesIfNecessary(location.getTable()));
+                    StringBuilder label = new StringBuilder(addQuotesIfNecessary(location.getTable()));
                     if(!location.getSchema().equalsIgnoreCase(defaultSchema)) {
                         label.insert(0, ".");
-                        label.insert(0, removeQuotesIfNecessary(location.getSchema()));
+                        label.insert(0, addQuotesIfNecessary(location.getSchema()));
                     }
                     if(!location.getCatalog().equalsIgnoreCase(defaultCatalog)) {
                         label.insert(0, ".");
-                        label.insert(0, removeQuotesIfNecessary(location.getCatalog()));
+                        label.insert(0, addQuotesIfNecessary(location.getCatalog()));
                     }
                     newModel.add(new CatalogSourceItem(location.toString(), label.toString(), getIconName(connection, rs)));
                 }
@@ -205,7 +213,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
         } catch (SQLException ex) {
             LOGGER.error(I18N.tr("Cannot read the table list"), ex);
         }
-        Collections.sort(newModel, ComparatorUtils.NATURAL_COMPARATOR);
+        Collections.sort(newModel, catalogComparator);
         int oldLength = sourceList.length;
         sourceList = new ContainerItemProperties[0];
         fireIntervalRemoved(this, 0, oldLength);
@@ -275,7 +283,34 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
     private static final class DefaultFilter implements IFilter {
         @Override
         public boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException {
-            return !tableProperties.getString("TABLE_TYPE").equalsIgnoreCase("SYSTEM");
+            return !tableProperties.getString("TABLE_TYPE").equalsIgnoreCase("SYSTEM TABLE");
+        }
+    }
+
+    private static class CatalogComparator implements Comparator<CatalogSourceItem> {
+        @Override
+        public int compare(CatalogSourceItem left, CatalogSourceItem right) {
+            TableLocation locationLeft = TableLocation.parse(left.getKey());
+            TableLocation locationRight = TableLocation.parse(right.getKey());
+            int tmpCompare = 0;
+            // Sort by catalog
+            tmpCompare = NATURAL_COMPARATOR.compare(locationLeft.getCatalog(), locationRight.getCatalog());
+            if(tmpCompare != 0) {
+                return tmpCompare;
+            }
+            // If catalog the same, sort by schema (default first)
+            tmpCompare = NATURAL_COMPARATOR.compare(locationLeft.getSchema(), locationRight.getSchema());
+            if(tmpCompare != 0) {
+                if(locationLeft.getSchema().equalsIgnoreCase("PUBLIC")) {
+                    return -1;
+                } else if(locationRight.getSchema().equalsIgnoreCase("PUBLIC")) {
+                    return 1;
+                } else {
+                    return tmpCompare;
+                }
+            }
+            // if schema the same, sort by table
+            return NATURAL_COMPARATOR.compare(locationLeft.getTable(), locationRight.getTable());
         }
     }
 }

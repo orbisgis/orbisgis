@@ -36,7 +36,6 @@ import org.fife.ui.rsyntaxtextarea.parser.DefaultParseResult;
 import org.fife.ui.rsyntaxtextarea.parser.DefaultParserNotice;
 import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
 import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
-import org.h2.api.JdbcParseSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,18 +110,18 @@ public class RSyntaxSQLParser extends AbstractParser {
                         try {
                             connection.prepareStatement(statement);
                         } catch (SQLException ex) {
-                            if(ex instanceof JdbcParseSQLException) {
-                                // If we can obtain the parse error character index
-                                JdbcParseSQLException parseEx = (JdbcParseSQLException) ex;
-                                // H2 error position is in the right side of the unexpected word
-                                // Notice want the left position of the word, and the length of this word
                                 // Find the beginning of the rightmost word in error
-                                int syntaxErrorPosition = parseEx.getSyntaxErrorPosition();
-                                int syntaxErrorLength = 1;
-                                int[] lastWord = getLastWordPositionAndLength(statement, parseEx.getSyntaxErrorPosition());
-                                if(lastWord != null) {
-                                    syntaxErrorPosition = lastWord[WORD_POSITION];
-                                    syntaxErrorLength = lastWord[WORD_LENGTH];
+                                int syntaxErrorPosition = ex.getLocalizedMessage().indexOf("[*]");
+                                int syntaxErrorLength;
+                                if(syntaxErrorPosition == -1) {
+                                    // Could not find exact position, underline all the statement (remove preceding line break)
+                                    syntaxErrorPosition = statement.indexOf(statement.trim());
+                                    syntaxErrorLength = statement.length() - syntaxErrorPosition;
+                                } else {
+                                    int[] syntaxWord = getLastWordPositionAndLength(ex.getLocalizedMessage(), syntaxErrorPosition);
+                                    String word = ex.getLocalizedMessage().substring(syntaxWord[WORD_POSITION], syntaxWord[WORD_POSITION]+syntaxWord[WORD_LENGTH]);
+                                    syntaxErrorPosition = statement.toLowerCase().indexOf(word.toLowerCase());
+                                    syntaxErrorLength = syntaxWord[WORD_LENGTH];
                                 }
                                 // Compute syntax error position from the beginning of the document, (-1 is length of ; char)
                                 int syntaxErrorPositionOffset = Math.min(docLength,
@@ -132,7 +131,6 @@ public class RSyntaxSQLParser extends AbstractParser {
                                         syntaxErrorLength);
                                 notice.setLevel(ParserNotice.ERROR);
                                 res.addNotice(notice);
-                            }
                         }
                     }
                 }

@@ -35,22 +35,33 @@ public class RSyntaxSQLParserTest {
 
         ParseResult res = parser.parse((RSyntaxDocument)rSyntaxTextArea.getDocument(), "");
         List noticeList = res.getNotices();
-        assertEquals(3, noticeList.size());
-
+        assertEquals(4, noticeList.size());
         ParserNotice notice = (ParserNotice) noticeList.get(0);
+
         assertEquals(0, notice.getLine());
         assertEquals(0, notice.getOffset());
         assertEquals(5, notice.getLength());
 
         notice = (ParserNotice) noticeList.get(1);
         assertEquals(0, notice.getLine());
-        assertEquals(15, notice.getOffset());
-        assertEquals(4, notice.getLength());
+        assertEquals(6, notice.getOffset());
+        assertEquals(13, notice.getLength());
 
         notice = (ParserNotice) noticeList.get(2);
         assertEquals(1, notice.getLine());
         assertEquals(21, notice.getOffset());
+
+
+        rSyntaxTextArea.setText("create tabre (id integer);");
+        res = parser.parse((RSyntaxDocument)rSyntaxTextArea.getDocument(), "");
+        noticeList = res.getNotices();
+        assertEquals(1, noticeList.size());
+        notice = (ParserNotice) noticeList.get(0);
+        assertEquals(0, notice.getLine());
+        assertEquals(7, notice.getOffset());
+
     }
+
     @Test //(timeout = 500)
     public void testBounds() throws Exception {
         // Create H2 DataSource

@@ -47,7 +47,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 public class DropDownButton extends JToggleButton implements
 	ChangeListener, PopupMenuListener, ActionListener {
         private static final long serialVersionUID = 1L;
-	private boolean popupVisible = false;
+	    private boolean popupVisible = false;
         private JMenuItem selectedItem=null;
         private boolean buttonAsMenuItem = true; //Does this button will be replaced by the selected menu item
         private AtomicBoolean listenerInstalled = new AtomicBoolean(false);
