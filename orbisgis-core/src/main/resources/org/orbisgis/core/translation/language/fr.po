@@ -1,405 +1,404 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# gwendall.petit <gwendall.petit@ec-nantes.fr>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: OrbisGis 4.0 Core\n"
+"Project-Id-Version: OrbisGIS\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-18 14:45+0100\n"
-"PO-Revision-Date: 2013-09-12 09:31+0100\n"
-"Last-Translator: Alexis Guéganno <alexis.gueganno@ec-nantes.fr>\n"
-"Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
-"Language: fr\n"
+"POT-Creation-Date: 2013-10-03 00:22+0200\n"
+"PO-Revision-Date: 2013-09-23 10:00+0000\n"
+"Last-Translator: gwendall.petit <gwendall.petit@ec-nantes.fr>\n"
+"Language-Team: French (http://www.transifex.com/projects/p/orbisgis/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 1.5.4\n"
-"X-Poedit-KeywordsList: tr\n"
-"X-Poedit-Basepath: ../../../../../..\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-SearchPath-0: java\n"
 
-#: java/org/orbisgis/core/layerModel/AbstractLayer.java:159
-msgid "Cannot move a layer to its child"
-msgstr "Impossible de déplacer la couche dans un de ses enfants"
+#: org/orbisgis/core/map/MapTransform.java:104
+msgid "Headless graphics environment, set current DPI to 96.0"
+msgstr "Environnement sans sortie graphique, DPI mis à 96.0"
 
-#: java/org/orbisgis/core/layerModel/AbstractLayer.java:237
-#: java/org/orbisgis/core/layerModel/AbstractLayer.java:267
-#: java/org/orbisgis/core/layerModel/AbstractLayer.java:282
-#: java/org/orbisgis/core/layerModel/AbstractLayer.java:287
-#: java/org/orbisgis/core/layerModel/AbstractLayer.java:293
-msgid "This layer cannot have children"
-msgstr "Cette couche ne peut pas avoir d'enfants"
+#: org/orbisgis/core/renderer/classification/ProportionalMethod.java:84
+msgid "The parameter of the logarithmic function must be greater than 0"
+msgstr "Le paramètre de la fonction logarithme doit être supérieur à 0"
 
-#: java/org/orbisgis/core/layerModel/AbstractLayer.java:242
-#: java/org/orbisgis/core/layerModel/AbstractLayer.java:247
-msgid "This layer does not have children"
-msgstr "Cette couche n'a pas d'enfants"
+#: org/orbisgis/core/renderer/util/SymbolUtil.java:75
+#: org/orbisgis/core/renderer/util/SymbolUtil.java:80
+msgid "Cannot draw the shape"
+msgstr "Impossible de dessiner l'enveloppe"
 
-#: java/org/orbisgis/core/layerModel/AbstractLayer.java:304
-msgid "This layer doesn't contain any child"
-msgstr "Cette couche ne contient pas d'enfant"
-
-#: java/org/orbisgis/core/layerModel/Layer.java:71
-#, java-format
-msgid "Cannot get the extent of the layer {0}"
-msgstr "Impossible de récupérer l''étendue de la couche {0}"
-
-#: java/org/orbisgis/core/layerModel/Layer.java:90
-#: java/org/orbisgis/core/layerModel/Layer.java:92
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:127
-msgid "Cannot close the data source"
-msgstr "Impossible de fermer la source de données"
-
-#: java/org/orbisgis/core/layerModel/Layer.java:114
-msgid "The layer cannot listen to source modifications"
-msgstr "La couche ne peut pas surveiller les modifications de la source"
-
-#: java/org/orbisgis/core/layerModel/Layer.java:118
-msgid "Cannot open the layer"
-msgstr "impossible d'ouvrir la couche"
-
-#: java/org/orbisgis/core/layerModel/Layer.java:126
-#, java-format
-msgid "The field is not {0}"
-msgstr "Le champ n''est pas {0}"
-
-#: java/org/orbisgis/core/layerModel/Layer.java:133
-#, java-format
-msgid "The field {0} is not found"
-msgstr "Le champ {0} n'a pas été trouvé"
-
-#: java/org/orbisgis/core/layerModel/Layer.java:158
-msgid "This layer is not a raster"
-msgstr "Cette couche n'est pas un raster"
-
-#: java/org/orbisgis/core/layerModel/BeanLayer.java:147
-#, java-format
-msgid "Unable to serialise the data source of layer {0}"
-msgstr "Impossible d''enregistrer la source de données de la couche {0}"
-
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:131
-msgid "Cannot check source contents"
-msgstr "Impossible de vérifier les contenus de la source"
-
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:137
-msgid "The source contains no spatial info"
-msgstr "La source ne contient pas d'informations spatiales"
-
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:243
-#, java-format
-msgid "Cannot open layer : {0} "
-msgstr "Impossible d''ouvrir la couche : {0}"
-
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:248
-#, java-format
-msgid "Cannot remove the layer {0}"
-msgstr "Impossible de supprimer la couche {0}"
-
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:273
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:479
-#, java-format
-msgid "Cannot close layer {0}"
-msgstr "Impossible de fermer la couche {0}"
-
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:312
-msgid "Layer provided for drawing is not from the map context layer model."
-msgstr ""
-
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:337
-msgid "The map is not open"
-msgstr "La carte n'est pas ouverte"
-
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:423
-msgid "Unable to read the provided map context"
-msgstr "Impossible de lire le contexte cartographique fourni"
-
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:436
-msgid "Error raised while exporting the map context"
-msgstr "Une erreur est survenue lors de l'export du contexte cartographique"
-
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:454
-msgid "The map must be closed to invoke this method"
-msgstr "La carte doit être fermée pour pouvoir invoquer cette méthode"
-
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:526
-#, java-format
-msgid "Unable to parse the href URI {0}."
-msgstr "Impossible d'analyser l'URI {0}."
-
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:528
-#, java-format
-msgid "Unable to load the data source uri {0}."
-msgstr "Impossible de charger la source de données avec l''URI {0}."
-
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:549
-#, java-format
-msgid "Unable to load the description of the layer {0}"
-msgstr "Impossible de charger la description de la couche {0}."
-
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:569
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:619
-msgid "The layer has not been imported"
-msgstr "La couche n'a pas été importée"
-
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:630
-msgid "The map is already open"
-msgstr "La carte est déjà ouverte"
-
-#: java/org/orbisgis/core/layerModel/OwsMapContext.java:687
-#, java-format
-msgid "Cannot associate layer {0}, this layer must be removed manually"
-msgstr ""
-"Impossible d''associer la couche {0}, cette couche doit être supprimée "
-"manuellement"
-
-#: java/org/orbisgis/core/layerModel/LayerCollection.java:437
-msgid "Cannot do this operation on a layer collection"
-msgstr "Opération impossible sur une collection de couches."
-
-#: java/org/orbisgis/core/layerModel/LayerCollection.java:442
-msgid "No row selection in a layer collection"
-msgstr "Sélection de ligne impossible dans une collection de couches"
-
-#: java/org/orbisgis/core/layerModel/mapcatalog/RemoteMapContext.java:77
-#, java-format
-msgid "HTTP Error {0} message : {1} while removing the map context from {2}"
-msgstr ""
-"Erreur HTTP {0} message : {1} pendant la suppression du contexte "
-"cartographique de {2}"
-
-#: java/org/orbisgis/core/layerModel/mapcatalog/RemoteMapContext.java:190
-#, java-format
-msgid "HTTP Error {0} message : {1} while downloading from {2}"
-msgstr "Erreur HTTP {0} message : {1} pendant le téléchargement de {2}"
-
-#: java/org/orbisgis/core/layerModel/mapcatalog/RemoteMapCatalog.java:113
-#: java/org/orbisgis/core/layerModel/mapcatalog/Workspace.java:266
-#, java-format
-msgid "HTTP Error {0} message : {1}"
-msgstr "Erreur HTTP {0} message : {1}"
-
-#: java/org/orbisgis/core/layerModel/mapcatalog/RemoteMapCatalog.java:133
-#: java/org/orbisgis/core/layerModel/mapcatalog/Workspace.java:167
-#: java/org/orbisgis/core/layerModel/mapcatalog/Workspace.java:285
-msgid "Invalid XML content"
-msgstr "Contenu XML invalide"
-
-#: java/org/orbisgis/core/layerModel/mapcatalog/Workspace.java:145
-#, java-format
-msgid "HTTP Error {0} message : {1} with the URL {2}"
-msgstr "Erreur HTTP {0} message : {1} avec l''URL {2}"
-
-#: java/org/orbisgis/core/layerModel/mapcatalog/Workspace.java:206
-#, java-format
-msgid "Cannot parse the provided date {0}"
-msgstr "impossible d''analyser la donnée fournie {0}"
-
-#: java/org/orbisgis/core/plugin/BundleTools.java:200
-msgid "Could not read bundle manifest"
-msgstr "Impossible de lire le manifest du bundle"
-
-#: java/org/orbisgis/core/map/MapTransform.java:104
-msgid "Could not retrieve current DPI. Use 96.0!"
-msgstr "impossible de récupérer le DPI courant. Utilisation de 96.0 !"
-
-#: java/org/orbisgis/core/events/ListenerContainer.java:85
-msgid "This listener is already registered."
-msgstr "Ce Listener est déjà enregistré"
-
-#: java/org/orbisgis/core/events/ListenerContainer.java:152
-msgid "The listener stop the event process."
-msgstr ""
-
-#: java/org/orbisgis/core/events/ListenerContainer.java:160
-msgid "The listener throw an unexpected error"
-msgstr ""
-
-#: java/org/orbisgis/core/renderer/Renderer.java:405
-#: java/org/orbisgis/core/renderer/Renderer.java:411
+#: org/orbisgis/core/renderer/Renderer.java:405
+#: org/orbisgis/core/renderer/Renderer.java:411
 #, java-format
 msgid "Layer {0} not drawn"
 msgstr "Couche {0} non dessinée"
 
-#: java/org/orbisgis/core/renderer/Renderer.java:430
-#: java/org/orbisgis/core/renderer/Renderer.java:433
+#: org/orbisgis/core/renderer/Renderer.java:430
+#: org/orbisgis/core/renderer/Renderer.java:433
 msgid "Cannot get Stream image"
-msgstr ""
+msgstr "Impossible d'obtenir le flux d'image"
 
-#: java/org/orbisgis/core/renderer/se/LineSymbolizer.java:85
-msgid "Line Symbolizer"
-msgstr "Symbole linéaire"
-
-#: java/org/orbisgis/core/renderer/se/PointSymbolizer.java:93
-msgid "Point Symbolizer"
-msgstr "Symbole ponctuel"
-
-#: java/org/orbisgis/core/renderer/se/AreaSymbolizer.java:85
-msgid "Area Symbolizer"
-msgstr "Symbole surfacique"
-
-#: java/org/orbisgis/core/renderer/se/parameter/Recode.java:232
-#: java/org/orbisgis/core/renderer/se/parameter/Recode.java:255
-#, java-format
-msgid "Fallback ({0})"
-msgstr ""
-
-#: java/org/orbisgis/core/renderer/se/parameter/Categorize.java:138
-msgid "Manual"
-msgstr "Manuel"
-
-#: java/org/orbisgis/core/renderer/se/parameter/Categorize.java:139
-msgid "Natural breaks"
-msgstr "Ruptures naturelles"
-
-#: java/org/orbisgis/core/renderer/se/parameter/Categorize.java:140
-msgid "Quantiles"
-msgstr "Quantiles"
-
-#: java/org/orbisgis/core/renderer/se/parameter/Categorize.java:141
-msgid "Equal Intervals"
-msgstr "Intervalles égaux"
-
-#: java/org/orbisgis/core/renderer/se/parameter/Categorize.java:142
-msgid "Mean - Standard deviation"
-msgstr "Moyenne - écart type"
-
-#: java/org/orbisgis/core/renderer/se/parameter/Categorize.java:143
-msgid "Boxed means"
-msgstr "Moyennes emboîtées"
-
-#: java/org/orbisgis/core/renderer/se/parameter/Categorize.java:483
-msgid "Unable to categorize the feature"
-msgstr "Impossible de classifier la donnée"
-
-#: java/org/orbisgis/core/renderer/se/parameter/string/Recode2String.java:91
-#: java/org/orbisgis/core/renderer/se/parameter/string/Recode2String.java:101
-msgid "Fallback"
-msgstr ""
-
-#: java/org/orbisgis/core/renderer/se/graphic/WellKnownName.java:102
-msgid "SQUARE"
-msgstr ""
-
-#: java/org/orbisgis/core/renderer/se/graphic/WellKnownName.java:104
-msgid "HALFCIRCLE"
-msgstr ""
-
-#: java/org/orbisgis/core/renderer/se/graphic/WellKnownName.java:106
-msgid "TRIANGLE"
-msgstr ""
-
-#: java/org/orbisgis/core/renderer/se/graphic/WellKnownName.java:108
-msgid "STAR"
-msgstr ""
-
-#: java/org/orbisgis/core/renderer/se/graphic/WellKnownName.java:110
-msgid "CROSS"
-msgstr ""
-
-#: java/org/orbisgis/core/renderer/se/graphic/WellKnownName.java:112
-msgid "X"
-msgstr ""
-
-#: java/org/orbisgis/core/renderer/se/graphic/WellKnownName.java:114
-msgid "CIRCLE"
-msgstr ""
-
-#: java/org/orbisgis/core/renderer/se/graphic/GraphicCollection.java:255
-msgid "Error during graphic composition"
-msgstr "Erreur pendant la composition du graphique"
-
-#: java/org/orbisgis/core/renderer/se/graphic/GraphicCollection.java:285
-msgid "Could not render graphic"
-msgstr "Impossible de dessiner le graphique"
-
-#: java/org/orbisgis/core/renderer/se/fill/DotMapFill.java:209
-msgid "Could not find position for mark within area"
-msgstr "Impossible de trouver une position pour l'objet  au sein de la surface"
-
-#: java/org/orbisgis/core/renderer/se/common/Halo.java:266
+#: org/orbisgis/core/renderer/se/common/Halo.java:266
 msgid "Perpendicular offset failed"
 msgstr "Échec du décalage perpendiculaire"
 
-#: java/org/orbisgis/core/renderer/se/common/Uom.java:112
+#: org/orbisgis/core/renderer/se/common/Uom.java:112
 msgid "IN"
-msgstr ""
+msgstr "IN"
 
-#: java/org/orbisgis/core/renderer/se/common/Uom.java:114
+#: org/orbisgis/core/renderer/se/common/Uom.java:114
 msgid "MM"
-msgstr ""
+msgstr "MM"
 
-#: java/org/orbisgis/core/renderer/se/common/Uom.java:116
+#: org/orbisgis/core/renderer/se/common/Uom.java:116
 msgid "PT"
-msgstr ""
+msgstr "PT"
 
-#: java/org/orbisgis/core/renderer/se/common/Uom.java:118
+#: org/orbisgis/core/renderer/se/common/Uom.java:118
 msgid "PERCENT"
-msgstr ""
+msgstr "POURCENT"
 
-#: java/org/orbisgis/core/renderer/se/common/Uom.java:120
+#: org/orbisgis/core/renderer/se/common/Uom.java:120
 msgid "GM"
-msgstr ""
+msgstr "GM"
 
-#: java/org/orbisgis/core/renderer/se/common/Uom.java:122
+#: org/orbisgis/core/renderer/se/common/Uom.java:122
 msgid "GFT"
-msgstr ""
+msgstr "GFT"
 
-#: java/org/orbisgis/core/renderer/se/common/Uom.java:124
+#: org/orbisgis/core/renderer/se/common/Uom.java:124
 msgid "PX"
-msgstr ""
+msgstr "PX"
 
-#: java/org/orbisgis/core/renderer/se/common/ShapeHelper.java:136
+#: org/orbisgis/core/renderer/se/common/ShapeHelper.java:136
 msgid "CLOSE"
-msgstr ""
+msgstr "FERMER"
 
-#: java/org/orbisgis/core/renderer/se/common/ShapeHelper.java:139
+#: org/orbisgis/core/renderer/se/common/ShapeHelper.java:139
 #, java-format
 msgid "CUBIC TO {0}:{1}"
-msgstr ""
+msgstr "CUBIQUE VERS {0}:{1}"
 
-#: java/org/orbisgis/core/renderer/se/common/ShapeHelper.java:142
+#: org/orbisgis/core/renderer/se/common/ShapeHelper.java:142
 #, java-format
 msgid "LINE TO {0}:{1}"
-msgstr ""
+msgstr "LIGNE VERS {0}:{1}"
 
-#: java/org/orbisgis/core/renderer/se/common/ShapeHelper.java:145
+#: org/orbisgis/core/renderer/se/common/ShapeHelper.java:145
 #, java-format
 msgid "MOVE TO {0}:{1}"
-msgstr ""
+msgstr "DÉPLACER VERS {0}:{1}"
 
-#: java/org/orbisgis/core/renderer/se/common/ShapeHelper.java:148
+#: org/orbisgis/core/renderer/se/common/ShapeHelper.java:148
 #, java-format
 msgid "QUAD TO {0}:{1}"
-msgstr ""
+msgstr "QUAD TO {0}:{1}"
 
-#: java/org/orbisgis/core/renderer/se/common/ShapeHelper.java:151
+#: org/orbisgis/core/renderer/se/common/ShapeHelper.java:151
 msgid "!DEFAULT!"
-msgstr ""
+msgstr "!DÉFAUT!"
 
-#: java/org/orbisgis/core/renderer/se/common/ShapeHelper.java:1125
+#: org/orbisgis/core/renderer/se/common/ShapeHelper.java:1125
 msgid "Unable to compute perpendicular offset"
 msgstr "Impossible de calculer le décalage perpendiculaire"
 
-#: java/org/orbisgis/core/renderer/se/stroke/PenStroke.java:449
+#: org/orbisgis/core/renderer/se/graphic/GraphicCollection.java:255
+msgid "Error during graphic composition"
+msgstr "Erreur pendant la composition du graphique"
+
+#: org/orbisgis/core/renderer/se/graphic/GraphicCollection.java:285
+msgid "Could not render graphic"
+msgstr "Impossible de dessiner le graphique"
+
+#: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:102
+msgid "SQUARE"
+msgstr "CARREE"
+
+#: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:104
+msgid "HALFCIRCLE"
+msgstr "DEMI-CERCLE"
+
+#: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:106
+msgid "TRIANGLE"
+msgstr "TRIANGLE"
+
+#: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:108
+msgid "STAR"
+msgstr "ETOILE"
+
+#: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:110
+msgid "CROSS"
+msgstr "CROIX"
+
+#: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:112
+msgid "X"
+msgstr "X"
+
+#: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:114
+msgid "CIRCLE"
+msgstr "CERCLE"
+
+#: org/orbisgis/core/renderer/se/fill/DotMapFill.java:209
+msgid "Could not find position for mark within area"
+msgstr "Impossible de trouver une position pour l'objet  au sein de la surface"
+
+#: org/orbisgis/core/renderer/se/AreaSymbolizer.java:85
+msgid "Area Symbolizer"
+msgstr "Symbole surfacique"
+
+#: org/orbisgis/core/renderer/se/PointSymbolizer.java:93
+msgid "Point Symbolizer"
+msgstr "Symbole ponctuel"
+
+#: org/orbisgis/core/renderer/se/stroke/PenStroke.java:450
 msgid "Dash array must be made of positive numbers separated with spaces."
-msgstr ""
-"Le vecteur de pointillés doit être composé de nombres positifs séparés par "
-"des espaces"
+msgstr "Le vecteur de pointillés doit être composé de nombres positifs séparés par des espaces"
 
-#: java/org/orbisgis/core/renderer/classification/ProportionalMethod.java:84
-msgid "The parameter of the logarithmic function must be greater than 0"
-msgstr "Le paramètre de la fonction logarithme doit être supérieur à 0"
+#: org/orbisgis/core/renderer/se/parameter/Recode.java:232
+#: org/orbisgis/core/renderer/se/parameter/Recode.java:255
+#, java-format
+msgid "Fallback ({0})"
+msgstr "Valeur par défaut ({0})"
 
-#: java/org/orbisgis/core/renderer/util/SymbolUtil.java:75
-#: java/org/orbisgis/core/renderer/util/SymbolUtil.java:80
-msgid "Cannot draw the shape"
-msgstr "Impossible de dessiner l'enveloppe"
+#: org/orbisgis/core/renderer/se/parameter/Categorize.java:138
+msgid "Manual"
+msgstr "Manuel"
 
-#: java/org/orbisgis/core/context/main/MainContext.java:104
+#: org/orbisgis/core/renderer/se/parameter/Categorize.java:139
+msgid "Natural breaks"
+msgstr "Ruptures naturelles"
+
+#: org/orbisgis/core/renderer/se/parameter/Categorize.java:140
+msgid "Quantiles"
+msgstr "Quantiles"
+
+#: org/orbisgis/core/renderer/se/parameter/Categorize.java:141
+msgid "Equal Intervals"
+msgstr "Intervalles égaux"
+
+#: org/orbisgis/core/renderer/se/parameter/Categorize.java:142
+msgid "Mean - Standard deviation"
+msgstr "Moyenne - écart type"
+
+#: org/orbisgis/core/renderer/se/parameter/Categorize.java:143
+msgid "Boxed means"
+msgstr "Moyennes emboîtées"
+
+#: org/orbisgis/core/renderer/se/parameter/Categorize.java:483
+msgid "Unable to categorize the feature"
+msgstr "Impossible de classifier la donnée"
+
+#: org/orbisgis/core/renderer/se/parameter/string/Recode2String.java:91
+#: org/orbisgis/core/renderer/se/parameter/string/Recode2String.java:101
+msgid "Fallback"
+msgstr "Valeur par défaut"
+
+#: org/orbisgis/core/renderer/se/LineSymbolizer.java:85
+msgid "Line Symbolizer"
+msgstr "Symbole linéaire"
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:131
+#: org/orbisgis/core/layerModel/Layer.java:90
+#: org/orbisgis/core/layerModel/Layer.java:92
+msgid "Cannot close the data source"
+msgstr "Impossible de fermer la source de données"
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:135
+msgid "Cannot check source contents"
+msgstr "Impossible de vérifier les contenus de la source"
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:141
+msgid "The source contains no spatial info"
+msgstr "La source ne contient pas d'informations spatiales"
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:247
+#, java-format
+msgid "Cannot open layer : {0} "
+msgstr "Impossible d''ouvrir la couche : {0}"
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:252
+#, java-format
+msgid "Cannot remove the layer {0}"
+msgstr "Impossible de supprimer la couche {0}"
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:277
+#: org/orbisgis/core/layerModel/OwsMapContext.java:541
+#, java-format
+msgid "Cannot close layer {0}"
+msgstr "Impossible de fermer la couche {0}"
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:316
+msgid "Layer provided for drawing is not from the map context layer model."
+msgstr "La couche fournie pour le dessin ne provient pas du modèle de carte."
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:341
+msgid "The map is not open"
+msgstr "La carte n'est pas ouverte"
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:467
+#, java-format
+msgid "Unable to serialise the data source of layer {0}"
+msgstr "Impossible d''enregistrer la source de données de la couche {0}"
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:485
+msgid "Unable to read the provided map context"
+msgstr "Impossible de lire le contexte cartographique fourni"
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:498
+msgid "Error raised while exporting the map context"
+msgstr "Une erreur est survenue lors de l'export du contexte cartographique"
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:516
+msgid "The map must be closed to invoke this method"
+msgstr "La carte doit être fermée pour pouvoir invoquer cette méthode"
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:590
+msgid "Error while trying to find an absolute path for an external resource"
+msgstr "Erreur lors de la tentative pour trouver un chemin absolu pour une ressource externe"
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:598
+#, java-format
+msgid "Unable to load the data source uri {0}."
+msgstr "Impossible de charger la source de données avec l''URI {0}."
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:614
+#, java-format
+msgid "Unable to parse the href URI {0}."
+msgstr "Impossible d'analyser l'URI {0}."
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:616
+#, java-format
+msgid "Unable to load the description of the layer {0}"
+msgstr "Impossible de charger la description de la couche {0}."
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:671
+#: org/orbisgis/core/layerModel/OwsMapContext.java:721
+msgid "The layer has not been imported"
+msgstr "La couche n'a pas été importée"
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:732
+msgid "The map is already open"
+msgstr "La carte est déjà ouverte"
+
+#: org/orbisgis/core/layerModel/OwsMapContext.java:789
+#, java-format
+msgid "Cannot associate layer {0}, this layer must be removed manually"
+msgstr "Impossible d''associer la couche {0}, cette couche doit être supprimée manuellement"
+
+#: org/orbisgis/core/layerModel/AbstractLayer.java:163
+msgid "Cannot move a layer to its child"
+msgstr "Impossible de déplacer la couche dans un de ses enfants"
+
+#: org/orbisgis/core/layerModel/AbstractLayer.java:241
+#: org/orbisgis/core/layerModel/AbstractLayer.java:271
+#: org/orbisgis/core/layerModel/AbstractLayer.java:286
+#: org/orbisgis/core/layerModel/AbstractLayer.java:291
+#: org/orbisgis/core/layerModel/AbstractLayer.java:297
+msgid "This layer cannot have children"
+msgstr "Cette couche ne peut pas avoir d'enfants"
+
+#: org/orbisgis/core/layerModel/AbstractLayer.java:246
+#: org/orbisgis/core/layerModel/AbstractLayer.java:251
+msgid "This layer does not have children"
+msgstr "Cette couche n'a pas d'enfants"
+
+#: org/orbisgis/core/layerModel/AbstractLayer.java:308
+msgid "This layer doesn't contain any child"
+msgstr "Cette couche ne contient pas d'enfant"
+
+#: org/orbisgis/core/layerModel/Layer.java:71
+#, java-format
+msgid "Cannot get the extent of the layer {0}"
+msgstr "Impossible de récupérer l''étendue de la couche {0}"
+
+#: org/orbisgis/core/layerModel/Layer.java:114
+msgid "The layer cannot listen to source modifications"
+msgstr "La couche ne peut pas surveiller les modifications de la source"
+
+#: org/orbisgis/core/layerModel/Layer.java:118
+msgid "Cannot open the layer"
+msgstr "impossible d'ouvrir la couche"
+
+#: org/orbisgis/core/layerModel/Layer.java:126
+#, java-format
+msgid "The field is not {0}"
+msgstr "Le champ n''est pas {0}"
+
+#: org/orbisgis/core/layerModel/Layer.java:133
+#, java-format
+msgid "The field {0} is not found"
+msgstr "Le champ {0} n'a pas été trouvé"
+
+#: org/orbisgis/core/layerModel/Layer.java:158
+msgid "This layer is not a raster"
+msgstr "Cette couche n'est pas un raster"
+
+#: org/orbisgis/core/layerModel/mapcatalog/RemoteMapCatalog.java:113
+#: org/orbisgis/core/layerModel/mapcatalog/Workspace.java:266
+#, java-format
+msgid "HTTP Error {0} message : {1}"
+msgstr "Erreur HTTP {0} message : {1}"
+
+#: org/orbisgis/core/layerModel/mapcatalog/RemoteMapCatalog.java:133
+#: org/orbisgis/core/layerModel/mapcatalog/Workspace.java:167
+#: org/orbisgis/core/layerModel/mapcatalog/Workspace.java:285
+msgid "Invalid XML content"
+msgstr "Contenu XML invalide"
+
+#: org/orbisgis/core/layerModel/mapcatalog/Workspace.java:145
+#, java-format
+msgid "HTTP Error {0} message : {1} with the URL {2}"
+msgstr "Erreur HTTP {0} message : {1} avec l''URL {2}"
+
+#: org/orbisgis/core/layerModel/mapcatalog/Workspace.java:206
+#, java-format
+msgid "Cannot parse the provided date {0}"
+msgstr "impossible d''analyser la donnée fournie {0}"
+
+#: org/orbisgis/core/layerModel/mapcatalog/RemoteMapContext.java:77
+#, java-format
+msgid "HTTP Error {0} message : {1} while removing the map context from {2}"
+msgstr "Erreur HTTP {0} message : {1} pendant la suppression du contexte cartographique de {2}"
+
+#: org/orbisgis/core/layerModel/mapcatalog/RemoteMapContext.java:190
+#, java-format
+msgid "HTTP Error {0} message : {1} while downloading from {2}"
+msgstr "Erreur HTTP {0} message : {1} pendant le téléchargement de {2}"
+
+#: org/orbisgis/core/layerModel/LayerCollection.java:437
+msgid "Cannot do this operation on a layer collection"
+msgstr "Opération impossible sur une collection de couches."
+
+#: org/orbisgis/core/layerModel/LayerCollection.java:442
+msgid "No row selection in a layer collection"
+msgstr "Sélection de ligne impossible dans une collection de couches"
+
+#: org/orbisgis/core/plugin/BundleTools.java:200
+msgid "Could not read bundle manifest"
+msgstr "Impossible de lire le manifest du bundle"
+
+#: org/orbisgis/core/events/ListenerContainer.java:85
+msgid "This listener is already registered."
+msgstr "Ce Listener est déjà enregistré"
+
+#: org/orbisgis/core/events/ListenerContainer.java:152
+msgid "The listener stop the event process."
+msgstr "Le déclencheur a annulé l’événement"
+
+#: org/orbisgis/core/events/ListenerContainer.java:160
+msgid "The listener throw an unexpected error"
+msgstr "L'écouteur à renvoyé une erreur inattendue"
+
+#: org/orbisgis/core/context/main/MainContext.java:104
 msgid ""
 "Access to the sources, to its properties (indexes, etc.) and its contents, "
 "either raster or vectorial"
-msgstr ""
+msgstr "Accèder aux sources, à leurs propriétés (index, etc) et leur contenu, qu'elles soient de type raster ou vecteur"
 
-#: java/org/orbisgis/core/context/main/MainContext.java:107
+#: org/orbisgis/core/context/main/MainContext.java:107
 msgid "Contains folders path"
-msgstr ""
+msgstr "Contient les chemins des dossiers"
