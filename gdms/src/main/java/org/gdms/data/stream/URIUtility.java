@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -115,7 +116,7 @@ public class URIUtility {
         if(base.getScheme().equalsIgnoreCase("file")) {
             separator = File.separator;
         }
-        StringTokenizer tokenizer = new StringTokenizer(target.getPath(), separator);
+        StringTokenizer tokenizer = new StringTokenizer(target.getRawPath(), separator);
         String targetPart = "";
         if(tokenizer.hasMoreTokens()) {
             targetPart = tokenizer.nextToken();
