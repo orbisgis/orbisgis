@@ -262,11 +262,8 @@ public class ST_TriangleContouring extends AbstractTableFunction {
                         || // If triangles vertices ALL outside inferior
                         (endExcluded < currentTriangle.m1
                         && endExcluded < currentTriangle.m2 && endExcluded < currentTriangle.m3)// If
-                        // triangles
-                        // vertices
-                        // ALL
-                        // outside
-                        // inferior
+                        // triangles vertices
+                        //ALL outside inferior
                         ) {
                         return false;
                 }
@@ -368,14 +365,8 @@ public class ST_TriangleContouring extends AbstractTableFunction {
                         || // Side == Iso 1 and the third vertice == Iso2
                         (vertIso2Start != -1 && vertIso2Stop != -1 && vertIso1Start != -1) // Side
                         // ==
-                        // Iso
-                        // 2
-                        // and
-                        // the
-                        // third
-                        // vertice
-                        // ==
-                        // Iso1
+                        // Iso 2
+                        // and the third vertice == Iso1
                         ) { // Covered totally by the range
                         intervalTriangles.add(currentTriangle);
                         return true;
@@ -583,7 +574,7 @@ public class ST_TriangleContouring extends AbstractTableFunction {
                         short isolvl = 0;
                         for (Double endInterval : isoLvls) {
                                 Deque<TriMarkers> triangleToDriver;
-
+                                   
                                 if (!toDriver.containsKey(isolvl)) {
                                         triangleToDriver = new LinkedList<TriMarkers>();
                                         toDriver.put(isolvl, triangleToDriver);

@@ -140,6 +140,9 @@ public class TestCreateTIN extends FunctionTest {
                 geometries.add(wktReader.read("POLYGON ((3 10, 3 20, 10 10, 3 10))"));
                 assertTrue(checkResult(result, geometries));
         }
+        
+        
+        
 
         public boolean checkResult(DataSet dataSet, ArrayList<Geometry> geometries) {
                 int inputContains = geometries.size();

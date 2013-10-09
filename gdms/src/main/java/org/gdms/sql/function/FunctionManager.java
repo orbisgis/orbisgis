@@ -201,7 +201,10 @@ import org.gdms.sql.function.spatial.raster.interpolation.ST_Interpolate;
 import org.gdms.sql.function.spatial.raster.morphology.ST_Shadow;
 import org.gdms.sql.function.spatial.raster.properties.ST_Count;
 import org.gdms.sql.function.spatial.raster.properties.ST_PixelValue;
+import org.gdms.sql.function.spatial.tin.analysis.ST_TriangleAspect;
 import org.gdms.sql.function.spatial.tin.analysis.ST_TriangleContouring;
+import org.gdms.sql.function.spatial.tin.analysis.ST_TriangleDirection;
+import org.gdms.sql.function.spatial.tin.analysis.ST_TriangleSlope;
 import org.gdms.sql.function.spatial.tin.create.ST_TIN;
 import org.gdms.sql.function.system.ExportCall;
 import org.gdms.sql.function.system.FunctionHelp;
@@ -386,6 +389,9 @@ public final class FunctionManager {
                 addFunction(ST_SRID.class);
                 addFunction(ST_ProjectTo.class);
                 addFunction(ST_Split.class);
+                addFunction(ST_TriangleSlope.class);
+                addFunction(ST_TriangleDirection.class);
+                addFunction(ST_TriangleAspect.class);
         }
 
         /**

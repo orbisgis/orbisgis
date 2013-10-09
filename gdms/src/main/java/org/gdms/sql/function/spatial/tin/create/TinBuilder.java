@@ -57,7 +57,9 @@ import org.jdelaunay.delaunay.geometries.DPoint;
 import org.jdelaunay.delaunay.geometries.DTriangle;
 
 /**
- *
+ * A class to build a delaunay or a constrained delaunay triangulation
+ * based on a list of geometries
+ * 
  * @author Erwan Bocher, Alexis Guéganno
  */
 public class TinBuilder {

@@ -92,8 +92,11 @@ public class ST_TIN extends AbstractTableFunction {
 
         @Override
         public String getDescription() {
-                return "Compute a TIN from the geometry given in argument. "
-                        + "If the geometry contains polygon or ligne the triangulation is enforced using a co";
+                return "Compute a TIN from the geometry given in argument.\n "
+                        + "The first argument force the intersection of all input edges.\n"
+                        + "The second argument is used to delete flat triangles.\n"
+                        + "If the geometry contains polygon or ligne the triangulation\n "
+                        + "is enforced using a constraint method.";
         }
 
         @Override
