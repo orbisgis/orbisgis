@@ -30,15 +30,12 @@
 package org.gdms.data.stream;
 
 import org.apache.log4j.Logger;
-import scala.actors.threadpool.Arrays;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -115,7 +112,7 @@ public class URIUtility {
         if(base.getScheme().equalsIgnoreCase("file")) {
             separator = File.separator;
         }
-        StringTokenizer tokenizer = new StringTokenizer(target.getPath(), separator);
+        StringTokenizer tokenizer = new StringTokenizer(target.getRawPath(), separator);
         String targetPart = "";
         if(tokenizer.hasMoreTokens()) {
             targetPart = tokenizer.nextToken();

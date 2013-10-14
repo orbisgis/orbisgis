@@ -55,7 +55,7 @@ public abstract class AbsComboBox extends WideComboBox {
      *
      * @param items Items to add, represented as Strings.
      */
-    public AbsComboBox(String[] items) {
+    public AbsComboBox(Object[] items) {
         super(items);
     }
 }
