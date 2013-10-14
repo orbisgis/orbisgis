@@ -175,6 +175,7 @@ import org.gdms.sql.function.spatial.geometry.properties.ST_Z;
 import org.gdms.sql.function.spatial.geometry.properties.ST_ZMax;
 import org.gdms.sql.function.spatial.geometry.properties.ST_ZMin;
 import org.gdms.sql.function.spatial.geometry.qa.ST_InternalGapFinder;
+import org.gdms.sql.function.spatial.geometry.simplify.ST_PrecisionReducer;
 import org.gdms.sql.function.spatial.geometry.simplify.ST_Simplify;
 import org.gdms.sql.function.spatial.geometry.simplify.ST_SimplifyPreserveTopology;
 import org.gdms.sql.function.spatial.geometry.trigo.ST_Azimut;
@@ -386,6 +387,7 @@ public final class FunctionManager {
                 addFunction(ST_SRID.class);
                 addFunction(ST_ProjectTo.class);
                 addFunction(ST_Split.class);
+                addFunction(ST_PrecisionReducer.class);
         }
 
         /**

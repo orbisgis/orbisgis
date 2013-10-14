@@ -1,11 +1,10 @@
 /**
- * The GDMS library (Generic Datasource Management System)
- * is a middleware dedicated to the management of various kinds of
- * data-sources such as spatial vectorial data or alphanumeric. Based
- * on the JTS library and conform to the OGC simple feature access
- * specifications, it provides a complete and robust API to manipulate
- * in a SQL way remote DBMS (PostgreSQL, H2...) or flat files (.shp,
- * .csv...).
+ * The GDMS library (Generic Datasource Management System) is a middleware
+ * dedicated to the management of various kinds of data-sources such as spatial
+ * vectorial data or alphanumeric. Based on the JTS library and conform to the
+ * OGC simple feature access specifications, it provides a complete and robust
+ * API to manipulate in a SQL way remote DBMS (PostgreSQL, H2...) or flat files
+ * (.shp, .csv...).
  *
  * Gdms is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
@@ -28,13 +27,13 @@
  *
  * For more information, please consult: <http://www.orbisgis.org/>
  *
- * or contact directly:
- * info@orbisgis.org
+ * or contact directly: info@orbisgis.org
  */
 package org.gdms.sql.function.spatial.geometry.simplify;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
 import com.vividsolutions.jts.precision.SimpleGeometryPrecisionReducer;
 
 import org.gdms.data.DataSourceFactory;
@@ -48,50 +47,57 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
 /**
  * A function to reduce the geometry precision
+ *
  * @author Erwan Bocher
  */
 public class ST_PrecisionReducer extends AbstractScalarSpatialFunction {
 
-        @Override
-        public Value evaluate(DataSourceFactory dsf, Value... values) throws FunctionException {
-                final int nbDec = values[1].getAsInt();
-                if (nbDec < 0) {
-                        throw new FunctionException("Decimal_places has to be >= 0.");
-                }
-                PrecisionModel pm = new PrecisionModel(scaleFactorForDecimalPlaces(nbDec));
-                Geometry geom = SimpleGeometryPrecisionReducer.reduce(values[0].getAsGeometry(), pm);
-                return ValueFactory.createValue(geom, values[0].getCRS());
-        }
+    GeometryPrecisionReducer gpr = null;
 
-        @Override
-        public String getName() {
-                return "ST_PrecisionReducer";
+    @Override
+    public Value evaluate(DataSourceFactory dsf, Value... values) throws FunctionException {
+        if (gpr == null) {
+            final int nbDec = values[1].getAsInt();
+            if (nbDec < 0) {
+                throw new FunctionException("Decimal_places has to be >= 0.");
+            }
+            PrecisionModel pm = new PrecisionModel(scaleFactorForDecimalPlaces(nbDec));
+            gpr = new GeometryPrecisionReducer(pm);
         }
+        Geometry geom = gpr.reduce(values[0].getAsGeometry());
+        return ValueFactory.createValue(geom, values[0].getCRS());
+    }
 
-        @Override
-        public String getDescription() {
-                return "A function to reduce the geometry precision. Decimal_Place is the number of decimals to keep.";
-        }
+    @Override
+    public String getName() {
+        return "ST_PrecisionReducer";
+    }
 
-        @Override
-        public String getSqlOrder() {
-                return "SELECT ST_PrecisionReducer(GEOMETRY,DECIMAL_PLACES) from myTable";
-        }
+    @Override
+    public String getDescription() {
+        return "A function to reduce the geometry precision. Decimal_Place is the number of decimals to keep.";
+    }
 
-        @Override
-        public FunctionSignature[] getFunctionSignatures() {
-                return new FunctionSignature[]{
-                                new BasicFunctionSignature(getType(null),
-                                ScalarArgument.GEOMETRY, ScalarArgument.INT)
-                        };
-        }
+    @Override
+    public String getSqlOrder() {
+        return "SELECT ST_PrecisionReducer(GEOMETRY,DECIMAL_PLACES) from myTable";
+    }
 
-        /**
-         * Computes the scale factor for a given number of decimal places.
-         * @param decimalPlaces
-         * @return the scale factor
-         */
-        public static double scaleFactorForDecimalPlaces(int decimalPlaces) {
-                return Math.pow(10.0, decimalPlaces);
-        }
+    @Override
+    public FunctionSignature[] getFunctionSignatures() {
+        return new FunctionSignature[]{
+            new BasicFunctionSignature(getType(null),
+            ScalarArgument.GEOMETRY, ScalarArgument.INT)
+        };
+    }
+
+    /**
+     * Computes the scale factor for a given number of decimal places.
+     *
+     * @param decimalPlaces
+     * @return the scale factor
+     */
+    public static double scaleFactorForDecimalPlaces(int decimalPlaces) {
+        return Math.pow(10.0, decimalPlaces);
+    }
 }
