@@ -52,7 +52,7 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
  */
 public class ST_PrecisionReducer extends AbstractScalarSpatialFunction {
 
-    GeometryPrecisionReducer gpr = null;
+    private GeometryPrecisionReducer gpr = null;
 
     @Override
     public Value evaluate(DataSourceFactory dsf, Value... values) throws FunctionException {
