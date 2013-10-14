@@ -31,10 +31,8 @@
  */
 package org.gdms.sql.function.spatial.geometry.simplify;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
-import com.vividsolutions.jts.precision.SimpleGeometryPrecisionReducer;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
@@ -64,8 +62,7 @@ public class ST_PrecisionReducer extends AbstractScalarSpatialFunction {
             PrecisionModel pm = new PrecisionModel(scaleFactorForDecimalPlaces(nbDec));
             gpr = new GeometryPrecisionReducer(pm);
         }
-        Geometry geom = gpr.reduce(values[0].getAsGeometry());
-        return ValueFactory.createValue(geom, values[0].getCRS());
+        return ValueFactory.createValue(gpr.reduce(values[0].getAsGeometry()), values[0].getCRS());
     }
 
     @Override
