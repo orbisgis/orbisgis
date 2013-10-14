@@ -26,17 +26,19 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.map.export;
+package org.orbisgis.core.map.export.material;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.text.NumberFormat;
 
-public class SingleLineScale extends AbstractScale implements Scale {
+public class RectanglesScale extends AbstractScale implements Scale {
 
-	public SingleLineScale() {
+	public RectanglesScale() {
 		partCount = 2;
 		partWidth = 1;
 		height = 0.3;
@@ -47,7 +49,7 @@ public class SingleLineScale extends AbstractScale implements Scale {
 
 	@Override
 	public String getScaleTypeName() {
-		return "Single line";
+		return "Rectangles";
 	}
 
 	@Override
@@ -83,28 +85,37 @@ public class SingleLineScale extends AbstractScale implements Scale {
 		// Write horizontal line
 		double startLineX = 0 + leftTextBounds.getWidth() / 2;
 		double partPixels = partWidth * dpcm;
-		int endLineX = (int) (startLineX + partPixels * partCount);
-		g.drawLine((int) startLineX, size.height, endLineX, size.height);
 		// Draw the vertical lines and the text
 		double posX = startLineX;
 		int startingBigVerticalMark = (int) (textHeight + 1);
-		int startingSmallVerticalMark = size.height - 2;
 		int i = 0;
 		while (i < partCount + 1) {
-			int posY;
+			int posY = startingBigVerticalMark;
+			Font previous = g.getFont();
 			if (remarkedParts[i]) {
-				posY = startingBigVerticalMark;
-			} else {
-				posY = startingSmallVerticalMark;
+				g.setFont(previous.deriveFont(Font.BOLD));
 			}
-			g.drawLine((int) posX, posY, (int) posX, size.height);
+			if (i < partCount) {
+				if (i / 2 == i / 2.0) {
+					g.setColor(Color.black);
+				} else {
+					g.setColor(Color.white);
+				}
+				g.fillRect((int) posX, posY, (int) partPixels, size.height
+						- posY);
+				g.setColor(Color.black);
+				g.drawRect((int) posX, posY, (int) partPixels, size.height
+						- posY);
+			}
 
 			if (partsWithText[i]) {
 				String number = nf.format(scaleDenominator * partWidth * i);
 				Rectangle2D bounds = fm.getStringBounds(number, g);
+				g.setColor(Color.black);
 				g.drawString(number, (int) (posX - bounds.getWidth() / 2),
 						posY - 1);
 			}
+			g.setFont(previous);
 			i++;
 			posX += partPixels;
 		}

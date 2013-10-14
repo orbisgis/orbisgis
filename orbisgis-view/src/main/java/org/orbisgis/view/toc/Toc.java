@@ -225,7 +225,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
 
 
             popupActions.addAction(new LayerAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
-                    I18N.tr("Add layer group"),I18N.tr("Add a the layer group to the map context"),
+                    I18N.tr("Add layer group"),I18N.tr("Add layer group to the map context"),
                     OrbisGISIcon.getIcon("add"),
                     EventHandler.create(ActionListener.class, this, "onAddGroup"),null)
                         .setOnLayerGroup(true)
@@ -1095,7 +1095,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                                 Style s2 = new Style(jaxbElement, layer);
                                                 layer.setStyle(index, s2);
                                             } catch (SeExceptions.InvalidStyle invalidStyle) {
-                                                LOGGER.error(I18N.tr("You produced an invalid style while copying" +
+                                                LOGGER.error(I18N.tr("You produced an invalid style while copying " +
                                                         "a valid one. Things are getting really wrong here."));
                                             }
                                         }

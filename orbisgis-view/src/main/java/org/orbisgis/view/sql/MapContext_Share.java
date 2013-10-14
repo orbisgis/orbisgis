@@ -90,7 +90,7 @@ public class MapContext_Share extends AbstractExecutorFunction {
                                         if (targetWorkspace != null) {
                                                 targetWorkspace.publishMapContext(mapElement.getMapContext(), null);
                                         } else {
-                                                throw new FunctionException(I18N.tr("The workspace doesn't exist. Please contact"
+                                                throw new FunctionException(I18N.tr("The workspace doesn't exist. Please contact "
                                                         + "the administrator of the service."));
                                         }
 
