@@ -185,7 +185,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         .setOnVectorSourceOnly(true)
                         .setLogicalGroup(TocActionFactory.G_STYLE));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_ADD_STYLE,
-                    I18N.tr("Add style"), I18N.tr("Add a new style."),
+                    I18N.tr("Add legend"), I18N.tr("Add a new legend."),
                     OrbisGISIcon.getIcon("add"),
                     EventHandler.create(ActionListener.class, this, "onAddStyle"),null)
                         .setSingleSelection(true)

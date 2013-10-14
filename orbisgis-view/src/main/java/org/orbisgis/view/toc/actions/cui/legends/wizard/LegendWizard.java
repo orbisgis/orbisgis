@@ -82,6 +82,7 @@ public class LegendWizard {
     public void onClickNext(){
         ILegendPanel selectedPanel = luc.getSelectedPanel();
         wp.setInnerLegend(selectedPanel);
+        wiz.setTitle(selectedPanel.getLegend().getName());
         wiz.pack();
     }
 
@@ -91,6 +92,7 @@ public class LegendWizard {
      */
     public void onClickPrevious(){
         wp.setInnerLegend(null);
+        wiz.setTitle("");
         wiz.pack();
 
     }

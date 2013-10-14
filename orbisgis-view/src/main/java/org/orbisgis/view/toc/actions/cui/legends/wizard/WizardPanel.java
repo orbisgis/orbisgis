@@ -157,6 +157,7 @@ public class WizardPanel implements UIPanel, LegendContext {
         if(ilp !=null){
             jp.add(inner.getComponent());
         }
+        field.setText(ilp.getLegend().getName());
     }
 
     /**
