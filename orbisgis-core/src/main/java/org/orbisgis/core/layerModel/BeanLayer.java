@@ -32,16 +32,12 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import net.opengis.ows_context.*;
-import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
-import org.gdms.source.Source;
+import net.opengis.ows_context.LayerType;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.Style;
@@ -102,60 +98,6 @@ public abstract class BeanLayer extends AbstractLayer {
                 //Deprectated listener
                 fireVisibilityChanged();
         }
-        @Override
-        public LayerType getJAXBElement() {
-                ObjectFactory ows_context_factory = new ObjectFactory();
-                net.opengis.se._2_0.core.ObjectFactory se_of = new net.opengis.se._2_0.core.ObjectFactory();
-                LayerType layerType = ows_context_factory.createLayerType();
-                description.initJAXBType(layerType);
-                layerType.setHidden(!visible);
-                ILayer[] childrens = getChildren();
-                for(ILayer child : childrens) {
-                        if(child.isSerializable()){
-                                layerType.getLayer().add(child.getJAXBElement());
-                        }
-                }
-                // If not a Layer Collection
-                if(styleList!=null) {
-                        StyleListType slt = ows_context_factory.createStyleListType();
-                        layerType.setStyleList(slt);
-                        for(Style style : styleList) {
-                                StyleType st = ows_context_factory.createStyleType();
-                                slt.getStyle().add(st);
-                                SLDType sltType = ows_context_factory.createSLDType();
-                                st.setSLD(sltType);
-                                sltType.setAbstractStyle(style.getJAXBElement());
-                        }                        
-                }
-                DataSource dataSource = getDataSource();
-                //Serialisation of dataSource as a DataUrl string
-                if(dataSource!=null) {
-                        //Create jaxb instances
-                        URLType dataURL = ows_context_factory.createURLType();
-                        OnlineResourceType resource = ows_context_factory.createOnlineResourceType();
-                        dataURL.setOnlineResource(resource);
-                        //Retrieve data source properties
-                        Source src = dataSource.getSource();                                                
-                        //Serialisation of the data source into a single string
-                        String resourceSerialisation = "";
-                        try {
-                                URI srcUri = src.getURI();
-                                if(srcUri!=null) {
-                                        resourceSerialisation = srcUri.toString();
-                                }
-                        } catch (DriverException ex) {
-                                LOGGER.error(I18N.tr("Unable to serialise the data source of layer {0}",getName()),ex);
-                        }
-                        
-                        resource.setHref(resourceSerialisation);
-                        if(!resourceSerialisation.isEmpty()) {
-                                layerType.setDataURL(dataURL);                                
-                        }
-                }
-                return layerType;
-        }
-        
-        
         
         /**
          * Get the value of description

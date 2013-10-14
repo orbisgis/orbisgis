@@ -395,12 +395,10 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
                                 }
 
                         } catch (ConnectException e) {
-                                LOGGER.error(I18N.tr("orbisgis.errorMessages.wms.CannotConnect"
-                                        + " " + wmsURL), e);
+                                LOGGER.error(I18N.tr("Cannot connect to {0}",wmsURL), e);
                         } catch (IOException e) {
                                 LOGGER.error(
-                                        I18N.tr("orbisgis.errorMessages.wms.CannotGetCapabilities"
-                                        + " " + wmsURL), e);
+                                        I18N.tr("Cannot get capabilities of {0}",wmsURL), e);
                         }
                 }
 

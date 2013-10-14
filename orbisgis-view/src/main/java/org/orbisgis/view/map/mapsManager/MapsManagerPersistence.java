@@ -48,19 +48,25 @@ import java.util.List;
  * @author Nicolas Fortin
  */
 public class MapsManagerPersistence implements DockingPanelLayout, Serializable, PropertyHost {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
     /**
      * Property of server uri list {@link org.orbisgis.view.map.MapEditorPersistence#getMapCatalogUrlList()}
      */
     public static final String PROP_SERVER_URI_LIST = "mapCatalogUrlList";
+    public static final String PROP_FOLDER_LIST = "mapCatalogUrlList";
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     private List<String> mapCatalogUrlList = new ArrayList<String>();
+    private List<String> mapCatalogFolderList = new ArrayList<String>();
 
     // XML consts
     private static final String URL_LIST_NODE = "mapCatalogUrlList";
     private static final String URL_NODE = "mapcatalog";
     private static final String URL_NODE_PROPERTY = "url";
+
+    private static final String FOLDER_LIST_NODE = "mapCatalogFolderList";
+    private static final String FOLDER_NODE = "mapcatalog";
+    private static final String FOLDER_NODE_PROPERTY = "path";
 
     /**
      * Set the map context server list
@@ -80,12 +86,32 @@ public class MapsManagerPersistence implements DockingPanelLayout, Serializable,
         return Collections.unmodifiableList(mapCatalogUrlList);
     }
 
+    /**
+     * @return The list of user defined map's folders.
+     */
+    public List<String> getMapCatalogFolderList() {
+        return mapCatalogFolderList;
+    }
+
+    /**
+     * @param mapCatalogFolderList The list of user defined map's folders.
+     */
+    public void setMapCatalogFolderList(List<String> mapCatalogFolderList) {
+        List<String> oldList = this.mapCatalogFolderList;
+        this.mapCatalogFolderList = mapCatalogFolderList;
+        propertyChangeSupport.firePropertyChange(PROP_FOLDER_LIST,oldList,mapCatalogFolderList);
+    }
+
     @Override
     public void writeStream(DataOutputStream out) throws IOException {
         out.writeLong(serialVersionUID);
         out.writeInt(mapCatalogUrlList.size());
         for(String mcUrl : mapCatalogUrlList) {
             out.writeUTF(mcUrl);
+        }
+        out.writeInt(mapCatalogFolderList.size());
+        for(String mcFolder : mapCatalogFolderList) {
+            out.writeUTF(mcFolder);
         }
     }
 
@@ -102,6 +128,14 @@ public class MapsManagerPersistence implements DockingPanelLayout, Serializable,
                 }
             }
             setMapCatalogUrlList(urlList);
+            if(version >= 2) {
+                int size = in.readInt();
+                List<String> folderList = new ArrayList<String>();
+                for(int i=0;i<size;i++) {
+                    folderList.add(in.readUTF());
+                }
+                setMapCatalogFolderList(folderList);
+            }
         }
     }
 
@@ -112,6 +146,10 @@ public class MapsManagerPersistence implements DockingPanelLayout, Serializable,
         for(String mcUrl : mapCatalogUrlList) {
             urlList.addElement(URL_NODE).addString(URL_NODE_PROPERTY, mcUrl);
         }
+        XElement pathList = element.addElement(FOLDER_LIST_NODE);
+        for(String mcUrl : mapCatalogFolderList) {
+            pathList.addElement(FOLDER_NODE).addString(FOLDER_NODE_PROPERTY, mcUrl);
+        }
     }
 
     @Override
@@ -119,11 +157,21 @@ public class MapsManagerPersistence implements DockingPanelLayout, Serializable,
         XElement managerNode = element.getElement(URL_LIST_NODE);
         long version = managerNode.getLong("serialVersionUID");
         List<String> urlList = new ArrayList<String>();
-        if(version==serialVersionUID) {
+        if(version>=1) {
             for(XElement map : managerNode.children()) {
                 if(map.getName().equals(URL_NODE)) {
                     urlList.add(map.getString(URL_NODE_PROPERTY));
                 }
+            }
+            if(version >= 2) {
+                List<String> folderList = new ArrayList<String>();
+                XElement folderNode = element.getElement(FOLDER_LIST_NODE);
+                for(XElement map : folderNode.children()) {
+                    if(map.getName().equals(FOLDER_NODE)) {
+                        folderList.add(map.getString(FOLDER_NODE_PROPERTY));
+                    }
+                }
+                setMapCatalogFolderList(folderList);
             }
         }
         setMapCatalogUrlList(urlList);
