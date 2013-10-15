@@ -79,7 +79,7 @@ public class DbaseFileHeader {
     // Constant for the size of a record
     private static final int FILE_DESCRIPTOR_SIZE = 32;
     /** @see "https://github.com/infused/dbf/blob/master/lib/dbf/encodings.rb" */
-    private static Map<Byte,String> CODE_PAGE_ENCODING = new HashMap<Byte, String>();
+    private static final Map<Byte,String> CODE_PAGE_ENCODING = new HashMap<Byte, String>();
     static {
         CODE_PAGE_ENCODING.put((byte) 0x01,"cp437"); // U.S. MS–DOS
         CODE_PAGE_ENCODING.put((byte) 0x02,"cp850"); // International MS–DOS
