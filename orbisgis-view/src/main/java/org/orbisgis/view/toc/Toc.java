@@ -60,9 +60,13 @@ import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.classification.ClassificationMethodException;
+import org.orbisgis.core.renderer.se.CompositeSymbolizer;
+import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sif.SIFWizard;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.OpenFilePanel;
@@ -87,6 +91,7 @@ import org.orbisgis.view.table.TableEditableElement;
 import org.orbisgis.view.toc.actions.*;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.SimpleStyleEditor;
+import org.orbisgis.view.toc.actions.cui.legends.wizard.LegendWizard;
 import org.orbisgis.view.toc.ext.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -173,15 +178,15 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         .setLogicalGroup(TocActionFactory.G_SELECTION));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_IMPORT_STYLE,
                     I18N.tr("Import style"), I18N.tr("Import a style from a file."),
-                    OrbisGISIcon.getIcon("add"),
+                    OrbisGISIcon.getIcon("palette_import"),
                     EventHandler.create(ActionListener.class, this, "onImportStyle"),null)
                         .setSingleSelection(true)
                         .setOnRealLayerOnly(true)
                         .setOnVectorSourceOnly(true)
                         .setLogicalGroup(TocActionFactory.G_STYLE));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_ADD_STYLE,
-                    I18N.tr("Add style"), I18N.tr("Add a new style."),
-                    OrbisGISIcon.getIcon("add"),
+                    I18N.tr("Create a thematic map"), I18N.tr("Add a new legend."),
+                    OrbisGISIcon.getIcon("palette_add"),
                     EventHandler.create(ActionListener.class, this, "onAddStyle"),null)
                         .setSingleSelection(true)
                         .setOnRealLayerOnly(true)
@@ -232,21 +237,25 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         EventHandler.create(ActionListener.class, this, "onDeleteLayer"),null)
                         .setLogicalGroup(TocActionFactory.G_REMOVE));
             // Style actions
+            popupActions.addAction(new StyleAction(this,TocActionFactory.A_ADD_LEGEND,
+                    I18N.tr("Create a thematic map"), I18N.tr("Add a legend in this style"),
+                    OrbisGISIcon.getIcon("palette_add"),
+                    EventHandler.create(ActionListener.class, this, "onAddLegend"),null).setOnSingleStyleSelection(true));
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_SIMPLE_EDITION,
                     I18N.tr("Simple style editor"), I18N.tr("Open the simple editor for SE styles"),
-                    OrbisGISIcon.getIcon("pencil"),
+                    OrbisGISIcon.getIcon("palette_edit"),
                     EventHandler.create(ActionListener.class, this, "onSimpleEditor"),null).setOnSingleStyleSelection(true));
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_ADVANCED_EDITION,
                     I18N.tr("Advanced style editor"), I18N.tr("Open the advanced editor for SE styles"),
-                    OrbisGISIcon.getIcon("pencil"),
+                    OrbisGISIcon.getIcon("palette_edit"),
                     EventHandler.create(ActionListener.class, this, "onAdvancedEditor"),null).setOnSingleStyleSelection(true));
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_REMOVE_STYLE,
                     I18N.tr("Remove style"), I18N.tr("Remove this style from the associated layer."),
-                    OrbisGISIcon.getIcon("remove"),
+                    OrbisGISIcon.getIcon("palette_remove"),
                     EventHandler.create(ActionListener.class, this, "onDeleteStyle"),null));
             popupActions.addAction(new StyleAction(this, TocActionFactory.A_EXPORT_STYLE,
                     I18N.tr("Export style"), I18N.tr("Export this style from the associated layer."),
-                    OrbisGISIcon.getIcon("add"),
+                    OrbisGISIcon.getIcon("palette_export"),
                     EventHandler.create(ActionListener.class, this, "onExportStyle"), null).setOnSingleStyleSelection(true));
         }
         /**
@@ -942,15 +951,48 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         }
 
         /**
+         * Called by EventHandler. This methods opens a wizard for the configuration
+         * of a legend that will be added to the selected style in a dedicated Rule.
+         */
+        public void onAddLegend(){
+            Style[] styles = mapContext.getSelectedStyles();
+            if(styles.length == 1){
+                Style base = styles[0];
+                BeanLayer l = (BeanLayer) base.getLayer();
+                MapEditor editor = mapElement.getMapEditor();
+                MapTransform mt = editor.getMapControl().getMapTransform();
+                LegendWizard lw = new LegendWizard();
+                SIFWizard wizard = lw.getSIFWizard(l, mt);
+                //Show a wizard to add new thematic map in a Layer
+                if(UIFactory.showWizard(wizard)){
+                    Symbolizer sym = lw.getSymbolizer();
+                    Rule r = new Rule(l);
+                    CompositeSymbolizer cs = r.getCompositeSymbolizer();
+                    Symbolizer def = cs.getSymbolizerList().get(0);
+                    cs.removeSymbolizer(def);
+                    cs.addSymbolizer(sym);
+                    base.addRule(r);
+                    l.onStyleChanged(new PropertyChangeEvent(base, ILayer.PROP_STYLES, base, base));
+                }
+            }
+        }     
+
+        /**
          * Add a new default style to the selected layer.
          */
         public void onAddStyle() {
                 ILayer[] layers = mapContext.getSelectedLayers();
                 if (layers.length == 1) {
+                    LegendWizard lw = new LegendWizard();
                     ILayer layer = layers[0];
                     if (isStyleAllowed(layer)) {
-                        Style s = new Style(layer, true);
-                        layer.addStyle(s);
+                        MapEditor editor = mapElement.getMapEditor();
+                        MapTransform mt = editor.getMapControl().getMapTransform();
+                        SIFWizard wizard = lw.getSIFWizard(layer, mt);
+                        if(UIFactory.showWizard(wizard)){
+                            Style s = lw.getStyle();
+                            layer.addStyle(s);
+                        }
                     } else {
                         LOGGER.info("This functionality is not supported.");
                     }
@@ -1034,7 +1076,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                 final Layer layer = (Layer) style.getLayer();
                                 if(isStyleAllowed(layer)){
                                     final int index = layer.indexOf(style);
-
                                     //In order to be able to cancel all of our modifications,
                                     //we produce a copy of our style.
                                     MapEditor editor = mapElement.getMapEditor();

@@ -73,7 +73,7 @@ public class LegendUIChooser implements UIPanel {
     /**
      * SimpleStyleEditor.
      */
-    private SimpleStyleEditor editor;
+    private LegendContext editor;
     /**
      * Possible Legend names.
      */
@@ -97,9 +97,9 @@ public class LegendUIChooser implements UIPanel {
      *
      * @param editor SimpleStyleEditor
      */
-    public LegendUIChooser(SimpleStyleEditor editor) {
+    public LegendUIChooser(LegendContext editor) {
         this.editor = editor;
-        initNamesList(editor.getStyleWrapper().getStyle().getLayer());
+        initNamesList(editor.getLayer());
         initUI();
     }
 
