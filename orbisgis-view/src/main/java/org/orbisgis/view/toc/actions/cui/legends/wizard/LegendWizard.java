@@ -47,11 +47,11 @@ import java.beans.EventHandler;
 /**
  * This class builds a SIFWizard that can be used to configure a new
  * Style for a ILayer.
- * @author Alexis Guéganno
+ * @author Alexis Guéganno, Erwan Bocher
  */
 public class LegendWizard {
 
-    private WizardPanel wp;
+    private ThematicMapWizard wp;
     private LegendUIChooser luc;
     private SIFWizard wiz;
 
@@ -63,7 +63,7 @@ public class LegendWizard {
      * @return A SIFWizard that can be displayed with UIFactory.
      */
     public SIFWizard getSIFWizard(ILayer layer, MapTransform mt){
-        wp = new WizardPanel(layer, mt);
+        wp = new ThematicMapWizard(layer, mt);
         luc = new LegendUIChooser(wp);
         UIPanel[] panes = new UIPanel[]{luc, wp};
         wiz = UIFactory.getWizard(panes);
@@ -72,6 +72,7 @@ public class LegendWizard {
         btnNext.addActionListener(al);
         ActionListener pre = EventHandler.create(ActionListener.class,this, "onClickPrevious");
         wiz.getBtnPrevious().addActionListener(pre);
+        wiz.setTitle(wp.getTitle());
         return wiz;
     }
 
@@ -82,7 +83,7 @@ public class LegendWizard {
     public void onClickNext(){
         ILegendPanel selectedPanel = luc.getSelectedPanel();
         wp.setInnerLegend(selectedPanel);
-        wiz.setTitle(selectedPanel.getLegend().getName());
+        wiz.setTitle(selectedPanel.getLegend().getLegendTypeName());
         wiz.pack();
     }
 
@@ -92,9 +93,8 @@ public class LegendWizard {
      */
     public void onClickPrevious(){
         wp.setInnerLegend(null);
-        wiz.setTitle("");
+        wiz.setTitle(wp.getTitle());
         wiz.pack();
-
     }
 
     /**

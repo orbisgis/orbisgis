@@ -51,12 +51,12 @@ import java.net.URL;
 /**
  * This UIPanel intends to host a ILegendPanel instance that will
  * be added to a layer
- * @author Alexis Guéganno
+ * @author Alexis Guéganno, Erwan Bocher
  */
-public class WizardPanel implements UIPanel, LegendContext {
+public class ThematicMapWizard implements UIPanel, LegendContext {
 
-    private static final Logger LOGGER = Logger.getLogger(WizardPanel.class);
-    private static final I18n I18N = I18nFactory.getI18n(WizardPanel.class);
+    private static final Logger LOGGER = Logger.getLogger(ThematicMapWizard.class);
+    private static final I18n I18N = I18nFactory.getI18n(ThematicMapWizard.class);
     private int geometryType = SimpleGeometryType.ALL;
     private ILegendPanel inner;
     private JPanel jp;
@@ -69,7 +69,7 @@ public class WizardPanel implements UIPanel, LegendContext {
      * @param l The parent layer.
      * @param m Needed for LegendContext implementation.
      */
-    public WizardPanel(ILayer l, MapTransform m){
+    public ThematicMapWizard(ILayer l, MapTransform m){
         layer = l;
         try {
             Type type = layer.getDataSource().getMetadata().getFieldType(
@@ -91,7 +91,7 @@ public class WizardPanel implements UIPanel, LegendContext {
 
     @Override
     public String getTitle() {
-        return I18N.tr("Wizard");
+        return I18N.tr("Create a thematic map");
     }
 
     @Override
@@ -155,9 +155,9 @@ public class WizardPanel implements UIPanel, LegendContext {
         }
         inner = ilp;
         if(ilp !=null){
-            jp.add(inner.getComponent());
+            jp.add(inner.getComponent());            
+            field.setText(ilp.getLegend().getLegendTypeName());
         }
-        field.setText(ilp.getLegend().getName());
     }
 
     /**

@@ -29,7 +29,6 @@
 package org.orbisgis.view.toc.actions.cui.legend;
 
 import org.orbisgis.legend.Legend;
-import org.orbisgis.view.toc.actions.cui.LegendContext;
 
 /**
  * Interface for Legend UI panels in the SimpleStyleEditor.
