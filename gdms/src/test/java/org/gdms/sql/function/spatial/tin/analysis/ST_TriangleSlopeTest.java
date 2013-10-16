@@ -126,4 +126,18 @@ public class ST_TriangleSlopeTest extends FunctionTest {
         Value out = fun.evaluate(dsf, new Value[]{ValueFactory.createValue(geom)});        
         assertTrue(out.getAsDouble()==0);
     }
+    
+    
+     @Test
+    public void testST_TriangleAspect() throws Exception {
+        ST_TriangleAspect fun = new ST_TriangleAspect();
+        Geometry geom = gf.createLinearRing(new Coordinate[]{
+            new Coordinate(0, 0, 1),
+            new Coordinate(10, 0, 0),
+            new Coordinate(0, 10, 1),
+            new Coordinate(0, 0, 1)
+        });
+        Value out = fun.evaluate(dsf, new Value[]{ValueFactory.createValue(geom)});        
+        assertTrue(out.getAsDouble()==90);
+    }
 }

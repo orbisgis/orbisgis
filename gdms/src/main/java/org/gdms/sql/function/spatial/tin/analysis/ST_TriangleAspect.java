@@ -55,7 +55,7 @@ import org.jdelaunay.delaunay.error.DelaunayError;
 
 /**
 * This function is used to computed the aspect of a triangle
-* Aspect represents the main slope direction angle according the north.
+* Aspect represents the main slope direction angle compared to the north direction.
 * @author Erwan Bocher
 */
 public class ST_TriangleAspect extends AbstractScalarFunction {
@@ -90,7 +90,7 @@ public class ST_TriangleAspect extends AbstractScalarFunction {
     @Override
     public final String getDescription() {
         return "Compute the aspect of steepest downhill slope for a triangle\n. "
-                + "The aspect value is expressed in degrees.";
+                + "The aspect value is expressed in degrees compared to the north direction.";
     }
 
     @Override
