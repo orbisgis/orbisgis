@@ -50,6 +50,7 @@ public interface TocActionFactory extends ActionFactoryService<TocExt> {
     public static final String A_ADD_LAYER_GROUP = "A_ADD_LAYER_GROUP";
 
     // Style actions
+    public static final String A_ADD_LEGEND = "A_ADD_LEGEND";
     public static final String A_SIMPLE_EDITION = "A_SIMPLE_EDITION";
     public static final String A_ADVANCED_EDITION = "A_ADVANCED_EDITION";
     public static final String A_REMOVE_STYLE = "A_REMOVE_STYLE";
