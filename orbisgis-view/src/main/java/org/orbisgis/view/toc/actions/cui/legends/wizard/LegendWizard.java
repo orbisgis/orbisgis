@@ -67,6 +67,7 @@ public class LegendWizard {
         luc = new LegendUIChooser(wp);
         UIPanel[] panes = new UIPanel[]{luc, wp};
         wiz = UIFactory.getWizard(panes);
+        wiz.getBtnFinish().setEnabled(false);
         JButton btnNext = wiz.getBtnNext();
         ActionListener al = EventHandler.create(ActionListener.class,this, "onClickNext");
         btnNext.addActionListener(al);
