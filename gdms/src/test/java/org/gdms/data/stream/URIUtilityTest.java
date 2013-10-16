@@ -31,6 +31,7 @@ package org.gdms.data.stream;
 
 import org.junit.Test;
 
+import java.io.File;
 import java.net.URI;
 import java.util.Map;
 import static org.junit.Assert.assertEquals;
@@ -60,6 +61,8 @@ public class URIUtilityTest {
         assertEquals("../bla/text.txt", URIUtility.relativize(folder, rel).toString());
         rel = new URI("file:///home/user/OrbisGIS/maps/landcover/text.txt");
         assertEquals("../text.txt", URIUtility.relativize(folder, rel).toString());
+        rel = new File("/home/user/OrbisGIS/maps/land cover/text.txt").toURI();
+        assertEquals("../../land%20cover/text.txt", URIUtility.relativize(folder, rel).toString());
         rel = new URI("file:///home/user/OrbisGIS/maps/text.txt");
         assertEquals("../../text.txt", URIUtility.relativize(folder, rel).toString());
         rel = new URI("file:///home/user/OrbisGIS/maps/landcover/folder/text.txt");

@@ -143,7 +143,7 @@ public class DbaseFileReader {
                 }
 
                 charBuffer = CharBuffer.allocate(header.getRecordLength() - 1);
-                Charset chars = Charset.forName("ISO-8859-1");
+                Charset chars = Charset.forName(header.getFileEncoding());
                 decoder = chars.newDecoder();
         }
 
@@ -232,9 +232,6 @@ public class DbaseFileReader {
                 Value object = null;
 
                 if (fieldLen > 0) {
-
-                        String numberString = extractNumberString(charBuffer, fieldOffset,
-                                fieldLen);
                         switch (type) {
                                 // (L)logical (T,t,F,f,Y,y,N,n)
                                 case 'l':
@@ -269,28 +266,32 @@ public class DbaseFileReader {
                                         // the
                                         // line....
                                         int start = fieldOffset;
-                                        int end = fieldOffset + fieldLen - 1;
+                                        int end = Math.min(fieldOffset + fieldLen - 1, charBuffer.length() - 1);
                                         // trim off whitespace and 'zero' chars
                                         while (start < end) {
-                                                char c = charBuffer.get(start);
-                                                if (c == 0 || Character.isWhitespace(c)) {
-                                                        start++;
-                                                } else {
-                                                        break;
-                                                }
+                                            char c = charBuffer.get(start);
+                                            if (c == 0 || Character.isWhitespace(c)) {
+                                                start++;
+                                            } else {
+                                                break;
+                                            }
                                         }
                                         while (end > start) {
+                                            try {
                                                 char c = charBuffer.get(end);
                                                 if (c == 0 || Character.isWhitespace(c)) {
-                                                        end--;
+                                                    end--;
                                                 } else {
-                                                        break;
+                                                    break;
                                                 }
+                                            } catch (IndexOutOfBoundsException ex) {
+                                                throw new IndexOutOfBoundsException();
+                                            }
                                         }
                                         // set up the new indexes for start and end
-                                        
+
                                         // this prevents one array copy (the one made by String)
-                                        object = ValueFactory.createValue(charBuffer.array(), start, end + 1 - start);
+                                        object  = ValueFactory.createValue(new String(charBuffer.array(), start, end + 1 - start));
                                         break;
                                 // (D)date (Date)
                                 case 'd':
@@ -326,6 +327,8 @@ public class DbaseFileReader {
                                 case 'N':
                                         try {
                                                 if (header.getFieldDecimalCount(fieldNum) == 0) {
+                                                        String numberString = extractNumberString(charBuffer, fieldOffset,
+                                                            fieldLen);
                                                         object = ValueFactory.createValue(Integer.parseInt(numberString));
                                                         // parsing successful --> exit
                                                         break;
@@ -342,6 +345,8 @@ public class DbaseFileReader {
 
                                                 // Lets try parsing a long instead...
                                                 try {
+                                                        String numberString = extractNumberString(charBuffer, fieldOffset,
+                                                            fieldLen);
                                                         object = ValueFactory.createValue(Long.parseLong(numberString));
                                                         // parsing successful --> exit
                                                         break;
@@ -357,6 +362,8 @@ public class DbaseFileReader {
 
                                 case 'f':
                                 case 'F': // floating point number
+                                        String numberString = extractNumberString(charBuffer, fieldOffset,
+                                            fieldLen);
                                         try {
 
                                                 object = ValueFactory.createValue(Double.parseDouble(numberString));
