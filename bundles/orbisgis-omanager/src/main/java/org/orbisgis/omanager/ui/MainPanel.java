@@ -463,16 +463,20 @@ public class MainPanel extends JPanel {
      */
     public void onAddBundleJar() {
         JFileChooser chooser = new JFileChooser();
+        chooser.setMultiSelectionEnabled(true);
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 I18N.tr("OSGi Jar"), "jar");
         chooser.setFileFilter(filter);
         int returnVal = chooser.showOpenDialog(this);
         if(returnVal == JFileChooser.APPROVE_OPTION) {
-            File selected = chooser.getSelectedFile();
-            try {
-                bundleContext.installBundle(selected.toURI().toString());
-            } catch (BundleException ex) {
-                LOGGER.error(ex.getLocalizedMessage(),ex);
+            File[] selection = chooser.getSelectedFiles();
+            for(File selected : selection) {
+                try {
+                    LOGGER.info(I18N.tr("Install bundle {0}", selected.toURI().toString()));
+                    bundleContext.installBundle(selected.toURI().toString());
+                } catch (BundleException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(),ex);
+                }
             }
         }
 
