@@ -51,7 +51,7 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 /**
  * This function split a line by a line a line by a point a polygon by a line
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class ST_Split extends AbstractScalarSpatialFunction {
 
@@ -60,12 +60,16 @@ public class ST_Split extends AbstractScalarSpatialFunction {
         Geometry result = null;
         Geometry geomA = args[0].getAsGeometry();
         Geometry geomB = args[1].getAsGeometry();
+        //We split a polygon with a linestring
         if (GeometryTypeUtil.isPolygon(geomA)) {
             result = GeometryEdit.splitPolygonWithLine((Polygon) geomA, (LineString) geomB);
-        } else if (GeometryTypeUtil.isLineString(geomA)) {
+        } //We split a linestring
+        else if (GeometryTypeUtil.isLineString(geomA)) {
+            //with another linestring
             if (GeometryTypeUtil.isLineString(geomB)) {
                 result = GeometryEdit.splitLineStringWithLine((LineString) geomA, (LineString) geomB);
-            } else if (GeometryTypeUtil.isPoint(geomB)) {
+            } //with a point
+            else if (GeometryTypeUtil.isPoint(geomB)) {
                 result = GeometryEdit.splitLineWithPoint((LineString) geomA, (Point) geomB);
             }
         } else if (GeometryTypeUtil.isMultiLineString(geomA)) {
@@ -83,7 +87,11 @@ public class ST_Split extends AbstractScalarSpatialFunction {
 
     @Override
     public String getDescription() {
-        return "Returns a collection of geometries resulting by splitting a geometry.";
+        return "Split a geometry with another geometry\n."
+                + "Supported operations are : \n"
+                + "Split a polygon with a linestring\n"
+                + "Split a multilinestring with a linestring or a point\n"
+                + "Split a linestring with a linestring or a point";
     }
 
     @Override
@@ -99,12 +107,12 @@ public class ST_Split extends AbstractScalarSpatialFunction {
     @Override
     public FunctionSignature[] getFunctionSignatures() {
         return new FunctionSignature[]{
-            new BasicFunctionSignature(Type.POLYGON, ScalarArgument.LINESTRING),
-            new BasicFunctionSignature(Type.MULTIPOLYGON, ScalarArgument.LINESTRING),
-            new BasicFunctionSignature(Type.LINESTRING, ScalarArgument.LINESTRING),
-            new BasicFunctionSignature(Type.LINESTRING, ScalarArgument.POINT),
-            new BasicFunctionSignature(Type.MULTILINESTRING, ScalarArgument.LINESTRING),
-            new BasicFunctionSignature(Type.MULTILINESTRING, ScalarArgument.POINT)
+            new BasicFunctionSignature(Type.MULTIPOLYGON, ScalarArgument.POLYGON, ScalarArgument.LINESTRING),
+            new BasicFunctionSignature(Type.MULTILINESTRING, ScalarArgument.LINESTRING, ScalarArgument.LINESTRING),
+            new BasicFunctionSignature(Type.LINESTRING, ScalarArgument.LINESTRING, ScalarArgument.LINESTRING),
+            new BasicFunctionSignature(Type.MULTILINESTRING, ScalarArgument.LINESTRING, ScalarArgument.POINT),
+            new BasicFunctionSignature(Type.MULTILINESTRING, ScalarArgument.MULTILINESTRING, ScalarArgument.LINESTRING),
+            new BasicFunctionSignature(Type.MULTILINESTRING, ScalarArgument.MULTILINESTRING, ScalarArgument.POINT)
         };
     }
 }

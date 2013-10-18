@@ -909,7 +909,7 @@ public final class GeometryEdit {
     public static Geometry splitPolygonWithLine(Polygon polygon, LineString lineString) {
         Collection<Polygon> pols = polygonWithLineSplitter(polygon, lineString);
         if (pols != null) {
-            return FACTORY.buildGeometry(polygonWithLineSplitter(polygon, lineString));
+            return FACTORY.buildGeometry(pols);
         }
         return null;
     }
