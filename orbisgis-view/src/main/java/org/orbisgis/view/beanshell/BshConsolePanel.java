@@ -264,6 +264,7 @@ public final class BshConsolePanel extends JPanel {
                 final SaveFilePanel outfilePanel = new SaveFilePanel(
                         "bshConsoleOutFile", I18N.tr("Save script"));
                 outfilePanel.addFilter("bsh", I18N.tr("BeanShell Script (*.bsh)"));
+                outfilePanel.setConfirmOverwrite(true);
                 outfilePanel.loadState();
                 if (UIFactory.showDialog(outfilePanel)) {
                         try {

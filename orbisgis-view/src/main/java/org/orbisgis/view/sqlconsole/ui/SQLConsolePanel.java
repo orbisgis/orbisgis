@@ -268,6 +268,7 @@ public class SQLConsolePanel extends JPanel {
                 final SaveFilePanel outfilePanel = new SaveFilePanel(
                         "sqlConsoleOutFile", I18N.tr("Save script"));
                 outfilePanel.addFilter("sql", I18N.tr("SQL script (*.sql)"));
+                outfilePanel.setConfirmOverwrite(true);
                 outfilePanel.loadState();
                 if (UIFactory.showDialog(outfilePanel)) {
                         try {

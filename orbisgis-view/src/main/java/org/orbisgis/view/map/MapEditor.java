@@ -546,6 +546,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             outfilePanel.addFilter("tiff", I18N.tr("Tagged Image File Format"));
             outfilePanel.addFilter("jpg", I18N.tr("Joint Photographic Experts Group"));
             outfilePanel.addFilter("pdf", I18N.tr("Portable Document Format"));
+            outfilePanel.setConfirmOverwrite(true);
             outfilePanel.loadState(); // Load last use path
             // Show save into dialog
             if (UIFactory.showDialog(outfilePanel, true, true)) {
