@@ -28,17 +28,18 @@
  */
 package org.orbisgis.view.main.frames;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.beans.EventHandler;
 import java.util.Locale;
-import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.MenuElement;
+import javax.swing.*;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.varia.DenyAllFilter;
+import org.apache.log4j.varia.LevelMatchFilter;
+import org.apache.log4j.varia.LevelRangeFilter;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.DefaultAction;
@@ -64,16 +65,22 @@ public class MainFrame extends JFrame implements MainWindow {
         private JMenuBar menuBar = new JMenuBar();
         private MenuItemServiceTracker<MainWindow,MainFrameAction> menuBarActionTracker;
         private MainFrameStatusBar mainFrameStatusBar = new MainFrameStatusBar(this);
+        private JPanel mainPanel = new JPanel(new BorderLayout());
+        private MessageOverlay messageOverlay = new MessageOverlay();
+        private OverlayLoggerTarget guiLoggerTarget = new OverlayLoggerTarget(messageOverlay);
+        private OverlayLoggerTarget popupLoggerTarget = new OverlayLoggerTarget(messageOverlay);
+        private OverlayLoggerTarget errorLoggerTarget = new OverlayLoggerTarget(messageOverlay);
+
         /**
          * Creates a new frame. The content of the frame is not created by
          * this constructor, clients must call {@link #init}.
          */
         public MainFrame(){
-                    getContentPane().setLayout(new BorderLayout());
-            setTitle( I18N.tr("OrbisGIS version {0} {1} {2}",
-                            getVersion(),ViewWorkspace.CITY_VERSION,Locale.getDefault().getCountry()));
+            setTitle(I18N.tr("OrbisGIS version {0} {1} {2}",
+                    getVersion(), ViewWorkspace.CITY_VERSION, Locale.getDefault().getCountry()));
                     setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
             setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis"));
+            add(new JLayer<>(mainPanel, messageOverlay));
         }
 
         @Override
@@ -82,8 +89,20 @@ public class MainFrame extends JFrame implements MainWindow {
                 if(menuBarActionTracker!=null) {
                     menuBarActionTracker.close();
                 }
+                guiLoggerTarget.disposeLogger();
+                popupLoggerTarget.disposeLogger();
+                errorLoggerTarget.disposeLogger();
             } finally {
                 super.dispose();
+            }
+        }
+
+        @Override
+        protected void addImpl(Component comp, Object constraints, int index) {
+            if(mainPanel==null || comp instanceof JLayer) {
+                super.addImpl(comp, constraints, index);
+            } else {
+                mainPanel.add(comp, constraints, index);
             }
         }
 
@@ -97,6 +116,26 @@ public class MainFrame extends JFrame implements MainWindow {
             menuBarActionTracker = new MenuItemServiceTracker<MainWindow, MainFrameAction>(context, MainFrameAction.class, actions, this);
             menuBarActionTracker.open();
             mainFrameStatusBar.init();
+
+
+
+            // Init link between LOG4J and MessageOverlay system.
+            // Root logger, from fatal to warning
+            LevelRangeFilter filter = new LevelRangeFilter();
+            filter.setLevelMax(Level.FATAL);
+            filter.setLevelMin(Level.WARN);
+            filter.setAcceptOnMatch(true);
+            errorLoggerTarget.addFilter(filter);
+            LevelMatchFilter guiFilter = new LevelMatchFilter();
+            guiFilter.setLevelToMatch(Level.INFO.toString());
+            // gui
+            guiLoggerTarget.addFilter(guiFilter);
+            guiLoggerTarget.addFilter(new DenyAllFilter());
+            guiLoggerTarget.initLogger(Logger.getLogger("gui.popup"));
+            popupLoggerTarget.addFilter(guiFilter);
+            popupLoggerTarget.addFilter(new DenyAllFilter());
+            popupLoggerTarget.initLogger(Logger.getLogger("popup"));
+            errorLoggerTarget.initLogger(Logger.getRootLogger());
         }
 
         public static String getVersion() {
