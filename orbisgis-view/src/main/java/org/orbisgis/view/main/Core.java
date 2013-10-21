@@ -95,7 +95,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class Core {
 
     private static final I18n I18N = I18nFactory.getI18n(Core.class);
-    private static final Logger LOGGER = Logger.getLogger(Core.class);
+    private static final Logger LOGGER = Logger.getLogger("gui.popup."+Core.class);
     /**
      * Buffer to copy resource to file
      */
