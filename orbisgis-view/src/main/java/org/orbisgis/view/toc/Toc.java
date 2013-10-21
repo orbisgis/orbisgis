@@ -940,7 +940,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         final SaveFilePanel outputXMLPanel = new SaveFilePanel(
                                         "org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
                                         "Choose a location");
-
                         outputXMLPanel.addFilter("se", "Symbology Encoding FeatureTypeStyle");
                         outputXMLPanel.loadState();
                         if (UIFactory.showDialog(outputXMLPanel)) {
