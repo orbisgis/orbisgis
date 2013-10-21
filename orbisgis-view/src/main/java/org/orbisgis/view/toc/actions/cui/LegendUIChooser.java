@@ -57,6 +57,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.net.URL;
 import java.util.ArrayList;
+import org.gdms.data.schema.MetadataUtilities;
 
 /**
  * Displays a UI with a list of the legends supported by the layer being
@@ -112,9 +113,20 @@ public class LegendUIChooser implements UIPanel {
     private void initNamesList(ILayer layer) {
         // Recover the geometry type of this ILayer.
         DataSource ds = layer.getDataSource();
+        int fieldsCount = 0;
         Type geomType = null;
         try {
             geomType = ds.getMetadata().getFieldType(ds.getSpatialFieldIndex());
+            //Used to filter a layer that contains only geometry columns (one or more)
+            Type[] fieldsTypes = MetadataUtilities.getFieldTypes(ds.getMetadata());            
+            for (Type type : fieldsTypes) {
+                if(type.getTypeCode() == Type.GEOMETRY){
+                    fieldsCount--;
+                }
+                else {
+                    fieldsCount++;
+                }
+            }
         } catch (DriverException e) {
             LOGGER.warn("Could not determine the specific geometry type for " +
                     "this layer.");
@@ -136,6 +148,9 @@ public class LegendUIChooser implements UIPanel {
             if ((simpleGeomType & SimpleGeometryType.POLYGON) != 0) {
                 typeNames.add(UniqueSymbolArea.NAME);
             }
+            //Do not display the thematic maps that need an attribute if there is
+            //only one geometry
+            if(fieldsCount>-1){
             typeNames.add(RecodedPoint.NAME);
             if ((simpleGeomType & lineOrPolygon) != 0) {
                 typeNames.add(RecodedLine.NAME);
@@ -153,6 +168,7 @@ public class LegendUIChooser implements UIPanel {
             }
             if ((simpleGeomType & SimpleGeometryType.POLYGON) != 0) {
                 typeNames.add(CategorizedArea.NAME);
+            }
             }
         }
         names = typeNames.toArray(new String[typeNames.size()]);
