@@ -384,7 +384,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                         final SaveFilePanel outfilePanel = new SaveFilePanel(
                                 "Geocatalog.SaveInFile",
                                 I18N.tr("Save the source : " + source));
-                        outfilePanel.setConfirmOverwrite(true);
                         int type = sm.getSource(source).getType();
                         DriverFilter filter;
                         if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
