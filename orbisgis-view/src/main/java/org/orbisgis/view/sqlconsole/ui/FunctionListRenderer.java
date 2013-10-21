@@ -67,7 +67,8 @@ public class FunctionListRenderer extends ListLaFRenderer {
                         FunctionElement sqlFunction = (FunctionElement)value;
                         renderingComp.setIcon(getFunctionIcon(sqlFunction));
                         renderingComp.setText(sqlFunction.getFunctionName());
-                        renderingComp.setToolTipText(sqlFunction.getToolTip());
+                        renderingComp.setToolTipText("<html><body><p style='width: 300px;'>"
+                                + sqlFunction.getToolTip() + "</p></body></html>");
                 }
                 return nativeCell;
         }
