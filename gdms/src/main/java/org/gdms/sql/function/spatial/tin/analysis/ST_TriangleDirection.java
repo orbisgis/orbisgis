@@ -63,49 +63,49 @@ public class ST_TriangleDirection extends AbstractScalarFunction {
 
         private GeometryFactory gf = new GeometryFactory();
 
-        @Override
-        public final Value evaluate(DataSourceFactory dsf, Value... values) throws FunctionException {
-                try {
-                        Geometry geom = values[0].getAsGeometry();
-                        DTriangle dTriangle = TINFeatureFactory.createDTriangle(geom);
-                        DPoint pointIntersection = dTriangle.getSteepestIntersectionPoint(dTriangle.getBarycenter());
-                        if (pointIntersection != null) {
-                                return ValueFactory.createValue(gf.createLineString(new Coordinate[]{dTriangle.getBarycenter().getCoordinate(), dTriangle.getSteepestIntersectionPoint(dTriangle.getBarycenter()).getCoordinate()}));
-                        }
+    @Override
+    public final Value evaluate(DataSourceFactory dsf, Value... values) throws FunctionException {
+        try {
+            Geometry geom = values[0].getAsGeometry();
+            DTriangle dTriangle = TINFeatureFactory.createDTriangle(geom);
+            DPoint pointIntersection = dTriangle.getSteepestIntersectionPoint(dTriangle.getBarycenter());
+            if (pointIntersection != null) {
+                return ValueFactory.createValue(gf.createLineString(new Coordinate[]{dTriangle.getBarycenter().getCoordinate(), dTriangle.getSteepestIntersectionPoint(dTriangle.getBarycenter()).getCoordinate()}));
+            }
 
-                } catch (DelaunayError ex) {
-                        throw new FunctionException("An error occurred while generating or handling the triangle", ex);
-                }
-                return ValueFactory.createNullValue();
-
+        } catch (DelaunayError ex) {
+            throw new FunctionException("An error occurred while generating or handling the triangle", ex);
         }
+        return ValueFactory.createNullValue();
 
-        @Override
-        public final String getName() {
-                return "ST_TriangleDirection";
-        }
+    }
 
-       @Override
-        public int getType(int[] argsTypes) {
-            return Type.LINESTRING;
-        }
+    @Override
+    public final String getName() {
+        return "ST_TriangleDirection";
+    }
 
-        @Override
-        public final String getDescription() {
-                return "Compute the steepest vector director for a triangle\n"
-                        + "and represent it as a linestring";
-        }
+    @Override
+    public int getType(int[] argsTypes) {
+        return Type.LINESTRING;
+    }
 
-        @Override
-        public final String getSqlOrder() {
-                return "SELECT ST_TriangleDirection(the_geom) FROM table";
-        }
+    @Override
+    public final String getDescription() {
+        return "Compute the steepest vector director for a triangle\n"
+                + "and represent it as a linestring";
+    }
 
-        @Override
-        public FunctionSignature[] getFunctionSignatures() {
-                return new FunctionSignature[]{
-                 new BasicFunctionSignature(Type.LINESTRING, ScalarArgument.POLYGON),
-                 new BasicFunctionSignature(Type.LINESTRING, ScalarArgument.MULTIPOLYGON)};
-        }
+    @Override
+    public final String getSqlOrder() {
+        return "SELECT ST_TriangleDirection(the_geom) FROM table";
+    }
+
+    @Override
+    public FunctionSignature[] getFunctionSignatures() {
+        return new FunctionSignature[]{
+            new BasicFunctionSignature(Type.LINESTRING, ScalarArgument.POLYGON),
+            new BasicFunctionSignature(Type.LINESTRING, ScalarArgument.MULTIPOLYGON)};
+    }
 }
 

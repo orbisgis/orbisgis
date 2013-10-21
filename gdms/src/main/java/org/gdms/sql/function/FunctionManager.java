@@ -390,6 +390,7 @@ public final class FunctionManager {
                 addFunction(ST_SRID.class);
                 addFunction(ST_ProjectTo.class);
                 addFunction(ST_Split.class);
+                addFunction(ST_PrecisionReducer.class);
                 addFunction(ST_TriangleSlope.class);
                 addFunction(ST_TriangleDirection.class);
                 addFunction(ST_TriangleAspect.class);

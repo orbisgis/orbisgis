@@ -45,7 +45,7 @@ import org.junit.Test;
  *
  * @author Erwan Bocher
  */
-public class ST_TriangleSlopeTest extends FunctionTest {
+public class ST_TriangleAnalysisTest extends FunctionTest {
 
     @Test
     public void testST_TriangleSlope() throws Exception {
@@ -83,7 +83,7 @@ public class ST_TriangleSlopeTest extends FunctionTest {
     }
 
     @Test
-    public void testST_TINSlopeDirection() throws Exception {
+    public void testST_TriangleDirection() throws Exception {
         ST_TriangleDirection fun = new ST_TriangleDirection();
         assertTrue(Type.LINESTRING == fun.getType(null));
         Geometry geom = gf.createLinearRing(new Coordinate[]{
@@ -101,7 +101,7 @@ public class ST_TriangleSlopeTest extends FunctionTest {
     }
 
     @Test
-    public void testST_TINSlopeFlatDirection() throws Exception {
+    public void testST_TriangleFlatDirection() throws Exception {
         ST_TriangleDirection fun = new ST_TriangleDirection();
         assertTrue(Type.LINESTRING == fun.getType(null));
         Geometry geom = gf.createLinearRing(new Coordinate[]{

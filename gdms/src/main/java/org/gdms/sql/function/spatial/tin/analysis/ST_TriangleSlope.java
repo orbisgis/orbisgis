@@ -59,7 +59,7 @@ import org.jdelaunay.delaunay.error.DelaunayError;
 */
 public class ST_TriangleSlope extends AbstractScalarFunction{
 
-       @Override
+    @Override
     public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
         Geometry geom = args[0].getAsGeometry();
         try {
@@ -72,30 +72,30 @@ public class ST_TriangleSlope extends AbstractScalarFunction{
         }
     }
 
-        @Override
-        public String getName() {
-                return "ST_TriangleSlope";
-        }
+    @Override
+    public String getName() {
+        return "ST_TriangleSlope";
+    }
 
-        @Override
-        public int getType(int[] argsTypes) {
-                return Type.DOUBLE;
-        }
+    @Override
+    public int getType(int[] argsTypes) {
+        return Type.DOUBLE;
+    }
 
-        @Override
-        public String getDescription() {
-                return "Compute the slope of a triangle expressed in percents.";
-        }
+    @Override
+    public String getDescription() {
+        return "Compute the slope of a triangle expressed in percents.";
+    }
 
-        @Override
-        public String getSqlOrder() {
-                return "SELECT ST_TriangleSlope(the_geom) FROM tin;" ;
-        }
+    @Override
+    public String getSqlOrder() {
+        return "SELECT ST_TriangleSlope(the_geom) FROM tin;";
+    }
 
-        @Override
-        public FunctionSignature[] getFunctionSignatures() {
-                return new FunctionSignature[]{                 
+    @Override
+    public FunctionSignature[] getFunctionSignatures() {
+        return new FunctionSignature[]{
             new BasicFunctionSignature(Type.DOUBLE, ScalarArgument.POLYGON),
             new BasicFunctionSignature(Type.DOUBLE, ScalarArgument.MULTIPOLYGON)};
-        }
+    }
 }
