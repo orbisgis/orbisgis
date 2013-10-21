@@ -53,24 +53,6 @@ public class SaveFilePanel extends OpenFilePanel {
         }
 
         /**
-         * Set a width used by the JLabel to display the message with the
-         * showConfirmDialog.
-         */
-        public void setConfirmMessageWidth(int messageWidth) {
-            this.messageWidth = messageWidth;
-        }
-
-        /**
-         * Return the width of the message that will used to build
-         * the showConfirmDialog
-         *
-         * @return
-         */
-        public int getConfirmMessageWidth() {
-            return messageWidth;
-        }
-
-        /**
          * @return True if this dialog will ask a confirmation for overwriting file.
          */
         public boolean isConfirmOverwrite() {
