@@ -41,7 +41,8 @@ public class SaveFilePanel extends OpenFilePanel {
 
         private static final I18n I18N = I18nFactory.getI18n(SaveFilePanel.class);
         private boolean fileMustNotExist;
-        private boolean confirmOverwrite = false;
+        // By default, we confirm before overwriting files.
+        private boolean confirmOverwrite = true;
         //Default size of the message for the confirm dialog
         private int messageWidth = 300;
 
@@ -50,25 +51,6 @@ public class SaveFilePanel extends OpenFilePanel {
                 getFileChooser().setDialogType(JFileChooser.SAVE_DIALOG);
                 setAcceptAllFileFilterUsed(false);
         }
-        
-        /**
-         * Set a width used by the JLabel to display the message with the 
-         * showConfirmDialog.
-         * 
-         */
-        public void setConfirmMessageWidth(int messageWidth){
-            this.messageWidth=messageWidth;
-        }
-
-        /**
-         * Return the width of the message that will used to build
-         * the showConfirmDialog
-         * @return 
-         */
-        public int getMessageWidth() {
-            return messageWidth;
-        }        
-        
 
         /**
          * @return True if this dialog will ask a confirmation for overwriting file.
@@ -126,10 +108,13 @@ public class SaveFilePanel extends OpenFilePanel {
                 if (exists && fileMustNotExist) {
                     return UIFactory.getI18n().tr("The file already exists");
                 } else if(exists && confirmOverwrite) {
-                    if(JOptionPane.showConfirmDialog(getComponent(),"<html><body><p style='width: "+ getMessageWidth()+ "px;'>"+
-                            I18N.tr("The file {0} already exists do you confirm overwrite ?"
-                            + "</body></html>", getSelectedFile()) ,
-                            I18N.tr("Overwrite confirmation"), JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
+                    if (JOptionPane.showConfirmDialog(
+                            getComponent(),
+                            "<html><body><p style='width: " + messageWidth + "px;'>"
+                            + I18N.tr("The file {0} already exists. Overwrite?"
+                            + "</body></html>", getSelectedFile()),
+                            I18N.tr("Confirm overwrite"),
+                            JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                         return I18N.tr("Overwrite canceled");
                     }
                 }
