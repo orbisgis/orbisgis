@@ -104,7 +104,7 @@ public class Core {
     //view package
     private EditorManager editors;         /*!< Management of editors */
 
-    private MainFrame mainFrame = new MainFrame();     /*!< The main window */
+    private MainFrame mainFrame;     /*!< The main window */
 
     private Catalog geoCatalog = null;      /*!< The GeoCatalog frame */
 
@@ -135,6 +135,7 @@ public class Core {
     public Core(CoreWorkspace coreWorkspace, boolean debugMode, ProgressMonitor progressInfo) throws InvocationTargetException, InterruptedException {
         MainContext.initConsoleLogger(debugMode);
         // Declare empty main frame
+        mainFrame = new MainFrame();
         //Set the main frame position and size
         mainFrame.setSize(MAIN_VIEW_SIZE);
         // Try to set the frame at the center of the default screen

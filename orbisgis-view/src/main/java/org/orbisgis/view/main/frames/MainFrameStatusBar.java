@@ -27,11 +27,7 @@
  */
 package org.orbisgis.view.main.frames;
 
-import java.awt.BorderLayout;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentListener;
 import java.awt.event.FocusListener;
@@ -39,13 +35,7 @@ import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.event.ListDataListener;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.Services;
@@ -77,7 +67,6 @@ public class MainFrameStatusBar extends StatusBar {
         private JobListModel runningJobs;
         private JobListItem firstJob;  //Job[0] listener & simplified panel
         private JFrame jobPopup;               //The job floating frame
-        private PopupMessageDialog messagePopup;
         private JFrame owner;
         //
         private AtomicBoolean listenToLogger = new AtomicBoolean(false);
@@ -98,16 +87,6 @@ public class MainFrameStatusBar extends StatusBar {
             //Add the JobList               
             makeJobList();
             makeWorkspaceManager();
-        }
-
-        @Override
-        public void addNotify() {
-                super.addNotify();
-                if(!listenToLogger.getAndSet(true)) {
-                        // - The user should be able to enable/disable this feature
-                        messagePopup = new PopupMessageDialog(this, owner);
-                        messagePopup.init();
-                }
         }
 
         private void makeJobList() {
@@ -140,9 +119,6 @@ public class MainFrameStatusBar extends StatusBar {
                 closeJobPopup();
                 clearJobTitle();
                 runningJobs.dispose();
-                if(messagePopup!=null) {
-                    messagePopup.dispose();
-                }
         }
         /**
          * The user click on change workspace button
@@ -204,7 +180,6 @@ public class MainFrameStatusBar extends StatusBar {
         /**
          * On resize , the job list window must be moved
          *
-         * @param ce
          */
         public void onJobPopupResize() {
                 if (jobPopup != null) {
