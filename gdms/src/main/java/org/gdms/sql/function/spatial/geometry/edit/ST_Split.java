@@ -58,8 +58,13 @@ public class ST_Split extends AbstractScalarSpatialFunction {
     @Override
     public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
         Geometry result = null;
+        double tolerance =10E-6;
+        if(args.length==3){
+              tolerance = args[2].getAsDouble();
+        }
         Geometry geomA = args[0].getAsGeometry();
         Geometry geomB = args[1].getAsGeometry();
+      
         //We split a polygon with a linestring
         if (GeometryTypeUtil.isPolygon(geomA)) {
             result = GeometryEdit.splitPolygonWithLine((Polygon) geomA, (LineString) geomB);
@@ -70,13 +75,13 @@ public class ST_Split extends AbstractScalarSpatialFunction {
                 result = GeometryEdit.splitLineStringWithLine((LineString) geomA, (LineString) geomB);
             } //with a point
             else if (GeometryTypeUtil.isPoint(geomB)) {
-                result = GeometryEdit.splitLineWithPoint((LineString) geomA, (Point) geomB);
+                result = GeometryEdit.splitLineWithPoint((LineString) geomA, (Point) geomB, tolerance);
             }
         } else if (GeometryTypeUtil.isMultiLineString(geomA)) {
             if (GeometryTypeUtil.isLineString(geomB)) {
                 result = GeometryEdit.splitMultiLineStringWithLine((MultiLineString) geomA, (LineString) geomB);
             } else if (GeometryTypeUtil.isPoint(geomB)) {
-                result = GeometryEdit.splitMultiLineStringWithPoint((MultiLineString) geomA, (Point) geomB);
+                result = GeometryEdit.splitMultiLineStringWithPoint((MultiLineString) geomA, (Point) geomB, tolerance);
             }
         }
         if (result != null) {
@@ -91,7 +96,11 @@ public class ST_Split extends AbstractScalarSpatialFunction {
                 + "Supported operations are : \n"
                 + "Split a polygon with a linestring\n"
                 + "Split a multilinestring with a linestring or a point\n"
-                + "Split a linestring with a linestring or a point";
+                + "Split a linestring with a linestring or a point\n"
+                + "Note : if the second geometry is a point\n"
+                + "the user can specify a tolerance to snap\n"
+                + "the point to the geometry. The default tolerance is : \n"
+                + "10E-6";
     }
 
     @Override
@@ -101,7 +110,7 @@ public class ST_Split extends AbstractScalarSpatialFunction {
 
     @Override
     public String getSqlOrder() {
-        return "SELECT ST_Split('LINESTRING(0 0, 10 0)'::LINESTRING, 'POINT(5 0)'::POINT);";
+        return "SELECT ST_Split('LINESTRING(0 0, 10 0)'::LINESTRING, 'POINT(5 0)'::POINT, [tolerance :: DOUBLE]);";
     }
 
     @Override
@@ -111,8 +120,10 @@ public class ST_Split extends AbstractScalarSpatialFunction {
             new BasicFunctionSignature(Type.MULTILINESTRING, ScalarArgument.LINESTRING, ScalarArgument.LINESTRING),
             new BasicFunctionSignature(Type.LINESTRING, ScalarArgument.LINESTRING, ScalarArgument.LINESTRING),
             new BasicFunctionSignature(Type.MULTILINESTRING, ScalarArgument.LINESTRING, ScalarArgument.POINT),
+            new BasicFunctionSignature(Type.MULTILINESTRING, ScalarArgument.LINESTRING, ScalarArgument.POINT, ScalarArgument.DOUBLE),
             new BasicFunctionSignature(Type.MULTILINESTRING, ScalarArgument.MULTILINESTRING, ScalarArgument.LINESTRING),
-            new BasicFunctionSignature(Type.MULTILINESTRING, ScalarArgument.MULTILINESTRING, ScalarArgument.POINT)
+            new BasicFunctionSignature(Type.MULTILINESTRING, ScalarArgument.MULTILINESTRING, ScalarArgument.POINT),
+            new BasicFunctionSignature(Type.MULTILINESTRING, ScalarArgument.MULTILINESTRING, ScalarArgument.POINT, ScalarArgument.DOUBLE)
         };
     }
 }

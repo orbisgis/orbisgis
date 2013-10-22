@@ -48,14 +48,18 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.gdms.sql.function.spatial.geometry.edit.ST_3DReverse;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Reverse;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.geometryUtils.GeometryEdit;
 import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.spatial.geometry.edit.ST_AddZ;
 import org.gdms.sql.function.spatial.geometry.edit.ST_LinearInterpolation;
 import org.gdms.sql.function.spatial.geometry.edit.ST_RemoveHoles;
+import org.gdms.sql.function.spatial.geometry.edit.ST_Split;
 import org.gdms.sql.function.spatial.geometry.edit.ST_SplitLine;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -303,5 +307,61 @@ public class EditFunctionTest extends FunctionTest {
                 ST_RemoveHoles sT_RemoveHoles = new ST_RemoveHoles();
                 Value result = sT_RemoveHoles.evaluate(dsf, new Value[]{ValueFactory.createValue(polygon)});
                 assertTrue(result.getAsGeometry().equals(expected));
+        }
+        
+        
+        @Test
+        public void testST_SplitLineByPoint() throws Exception {
+            LineString line = (LineString) wktReader.read("LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8, 25 8, 30 8, 50 8, 100 8)");
+            Point point = (Point) wktReader.read("POINT(3 8)");
+            ST_Split sts = new ST_Split();
+            Value result = sts.evaluate(dsf, new Value[]{ValueFactory.createValue(line), ValueFactory.createValue(point)});
+            Geometry results = result.getAsGeometry();
+            assertTrue(results.getNumGeometries() == 2);
+            assertEquals(results.getGeometryN(0), wktReader.read("LINESTRING(0 8, 1 8 , 3 8)"));
+            assertEquals(results.getGeometryN(1), wktReader.read("LINESTRING(3 8,  8  8, 10 8, 20 8, 25 8, 30 8, 50 8, 100 8)"));
+        }
+        
+        @Test
+        public void testST_SplitLineByPointWithTolerance() throws Exception {
+            LineString line = (LineString) wktReader.read("LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8, 25 8, 30 8, 50 8, 100 8)");
+            Point point = (Point) wktReader.read("POINT(1.5 4)");
+            ST_Split sts = new ST_Split();
+            Value result = sts.evaluate(dsf, new Value[]{ValueFactory.createValue(line), ValueFactory.createValue(point),
+            ValueFactory.createValue(4)});
+            Geometry results = result.getAsGeometry();
+            assertTrue(results.getNumGeometries() == 2);
+            assertEquals(results.getGeometryN(0), wktReader.read("LINESTRING(0 8, 1 8 , 1.5 8)"));
+            assertEquals(results.getGeometryN(1), wktReader.read("LINESTRING(1.5 8 , 3 8,  8  8, 10 8, 20 8, 25 8, 30 8, 50 8, 100 8)"));
+        }
+        
+         @Test
+        public void testST_SplitLineByLine() throws Exception {
+            LineString lineA = (LineString) wktReader.read("LINESTRING(50 0, 100 0)");
+            LineString lineB = (LineString) wktReader.read("LINESTRING(50 50, 100 50)");
+            ST_Split sts = new ST_Split();
+            Value result = sts.evaluate(dsf, new Value[]{ValueFactory.createValue(lineA), ValueFactory.createValue(lineB)});
+            Geometry results = result.getAsGeometry();
+            assertTrue(results.getNumGeometries() == 1);
+            assertEquals(results, wktReader.read("LINESTRING(50 0, 100 0)"));
+         }
+         
+        @Test
+        public void testST_SplitPolygonByLine() throws Exception {
+            Polygon polygon = (Polygon) wktReader.read("POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))");
+            LineString line = (LineString) wktReader.read("LINESTRING (5 0, 5 10)");
+            ST_Split sts = new ST_Split();
+            Value result = sts.evaluate(dsf, new Value[]{ValueFactory.createValue(polygon), ValueFactory.createValue(line)});
+            Geometry results = result.getAsGeometry();
+            assertTrue(results.getNumGeometries() == 2);
+            Polygon pol1 = (Polygon) wktReader.read("POLYGON (( 0 0, 5 0, 5 10 , 0 10, 0 0))");
+            Polygon pol2 = (Polygon) wktReader.read("POLYGON ((5 0, 10 0 , 10 10, 5 10, 5 0))");
+            for (int i = 0; i < results.getNumGeometries(); i++) {
+            Geometry pol = results.getGeometryN(i);        
+            if (!pol.getEnvelopeInternal().equals(pol1.getEnvelopeInternal())
+                    && !pol.getEnvelopeInternal().equals(pol2.getEnvelopeInternal())) {
+                fail();
+            }
+        }
         }
 }
