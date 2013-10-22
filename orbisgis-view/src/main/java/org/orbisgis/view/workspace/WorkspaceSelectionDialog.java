@@ -83,7 +83,9 @@ public class WorkspaceSelectionDialog {
         Font smallFont = new Font(defaultFontName, Font.PLAIN, 10);
         chooseLabel.setFont(largeFont);
         JLabel subChooseLabel = new JLabel(
-                I18N.tr("Choose a previous OrbisGIS workspace or create a new one"));
+                "<html><body><p style='width: 200px;'>" +
+                I18N.tr("Choose a previous OrbisGIS workspace or create a new one")
+                + "</body</html>");
         subChooseLabel.setFont(smallFont);
         DirectoryComboBoxChoice comboBox =
                 new DirectoryComboBoxChoice(knownWorkspaces);
@@ -92,9 +94,9 @@ public class WorkspaceSelectionDialog {
             comboBox.setValue(knownWorkspaces.get(0).getAbsolutePath());
         }
         JCheckBox defaultCheckBox = new JCheckBox(I18N.tr("Set as default?"));
-        JLabel subCheckBox = new JLabel("<html>" +
+        JLabel subCheckBox = new JLabel("<html><body><p style='width: 200px;'>" +
                 I18N.tr("Setting this workspace as default will allow you to " +
-                        "skip this<br>dialog next time") + "</html>");
+                        "skip this<br>dialog next time") + "</body</html>");
         subCheckBox.setFont(smallFont);
 
         // Add components
