@@ -61,6 +61,7 @@ import org.orbisgis.view.components.findReplace.FindReplaceDialog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.sqlconsole.actions.ExecuteScriptProcess;
+import org.orbisgis.view.sqlconsole.blockComment.CommentSQL;
 import org.orbisgis.view.sqlconsole.blockComment.QuoteSQL;
 import org.orbisgis.view.sqlconsole.codereformat.CodeReformator;
 import org.orbisgis.view.sqlconsole.codereformat.CommentSpec;
@@ -103,6 +104,7 @@ public class SQLConsolePanel extends JPanel {
         private DefaultAction findAction;
         private DefaultAction quoteAction;
         private DefaultAction unQuoteAction;
+        private DefaultAction commentAction;
         private DefaultAction formatSQLAction;
         private DefaultAction saveAction;
         
@@ -176,6 +178,16 @@ public class SQLConsolePanel extends JPanel {
                         KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SLASH, InputEvent.SHIFT_DOWN_MASK)
                        ).setLogicalGroup("format");
                 actions.addAction(unQuoteAction);
+
+                //Comment
+                commentAction = new DefaultAction(SQLAction.A_COMMENT,
+                        I18N.tr("Comment"),
+                        I18N.tr("Comment selected text"),
+                        null,
+                        EventHandler.create(ActionListener.class,this,"onComment"),
+                        KeyStroke.getKeyStroke("alt C")
+                ).setLogicalGroup("format");
+                actions.addAction(commentAction);
                 
                 //Format SQL
                 formatSQLAction = new DefaultAction(SQLAction.A_FORMAT,
@@ -331,6 +343,14 @@ public class SQLConsolePanel extends JPanel {
         public void onUnQuote() {
                 QuoteSQL.unquoteSQL(this);
         }
+
+        /**
+         * Add comment selected text function.
+         */
+        public void onComment() {
+            CommentSQL.commentSQL(scriptPanel);
+        }
+
         /**
          * Format SQL code
          */
