@@ -96,7 +96,7 @@ public class WorkspaceSelectionDialog {
         JCheckBox defaultCheckBox = new JCheckBox(I18N.tr("Set as default?"));
         JLabel subCheckBox = new JLabel("<html><body><p style='width: 200px;'>" +
                 I18N.tr("Setting this workspace as default will allow you to " +
-                        "skip this dialog next time") + "</p></body</html>");
+                        "skip this dialog next time") + "</p></body></html>");
         subCheckBox.setFont(smallFont);
 
         // Add components

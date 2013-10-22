@@ -1139,7 +1139,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         tableElement.getSourceName())
                         && hasDataSource(mapContext.getLayerModel(),
                         tableElement.getSourceName())) {
-                        LOGGER.debug(I18N.tr("Link the editable element with the toc"));
+                        LOGGER.debug(I18N.tr("Link the editable element with the Toc"));
                         //Need to track geometry selection with this element
                         // MapContext selection change -> Table selection
                         linkedEditableElements.put(tableElement.getSourceName(), tableElement);
