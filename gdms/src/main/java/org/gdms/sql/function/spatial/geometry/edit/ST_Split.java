@@ -55,10 +55,12 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
  */
 public class ST_Split extends AbstractScalarSpatialFunction {
 
+    public static final double DEFAULT_TOLERANCE = 10E-6;
+    
     @Override
     public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
         Geometry result = null;
-        double tolerance =10E-6;
+        double tolerance =DEFAULT_TOLERANCE;
         if(args.length==3){
               tolerance = args[2].getAsDouble();
         }
@@ -94,9 +96,9 @@ public class ST_Split extends AbstractScalarSpatialFunction {
     public String getDescription() {
         return "Split a geometry with another geometry\n."
                 + "Supported operations are : \n"
-                + "Split a polygon with a linestring\n"
-                + "Split a multilinestring with a linestring or a point\n"
-                + "Split a linestring with a linestring or a point\n"
+                + "<ul>Split a polygon with a linestring</ul>"
+                + "<ul>Split a multilinestring with a linestring or a point</ul>"
+                + "<ul>Split a linestring with a linestring or a point</ul>"
                 + "Note : if the second geometry is a point\n"
                 + "the user can specify a tolerance to snap\n"
                 + "the point to the geometry. The default tolerance is : \n"
