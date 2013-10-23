@@ -53,7 +53,51 @@ public class CommentSQL {
      *
      * @param scriptPanel Script panel
      */
-    public static void commentSQL(RSyntaxTextArea scriptPanel) {
+    public static void commentOrUncommentSQL(RSyntaxTextArea scriptPanel) {
+        // If the selection contains an unbroken range of commented lines,
+        // then we uncomment.
+        if (unbrokenRangeOfComments(scriptPanel)) {
+            uncommentSQL(scriptPanel);
+        } // Otherwise, we comment everything.
+        else {
+            commentSQL(scriptPanel);
+        }
+    }
+
+    /**
+     * Test whether the selected text consists of an unbroken range of
+     * commented lines.
+     *
+     * @param scriptPanel Script panel
+     * @return True iff the selected text consists of an unbroken range of
+     * commented lines
+     */
+    private static boolean unbrokenRangeOfComments(RSyntaxTextArea scriptPanel) {
+
+        final Element root = scriptPanel.getDocument().getDefaultRootElement();
+
+        final int numberOfLastLine = root.getElementIndex(scriptPanel.getSelectionEnd());
+        int currentLineNumber = root.getElementIndex(scriptPanel.getSelectionStart());
+        while (currentLineNumber <= numberOfLastLine) {
+            try {
+                int startOffset = root.getElement(currentLineNumber).getStartOffset();
+                if (!scriptPanel.getText(startOffset, COMMENT_LENGTH).equals(COMMENT_CHARACTER)) {
+                    return false;
+                }
+            } catch (BadLocationException e) {
+                LOGGER.warn(I18N.tr("Problem when checking for an unbroken range of comments"), e);
+            }
+            currentLineNumber++;
+        }
+        return true;
+    }
+
+    /**
+     * Comment the selected text in the given script panel.
+     *
+     * @param scriptPanel Script panel
+     */
+    private static void commentSQL(RSyntaxTextArea scriptPanel) {
 
         final Element root = scriptPanel.getDocument().getDefaultRootElement();
 
@@ -71,7 +115,7 @@ public class CommentSQL {
      *
      * @param scriptPanel Script panel
      */
-    public static void uncommentSQL(RSyntaxTextArea scriptPanel) {
+    private static void uncommentSQL(RSyntaxTextArea scriptPanel) {
 
         final Element root = scriptPanel.getDocument().getDefaultRootElement();
 

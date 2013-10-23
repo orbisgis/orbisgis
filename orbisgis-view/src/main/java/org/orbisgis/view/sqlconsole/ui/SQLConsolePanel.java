@@ -182,24 +182,14 @@ public class SQLConsolePanel extends JPanel {
 
                 // Comment
                 commentAction = new DefaultAction(SQLAction.A_COMMENT,
-                        I18N.tr("Comment"),
-                        I18N.tr("Comment selected text"),
+                        I18N.tr("Comment/Uncomment"),
+                        I18N.tr("(Un)Comment selected text"),
                         null,
                         EventHandler.create(ActionListener.class,this,"onComment"),
                         KeyStroke.getKeyStroke("alt C")
                 ).setLogicalGroup("format");
                 actions.addAction(commentAction);
 
-                 // Uncomment
-                uncommentAction = new DefaultAction(SQLAction.A_UNCOMMENT,
-                        I18N.tr("Uncomment"),
-                        I18N.tr("Uncomment selected text"),
-                        null,
-                        EventHandler.create(ActionListener.class,this,"onUncomment"),
-                        KeyStroke.getKeyStroke("alt shift C")
-                ).setLogicalGroup("format");
-                actions.addAction(uncommentAction);
-                
                 //Format SQL
                 formatSQLAction = new DefaultAction(SQLAction.A_FORMAT,
                         I18N.tr("Format"),
@@ -359,14 +349,7 @@ public class SQLConsolePanel extends JPanel {
          * Comment the selected text.
          */
         public void onComment() {
-            CommentSQL.commentSQL(scriptPanel);
-        }
-
-        /**
-         * Uncomment the selected text.
-         */
-        public void onUncomment() {
-            CommentSQL.uncommentSQL(scriptPanel);
+            CommentSQL.commentOrUncommentSQL(scriptPanel);
         }
 
         /**

@@ -25,25 +25,58 @@ public class CommentSQLTest {
 
 
     @Test
-    public void testComment() {
+    public void testCommentLinesOneAndTwo() {
         RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
         scriptPanel.setText(TEXT);
         // Comment just the first two lines.
         scriptPanel.select(13, 226);
-        CommentSQL.commentSQL(scriptPanel);
+        CommentSQL.commentOrUncommentSQL(scriptPanel);
         assertEquals(CommentSQL.COMMENT_CHARACTER + LINE_ONE
                 + CommentSQL.COMMENT_CHARACTER + LINE_TWO + LINE_THREE,
                 scriptPanel.getText());
     }
 
     @Test
-    public void testUncomment() {
+    public void testCommentUncommentLinesOneAndTwo() {
         RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
         scriptPanel.setText(TEXT);
-        // Comment and uncomment the first two lines.
         scriptPanel.select(13, 226);
-        CommentSQL.commentSQL(scriptPanel);
-        CommentSQL.uncommentSQL(scriptPanel);
+        // Comment the first two lines.
+        CommentSQL.commentOrUncommentSQL(scriptPanel);
+        // Uncomment the first two lines.
+        CommentSQL.commentOrUncommentSQL(scriptPanel);
         assertEquals(TEXT, scriptPanel.getText());
+    }
+
+    @Test
+    public void testUncommentUnbrokenRangeWithCommentRemainingOnLineTwo() {
+        RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
+        scriptPanel.setText(CommentSQL.COMMENT_CHARACTER + LINE_ONE
+                + CommentSQL.COMMENT_CHARACTER + CommentSQL.COMMENT_CHARACTER + LINE_TWO
+                + CommentSQL.COMMENT_CHARACTER + LINE_THREE);
+        scriptPanel.selectAll();
+        // Uncomment all three lines, leaving only line two commented.
+        CommentSQL.commentOrUncommentSQL(scriptPanel);
+        // Uncomment the first two lines.
+        assertEquals(LINE_ONE
+                + CommentSQL.COMMENT_CHARACTER + LINE_TWO
+                + LINE_THREE,
+                scriptPanel.getText());
+    }
+
+    @Test
+    public void testCommentBrokenRangeWithNoCommentOnLineTwo() {
+        RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
+        scriptPanel.setText(CommentSQL.COMMENT_CHARACTER + LINE_ONE
+                + LINE_TWO
+                + CommentSQL.COMMENT_CHARACTER + LINE_THREE);
+        scriptPanel.selectAll();
+        // Comment all three lines.
+        CommentSQL.commentOrUncommentSQL(scriptPanel);
+        // Uncomment the first two lines.
+        assertEquals(CommentSQL.COMMENT_CHARACTER + CommentSQL.COMMENT_CHARACTER + LINE_ONE
+                + CommentSQL.COMMENT_CHARACTER + LINE_TWO
+                + CommentSQL.COMMENT_CHARACTER + CommentSQL.COMMENT_CHARACTER + LINE_THREE,
+                scriptPanel.getText());
     }
 }
