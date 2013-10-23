@@ -49,6 +49,8 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeExpansionListener;
 
 import org.apache.commons.io.FilenameUtils;
@@ -489,40 +491,60 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 I18N.tr("Update width to keep ratio")};
         final MultiInputPanel inputPanel = new MultiInputPanel(I18N.tr("Export parameters"));
 
+        TextBoxType tbWidth = new TextBoxType(textWidth); 
         inputPanel.addInput(WIDTH_T,
                 I18N.tr("Width (pixels)"),
                 String.valueOf(mapControl.getImage().getWidth()),
-                new TextBoxType(textWidth));
+                tbWidth);
+        TextBoxType tbHeight = new TextBoxType(textWidth);
         inputPanel.addInput(HEIGHT_T,
                 I18N.tr("Height (pixels)"),
                 String.valueOf(mapControl.getImage().getHeight()),
-                new TextBoxType(textWidth));
+                tbHeight);
 
         final ComboBoxChoice comboBoxChoice = new ComboBoxChoice(RATIO, RATIO_LABELS);
         comboBoxChoice.setValue(RATIO[0]);
         
         
-        //Use to refresh the ratio when the user select an item in the combobox.
+         //Use to refresh the ratio when the user select an item in the combobox.
         final Envelope adjExtent = mapControl.getMapTransform().getAdjustedExtent();
-        WideComboBox combo = (WideComboBox)comboBoxChoice.getComponent();
-        combo.addActionListener(new ActionListener() {
+        
+        DocumentListener fieldsListener = new DocumentListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void insertUpdate(DocumentEvent e) {
+                updateFields();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateFields();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateFields();
+            }
+
+            private void updateFields() {
                 int width = Integer.valueOf(inputPanel.getInput(WIDTH_T));
                 int height = Integer.valueOf(inputPanel.getInput(HEIGHT_T));
-                String ratioCB = inputPanel.getInput(RATIO_T);                
-                if(ratioCB.equals(RATIO[1])){
+                String ratioCB = inputPanel.getInput(RATIO_T);
+                if (ratioCB.equals(RATIO[1])) {
                     // Change image height to keep ratio
-                    height = (int)(width * (adjExtent.getHeight() / adjExtent.getWidth()));
+                    height = (int) (width * (adjExtent.getHeight() / adjExtent.getWidth()));
                     inputPanel.setValue(HEIGHT_T, String.valueOf(height));
-                }
-                else if (ratioCB.equals(RATIO[2])) {
-                    width = (int)(height * (adjExtent.getWidth() / adjExtent.getHeight()));
+                } else if (ratioCB.equals(RATIO[2])) {
+                    width = (int) (height * (adjExtent.getWidth() / adjExtent.getHeight()));
                     inputPanel.setValue(WIDTH_T, String.valueOf(width));
-                }               
-                       
+                }
+
             }
-        });
+        };
+        JTextField text = (JTextField) tbHeight.getComponent();
+        text.getDocument().addDocumentListener(fieldsListener);
+        text = (JTextField) tbWidth.getComponent();
+        text.getDocument().addDocumentListener(fieldsListener);
+
         inputPanel.addInput(RATIO_T, I18N.tr("Ratio"), comboBoxChoice);
 
         inputPanel.addInput(DPI_T,
@@ -537,6 +559,8 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         inputPanel.addValidation(new MIPValidationInteger(WIDTH_T, I18N.tr("Width (pixels)")));
         inputPanel.addValidation(new MIPValidationInteger(HEIGHT_T, I18N.tr("Height (pixels)")));
         inputPanel.addValidation(new MIPValidationInteger(DPI_T, I18N.tr("DPI")));
+        
+        
         
         // Show the dialog and get the user's choice.
         int userChoice = JOptionPane.showConfirmDialog(this,
