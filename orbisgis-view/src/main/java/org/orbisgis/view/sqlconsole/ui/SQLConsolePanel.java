@@ -105,7 +105,7 @@ public class SQLConsolePanel extends JPanel {
         private DefaultAction quoteAction;
         private DefaultAction unQuoteAction;
         private DefaultAction commentAction;
-        private DefaultAction uncommentAction;
+        private DefaultAction blockCommentAction;
         private DefaultAction formatSQLAction;
         private DefaultAction saveAction;
         
@@ -182,13 +182,23 @@ public class SQLConsolePanel extends JPanel {
 
                 // Comment/Uncomment
                 commentAction = new DefaultAction(SQLAction.A_COMMENT,
-                        I18N.tr("Comment/Uncomment"),
-                        I18N.tr("(Un)Comment selected text"),
+                        I18N.tr("(Un)comment"),
+                        I18N.tr("(Un)comment the selected text"),
                         null,
-                        EventHandler.create(ActionListener.class,this,"onComment"),
+                        EventHandler.create(ActionListener.class, this, "onComment"),
                         KeyStroke.getKeyStroke("alt C")
                 ).setLogicalGroup("format");
                 actions.addAction(commentAction);
+
+                // Block Comment/Uncomment
+                blockCommentAction = new DefaultAction(SQLAction.A_BLOCKCOMMENT,
+                        I18N.tr("Block (un)comment"),
+                        I18N.tr("Block (un)comment the selected text."),
+                        null,
+                        EventHandler.create(ActionListener.class, this, "onBlockComment"),
+                        KeyStroke.getKeyStroke("alt shift C")
+                ).setLogicalGroup("format");
+                actions.addAction(blockCommentAction);
 
                 //Format SQL
                 formatSQLAction = new DefaultAction(SQLAction.A_FORMAT,
@@ -346,10 +356,17 @@ public class SQLConsolePanel extends JPanel {
         }
 
         /**
-         * Comment the selected text.
+         * (Un)comment the selected text.
          */
         public void onComment() {
             CommentUtil.commentOrUncommentSQL(scriptPanel);
+        }
+
+        /**
+         * Block (un)comment the selected text.
+         */
+        public void onBlockComment() {
+            CommentUtil.blockCommentOrUncomment(scriptPanel);
         }
 
         /**

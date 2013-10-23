@@ -30,6 +30,7 @@ package org.orbisgis.view.util;
 
 import org.apache.log4j.Logger;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.orbisgis.utils.TextUtils;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -46,6 +47,8 @@ public class CommentUtil {
 
     public static final String SQL_COMMENT_CHARACTER = "--";
     public static final String JAVA_COMMENT_CHARACTER = "//";
+    public static final String BLOCK_COMMENT_START = "/*";
+    public static final String BLOCK_COMMENT_END = "*/";
     private final static I18n I18N = I18nFactory.getI18n(CommentUtil.class);
     private final static Logger LOGGER = Logger.getLogger(CommentUtil.class);
 
@@ -68,7 +71,7 @@ public class CommentUtil {
     }
 
     /**
-     * Comment the selected text in the given script panel.
+     * Comment or uncomment the selected text in the given script panel.
      *
      * @param scriptPanel Script panel
      */
@@ -109,6 +112,72 @@ public class CommentUtil {
             currentLineNumber++;
         }
         return true;
+    }
+
+    /**
+     * Block comment or uncomment the selected text in the given script panel.
+     *
+     * @param scriptPanel Script panel
+     */
+    public static void blockCommentOrUncomment(RSyntaxTextArea scriptPanel) {
+        if (alreadyBlockCommented(scriptPanel)) {
+            blockUncomment(scriptPanel);
+        } else {
+            if (scriptPanel.getSelectedText() != null) {
+                blockComment(scriptPanel);
+            }
+        }
+    }
+
+    /**
+     * Return true iff the selection is already block commented.
+     * @param scriptPanel Script panel
+     * @return True iff the selection is already block commented
+     */
+    private static boolean alreadyBlockCommented(RSyntaxTextArea scriptPanel) {
+        try {
+            return scriptPanel.getText(scriptPanel.getSelectionStart(), BLOCK_COMMENT_START.length()).equals(BLOCK_COMMENT_START)
+                    && scriptPanel.getText(scriptPanel.getSelectionEnd() - BLOCK_COMMENT_END.length(), BLOCK_COMMENT_END.length()).equals(BLOCK_COMMENT_END);
+        } catch (BadLocationException e) {
+            LOGGER.warn(I18N.tr("Assuming the selection is not already block commented."), e);
+        }
+        return false;
+    }
+
+
+    /**
+     * Block comment the selected text in the given script panel.
+     *
+     * @param scriptPanel Script panel
+     */
+    private static void blockComment(RSyntaxTextArea scriptPanel) {
+        // Recover the index of the start of the selection.
+        final int startOffset = scriptPanel.getSelectionStart();
+        // Comment the selection.
+        final String commentedSelection = BLOCK_COMMENT_START
+                + scriptPanel.getSelectedText() + BLOCK_COMMENT_END;
+        scriptPanel.replaceSelection(commentedSelection);
+        // Select the commented selection.
+        scriptPanel.setSelectionStart(startOffset);
+        scriptPanel.setSelectionEnd(startOffset + commentedSelection.length());
+    }
+
+    /**
+     * Block uncomment the selected text in the given script panel.
+     *
+     * @param scriptPanel Script panel
+     */
+    private static void blockUncomment(RSyntaxTextArea scriptPanel) {
+        // Recover the index of the start of the selection.
+        final int startOffset = scriptPanel.getSelectionStart();
+        final int endOffset = scriptPanel.getSelectionEnd();
+        // Delete the comment characters.
+        scriptPanel.replaceRange("", endOffset - BLOCK_COMMENT_END.length(), endOffset);
+        scriptPanel.replaceRange("", startOffset, startOffset + BLOCK_COMMENT_START.length());
+        // Select the uncommented selection.
+        scriptPanel.setSelectionStart(startOffset);
+        scriptPanel.setSelectionEnd(endOffset - BLOCK_COMMENT_START.length()
+                - BLOCK_COMMENT_END.length());
     }
 
     /**

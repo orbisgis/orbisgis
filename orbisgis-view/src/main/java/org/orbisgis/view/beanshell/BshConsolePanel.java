@@ -97,6 +97,7 @@ public final class BshConsolePanel extends JPanel {
         private DefaultAction saveAction;
         private DefaultAction findAction;
         private DefaultAction commentAction;
+        private DefaultAction blockCommentAction;
         
         /**
          * Creates a console for beanshell.
@@ -258,20 +259,37 @@ public final class BshConsolePanel extends JPanel {
 
                 // Comment/Uncomment
                 commentAction = new DefaultAction(BeanShellAction.A_COMMENT,
-                        I18N.tr("Comment/Uncomment"),
-                        I18N.tr("(Un)Comment selected text"),
+                        I18N.tr("(Un)comment"),
+                        I18N.tr("(Un)comment the selected text"),
                         null,
-                        EventHandler.create(ActionListener.class,this,"onComment"),
+                        EventHandler.create(ActionListener.class, this, "onComment"),
                         KeyStroke.getKeyStroke("alt C")
                 ).setLogicalGroup("format");
                 actions.addAction(commentAction);
+
+                // Block Comment/Uncomment
+                blockCommentAction = new DefaultAction(BeanShellAction.A_BLOCKCOMMENT,
+                        I18N.tr("Block (un)comment"),
+                        I18N.tr("Block (un)comment the selected text."),
+                        null,
+                        EventHandler.create(ActionListener.class, this, "onBlockComment"),
+                        KeyStroke.getKeyStroke("alt shift C")
+                ).setLogicalGroup("format");
+                actions.addAction(blockCommentAction);
         }
 
         /**
-         * Comment the selected text.
+         * (Un)comment the selected text.
          */
         public void onComment() {
             CommentUtil.commentOrUncommentJava(scriptPanel);
+        }
+
+        /**
+         * Block (un)comment the selected text.
+         */
+        public void onBlockComment() {
+            CommentUtil.blockCommentOrUncomment(scriptPanel);
         }
 
         /**

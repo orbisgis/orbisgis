@@ -42,4 +42,5 @@ public interface BeanShellAction extends ActionFactoryService<BeanShellFrame> {
     public static final String A_SAVE = "M_SAVE";
     public static final String A_SEARCH = "M_SEARCH";
     public static final String A_COMMENT = "M_COMMENT";
+    public static final String A_BLOCKCOMMENT = "M_BLOCKCOMMENT";
 }

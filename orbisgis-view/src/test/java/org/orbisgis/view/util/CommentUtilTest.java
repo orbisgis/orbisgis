@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.orbisgis.utils.TextUtils;
 import org.orbisgis.view.util.CommentUtil;
 
+import javax.swing.text.BadLocationException;
+
 import static junit.framework.Assert.assertEquals;
 
 /**
@@ -84,4 +86,75 @@ public class CommentUtilTest {
                 + CommentUtil.SQL_COMMENT_CHARACTER + CommentUtil.SQL_COMMENT_CHARACTER + LINE_THREE,
                 scriptPanel.getText());
     }
+
+    @Test
+    public void testBlockComment() throws BadLocationException {
+        RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
+        scriptPanel.setText(TEXT);
+        scriptPanel.select(13, 226);
+        final String beforeSelection = scriptPanel.getText(0, scriptPanel.getSelectionStart());
+        final String selection = scriptPanel.getText(
+                scriptPanel.getSelectionStart(), scriptPanel.getSelectedText().length());
+        final String afterSelection = scriptPanel.getText(
+                scriptPanel.getSelectionEnd(),
+                scriptPanel.getDocument().getEndPosition().getOffset() -  scriptPanel.getSelectionEnd() - 1);
+        final String expectedText = beforeSelection
+                + CommentUtil.BLOCK_COMMENT_START + selection + CommentUtil.BLOCK_COMMENT_END
+                + afterSelection;
+        // Block comment the selection
+        CommentUtil.blockCommentOrUncomment(scriptPanel);
+        assertEquals(expectedText, scriptPanel.getText());
+        // Check that the commented part is selected.
+        assertEquals(13, scriptPanel.getSelectionStart());
+        assertEquals(226 + CommentUtil.BLOCK_COMMENT_START.length()
+                + CommentUtil.BLOCK_COMMENT_END.length(),
+                scriptPanel.getSelectionEnd());
+    }
+
+    @Test
+    public void testBlockCommentEmptySelection() {
+        RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
+        scriptPanel.setText(TEXT);
+        // Try to comment when there is no selection.
+        scriptPanel.select(13, 13);
+        final String originalText = scriptPanel.getText();
+        CommentUtil.blockCommentOrUncomment(scriptPanel);
+        assertEquals(originalText, scriptPanel.getText());
+    }
+
+    @Test
+    public void testBlockCommentUncomment() throws BadLocationException {
+        RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
+        scriptPanel.setText(TEXT);
+        scriptPanel.select(13, 226);
+        final String originalText = scriptPanel.getText();
+        // Block comment the selection
+        CommentUtil.blockCommentOrUncomment(scriptPanel);
+        assertEquals(13, scriptPanel.getSelectionStart());
+        assertEquals(226 + CommentUtil.BLOCK_COMMENT_START.length()
+                + CommentUtil.BLOCK_COMMENT_END.length(),
+                scriptPanel.getSelectionEnd());
+        // Block uncomment the selection
+        CommentUtil.blockCommentOrUncomment(scriptPanel);
+        assertEquals(13, scriptPanel.getSelectionStart());
+        assertEquals(226, scriptPanel.getSelectionEnd());
+        assertEquals(originalText, scriptPanel.getText());
+    }
+
+    @Test
+    public void testBlockUncomment() {
+        RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
+        scriptPanel.setText("This is a /*test for block*/ uncommenting.");
+        // Comment just the first two lines.
+        scriptPanel.select(10, 28);
+        CommentUtil.blockCommentOrUncomment(scriptPanel);
+        assertEquals(10, scriptPanel.getSelectionStart());
+        assertEquals(28 - CommentUtil.BLOCK_COMMENT_START.length()
+                - CommentUtil.BLOCK_COMMENT_END.length(),
+                scriptPanel.getSelectionEnd());
+        assertEquals("This is a test for block uncommenting.",
+                scriptPanel.getText());
+    }
+
+
 }
