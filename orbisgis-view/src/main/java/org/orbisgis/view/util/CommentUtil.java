@@ -120,10 +120,10 @@ public class CommentUtil {
      * @param scriptPanel Script panel
      */
     public static void blockCommentOrUncomment(RSyntaxTextArea scriptPanel) {
-        if (alreadyBlockCommented(scriptPanel)) {
-            blockUncomment(scriptPanel);
-        } else {
-            if (scriptPanel.getSelectedText() != null) {
+        if (scriptPanel.getSelectedText() != null) {
+            if (alreadyBlockCommented(scriptPanel)) {
+                blockUncomment(scriptPanel);
+            } else {
                 blockComment(scriptPanel);
             }
         }
