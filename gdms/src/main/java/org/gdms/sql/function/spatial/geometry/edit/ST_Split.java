@@ -94,15 +94,15 @@ public class ST_Split extends AbstractScalarSpatialFunction {
 
     @Override
     public String getDescription() {
-        return "Split a geometry with another geometry\n."
+        return "<html>Split a geometry with another geometry\n."
                 + "Supported operations are : \n"
-                + "<ul>Split a polygon with a linestring</ul>"
-                + "<ul>Split a multilinestring with a linestring or a point</ul>"
-                + "<ul>Split a linestring with a linestring or a point</ul>"
+                + "<ul><li>Split a polygon with a linestring</li>"
+                + "<li>Split a multilinestring with a linestring or a point</li>"
+                + "<li>Split a linestring with a linestring or a point</li>"
                 + "Note : if the second geometry is a point\n"
                 + "the user can specify a tolerance to snap\n"
                 + "the point to the geometry. The default tolerance is : \n"
-                + "10E-6";
+                + "10^(-6) meters.</ul></html>";
     }
 
     @Override
