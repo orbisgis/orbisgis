@@ -105,6 +105,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
 
         private static final long serialVersionUID = 1L;
         private static final I18n I18N = I18nFactory.getI18n(Toc.class);
+        private static final Logger LOGGER_POPUP = Logger.getLogger("gui.popup" + Toc.class);
         private static final Logger LOGGER = Logger.getLogger("gui." + Toc.class);
         private DockingPanelParameters dockingPanelParameters;
         private transient MapContext mapContext = null;
@@ -993,7 +994,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                             layer.addStyle(s);
                         }
                     } else {
-                        LOGGER.info("This functionality is not supported.");
+                        LOGGER.info(I18N.tr("This functionality is not supported."));
                     }
 
                 }
@@ -1108,16 +1109,17 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                             }
                                     }
                                 }else{
-                                    LOGGER.info("Styles can be set only on vector layers.");
+                                    LOGGER.info(I18N.tr("Styles can be set only on vector layers."));
                                 }
                         } catch (SeExceptions.InvalidStyle sis) {
                                 //I don't know how this could happen : we are creating a style
                                 //from a valid style. Should be valid too, consequently...
-                                LOGGER.error("The style you're trying to edit is not valid !");
+                                LOGGER.error(I18N.tr("The style you're trying to edit is not valid !"));
                         } catch (DriverException de) {
-                                LOGGER.error("An error occurred while processing the DataSource");
+                                LOGGER.error(I18N.tr("An error occurred while processing the DataSource"));
                         } catch (UnsupportedOperationException uoe){
-                                LOGGER.error(uoe.getMessage());
+                                 LOGGER_POPUP.info(I18N.tr("Cannot create the user interface for this style. \n"
+                                         + "Please uses the advanced style editor."), uoe);
                         }
                 }
         }
@@ -1137,7 +1139,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         tableElement.getSourceName())
                         && hasDataSource(mapContext.getLayerModel(),
                         tableElement.getSourceName())) {
-                        LOGGER.debug("Link the editable element with the toc");
+                        LOGGER.debug(I18N.tr("Link the editable element with the Toc"));
                         //Need to track geometry selection with this element
                         // MapContext selection change -> Table selection
                         linkedEditableElements.put(tableElement.getSourceName(), tableElement);

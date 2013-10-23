@@ -112,7 +112,7 @@ public class SaveFilePanel extends OpenFilePanel {
                             getComponent(),
                             "<html><body><p style='width: " + messageWidth + "px;'>"
                             + I18N.tr("The file {0} already exists. Overwrite?"
-                            + "</body></html>", getSelectedFile()),
+                            + "</p></body></html>", getSelectedFile()),
                             I18N.tr("Confirm overwrite"),
                             JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                         return I18N.tr("Overwrite canceled");
