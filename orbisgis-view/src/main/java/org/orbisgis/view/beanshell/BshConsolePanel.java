@@ -64,6 +64,7 @@ import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.components.findReplace.FindReplaceDialog;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.util.CommentUtil;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -95,6 +96,7 @@ public final class BshConsolePanel extends JPanel {
         private DefaultAction clearAction;
         private DefaultAction saveAction;
         private DefaultAction findAction;
+        private DefaultAction commentAction;
         
         /**
          * Creates a console for beanshell.
@@ -253,7 +255,23 @@ public final class BshConsolePanel extends JPanel {
                         EventHandler.create(ActionListener.class, this, "openFindReplaceDialog"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK)).addStroke(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK));
                 actions.addAction(findAction);
-                                
+
+                // Comment/Uncomment
+                commentAction = new DefaultAction(BeanShellAction.A_COMMENT,
+                        I18N.tr("Comment/Uncomment"),
+                        I18N.tr("(Un)Comment selected text"),
+                        null,
+                        EventHandler.create(ActionListener.class,this,"onComment"),
+                        KeyStroke.getKeyStroke("alt C")
+                ).setLogicalGroup("format");
+                actions.addAction(commentAction);
+        }
+
+        /**
+         * Comment the selected text.
+         */
+        public void onComment() {
+            CommentUtil.commentOrUncommentJava(scriptPanel);
         }
 
         /**

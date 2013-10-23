@@ -61,7 +61,7 @@ import org.orbisgis.view.components.findReplace.FindReplaceDialog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.sqlconsole.actions.ExecuteScriptProcess;
-import org.orbisgis.view.sqlconsole.blockComment.CommentSQL;
+import org.orbisgis.view.util.CommentUtil;
 import org.orbisgis.view.sqlconsole.blockComment.QuoteSQL;
 import org.orbisgis.view.sqlconsole.codereformat.CodeReformator;
 import org.orbisgis.view.sqlconsole.codereformat.CommentSpec;
@@ -180,7 +180,7 @@ public class SQLConsolePanel extends JPanel {
                        ).setLogicalGroup("format");
                 actions.addAction(unQuoteAction);
 
-                // Comment
+                // Comment/Uncomment
                 commentAction = new DefaultAction(SQLAction.A_COMMENT,
                         I18N.tr("Comment/Uncomment"),
                         I18N.tr("(Un)Comment selected text"),
@@ -349,7 +349,7 @@ public class SQLConsolePanel extends JPanel {
          * Comment the selected text.
          */
         public void onComment() {
-            CommentSQL.commentOrUncommentSQL(scriptPanel);
+            CommentUtil.commentOrUncommentSQL(scriptPanel);
         }
 
         /**

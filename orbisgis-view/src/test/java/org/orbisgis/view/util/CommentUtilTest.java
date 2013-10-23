@@ -1,14 +1,19 @@
-package org.orbisgis.view.sqlconsole.blockComment;
+package org.orbisgis.view.util;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.junit.Test;
 import org.orbisgis.utils.TextUtils;
+import org.orbisgis.view.util.CommentUtil;
+
 import static junit.framework.Assert.assertEquals;
 
 /**
+ * Note: The tests for {@link CommentUtil#commentOrUncommentJava} look exactly
+ * the same, so we don't include them.
+ *
  * @author Adam Gouge
  */
-public class CommentSQLTest {
+public class CommentUtilTest {
 
     private static final String EOL = TextUtils.getEolStr();
 
@@ -30,9 +35,9 @@ public class CommentSQLTest {
         scriptPanel.setText(TEXT);
         // Comment just the first two lines.
         scriptPanel.select(13, 226);
-        CommentSQL.commentOrUncommentSQL(scriptPanel);
-        assertEquals(CommentSQL.COMMENT_CHARACTER + LINE_ONE
-                + CommentSQL.COMMENT_CHARACTER + LINE_TWO + LINE_THREE,
+        CommentUtil.commentOrUncommentSQL(scriptPanel);
+        assertEquals(CommentUtil.SQL_COMMENT_CHARACTER + LINE_ONE
+                + CommentUtil.SQL_COMMENT_CHARACTER + LINE_TWO + LINE_THREE,
                 scriptPanel.getText());
     }
 
@@ -42,24 +47,24 @@ public class CommentSQLTest {
         scriptPanel.setText(TEXT);
         scriptPanel.select(13, 226);
         // Comment the first two lines.
-        CommentSQL.commentOrUncommentSQL(scriptPanel);
+        CommentUtil.commentOrUncommentSQL(scriptPanel);
         // Uncomment the first two lines.
-        CommentSQL.commentOrUncommentSQL(scriptPanel);
+        CommentUtil.commentOrUncommentSQL(scriptPanel);
         assertEquals(TEXT, scriptPanel.getText());
     }
 
     @Test
     public void testUncommentUnbrokenRangeWithCommentRemainingOnLineTwo() {
         RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
-        scriptPanel.setText(CommentSQL.COMMENT_CHARACTER + LINE_ONE
-                + CommentSQL.COMMENT_CHARACTER + CommentSQL.COMMENT_CHARACTER + LINE_TWO
-                + CommentSQL.COMMENT_CHARACTER + LINE_THREE);
+        scriptPanel.setText(CommentUtil.SQL_COMMENT_CHARACTER + LINE_ONE
+                + CommentUtil.SQL_COMMENT_CHARACTER + CommentUtil.SQL_COMMENT_CHARACTER + LINE_TWO
+                + CommentUtil.SQL_COMMENT_CHARACTER + LINE_THREE);
         scriptPanel.selectAll();
         // Uncomment all three lines, leaving only line two commented.
-        CommentSQL.commentOrUncommentSQL(scriptPanel);
+        CommentUtil.commentOrUncommentSQL(scriptPanel);
         // Uncomment the first two lines.
         assertEquals(LINE_ONE
-                + CommentSQL.COMMENT_CHARACTER + LINE_TWO
+                + CommentUtil.SQL_COMMENT_CHARACTER + LINE_TWO
                 + LINE_THREE,
                 scriptPanel.getText());
     }
@@ -67,16 +72,16 @@ public class CommentSQLTest {
     @Test
     public void testCommentBrokenRangeWithNoCommentOnLineTwo() {
         RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
-        scriptPanel.setText(CommentSQL.COMMENT_CHARACTER + LINE_ONE
+        scriptPanel.setText(CommentUtil.SQL_COMMENT_CHARACTER + LINE_ONE
                 + LINE_TWO
-                + CommentSQL.COMMENT_CHARACTER + LINE_THREE);
+                + CommentUtil.SQL_COMMENT_CHARACTER + LINE_THREE);
         scriptPanel.selectAll();
         // Comment all three lines.
-        CommentSQL.commentOrUncommentSQL(scriptPanel);
+        CommentUtil.commentOrUncommentSQL(scriptPanel);
         // Uncomment the first two lines.
-        assertEquals(CommentSQL.COMMENT_CHARACTER + CommentSQL.COMMENT_CHARACTER + LINE_ONE
-                + CommentSQL.COMMENT_CHARACTER + LINE_TWO
-                + CommentSQL.COMMENT_CHARACTER + CommentSQL.COMMENT_CHARACTER + LINE_THREE,
+        assertEquals(CommentUtil.SQL_COMMENT_CHARACTER + CommentUtil.SQL_COMMENT_CHARACTER + LINE_ONE
+                + CommentUtil.SQL_COMMENT_CHARACTER + LINE_TWO
+                + CommentUtil.SQL_COMMENT_CHARACTER + CommentUtil.SQL_COMMENT_CHARACTER + LINE_THREE,
                 scriptPanel.getText());
     }
 }

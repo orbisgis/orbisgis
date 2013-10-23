@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.sqlconsole.blockComment;
+package org.orbisgis.view.util;
 
 import org.apache.log4j.Logger;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -37,16 +37,17 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 
 /**
- * Class for commenting SQL code in the SQL console.
+ * Class for commenting SQL code in the SQL console and Java code in the
+ * Beanshell console.
  *
  * @author Adam Gouge
  */
-public class CommentSQL {
+public class CommentUtil {
 
-    public static final String COMMENT_CHARACTER = "--";
-    private static final int COMMENT_LENGTH = COMMENT_CHARACTER.length();
-    private final static I18n I18N = I18nFactory.getI18n(CommentSQL.class);
-    private final static Logger LOGGER = Logger.getLogger(CommentSQL.class);
+    public static final String SQL_COMMENT_CHARACTER = "--";
+    public static final String JAVA_COMMENT_CHARACTER = "//";
+    private final static I18n I18N = I18nFactory.getI18n(CommentUtil.class);
+    private final static Logger LOGGER = Logger.getLogger(CommentUtil.class);
 
     /**
      * Comment the selected text in the given script panel.
@@ -54,13 +55,31 @@ public class CommentSQL {
      * @param scriptPanel Script panel
      */
     public static void commentOrUncommentSQL(RSyntaxTextArea scriptPanel) {
+        commentOrUncomment(scriptPanel, SQL_COMMENT_CHARACTER);
+    }
+
+    /**
+     * Comment the selected text in the given script panel.
+     *
+     * @param scriptPanel Script panel
+     */
+    public static void commentOrUncommentJava(RSyntaxTextArea scriptPanel) {
+        commentOrUncomment(scriptPanel, JAVA_COMMENT_CHARACTER);
+    }
+
+    /**
+     * Comment the selected text in the given script panel.
+     *
+     * @param scriptPanel Script panel
+     */
+    private static void commentOrUncomment(RSyntaxTextArea scriptPanel, String commentCharacter) {
         // If the selection contains an unbroken range of commented lines,
         // then we uncomment.
-        if (unbrokenRangeOfComments(scriptPanel)) {
-            uncommentSQL(scriptPanel);
+        if (unbrokenRangeOfComments(scriptPanel, commentCharacter)) {
+            uncommentSQL(scriptPanel, commentCharacter);
         } // Otherwise, we comment everything.
         else {
-            commentSQL(scriptPanel);
+            commentSQL(scriptPanel, commentCharacter);
         }
     }
 
@@ -72,7 +91,7 @@ public class CommentSQL {
      * @return True iff the selected text consists of an unbroken range of
      * commented lines
      */
-    private static boolean unbrokenRangeOfComments(RSyntaxTextArea scriptPanel) {
+    private static boolean unbrokenRangeOfComments(RSyntaxTextArea scriptPanel, String commentCharacter) {
 
         final Element root = scriptPanel.getDocument().getDefaultRootElement();
 
@@ -81,7 +100,7 @@ public class CommentSQL {
         while (currentLineNumber <= numberOfLastLine) {
             try {
                 int startOffset = root.getElement(currentLineNumber).getStartOffset();
-                if (!scriptPanel.getText(startOffset, COMMENT_LENGTH).equals(COMMENT_CHARACTER)) {
+                if (!scriptPanel.getText(startOffset, commentCharacter.length()).equals(commentCharacter)) {
                     return false;
                 }
             } catch (BadLocationException e) {
@@ -97,14 +116,14 @@ public class CommentSQL {
      *
      * @param scriptPanel Script panel
      */
-    private static void commentSQL(RSyntaxTextArea scriptPanel) {
+    private static void commentSQL(RSyntaxTextArea scriptPanel, String commentCharacter) {
 
         final Element root = scriptPanel.getDocument().getDefaultRootElement();
 
         final int numberOfLastLine = root.getElementIndex(scriptPanel.getSelectionEnd());
         int currentLineNumber = root.getElementIndex(scriptPanel.getSelectionStart());
         while (currentLineNumber <= numberOfLastLine) {
-            scriptPanel.insert(COMMENT_CHARACTER,
+            scriptPanel.insert(commentCharacter,
                     root.getElement(currentLineNumber).getStartOffset());
             currentLineNumber++;
         }
@@ -115,7 +134,7 @@ public class CommentSQL {
      *
      * @param scriptPanel Script panel
      */
-    private static void uncommentSQL(RSyntaxTextArea scriptPanel) {
+    private static void uncommentSQL(RSyntaxTextArea scriptPanel, String commentCharacter) {
 
         final Element root = scriptPanel.getDocument().getDefaultRootElement();
 
@@ -124,8 +143,8 @@ public class CommentSQL {
         while (currentLineNumber <= numberOfLastLine) {
             try {
                 int startOffset = root.getElement(currentLineNumber).getStartOffset();
-                if (scriptPanel.getText(startOffset, COMMENT_LENGTH).equals(COMMENT_CHARACTER)) {
-                    scriptPanel.replaceRange("", startOffset, startOffset + COMMENT_LENGTH);
+                if (scriptPanel.getText(startOffset, commentCharacter.length()).equals(commentCharacter)) {
+                    scriptPanel.replaceRange("", startOffset, startOffset + commentCharacter.length());
                 }
             } catch (BadLocationException e) {
                 LOGGER.warn(I18N.tr("Invalid length or offset when trying to uncomment code."), e);
