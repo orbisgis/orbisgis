@@ -105,6 +105,7 @@ public class SQLConsolePanel extends JPanel {
         private DefaultAction quoteAction;
         private DefaultAction unQuoteAction;
         private DefaultAction commentAction;
+        private DefaultAction uncommentAction;
         private DefaultAction formatSQLAction;
         private DefaultAction saveAction;
         
@@ -179,7 +180,7 @@ public class SQLConsolePanel extends JPanel {
                        ).setLogicalGroup("format");
                 actions.addAction(unQuoteAction);
 
-                //Comment
+                // Comment
                 commentAction = new DefaultAction(SQLAction.A_COMMENT,
                         I18N.tr("Comment"),
                         I18N.tr("Comment selected text"),
@@ -188,6 +189,16 @@ public class SQLConsolePanel extends JPanel {
                         KeyStroke.getKeyStroke("alt C")
                 ).setLogicalGroup("format");
                 actions.addAction(commentAction);
+
+                 // Uncomment
+                uncommentAction = new DefaultAction(SQLAction.A_UNCOMMENT,
+                        I18N.tr("Uncomment"),
+                        I18N.tr("Uncomment selected text"),
+                        null,
+                        EventHandler.create(ActionListener.class,this,"onUncomment"),
+                        KeyStroke.getKeyStroke("alt shift C")
+                ).setLogicalGroup("format");
+                actions.addAction(uncommentAction);
                 
                 //Format SQL
                 formatSQLAction = new DefaultAction(SQLAction.A_FORMAT,
@@ -345,10 +356,17 @@ public class SQLConsolePanel extends JPanel {
         }
 
         /**
-         * Add comment selected text function.
+         * Comment the selected text.
          */
         public void onComment() {
             CommentSQL.commentSQL(scriptPanel);
+        }
+
+        /**
+         * Uncomment the selected text.
+         */
+        public void onUncomment() {
+            CommentSQL.uncommentSQL(scriptPanel);
         }
 
         /**

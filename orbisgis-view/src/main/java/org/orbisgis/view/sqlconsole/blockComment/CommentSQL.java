@@ -28,10 +28,10 @@
  */
 package org.orbisgis.view.sqlconsole.blockComment;
 
+import org.apache.log4j.Logger;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.orbisgis.utils.TextUtils;
-import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
-import org.orbisgis.view.sqlconsole.util.QuoteUtilities;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
@@ -43,8 +43,10 @@ import javax.swing.text.Element;
  */
 public class CommentSQL {
 
-    private static final String EOL = TextUtils.getEolStr();
     public static final String COMMENT_CHARACTER = "--";
+    private static final int COMMENT_LENGTH = COMMENT_CHARACTER.length();
+    private final static I18n I18N = I18nFactory.getI18n(CommentSQL.class);
+    private final static Logger LOGGER = Logger.getLogger(CommentSQL.class);
 
     /**
      * Comment the selected text in the given script panel.
@@ -55,12 +57,36 @@ public class CommentSQL {
 
         final Element root = scriptPanel.getDocument().getDefaultRootElement();
 
-        final int lastLineNumberInSelect = root.getElementIndex(scriptPanel.getSelectionEnd());
-        int selectionLineNumber = root.getElementIndex(scriptPanel.getSelectionStart());
-        while (selectionLineNumber <= lastLineNumberInSelect) {
+        final int numberOfLastLine = root.getElementIndex(scriptPanel.getSelectionEnd());
+        int currentLineNumber = root.getElementIndex(scriptPanel.getSelectionStart());
+        while (currentLineNumber <= numberOfLastLine) {
             scriptPanel.insert(COMMENT_CHARACTER,
-                    root.getElement(selectionLineNumber).getStartOffset());
-            selectionLineNumber++;
+                    root.getElement(currentLineNumber).getStartOffset());
+            currentLineNumber++;
+        }
+    }
+
+    /**
+     * Uncomment the selected text in the given script panel.
+     *
+     * @param scriptPanel Script panel
+     */
+    public static void uncommentSQL(RSyntaxTextArea scriptPanel) {
+
+        final Element root = scriptPanel.getDocument().getDefaultRootElement();
+
+        final int numberOfLastLine = root.getElementIndex(scriptPanel.getSelectionEnd());
+        int currentLineNumber = root.getElementIndex(scriptPanel.getSelectionStart());
+        while (currentLineNumber <= numberOfLastLine) {
+            try {
+                int startOffset = root.getElement(currentLineNumber).getStartOffset();
+                if (scriptPanel.getText(startOffset, COMMENT_LENGTH).equals(COMMENT_CHARACTER)) {
+                    scriptPanel.replaceRange("", startOffset, startOffset + COMMENT_LENGTH);
+                }
+            } catch (BadLocationException e) {
+                LOGGER.warn(I18N.tr("Invalid length or offset when trying to uncomment code."), e);
+            }
+            currentLineNumber++;
         }
     }
 }

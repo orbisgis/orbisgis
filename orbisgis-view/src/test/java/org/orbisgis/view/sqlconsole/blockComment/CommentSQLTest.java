@@ -25,7 +25,7 @@ public class CommentSQLTest {
 
 
     @Test
-    public void test() {
+    public void testComment() {
         RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
         scriptPanel.setText(TEXT);
         // Comment just the first two lines.
@@ -34,5 +34,16 @@ public class CommentSQLTest {
         assertEquals(CommentSQL.COMMENT_CHARACTER + LINE_ONE
                 + CommentSQL.COMMENT_CHARACTER + LINE_TWO + LINE_THREE,
                 scriptPanel.getText());
+    }
+
+    @Test
+    public void testUncomment() {
+        RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
+        scriptPanel.setText(TEXT);
+        // Comment and uncomment the first two lines.
+        scriptPanel.select(13, 226);
+        CommentSQL.commentSQL(scriptPanel);
+        CommentSQL.uncommentSQL(scriptPanel);
+        assertEquals(TEXT, scriptPanel.getText());
     }
 }
