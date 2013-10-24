@@ -47,11 +47,18 @@ public class SIFWizard extends AbstractOutsideFrame {
         private int index = 0;
         private CardLayout layout = new CardLayout();
 
+        /**
+         * Builds a new SIFWizard which parent window is {@code owner}?
+         * @param owner The parent window.
+         */
         public SIFWizard(Window owner) {
                 super(owner);
                 init();
         }
 
+        /**
+         * Basic initialization.
+         */
         private void init() {
                 this.setLayout(new BorderLayout());
 
@@ -61,6 +68,12 @@ public class SIFWizard extends AbstractOutsideFrame {
                 this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         }
 
+
+        /**
+         * Gets the panel that contains the buttons of the
+         * wizard.
+         * @return The buttons in a JPanel.
+         */
         private JPanel getWizardButtons() {
                 if (wizardButtons == null) {
                         wizardButtons = new JPanel();
@@ -73,6 +86,12 @@ public class SIFWizard extends AbstractOutsideFrame {
                 return wizardButtons;
         }
 
+        /**
+         * Builds the main panel. It is a simple JPanel with
+         * a CardLayout.
+         * @param panels The SimplePanel instances that will be
+         *               organized in the CardLayout.
+         */
         private void buildMainPanel(SimplePanel[] panels) {
                 mainPanel = new JPanel();
                 mainPanel.setLayout(layout);
@@ -81,6 +100,10 @@ public class SIFWizard extends AbstractOutsideFrame {
                 }
         }
 
+        /**
+         * Get the Previous button.
+         * @return The previous button.
+         */
         public JButton getBtnPrevious() {
                 if (btnPrevious == null) {
                         btnPrevious = new JButton(I18N.tr("Previous"));
@@ -100,6 +123,10 @@ public class SIFWizard extends AbstractOutsideFrame {
                 return btnPrevious;
         }
 
+        /**
+         * Get the Next button.
+         * @return The previous button.
+         */
         public JButton getBtnNext() {
                 if (btnNext == null) {
                         btnNext = new JButton(I18N.tr("Next"));
@@ -121,6 +148,9 @@ public class SIFWizard extends AbstractOutsideFrame {
                 return btnNext;
         }
 
+        /**
+         * Sets the button selected by default
+         */
         private void setDefaultButton() {
                 if (index == panels.length - 1) {
                         getRootPane().setDefaultButton(btnFinish);
@@ -129,6 +159,10 @@ public class SIFWizard extends AbstractOutsideFrame {
                 }
         }
 
+        /**
+         * Gets the Finish button
+         * @return The Finish button.
+         */
         public JButton getBtnFinish() {
                 if (btnFinish == null) {
                         btnFinish = new JButton(I18N.tr("Finish"));
@@ -144,6 +178,10 @@ public class SIFWizard extends AbstractOutsideFrame {
                 return btnFinish;
         }
 
+        /**
+         * Gets the Cancel button used in this wizard.
+         * @return The Cancel button
+         */
         public JButton getBtnCancel() {
                 if (btnCancel == null) {
                         btnCancel = new JButton(I18N.tr("Cancel"));
@@ -160,6 +198,10 @@ public class SIFWizard extends AbstractOutsideFrame {
                 return btnCancel;
         }
 
+        /**
+         * Sets the SimplePanel instances used in this wizard.
+         * @param panels The panels used by this wizard.
+         */
         public void setComponent(SimplePanel[] panels) {
                 this.panels = panels;
                 this.index = 0;

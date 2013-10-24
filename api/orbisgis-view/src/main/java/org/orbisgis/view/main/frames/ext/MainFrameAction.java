@@ -13,4 +13,5 @@ public interface MainFrameAction  extends ActionFactoryService<MainWindow> {
     public static final String MENU_EXIT = "exitapp";
     public static final String MENU_TOOLS = "tools";
     public static final String MENU_CONFIGURE = "configure";
+    public static final String MENU_SAVE = "save";
 }

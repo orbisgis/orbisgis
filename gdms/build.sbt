@@ -8,7 +8,7 @@ scalaVersion := "2.9.2"
 
 externalPom()
 
-javacOptions ++= Seq("-target", "1.6", "-source", "1.6", "-Xlint")
+javacOptions ++= Seq("-target", "1.7", "-source", "1.7", "-Xlint")
 
 scalacOptions ++= Seq("-unchecked", "-Xlint", "-Ywarn-all")
 

@@ -30,7 +30,11 @@ package org.orbisgis.view.toc.actions.cui.legends.components;
 
 import org.orbisgis.core.renderer.se.graphic.WellKnownName;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
+import org.orbisgis.sif.common.ContainerItem;
+import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+
+import java.util.Arrays;
 
 /**
  * Combo box for the symbol's well-known name.
@@ -47,14 +51,28 @@ public class WKNComboBox extends PreviewComboBox {
      */
     public WKNComboBox(ConstantFormPoint legend,
                        CanvasSE preview) {
-        super(WellKnownName.getLocalizedStrings(), legend, preview);
+        super(getItems(), legend, preview);
         setSelectedItem(WellKnownName.fromString(legend.getWellKnownName())
                 .toLocalizedString());
     }
 
     @Override
     protected void updatePreview() {
-        ((ConstantFormPoint) legend).setWellKnownName(getSelectedItem().toString());
+        ContainerItem<WellKnownName> si = (ContainerItem<WellKnownName>) getSelectedItem();
+        ((ConstantFormPoint) legend).setWellKnownName(si.getKey().toString());
         preview.imageChanged();
+    }
+
+    /**
+     * Builds the allowed items for this WKNComboBox.
+     * @return The items stored in ContainerItem instances.
+     */
+    private static ContainerItem[] getItems(){
+        WellKnownName[] values = WellKnownName.values();
+        ContainerItem[] cips= new ContainerItem[values.length];
+        for(int i = 0; i<values.length; i++){
+            cips[i] = new ContainerItem<WellKnownName>(values[i], values[i].toLocalizedString());
+        }
+        return cips;
     }
 }

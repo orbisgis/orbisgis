@@ -209,6 +209,20 @@ public class UIFactory {
             return dlg.isAccepted();
         }
 
+        /** 
+         * Show the given wizard as a modal, on top and visible frame.
+         * @param wiz The wizard to be displayed.
+         * @return true if the wizard has been accepted, false otherwise.
+         */
+        public static boolean showWizard(SIFWizard wiz){
+            wiz.setModal(true);
+            wiz.pack();
+            wiz.setLocationRelativeTo(mainFrame);
+            wiz.setAlwaysOnTop(true);
+            wiz.setVisible(true);
+            return wiz.isAccepted();
+        }
+
         /**
          * Create a dialog and specify if the dialog shows the ok cancel buttons
          * and if its on top of all swing GUI.

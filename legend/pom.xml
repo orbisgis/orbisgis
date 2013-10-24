@@ -89,10 +89,4 @@
                         </plugin>
                 </plugins>
         </build>
-        <pluginRepositories>
-                <pluginRepository>
-                        <id>gettext-commons-site</id>
-                        <url>http://gettext-commons-maven-repository.googlecode.com/svn/repository</url>
-                </pluginRepository>
-        </pluginRepositories>
 </project>

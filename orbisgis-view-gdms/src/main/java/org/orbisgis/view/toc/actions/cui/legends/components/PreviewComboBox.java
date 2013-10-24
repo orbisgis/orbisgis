@@ -50,7 +50,7 @@ public abstract class PreviewComboBox extends AbsComboBox {
      * @param legend  Legend
      * @param preview Preview
      */
-    public PreviewComboBox(String[] items,
+    public PreviewComboBox(Object[] items,
                            Legend legend,
                            CanvasSE preview) {
         super(items);

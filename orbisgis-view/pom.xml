@@ -149,10 +149,4 @@
                     <version>4.2</version>
                 </dependency>
         </dependencies>
-        <pluginRepositories>
-                <pluginRepository>
-                        <id>gettext-commons-site</id>
-                        <url>http://gettext-commons-maven-repository.googlecode.com/svn/repository</url>
-                </pluginRepository>
-        </pluginRepositories>
 </project>

@@ -41,7 +41,10 @@ public class SaveFilePanel extends OpenFilePanel {
 
         private static final I18n I18N = I18nFactory.getI18n(SaveFilePanel.class);
         private boolean fileMustNotExist;
-        private boolean confirmOverwrite = false;
+        // By default, we confirm before overwriting files.
+        private boolean confirmOverwrite = true;
+        //Default size of the message for the confirm dialog
+        private int messageWidth = 300;
 
         public SaveFilePanel(String id, String title) {
                 super(id, title);
@@ -105,9 +108,13 @@ public class SaveFilePanel extends OpenFilePanel {
                 if (exists && fileMustNotExist) {
                     return UIFactory.getI18n().tr("The file already exists");
                 } else if(exists && confirmOverwrite) {
-                    if(JOptionPane.showConfirmDialog(getComponent(),
-                            I18N.tr("The file {0} already exists do you confirm overwrite ?", getSelectedFile()) ,
-                            I18N.tr("Overwrite confirmation"), JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
+                    if (JOptionPane.showConfirmDialog(
+                            getComponent(),
+                            "<html><body><p style='width: " + messageWidth + "px;'>"
+                            + I18N.tr("The file {0} already exists. Overwrite?"
+                            + "</p></body></html>", getSelectedFile()),
+                            I18N.tr("Confirm overwrite"),
+                            JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                         return I18N.tr("Overwrite canceled");
                     }
                 }

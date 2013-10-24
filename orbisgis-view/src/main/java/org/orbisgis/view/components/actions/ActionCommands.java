@@ -425,8 +425,8 @@ public class ActionCommands extends BeanPropertyChangeSupport implements Actions
                 } else {
                         components = parent.getComponents();
                 }
-                for(int i=0;i<parent.getComponentCount();i++) {
-                        Component comp = parent.getComponent(i);
+                 for(int i=0;i<components.length;i++) {
+                        Component comp = components[i];
                         if(comp instanceof AbstractButton) {
                                 Action compAction = ((AbstractButton)comp).getAction();
                                 if(compAction!=null) {

@@ -62,6 +62,7 @@ import org.orbisgis.view.components.findReplace.FindReplaceDialog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.sqlconsole.actions.ExecuteScriptProcess;
+import org.orbisgis.view.util.CommentUtil;
 import org.orbisgis.view.sqlconsole.blockComment.QuoteSQL;
 import org.orbisgis.view.sqlconsole.codereformat.CodeReformator;
 import org.orbisgis.view.sqlconsole.codereformat.CommentSpec;
@@ -102,6 +103,8 @@ public class SQLConsolePanel extends JPanel {
         private DefaultAction findAction;
         private DefaultAction quoteAction;
         private DefaultAction unQuoteAction;
+        private DefaultAction commentAction;
+        private DefaultAction blockCommentAction;
         private DefaultAction formatSQLAction;
         private DefaultAction saveAction;
         
@@ -175,7 +178,27 @@ public class SQLConsolePanel extends JPanel {
                         KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SLASH, InputEvent.SHIFT_DOWN_MASK)
                        ).setLogicalGroup("format");
                 actions.addAction(unQuoteAction);
-                
+
+                // Comment/Uncomment
+                commentAction = new DefaultAction(SQLAction.A_COMMENT,
+                        I18N.tr("(Un)comment"),
+                        I18N.tr("(Un)comment the selected text"),
+                        null,
+                        EventHandler.create(ActionListener.class, this, "onComment"),
+                        KeyStroke.getKeyStroke("alt C")
+                ).setLogicalGroup("format");
+                actions.addAction(commentAction);
+
+                // Block Comment/Uncomment
+                blockCommentAction = new DefaultAction(SQLAction.A_BLOCKCOMMENT,
+                        I18N.tr("Block (un)comment"),
+                        I18N.tr("Block (un)comment the selected text."),
+                        null,
+                        EventHandler.create(ActionListener.class, this, "onBlockComment"),
+                        KeyStroke.getKeyStroke("alt shift C")
+                ).setLogicalGroup("format");
+                actions.addAction(blockCommentAction);
+
                 //Format SQL
                 formatSQLAction = new DefaultAction(SQLAction.A_FORMAT,
                         I18N.tr("Format"),
@@ -330,6 +353,21 @@ public class SQLConsolePanel extends JPanel {
         public void onUnQuote() {
                 QuoteSQL.unquoteSQL(this);
         }
+
+        /**
+         * (Un)comment the selected text.
+         */
+        public void onComment() {
+            CommentUtil.commentOrUncommentSQL(scriptPanel);
+        }
+
+        /**
+         * Block (un)comment the selected text.
+         */
+        public void onBlockComment() {
+            CommentUtil.blockCommentOrUncomment(scriptPanel);
+        }
+
         /**
          * Format SQL code
          */

@@ -541,7 +541,6 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             final SaveFilePanel outfilePanel = new SaveFilePanel(
                     "MapEditor.ExportInFile",
                     I18N.tr("Save the map as image : " + mapContext.getTitle()));
-            outfilePanel.setConfirmOverwrite(true);
             outfilePanel.addFilter("png", I18N.tr("Portable Network Graphics"));
             outfilePanel.addFilter("tiff", I18N.tr("Tagged Image File Format"));
             outfilePanel.addFilter("jpg", I18N.tr("Joint Photographic Experts Group"));
