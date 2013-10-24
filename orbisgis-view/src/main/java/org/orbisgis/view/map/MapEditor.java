@@ -29,32 +29,9 @@
 package org.orbisgis.view.map;
 
 import com.vividsolutions.jts.geom.Envelope;
-
-import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.geom.Point2D;
-import java.beans.EventHandler;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.*;
-import javax.swing.event.TreeExpansionListener;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
@@ -64,18 +41,12 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
 import org.orbisgis.core.map.export.MapImageWriter;
 import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.progress.*;
+import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.ColorPicker;
 import org.orbisgis.sif.components.SaveFilePanel;
-import org.orbisgis.sif.multiInputPanel.CheckBoxChoice;
-import org.orbisgis.sif.multiInputPanel.ComboBoxChoice;
-import org.orbisgis.sif.multiInputPanel.MIPValidationDouble;
-import org.orbisgis.sif.multiInputPanel.MIPValidationInteger;
-import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
-import org.orbisgis.sif.multiInputPanel.TextBoxType;
+import org.orbisgis.sif.multiInputPanel.*;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
@@ -98,19 +69,24 @@ import org.orbisgis.view.map.mapsManager.TreeLeafMapElement;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.toolbar.ActionAutomaton;
-import org.orbisgis.view.map.tools.CompassTool;
-import org.orbisgis.view.map.tools.FencePolygonTool;
-import org.orbisgis.view.map.tools.InfoTool;
-import org.orbisgis.view.map.tools.MesureLineTool;
-import org.orbisgis.view.map.tools.MesurePolygonTool;
-import org.orbisgis.view.map.tools.PanTool;
-import org.orbisgis.view.map.tools.PickCoordinatesPointTool;
-import org.orbisgis.view.map.tools.SelectionTool;
-import org.orbisgis.view.map.tools.ZoomInTool;
-import org.orbisgis.view.map.tools.ZoomOutTool;
+import org.orbisgis.view.map.tools.*;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.swing.*;
+import javax.swing.event.TreeExpansionListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.Point2D;
+import java.beans.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The Map Editor Panel
@@ -139,6 +115,10 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     private PropertyChangeListener activeLayerListener = EventHandler.create(PropertyChangeListener.class,this,"onActiveLayerChange","");
     private ActionCommands actions = new ActionCommands();
     private MapEditorPersistence mapEditorPersistence = new MapEditorPersistence();
+
+    private boolean userChangedWidth = false;
+    private boolean userChangedHeight = false;
+
     /**
      * Constructor
      */
@@ -481,49 +461,124 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         // Show Dialog to select image size
         final String WIDTH_T = "width";
         final String HEIGHT_T = "height";
-        final String RATIO_T = "ratio";
+        final String RATIO_CHECKBOX_T = "ratio checkbox";
         final String TRANSPARENT_BACKGROUND_T = "background";
         final String DPI_T = "dpi";
         final int textWidth = 8;
-        String[] RATIO = new String[] {"UPDATE_EXTENT", "FIX_WIDTH", "FIX_HEIGHT"};
-        String[] RATIO_LABELS = new String[] {I18N.tr("Change extent"),
-                I18N.tr("Update height to keep ratio"),
-                I18N.tr("Update width to keep ratio")};
-        MultiInputPanel inputPanel = new MultiInputPanel(I18N.tr("Export parameters"));
+        final MultiInputPanel inputPanel = new MultiInputPanel(I18N.tr("Export parameters"));
 
-        inputPanel.addInput(WIDTH_T,
-                I18N.tr("Width (pixels)"),
-                String.valueOf(mapControl.getImage().getWidth()),
-                new TextBoxType(textWidth));
-        inputPanel.addInput(HEIGHT_T,
-                I18N.tr("Height (pixels)"),
-                String.valueOf(mapControl.getImage().getHeight()),
-                new TextBoxType(textWidth));
-
-        ComboBoxChoice comboBoxChoice = new ComboBoxChoice(RATIO, RATIO_LABELS);
-        comboBoxChoice.setValue(RATIO[0]);
-        inputPanel.addInput(RATIO_T, I18N.tr("Ratio"), comboBoxChoice);
-
-        inputPanel.addInput(DPI_T,
-                I18N.tr("DPI"),
-                String.valueOf((int) (MapImageWriter.MILLIMETERS_BY_INCH / MapImageWriter.DEFAULT_PIXEL_SIZE)),
-                new TextBoxType(textWidth));
         inputPanel.addInput(TRANSPARENT_BACKGROUND_T,
                 "",
                 "True",
                 new CheckBoxChoice(true, "<html>" + I18N.tr("Transparent\nbackground") + "</html>"));
 
+        inputPanel.addInput(DPI_T,
+                I18N.tr("DPI"),
+                String.valueOf((int) (MapImageWriter.MILLIMETERS_BY_INCH / MapImageWriter.DEFAULT_PIXEL_SIZE)),
+                new TextBoxType(textWidth));
+
+        TextBoxType tbWidth = new TextBoxType(textWidth); 
+        inputPanel.addInput(WIDTH_T,
+                I18N.tr("Width (pixels)"),
+                String.valueOf(mapControl.getImage().getWidth()),
+                tbWidth);
+        TextBoxType tbHeight = new TextBoxType(textWidth);
+        inputPanel.addInput(HEIGHT_T,
+                I18N.tr("Height (pixels)"),
+                String.valueOf(mapControl.getImage().getHeight()),
+                tbHeight);
+
+        tbHeight.getComponent().addFocusListener(new FocusAdapter() {
+
+            @Override
+            public void focusGained(FocusEvent e) {
+                userChangedHeight = true;
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                updateWidth();
+            }
+
+            private void updateWidth() {
+                if (userChangedHeight) {
+                    if (inputPanel.getInput(RATIO_CHECKBOX_T).equals("true")) {
+                        // Change image width to keep ratio
+                        final String heightString = inputPanel.getInput(HEIGHT_T);
+                        if (!heightString.isEmpty()) {
+                            try {
+                                final Envelope adjExtent = mapControl.getMapTransform().getAdjustedExtent();
+                                final double ratio = adjExtent.getWidth() / adjExtent.getHeight();
+                                final int height = Integer.parseInt(heightString);
+                                final long newWidth = Math.round(height * ratio);
+                                inputPanel.setValue(WIDTH_T, String.valueOf(newWidth));
+                            } catch (NumberFormatException e) {
+                            }
+                        }
+                    }
+                }
+                userChangedWidth = false;
+            }
+        });
+
+        tbWidth.getComponent().addFocusListener(new FocusAdapter() {
+
+            @Override
+            public void focusGained(FocusEvent e) {
+                userChangedWidth = true;
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                updateHeight();
+            }
+
+            private void updateHeight() {
+                if (userChangedWidth) {
+                    if (inputPanel.getInput(RATIO_CHECKBOX_T).equals("true")) {
+                        // Change image height to keep ratio
+                        final String widthString = inputPanel.getInput(WIDTH_T);
+                        if (!widthString.isEmpty()) {
+                            try {
+                                final Envelope adjExtent = mapControl.getMapTransform().getAdjustedExtent();
+                                final double ratio = adjExtent.getHeight() / adjExtent.getWidth();
+                                final int width = Integer.parseInt(widthString);
+                                final long newHeight = Math.round(width * ratio);
+                                inputPanel.setValue(HEIGHT_T, String.valueOf(newHeight));
+                            } catch (NumberFormatException e) {
+                            }
+                        }
+                    }
+                }
+                userChangedHeight = false;
+            }
+        });
+
+        inputPanel.addInput(RATIO_CHECKBOX_T, "",
+                new CheckBoxChoice(true, I18N.tr("Keep ratio")));
+
         inputPanel.addValidation(new MIPValidationInteger(WIDTH_T, I18N.tr("Width (pixels)")));
         inputPanel.addValidation(new MIPValidationInteger(HEIGHT_T, I18N.tr("Height (pixels)")));
         inputPanel.addValidation(new MIPValidationInteger(DPI_T, I18N.tr("DPI")));
 
+        JButton refreshButton = new JButton(I18N.tr("Reset extent"));
+        refreshButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                inputPanel.setValue(WIDTH_T, String.valueOf(mapControl.getImage().getWidth()));
+                inputPanel.setValue(HEIGHT_T, String.valueOf(mapControl.getImage().getHeight()));
+            }
+        });
+        
         // Show the dialog and get the user's choice.
-        int userChoice = JOptionPane.showConfirmDialog(this,
-                        inputPanel.getComponent(),
-                        I18N.tr("Export map as image"),
-                        JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        OrbisGISIcon.getIcon("map_catalog"));
+        int userChoice = JOptionPane.showOptionDialog(this,
+                inputPanel.getComponent(),
+                I18N.tr("Export map as image"),
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                OrbisGISIcon.getIcon("map_catalog"),
+                new Object[]{"OK", "Cancel", refreshButton},
+                null);
 
         // If the user clicked OK, then show the save image dialog.
         if (userChoice == JOptionPane.OK_OPTION) {
@@ -562,13 +617,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 mapImageWriter.setBoundingBox(mapContext.getBoundingBox());
                 int width = Integer.valueOf(inputPanel.getInput(WIDTH_T));
                 int height = Integer.valueOf(inputPanel.getInput(HEIGHT_T));
-                Envelope adjExtent = mapControl.getMapTransform().getAdjustedExtent();
-                if(comboBoxChoice.getValue().equals(RATIO[1])) {
-                    // Change image height to keep ratio
-                    height = (int)(width * (adjExtent.getHeight() / adjExtent.getWidth()));
-                } else if(comboBoxChoice.getValue().equals(RATIO[2])) {
-                    width = (int)(height * (adjExtent.getWidth() / adjExtent.getHeight()));
-                }
+                
                 mapImageWriter.setWidth(width);
                 mapImageWriter.setHeight(height);
                 ExportRenderingIntoFile renderingIntoFile = new ExportRenderingIntoFile(mapImageWriter, outFile);
