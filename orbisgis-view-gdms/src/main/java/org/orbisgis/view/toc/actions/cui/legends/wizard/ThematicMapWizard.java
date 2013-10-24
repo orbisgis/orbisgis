@@ -29,8 +29,7 @@
 package org.orbisgis.view.toc.actions.cui.legends.wizard;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.types.Type;
-import org.gdms.driver.DriverException;
+import org.h2gis.utilities.SFSUtilities;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.sif.UIFactory;
@@ -72,6 +71,7 @@ public class ThematicMapWizard implements UIPanel, LegendContext {
     public ThematicMapWizard(ILayer l, MapTransform m){
         layer = l;
         try {
+            SFSUtilities.getGeometryType()
             Type type = layer.getDataSource().getMetadata().getFieldType(
                     layer.getDataSource().getSpatialFieldIndex());
             this.geometryType = (type == null)

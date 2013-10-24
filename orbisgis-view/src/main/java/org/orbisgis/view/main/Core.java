@@ -169,12 +169,8 @@ public class Core {
 
     private void startPluginHost() {
         try {
-            pluginFramework = new PluginHost(new File(mainContext.getCoreWorkspace().getPluginCache()));
-            pluginFramework.init();
-            // Install built-in bundles
-            BundleFromResources.installResourceBundles(pluginFramework.getHostBundleContext());
-            // Start bundles
-            pluginFramework.start();
+            mainContext.startBundleHost(BundleFromResources.SPECIFIC_BEHAVIOUR_BUNDLES);
+            pluginFramework = mainContext.getPluginHost();
         } catch (Exception ex) {
             LOGGER.error(I18N.tr("Loading of plugins is aborted"), ex);
         }
@@ -220,10 +216,6 @@ public class Core {
     }
 
     private static class PromptUserForSelectingWorkspace implements Runnable {
-                private CoreWorkspace coreWorkspace;
-                /** User do not cancel workspace selection */
-                private boolean ok = false;
-
         private CoreWorkspace coreWorkspace;
         /**
          * User do not cancel workspace selection
