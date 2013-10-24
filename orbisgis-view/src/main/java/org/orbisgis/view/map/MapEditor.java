@@ -115,6 +115,10 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     private PropertyChangeListener activeLayerListener = EventHandler.create(PropertyChangeListener.class,this,"onActiveLayerChange","");
     private ActionCommands actions = new ActionCommands();
     private MapEditorPersistence mapEditorPersistence = new MapEditorPersistence();
+
+    private boolean userChangedWidth = false;
+    private boolean userChangedHeight = false;
+
     /**
      * Constructor
      */
@@ -461,10 +465,9 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         final String TRANSPARENT_BACKGROUND_T = "background";
         final String DPI_T = "dpi";
         final int textWidth = 8;
-        final String[] RATIO = new String[] {"UPDATE_EXTENT", "FIX_WIDTH", "FIX_HEIGHT"};
+        final String[] RATIO = new String[] {"UPDATE_EXTENT", "KEEP_RATIO"};
         String[] RATIO_LABELS = new String[] {I18N.tr("Change extent"),
-                I18N.tr("Update height to keep ratio"),
-                I18N.tr("Update width to keep ratio")};
+                I18N.tr("Keep ratio")};
         final MultiInputPanel inputPanel = new MultiInputPanel(I18N.tr("Export parameters"));
 
         TextBoxType tbWidth = new TextBoxType(textWidth); 
@@ -484,52 +487,70 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         inputPanel.addInput(RATIO_T, I18N.tr("Ratio"), comboBoxChoice);
 
         tbHeight.getComponent().addFocusListener(new FocusAdapter() {
+
+            @Override
+            public void focusGained(FocusEvent e) {
+                userChangedHeight = true;
+            }
+
             @Override
             public void focusLost(FocusEvent e) {
                 updateWidth();
             }
 
             private void updateWidth() {
-                final String ratioCB = inputPanel.getInput(RATIO_T);
-                if (ratioCB.equals(RATIO[2])) {
-                    // Change image width to keep ratio
-                    final String heightString = inputPanel.getInput(HEIGHT_T);
-                    if (!heightString.isEmpty()) {
-                        try {
-                            final Envelope adjExtent = mapControl.getMapTransform().getAdjustedExtent();
-                            final double ratio = adjExtent.getWidth() / adjExtent.getHeight();
-                            final int height = Integer.parseInt(heightString);
-                            final long newWidth = Math.round(height * ratio);
-                            inputPanel.setValue(WIDTH_T, String.valueOf(newWidth));
-                        } catch (NumberFormatException e) {
+                if (userChangedHeight) {
+                    final String ratioCB = inputPanel.getInput(RATIO_T);
+                    if (ratioCB.equals(RATIO[1])) {
+                        // Change image width to keep ratio
+                        final String heightString = inputPanel.getInput(HEIGHT_T);
+                        if (!heightString.isEmpty()) {
+                            try {
+                                final Envelope adjExtent = mapControl.getMapTransform().getAdjustedExtent();
+                                final double ratio = adjExtent.getWidth() / adjExtent.getHeight();
+                                final int height = Integer.parseInt(heightString);
+                                final long newWidth = Math.round(height * ratio);
+                                inputPanel.setValue(WIDTH_T, String.valueOf(newWidth));
+                            } catch (NumberFormatException e) {
+                            }
                         }
                     }
                 }
+                userChangedWidth = false;
             }
         });
 
         tbWidth.getComponent().addFocusListener(new FocusAdapter() {
+
+            @Override
+            public void focusGained(FocusEvent e) {
+                userChangedWidth = true;
+            }
+
             @Override
             public void focusLost(FocusEvent e) {
                 updateHeight();
             }
 
             private void updateHeight() {
-                final String ratioCB = inputPanel.getInput(RATIO_T);
-                if (ratioCB.equals(RATIO[1])) {
-                    // Change image height to keep ratio
-                    final String widthString = inputPanel.getInput(WIDTH_T);
-                    if (!widthString.isEmpty()) {
-                        try {
-                            final Envelope adjExtent = mapControl.getMapTransform().getAdjustedExtent();
-                            final double ratio = adjExtent.getHeight() / adjExtent.getWidth();
-                            final int width = Integer.parseInt(widthString);
-                            final long newHeight = Math.round(width * ratio);
-                            inputPanel.setValue(HEIGHT_T, String.valueOf(newHeight));
-                        } catch (NumberFormatException e) {
+                if (userChangedWidth) {
+                    final String ratioCB = inputPanel.getInput(RATIO_T);
+                    if (ratioCB.equals(RATIO[1])) {
+                        // Change image height to keep ratio
+                        final String widthString = inputPanel.getInput(WIDTH_T);
+                        if (!widthString.isEmpty()) {
+                            try {
+                                final Envelope adjExtent = mapControl.getMapTransform().getAdjustedExtent();
+                                final double ratio = adjExtent.getHeight() / adjExtent.getWidth();
+                                final int width = Integer.parseInt(widthString);
+                                final long newHeight = Math.round(width * ratio);
+                                inputPanel.setValue(HEIGHT_T, String.valueOf(newHeight));
+                            } catch (NumberFormatException e) {
+                            }
                         }
                     }
                 }
+                userChangedHeight = false;
             }
         });
 
