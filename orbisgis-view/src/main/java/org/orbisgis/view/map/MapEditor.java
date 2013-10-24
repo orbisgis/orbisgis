@@ -461,14 +461,21 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         // Show Dialog to select image size
         final String WIDTH_T = "width";
         final String HEIGHT_T = "height";
-        final String RATIO_T = "ratio";
+        final String RATIO_CHECKBOX_T = "ratio checkbox";
         final String TRANSPARENT_BACKGROUND_T = "background";
         final String DPI_T = "dpi";
         final int textWidth = 8;
-        final String[] RATIO = new String[] {"UPDATE_EXTENT", "KEEP_RATIO"};
-        String[] RATIO_LABELS = new String[] {I18N.tr("Change extent"),
-                I18N.tr("Keep ratio")};
         final MultiInputPanel inputPanel = new MultiInputPanel(I18N.tr("Export parameters"));
+
+        inputPanel.addInput(TRANSPARENT_BACKGROUND_T,
+                "",
+                "True",
+                new CheckBoxChoice(true, "<html>" + I18N.tr("Transparent\nbackground") + "</html>"));
+
+        inputPanel.addInput(DPI_T,
+                I18N.tr("DPI"),
+                String.valueOf((int) (MapImageWriter.MILLIMETERS_BY_INCH / MapImageWriter.DEFAULT_PIXEL_SIZE)),
+                new TextBoxType(textWidth));
 
         TextBoxType tbWidth = new TextBoxType(textWidth); 
         inputPanel.addInput(WIDTH_T,
@@ -480,11 +487,6 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 I18N.tr("Height (pixels)"),
                 String.valueOf(mapControl.getImage().getHeight()),
                 tbHeight);
-
-        final ComboBoxChoice comboBoxChoice = new ComboBoxChoice(RATIO, RATIO_LABELS);
-        comboBoxChoice.setValue(RATIO[0]);
-
-        inputPanel.addInput(RATIO_T, I18N.tr("Ratio"), comboBoxChoice);
 
         tbHeight.getComponent().addFocusListener(new FocusAdapter() {
 
@@ -500,8 +502,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
             private void updateWidth() {
                 if (userChangedHeight) {
-                    final String ratioCB = inputPanel.getInput(RATIO_T);
-                    if (ratioCB.equals(RATIO[1])) {
+                    if (inputPanel.getInput(RATIO_CHECKBOX_T).equals("true")) {
                         // Change image width to keep ratio
                         final String heightString = inputPanel.getInput(HEIGHT_T);
                         if (!heightString.isEmpty()) {
@@ -534,8 +535,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
             private void updateHeight() {
                 if (userChangedWidth) {
-                    final String ratioCB = inputPanel.getInput(RATIO_T);
-                    if (ratioCB.equals(RATIO[1])) {
+                    if (inputPanel.getInput(RATIO_CHECKBOX_T).equals("true")) {
                         // Change image height to keep ratio
                         final String widthString = inputPanel.getInput(WIDTH_T);
                         if (!widthString.isEmpty()) {
@@ -554,14 +554,8 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             }
         });
 
-        inputPanel.addInput(DPI_T,
-                I18N.tr("DPI"),
-                String.valueOf((int) (MapImageWriter.MILLIMETERS_BY_INCH / MapImageWriter.DEFAULT_PIXEL_SIZE)),
-                new TextBoxType(textWidth));
-        inputPanel.addInput(TRANSPARENT_BACKGROUND_T,
-                "",
-                "True",
-                new CheckBoxChoice(true, "<html>" + I18N.tr("Transparent\nbackground") + "</html>"));
+        inputPanel.addInput(RATIO_CHECKBOX_T, "",
+                new CheckBoxChoice(true, I18N.tr("Keep ratio")));
 
         inputPanel.addValidation(new MIPValidationInteger(WIDTH_T, I18N.tr("Width (pixels)")));
         inputPanel.addValidation(new MIPValidationInteger(HEIGHT_T, I18N.tr("Height (pixels)")));
