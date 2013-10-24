@@ -62,7 +62,6 @@ import net.opengis.ows_context.StyleType;
 import net.opengis.ows_context.URLType;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.Renderer;
@@ -72,8 +71,8 @@ import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.core.renderer.se.common.LocalizedText;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.sputilities.SFSUtilities;
-import org.orbisgis.sputilities.URIUtility;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.URIUtility;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

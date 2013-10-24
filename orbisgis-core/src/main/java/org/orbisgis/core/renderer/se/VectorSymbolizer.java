@@ -45,7 +45,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
-import org.orbisgis.sputilities.SpatialResultSet;
+import org.h2gis.utilities.SpatialResultSet;
 
 /**
  * This class contains the common elements shared by <code>PointSymbolizer</code>,<code>LineSymbolizer</code>

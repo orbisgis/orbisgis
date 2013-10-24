@@ -49,7 +49,7 @@ import org.orbisgis.core.renderer.se.fill.HatchedFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.junit.Test;
-import org.orbisgis.sputilities.SFSUtilities;
+import org.h2gis.utilities.SFSUtilities;
 
 import static org.junit.Assert.*;
 

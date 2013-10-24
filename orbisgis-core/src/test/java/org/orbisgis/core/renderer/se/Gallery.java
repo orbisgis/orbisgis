@@ -46,7 +46,7 @@ import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.sputilities.SFSUtilities;
+import org.h2gis.utilities.SFSUtilities;
 
 /**
  *

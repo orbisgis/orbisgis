@@ -54,9 +54,9 @@ import org.orbisgis.core.renderer.se.VectorSymbolizer;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.sputilities.SFSUtilities;
-import org.orbisgis.sputilities.SpatialResultSet;
-import org.orbisgis.sputilities.SpatialResultSetMetaData;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.SpatialResultSet;
+import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

@@ -107,7 +107,7 @@
                 <dependency>
                   <groupId>org.h2gis</groupId>
                   <artifactId>h2spatial</artifactId>
-                  <version>${h2-spatial-version}</version>
+                  <version>${h2-gis-version}</version>
                   <scope>test</scope>
                 </dependency>
                 <dependency>

@@ -198,31 +198,31 @@
         <dependency>
             <groupId>org.h2gis</groupId>
             <artifactId>h2spatial-ext-osgi</artifactId>
-            <version>${h2-spatial-version}</version>
+            <version>${h2-gis-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.h2gis</groupId>
             <artifactId>h2drivers</artifactId>
-            <version>${h2-spatial-version}</version>
+            <version>${h2-gis-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.h2gis</groupId>
             <artifactId>h2spatial-ext</artifactId>
-            <version>${h2-spatial-version}</version>
+            <version>${h2-gis-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.h2gis</groupId>
             <artifactId>h2spatial</artifactId>
-            <version>${h2-spatial-version}</version>
+            <version>${h2-gis-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.h2gis</groupId>
             <artifactId>h2spatial-osgi</artifactId>
-            <version>${h2-spatial-version}</version>
+            <version>${h2-gis-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

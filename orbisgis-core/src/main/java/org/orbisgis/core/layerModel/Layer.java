@@ -41,7 +41,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.sputilities.SFSUtilities;
+import org.h2gis.utilities.SFSUtilities;
 
 import javax.sql.DataSource;
 

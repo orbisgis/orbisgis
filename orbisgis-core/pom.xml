@@ -181,7 +181,7 @@
                 <dependency>
                         <groupId>org.xnap.commons</groupId>
                         <artifactId>gettext-commons</artifactId>
-                        <version>0.9.7</version>
+                        <version>${gettext-commons-version}</version>
                 </dependency>
                 <dependency>
                         <groupId>org.orbisgis.schemas</groupId>
@@ -216,7 +216,7 @@
                 <dependency>
                         <groupId>org.h2gis</groupId>
                         <artifactId>spatial-utilities</artifactId>
-                        <version>${h2-spatial-version}</version>
+                        <version>${h2-gis-version}</version>
                 </dependency>
                 <dependency>
                     <groupId>org.osgi</groupId>
@@ -232,25 +232,25 @@
                 <dependency>
                     <groupId>org.h2gis</groupId>
                     <artifactId>h2spatial-ext-osgi</artifactId>
-                    <version>${h2-spatial-version}</version>
+                    <version>${h2-gis-version}</version>
                     <scope>test</scope>
                 </dependency>
             <dependency>
                 <groupId>org.h2gis</groupId>
                 <artifactId>h2spatial-ext</artifactId>
-                <version>${h2-spatial-version}</version>
+                <version>${h2-gis-version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.h2gis</groupId>
                 <artifactId>h2spatial</artifactId>
-                <version>${h2-spatial-version}</version>
+                <version>${h2-gis-version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.h2gis</groupId>
                 <artifactId>h2spatial-osgi</artifactId>
-                <version>${h2-spatial-version}</version>
+                <version>${h2-gis-version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

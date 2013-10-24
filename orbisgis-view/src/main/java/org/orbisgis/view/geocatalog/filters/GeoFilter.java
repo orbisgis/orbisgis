@@ -28,8 +28,8 @@
  */
 package org.orbisgis.view.geocatalog.filters;
 
-import org.orbisgis.sputilities.SFSUtilities;
-import org.orbisgis.sputilities.TableLocation;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

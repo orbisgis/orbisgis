@@ -47,9 +47,9 @@ import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
-import org.orbisgis.sputilities.GeometryTypeCodes;
-import org.orbisgis.sputilities.SFSUtilities;
-import org.orbisgis.sputilities.SpatialResultSet;
+import org.h2gis.utilities.GeometryTypeCodes;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.SpatialResultSet;
 
 import javax.sql.DataSource;
 

@@ -3,7 +3,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
         <modelVersion>4.0.0</modelVersion>
         <packaging>bundle</packaging>
-        <groupId>org.orbisgis</groupId>
         <artifactId>orbisgis-omanager</artifactId>
         <name>OSGi Plugin Manager GUI</name>
         <description>Graphical user interface to manage OSGi bundles.</description>
@@ -81,13 +80,13 @@
                 <dependency>
                     <groupId>org.osgi</groupId>
                     <artifactId>org.osgi.compendium</artifactId>
-                    <version>4.3.1</version>
+                    <version>${org.osgi.compendium-version}</version>
                     <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>org.osgi.service.obr</artifactId>
-                    <version>1.0.2</version>
+                    <version>${org.osgi.service.obr-version}</version>
                     <scope>provided</scope>
                 </dependency>
                 <dependency>
@@ -99,12 +98,12 @@
                 <dependency>
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
-                    <version>1.2.16</version>
+                    <version>${log4j-version}</version>
                 </dependency>
                 <dependency>
                     <groupId>org.xnap.commons</groupId>
                     <artifactId>gettext-commons</artifactId>
-                    <version>0.9.7</version>
+                    <version>${gettext-commons-version}</version>
                 </dependency>
         </dependencies>
         <pluginRepositories>

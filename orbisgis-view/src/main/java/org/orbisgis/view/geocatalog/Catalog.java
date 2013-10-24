@@ -58,7 +58,7 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
-import org.orbisgis.sputilities.TableLocation;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.utils.FileUtils;
 import org.orbisgis.view.background.BackgroundJob;

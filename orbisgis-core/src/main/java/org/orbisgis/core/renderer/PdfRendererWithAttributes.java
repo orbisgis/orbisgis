@@ -37,14 +37,13 @@ import com.itextpdf.text.pdf.PdfStructureElement;
 import com.itextpdf.text.pdf.PdfTemplate;
 import java.awt.Graphics2D;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.sputilities.SpatialResultSetMetaData;
+import org.h2gis.utilities.SpatialResultSetMetaData;
 
 /**
  * This renderer is a prototype. The aim is to generate rendered-layers in a way

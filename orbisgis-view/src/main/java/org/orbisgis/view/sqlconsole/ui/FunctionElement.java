@@ -30,7 +30,7 @@ package org.orbisgis.view.sqlconsole.ui;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
-import org.orbisgis.sputilities.TableLocation;
+import org.h2gis.utilities.TableLocation;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

@@ -86,7 +86,7 @@
                 <dependency>
                     <groupId>org.xnap.commons</groupId>
                     <artifactId>gettext-commons</artifactId>
-                    <version>0.9.7</version>
+                    <version>${gettext-commons-version}</version>
                 </dependency>
                 <dependency>
                     <groupId>log4j</groupId>
