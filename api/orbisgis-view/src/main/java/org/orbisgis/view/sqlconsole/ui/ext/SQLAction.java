@@ -43,5 +43,7 @@ public interface SQLAction extends ActionFactoryService<org.orbisgis.view.sqlcon
     public static final String A_FORMAT = "M_SEARCH";
     public static final String A_QUOTE = "M_QUOTE";
     public static final String A_UNQUOTE = "M_UNQUOTE";
+    public static final String A_COMMENT = "M_COMMENT";
+    public static final String A_BLOCKCOMMENT = "M_BLOCKCOMMENT";
     public static final String A_SQL_LIST = "M_SQL_LIST";
 }
