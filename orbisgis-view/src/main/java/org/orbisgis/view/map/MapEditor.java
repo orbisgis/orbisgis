@@ -560,16 +560,25 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         inputPanel.addValidation(new MIPValidationInteger(WIDTH_T, I18N.tr("Width (pixels)")));
         inputPanel.addValidation(new MIPValidationInteger(HEIGHT_T, I18N.tr("Height (pixels)")));
         inputPanel.addValidation(new MIPValidationInteger(DPI_T, I18N.tr("DPI")));
-        
-        
+
+        JButton refreshButton = new JButton(I18N.tr("Reset extent"));
+        refreshButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                inputPanel.setValue(WIDTH_T, String.valueOf(mapControl.getImage().getWidth()));
+                inputPanel.setValue(HEIGHT_T, String.valueOf(mapControl.getImage().getHeight()));
+            }
+        });
         
         // Show the dialog and get the user's choice.
-        int userChoice = JOptionPane.showConfirmDialog(this,
-                        inputPanel.getComponent(),
-                        I18N.tr("Export map as image"),
-                        JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        OrbisGISIcon.getIcon("map_catalog"));
+        int userChoice = JOptionPane.showOptionDialog(this,
+                inputPanel.getComponent(),
+                I18N.tr("Export map as image"),
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                OrbisGISIcon.getIcon("map_catalog"),
+                new Object[]{"OK", "Cancel", refreshButton},
+                null);
 
         // If the user clicked OK, then show the save image dialog.
         if (userChoice == JOptionPane.OK_OPTION) {
