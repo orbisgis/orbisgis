@@ -57,7 +57,7 @@ public class ProportionalPointPanel extends AbsPanel {
     private MaxSizeSpinner maxSizeSpinner;
     private MinSizeSpinner minSizeSpinner;
 
-    private OnVertexOnCentroidButtonGroup onVertexOnCentroidButtonGroup;
+    private OnVertexOnInteriorButtonGroup onVertexOnInteriorButtonGroup;
 
     /**
      * Constructor
@@ -98,8 +98,8 @@ public class ProportionalPointPanel extends AbsPanel {
             e.printStackTrace();
         }
         if (geometryType != SimpleGeometryType.POINT) {
-            onVertexOnCentroidButtonGroup =
-                    new OnVertexOnCentroidButtonGroup(getLegend(), preview);
+            onVertexOnInteriorButtonGroup =
+                    new OnVertexOnInteriorButtonGroup(getLegend(), preview);
         }
     }
 
@@ -121,10 +121,10 @@ public class ProportionalPointPanel extends AbsPanel {
         add(new JLabel(I18N.tr("Min. size")));
         add(minSizeSpinner, "growx");
         // If geometryType != POINT, we must let the user choose if he
-        // wants to draw symbols on centroid or on vertices.
+        // wants to draw symbols on interior point or on vertices.
         if (geometryType != SimpleGeometryType.POINT) {
             add(new JLabel(I18N.tr(PLACE_SYMBOL_ON)), "span 1 2");
-            add(onVertexOnCentroidButtonGroup, "span 1 2");
+            add(onVertexOnInteriorButtonGroup, "span 1 2");
         }
     }
 }

@@ -31,25 +31,25 @@ package org.orbisgis.legend.thematic;
 
 /**
  * Interface for {@code Legend}s which can be set either on vertices
- * or on the centroid.
+ * or on the interior point.
  *
  * @author Adam Gouge
  */
-public interface OnVertexOnCentroid {
+public interface OnVertexOnInterior {
 
     /**
-     * Gets whether symbols must be drawn on vertices or on centroid.
+     * Gets whether symbols must be drawn on vertices or on interior point.
      * @return
      */
     boolean isOnVertex();
 
     /**
-     * Sets that symbols must be drawn on vertices or on centroid.
+     * Sets that symbols must be drawn on vertices or on interior point.
      */
     void setOnVertex();
 
     /**
-     * Sets that symbols must be drawn on vertices or on centroid.
+     * Sets that symbols must be drawn on vertices or on interior point.
      */
-    void setOnCentroid();
+    void setOnInterior();
 }

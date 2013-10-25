@@ -49,7 +49,7 @@ public class PointPanel extends AbsPanel {
     private final boolean displayUOM;
     private final int geometryType;
 
-    private OnVertexOnCentroidButtonGroup onVertexOnCentroidButtonGroup;
+    private OnVertexOnInteriorButtonGroup onVertexOnInteriorButtonGroup;
     private SymbolUOMComboBox symbolUOMComboBox;
     private WKNComboBox wknComboBox;
     private SymbolWidthSpinner symbolWidthSpinner;
@@ -85,8 +85,8 @@ public class PointPanel extends AbsPanel {
     protected void init() {
         if (displayUOM) {
             if (geometryType != SimpleGeometryType.POINT) {
-                onVertexOnCentroidButtonGroup =
-                        new OnVertexOnCentroidButtonGroup(getLegend(), preview);
+                onVertexOnInteriorButtonGroup =
+                        new OnVertexOnInteriorButtonGroup(getLegend(), preview);
             }
             symbolUOMComboBox = new SymbolUOMComboBox(getLegend(), preview);
         }
@@ -99,10 +99,10 @@ public class PointPanel extends AbsPanel {
     protected void addComponents() {
         if (displayUOM) {
             // If geometryType != POINT, we must let the user choose if
-            // he wants to draw symbols on centroid or on vertices.
+            // he wants to draw symbols on interior point or on vertices.
             if (geometryType != SimpleGeometryType.POINT) {
                 add(new JLabel(I18N.tr(PLACE_SYMBOL_ON)), "span 1 2");
-                add(onVertexOnCentroidButtonGroup, "span 1 2");
+                add(onVertexOnInteriorButtonGroup, "span 1 2");
             }
             // Unit of measure - symbol size
             add(new JLabel(I18N.tr(SYMBOL_SIZE_UNIT)));
