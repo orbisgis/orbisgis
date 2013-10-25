@@ -589,6 +589,8 @@ public class SQLConsolePanel extends JPanel {
                         findAction.setEnabled(false);
                         quoteAction.setEnabled(false);
                         unQuoteAction.setEnabled(false);
+                        commentAction.setEnabled(false);
+                        blockCommentAction.setEnabled(false);
                         formatSQLAction.setEnabled(false);
                 }
                 else{
@@ -598,6 +600,8 @@ public class SQLConsolePanel extends JPanel {
                         findAction.setEnabled(true);
                         quoteAction.setEnabled(true);
                         unQuoteAction.setEnabled(true);
+                        commentAction.setEnabled(true);
+                        blockCommentAction.setEnabled(true);
                         formatSQLAction.setEnabled(true);
                 }
         }
