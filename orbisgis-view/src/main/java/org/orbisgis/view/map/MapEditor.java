@@ -577,7 +577,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 OrbisGISIcon.getIcon("map_catalog"),
-                new Object[]{"OK", "Cancel", refreshButton},
+                new Object[]{I18N.tr("OK"), I18N.tr("Cancel"), refreshButton},
                 null);
 
         // If the user clicked OK, then show the save image dialog.
