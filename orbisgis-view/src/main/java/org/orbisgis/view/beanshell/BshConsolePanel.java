@@ -497,12 +497,16 @@ public final class BshConsolePanel extends JPanel {
                         clearAction.setEnabled(false);
                         saveAction.setEnabled(false);
                         findAction.setEnabled(false);
+                        commentAction.setEnabled(false);
+                        blockCommentAction.setEnabled(false);
                 }
                 else{
                         executeAction.setEnabled(true);
                         clearAction.setEnabled(true);
                         saveAction.setEnabled(true);
                         findAction.setEnabled(true);
+                        commentAction.setEnabled(true);
+                        blockCommentAction.setEnabled(true);
                 }
         }
         
