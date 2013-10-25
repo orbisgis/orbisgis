@@ -3,9 +3,9 @@ package org.orbisgis.view.util;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.junit.Test;
 import org.orbisgis.utils.TextUtils;
-import org.orbisgis.view.util.CommentUtil;
 
 import javax.swing.text.BadLocationException;
+import java.awt.*;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -33,6 +33,7 @@ public class CommentUtilTest {
 
     @Test
     public void testCommentLinesOneAndTwo() {
+        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
         RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
         scriptPanel.setText(TEXT);
         // Comment just the first two lines.
@@ -45,6 +46,7 @@ public class CommentUtilTest {
 
     @Test
     public void testCommentUncommentLinesOneAndTwo() {
+        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
         RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
         scriptPanel.setText(TEXT);
         scriptPanel.select(13, 226);
@@ -57,6 +59,7 @@ public class CommentUtilTest {
 
     @Test
     public void testUncommentUnbrokenRangeWithCommentRemainingOnLineTwo() {
+        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
         RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
         scriptPanel.setText(CommentUtil.SQL_COMMENT_CHARACTER + LINE_ONE
                 + CommentUtil.SQL_COMMENT_CHARACTER + CommentUtil.SQL_COMMENT_CHARACTER + LINE_TWO
@@ -73,6 +76,7 @@ public class CommentUtilTest {
 
     @Test
     public void testCommentBrokenRangeWithNoCommentOnLineTwo() {
+        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
         RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
         scriptPanel.setText(CommentUtil.SQL_COMMENT_CHARACTER + LINE_ONE
                 + LINE_TWO
@@ -89,6 +93,7 @@ public class CommentUtilTest {
 
     @Test
     public void testBlockComment() throws BadLocationException {
+        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
         RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
         scriptPanel.setText(TEXT);
         scriptPanel.select(13, 226);
@@ -113,6 +118,7 @@ public class CommentUtilTest {
 
     @Test
     public void testBlockCommentEmptySelection() {
+        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
         RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
         scriptPanel.setText(TEXT);
         // Try to comment when there is no selection.
@@ -124,6 +130,7 @@ public class CommentUtilTest {
 
     @Test
     public void testBlockCommentUncomment() throws BadLocationException {
+        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
         RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
         scriptPanel.setText(TEXT);
         scriptPanel.select(13, 226);
@@ -143,6 +150,7 @@ public class CommentUtilTest {
 
     @Test
     public void testBlockUncomment() {
+        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
         RSyntaxTextArea scriptPanel = new RSyntaxTextArea();
         scriptPanel.setText("This is a /*test for block*/ uncommenting.");
         // Comment just the first two lines.
@@ -155,6 +163,4 @@ public class CommentUtilTest {
         assertEquals("This is a test for block uncommenting.",
                 scriptPanel.getText());
     }
-
-
 }
