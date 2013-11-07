@@ -50,9 +50,9 @@ import org.osgi.framework.Bundle;
 /**
  * @author Nicolas Fortin
  */
-public class BundleListRenderer implements ListCellRenderer {
+public class BundleListRenderer implements ListCellRenderer<BundleItem> {
     private static final Logger LOGGER = Logger.getLogger(BundleListRenderer.class);
-    private ListCellRenderer lookAndFeelRenderer;
+    private ListCellRenderer<? super BundleItem> lookAndFeelRenderer;
     private static Dimension bundleIconDimension = new Dimension(32,32);
     private static final ImageIcon defaultIcon = new ImageIcon(BundleListRenderer.class.getResource("defaultIcon.png"));
     private static final ImageIcon activeLayer = new ImageIcon(BundleListRenderer.class.getResource("active_layer.png"));
@@ -102,7 +102,7 @@ public class BundleListRenderer implements ListCellRenderer {
      */
     public static String getBundleIconPath(String icons) {
         if(icons!=null) {
-            List<String> iconList = new ArrayList<String>();
+            List<String> iconList = new ArrayList<>();
             if(icons.contains(ICON_SEPARATOR)) {
                 for(String icon_descr : icons.split(ICON_SEPARATOR)) {
                     iconList.add(icon_descr);
@@ -137,12 +137,13 @@ public class BundleListRenderer implements ListCellRenderer {
     private ImageIcon getBundleIcon(Bundle bundle) {
         return pathToImage(bundle,getBundleIconPath(bundle.getHeaders().get(ICON_HEADER)));
     }
-    public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b2) {
-        Component lafComp = lookAndFeelRenderer.getListCellRendererComponent(jList,o,i,b,b2);
-        if(lafComp instanceof JLabel && o!=null) {
+
+    @Override
+    public Component getListCellRendererComponent(JList<? extends BundleItem> jList, BundleItem bi, int i, boolean b, boolean b2) {
+        Component lafComp = lookAndFeelRenderer.getListCellRendererComponent(jList,bi,i,b,b2);
+        if(lafComp instanceof JLabel && bi!=null) {
                 try {
                     JLabel label = (JLabel)lafComp;
-                    BundleItem bi = (BundleItem)o;
                     ImageIcon bundleImage = defaultIcon;
                     // Open the bundle icon if defined
                     if(bi.getBundle()!=null) {
@@ -186,7 +187,7 @@ public class BundleListRenderer implements ListCellRenderer {
      * Warning, Used only by PropertyChangeListener on UI property
      */
     public void updateLFRenderer() {
-        lookAndFeelRenderer = new JList().getCellRenderer();
+        lookAndFeelRenderer = new JList<BundleItem>().getCellRenderer();
     }
 
     private void initialize(JList list) {

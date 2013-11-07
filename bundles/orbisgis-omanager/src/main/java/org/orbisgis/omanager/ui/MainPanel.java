@@ -37,7 +37,6 @@ import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -99,17 +98,17 @@ public class MainPanel extends JPanel {
     private static final int PROPERTY_TITLE_SIZE_INCREMENT = 4;
     private static final String DEFAULT_CATEGORY = "OrbisGIS";
     private ItemFilterStatusFactory.Status radioFilterStatus = ItemFilterStatusFactory.Status.ALL;
-    private Map<String,ImageIcon> buttonIcons = new HashMap<String, ImageIcon>();
+    private Map<String,ImageIcon> buttonIcons = new HashMap<>();
 
     // Bundle Category filter
-    private JComboBox bundleCategory = new JComboBox();
+    private JComboBox<String> bundleCategory = new JComboBox<>();
     private JTextField bundleSearchField = new JTextField(MINIMUM_SEARCH_COLUMNS);
     private JTextPane bundleDetails = new JTextPane();
-    private JList bundleList = new JList();
+    private JList<BundleItem> bundleList = new JList<>();
     private JPanel bundleActions = new JPanel();
     private JButton repositoryRemove;
     private BundleListModel bundleListModel;
-    private FilteredModel<BundleListModel> filterModel;
+    private FilteredModel<BundleItem, BundleListModel> filterModel;
     private JPanel bundleDetailsAndActions = new JPanel(new BorderLayout());
     private JSplitPane splitPane;
     private ActionBundleFactory actionFactory;
@@ -156,7 +155,7 @@ public class MainPanel extends JPanel {
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,leftOfSplitGroup,bundleDetailsAndActions);
         add(splitPane);
         bundleListModel =  new BundleListModel(bundleContext,repositoryAdminTrackerCustomizer);
-        filterModel = new FilteredModel<BundleListModel>(bundleListModel);
+        filterModel = new FilteredModel<>(bundleListModel);
         bundleList.setModel(filterModel);
         bundleListModel.install();
         bundleList.setCellRenderer(new BundleListRenderer(bundleList));
@@ -183,7 +182,7 @@ public class MainPanel extends JPanel {
 
     private void initRepositoryTracker() {
         repositoryAdminTrackerCustomizer = new RepositoryAdminTracker(bundleContext);
-        repositoryAdminTracker = new ServiceTracker<RepositoryAdmin, RepositoryAdmin>(bundleContext,
+        repositoryAdminTracker = new ServiceTracker<>(bundleContext,
                 RepositoryAdmin.class,repositoryAdminTrackerCustomizer);
         repositoryAdminTracker.open();
         repositoryAdminTrackerCustomizer.getPropertyChangeSupport().addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class,this,"onRepositoryChange"));
@@ -198,10 +197,10 @@ public class MainPanel extends JPanel {
             readSelectedBundle();
         }
     }
+
     private void readSelectedBundle() {
-        Object selected = bundleList.getSelectedValue();
-        if(selected instanceof BundleItem) {
-            final BundleItem selectedItem = (BundleItem)selected;
+        final BundleItem selectedItem = bundleList.getSelectedValue();
+        if(selectedItem != null) {
             if(!SwingUtilities.isEventDispatchThread()) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
@@ -231,19 +230,24 @@ public class MainPanel extends JPanel {
     public void onListUpdate() {
         Object oldValue = bundleCategory.getSelectedItem();
         readSelectedBundle();
-        DefaultComboBoxModel model = new DefaultComboBoxModel();
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         // Update the list of categories
-        Set<String> categories = new HashSet<String>();
+        Set<String> categories = new HashSet<>();
         int size = bundleList.getModel().getSize();
-        ListModel listModel = bundleList.getModel();
+        ListModel<BundleItem> listModel = bundleList.getModel();
         for(int i=0; i<size; i++) {
-            categories.addAll(((BundleItem) listModel.getElementAt(i)).getBundleCategories());
+            BundleItem item = listModel.getElementAt(i);
+            if(item != null) {
+                for(String category : item.getBundleCategories()) {
+                    categories.add(category.trim().toLowerCase());
+                }
+            }
         }
         if(!categories.contains(DEFAULT_CATEGORY)) {
             categories.add(DEFAULT_CATEGORY);
         }
         model.addElement(I18N.tr("All"));
-        List<String> sortedCategories = new ArrayList<String>(categories);
+        List<String> sortedCategories = new ArrayList<>(categories);
         Collections.sort(sortedCategories,String.CASE_INSENSITIVE_ORDER);
         String selectedValue= DEFAULT_CATEGORY;
         if(oldValue instanceof String) {
@@ -374,7 +378,7 @@ public class MainPanel extends JPanel {
         }
     }
     private void applyFilters() {
-        List<ItemFilter<BundleListModel>> filters = new ArrayList<ItemFilter<BundleListModel>>();
+        List<ItemFilter<BundleListModel>> filters = new ArrayList<>();
         ItemFilter<BundleListModel> radioFilter = ItemFilterStatusFactory.getFilter(radioFilterStatus);
         if(radioFilter!=null) {
             filters.add(radioFilter);

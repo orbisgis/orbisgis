@@ -39,7 +39,7 @@ import javax.swing.event.ListDataListener;
  * Decorator to ListModel, enable filtering
  * @param <SubModel> ListModel implementation
  */
-public class FilteredModel<SubModel extends ListModel> extends AbstractListModel {
+public class FilteredModel<Item, SubModel extends ListModel<Item>> extends AbstractListModel<Item> {
     private SubModel subModel;
     private List<Integer> shownElements = null;      // Filtered (visible) elements
     private ItemFilter<SubModel> elementFilter;
@@ -80,14 +80,14 @@ public class FilteredModel<SubModel extends ListModel> extends AbstractListModel
         }
     }
     @Override
-    public Object getElementAt(int i) {
+    public Item getElementAt(int i) {
         if(elementFilter==null) {
             return subModel.getElementAt(i);
         } else {
             if(i>=0 && i<shownElements.size()) {
                 return subModel.getElementAt(shownElements.get(i));
             } else {
-                return false;
+                return null;
             }
         }
     }
