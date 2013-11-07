@@ -32,7 +32,6 @@
                             <extensions>true</extensions>
                             <configuration>
                                 <instructions>
-                                    <Export-Package>org.orbisgis.sif.*, org.orbisgis.sif</Export-Package>
                                     <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
                                     <Bundle-Category>gui</Bundle-Category>
                                 </instructions>

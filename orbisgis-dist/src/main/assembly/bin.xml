@@ -42,7 +42,7 @@
             <dependencySet>
                 <outputDirectory>/bin/</outputDirectory>
                 <useProjectArtifact>true</useProjectArtifact>
-                <scope>runtime</scope>
+               <!-- <scope>runtime</scope> -->
             </dependencySet>
         </dependencySets>
 </assembly>
