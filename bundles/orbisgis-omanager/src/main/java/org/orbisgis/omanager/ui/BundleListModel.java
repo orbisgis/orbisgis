@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.swing.AbstractListModel;
 import javax.swing.SwingUtilities;
-import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -50,16 +49,15 @@ import org.osgi.service.obr.Resource;
  * List content of Bundles, items are only instance of {@link BundleItem}.
  * @author Nicolas Fortin
  */
-public class BundleListModel extends AbstractListModel {
+public class BundleListModel extends AbstractListModel<BundleItem> {
     // Bundles read from local repository and remote repositories
-    private static final Logger LOGGER = Logger.getLogger("gui."+BundleListModel.class);
-    private List<BundleItem> storedBundles = new ArrayList<BundleItem>();
+    private List<BundleItem> storedBundles = new ArrayList<>();
     private BundleContext bundleContext;
     private BundleListener bundleListener = new BundleModelListener();
     private RepositoryAdminTracker repositoryAdminTrackerCustomizer;
     // Hidden bundles
     private final static Set<String> HIDDEN_BUNDLES_SET =
-            new HashSet<String>(Arrays.asList(new String[]{"org.apache.felix.framework",
+            new HashSet<>(Arrays.asList(new String[]{"org.apache.felix.framework",
             "org.apache.felix.shell","org.osgi.service.obr","org.apache.felix.shell.gui",
             "org.apache.felix.bundlerepository","org.orbisgis.omanager-plugin",
             "org.orbisgis.omanager"}));
@@ -106,7 +104,7 @@ public class BundleListModel extends AbstractListModel {
      * Update the content of the bundle context. Called also by the propertyChangeListener.
      */
     public void update() {
-        Map<String,BundleItem> curBundles = new HashMap<String,BundleItem>(storedBundles.size());
+        Map<String,BundleItem> curBundles = new HashMap<>(storedBundles.size());
         for(BundleItem bundle : storedBundles) {
             curBundles.put(bundle.getSymbolicName(),bundle);
         }
@@ -118,7 +116,7 @@ public class BundleListModel extends AbstractListModel {
             // This model should be already uninstalled;
             return;
         }
-        Set<String> currentBundles = new HashSet<String>(bundles.length);
+        Set<String> currentBundles = new HashSet<>(bundles.length);
         // Search new or updated bundles
         for(Bundle bundle : bundles) {
             if(!HIDDEN_BUNDLES_SET.contains(bundle.getSymbolicName())) {
@@ -143,7 +141,7 @@ public class BundleListModel extends AbstractListModel {
             }
         }
         // Search deleted bundles
-        for(BundleItem item : new ArrayList<BundleItem>(storedBundles)) {
+        for(BundleItem item : new ArrayList<>(storedBundles)) {
             if(!currentBundles.contains(getIdentifier(item))) {
                 item.setBundle(null);
                 if(item.getObrResource()==null) {
@@ -162,8 +160,8 @@ public class BundleListModel extends AbstractListModel {
                 if(storedBundle!=null) {
                     // An item has the same identifier
                     Resource storedObrResource = storedBundle.getObrResource();
-                    if(storedObrResource==null || (storedObrResource!=null && storedObrResource.getVersion()
-                            .compareTo(resource.getVersion())<0)) {
+                    if(storedObrResource==null || storedObrResource.getVersion()
+                            .compareTo(resource.getVersion())<0) {
                         // Replace stored Obr Resource if the version is inferior or it does not exist
                         storedBundle.setObrResource(resource);
                         int index = storedBundles.indexOf(storedBundle);
@@ -180,7 +178,7 @@ public class BundleListModel extends AbstractListModel {
             }
         }
         // Remove empty items
-        for(BundleItem item : new ArrayList<BundleItem>(storedBundles)) {
+        for(BundleItem item : new ArrayList<>(storedBundles)) {
             if(item.getBundle()==null && item.getObrResource()==null) {
                 deleteItem(item);
             }
@@ -196,11 +194,14 @@ public class BundleListModel extends AbstractListModel {
     private String getIdentifier(BundleItem bundle) {
         return bundle.getSymbolicName();
     }
+
+    @Override
     public int getSize() {
         return storedBundles.size();
     }
 
-    public Object getElementAt(int i) {
+    @Override
+    public BundleItem getElementAt(int i) {
         if(i >= 0 && i < getSize()) {
             return storedBundles.get(i);
         } else {
