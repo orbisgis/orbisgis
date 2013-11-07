@@ -196,31 +196,31 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.h2gis</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial-ext-osgi</artifactId>
             <version>${h2-gis-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.h2gis</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>h2drivers</artifactId>
             <version>${h2-gis-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.h2gis</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial-ext</artifactId>
             <version>${h2-gis-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.h2gis</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial</artifactId>
             <version>${h2-gis-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.h2gis</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial-osgi</artifactId>
             <version>${h2-gis-version}</version>
             <scope>provided</scope>
@@ -244,7 +244,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-          <groupId>org.cts</groupId>
+          <groupId>${project.groupId}</groupId>
           <artifactId>cts</artifactId>
           <version>${cts-version}</version>
         </dependency>
