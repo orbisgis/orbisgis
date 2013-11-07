@@ -157,7 +157,7 @@ public class MultiInputPanel implements UIPanel {
         }
 
         @Override
-        public Component getComponent() {
+        public InputPanel getComponent() {
                 if (comp == null) {
                         comp = new InputPanel(inputs);
                 }

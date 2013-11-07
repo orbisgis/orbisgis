@@ -55,7 +55,7 @@ public final class TextBoxType implements InputType {
         }
 
         @Override
-        public Component getComponent() {
+        public JTextField getComponent() {
                 return comp;
         }
 

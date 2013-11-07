@@ -55,7 +55,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class RepositoryAdminTracker implements ServiceTrackerCustomizer<RepositoryAdmin,RepositoryAdmin> {
     private BundleContext bc;
     private static final String OSGI_REPOSITORY_FILENAME = "repositories.properties";
-    private final URI ORBISGIS_OSGI_REPOSITORY = URI.create("http://plugins.orbisgis.org/repository.xml");
+    private final URI ORBISGIS_OSGI_REPOSITORY = URI.create("http://plugins.orbisgis.org/.meta/obr.xml");
     private final Logger logger = Logger.getLogger(RepositoryAdminTracker.class);
     private AtomicBoolean addingRepositories = new AtomicBoolean(false);
 
