@@ -134,6 +134,7 @@ public class FunctionElement {
                             sb.append(functionData.getString("TYPE_NAME"));
                         }
                     }
+                    sb.append(")");
                     functionData.close();
                     command = sb.toString();
                 } finally {

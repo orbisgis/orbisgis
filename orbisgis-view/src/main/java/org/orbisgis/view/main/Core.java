@@ -142,7 +142,7 @@ public class Core {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }
         UIFactory.setMainFrame(mainFrame);
-        progressInfo.init(I18N.tr("Loading GDMS.."), 100);
+        progressInfo.init(I18N.tr("Loading Workspace.."), 100);
         initMainContext(debugMode, coreWorkspace);
         progressInfo.progressTo(10);
         this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());
@@ -155,6 +155,7 @@ public class Core {
         progressInfo.init(I18N.tr("Load the plugin framework.."), 100);
         startPluginHost();
         progressInfo.progressTo(18);
+        progressInfo.init(I18N.tr("Connecting to the database.."), 100);
         // Init database
         try {
             mainContext.initDataBase("","");

@@ -52,7 +52,11 @@ public class FunctionListTransferHandler extends TransferHandler {
                 StringBuilder stringBuilder = new StringBuilder();
                 Object[] selectedItems = list.getSelectedValues();
                 for(Object item : selectedItems) {
-                        stringBuilder.append(((FunctionElement)item).getSQLCommand());
+                        FunctionElement functionElement = ((FunctionElement)item);
+                        stringBuilder.append("-- ");
+                        stringBuilder.append(functionElement.getToolTip().replaceAll("\n","--\n"));
+                        stringBuilder.append("\n");
+                        stringBuilder.append(functionElement.getSQLCommand());
                         stringBuilder.append("\n");
                 }
                 return new StringSelection(stringBuilder.toString());
