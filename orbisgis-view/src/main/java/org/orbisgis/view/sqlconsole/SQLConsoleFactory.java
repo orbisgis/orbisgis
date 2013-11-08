@@ -30,13 +30,16 @@ package org.orbisgis.view.sqlconsole;
 
 import org.fife.rsta.ac.LanguageSupport;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.SingleEditorFactory;
 import org.orbisgis.view.sqlconsole.ui.ext.SQLAction;
 import org.orbisgis.view.sqlconsole.ui.ext.SQLConsoleEditor;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -54,6 +57,7 @@ public class SQLConsoleFactory implements SingleEditorFactory {
         private BundleContext hostBundle;
         private MenuItemServiceTracker<SQLConsoleEditor,SQLAction> actionTracker;
         private ServiceTracker<LanguageSupport,LanguageSupport> st;
+        private ServiceTracker<ScriptSplitterFactory, ScriptSplitterFactory> splitterFactoryServiceTracker;
         /**
          * Constructor
          * @param hostBundle The SQLConsole buttons can be extended.
@@ -69,10 +73,14 @@ public class SQLConsoleFactory implements SingleEditorFactory {
                         //Track Action plugin
                         actionTracker = new MenuItemServiceTracker<SQLConsoleEditor, SQLAction>(hostBundle,SQLAction.class,sqlConsole.getActions(),sqlConsole);
                         actionTracker.open(); //begin the track
+                        // Track parser
+                        splitterFactoryServiceTracker = new ServiceTracker<>(hostBundle, ScriptSplitterFactory.class,
+                                new SQLParserTracker(hostBundle, sqlConsole));
+                        splitterFactoryServiceTracker.open();
                         //Track language service
                         if(sqlConsole.getTextArea() instanceof RSyntaxTextArea) {
                             LanguageSupportTracker tracker = new LanguageSupportTracker(hostBundle, (RSyntaxTextArea)sqlConsole.getTextArea());
-                            st = new ServiceTracker<LanguageSupport, LanguageSupport>(hostBundle, LanguageSupport.class, tracker);
+                            st = new ServiceTracker<>(hostBundle, LanguageSupport.class, tracker);
                             st.open();
                         }
                 }
@@ -86,14 +94,43 @@ public class SQLConsoleFactory implements SingleEditorFactory {
 
         @Override
         public void dispose() {
-                if(actionTracker!=null) {
+                if(actionTracker != null) {
                     actionTracker.close();
                 }
-                if(sqlConsole!=null) {
+                if(sqlConsole != null) {
                     sqlConsole.dispose();
                 }
-                if(st!=null) {
+                if(splitterFactoryServiceTracker != null) {
+                    splitterFactoryServiceTracker.close();
+                }
+                if(st != null) {
                     st.close();
                 }
+        }
+        private static class SQLParserTracker implements ServiceTrackerCustomizer<ScriptSplitterFactory, ScriptSplitterFactory> {
+            private SQLConsole console;
+            private BundleContext bundleContext;
+
+            private SQLParserTracker(BundleContext bundleContext, SQLConsole console) {
+                this.bundleContext = bundleContext;
+                this.console = console;
+            }
+
+            @Override
+            public ScriptSplitterFactory addingService(ServiceReference<ScriptSplitterFactory> reference) {
+                ScriptSplitterFactory scriptSplitterFactory = bundleContext.getService(reference);
+                console.setSplitterFactory(scriptSplitterFactory);
+                return scriptSplitterFactory;
+            }
+
+            @Override
+            public void modifiedService(ServiceReference<ScriptSplitterFactory> reference, ScriptSplitterFactory service) {
+                //Not track properties
+            }
+
+            @Override
+            public void removedService(ServiceReference<ScriptSplitterFactory> reference, ScriptSplitterFactory service) {
+                console.setSplitterFactory(null);
+            }
         }
 }

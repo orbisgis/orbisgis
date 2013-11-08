@@ -1,19 +1,19 @@
 package org.orbisgis.scp;
 
 import org.h2.util.ScriptReader;
+import org.orbisgis.sqlparserapi.ScriptSplitter;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Iterator;
 
 /**
  * Iterate over statements in document
  * @author Nicolas Fortin
  */
-public class DocumentSQLReader implements Iterator<String> {
+public class DocumentSQLReader implements ScriptSplitter {
 
     private Document document;
     private int position = 0;
@@ -36,29 +36,23 @@ public class DocumentSQLReader implements Iterator<String> {
         return nextStatement!=null;
     }
 
-    /**
-     * @return Line index [0-n]
-     */
+    @Override
     public int getLineIndex() {
         return getLineIndex(position);
     }
 
-    /**
-     * @param charOffset Character index (from the beginning of the document)
-     * @return Line index [0-n]
-     */
+    @Override
     public int getLineIndex(int charOffset) {
         Element map = document.getDefaultRootElement();
         return map.getElementIndex(charOffset);
     }
 
+    @Override
     public boolean isInsideRemark() {
         return commentStatement;
     }
 
-    /**
-     * @return The start position of the statement
-     */
+    @Override
     public int getPosition() {
         return position;
     }

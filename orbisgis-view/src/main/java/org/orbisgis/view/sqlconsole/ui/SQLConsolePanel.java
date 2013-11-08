@@ -55,6 +55,7 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
+import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.DefaultAction;
@@ -77,7 +78,7 @@ public class SQLConsolePanel extends JPanel {
         private static final long serialVersionUID = 1L;
         protected final static I18n I18N = I18nFactory.getI18n(SQLConsolePanel.class);
         private final static Logger LOGGER = Logger.getLogger("gui." + SQLConsolePanel.class);
-        
+        private ScriptSplitterFactory splitterFactory;
         
         // Components
         private JToolBar infoToolBar;
@@ -123,7 +124,14 @@ public class SQLConsolePanel extends JPanel {
                 add(split, BorderLayout.CENTER);
                 add(getStatusToolBar(), BorderLayout.SOUTH);
         }
-        
+
+        /**
+         * @param splitterFactory The component used to split sql script into single query
+         */
+        public void setSplitterFactory(ScriptSplitterFactory splitterFactory) {
+            this.splitterFactory = splitterFactory;
+        }
+
         /**
          * Create actions instances
          * 
@@ -271,14 +279,18 @@ public class SQLConsolePanel extends JPanel {
          */
         public void onExecute() {      
                 if (scriptPanel.getDocument().getLength() > 0) {
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                    BackgroundManager bm = Services.getService(BackgroundManager.class);
                     MapContext mapContext = null;
                     MapElement mapElement = MapElement.fetchFirstMapElement();
                     if(mapElement!=null) {
                         mapContext = mapElement.getMapContext();
                     }
                     DataSource dataSource = Services.getService(DataSource.class);
-                    bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(getText(), this, dataSource));
+                    if(splitterFactory != null) {
+                        bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(this, dataSource, splitterFactory));
+                    } else {
+                        LOGGER.error(I18N.tr("SQL parser is not available"));
+                    }
                 }
         }
                

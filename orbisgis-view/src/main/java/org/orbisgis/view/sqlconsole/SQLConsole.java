@@ -30,6 +30,7 @@ package org.orbisgis.view.sqlconsole;
 
 import javax.swing.*;
 
+import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
 import org.orbisgis.view.docking.DockingPanelParameters;
@@ -59,6 +60,13 @@ public class SQLConsole implements EditorDockable,SQLConsoleEditor {
                 // thanks to this listener
                 sqlPanel.getActions().addPropertyChangeListener(
                         new ActionDockingListener(dockingPanelParameters));
+        }
+
+        /**
+         * @param splitterFactory The component used to split sql script into single query
+         */
+        public void setSplitterFactory(ScriptSplitterFactory splitterFactory) {
+            sqlPanel.setSplitterFactory(splitterFactory);
         }
 
         /**

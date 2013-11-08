@@ -32,35 +32,41 @@ import javax.sql.DataSource;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sqlparserapi.ScriptSplitter;
+import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Execute SQL script in a background process
  */
 public class ExecuteScriptProcess implements BackgroundJob {
 
-        private String script;
         private static final Logger LOGGER = Logger.getLogger("gui."+ExecuteScriptProcess.class);
         protected final static I18n I18N = I18nFactory.getI18n(ExecuteScriptProcess.class);
                 
         private SQLConsolePanel panel;
         private DataSource ds;
-
+        private ScriptSplitterFactory splitterFactory;
+        private static final int MAX_PRINTED_ROWS = 1000;
+        private static final int MAX_FIELD_LENGTH = 18;
         /**
          * @param script Script to execute
          * @param panel Console panel (Can be null)
          * @param ds DataSource to acquire DBMS Connection
          */
-        public ExecuteScriptProcess(String script, SQLConsolePanel panel, DataSource ds) {
-                this.script = script;
+        public ExecuteScriptProcess(SQLConsolePanel panel, DataSource ds, ScriptSplitterFactory splitterFactory) {
                 this.ds = ds;
                 this.panel = panel;
+                this.splitterFactory = splitterFactory;
         }
 
         @Override
@@ -79,15 +85,62 @@ public class ExecuteScriptProcess implements BackgroundJob {
                 }
         }
 
+        public void printSelect(String query, Statement st) throws SQLException {
+            // Select generate a ResultSet
+            ResultSet rs = st.executeQuery(query);
+            // Print headers
+            LOGGER.info(query+ ": ");
+            ResultSetMetaData metaData = rs.getMetaData();
+            StringBuilder sb = new StringBuilder();
+            int columnCount = metaData.getColumnCount();
+            for(int idColumn = 1; idColumn <= columnCount; idColumn++) {
+                if(idColumn > 1) {
+                    sb.append("\t\t");
+                }
+                sb.append(metaData.getColumnName(idColumn));
+                sb.append("(");
+                sb.append(metaData.getColumnTypeName(idColumn));
+                sb.append(")");
+            }
+            LOGGER.info(sb.toString());
+            int shownLines = 0;
+            while(rs.next() && shownLines < MAX_PRINTED_ROWS) {
+                StringBuilder line = new StringBuilder();
+                for(int idColumn = 1; idColumn <= columnCount; idColumn ++) {
+                    if(idColumn > 1) {
+                        line.append("\t\t");
+                    }
+                    String value = rs.getString(idColumn);
+                    if(value.length() < MAX_FIELD_LENGTH) {
+                        line.append(value);
+                    } else {
+                        line.append(value.substring(0, MAX_FIELD_LENGTH));
+                        line.append("..");
+                    }
+                }
+                LOGGER.info(line.toString());
+                shownLines++;
+            }
+        }
+
         @Override
         public void run(ProgressMonitor pm) {
+                ScriptSplitter splitter = splitterFactory.create(panel.getScriptPanel().getDocument());
                 long t1 = System.currentTimeMillis();
-                try {
-                    Connection connection = ds.getConnection();
-                    try {
-                        connection.createStatement().execute(script);
-                    } finally {
-                        connection.close();
+                pm.init(I18N.tr("Execute SQL Request"), panel.getScriptPanel().getLineCount());
+                try(Connection connection = ds.getConnection()) {
+                    try(Statement st = connection.createStatement()) {
+                        while(splitter.hasNext()) {
+                            if(!splitter.isInsideRemark()) {
+                                String query = splitter.next();
+                                if(query.trim().toLowerCase().startsWith("select")) {
+                                    printSelect(query, st);
+                                } else {
+                                    st.execute(query);
+                                }
+                            }
+                            pm.progressTo(splitter.getLineIndex());
+                        }
                     }
                 } catch (SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);

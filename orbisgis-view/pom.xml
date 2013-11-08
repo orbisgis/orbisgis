@@ -153,5 +153,10 @@
                   <artifactId>log4j</artifactId>
                   <version>${log4j-version}</version>
                 </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>sql-parser-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
         </dependencies>
 </project>
