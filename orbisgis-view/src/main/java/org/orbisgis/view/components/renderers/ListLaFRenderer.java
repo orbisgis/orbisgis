@@ -39,16 +39,16 @@ import javax.swing.ListCellRenderer;
  * 
  * @author Nicolas Fortin
  */
-public abstract class ListLaFRenderer implements ListCellRenderer {
+public abstract class ListLaFRenderer<ListElement> implements ListCellRenderer<ListElement> {
         
-        protected ListCellRenderer lookAndFeelRenderer;
+        protected ListCellRenderer<? super ListElement> lookAndFeelRenderer;
         
         /**
          * Update the native renderer.
          * Warning, Used only by PropertyChangeListener on UI property
          */
         public void updateLFRenderer() {
-                lookAndFeelRenderer = new JList().getCellRenderer();
+                lookAndFeelRenderer = new JList<ListElement>().getCellRenderer();
         }
         /**
          * Set listener to L&F events

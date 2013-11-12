@@ -54,7 +54,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class SQLFunctionsPanel extends JPanel {
         private static final long serialVersionUID = 1L;
 
-        private final JList list;
+        private final FunctionList list;
         private final JPanel expandedPanel;
         private final FunctionListModel functionListModel;
         private final FilterFactoryManager<FunctionFilter,DefaultActiveFilter> functionFilters = new FilterFactoryManager<FunctionFilter,DefaultActiveFilter>();
@@ -70,7 +70,7 @@ public class SQLFunctionsPanel extends JPanel {
                 functionListModel = new FunctionListModel();
                 functionLabelCount = new JLabel(I18N.tr("Functions count = {0}",0));
 
-                list = new JList();
+                list = new FunctionList();
                 list.setBorder(BorderFactory.createLoweredBevelBorder());
                 list.setModel(functionListModel);
                 list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

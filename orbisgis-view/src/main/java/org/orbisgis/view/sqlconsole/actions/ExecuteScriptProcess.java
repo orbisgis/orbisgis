@@ -56,12 +56,12 @@ public class ExecuteScriptProcess implements BackgroundJob {
         private SQLConsolePanel panel;
         private DataSource ds;
         private ScriptSplitterFactory splitterFactory;
-        private static final int MAX_PRINTED_ROWS = 1000;
-        private static final int MAX_FIELD_LENGTH = 18;
+        private static final int MAX_PRINTED_ROWS = 100;
+        private static final int MAX_FIELD_LENGTH = 30;
         /**
-         * @param script Script to execute
          * @param panel Console panel (Can be null)
          * @param ds DataSource to acquire DBMS Connection
+         * @param splitterFactory Sql Parser
          */
         public ExecuteScriptProcess(SQLConsolePanel panel, DataSource ds, ScriptSplitterFactory splitterFactory) {
                 this.ds = ds;
@@ -104,23 +104,28 @@ public class ExecuteScriptProcess implements BackgroundJob {
             }
             LOGGER.info(sb.toString());
             int shownLines = 0;
+            StringBuilder lines = new StringBuilder();
             while(rs.next() && shownLines < MAX_PRINTED_ROWS) {
-                StringBuilder line = new StringBuilder();
                 for(int idColumn = 1; idColumn <= columnCount; idColumn ++) {
                     if(idColumn > 1) {
-                        line.append("\t\t");
+                        lines.append("\t\t");
                     }
                     String value = rs.getString(idColumn);
-                    if(value.length() < MAX_FIELD_LENGTH) {
-                        line.append(value);
+                    if(value != null) {
+                        if(value.length() < MAX_FIELD_LENGTH) {
+                            lines.append(value);
+                        } else {
+                            lines.append(value.substring(0, MAX_FIELD_LENGTH));
+                            lines.append("..");
+                        }
                     } else {
-                        line.append(value.substring(0, MAX_FIELD_LENGTH));
-                        line.append("..");
+                        lines.append("NULL");
                     }
                 }
-                LOGGER.info(line.toString());
                 shownLines++;
+                lines.append("\n");
             }
+            LOGGER.info(lines.toString());
         }
 
         @Override

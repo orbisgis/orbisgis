@@ -41,7 +41,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  *
  * @author Erwan Bocher
  */
-public class FunctionListRenderer extends ListLaFRenderer {
+public class FunctionListRenderer extends ListLaFRenderer<FunctionElement> {
         private static final long serialVersionUID = 1L;
 
         public static final int TOOLTIP_WIDTH_PX = 300;
@@ -56,11 +56,10 @@ public class FunctionListRenderer extends ListLaFRenderer {
                 return OrbisGISIcon.getIcon("builtinfunctionmap");
         }
         @Override
-        public Component getListCellRendererComponent(JList jlist, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                Component nativeCell = lookAndFeelRenderer.getListCellRendererComponent(jlist, value, index, isSelected, cellHasFocus);
+        public Component getListCellRendererComponent(JList<? extends FunctionElement> jlist, FunctionElement sqlFunction, int index, boolean isSelected, boolean cellHasFocus) {
+                Component nativeCell = lookAndFeelRenderer.getListCellRendererComponent(jlist, sqlFunction, index, isSelected, cellHasFocus);
                 if(nativeCell instanceof JLabel) {
                         JLabel renderingComp = (JLabel) nativeCell;
-                        FunctionElement sqlFunction = (FunctionElement)value;
                         renderingComp.setIcon(getFunctionIcon(sqlFunction));
                         renderingComp.setText(sqlFunction.getFunctionName());
                         renderingComp.setToolTipText("<html><body><p style='width: "

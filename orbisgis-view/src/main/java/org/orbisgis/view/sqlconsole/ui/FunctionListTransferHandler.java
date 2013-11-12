@@ -30,6 +30,7 @@ package org.orbisgis.view.sqlconsole.ui;
 
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.TransferHandler;
@@ -47,19 +48,22 @@ public class FunctionListTransferHandler extends TransferHandler {
         }
 
         @Override
-        protected Transferable createTransferable(JComponent jc) {                
-                JList list = (JList) jc;
-                StringBuilder stringBuilder = new StringBuilder();
-                Object[] selectedItems = list.getSelectedValues();
-                for(Object item : selectedItems) {
-                        FunctionElement functionElement = ((FunctionElement)item);
-                        stringBuilder.append("-- ");
-                        stringBuilder.append(functionElement.getToolTip().replaceAll("\n","--\n"));
-                        stringBuilder.append("\n");
-                        stringBuilder.append(functionElement.getSQLCommand());
-                        stringBuilder.append("\n");
+        protected Transferable createTransferable(JComponent jc) {
+                if(jc instanceof FunctionList) {
+                    FunctionList list = (FunctionList) jc;
+                    StringBuilder stringBuilder = new StringBuilder();
+                    List<FunctionElement> selectedItems = list.getSelectedValuesList();
+                    for(FunctionElement functionElement : selectedItems) {
+                            stringBuilder.append("-- ");
+                            stringBuilder.append(functionElement.getToolTip().replaceAll("\n","--\n"));
+                            stringBuilder.append("\n");
+                            stringBuilder.append(functionElement.getSQLCommand());
+                            stringBuilder.append("\n");
+                    }
+                    return new StringSelection(stringBuilder.toString());
+                } else {
+                    return null;
                 }
-                return new StringSelection(stringBuilder.toString());
         }
         
 }

@@ -258,6 +258,7 @@ public class SQLConsolePanel extends JPanel {
                         scriptPanel.setLineWrap(true);
                         scriptPanel.setClearWhitespaceLinesEnabled(true);
                         scriptPanel.setMarkOccurrences(false);
+                        scriptPanel.setTransferHandler(new ScriptPanelTransferHandler());
                         actions.setAccelerators(scriptPanel);
                         //TODO track language support bundles
 

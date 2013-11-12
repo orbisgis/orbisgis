@@ -40,7 +40,7 @@ import org.orbisgis.view.edition.TransferableEditableElement;
  */
 public class TransferableSource implements Transferable {
 
-	private static DataFlavor sourceFlavor = new DataFlavor(String[].class,
+	public static final DataFlavor sourceFlavor = new DataFlavor(String[].class,
 			"Source");
 
 	private String[] sources = null;

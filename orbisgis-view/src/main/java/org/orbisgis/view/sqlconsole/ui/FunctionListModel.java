@@ -37,7 +37,6 @@ import java.util.Comparator;
 import java.util.List;
 import javax.sql.DataSource;
 import javax.swing.AbstractListModel;
-import javax.swing.ListModel;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
@@ -47,11 +46,11 @@ import org.orbisgis.core.Services;
  * @author Erwan Bocher
  * @author Nicolas Fortin
  */
-public class FunctionListModel extends AbstractListModel implements ListModel {
+public class FunctionListModel extends AbstractListModel<FunctionElement> {
     private static final long serialVersionUID = 1L;
     private List<FunctionElement> functionsList;
     private List<Integer> filteredFunctionList;
-    private List<FunctionFilter> filters = new ArrayList<FunctionFilter>();
+    private List<FunctionFilter> filters = new ArrayList<>();
     private static final Logger LOGGER = Logger.getLogger(FunctionListModel.class);
     private static final int AVERAGE_FUNCTION_COUNT = 300; //Hint for size of array
 
@@ -68,7 +67,7 @@ public class FunctionListModel extends AbstractListModel implements ListModel {
     }
 
     @Override
-    public Object getElementAt(int i) {
+    public FunctionElement getElementAt(int i) {
         if(filteredFunctionList!=null) {
             return functionsList.get(filteredFunctionList.get(i));
         } else {
