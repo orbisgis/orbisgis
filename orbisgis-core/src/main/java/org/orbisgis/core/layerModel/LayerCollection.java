@@ -36,7 +36,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import net.opengis.ows_context.LayerType;
-import org.grap.model.GeoRaster;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 
@@ -437,10 +436,6 @@ public class LayerCollection extends BeanLayer {
 
         //////////////////Unsupported methods////////////////////////
 
-        @Override
-	public GeoRaster getRaster() throws LayerException {
-		throw new UnsupportedOperationException(I18N.tr("Cannot do this operation on a layer collection"));
-	}
 
         @Override
 	public void setSelection(Set<Integer> newSelection) {

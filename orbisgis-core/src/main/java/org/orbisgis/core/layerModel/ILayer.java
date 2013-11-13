@@ -33,7 +33,6 @@ import java.beans.PropertyChangeListener;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
-import org.grap.model.GeoRaster;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.common.Description;
@@ -389,8 +388,8 @@ public interface ILayer {
 	 * @return
 	 * @throws LayerException
 	 * @throws UnsupportedOperationException
-	 */
 	GeoRaster getRaster() throws LayerException, UnsupportedOperationException;
+     */
 
 	/**
 	 * Gets an array of the selected rows

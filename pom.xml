@@ -28,6 +28,14 @@
                 <module>orbisgis-view</module>
                 <module>orbisgis-dist</module>
         </modules>
+        <profiles>
+            <profile>
+                <id>osgi</id>
+                <modules>
+                    <module>integration-test</module>
+                </modules>
+            </profile>
+        </profiles>
         <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <netbeans.hint.license>OrbisGIS</netbeans.hint.license>

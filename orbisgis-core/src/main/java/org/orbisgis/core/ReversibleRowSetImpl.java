@@ -10,6 +10,7 @@ import javax.sql.RowSet;
 import javax.sql.RowSetListener;
 import javax.swing.event.UndoableEditListener;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
@@ -24,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.RowId;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
 import java.sql.Statement;
@@ -42,7 +44,7 @@ import java.util.Map;
  *
  * @author Nicolas Fortin
  */
-public class ReversibleRowSetImpl implements ReversibleRowSet {
+public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
     private static final int WAITING_FOR_RESULTSET = 5;
     private final List<UndoableEditListener> undoListenerList = new ArrayList<>();
     private final List<RowSetListener> rowSetListeners = new ArrayList<>();
@@ -52,9 +54,10 @@ public class ReversibleRowSetImpl implements ReversibleRowSet {
     private Map<Integer, Object[]> rowCache = new HashMap<>();
     private List<Integer> cachedRows = new LinkedList<>();
     private int rowId = -1;
-    private boolean afterLast = false;
+    /** If the table has been updated or never read, rowCount is set to -1 (unknown) */
+    private long cachedRowCount = -1;
     private int rowFetchSize = 100;
-    private final ResultSetHolder resultSetHolder;
+    private final ResultSetHolder resultSetHolder = new ResultSetHolder(this, getCommand());
 
     /**
      * Constructor.
@@ -64,7 +67,6 @@ public class ReversibleRowSetImpl implements ReversibleRowSet {
     public ReversibleRowSetImpl(DataSource dataSource, TableLocation location) {
         this.dataSource = dataSource;
         this.location = location;
-        resultSetHolder = new ResultSetHolder(dataSource, getCommand());
     }
 
     /**
@@ -100,10 +102,13 @@ public class ReversibleRowSetImpl implements ReversibleRowSet {
                 int end = rowId + (int)(rowFetchSize * 0.75);
                 for(int fetchId = begin; fetchId < end; fetchId ++) {
                     if(!rowCache.containsKey(fetchId)) {
-                        if(rs.getRow() != rowId) {
-                            rs.absolute(rowId);
+                        if(rs.absolute(rowId)) {
+                            Object[] row = new Object[columnCount];
+                            for(int idColumn=1; idColumn <= columnCount; idColumn++) {
+                                row[idColumn-1] = rs.getObject(idColumn);
+                            }
+                            rowCache.put(rowId, row);
                         }
-                        Object[] row = new Object[columnCount];
                     }
                 }
             }
@@ -114,7 +119,7 @@ public class ReversibleRowSetImpl implements ReversibleRowSet {
      * Reestablish connection if necessary
      * @throws SQLException
      */
-    private Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException {
         Connection connection = dataSource.getConnection();
         if(timeOut != 0) {
             try(Statement st = connection.createStatement()) {
@@ -311,7 +316,7 @@ public class ReversibleRowSetImpl implements ReversibleRowSet {
     public boolean next() throws SQLException {
         rowId++;
         updateRowCache();
-        return afterLast;
+        return rowId < getRowCount();
     }
 
     @Override
@@ -321,14 +326,16 @@ public class ReversibleRowSetImpl implements ReversibleRowSet {
 
     @Override
     public long getRowCount() throws SQLException {
-        try(Connection connection = getConnection();
-        Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM "+location)) {
-            if(rs.next()) {
-                return rs.getLong(1);
+        if(cachedRowCount == -1) {
+            try (Connection connection = getConnection();
+                 Statement st = connection.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM " + location)) {
+                if (rs.next()) {
+                    cachedRowCount = rs.getLong(1);
+                }
             }
         }
-        return 0;
+        return cachedRowCount;
     }
 
     @Override
@@ -1699,6 +1706,38 @@ public class ReversibleRowSetImpl implements ReversibleRowSet {
     @Override
     public boolean isWrapperFor(Class<?> aClass) throws SQLException {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    // DataSource methods
+
+    @Override
+    public Connection getConnection(String s, String s2) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public PrintWriter getLogWriter() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setLogWriter(PrintWriter printWriter) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setLoginTimeout(int i) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getLoginTimeout() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        throw new UnsupportedOperationException();
     }
 
     /**

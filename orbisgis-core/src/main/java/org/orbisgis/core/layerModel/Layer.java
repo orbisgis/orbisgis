@@ -36,7 +36,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import org.grap.model.GeoRaster;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.renderer.se.Rule;
@@ -168,16 +167,6 @@ public class Layer extends BeanLayer {
         public boolean isSerializable() {
                 return tableReference != null;
         }
-
-
-    @Override
-	public GeoRaster getRaster() throws LayerException {
-		if (!isRaster()) {
-			throw new UnsupportedOperationException(
-					I18N.tr("This layer is not a raster"));
-		}
-		return null;
-	}
 
 	@Override
 	public List<Rule> getRenderingRule() throws LayerException {
