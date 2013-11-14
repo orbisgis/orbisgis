@@ -53,11 +53,16 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
     private int timeOut = 0; // TimeOut to be set if connection is established
     private Map<Integer, Object[]> rowCache = new HashMap<>();
     private List<Integer> cachedRows = new LinkedList<>();
-    private int rowId = -1;
+    private Object[] currentRow;
+    private int rowId = 0;
     /** If the table has been updated or never read, rowCount is set to -1 (unknown) */
     private long cachedRowCount = -1;
+    private int cachedColumnCount = -1;
+
+    private boolean wasNull = true;
+
     private int rowFetchSize = 100;
-    private final ResultSetHolder resultSetHolder = new ResultSetHolder(this, getCommand());
+    private final ResultSetHolder resultSetHolder;
 
     /**
      * Constructor.
@@ -67,6 +72,11 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
     public ReversibleRowSetImpl(DataSource dataSource, TableLocation location) {
         this.dataSource = dataSource;
         this.location = location;
+        resultSetHolder =new ResultSetHolder(this, getCommand());
+    }
+
+    private void setWasNull(boolean wasNull) {
+        this.wasNull = wasNull;
     }
 
     /**
@@ -88,6 +98,18 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
         }
     }
 
+    private void checkColumnIndex(int columnIndex) throws SQLException {
+        if(columnIndex < 1 || columnIndex > cachedColumnCount) {
+            throw new SQLException(new IndexOutOfBoundsException("Column index "+columnIndex+" out of bound[1-"+cachedColumnCount+"]"));
+        }
+    }
+
+    private void checkCurrentRow() throws SQLException {
+        if(rowId < 1 || rowId > getRowCount() || currentRow == null) {
+            throw new SQLException("Not in a valid row "+rowId+"/"+getRowCount());
+        }
+    }
+
     /**
      * Read the content of the DB near the current row id
      */
@@ -96,23 +118,25 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
             synchronized (resultSetHolder) {
                 checkResultSet();
                 ResultSet rs = resultSetHolder.getResultSet();
-                final int columnCount = rs.getMetaData().getColumnCount();
+                cachedColumnCount = rs.getMetaData().getColumnCount();
                 // Cache values
-                int begin = Math.max(0, rowId - (int)(rowFetchSize * 0.25));
+                int begin = Math.max(1, rowId - (int)(rowFetchSize * 0.25));
                 int end = rowId + (int)(rowFetchSize * 0.75);
                 for(int fetchId = begin; fetchId < end; fetchId ++) {
                     if(!rowCache.containsKey(fetchId)) {
                         if(rs.absolute(rowId)) {
-                            Object[] row = new Object[columnCount];
-                            for(int idColumn=1; idColumn <= columnCount; idColumn++) {
+                            Object[] row = new Object[cachedColumnCount];
+                            for(int idColumn=1; idColumn <= cachedColumnCount; idColumn++) {
                                 row[idColumn-1] = rs.getObject(idColumn);
                             }
                             rowCache.put(rowId, row);
+                            cachedRows.add(rowId);
                         }
                     }
                 }
             }
         }
+        currentRow = rowCache.get(rowId);
     }
 
     /**
@@ -316,12 +340,19 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
     public boolean next() throws SQLException {
         rowId++;
         updateRowCache();
-        return rowId < getRowCount();
+        return rowId <= getRowCount();
     }
 
     @Override
     public void close() throws SQLException {
-        // TODO Clear cache
+        synchronized (resultSetHolder) {
+            try {
+                rowCache.clear();
+                resultSetHolder.close();
+            } catch (Exception ex) {
+                throw new SQLException(ex);
+            }
+        }
     }
 
     @Override
@@ -340,7 +371,7 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
 
     @Override
     public boolean wasNull() throws SQLException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return wasNull;
     }
 
     @Override
@@ -790,7 +821,26 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
 
     @Override
     public int getInt(int i) throws SQLException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        checkColumnIndex(i);
+        checkCurrentRow();
+        Object cell = currentRow[i-1];
+
+        if(cell == null) {
+            setWasNull(true);
+            return 0;
+        } else {
+            setWasNull(false);
+        }
+
+        if(cell instanceof Number) {
+            return ((Number)cell).intValue();
+        } else {
+            try {
+                return Integer.valueOf(cell.toString());
+            } catch (Exception ex) {
+                throw new SQLException(ex);
+            }
+        }
     }
 
     @Override
@@ -1040,7 +1090,9 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
 
     @Override
     public boolean previous() throws SQLException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        rowId--;
+        updateRowCache();
+        return rowId > 0;
     }
 
     @Override
@@ -1743,7 +1795,7 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
     /**
      * Free the result set if it is no longer used
      */
-    private static class ResultSetHolder implements Runnable {
+    private static class ResultSetHolder implements Runnable,AutoCloseable {
         private static final int SLEEP_TIME = 1000;
         private static final int RESULT_SET_TIMEOUT = 10000;
         public enum STATUS { NEVER_STARTED, STARTED , READY, CLOSED}
@@ -1762,6 +1814,7 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
 
         @Override
         public void run() {
+            lastUsage = System.currentTimeMillis();
             status = STATUS.STARTED;
             try(Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement();
@@ -1779,6 +1832,11 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
             } finally {
                 status = STATUS.CLOSED;
             }
+        }
+
+        @Override
+        public void close() throws Exception {
+            lastUsage = 0;
         }
 
         /**
