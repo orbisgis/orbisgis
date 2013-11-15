@@ -8,6 +8,7 @@ import org.orbisgis.core.api.ReversibleRowSet;
 import javax.sql.DataSource;
 import javax.sql.RowSet;
 import javax.sql.RowSetListener;
+import javax.sql.rowset.BaseRowSet;
 import javax.swing.event.UndoableEditListener;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -44,17 +45,15 @@ import java.util.Map;
  *
  * @author Nicolas Fortin
  */
-public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource, ResultSetMetaData {
+public class ReversibleRowSetImpl extends BaseRowSet implements ReversibleRowSet, DataSource, ResultSetMetaData {
     private static final int WAITING_FOR_RESULTSET = 5;
     private final List<UndoableEditListener> undoListenerList = new ArrayList<>();
-    private final List<RowSetListener> rowSetListeners = new ArrayList<>();
     private final TableLocation location;
     private final DataSource dataSource;
-    private int timeOut = 0; // TimeOut to be set if connection is established
-    private Map<Integer, Object[]> rowCache = new HashMap<>();
-    private List<Integer> cachedRows = new LinkedList<>();
+    private Map<Long, Object[]> rowCache = new HashMap<>();
+    private List<Long> cachedRows = new LinkedList<>();
     private Object[] currentRow;
-    private int rowId = 0;
+    private long rowId = 0;
     /** If the table has been updated or never read, rowCount is set to -1 (unknown) */
     private long cachedRowCount = -1;
     private int cachedColumnCount = -1;
@@ -127,11 +126,11 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource, Resul
                     }
                 }
                 // Cache values
-                int begin = Math.max(1, rowId - (int)(rowFetchSize * 0.25));
-                int end = rowId + (int)(rowFetchSize * 0.75);
-                for(int fetchId = begin; fetchId < end; fetchId ++) {
+                long begin = Math.max(1, rowId - (int)(rowFetchSize * 0.25));
+                long end = rowId + (int)(rowFetchSize * 0.75);
+                for(long fetchId = begin; fetchId < end; fetchId ++) {
                     if(!rowCache.containsKey(fetchId)) {
-                        if(rs.absolute(rowId)) {
+                        if(rs.absolute((int)rowId)) {
                             Object[] row = new Object[columnCount];
                             for(int idColumn=1; idColumn <= columnCount; idColumn++) {
                                 row[idColumn-1] = rs.getObject(idColumn);
@@ -152,9 +151,9 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource, Resul
      */
     public Connection getConnection() throws SQLException {
         Connection connection = dataSource.getConnection();
-        if(timeOut != 0) {
+        if(getQueryTimeout() > 0) {
             try(Statement st = connection.createStatement()) {
-                st.execute("SET QUERY_TIMEOUT "+timeOut);
+                st.execute("SET QUERY_TIMEOUT "+getQueryTimeout());
             }
         }
         return connection;
@@ -171,82 +170,12 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource, Resul
     }
 
     @Override
-    public void addRowSetListener(RowSetListener rowSetListener) {
-        rowSetListeners.add(rowSetListener);
-    }
-
-    @Override
-    public String getUrl() throws SQLException {
-        try(Connection connection = getConnection()) {
-            return connection.getMetaData().getURL();
-        } catch (SQLException ex) {
-            return "";
-        }
-    }
-
-    @Override
-    public void setUrl(String s) throws SQLException {
-        throw new SQLException("Cannot set URL");
-    }
-
-    @Override
-    public String getDataSourceName() {
-        return dataSource.toString();
-    }
-
-    @Override
-    public void setDataSourceName(String s) throws SQLException {
-        throw new SQLException("DataSource defined in constructor");
-    }
-
-    @Override
-    public String getUsername() {
-        try(Connection connection = getConnection()) {
-            return connection.getMetaData().getUserName();
-        } catch (SQLException ex) {
-            return "";
-        }
-    }
-
-    @Override
-    public void setUsername(String s) throws SQLException {
-        throw new SQLException("Cannot set user name");
-    }
-
-    @Override
-    public String getPassword() {
-        throw new UnsupportedOperationException("Cannot get password");
-    }
-
-    @Override
-    public void setPassword(String s) throws SQLException {
-        throw new SQLException("Cannot set password");
-    }
-
-    @Override
     public int getTransactionIsolation() {
         try(Connection connection = getConnection()) {
             return connection.getMetaData().getDefaultTransactionIsolation();
         } catch (SQLException ex) {
             return 0;
         }
-    }
-
-    @Override
-    public void setTransactionIsolation(int i) throws SQLException {
-        throw new SQLException("Cannot set transaction isolation");
-    }
-
-    @Override
-    public Map<String, Class<?>> getTypeMap() throws SQLException {
-        Map<String, Class<?>> typeMap = new HashMap<>();
-        typeMap.put("GEOMETRY", Geometry.class);
-        return typeMap;
-    }
-
-    @Override
-    public void setTypeMap(Map<String, Class<?>> stringClassMap) throws SQLException {
-        throw new SQLException("Cannot set type map");
     }
 
     @Override
@@ -257,56 +186,6 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource, Resul
     @Override
     public void setCommand(String s) throws SQLException {
         throw new SQLException("Cannot set command");
-    }
-
-    @Override
-    public boolean isReadOnly() {
-        return false;
-    }
-
-    @Override
-    public void setReadOnly(boolean b) throws SQLException {
-        throw new SQLException("Cannot set read only");
-    }
-
-    @Override
-    public int getMaxFieldSize() throws SQLException {
-        return Integer.MAX_VALUE;
-    }
-
-    @Override
-    public void setMaxFieldSize(int i) throws SQLException {
-        throw new SQLException("Cannot set max field size");
-    }
-
-    @Override
-    public int getMaxRows() throws SQLException {
-        return Integer.MAX_VALUE;
-    }
-
-    @Override
-    public void setMaxRows(int i) throws SQLException {
-        throw new SQLException("Cannot set max rows");
-    }
-
-    @Override
-    public boolean getEscapeProcessing() throws SQLException {
-        return false;
-    }
-
-    @Override
-    public void setEscapeProcessing(boolean b) throws SQLException {
-        throw new SQLException("Cannot set escape processing");
-    }
-
-    @Override
-    public int getQueryTimeout() throws SQLException {
-        return timeOut;
-    }
-
-    @Override
-    public void setQueryTimeout(int i) throws SQLException {
-        timeOut = i;
     }
 
     @Override
@@ -339,14 +218,10 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource, Resul
     }
 
     @Override
-    public void removeRowSetListener(RowSetListener rowSetListener) {
-        rowSetListeners.remove(rowSetListener);
-    }
-
-    @Override
     public boolean next() throws SQLException {
         rowId++;
         updateRowCache();
+        notifyCursorMoved();
         return rowId <= getRowCount();
     }
 
@@ -379,431 +254,6 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource, Resul
     @Override
     public boolean wasNull() throws SQLException {
         return wasNull;
-    }
-
-    @Override
-    public void setNull(int i, int i2) throws SQLException {
-        throw new UnsupportedOperationException("setNull(int parameterIndex,int sqlType) not supported");
-    }
-
-    @Override
-    public void setNull(String s, int i) throws SQLException {
-        throw new UnsupportedOperationException("setNull(String parameterName,int sqlType) not supported");
-    }
-
-    @Override
-    public void setNull(int i, int i2, String s) throws SQLException {
-        throw new UnsupportedOperationException("setNull(int paramIndex,int sqlType,String typeName) not supported");
-    }
-
-    @Override
-    public void setNull(String s, int i, String s2) throws SQLException {
-        throw new UnsupportedOperationException("setNull(String parameterName,int sqlType,String typeName) not supported");
-    }
-
-    @Override
-    public void setBoolean(int i, boolean b) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setBoolean(String s, boolean b) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setByte(int i, byte b) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setByte(String s, byte b) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setShort(int i, short i2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setShort(String s, short i) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setInt(int i, int i2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setInt(String s, int i) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setLong(int i, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setLong(String s, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setFloat(int i, float v) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setFloat(String s, float v) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setDouble(int i, double v) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setDouble(String s, double v) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setBigDecimal(int i, BigDecimal bigDecimal) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setBigDecimal(String s, BigDecimal bigDecimal) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setString(int i, String s) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setString(String s, String s2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setBytes(int i, byte[] bytes) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setBytes(String s, byte[] bytes) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setDate(int i, Date date) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setTime(int i, Time time) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setTimestamp(int i, Timestamp timestamp) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setTimestamp(String s, Timestamp timestamp) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setAsciiStream(int i, InputStream inputStream, int i2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setAsciiStream(String s, InputStream inputStream, int i) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setBinaryStream(int i, InputStream inputStream, int i2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setBinaryStream(String s, InputStream inputStream, int i) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setCharacterStream(int i, Reader reader, int i2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setCharacterStream(String s, Reader reader, int i) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setAsciiStream(int i, InputStream inputStream) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setAsciiStream(String s, InputStream inputStream) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setBinaryStream(int i, InputStream inputStream) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setBinaryStream(String s, InputStream inputStream) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setCharacterStream(int i, Reader reader) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setCharacterStream(String s, Reader reader) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setNCharacterStream(int i, Reader reader) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setObject(int i, Object o, int i2, int i3) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setObject(String s, Object o, int i, int i2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setObject(int i, Object o, int i2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setObject(String s, Object o, int i) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setObject(String s, Object o) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setObject(int i, Object o) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setRef(int i, Ref ref) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setBlob(int i, Blob blob) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setBlob(int i, InputStream inputStream, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setBlob(int i, InputStream inputStream) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setBlob(String s, InputStream inputStream, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setBlob(String s, Blob blob) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setBlob(String s, InputStream inputStream) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setClob(int i, Clob clob) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setClob(int i, Reader reader, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setClob(int i, Reader reader) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setClob(String s, Reader reader, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setClob(String s, Clob clob) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setClob(String s, Reader reader) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setArray(int i, Array array) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setDate(int i, Date date, Calendar calendar) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setDate(String s, Date date) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setDate(String s, Date date, Calendar calendar) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setTime(int i, Time time, Calendar calendar) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setTime(String s, Time time) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setTime(String s, Time time, Calendar calendar) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setTimestamp(int i, Timestamp timestamp, Calendar calendar) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setTimestamp(String s, Timestamp timestamp, Calendar calendar) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setSQLXML(int i, SQLXML sqlxml) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setSQLXML(String s, SQLXML sqlxml) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setRowId(int i, RowId rowId) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setRowId(String s, RowId rowId) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setNString(int i, String s) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setNString(String s, String s2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setNCharacterStream(int i, Reader reader, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setNCharacterStream(String s, Reader reader, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setNCharacterStream(String s, Reader reader) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setNClob(String s, NClob nClob) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setNClob(String s, Reader reader, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setNClob(String s, Reader reader) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setNClob(int i, Reader reader, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setNClob(int i, NClob nClob) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setNClob(int i, Reader reader) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setURL(int i, URL url) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -1249,12 +699,18 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource, Resul
 
     @Override
     public boolean first() throws SQLException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        rowId=1;
+        updateRowCache();
+        notifyCursorMoved();
+        return rowId>0 && rowId <= getRowCount();
     }
 
     @Override
     public boolean last() throws SQLException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        rowId=getRowCount();
+        updateRowCache();
+        notifyCursorMoved();
+        return rowId>0 && rowId <= getRowCount();
     }
 
     @Override
@@ -1264,18 +720,25 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource, Resul
 
     @Override
     public boolean absolute(int i) throws SQLException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        rowId=i;
+        updateRowCache();
+        notifyCursorMoved();
+        return rowId>0 && rowId <= getRowCount();
     }
 
     @Override
     public boolean relative(int i) throws SQLException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        rowId+=i;
+        updateRowCache();
+        notifyCursorMoved();
+        return rowId>0 && rowId <= getRowCount();
     }
 
     @Override
     public boolean previous() throws SQLException {
         rowId--;
         updateRowCache();
+        notifyCursorMoved();
         return rowId > 0;
     }
 
@@ -1989,6 +1452,14 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource, Resul
 
     @Override
     public int getColumnCount() throws SQLException {
+        if(cachedColumnCount == -1) {
+            synchronized (resultSetHolder) {
+                checkResultSet();
+                ResultSet rs = resultSetHolder.getResultSet();
+                cachedColumnCount = rs.getMetaData().getColumnCount();
+                return cachedColumnCount;
+            }
+        }
         return cachedColumnCount;
     }
 
