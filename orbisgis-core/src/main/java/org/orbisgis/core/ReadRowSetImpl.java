@@ -45,9 +45,8 @@ import java.util.Map;
  *
  * @author Nicolas Fortin
  */
-public class ReadRowSetImpl extends BaseRowSet implements ReversibleRowSet, DataSource, ResultSetMetaData {
+public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, ResultSetMetaData {
     private static final int WAITING_FOR_RESULTSET = 5;
-    private final List<UndoableEditListener> undoListenerList = new ArrayList<>();
     private final TableLocation location;
     private final DataSource dataSource;
     private Map<Long, Object[]> rowCache = new HashMap<>();
@@ -76,6 +75,14 @@ public class ReadRowSetImpl extends BaseRowSet implements ReversibleRowSet, Data
 
     private void setWasNull(boolean wasNull) {
         this.wasNull = wasNull;
+    }
+
+    private int getColumnByLabel(String label) throws SQLException {
+        Integer columnId = cachedColumnNames.get(label.toUpperCase());
+        if(columnId == null) {
+            throw new SQLException("Column "+label+" does not exists");
+        }
+        return columnId;
     }
 
     /**
@@ -122,7 +129,7 @@ public class ReadRowSetImpl extends BaseRowSet implements ReversibleRowSet, Data
                     cachedColumnNames = new HashMap<>(columnCount);
                     ResultSetMetaData metaData = rs.getMetaData();
                     for(int idColumn=1; idColumn <= columnCount; idColumn++) {
-                        cachedColumnNames.put(metaData.getColumnName(idColumn), idColumn);
+                        cachedColumnNames.put(metaData.getColumnName(idColumn).toUpperCase(), idColumn);
                     }
                 }
                 // Cache values
@@ -157,16 +164,6 @@ public class ReadRowSetImpl extends BaseRowSet implements ReversibleRowSet, Data
             }
         }
         return connection;
-    }
-
-    @Override
-    public void addUndoableEditListener(UndoableEditListener listener) {
-        undoListenerList.add(listener);
-    }
-
-    @Override
-    public void removeUndoableEditListener(UndoableEditListener listener) {
-        undoListenerList.remove(listener);
     }
 
     @Override
@@ -519,7 +516,7 @@ public class ReadRowSetImpl extends BaseRowSet implements ReversibleRowSet, Data
 
     @Override
     public boolean getBoolean(String s) throws SQLException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return getBoolean(getColumnByLabel(s));
     }
 
     @Override
@@ -623,12 +620,12 @@ public class ReadRowSetImpl extends BaseRowSet implements ReversibleRowSet, Data
 
     @Override
     public Object getObject(String s) throws SQLException {
-        return getObject(cachedColumnNames.get(s));
+        return getObject(getColumnByLabel(s));
     }
 
     @Override
     public int findColumn(String s) throws SQLException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return getColumnByLabel(s);
     }
 
     @Override
