@@ -28,7 +28,7 @@ import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.TableLocation;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.core.ReversibleRowSetImpl;
+import org.orbisgis.core.ReadRowSetImpl;
 import org.orbisgis.core.api.ReversibleRowSet;
 
 import javax.sql.DataSource;
@@ -59,7 +59,7 @@ public class ReversibleRowSetTest {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer, str varchar(30), flt float)");
             st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
-            try (ReversibleRowSet rs = new ReversibleRowSetImpl(dataSource, TableLocation.parse("test"))) {
+            try (ReversibleRowSet rs = new ReadRowSetImpl(dataSource, TableLocation.parse("test"))) {
                 assertTrue(rs.next());
                 assertEquals(42, rs.getInt(1));
                 assertEquals("marvin", rs.getString(2));

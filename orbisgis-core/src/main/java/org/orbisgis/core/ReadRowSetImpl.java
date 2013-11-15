@@ -45,7 +45,7 @@ import java.util.Map;
  *
  * @author Nicolas Fortin
  */
-public class ReversibleRowSetImpl extends BaseRowSet implements ReversibleRowSet, DataSource, ResultSetMetaData {
+public class ReadRowSetImpl extends BaseRowSet implements ReversibleRowSet, DataSource, ResultSetMetaData {
     private static final int WAITING_FOR_RESULTSET = 5;
     private final List<UndoableEditListener> undoListenerList = new ArrayList<>();
     private final TableLocation location;
@@ -68,7 +68,7 @@ public class ReversibleRowSetImpl extends BaseRowSet implements ReversibleRowSet
      * @param dataSource Connection properties
      * @param location Table location
      */
-    public ReversibleRowSetImpl(DataSource dataSource, TableLocation location) {
+    public ReadRowSetImpl(DataSource dataSource, TableLocation location) {
         this.dataSource = dataSource;
         this.location = location;
         resultSetHolder =new ResultSetHolder(this, getCommand());
