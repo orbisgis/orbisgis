@@ -189,22 +189,6 @@ public class ReversibleRowSetImpl extends BaseRowSet implements ReversibleRowSet
     }
 
     @Override
-    public void setType(int i) throws SQLException {
-        throw new SQLException("Cannot set rowset type");
-    }
-
-    @Override
-    public void setConcurrency(int i) throws SQLException {
-        throw new SQLException("Cannot set concurrency type");
-    }
-
-
-    @Override
-    public void clearParameters() throws SQLException {
-        // This row set does not use command
-    }
-
-    @Override
     public void execute() throws SQLException {
         Thread resultSetThread = new Thread(resultSetHolder, "ResultSet of "+getCommand());
         resultSetThread.start();
@@ -1616,11 +1600,11 @@ public class ReversibleRowSetImpl extends BaseRowSet implements ReversibleRowSet
     }
 
     /**
-     * Free the result set if it is no longer used
+     * This thread guaranty that the connection,ResultSet is released when no longer used.
      */
     private static class ResultSetHolder implements Runnable,AutoCloseable {
         private static final int SLEEP_TIME = 1000;
-        private static final int RESULT_SET_TIMEOUT = 10000;
+        private static final int RESULT_SET_TIMEOUT = 60000;
         public enum STATUS { NEVER_STARTED, STARTED , READY, CLOSED}
 
         private ResultSet resultSet;
