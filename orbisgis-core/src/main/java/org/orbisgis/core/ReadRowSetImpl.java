@@ -1,15 +1,11 @@
 package org.orbisgis.core;
 
-import com.vividsolutions.jts.geom.Geometry;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.api.ReversibleRowSet;
 
 import javax.sql.DataSource;
 import javax.sql.RowSet;
-import javax.sql.RowSetListener;
 import javax.sql.rowset.BaseRowSet;
-import javax.swing.event.UndoableEditListener;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -32,7 +28,6 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -172,6 +167,9 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
                             }
                             rowCache.put(fetchId, row);
                             cachedRows.add(fetchId);
+                            while(cachedRows.size() > rowFetchSize) {
+                                rowCache.remove(cachedRows.remove(0));
+                            }
                         }
                     }
                 }

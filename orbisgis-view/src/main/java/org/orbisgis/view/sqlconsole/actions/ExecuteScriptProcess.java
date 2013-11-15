@@ -138,8 +138,27 @@ public class ExecuteScriptProcess implements BackgroundJob {
                         while(splitter.hasNext()) {
                             if(!splitter.isInsideRemark()) {
                                 String query = splitter.next();
-                                if(query.trim().toLowerCase().startsWith("select")) {
-                                    printSelect(query, st);
+                                // Some query need to be shown to the user
+                                String lc_query = query.trim().toLowerCase();
+                                String[] executeQueryCommands = new String[] {"select", "explain", "call", "show"};
+                                boolean doExecuteQuery = false;
+                                for(String command : executeQueryCommands) {
+                                    if(lc_query.startsWith(command)) {
+                                        doExecuteQuery = true;
+                                        break;
+                                    }
+                                }
+                                if(doExecuteQuery) {
+                                    try {
+                                        printSelect(query, st);
+                                    } catch (SQLException ex) {
+                                        //May not accept executeQuery but simple query
+                                        if(!lc_query.startsWith("select")) {
+                                            st.execute(query);
+                                        } else {
+                                            throw ex;
+                                        }
+                                    }
                                 } else {
                                     st.execute(query);
                                 }
