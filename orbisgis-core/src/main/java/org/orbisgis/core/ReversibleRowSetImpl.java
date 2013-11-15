@@ -44,7 +44,7 @@ import java.util.Map;
  *
  * @author Nicolas Fortin
  */
-public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
+public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource, ResultSetMetaData {
     private static final int WAITING_FOR_RESULTSET = 5;
     private final List<UndoableEditListener> undoListenerList = new ArrayList<>();
     private final List<RowSetListener> rowSetListeners = new ArrayList<>();
@@ -58,7 +58,7 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
     /** If the table has been updated or never read, rowCount is set to -1 (unknown) */
     private long cachedRowCount = -1;
     private int cachedColumnCount = -1;
-
+    private Map<String, Integer> cachedColumnNames;
     private boolean wasNull = true;
 
     private int rowFetchSize = 100;
@@ -118,15 +118,22 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
             synchronized (resultSetHolder) {
                 checkResultSet();
                 ResultSet rs = resultSetHolder.getResultSet();
-                cachedColumnCount = rs.getMetaData().getColumnCount();
+                final int columnCount = getColumnCount();
+                if(cachedColumnNames == null) {
+                    cachedColumnNames = new HashMap<>(columnCount);
+                    ResultSetMetaData metaData = rs.getMetaData();
+                    for(int idColumn=1; idColumn <= columnCount; idColumn++) {
+                        cachedColumnNames.put(metaData.getColumnName(idColumn), idColumn);
+                    }
+                }
                 // Cache values
                 int begin = Math.max(1, rowId - (int)(rowFetchSize * 0.25));
                 int end = rowId + (int)(rowFetchSize * 0.75);
                 for(int fetchId = begin; fetchId < end; fetchId ++) {
                     if(!rowCache.containsKey(fetchId)) {
                         if(rs.absolute(rowId)) {
-                            Object[] row = new Object[cachedColumnCount];
-                            for(int idColumn=1; idColumn <= cachedColumnCount; idColumn++) {
+                            Object[] row = new Object[columnCount];
+                            for(int idColumn=1; idColumn <= columnCount; idColumn++) {
                                 row[idColumn-1] = rs.getObject(idColumn);
                             }
                             rowCache.put(rowId, row);
@@ -376,22 +383,22 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
 
     @Override
     public void setNull(int i, int i2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException("setNull(int parameterIndex,int sqlType) not supported");
     }
 
     @Override
     public void setNull(String s, int i) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException("setNull(String parameterName,int sqlType) not supported");
     }
 
     @Override
     public void setNull(int i, int i2, String s) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException("setNull(int paramIndex,int sqlType,String typeName) not supported");
     }
 
     @Override
     public void setNull(String s, int i, String s2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException("setNull(String parameterName,int sqlType,String typeName) not supported");
     }
 
     @Override
@@ -801,12 +808,32 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
 
     @Override
     public String getString(int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return null;
+        } else {
+            return cell.toString();
+        }
     }
 
     @Override
     public boolean getBoolean(int i) throws SQLException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return false;
+        }
+
+        if(cell instanceof Boolean) {
+            return (Boolean)cell;
+        } else {
+            try {
+                return Boolean.valueOf(cell.toString());
+            } catch (Exception ex) {
+                throw new SQLException(ex);
+            }
+        }
     }
 
     @Override
@@ -816,20 +843,29 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
 
     @Override
     public short getShort(int i) throws SQLException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return 0;
+        }
+
+        if(cell instanceof Number) {
+            return ((Number)cell).shortValue();
+        } else {
+            try {
+                return Short.valueOf(cell.toString());
+            } catch (Exception ex) {
+                throw new SQLException(ex);
+            }
+        }
     }
 
     @Override
     public int getInt(int i) throws SQLException {
-        checkColumnIndex(i);
-        checkCurrentRow();
-        Object cell = currentRow[i-1];
+        Object cell = getObject(i);
 
         if(cell == null) {
-            setWasNull(true);
             return 0;
-        } else {
-            setWasNull(false);
         }
 
         if(cell instanceof Number) {
@@ -845,62 +881,206 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
 
     @Override
     public long getLong(int i) throws SQLException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return 0;
+        }
+
+        if(cell instanceof Number) {
+            return ((Number)cell).longValue();
+        } else {
+            try {
+                return Long.valueOf(cell.toString());
+            } catch (Exception ex) {
+                throw new SQLException(ex);
+            }
+        }
     }
 
     @Override
     public float getFloat(int i) throws SQLException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return 0;
+        }
+
+        if(cell instanceof Number) {
+            return ((Number)cell).floatValue();
+        } else {
+            try {
+                return Float.valueOf(cell.toString());
+            } catch (Exception ex) {
+                throw new SQLException(ex);
+            }
+        }
     }
 
     @Override
     public double getDouble(int i) throws SQLException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return 0;
+        }
+
+        if(cell instanceof Number) {
+            return ((Number)cell).doubleValue();
+        } else {
+            try {
+                return Double.valueOf(cell.toString());
+            } catch (Exception ex) {
+                throw new SQLException(ex);
+            }
+        }
     }
 
     @Override
     public BigDecimal getBigDecimal(int i, int i2) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return null;
+        }
+
+        try {
+            return new BigDecimal(cell.toString());
+        } catch (Exception ex) {
+            throw new SQLException(ex);
+        }
     }
 
     @Override
     public byte[] getBytes(int i) throws SQLException {
-        return new byte[0];  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return null;
+        }
+
+        if(cell instanceof byte[]) {
+            return (byte[])cell;
+        } else {
+            try {
+                return cell.toString().getBytes();
+            } catch (Exception ex) {
+                throw new SQLException(ex);
+            }
+        }
     }
 
     @Override
     public Date getDate(int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return null;
+        }
+
+        if(cell instanceof Date) {
+            return (Date)cell;
+        } else {
+            try {
+                return Date.valueOf(cell.toString());
+            } catch (Exception ex) {
+                throw new SQLException(ex);
+            }
+        }
     }
 
     @Override
     public Time getTime(int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return null;
+        }
+
+        if(cell instanceof Time) {
+            return (Time)cell;
+        } else {
+            try {
+                return Time.valueOf(cell.toString());
+            } catch (Exception ex) {
+                throw new SQLException(ex);
+            }
+        }
     }
 
     @Override
     public Timestamp getTimestamp(int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return null;
+        }
+
+        if(cell instanceof Timestamp) {
+            return (Timestamp)cell;
+        } else {
+            try {
+                return Timestamp.valueOf(cell.toString());
+            } catch (Exception ex) {
+                throw new SQLException(ex);
+            }
+        }
     }
 
     @Override
     public InputStream getAsciiStream(int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return null;
+        }
+
+        if(cell instanceof InputStream) {
+            return (InputStream)cell;
+        } else {
+            throw new SQLException("Column is not an input stream");
+        }
     }
 
     @Override
     public InputStream getUnicodeStream(int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return null;
+        }
+
+        if(cell instanceof InputStream) {
+            return (InputStream)cell;
+        } else {
+            throw new SQLException("Column is not an input stream");
+        }
     }
 
     @Override
     public InputStream getBinaryStream(int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return null;
+        }
+
+        if(cell instanceof InputStream) {
+            return (InputStream)cell;
+        } else {
+            throw new SQLException("Column is not an input stream");
+        }
     }
 
     @Override
     public String getString(String s) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(s);
+
+        if(cell == null) {
+            return null;
+        } else {
+            return cell.toString();
+        }
     }
 
     @Override
@@ -995,17 +1175,21 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
 
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return this;
     }
 
     @Override
     public Object getObject(int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        checkColumnIndex(i);
+        checkCurrentRow();
+        Object cell = currentRow[i-1];
+        setWasNull(cell == null);
+        return cell;
     }
 
     @Override
     public Object getObject(String s) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return getObject(cachedColumnNames.get(s));
     }
 
     @Override
@@ -1790,6 +1974,174 @@ public class ReversibleRowSetImpl implements ReversibleRowSet, DataSource {
     @Override
     public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
         throw new UnsupportedOperationException();
+    }
+
+    // ResultSetMetaData functions
+
+
+    @Override
+    public String getCatalogName(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().getCatalogName(i);
+        }
+    }
+
+    @Override
+    public int getColumnCount() throws SQLException {
+        return cachedColumnCount;
+    }
+
+    @Override
+    public boolean isAutoIncrement(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().isAutoIncrement(i);
+        }
+    }
+
+    @Override
+    public boolean isCaseSensitive(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().isCaseSensitive(i);
+        }
+    }
+
+    @Override
+    public boolean isSearchable(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().isSearchable(i);
+        }
+    }
+
+    @Override
+    public boolean isCurrency(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().isCurrency(i);
+        }
+    }
+
+    @Override
+    public int isNullable(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().isNullable(i);
+        }
+    }
+
+    @Override
+    public boolean isSigned(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().isSigned(i);
+        }
+    }
+
+    @Override
+    public int getColumnDisplaySize(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().getColumnDisplaySize(i);
+        }
+    }
+
+    @Override
+    public String getColumnLabel(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().getColumnLabel(i);
+        }
+    }
+
+    @Override
+    public String getColumnName(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().getColumnName(i);
+        }
+    }
+
+    @Override
+    public String getSchemaName(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().getSchemaName(i);
+        }
+    }
+
+    @Override
+    public int getPrecision(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().getPrecision(i);
+        }
+    }
+
+    @Override
+    public int getScale(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().getScale(i);
+        }
+    }
+
+    @Override
+    public String getTableName(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().getTableName(i);
+        }
+    }
+
+    @Override
+    public int getColumnType(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().getColumnType(i);
+        }
+    }
+
+    @Override
+    public String getColumnTypeName(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().getColumnTypeName(i);
+        }
+    }
+
+    @Override
+    public boolean isReadOnly(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().isReadOnly(i);
+        }
+    }
+
+    @Override
+    public boolean isWritable(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().isWritable(i);
+        }
+    }
+
+    @Override
+    public boolean isDefinitelyWritable(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().isDefinitelyWritable(i);
+        }
+    }
+
+    @Override
+    public String getColumnClassName(int i) throws SQLException {
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            return resultSetHolder.getResultSet().getMetaData().getColumnClassName(i);
+        }
     }
 
     /**

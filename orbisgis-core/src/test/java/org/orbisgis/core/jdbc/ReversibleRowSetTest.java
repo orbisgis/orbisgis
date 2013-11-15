@@ -37,6 +37,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -63,7 +64,9 @@ public class ReversibleRowSetTest {
                 assertEquals(42, rs.getInt(1));
                 assertTrue(rs.next());
                 assertEquals(666, rs.getInt(1));
+                assertFalse(rs.next());
             }
+            st.execute("drop table if exists test");
         }
     }
 }
