@@ -60,7 +60,7 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
     private boolean wasNull = true;
 
     private int rowFetchSize = 100;
-    private final ResultSetHolder resultSetHolder;
+    protected final ResultSetHolder resultSetHolder;
 
     /**
      * Constructor.
@@ -77,7 +77,7 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
         this.wasNull = wasNull;
     }
 
-    private int getColumnByLabel(String label) throws SQLException {
+    protected int getColumnByLabel(String label) throws SQLException {
         Integer columnId = cachedColumnNames.get(label.toUpperCase());
         if(columnId == null) {
             throw new SQLException("Column "+label+" does not exists");
@@ -90,7 +90,7 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
      * Call this method into a synchronized (resultSetHolder) block
      * @throws SQLException
      */
-    private void checkResultSet() throws SQLException {
+    protected void checkResultSet() throws SQLException {
         // Reactivate result set if necessary
         if(resultSetHolder.getStatus() == ResultSetHolder.STATUS.CLOSED || resultSetHolder.getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
             execute();
@@ -104,22 +104,50 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
         }
     }
 
-    private void checkColumnIndex(int columnIndex) throws SQLException {
+    protected void checkColumnIndex(int columnIndex) throws SQLException {
         if(columnIndex < 1 || columnIndex > cachedColumnCount) {
             throw new SQLException(new IndexOutOfBoundsException("Column index "+columnIndex+" out of bound[1-"+cachedColumnCount+"]"));
         }
     }
 
-    private void checkCurrentRow() throws SQLException {
-        if(rowId < 1 || rowId > getRowCount() || currentRow == null) {
+    /**
+     * Check the current RowId, throw an exception if the cursor is at wrong position.
+     * @throws SQLException
+     */
+    protected void checkCurrentRow() throws SQLException {
+        if(rowId < 1 || rowId > getRowCount()) {
             throw new SQLException("Not in a valid row "+rowId+"/"+getRowCount());
         }
+        if(currentRow == null) {
+            synchronized (resultSetHolder) {
+                checkResultSet();
+                ResultSet rs = resultSetHolder.getResultSet();
+                final int columnCount = getColumnCount();
+                if(rs.absolute((int)rowId)) {
+                    Object[] row = new Object[columnCount];
+                    for(int idColumn=1; idColumn <= columnCount; idColumn++) {
+                        row[idColumn-1] = rs.getObject(idColumn);
+                    }
+                    rowCache.put(rowId, row);
+                    cachedRows.add(rowId);
+                }
+            }
+        }
+    }
+
+    /**
+     * Clear local cache of rows
+     */
+    protected void clearRowCache() {
+        rowCache.clear();
+        cachedRows.clear();
+        currentRow = null;
     }
 
     /**
      * Read the content of the DB near the current row id
      */
-    private void updateRowCache() throws SQLException {
+    protected void updateRowCache() throws SQLException {
         if(!rowCache.containsKey(rowId)) {
             synchronized (resultSetHolder) {
                 checkResultSet();
@@ -137,13 +165,13 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
                 long end = rowId + (int)(rowFetchSize * 0.75);
                 for(long fetchId = begin; fetchId < end; fetchId ++) {
                     if(!rowCache.containsKey(fetchId)) {
-                        if(rs.absolute((int)rowId)) {
+                        if(rs.absolute((int)fetchId)) {
                             Object[] row = new Object[columnCount];
                             for(int idColumn=1; idColumn <= columnCount; idColumn++) {
                                 row[idColumn-1] = rs.getObject(idColumn);
                             }
-                            rowCache.put(rowId, row);
-                            cachedRows.add(rowId);
+                            rowCache.put(fetchId, row);
+                            cachedRows.add(fetchId);
                         }
                     }
                 }
@@ -218,7 +246,6 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
         }
     }
 
-    @Override
     public long getRowCount() throws SQLException {
         if(cachedRowCount == -1) {
             try (Connection connection = getConnection();
@@ -269,7 +296,21 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
 
     @Override
     public byte getByte(int i) throws SQLException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return 0;
+        }
+
+        if(cell instanceof Byte) {
+            return (Byte)cell;
+        } else {
+            try {
+                return Byte.valueOf(cell.toString());
+            } catch (Exception ex) {
+                throw new SQLException(ex);
+            }
+        }
     }
 
     @Override
@@ -770,207 +811,207 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
 
     @Override
     public void updateNull(int i) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBoolean(int i, boolean b) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateByte(int i, byte b) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateShort(int i, short i2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateInt(int i, int i2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateLong(int i, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateFloat(int i, float v) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateDouble(int i, double v) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBigDecimal(int i, BigDecimal bigDecimal) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateString(int i, String s) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBytes(int i, byte[] bytes) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateDate(int i, Date date) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateTime(int i, Time time) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateTimestamp(int i, Timestamp timestamp) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateAsciiStream(int i, InputStream inputStream, int i2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBinaryStream(int i, InputStream inputStream, int i2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateCharacterStream(int i, Reader reader, int i2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateObject(int i, Object o, int i2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateObject(int i, Object o) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateNull(String s) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBoolean(String s, boolean b) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateByte(String s, byte b) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateShort(String s, short i) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateInt(String s, int i) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateLong(String s, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateFloat(String s, float v) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateDouble(String s, double v) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBigDecimal(String s, BigDecimal bigDecimal) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateString(String s, String s2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBytes(String s, byte[] bytes) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateDate(String s, Date date) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateTime(String s, Time time) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateTimestamp(String s, Timestamp timestamp) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateAsciiStream(String s, InputStream inputStream, int i) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBinaryStream(String s, InputStream inputStream, int i) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateCharacterStream(String s, Reader reader, int i) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateObject(String s, Object o, int i) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateObject(String s, Object o) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void insertRow() throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateRow() throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void deleteRow() throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
@@ -980,12 +1021,12 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
 
     @Override
     public void cancelRowUpdates() throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void moveToInsertRow() throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
@@ -1090,42 +1131,42 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
 
     @Override
     public void updateRef(int i, Ref ref) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateRef(String s, Ref ref) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBlob(int i, Blob blob) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBlob(String s, Blob blob) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateClob(int i, Clob clob) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateClob(String s, Clob clob) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateArray(int i, Array array) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateArray(String s, Array array) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
@@ -1140,12 +1181,12 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
 
     @Override
     public void updateRowId(int i, RowId rowId) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateRowId(String s, RowId rowId) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
@@ -1160,22 +1201,22 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
 
     @Override
     public void updateNString(int i, String s) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateNString(String s, String s2) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateNClob(int i, NClob nClob) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateNClob(String s, NClob nClob) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
@@ -1200,12 +1241,12 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
 
     @Override
     public void updateSQLXML(int i, SQLXML sqlxml) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateSQLXML(String s, SQLXML sqlxml) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
@@ -1230,142 +1271,142 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
 
     @Override
     public void updateNCharacterStream(int i, Reader reader, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateNCharacterStream(String s, Reader reader, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateAsciiStream(int i, InputStream inputStream, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBinaryStream(int i, InputStream inputStream, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateCharacterStream(int i, Reader reader, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateAsciiStream(String s, InputStream inputStream, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBinaryStream(String s, InputStream inputStream, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateCharacterStream(String s, Reader reader, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBlob(int i, InputStream inputStream, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBlob(String s, InputStream inputStream, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateClob(int i, Reader reader, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateClob(String s, Reader reader, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateNClob(int i, Reader reader, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateNClob(String s, Reader reader, long l) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateNCharacterStream(int i, Reader reader) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateNCharacterStream(String s, Reader reader) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateAsciiStream(int i, InputStream inputStream) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBinaryStream(int i, InputStream inputStream) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateCharacterStream(int i, Reader reader) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateAsciiStream(String s, InputStream inputStream) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBinaryStream(String s, InputStream inputStream) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateCharacterStream(String s, Reader reader) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBlob(int i, InputStream inputStream) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateBlob(String s, InputStream inputStream) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateClob(int i, Reader reader) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateClob(String s, Reader reader) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateNClob(int i, Reader reader) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
     public void updateNClob(String s, Reader reader) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     @Override
