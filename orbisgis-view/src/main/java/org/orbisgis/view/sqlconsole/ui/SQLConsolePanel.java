@@ -29,6 +29,7 @@
 package org.orbisgis.view.sqlconsole.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -78,6 +79,7 @@ public class SQLConsolePanel extends JPanel {
         private static final long serialVersionUID = 1L;
         protected final static I18n I18N = I18nFactory.getI18n(SQLConsolePanel.class);
         private final static Logger LOGGER = Logger.getLogger("gui." + SQLConsolePanel.class);
+        private static final String DEFAULT_STATUS_MESSAGE = I18n.marktr("Drop source here to get all table columns");
         private ScriptSplitterFactory splitterFactory;
         
         // Components
@@ -258,7 +260,6 @@ public class SQLConsolePanel extends JPanel {
                         scriptPanel.setLineWrap(true);
                         scriptPanel.setClearWhitespaceLinesEnabled(true);
                         scriptPanel.setMarkOccurrences(false);
-                        scriptPanel.setTransferHandler(new ScriptPanelTransferHandler());
                         actions.setAccelerators(scriptPanel);
                         //TODO track language support bundles
 
@@ -414,6 +415,7 @@ public class SQLConsolePanel extends JPanel {
 
                 if (infoToolBar == null) {
                         infoToolBar = new JToolBar();
+                        infoToolBar.setTransferHandler(new ScriptPanelTransferHandler(scriptPanel));
                         statusMessage = new JLabel();
                         infoToolBar.add(statusMessage);
                         infoToolBar.setFloatable(false);
@@ -426,17 +428,21 @@ public class SQLConsolePanel extends JPanel {
                                 }
                         });
                         messageCleanTimer.setRepeats(false);
+                        setStatusMessage("");
                 }
 
                 return infoToolBar;
         }
 
-        public final void setStatusMessage(String message) {
-                this.message = message;
+        public final void setStatusMessage(String messageToShow) {
+                this.message = messageToShow;
                 if (!message.isEmpty()) {
-                        messageCleanTimer.restart();
+                    messageCleanTimer.restart();
+                } else {
+                    // Empty message mean show default message
+                    messageToShow = I18N.tr(DEFAULT_STATUS_MESSAGE);
                 }
-                statusMessage.setText(String.format(MESSAGEBASE, line, character, message));
+                statusMessage.setText(String.format(MESSAGEBASE, line, character, messageToShow));
         }
 
         public void setCharacter(int character) {

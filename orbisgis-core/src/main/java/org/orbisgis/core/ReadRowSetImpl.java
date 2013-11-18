@@ -560,72 +560,72 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
 
     @Override
     public byte getByte(String s) throws SQLException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return getByte(getColumnByLabel(s));
     }
 
     @Override
     public short getShort(String s) throws SQLException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return getByte(getColumnByLabel(s));
     }
 
     @Override
     public int getInt(String s) throws SQLException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return getInt(getColumnByLabel(s));
     }
 
     @Override
     public long getLong(String s) throws SQLException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return getLong(getColumnByLabel(s));
     }
 
     @Override
     public float getFloat(String s) throws SQLException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return getFloat(getColumnByLabel(s));
     }
 
     @Override
     public double getDouble(String s) throws SQLException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return getDouble(getColumnByLabel(s));
     }
 
     @Override
     public BigDecimal getBigDecimal(String s, int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return getBigDecimal(getColumnByLabel(s), i);
     }
 
     @Override
     public byte[] getBytes(String s) throws SQLException {
-        return new byte[0];  //To change body of implemented methods use File | Settings | File Templates.
+        return getBytes(getColumnByLabel(s));
     }
 
     @Override
     public Date getDate(String s) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return getDate(getColumnByLabel(s));
     }
 
     @Override
     public Time getTime(String s) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return getTime(getColumnByLabel(s));
     }
 
     @Override
     public Timestamp getTimestamp(String s) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return getTimestamp(getColumnByLabel(s));
     }
 
     @Override
     public InputStream getAsciiStream(String s) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return getAsciiStream(getColumnByLabel(s));
     }
 
     @Override
     public InputStream getUnicodeStream(String s) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return getUnicodeStream(getColumnByLabel(s));
     }
 
     @Override
     public InputStream getBinaryStream(String s) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return getBinaryStream(getColumnByLabel(s));
     }
 
     @Override
@@ -669,77 +669,99 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
 
     @Override
     public Reader getCharacterStream(int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return null;
+        }
+
+        if(cell instanceof Reader) {
+            return (Reader)cell;
+        } else {
+            throw new SQLException("Column is not an character stream");
+        }
     }
 
     @Override
     public Reader getCharacterStream(String s) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return getCharacterStream(getColumnByLabel(s));
     }
 
     @Override
     public BigDecimal getBigDecimal(int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Object cell = getObject(i);
+
+        if(cell == null) {
+            return new BigDecimal(0);
+        }
+
+        if(cell instanceof BigDecimal) {
+            return (BigDecimal)cell;
+        } else {
+            try {
+                return new BigDecimal(cell.toString());
+            } catch (Exception ex) {
+                throw new SQLException(ex);
+            }
+        }
     }
 
     @Override
     public BigDecimal getBigDecimal(String s) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return getBigDecimal(getColumnByLabel(s));
     }
 
     @Override
     public boolean isBeforeFirst() throws SQLException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return rowId == 0;
     }
 
     @Override
     public boolean isAfterLast() throws SQLException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return rowId > getRowCount();
     }
 
     @Override
     public boolean isFirst() throws SQLException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return rowId == 1;
     }
 
     @Override
     public boolean isLast() throws SQLException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return rowId == getRowCount();
     }
 
     @Override
     public void beforeFirst() throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        moveCursorTo(0);
     }
 
     @Override
     public void afterLast() throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        moveCursorTo((int)(getRowCount() + 1));
     }
 
     @Override
     public boolean first() throws SQLException {
-        rowId=1;
-        updateRowCache();
-        notifyCursorMoved();
-        return rowId>0 && rowId <= getRowCount();
+        return moveCursorTo(1);
     }
 
     @Override
     public boolean last() throws SQLException {
-        rowId=getRowCount();
-        updateRowCache();
-        notifyCursorMoved();
-        return rowId>0 && rowId <= getRowCount();
+        return moveCursorTo((int)getRowCount());
     }
 
     @Override
     public int getRow() throws SQLException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return (int)rowId;
     }
 
     @Override
     public boolean absolute(int i) throws SQLException {
+        return moveCursorTo(i);
+    }
+
+    private boolean moveCursorTo(long i) throws SQLException {
         rowId=i;
         updateRowCache();
         notifyCursorMoved();
@@ -748,18 +770,12 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
 
     @Override
     public boolean relative(int i) throws SQLException {
-        rowId+=i;
-        updateRowCache();
-        notifyCursorMoved();
-        return rowId>0 && rowId <= getRowCount();
+        return moveCursorTo((int)(rowId + i));
     }
 
     @Override
     public boolean previous() throws SQLException {
-        rowId--;
-        updateRowCache();
-        notifyCursorMoved();
-        return rowId > 0;
+        return moveCursorTo(rowId - 1);
     }
 
     @Override

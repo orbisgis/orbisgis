@@ -91,38 +91,31 @@ public class ExecuteScriptProcess implements BackgroundJob {
             // Print headers
             LOGGER.info(query+ ": ");
             ResultSetMetaData metaData = rs.getMetaData();
-            StringBuilder sb = new StringBuilder();
             int columnCount = metaData.getColumnCount();
+            StringBuilder formatStringBuilder = new StringBuilder();
+            String[] header = new String[columnCount];
             for(int idColumn = 1; idColumn <= columnCount; idColumn++) {
-                if(idColumn > 1) {
-                    sb.append("\t\t");
-                }
-                sb.append(metaData.getColumnName(idColumn));
-                sb.append("(");
-                sb.append(metaData.getColumnTypeName(idColumn));
-                sb.append(")");
+                header[idColumn-1] = metaData.getColumnLabel(idColumn)+"("+metaData.getColumnTypeName(idColumn)+")";
+                formatStringBuilder.append("%-"+MAX_FIELD_LENGTH+"s");
             }
-            LOGGER.info(sb.toString());
+            LOGGER.info(String.format(formatStringBuilder.toString(), header));
             int shownLines = 0;
             StringBuilder lines = new StringBuilder();
             while(rs.next() && shownLines < MAX_PRINTED_ROWS) {
+                String[] row = new String[columnCount];
                 for(int idColumn = 1; idColumn <= columnCount; idColumn ++) {
-                    if(idColumn > 1) {
-                        lines.append("\t\t");
-                    }
                     String value = rs.getString(idColumn);
                     if(value != null) {
-                        if(value.length() < MAX_FIELD_LENGTH) {
-                            lines.append(value);
-                        } else {
-                            lines.append(value.substring(0, MAX_FIELD_LENGTH));
-                            lines.append("..");
+                        if(value.length() > MAX_FIELD_LENGTH) {
+                            value = value.substring(0, MAX_FIELD_LENGTH-2) + "..";
                         }
                     } else {
-                        lines.append("NULL");
+                        value = "NULL";
                     }
+                    row[idColumn-1] = value;
                 }
                 shownLines++;
+                lines.append(String.format(formatStringBuilder.toString(),row));
                 lines.append("\n");
             }
             LOGGER.info(lines.toString());
@@ -140,7 +133,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                 String query = splitter.next();
                                 // Some query need to be shown to the user
                                 String lc_query = query.trim().toLowerCase();
-                                String[] executeQueryCommands = new String[] {"select", "explain", "call", "show"};
+                                String[] executeQueryCommands = new String[] {"select", "explain", "call", "show", "script"};
                                 boolean doExecuteQuery = false;
                                 for(String command : executeQueryCommands) {
                                     if(lc_query.startsWith(command)) {

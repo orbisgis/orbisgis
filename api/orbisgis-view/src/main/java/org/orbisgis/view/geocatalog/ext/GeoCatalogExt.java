@@ -45,4 +45,9 @@ public interface GeoCatalogExt {
          * @return The selection model of the list.
          */
         ListSelectionModel getListSelectionModel();
+
+        /**
+         * Reload the list of source from the DataBase
+         */
+        void refreshSourceList();
 }

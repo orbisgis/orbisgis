@@ -47,8 +47,8 @@ public class CoreWorkspace implements Serializable {
         private static final long serialVersionUID = 6L; /*<! Update this integer while adding properties (1 for each new property)*/
 
         public static final int MAJOR_VERSION = 4; // Load a workspace only if the major version is equal
-        public static final int MINOR_VERSION = 0; // increment on new features
-        public static final int REVISION_VERSION = 1; // increment on fix
+        public static final int MINOR_VERSION = 1; // increment on new features
+        public static final int REVISION_VERSION = 0; // increment on fix
         private PropertyChangeSupport propertySupport;
         private String applicationFolder = new File(System.getProperty("user.home"))
                 .getAbsolutePath() + File.separator + ".OrbisGIS" + File.separator

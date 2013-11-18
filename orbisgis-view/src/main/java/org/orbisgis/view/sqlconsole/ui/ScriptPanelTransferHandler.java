@@ -29,7 +29,6 @@
 package org.orbisgis.view.sqlconsole.ui;
 
 import org.apache.log4j.Logger;
-import org.fife.ui.rtextarea.RTATextTransferHandler;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.view.geocatalog.TransferableSource;
@@ -49,8 +48,13 @@ import java.util.TreeSet;
  * If a source is dropped into the console panel, it transfer table reference into a SQL Request.
  * @author Nicolas Fortin
  */
-public class ScriptPanelTransferHandler extends RTATextTransferHandler {
-    private Logger LOGGER = Logger.getLogger(ScriptPanelTransferHandler.class);
+public class ScriptPanelTransferHandler extends TransferHandler {
+    private static final Logger LOGGER = Logger.getLogger(ScriptPanelTransferHandler.class);
+    private JTextArea textArea;
+
+    public ScriptPanelTransferHandler(JTextArea textArea) {
+        this.textArea = textArea;
+    }
 
     @Override
     public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) {
@@ -64,7 +68,7 @@ public class ScriptPanelTransferHandler extends RTATextTransferHandler {
 
     @Override
     public boolean importData(JComponent comp, Transferable t) {
-        if(t.isDataFlavorSupported(TransferableSource.sourceFlavor) && comp instanceof JTextArea) {
+        if(t.isDataFlavorSupported(TransferableSource.sourceFlavor)) {
             DataSource dataSource = Services.getService(DataSource.class);
             if(dataSource == null) {
                 return false;
@@ -96,7 +100,7 @@ public class ScriptPanelTransferHandler extends RTATextTransferHandler {
                                 fields.append(", ");
                             }
                         }
-                        ((JTextArea)comp).append(String.format("SELECT %s FROM %s;\n",fields.toString(),table));
+                        textArea.append(String.format("SELECT %s FROM %s;\n",fields.toString(),table));
                     }
                 }
                 return true;

@@ -75,6 +75,7 @@ import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.actions.ActionOnNonEmptySourceList;
 import org.orbisgis.view.geocatalog.actions.ActionOnSelection;
+import org.orbisgis.view.geocatalog.ext.GeoCatalogExt;
 import org.orbisgis.view.geocatalog.ext.GeoCatalogMenu;
 import org.orbisgis.view.geocatalog.ext.PopupMenu;
 import org.orbisgis.view.geocatalog.ext.PopupTarget;
@@ -345,7 +346,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                         //When opening file in geocatalog, cannot found a driver able to load ex:.JPG extension
                         LOGGER.error(I18N.tr("No driver found for {0} extension", ext));
                     } else {
-                        ImportFile importFileJob = new ImportFile(driverFunction, file, FileUtils.getNameFromURI(file.toURI()));
+                        ImportFile importFileJob = new ImportFile(this, driverFunction, file, FileUtils.getNameFromURI(file.toURI()));
                         BackgroundManager bm = Services.getService(BackgroundManager.class);
                         bm.nonBlockingBackgroundOperation(importFileJob);
                     }
@@ -657,12 +658,16 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             popupActions.addAction(new DefaultAction(PopupMenu.M_REFRESH,I18N.tr("Refresh"),
                     I18N.tr("Read the content of the database"),
                     OrbisGISIcon.getIcon("arrow_refresh"),EventHandler.create(ActionListener.class,
-                    sourceListContent,"onDataManagerChange"),null).setLogicalGroup(PopupMenu.GROUP_OPEN));
+                    this,"refreshSourceList"),null).setLogicalGroup(PopupMenu.GROUP_OPEN));
 
             //Clear Geo-catalog
             popupActions.addAction(new ActionOnNonEmptySourceList(PopupMenu.M_CLEAR_CATALOG,I18N.tr("Clear the GeoCatalog"),
                     I18N.tr("Remove all sources in this list"),OrbisGISIcon.getIcon("bin_closed"),
                     EventHandler.create(ActionListener.class,this,"onMenuClearGeoCatalog"), sourceListContent).setLogicalGroup(PopupMenu.GROUP_CLOSE));
+        }
+
+        public void refreshSourceList() {
+            sourceListContent.onDataManagerChange();
         }
 
         /**
@@ -750,8 +755,10 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             private DriverFunction driverFunction;
             private File file;
             private String tableName;
+            private GeoCatalogExt catalog;
 
-            private ImportFile(DriverFunction driverFunction, File file, String tableName) {
+            private ImportFile(GeoCatalogExt catalog, DriverFunction driverFunction, File file, String tableName) {
+                this.catalog = catalog;
                 this.driverFunction = driverFunction;
                 this.file = file;
                 this.tableName = tableName;
@@ -770,6 +777,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 } catch (SQLException | IOException ex) {
                     LOGGER.error(I18N.tr("Cannot import the file"), ex);
                 }
+                catalog.refreshSourceList();
             }
         }
 }

@@ -5,11 +5,10 @@
         <parent>
                 <artifactId>orbisgis-h2</artifactId>
                 <groupId>org.orbisgis</groupId>
-                <version>4.0.2-SNAPSHOT</version>
+                <version>4.1.0-SNAPSHOT</version>
                 <relativePath>../</relativePath>
         </parent>
         <artifactId>orbisgis-sif</artifactId>
-        <version>4.0.2-SNAPSHOT</version>
         <packaging>bundle</packaging>
         <name>orbisgis-sif</name>
         <url>http://maven.apache.org</url>
