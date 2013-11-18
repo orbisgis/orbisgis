@@ -32,6 +32,9 @@ import org.orbisgis.core.ReadRowSetImpl;
 import org.orbisgis.core.api.ReversibleRowSet;
 
 import javax.sql.DataSource;
+import javax.sql.RowSet;
+import javax.sql.RowSetEvent;
+import javax.sql.RowSetListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -52,6 +55,31 @@ public class RowSetTest {
     }
 
     @Test
+    public void testRowSetListener() throws SQLException {
+        UnitTestRowSetListener rowSetListener = new UnitTestRowSetListener();
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+            st.execute("drop table if exists test");
+            st.execute("create table test (id integer, str varchar(30), flt float)");
+            st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
+            try (RowSet rs = new ReadRowSetImpl(dataSource, TableLocation.parse("test"))) {
+                rs.addRowSetListener(rowSetListener);
+                assertFalse(rowSetListener.isCursorMoved());
+                assertTrue(rs.next());
+                assertTrue(rowSetListener.isCursorMoved());
+                rowSetListener.setCursorMoved(false);
+                assertFalse(rs.previous());
+                assertTrue(rowSetListener.isCursorMoved());
+                rowSetListener.setCursorMoved(false);
+                assertTrue(rs.absolute(2));
+                assertTrue(rowSetListener.isCursorMoved());
+            }
+            st.execute("drop table if exists test");
+        }
+    }
+
+    @Test
     public void testReadTable() throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
@@ -59,7 +87,7 @@ public class RowSetTest {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer, str varchar(30), flt float)");
             st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
-            try (ReadRowSetImpl rs = new ReadRowSetImpl(dataSource, TableLocation.parse("test"))) {
+            try (RowSet rs = new ReadRowSetImpl(dataSource, TableLocation.parse("test"))) {
                 assertTrue(rs.next());
                 assertEquals(42, rs.getInt(1));
                 assertEquals("marvin", rs.getString(2));
@@ -83,6 +111,32 @@ public class RowSetTest {
                 assertEquals(10.1010, rs.getFloat(3), 1e-6);
             }
             st.execute("drop table if exists test");
+        }
+    }
+
+
+    private static class UnitTestRowSetListener implements RowSetListener {
+        private boolean cursorMoved = false;
+
+        public boolean isCursorMoved() {
+            return cursorMoved;
+        }
+
+        private void setCursorMoved(boolean cursorMoved) {
+            this.cursorMoved = cursorMoved;
+        }
+
+        @Override
+        public void cursorMoved(RowSetEvent rowSetEvent) {
+            cursorMoved = true;
+        }
+
+        @Override
+        public void rowSetChanged(RowSetEvent rowSetEvent) {
+        }
+
+        @Override
+        public void rowChanged(RowSetEvent rowSetEvent) {
         }
     }
 }
