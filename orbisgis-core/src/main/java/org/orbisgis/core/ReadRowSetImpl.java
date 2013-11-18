@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 
 /**
@@ -45,7 +47,7 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
     private final TableLocation location;
     private final DataSource dataSource;
     private Map<Long, Object[]> rowCache = new HashMap<>();
-    private List<Long> cachedRows = new LinkedList<>();
+    private SortedSet<Long> cachedRows = new TreeSet<>();
     private Object[] currentRow;
     private long rowId = 0;
     /** If the table has been updated or never read, rowCount is set to -1 (unknown) */
@@ -168,7 +170,9 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
                             rowCache.put(fetchId, row);
                             cachedRows.add(fetchId);
                             while(cachedRows.size() > rowFetchSize) {
-                                rowCache.remove(cachedRows.remove(0));
+                                Long oldRow = cachedRows.first();
+                                cachedRows.remove(oldRow);
+                                rowCache.remove(oldRow);
                             }
                         }
                     }
