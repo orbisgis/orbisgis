@@ -32,7 +32,7 @@ import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.thematic.OnVertexOnCentroid;
+import org.orbisgis.legend.thematic.OnVertexOnInterior;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legends.panels.TablePanel;
 import org.xnap.commons.i18n.I18n;
@@ -44,19 +44,20 @@ import java.awt.event.ActionListener;
 
 /**
  * Button group for choosing whether the symbol should be placed on the vertices
- * or on the centroid.
+ * or on the interior point.
  *
  * @author Adam Gouge
  * @author Alexis Guéganno
+ * @author Erwan Bocher
  */
-public final class OnVertexOnCentroidButtonGroup extends JPanel {
+public final class OnVertexOnInteriorButtonGroup extends JPanel {
 
-    private static final I18n I18N = I18nFactory.getI18n(OnVertexOnCentroidButtonGroup.class);
+    private static final I18n I18N = I18nFactory.getI18n(OnVertexOnInteriorButtonGroup.class);
 
     private static final String VERTEX = I18n.marktr("Vertex");
-    private static final String CENTROID = I18n.marktr("Centroid");
+    private static final String INTERIOR = I18n.marktr("Interior");
 
-    private OnVertexOnCentroid legend;
+    private OnVertexOnInterior legend;
     private CanvasSE preview;
     private TablePanel tablePanel;
 
@@ -67,7 +68,7 @@ public final class OnVertexOnCentroidButtonGroup extends JPanel {
      * @param preview    Preview
      * @param tablePanel Table panel
      */
-    public OnVertexOnCentroidButtonGroup(OnVertexOnCentroid legend,
+    public OnVertexOnInteriorButtonGroup(OnVertexOnInterior legend,
                                          CanvasSE preview,
                                          TablePanel tablePanel) {
         super(new MigLayout("wrap 1"));
@@ -77,14 +78,14 @@ public final class OnVertexOnCentroidButtonGroup extends JPanel {
         init();
     }
 
-    public OnVertexOnCentroidButtonGroup(OnVertexOnCentroid legend,
+    public OnVertexOnInteriorButtonGroup(OnVertexOnInterior legend,
                                          CanvasSE preview) {
         this(legend, preview, null);
     }
 
     /**
      * Initializes the panel used to configure if the symbol must be drawn on
-     * the vertices or on the centroid.
+     * the vertices or on the interior point.
      */
     private void init() {
 
@@ -103,17 +104,17 @@ public final class OnVertexOnCentroidButtonGroup extends JPanel {
             }
         });
 
-        JRadioButton bCentroid = new JRadioButton(I18N.tr(CENTROID));
-        bCentroid.addActionListener(new ActionListener() {
+        JRadioButton bInterior = new JRadioButton(I18N.tr(INTERIOR));
+        bInterior.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                legend.setOnCentroid();
+                legend.setOnInterior();
             }
         });
-        bCentroid.addActionListener(new ActionListener() {
+        bInterior.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onClickCentroid();
+                onClickInterior();
             }
         });
 
@@ -122,17 +123,17 @@ public final class OnVertexOnCentroidButtonGroup extends JPanel {
         if (symbol instanceof PointSymbolizer) {
             boolean onVertex = ((PointSymbolizer) symbol).isOnVertex();
             bVertex.setSelected(onVertex);
-            bCentroid.setSelected(!onVertex);
+            bInterior.setSelected(!onVertex);
         }
 
         // Make the button group.
         ButtonGroup bg = new ButtonGroup();
         bg.add(bVertex);
-        bg.add(bCentroid);
+        bg.add(bInterior);
 
         // Make and return the panel.
         add(bVertex);
-        add(bCentroid);
+        add(bInterior);
     }
 
     /**
@@ -143,9 +144,9 @@ public final class OnVertexOnCentroidButtonGroup extends JPanel {
     }
 
     /**
-     * Called when the user wants to put the points on the centroid of the geometry.
+     * Called when the user wants to put the points on the interior point of the geometry.
      */
-    private void onClickCentroid() {
+    private void onClickInterior() {
         changeOnVertex(false);
     }
 
@@ -154,7 +155,7 @@ public final class OnVertexOnCentroidButtonGroup extends JPanel {
      * table preview if necessary).
      *
      * @param onVertex True if the symbol is to be placed on vertices; false
-     *                 if on the centroid
+     *                 if on the interior point
      */
     private void changeOnVertex(boolean onVertex) {
         Symbolizer symbol = preview.getSymbol();

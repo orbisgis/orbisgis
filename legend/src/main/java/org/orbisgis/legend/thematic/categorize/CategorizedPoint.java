@@ -24,7 +24,7 @@ import org.orbisgis.legend.structure.categorize.CategorizedString;
 import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 import org.orbisgis.legend.thematic.EnablesStroke;
-import org.orbisgis.legend.thematic.OnVertexOnCentroid;
+import org.orbisgis.legend.thematic.OnVertexOnInterior;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.legend.thematic.uom.SymbolUom;
@@ -41,7 +41,7 @@ import java.util.List;
  * @author Alexis Guéganno
  */
 public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
-        implements SymbolUom, EnablesStroke, OnVertexOnCentroid {
+        implements SymbolUom, EnablesStroke, OnVertexOnInterior {
 
     private CategorizedColor colorFill;
     private CategorizedReal opacityFill;
@@ -405,7 +405,7 @@ public class CategorizedPoint extends AbstractCategorizedLegend<PointParameters>
     }
 
     @Override
-    public void setOnCentroid(){
+    public void setOnInterior(){
         symbolizer.setOnVertex(false);
     }
 

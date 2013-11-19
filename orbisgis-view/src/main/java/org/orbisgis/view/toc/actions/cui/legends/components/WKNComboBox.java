@@ -31,10 +31,8 @@ package org.orbisgis.view.toc.actions.cui.legends.components;
 import org.orbisgis.core.renderer.se.graphic.WellKnownName;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.sif.common.ContainerItem;
-import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
-import java.util.Arrays;
 
 /**
  * Combo box for the symbol's well-known name.
@@ -52,8 +50,8 @@ public class WKNComboBox extends PreviewComboBox {
     public WKNComboBox(ConstantFormPoint legend,
                        CanvasSE preview) {
         super(getItems(), legend, preview);
-        setSelectedItem(WellKnownName.fromString(legend.getWellKnownName())
-                .toLocalizedString());
+        WellKnownName value = WellKnownName.fromString(legend.getWellKnownName());
+        setSelectedItem(new ContainerItem<WellKnownName>(value, value.toLocalizedString()));
     }
 
     @Override

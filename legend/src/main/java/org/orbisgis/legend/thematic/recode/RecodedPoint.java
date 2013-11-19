@@ -51,7 +51,7 @@ import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 import org.orbisgis.legend.thematic.EnablesStroke;
-import org.orbisgis.legend.thematic.OnVertexOnCentroid;
+import org.orbisgis.legend.thematic.OnVertexOnInterior;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.legend.thematic.uom.SymbolUom;
@@ -69,7 +69,7 @@ import java.util.Set;
  * @author Alexis Guéganno
  */
 public class RecodedPoint extends AbstractRecodedLegend<PointParameters>
-        implements SymbolUom, EnablesStroke, OnVertexOnCentroid {
+        implements SymbolUom, EnablesStroke, OnVertexOnInterior {
 
     private PointSymbolizer pointSymbolizer;
     private final RecodedSolidFillLegend fill;
@@ -476,7 +476,7 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters>
     }
 
     @Override
-    public void setOnCentroid(){
+    public void setOnInterior(){
         pointSymbolizer.setOnVertex(false);
     }
 

@@ -34,7 +34,7 @@ import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.LineParameters;
-import org.orbisgis.legend.thematic.OnVertexOnCentroid;
+import org.orbisgis.legend.thematic.OnVertexOnInterior;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.legend.thematic.uom.SymbolUom;
@@ -190,7 +190,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
     /**
      * Makes a postProcess operation on {@code ml} using the inner
      * legend. We keep properties handled by the following interfaces :
-     * <ul><li>{@link OnVertexOnCentroid},</li>
+     * <ul><li>{@link OnVertexOnInterior},</li>
      * <li>{@link EnablesStroke}</li>
      * <li>{@link StrokeUom}</li>
      * <li>{@link SymbolUom}</li>
@@ -200,12 +200,12 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
      */
     protected void postProcess(MappedLegend<K, U> ml) {
         MappedLegend<K,U> inner = getLegend();
-        if (inner instanceof OnVertexOnCentroid &&
-                ml instanceof OnVertexOnCentroid) {
-                if (((OnVertexOnCentroid) inner).isOnVertex()) {
-                    ((OnVertexOnCentroid) ml).setOnVertex();
+        if (inner instanceof OnVertexOnInterior &&
+                ml instanceof OnVertexOnInterior) {
+                if (((OnVertexOnInterior) inner).isOnVertex()) {
+                    ((OnVertexOnInterior) ml).setOnVertex();
                 } else {
-                    ((OnVertexOnCentroid) ml).setOnCentroid();
+                    ((OnVertexOnInterior) ml).setOnInterior();
                 }
         }
         if (inner instanceof EnablesStroke &&
