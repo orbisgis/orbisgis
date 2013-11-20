@@ -164,7 +164,7 @@ public class BundleTools {
 
             // Keep a reference to bundles in the framework cache
             for (Bundle bundle : hostBundle.getBundles()) {
-                String key = bundle.getSymbolicName()+"_"+bundle.getVersion();
+                String key = bundle.getSymbolicName();
                 installedBundleMap.put(key, bundle);
             }
 
@@ -173,12 +173,14 @@ public class BundleTools {
             for (File jarFile : jarList) {
                 // Extract version and symbolic name of the bundle
                 String key="";
+                BundleReference jarRef;
                 try {
                     List<PackageDeclaration> packageDeclarations = new ArrayList<PackageDeclaration>();
-                    BundleReference jarRef = parseJarManifest(jarFile, packageDeclarations);
-                    key = jarRef.getArtifactId()+"_"+jarRef.getVersion();
+                    jarRef = parseJarManifest(jarFile, packageDeclarations);
+                    key = jarRef.getArtifactId();
                 } catch (IOException ex) {
                     LOGGER.error(ex.getLocalizedMessage(),ex);
+                    continue;
                 }
                 // Retrieve from the framework cache the bundle at this location
                 Bundle b = installedBundleMap.remove(key);
@@ -203,10 +205,21 @@ public class BundleTools {
                 try {
                     if(b!=null) {
                         String installedBundleLocation = b.getLocation();
-                        if(!installedBundleLocation.equals(jarFile.toURI().toString())) {
-                            //if the location is not the same reinstall it
+                        int verDiff = b.getVersion().compareTo(jarRef.getVersion());
+                        if(verDiff==0) {
+                            // If the same version
+                            if(!installedBundleLocation.equals(jarFile.toURI().toString())) {
+                                //if the location is not the same reinstall it
+                                b.uninstall();
+                                b=null;
+                            }
+                        } else if(verDiff < 0) {
+                            // Installed version is older than the bundle version
                             b.uninstall();
                             b=null;
+                        } else {
+                            // Installed version is more recent than the bundle version
+                            continue;
                         }
                     }
                     // If the bundle is not in the framework cache install it
