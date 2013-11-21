@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.common.IntegerUnion;
-import org.orbisgis.view.geocatalog.EditableSource;
+import org.orbisgis.view.geocatalog.EditableSourceImpl;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -41,24 +41,24 @@ import org.xnap.commons.i18n.I18nFactory;
  * by the table editor.
  * 
  */
-public class TableEditableElement extends EditableSource {
+public class TableEditableElementImpl extends EditableSourceImpl {
         public static final String TYPE_ID = "TableEditableElement";
         // Properties names
         public static final String PROP_SELECTION = "selection";
-        private static final Logger LOGGER = Logger.getLogger(TableEditableElement.class);
+        private static final Logger LOGGER = Logger.getLogger(TableEditableElementImpl.class);
         // Properties
         protected IntegerUnion selectedGeometries;
-        private final I18n i18n = I18nFactory.getI18n(TableEditableElement.class);
+        private final I18n i18n = I18nFactory.getI18n(TableEditableElementImpl.class);
 
-        public TableEditableElement(Set<Integer> selection, String sourceName) {
+        public TableEditableElementImpl(Set<Integer> selection, String sourceName) {
                 super(sourceName);
                 this.selectedGeometries = new IntegerUnion(selection);
         }
 
         /**
-         * {@link EditableSource#EditableSource(String)}
+         * {@link org.orbisgis.view.geocatalog.EditableSourceImpl#EditableSourceImpl(String)}
          */
-        public TableEditableElement(String sourceName) {
+        public TableEditableElementImpl(String sourceName) {
                 super(sourceName);
                 this.selectedGeometries = new IntegerUnion();
         }

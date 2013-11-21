@@ -28,25 +28,34 @@
 package org.orbisgis.view.geocatalog;
 
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.TableLocation;
+import org.orbisgis.core.ReversibleRowSetImpl;
+import org.orbisgis.core.Services;
+import org.orbisgis.core.api.ReversibleRowSet;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.edition.AbstractEditableElement;
 import org.orbisgis.view.edition.EditableElementException;
+import org.orbisgis.view.edition.EditableSource;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
  * EditableElement that hold a table reference.
  *
  * Open/Close , open and close the DataSource
  */
-public class EditableSource extends AbstractEditableElement {
+public class EditableSourceImpl extends AbstractEditableElement implements EditableSource {
 
     public static final String EDITABLE_RESOURCE_TYPE = "EditableSource";
     public static final String PROP_EDITING = "editing";
     private String tableReference;
+    private ReversibleRowSet rowSet; // Instantiated when editable source is open
     private boolean editing = false;
-    private final Logger logger = Logger.getLogger(EditableSource.class);
-    private final I18n i18n = I18nFactory.getI18n(EditableSource.class);
+    private final Logger logger = Logger.getLogger(EditableSourceImpl.class);
+    private final I18n i18n = I18nFactory.getI18n(EditableSourceImpl.class);
 
     /**
      * Construct a source from name. A new instance of DataSource will be
@@ -54,7 +63,7 @@ public class EditableSource extends AbstractEditableElement {
      *
      * @param tableReference
      */
-    public EditableSource(String tableReference) {
+    public EditableSourceImpl(String tableReference) {
         if (tableReference == null) {
             throw new IllegalArgumentException("Source name must "
                     + "not be null");
@@ -71,6 +80,14 @@ public class EditableSource extends AbstractEditableElement {
     @Override
     public void close(ProgressMonitor progressMonitor)
             throws UnsupportedOperationException, EditableElementException {
+        if(rowSet != null) {
+            try {
+                rowSet.close();
+                setOpen(false);
+            } catch (SQLException ex) {
+                throw new EditableElementException(ex);
+            }
+        }
     }
 
     @Override
@@ -81,12 +98,19 @@ public class EditableSource extends AbstractEditableElement {
     @Override
     public void open(ProgressMonitor progressMonitor)
             throws UnsupportedOperationException, EditableElementException {
+        if(rowSet == null) {
+            DataSource dataSource = Services.getService(DataSource.class);
+            if(dataSource != null) {
+                rowSet = new ReversibleRowSetImpl(dataSource, TableLocation.parse(tableReference));
+                setOpen(true);
+            }
+        }
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof EditableSource) {
-            EditableSource er = (EditableSource) obj;
+        if (obj instanceof EditableSourceImpl) {
+            EditableSourceImpl er = (EditableSourceImpl) obj;
             return tableReference.equals(er.tableReference);
         } else {
             return false;
@@ -98,25 +122,16 @@ public class EditableSource extends AbstractEditableElement {
         return tableReference.hashCode();
     }
 
-    /**
-     * @return True if the table can be modified
-     */
+    @Override
     public boolean isEditable() {
         return true;
     }
 
-    /**
-     * Get the data source name
-     *
-     * @return
-     */
+    @Override
     public String getTableReference() {
         return tableReference;
     }
 
-    /**
-     * @return the Editing
-     */
     public boolean isEditing() {
         return editing;
     }

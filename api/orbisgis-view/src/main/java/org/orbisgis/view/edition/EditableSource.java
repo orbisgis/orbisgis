@@ -28,21 +28,26 @@
  */
 package org.orbisgis.view.edition;
 
-public class EditableElementException extends Exception {
-    /**
-     * Constructor
-     * @param string Exception message
-     * @param thrwbl Throwable
-     */
-    public EditableElementException(String string, Throwable thrwbl) {
-        super(string, thrwbl);
-    }
+/**
+ * @author Nicolas Fortin
+ */
+public interface EditableSource extends EditableElement {
 
     /**
-     * Constructor
-     * @param cause Throwable
+     * @return True if the table can be modified
      */
-    public EditableElementException(Throwable cause) {
-        super(cause);
-    }
+    public boolean isEditable();
+
+    /**
+     * Get the data source name
+     *
+     * @return Table location
+     */
+    public String getTableReference();
+
+    /**
+     * If this source is in edit mode
+     * @return the Editing
+     */
+    public boolean isEditing();
 }

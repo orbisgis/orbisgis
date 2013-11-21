@@ -6,7 +6,6 @@
         <artifactId>orbisgis-omanager-plugin</artifactId>
         <name>OrbisGIS OSGi Plugin Manager</name>
         <description>Add a menu shortcut in OrbisGIS in order to show the plugin manager</description>
-        <version>1.1</version>
         <url>http://orbisgis.org</url>
         <build>
                 <plugins>
@@ -68,26 +67,22 @@
                 <dependency>
                         <groupId>org.orbisgis</groupId>
                         <artifactId>orbisgis-view-api</artifactId>
-                        <version>${project.parent.version}</version>
-                        <scope>provided</scope>
+                        <version>${project.version}</version>
                 </dependency>
                 <dependency>
                         <groupId>org.osgi</groupId>
                         <artifactId>org.osgi.core</artifactId>
                         <version>4.3.1</version>
-                        <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.osgi</groupId>
                     <artifactId>org.osgi.compendium</artifactId>
                     <version>4.3.1</version>
-                    <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>org.apache.felix.shell.gui</artifactId>
                     <version>0.9.0-SNAPSHOT</version>
-                    <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>junit</groupId>
@@ -103,13 +98,12 @@
                 <dependency>
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
-                    <version>1.2.16</version>
+                    <version>${log4j-version}</version>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>org.osgi.service.obr</artifactId>
                     <version>1.0.2</version>
-                    <scope>provided</scope>
                 </dependency>
         </dependencies>
 </project>

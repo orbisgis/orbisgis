@@ -34,15 +34,10 @@ import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import javax.sql.DataSource;
@@ -87,7 +82,7 @@ import org.orbisgis.view.geocatalog.filters.factories.SourceTypeIs;
 import org.orbisgis.view.geocatalog.io.ExportInFileOperation;
 import org.orbisgis.view.geocatalog.renderer.DataSourceListCellRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.table.TableEditableElement;
+import org.orbisgis.view.table.TableEditableElementImpl;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 import org.xnap.commons.i18n.I18n;
@@ -307,7 +302,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 String[] res = getSelectedSources();
                 EditorManager editorManager = Services.getService(EditorManager.class);
                 for (String source : res) {
-                        TableEditableElement tableDocument = new TableEditableElement(source);
+                        TableEditableElementImpl tableDocument = new TableEditableElementImpl(source);
                         editorManager.openEditable(tableDocument);
                 }
         }

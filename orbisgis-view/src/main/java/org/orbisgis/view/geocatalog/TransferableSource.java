@@ -58,7 +58,7 @@ public class TransferableSource implements Transferable {
 				.equals(TransferableEditableElement.editableElementFlavor)) {
 			EditableElement[] elems = new EditableElement[sources.length];
 			for (int i = 0; i < sources.length; i++) {
-				elems[i] = new EditableSource(sources[i]);
+				elems[i] = new EditableSourceImpl(sources[i]);
 			}
 			ret = elems;
 		} else if (flavor.equals(DataFlavor.stringFlavor)) {

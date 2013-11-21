@@ -5,7 +5,6 @@
         <packaging>bundle</packaging>
         <artifactId>orbisgis-oshell</artifactId>
         <name>OrbisGIS OSGI Shell Frame</name>
-        <version>1.0</version>
         <url>http://orbisgis.org</url>
         <description>An OSGi Shell to control all bundles</description>
         <build>
@@ -66,22 +65,19 @@
         </properties>
         <dependencies>
                 <dependency>
-                        <groupId>org.orbisgis</groupId>
+                        <groupId>${project.groupId}</groupId>
                         <artifactId>orbisgis-view-api</artifactId>
-                        <version>${project.parent.version}</version>
-                        <scope>provided</scope>
+                        <version>${project.version}</version>
                 </dependency>
                 <dependency>
                         <groupId>org.osgi</groupId>
                         <artifactId>org.osgi.core</artifactId>
                         <version>4.3.1</version>
-                        <scope>provided</scope>
                 </dependency>
                 <dependency>
                         <groupId>org.apache.felix</groupId>
                         <artifactId>org.apache.felix.shell</artifactId>
                         <version>1.4.3</version>
-                        <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.xnap.commons</groupId>
@@ -91,7 +87,7 @@
                 <dependency>
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
-                    <version>1.2.16</version>
+                    <version>${log4j-version}</version>
                 </dependency>
         </dependencies>
 </project>
