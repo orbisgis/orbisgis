@@ -567,14 +567,12 @@ public class ST_TriangleContouring extends AbstractTableFunction {
                 // For each iso interval
                 Deque<TriMarkers> triangleToProcess = new LinkedList<TriMarkers>();
                 triangleToProcess.add(currentTriangle);
-
                 do {
                         currentTriangle = triangleToProcess.pop();
                         Double beginInterval = Double.NEGATIVE_INFINITY;
                         short isolvl = 0;
                         for (Double endInterval : isoLvls) {
                                 Deque<TriMarkers> triangleToDriver;
-                                   
                                 if (!toDriver.containsKey(isolvl)) {
                                         triangleToDriver = new LinkedList<TriMarkers>();
                                         toDriver.put(isolvl, triangleToDriver);
