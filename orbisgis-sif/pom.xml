@@ -37,7 +37,7 @@
                             </configuration>
                         </plugin>
                         <plugin>
-                                <groupId>org.xnap.commons</groupId>
+                                <groupId>com.googlecode.gettext-commons</groupId>
                                 <executions>
                                         <execution>
                                                 <id>convert-po-class</id>
@@ -47,7 +47,7 @@
                                                 </goals>
                                         </execution>
                                 </executions>
-                                <artifactId>maven-gettext-plugin</artifactId>
+                                <artifactId>gettext-maven-plugin</artifactId>
                                 <configuration>
                                         <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/sif/translation/language/</poDirectory>
                                         <targetBundle>org.orbisgis.sif.Messages</targetBundle>
@@ -68,7 +68,7 @@
                         <scope>test</scope>
                 </dependency>                
                 <dependency>
-                        <groupId>org.xnap.commons</groupId>
+                        <groupId>com.googlecode.gettext-commons</groupId>
                         <artifactId>gettext-commons</artifactId>
                         <version>${gettext-commons-version}</version>
                 </dependency>

@@ -254,32 +254,14 @@ public class ConnectionToolBar extends JToolBar {
          * Change the status of the components
          */
         private void onUserSelectionChange() {
-                boolean isCmbEmpty = getCmbDataBaseUri().getItemCount() == 0;
+            boolean isCmbEmpty = getCmbDataBaseUri().getItemCount() == 0;
 
-                if (isCmbEmpty) {
-                        btnConnect.setEnabled(false);
-                        btnDisconnect.setEnabled(false);
-                        btnAddConnection.setEnabled(true);
-                        btnEditConnection.setEnabled(false);
-                        btnRemoveConnection.setEnabled(false);
-                        cmbDataBaseUri.setEnabled(true);
-                } else {
-                        if (isConnected()) {
-                                btnConnect.setEnabled(false);
-                                btnDisconnect.setEnabled(true);
-                                btnAddConnection.setEnabled(false);
-                                btnEditConnection.setEnabled(false);
-                                btnRemoveConnection.setEnabled(false);
-                                cmbDataBaseUri.setEnabled(false);
-                        } else {
-                                btnConnect.setEnabled(true);
-                                btnDisconnect.setEnabled(false);
-                                btnAddConnection.setEnabled(true);
-                                btnEditConnection.setEnabled(true);
-                                btnRemoveConnection.setEnabled(true);
-                                cmbDataBaseUri.setEnabled(true);
-                        }
-                }
+            btnConnect.setEnabled(!isCmbEmpty && !isConnected());
+            btnDisconnect.setEnabled(!isCmbEmpty && isConnected());
+            btnAddConnection.setEnabled(isCmbEmpty && !isConnected());
+            btnEditConnection.setEnabled(!isCmbEmpty && !isConnected());
+            btnRemoveConnection.setEnabled(!isCmbEmpty && !isConnected());
+            cmbDataBaseUri.setEnabled(isCmbEmpty && !isConnected());
         }
 
         /**

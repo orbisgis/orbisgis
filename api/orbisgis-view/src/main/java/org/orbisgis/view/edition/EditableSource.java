@@ -28,6 +28,8 @@
  */
 package org.orbisgis.view.edition;
 
+import org.orbisgis.core.api.ReversibleRowSet;
+
 /**
  * @author Nicolas Fortin
  */
@@ -36,14 +38,20 @@ public interface EditableSource extends EditableElement {
     /**
      * @return True if the table can be modified
      */
-    public boolean isEditable();
+    boolean isEditable();
 
     /**
      * Get the data source name
      *
      * @return Table location
      */
-    public String getTableReference();
+    String getTableReference();
+
+    /**
+     * @return The content of the table
+     * @throws EditableElementException
+     */
+    ReversibleRowSet getRowSet() throws EditableElementException;
 
     /**
      * If this source is in edit mode

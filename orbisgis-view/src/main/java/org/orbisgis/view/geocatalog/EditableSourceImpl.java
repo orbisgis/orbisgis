@@ -32,6 +32,7 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.ReversibleRowSetImpl;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.api.ReversibleRowSet;
+import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.edition.AbstractEditableElement;
 import org.orbisgis.view.edition.EditableElementException;
@@ -93,6 +94,15 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
     @Override
     public String getTypeId() {
         return EDITABLE_RESOURCE_TYPE;
+    }
+
+    @Override
+    public ReversibleRowSet getRowSet() throws EditableElementException {
+        if(rowSet == null) {
+            logger.warn("Get rowset without opening it"); // Developer warning
+            open(new NullProgressMonitor());
+        }
+        return rowSet;
     }
 
     @Override

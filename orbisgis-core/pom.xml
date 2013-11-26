@@ -61,9 +61,9 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.xnap.commons</groupId>
-                <artifactId>maven-gettext-plugin</artifactId>
-                <version>1.2.3</version>
+                <groupId>com.googlecode.gettext-commons</groupId>
+                <artifactId>gettext-maven-plugin</artifactId>
+                <version>1.2.4</version>
                 <executions>
                     <execution>
                         <id>convert-po-class</id>
@@ -189,7 +189,7 @@
             <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>org.xnap.commons</groupId>
+            <groupId>com.googlecode.gettext-commons</groupId>
             <artifactId>gettext-commons</artifactId>
             <version>${gettext-commons-version}</version>
         </dependency>
@@ -281,16 +281,4 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>gettext-commons-site</id>
-            <url>http://gettext-commons-maven-repository.googlecode.com/svn/repository</url>
-        </pluginRepository>
-    </pluginRepositories>
-    <repositories>
-        <repository>
-            <id>gettext-commons-site</id>
-            <url>http://gettext-commons-maven-repository.googlecode.com/svn/repository/</url>
-        </repository>
-    </repositories>
 </project>

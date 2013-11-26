@@ -55,7 +55,7 @@
                 <sl4j-version>1.6.0</sl4j-version>
                 <rsyntax-version>2.0.7</rsyntax-version>
                 <rsyntax-ls-version>r795</rsyntax-ls-version>
-                <gettext-commons-version>0.9.7</gettext-commons-version>
+                <gettext-commons-version>0.9.8</gettext-commons-version>
                 <cts-version>1.3.1</cts-version>
                 <org.osgi.service.obr-version>1.0.2</org.osgi.service.obr-version>
         </properties>
