@@ -288,11 +288,7 @@ public class SQLConsolePanel extends JPanel {
                         mapContext = mapElement.getMapContext();
                     }
                     DataSource dataSource = Services.getService(DataSource.class);
-                    if(splitterFactory != null) {
-                        bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(this, dataSource, splitterFactory));
-                    } else {
-                        LOGGER.error(I18N.tr("SQL parser is not available"));
-                    }
+                    bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(this, dataSource, splitterFactory));
                 }
         }
                

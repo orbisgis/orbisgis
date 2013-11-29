@@ -24,9 +24,14 @@ public class DocumentSQLReader implements ScriptSplitter {
     private boolean nextCommentStatement;
 
     public DocumentSQLReader(Document document) {
+        this(document, false);
+    }
+
+    public DocumentSQLReader(Document document, boolean skipRemarks) {
         this.document = document;
         DocumentReader documentReader = new DocumentReader(document);
         scriptReader = new ScriptReader(documentReader);
+        scriptReader.setSkipRemarks(skipRemarks);
         nextStatement = scriptReader.readStatement();
         nextCommentStatement = scriptReader.isInsideRemark();
     }

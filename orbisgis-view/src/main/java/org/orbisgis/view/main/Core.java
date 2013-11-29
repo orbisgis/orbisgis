@@ -608,17 +608,17 @@ public class Core {
                 this.dispose();
             } finally {
                 //While public Plugins are not implemented do not close the VM in finally clause
-                // if(stopVM) {
-                //SwingUtilities.invokeLater( new Runnable(){
-                //   /** If an error occur while unload resources, java machine
-                //    * may continue to run. In this case, the following command
-                //    * would terminate the application.
-                //    */
-                //    public void run(){
-                //            System.exit(0);
-                //    }
-                //   } );
-                // }
+                if(stopVM) {
+                    SwingUtilities.invokeLater( new Runnable(){
+                   /** If an error occur while unload resources, java machine
+                    * may continue to run. In this case, the following command
+                    * would terminate the application.
+                    */
+                    public void run(){
+                            System.exit(0);
+                    }
+                   } );
+                }
             }
             return true;
         } else {
