@@ -36,6 +36,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Driver;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -50,6 +53,7 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.osgi.service.jdbc.DataSourceFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -72,15 +76,32 @@ public class ConnectionToolBar extends JToolBar {
         private JButton btnAddConnection;
         private JButton btnEditConnection;
         private JButton btnRemoveConnection;
-        private ListenerContainer<DBMessageEvents> messagesEvents = new ListenerContainer<DBMessageEvents>();
+        private ListenerContainer<DBMessageEvents> messagesEvents = new ListenerContainer<>();
         private boolean connected = false;
         public static final String PROP_CONNECTED = "connected";
+        List<Driver> jdbcDrivers = new ArrayList<>();
 
         /*
          * Create the toolbar with all components : combobox, buttons
          */
         public ConnectionToolBar() {
                 init();
+        }
+
+        /**
+         * Add DataSourceFactory used to show the list of supported JDBC Drivers
+         * @param driver DataSourceFactory implementation
+         */
+        public void addDriver(Driver driver) {
+            jdbcDrivers.add(driver);
+        }
+
+        /**
+         * Remove DataSourceFactory used to show the list of supported JDBC Drivers
+         * @param driver DataSourceFactory implementation
+         */
+        public boolean removeDriver(Driver driver) {
+            return jdbcDrivers.remove(driver);
         }
 
         /**
@@ -268,7 +289,7 @@ public class ConnectionToolBar extends JToolBar {
          * Add a new connection
          */
         public void onAddConnection() throws EventException {
-                MultiInputPanel mip = DBUIFactory.getConnectionPanel();
+                MultiInputPanel mip = DBUIFactory.getConnectionPanel(jdbcDrivers);
                 if (UIFactory.showDialog(mip)) {
                         String connectionName = mip.getInput(DBUIFactory.CONNAME);
                         if (!getDbProperties().containsKey(connectionName)) {
@@ -304,7 +325,7 @@ public class ConnectionToolBar extends JToolBar {
                 String dataBaseUri = getCmbDataBaseUri().getSelectedItem().toString();
                 if (!dataBaseUri.isEmpty()) {
                         String property = getDbProperties().getProperty(dataBaseUri);
-                        MultiInputPanel mip = DBUIFactory.getEditConnectionPanel(dataBaseUri, property);
+                        MultiInputPanel mip = DBUIFactory.getEditConnectionPanel(dataBaseUri, property, jdbcDrivers);
                         if (UIFactory.showDialog(mip)) {
                                 String connectionName = mip.getInput(DBUIFactory.CONNAME);
                                 StringBuilder sb = new StringBuilder();

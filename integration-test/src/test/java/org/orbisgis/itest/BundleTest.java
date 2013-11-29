@@ -82,15 +82,13 @@ public class BundleTest {
                 mavenBundle("org.orbisgis", "h2spatial-api"),
                 mavenBundle("org.orbisgis", "spatial-utilities"),
                 mavenBundle("org.orbisgis", "cts"),
-                mavenBundle("com.vividsolutions", "jts-osgi"),
+                mavenBundle("org.orbisgis", "jts"),
                 mavenBundle("com.h2database", "h2"),
                 mavenBundle("org.orbisgis", "h2spatial").noStart(),
                 mavenBundle("org.orbisgis", "h2spatial-ext").noStart(),
                 mavenBundle("org.orbisgis", "h2drivers").noStart(),
                 mavenBundle("org.orbisgis", "h2spatial-osgi"),
                 mavenBundle("org.orbisgis", "h2spatial-ext-osgi"),
-                mavenBundle("org.orbisgis", "orbisgis-core-api"),
-                mavenBundle("org.orbisgis", "orbisgis-core"),
                 junitBundles());
     }
     /**

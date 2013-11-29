@@ -225,6 +225,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 for (URI uri : uriDrop) {
                         try {
                             src.registerDataSource(uri);
+                            refreshSourceList();
                         } catch (SQLException ex) {
                             LOGGER.error("Cannot load dropped data source", ex);
                         }

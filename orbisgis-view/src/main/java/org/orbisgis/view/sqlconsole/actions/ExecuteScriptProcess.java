@@ -98,9 +98,10 @@ public class ExecuteScriptProcess implements BackgroundJob {
                 header[idColumn-1] = metaData.getColumnLabel(idColumn)+"("+metaData.getColumnTypeName(idColumn)+")";
                 formatStringBuilder.append("%-"+MAX_FIELD_LENGTH+"s");
             }
-            LOGGER.info(String.format(formatStringBuilder.toString(), header));
             int shownLines = 0;
-            StringBuilder lines = new StringBuilder();
+            StringBuilder lines = new StringBuilder("\n");
+            lines.append(String.format(formatStringBuilder.toString(), header));
+            lines.append("\n");
             while(rs.next() && shownLines < MAX_PRINTED_ROWS) {
                 String[] row = new String[columnCount];
                 for(int idColumn = 1; idColumn <= columnCount; idColumn ++) {
@@ -153,7 +154,11 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                         }
                                     }
                                 } else {
+                                    LOGGER.info(I18N.tr("Execute line {0}/{1}:\n{2}",splitter.getLineIndex() + 1,panel.getScriptPanel().getLineCount(),query));
+                                    long debQuery = System.currentTimeMillis();
                                     st.execute(query);
+                                    LOGGER.info(I18N.tr("Done in {0} seconds",(System.currentTimeMillis() - debQuery) / 1000.));
+
                                 }
                             }
                             pm.progressTo(splitter.getLineIndex());
@@ -164,7 +169,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
                 }
                 long t2 = System.currentTimeMillis();
                 double lastExecTime = ((t2 - t1) / 1000.0);
-                String message = I18N.tr("Execution time: {0}",lastExecTime);
+                String message = I18N.tr("Overall execution time: {0} seconds",lastExecTime);
                 LOGGER.info(message);
                 showPanelMessage(message);
         }
