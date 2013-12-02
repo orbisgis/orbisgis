@@ -77,7 +77,7 @@ public class MainFrame extends JFrame implements MainWindow {
          */
         public MainFrame(){
             setTitle(I18N.tr("OrbisGIS version {0} {1} {2}",
-                    getVersion(), ViewWorkspace.CITY_VERSION, Locale.getDefault().getCountry()));
+                    getVersion(), CoreWorkspace.CITY_VERSION, Locale.getDefault().getCountry()));
                     setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
             setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis"));
             add(new JLayer<>(mainPanel, messageOverlay));

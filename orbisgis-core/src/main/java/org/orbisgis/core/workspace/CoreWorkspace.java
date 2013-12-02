@@ -69,8 +69,9 @@ public class CoreWorkspace implements Serializable {
         public static final String PROP_LOGFILE = "logFile";
         private static final String CURRENT_WORKSPACE_FILENAME = "currentWorkspace.txt";
         private static final String ALL_WORKSPACE_FILENAME = "workspaces.txt";
-        private String dataBaseUriFile = "database.uri";
-        public static final String PROP_DATA_BASE_URI_FILE = "dataBaseUriFile";
+        private static final String dataBaseUriFile = "database.uri";
+        public static final String VERSION_FILE = "org.orbisgis.version.txt";
+        public static final String CITY_VERSION = "La Rochelle";
 
         /**
          * bean constructor
@@ -81,8 +82,58 @@ public class CoreWorkspace implements Serializable {
                 //Read default workspace
                 loadCurrentWorkSpace();
         }
-        private String getDefaultJDBCConnectionString() {
-            return "jdbc:h2:" + getWorkspaceFolder() + File.separator + "database";
+
+        private static void writeVersionFile(File versionFile) throws IOException {
+            BufferedWriter writer = null;
+            try {
+                writer = new BufferedWriter(new FileWriter(versionFile));
+                writer.write(Integer.toString(MAJOR_VERSION));
+                writer.newLine();
+                writer.write(Integer.toString(MINOR_VERSION));
+                writer.newLine();
+                writer.write(Integer.toString(REVISION_VERSION));
+                writer.newLine();
+                writer.write(CITY_VERSION);
+                writer.newLine();
+            } finally {
+                if (writer != null) {
+                    writer.close();
+                }
+            }
+        }
+
+        /**
+         * Create minimal resource inside an empty workspace folder
+         * @param workspaceFolder
+         * @throws IOException Error while writing files or the folder is not empty
+         */
+        public static void initWorkspaceFolder(File workspaceFolder) throws IOException {
+            if(!workspaceFolder.exists()) {
+                workspaceFolder.mkdirs();
+            }
+            File[] files = workspaceFolder.listFiles();
+            if (files != null && files.length != 0) {
+                // This method must be called with empty folder only
+                throw new IOException("Workspace folder must be empty");
+            }
+            File versionFile = new File(workspaceFolder,VERSION_FILE);
+            if(!versionFile.exists()) {
+                writeVersionFile(versionFile);
+            }
+            File uriFile = new File(workspaceFolder,dataBaseUriFile);
+            if(!uriFile.exists()) {
+                writeDefaultdataBaseUriFile(uriFile, getDefaultJDBCConnectionString(workspaceFolder.toString()));
+            }
+        }
+
+        private static void writeDefaultdataBaseUriFile(File dest, String content) throws IOException {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(dest))) {
+                writer.write(content);
+            }
+        }
+
+        private static String getDefaultJDBCConnectionString(String workspaceFolder) {
+            return "jdbc:h2:" + new File(workspaceFolder + File.separator + "database").toURI().getRawPath();
         }
         /**
          * Read the file located at {@link #getDataBaseUriFilePath()}
@@ -91,7 +142,7 @@ public class CoreWorkspace implements Serializable {
         public String getJDBCConnectionReference() {
             String uriFile = getDataBaseUriFilePath();
             if(uriFile==null) {
-                return getDefaultJDBCConnectionString();
+                return getDefaultJDBCConnectionString(getWorkspaceFolder());
             }
             File dbUriFile = new File(uriFile);
             if(dbUriFile.exists()) {
@@ -105,7 +156,7 @@ public class CoreWorkspace implements Serializable {
                     LOGGER.error("Could not read the DataBase URI from workspace",ex);
                 }
             }
-            return getDefaultJDBCConnectionString();
+            return getDefaultJDBCConnectionString(getWorkspaceFolder());
         }
         /**
          * Get the value of dataBaseUriFile
@@ -117,17 +168,6 @@ public class CoreWorkspace implements Serializable {
                     return null;
                 }
                 return workspaceFolder + File.separator + dataBaseUriFile;
-        }
-
-        /**
-         * Set the value of dataBaseUriFile
-         *
-         * @param dataBaseUriFile new value of dataBaseUriFile
-         */
-        public void setDataBaseUriFilePath(String dataBaseUriFile) {
-                String olddataBaseUriFile = this.dataBaseUriFile;
-                this.dataBaseUriFile = dataBaseUriFile;
-                propertySupport.firePropertyChange(PROP_DATA_BASE_URI_FILE, olddataBaseUriFile, dataBaseUriFile);
         }
 
         /**
