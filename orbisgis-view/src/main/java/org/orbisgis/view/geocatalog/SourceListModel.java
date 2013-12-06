@@ -147,8 +147,13 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
         if (rs == null) {
             return "information_geo"; //Unknown source type
         }
-        if(!SFSUtilities.getGeometryFields(connection, new TableLocation(rs)).isEmpty()) {
-            return "geofile";
+        try {
+            if(!SFSUtilities.getGeometryFields(connection, new TableLocation(rs)).isEmpty()) {
+                return "geofile";
+            }
+        } catch (SQLException ex) {
+            // GEOMETRY COLUMNS table doesn't exists
+            LOGGER.trace(ex.getLocalizedMessage(), ex);
         }
         switch(rs.getString("TABLE_TYPE")) {
             case "SYSTEM_TABLE":

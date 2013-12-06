@@ -158,7 +158,7 @@ public class Core {
         progressInfo.init(I18N.tr("Connecting to the database.."), 100);
         // Init database
         try {
-            mainContext.initDataBase("","");
+            mainContext.initDataBase("sa","sa");
         } catch (SQLException ex) {
             throw new RuntimeException(ex.getLocalizedMessage(), ex);
         }

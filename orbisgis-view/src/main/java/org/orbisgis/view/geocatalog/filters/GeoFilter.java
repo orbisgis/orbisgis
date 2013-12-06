@@ -42,6 +42,11 @@ public class GeoFilter implements IFilter {
 
     @Override
     public boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException {
-        return !SFSUtilities.getGeometryFields(connection, TableLocation.parse(sourceName)).isEmpty();
+        try {
+            return !SFSUtilities.getGeometryFields(connection, TableLocation.parse(sourceName)).isEmpty();
+        } catch (SQLException ex) {
+            // DataBase does not handle geometry type
+            return false;
+        }
     }
 }

@@ -34,9 +34,11 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * Core Worskpace Folder information
+ * Core Workspace Folder information
  * 
  * See documentation related to java.beans management systems
  * 
@@ -44,6 +46,7 @@ import org.apache.log4j.Logger;
 
 public class CoreWorkspace implements Serializable {
         private static final Logger LOGGER = Logger.getLogger(CoreWorkspace.class);
+        private static final I18n I18N = I18nFactory.getI18n(CoreWorkspace.class);
         private static final long serialVersionUID = 6L; /*<! Update this integer while adding properties (1 for each new property)*/
 
         public static final int MAJOR_VERSION = 4; // Load a workspace only if the major version is equal
@@ -142,6 +145,7 @@ public class CoreWorkspace implements Serializable {
         public String getJDBCConnectionReference() {
             String uriFile = getDataBaseUriFilePath();
             if(uriFile==null) {
+                LOGGER.warn(I18N.tr("Unable to read the JDBC URI from workspace folder"));
                 return getDefaultJDBCConnectionString(getWorkspaceFolder());
             }
             File dbUriFile = new File(uriFile);
@@ -156,6 +160,7 @@ public class CoreWorkspace implements Serializable {
                     LOGGER.error("Could not read the DataBase URI from workspace",ex);
                 }
             }
+            LOGGER.warn(I18N.tr("Unable to read the JDBC URI from workspace folder"));
             return getDefaultJDBCConnectionString(getWorkspaceFolder());
         }
         /**

@@ -78,9 +78,10 @@ public class SQLLanguageSupport extends AbstractLanguageSupport {
                             properties.setProperty(DataSourceFactory.JDBC_URL, "jdbc:h2:mem:syntax");
                             dataSource = dataSourceFactory.createDataSource(properties);
                         }
-                        parser = new RSyntaxSQLParser(dataSource);
-                        textArea.putClientProperty(PROPERTY_LANGUAGE_PARSER, parser);
-                        textArea.addParser(parser);
+                        // SQL parser take too much time to evaluate, currently deactivated
+                        //parser = new RSyntaxSQLParser(dataSource);
+                        //textArea.putClientProperty(PROPERTY_LANGUAGE_PARSER, parser);
+                        //textArea.addParser(parser);
 
                         // install auto-completion
                         sqlCompletionProvider = new SQLCompletionProvider(dataSource);

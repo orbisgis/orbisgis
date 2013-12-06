@@ -142,7 +142,7 @@ public class SQLCompletionProvider extends CompletionProviderBase {
         List<Completion> completionList = new LinkedList<Completion>();
 
         // Extract the statement at this position
-        DocumentSQLReader documentReader = new DocumentSQLReader(jTextComponent.getDocument());
+        DocumentSQLReader documentReader = new DocumentSQLReader(jTextComponent.getDocument(), true);
         String statement = "";
         while(documentReader.hasNext() && documentReader.getPosition() + statement.length() < charIndex) {
             statement = documentReader.next();

@@ -1,5 +1,6 @@
 package org.orbisgis.core;
 
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.api.DataManager;
 import org.orbisgis.utils.FileUtils;
 
@@ -14,6 +15,7 @@ import javax.sql.rowset.WebRowSet;
 import java.io.File;
 import java.net.URI;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -95,6 +97,17 @@ public class DataManagerImpl implements DataManager {
                 throw new SQLException("Specified source does not exists");
             }
             try (Connection connection = dataSource.getConnection()) {
+                // Find if a linked table use this file path
+                DatabaseMetaData meta = connection.getMetaData();
+                try(ResultSet tablesRs = meta.getTables(null,null,null,null)) {
+                    while(tablesRs.next()) {
+                        if(tablesRs.getString("REMARKS").equals(path.getAbsolutePath())) {
+                            return new TableLocation(tablesRs.getString("TABLE_CAT"), tablesRs.getString("TABLE_SCHEM"), tablesRs.getString("TABLE_NAME")).toString();
+                        }
+                    }
+                }
+                // Table not found, use table link
+                // TODO if tcp, use DriverManager
                 PreparedStatement st = connection.prepareStatement("CALL FILE_TABLE(?,?)");
                 st.setString(1, path.getAbsolutePath());
                 st.setString(2, tableName);
