@@ -29,8 +29,7 @@
 
 package org.orbisgis.view.table.ext;
 
-import org.orbisgis.view.table.TableEditableElement;
-
+import org.orbisgis.view.edition.EditableSource;
 import javax.swing.*;
 import java.awt.*;
 
@@ -42,7 +41,7 @@ public interface SourceTable {
         /**
         * @return The source document opened in the Table.
         */
-        TableEditableElement getTableEditableElement();
+        EditableSource getTableEditableElement();
 
         /**
         * @return The swing JTable component.

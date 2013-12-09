@@ -85,6 +85,7 @@ import org.orbisgis.view.docking.DockingLocation;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditableElementException;
+import org.orbisgis.view.edition.EditableSource;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -110,7 +111,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         private static final Logger LOGGER = Logger.getLogger("gui."+TableEditor.class);
         
         private static final long serialVersionUID = 1L;
-        private TableEditableElement tableEditableElement;
+        private TableEditableElementImpl tableEditableElement;
         private DockingPanelParameters dockingPanelParameters;
         private JTable table;
         private JScrollPane tableScrollPane;
@@ -129,28 +130,22 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         private PropertyChangeListener editableSelectionListener =
                 EventHandler.create(PropertyChangeListener.class,this,
                 "onEditableSelectionChange","newValue");
-        private SourceListener sourceListener = 
-                EventHandler.create(SourceListener.class, this,"onSourceRemoved",
-                "","sourceRemoved");
         private ActionCommands popupActions = new ActionCommands();
 
         /**
          * Constructor
          * @param element Source to read and edit
          */
-        public TableEditor(TableEditableElement element) {
+        public TableEditor(TableEditableElementImpl element) {
                 super(new BorderLayout());
 
                 //Add a listener to the source manager to close the table when
                 //the source is removed
-                Services.getService(DataManager.class).getSourceManager().
-                        addSourceListener(sourceListener);
                 this.tableEditableElement = element;
                 dockingPanelParameters = new DockingPanelParameters();
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("openattributes"));
                 dockingPanelParameters.setDefaultDockingLocation(
                         new DockingLocation(DockingLocation.Location.STACKED_ON, "map_editor"));
-                dockingPanelParameters.addVetoableChangeListener(DockingPanelParameters.PROP_VISIBLE,EventHandler.create(VetoableChangeListener.class,this,"onVisibleChanging",""));
                 tableScrollPane = new JScrollPane(makeTable());
                 add(tableScrollPane,BorderLayout.CENTER);
                 updateTitle();
@@ -158,6 +153,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
 
         private List<Action> getDockActions() {
                 List<Action> actions = new LinkedList<Action>();
+                /*
+                TODO Edition
                 if(tableEditableElement.getDataSource().isEditable()) {
                         try {
                                 actions.add(new ActionAddColumn(tableEditableElement));
@@ -172,68 +169,10 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                                 LOGGER.error(ex.getLocalizedMessage(),ex);
                         }
                 }
+                */
                 return actions;
         }
-        /**
-         * The window is going to be closed, check for unsaved modifications
-         * @param evt
-         * @throws PropertyVetoException
-         */
-        public void onVisibleChanging(PropertyChangeEvent evt) throws PropertyVetoException {
-            if(Boolean.FALSE.equals(evt.getNewValue())) {
-                if(tableEditableElement.isModified()) {
-                    int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
-                            I18N.tr("This table use modified data source, do you want to save these modifications before closing it ?"),
-                            I18N.tr("Unsaved modifications"),
-                            JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-                    if(response==JOptionPane.YES_OPTION) {
-                        try {
-                            tableEditableElement.save();
-                        } catch (EditableElementException ex) {
-                            int errorResponse = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
-                                    I18N.tr("The data source {0} can not be saved, are you sure you want to continue ?", tableEditableElement.getSourceName()),
-                                    I18N.tr("Errors on data source save process"),
-                                    JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
-                            if(errorResponse==JOptionPane.NO_OPTION) {
-                                throw new PropertyVetoException(I18N.tr("Canceled by user"),evt);
-                            }
-                        }
-                    } else if(response==JOptionPane.CANCEL_OPTION) {
-                        throw new PropertyVetoException(I18N.tr("Canceled by user"),evt);
-                    }
-                }
-            }
-        }
-        /**
-         * A source has been removed, check that it is not the table source, if
-         * it is close the editor
-         *
-         * @param e
-         */
-        public void onSourceRemoved(SourceRemovalEvent e) {
-                String tableSourceName = tableEditableElement.getSourceName();
-                boolean removeThisDataSource=false;
-                if(e.getName().equals(tableSourceName)) {
-                        removeThisDataSource = true;
-                } else {
-                        for (String sourceName : e.getNames()) {
-                                if (sourceName.equals(tableSourceName)) {
-                                        removeThisDataSource = true;
-                                        break;
-                                }
-                        }
-                }
-                if (removeThisDataSource) {
-                        SwingUtilities.invokeLater(new Runnable() {
 
-                                @Override
-                                public void run() {
-                                        //Close the editor
-                                        dockingPanelParameters.setVisible(false);
-                                }
-                        });
-                }
-        }
         /**
          * The editable selection has been updated,
          * propagate in the table if necessary
@@ -432,8 +371,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                                 MapContext mapContext = mapEditable.getMapContext();
                                 for(ILayer layer : mapContext.getLayers()) {
                                         if(layer.isVisible()) {
-                                                DataSource source = layer.getDataSource();
-                                                if(source !=null && source.getName().equals(tableEditableElement.getSourceName())) {
+                                                if(layer.getTableReference().equals(tableEditableElement.getTableReference())) {
                                                         return true;
                                                 }
                                         }
@@ -442,12 +380,12 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 }
                 return false;
         }
+
         public void onMenuZoomToSelection() {
                 int[] viewSelection = table.getSelectedRows();
                 if(viewSelection.length==0) {
                         return;
                 }
-                DataSource source = tableModel.getDataSource();
                 int[] modelSelection = new int[viewSelection.length];
                 for(int i=0;i<viewSelection.length;i++) {
                         modelSelection[i] = table.convertRowIndexToModel(viewSelection[i]);
@@ -724,7 +662,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * @return 
          */
         @Override
-        public TableEditableElement getTableEditableElement() {
+        public EditableSource getTableEditableElement() {
                 return tableEditableElement;
         }
 

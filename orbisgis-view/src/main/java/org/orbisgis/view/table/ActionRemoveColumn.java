@@ -30,7 +30,8 @@
 package org.orbisgis.view.table;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
+import org.h2gis.utilities.TableLocation;
+import org.orbisgis.core.Services;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.actions.ActionTools;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -38,8 +39,14 @@ import org.orbisgis.view.table.ext.SourceTable;
 import org.orbisgis.view.table.ext.TableEditorPopupActions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.sql.DataSource;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Remove a column in the DataSource.
@@ -69,17 +76,33 @@ public class ActionRemoveColumn extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
                 if(editor.getTableEditableElement().isEditing()) {
-                        try {
-                                DataSource source = editor.getTableEditableElement().getDataSource();
-                                int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
-                                        I18N.tr("Are you sure you want to remove the column {0} ?",source.getFieldName(editor.getPopupCellAdress().x)),
-                                        I18N.tr("Deletion of a column"),
-                                        JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-                                if(response==JOptionPane.YES_OPTION) {
-                                        source.removeField(editor.getPopupCellAdress().x);
+                        TableLocation table = TableLocation.parse(editor.getTableEditableElement().getTableReference());
+                        int columnIndex = editor.getPopupCellAdress().x + 1;
+                        DataSource dataSource = Services.getService(DataSource.class);
+                        try(Connection connection = dataSource.getConnection()) {
+                            String columnName = "";
+                            // Read column name
+                            DatabaseMetaData meta = connection.getMetaData();
+                            try(ResultSet rs  = meta.getColumns(table.getCatalog(), table.getSchema(), table.getTable(), null)) {
+                                while(rs.next()) {
+                                    if(rs.getInt("ORDINAL_POSITION")==columnIndex) {
+                                        columnName = rs.getString("COLUMN_NAME");
+                                        break;
+                                    }
                                 }
-                        } catch (Exception ex) {
-                                logger.error(ex.getLocalizedMessage(),ex);
+                            }
+                            if(columnName.isEmpty()) {
+                                throw new SQLException(I18N.tr("Column not found"));
+                            }
+                            int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                                    I18N.tr("Are you sure you want to remove the column {0} ?",columnName),
+                                    I18N.tr("Deletion of a column"),
+                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                            if(response==JOptionPane.YES_OPTION) {
+                                    connection.createStatement().execute(String.format("ALTER TABLE %s DROP COLUMN `%s`",table, columnName));
+                            }
+                        } catch (SQLException ex ) {
+                            logger.error(ex.getLocalizedMessage(), ex);
                         }
                 }
         }
