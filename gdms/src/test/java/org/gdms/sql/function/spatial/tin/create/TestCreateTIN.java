@@ -53,106 +53,106 @@ import org.orbisgis.progress.NullProgressMonitor;
  */
 public class TestCreateTIN extends FunctionTest {
 
-        @Test
-        public void ST_TIN_POINTS() throws Exception {
-                Geometry geom = wktReader.read("POINT(0 0)");
-                Geometry geom2 = wktReader.read("POINT(10 0)");
-                Geometry geom3 = wktReader.read("POINT(10 10)");
+    @Test
+    public void ST_TIN_POINTS() throws Exception {
+        Geometry geom = wktReader.read("POINT(0 0)");
+        Geometry geom2 = wktReader.read("POINT(10 0)");
+        Geometry geom3 = wktReader.read("POINT(10 10)");
 
-                // datasource
-                final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
-                        new String[]{"the_geom"},
-                        new Type[]{TypeFactory.createType(Type.POINT)});
-                // insert all filled rows...
-                driver1.addValues(new Value[]{ValueFactory.createValue(geom)});
-                driver1.addValues(new Value[]{ValueFactory.createValue(geom2)});
-                driver1.addValues(new Value[]{ValueFactory.createValue(geom3)});
+        // datasource
+        final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
+                new String[]{"the_geom"},
+                new Type[]{TypeFactory.createType(Type.POINT)});
+        // insert all filled rows...
+        driver1.addValues(new Value[]{ValueFactory.createValue(geom)});
+        driver1.addValues(new Value[]{ValueFactory.createValue(geom2)});
+        driver1.addValues(new Value[]{ValueFactory.createValue(geom3)});
 
-                Value[] values = new Value[]{
-                        ValueFactory.createValue(false), ValueFactory.createValue(false)};
+        Value[] values = new Value[]{
+            ValueFactory.createValue(false), ValueFactory.createValue(false)};
 
-                DataSet[] tables = new DataSet[]{driver1};
+        DataSet[] tables = new DataSet[]{driver1};
 
-                ST_TIN st_tin = new ST_TIN();
-                DataSet result = st_tin.evaluate(dsf, tables, values, new NullProgressMonitor());
+        ST_TIN st_tin = new ST_TIN();
+        DataSet result = st_tin.evaluate(dsf, tables, values, new NullProgressMonitor());
 
-                assertTrue(result.getRowCount() == 1);
+        assertTrue(result.getRowCount() == 1);
 
-                assertTrue(result.getGeometry(0, 0).equals(wktReader.read("POLYGON((0 0, 10 0, 10 10, 0 0))")));
+        assertTrue(result.getGeometry(0, 0).equals(wktReader.read("POLYGON((0 0, 10 0, 10 10, 0 0))")));
+    }
+
+    @Test
+    public void ST_TIN_LINES() throws Exception {
+        Geometry geom = wktReader.read("LINESTRING(0 0, 10 0)");
+        Geometry geom2 = wktReader.read("LINESTRING(0 5, 10 10)");
+
+        // datasource
+        final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
+                new String[]{"the_geom"},
+                new Type[]{TypeFactory.createType(Type.LINESTRING)});
+        // insert all filled rows...
+        driver1.addValues(new Value[]{ValueFactory.createValue(geom)});
+        driver1.addValues(new Value[]{ValueFactory.createValue(geom2)});
+
+        Value[] values = new Value[]{
+            ValueFactory.createValue(false), ValueFactory.createValue(false)};
+
+        DataSet[] tables = new DataSet[]{driver1};
+
+        ST_TIN st_tin = new ST_TIN();
+        DataSet result = st_tin.evaluate(dsf, tables, values, new NullProgressMonitor());
+
+        assertTrue(result.getRowCount() == 2);
+
+        ArrayList<Geometry> geometries = new ArrayList<Geometry>();
+        geometries.add(wktReader.read("POLYGON((0 5, 0 0, 10 0, 0 5))"));
+        geometries.add(wktReader.read("POLYGON((10 0, 0 5, 10 10, 10 0))"));
+        assertTrue(checkResult(result, geometries));
+    }
+
+    @Test
+    public void ST_TIN_LINES_INTERSECTION() throws Exception {
+        Geometry geom = wktReader.read("LINESTRING(0 10 , 10 10)");
+        Geometry geom2 = wktReader.read("LINESTRING(3 0, 3 20)");
+
+        // datasource
+        final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
+                new String[]{"the_geom"},
+                new Type[]{TypeFactory.createType(Type.LINESTRING)});
+        // insert all filled rows...
+        driver1.addValues(new Value[]{ValueFactory.createValue(geom)});
+        driver1.addValues(new Value[]{ValueFactory.createValue(geom2)});
+
+        Value[] values = new Value[]{
+            ValueFactory.createValue(true), ValueFactory.createValue(false)};
+
+        DataSet[] tables = new DataSet[]{driver1};
+
+        ST_TIN st_tin = new ST_TIN();
+        DataSet result = st_tin.evaluate(dsf, tables, values, new NullProgressMonitor());
+
+        assertTrue(result.getRowCount() == 4);
+
+        ArrayList<Geometry> geometries = new ArrayList<Geometry>();
+        geometries.add(wktReader.read("POLYGON ((0 10, 3 0, 3 10, 0 10))"));
+        geometries.add(wktReader.read("POLYGON ((3 10, 0 10, 3 20, 3 10))"));
+        geometries.add(wktReader.read("POLYGON ((3 0, 3 10, 10 10, 3 0))"));
+        geometries.add(wktReader.read("POLYGON ((3 10, 3 20, 10 10, 3 10))"));
+        assertTrue(checkResult(result, geometries));
+    }
+
+    public boolean checkResult(DataSet dataSet, ArrayList<Geometry> geometries) {
+        int inputContains = geometries.size();
+
+        Iterator<Value[]> it = dataSet.iterator();
+        int contains = 0;
+        while (it.hasNext()) {
+            Value[] values = it.next();
+            Geometry geom = values[0].getAsGeometry();
+            if (geometries.contains(geom)) {
+                contains++;
+            }
         }
-
-        @Test
-        public void ST_TIN_LINES() throws Exception {
-                Geometry geom = wktReader.read("LINESTRING(0 0, 10 0)");
-                Geometry geom2 = wktReader.read("LINESTRING(0 5, 10 10)");
-
-                // datasource
-                final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
-                        new String[]{"the_geom"},
-                        new Type[]{TypeFactory.createType(Type.LINESTRING)});
-                // insert all filled rows...
-                driver1.addValues(new Value[]{ValueFactory.createValue(geom)});
-                driver1.addValues(new Value[]{ValueFactory.createValue(geom2)});
-
-                Value[] values = new Value[]{
-                        ValueFactory.createValue(false), ValueFactory.createValue(false)};
-
-                DataSet[] tables = new DataSet[]{driver1};
-
-                ST_TIN st_tin = new ST_TIN();
-                DataSet result = st_tin.evaluate(dsf, tables, values, new NullProgressMonitor());
-
-                assertTrue(result.getRowCount() == 2);
-
-                ArrayList<Geometry> geometries = new ArrayList<Geometry>();
-                geometries.add(wktReader.read("POLYGON((0 5, 0 0, 10 0, 0 5))"));
-                geometries.add(wktReader.read("POLYGON((10 0, 0 5, 10 10, 10 0))"));
-                assertTrue(checkResult(result, geometries));
-        }
-
-        @Test
-        public void ST_TIN_LINES_INTERSECTION() throws Exception {
-                Geometry geom = wktReader.read("LINESTRING(0 10 , 10 10)");
-                Geometry geom2 = wktReader.read("LINESTRING(3 0, 3 20)");
-
-                // datasource
-                final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
-                        new String[]{"the_geom"},
-                        new Type[]{TypeFactory.createType(Type.LINESTRING)});
-                // insert all filled rows...
-                driver1.addValues(new Value[]{ValueFactory.createValue(geom)});
-                driver1.addValues(new Value[]{ValueFactory.createValue(geom2)});
-
-                Value[] values = new Value[]{
-                        ValueFactory.createValue(true), ValueFactory.createValue(false)};
-
-                DataSet[] tables = new DataSet[]{driver1};
-
-                ST_TIN st_tin = new ST_TIN();
-                DataSet result = st_tin.evaluate(dsf, tables, values, new NullProgressMonitor());
-
-                assertTrue(result.getRowCount() == 4);
-
-                ArrayList<Geometry> geometries = new ArrayList<Geometry>();
-                geometries.add(wktReader.read("POLYGON ((0 10, 3 0, 3 10, 0 10))"));
-                geometries.add(wktReader.read("POLYGON ((3 10, 0 10, 3 20, 3 10))"));
-                geometries.add(wktReader.read("POLYGON ((3 0, 3 10, 10 10, 3 0))"));
-                geometries.add(wktReader.read("POLYGON ((3 10, 3 20, 10 10, 3 10))"));
-                assertTrue(checkResult(result, geometries));
-        }
-
-        public boolean checkResult(DataSet dataSet, ArrayList<Geometry> geometries) {
-                int inputContains = geometries.size();
-
-                Iterator<Value[]> it = dataSet.iterator();
-                int contains = 0;
-                while (it.hasNext()) {
-                        Value[] values = it.next();
-                        Geometry geom = values[0].getAsGeometry();
-                        if (geometries.contains(geom)) {
-                                contains++;
-                        }
-                }
-                return contains == inputContains ? true : false;
-        }
+        return contains == inputContains ? true : false;
+    }
 }

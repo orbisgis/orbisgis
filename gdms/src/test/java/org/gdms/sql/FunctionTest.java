@@ -70,6 +70,7 @@ public abstract class FunctionTest extends TestBase {
         protected Geometry JTSPolygonWith2Holes;
         protected GeometryCollection JTS3DCollection;
         protected WKTReader wktReader;
+        protected GeometryFactory gf;
 
         @Before
         public void setUp() throws Exception {
@@ -87,7 +88,7 @@ public abstract class FunctionTest extends TestBase {
 
                 JTSPolygonWith2Holes = wktReader.read("POLYGON ((85 55, 85 306, 366 306, 366 55, 85 55), (153 205, 212 173, 241 190, 251 253, 235 278, 147 254, 153 205), (262 88, 321 97, 324 153, 303 177, 240 138, 262 88))");
 
-                GeometryFactory gf = new GeometryFactory();
+                gf = new GeometryFactory();
                 JTSGeometryCollection = gf.createGeometryCollection(new Geometry[]{
                                 JTSMultiPolygon2D, JTSMultiLineString2D, JTSPolygon2D});
                 JTS3DCollection = gf.createGeometryCollection(new Geometry[]{JTSMultiPolygon2D, JTSLineString3D});
