@@ -94,7 +94,7 @@ public final class CRSConstraint extends AbstractConstraint {
 
     @Override
     public byte[] getBytes() {
-        return PrjWriter.crsToWKT(coordinateReferenceSystem).getBytes();
+        return coordinateReferenceSystem.toWKT().getBytes();
     }
 
     @Override
