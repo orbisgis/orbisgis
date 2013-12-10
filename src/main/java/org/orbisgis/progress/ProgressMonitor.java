@@ -28,30 +28,41 @@
  */
 package org.orbisgis.progress;
 
+import java.beans.PropertyChangeListener;
+
 /**
  * Represents a way to report progress of a task.
+ *
+ * How to use:
+ *
+ * Your method receive a ProgressMonitor instance named A. You know the number of task in your method
+ * then you call {@link ProgressMonitor#startTask(String, long)} and you receive a new instance of ProgressMonitor named B.
+ * With B you can advance in task by calling {@link org.orbisgis.progress.ProgressMonitor#endTask()} or
+ * by passing B to the sub method parameter.
  * 
  * @author Fernando GONZALEZ CORTES
  * @author Thomas LEDUC
  * @author Antoine Gourlay <antoine@gourlay.fr>
+ * @author Nicolas Fortin
  */
 public interface ProgressMonitor {
+        static final String PROP_PROGRESSION = "P";
+        static final String PROP_CANCEL = "C";
 
         /**
-         * Initialize a new task with the given end.
-         * @param taskName the name of the task
-         * @param end the end of the progress of the task
-         */
-        void init(String taskName, long end);
-
-        /**
-         * Adds a new child task to the last added.
+         * Create a new child task to this parent task.
          *
          * @param taskName
          *            Task name
          * @param end  
          */
-        void startTask(String taskName, long end);
+        ProgressMonitor startTask(String taskName, long end);
+
+        /**
+         * Create a new child task to this parent task.
+         * @param end Number of sub task
+         */
+        ProgressMonitor startTask(long end);
 
         /**
          * Ends the currently running task.
@@ -59,12 +70,14 @@ public interface ProgressMonitor {
         void endTask();
 
         /**
-         * Gets the current name of the task. The name at init or the name at the
-         * last call to startTask if any.
-         *
-         * @return
+         * @return the overall process task name.
          */
         String getCurrentTaskName();
+
+        /**
+         * Set the overall process task name
+         */
+        void setTaskName(String taskName);
 
         /**
          * Indicates the progress of the last added task.
@@ -76,28 +89,46 @@ public interface ProgressMonitor {
         /**
          * Gets the progress of the overall process.
          *
-         * @return
+         * @return A value in the range [0-1]
          */
-        int getOverallProgress();
+        double getOverallProgress();
 
         /**
          * Gets the progress of the current process.
          *
-         * @return
+         * @return A value in the range [0-getEnd()[
          */
-        int getCurrentProgress();
+        long getCurrentProgress();
+
+        /**
+         * @return Number of task in this process
+         */
+        long getEnd();
 
         /**
          * Returns true if the process is canceled and should end as quickly as
          * possible.
          *
-         * @return
+         * @return True if it should be canceled
          */
         boolean isCancelled();
 
         /**
          * Sets the cancel state of the process.
-         * @param cancelled
+         * This method call property change listeners
+         * @param cancelled New value
          */
         void setCancelled(boolean cancelled);
+
+        /**
+         * Add a property change listener. The property change listener belongs to the overall process.
+         * @param property PROP_* name
+         * @param listener Listener instance
+         */
+        void addPropertyChangeListener(String property, PropertyChangeListener listener);
+
+        /**
+         * @param listener PropertyChange listener to remove
+         */
+        void removePropertyChangeListener(PropertyChangeListener listener);
 }

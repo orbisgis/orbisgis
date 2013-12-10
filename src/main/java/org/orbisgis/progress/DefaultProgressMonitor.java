@@ -28,104 +28,140 @@
  */
 package org.orbisgis.progress;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.List;
+
 /**
  * Default implementation of an ProgressMonitor.
  */
-public final class DefaultProgressMonitor implements ProgressMonitor {
+public class DefaultProgressMonitor implements ProgressMonitor {
 
-        private static final int PERCENTAGEMAX = 100;
-        private Task overallTask;
-        private Task currentTask;
-        private boolean cancelled;
+    protected DefaultProgressMonitor parentProcess;
+    private long subprocess_size;
+    private double subprocess_done = 0;
 
-        /**
-         * Creates a new DefaultProgressMonitor.
-         * @param taskName the name of the task
-         * @param end the end of the progress of the task
-         */
-        public DefaultProgressMonitor(String taskName, int end) {
-                init(taskName, end);
+    public DefaultProgressMonitor(long subprocess_size, DefaultProgressMonitor parentProcess) {
+        this.subprocess_size = subprocess_size;
+        this.parentProcess = parentProcess;
+    }
+
+    public void removeChild(DefaultProgressMonitor child) {
+        if(parentProcess != null) {
+            parentProcess.removeChild(child);
         }
+    }
 
-        @Override
-        public void init(String taskName, long end) {
-                overallTask = new Task(taskName, end);
+    @Override
+    public void addPropertyChangeListener(String property, PropertyChangeListener listener) {
+        if(parentProcess != null) {
+            parentProcess.addPropertyChangeListener(property, listener);
         }
+    }
 
-        @Override
-        public void startTask(String taskName, long end) {
-                currentTask = new Task(taskName, end);
+    @Override
+    public void setTaskName(String taskName) {
+        if(parentProcess != null) {
+            parentProcess.setTaskName(taskName);
         }
+    }
 
-        private static class Task {
+    @Override
+    public ProgressMonitor startTask(String taskName, long end) {
+        setTaskName(taskName);
+        return startTask(end);
+    }
 
-                private String taskName;
-                private int percentage;
-                private long end;
+    @Override
+    public ProgressMonitor startTask(long end) {
+        return new DefaultProgressMonitor(end, this);
+    }
 
-                Task(String taskName, long end) {
-                        this.taskName = taskName;
-                        this.percentage = 0;
-                        this.end = end > 0 ? end : 1;
-                }
+    protected synchronized void pushProgression(double incProg) {
+        if (subprocess_done + incProg <= subprocess_size) {
+            double oldProgress = subprocess_done;
+            subprocess_done += incProg;
+            if (parentProcess != null) {
+                parentProcess.pushProgression((incProg / subprocess_size));
+            }
         }
+    }
 
-        @Override
-        public void endTask() {
-                currentTask = null;
+    @Override
+    public void endTask() {
+        pushProgression(1.0);
+    }
+
+    @Override
+    public String getCurrentTaskName() {
+        if(parentProcess != null) {
+            return parentProcess.getCurrentTaskName();
+        } else {
+            return "";
         }
+    }
 
-        @Override
-        public void progressTo(long progress) {
-                if (currentTask != null) {
-                        currentTask.percentage = (int) (progress * PERCENTAGEMAX / currentTask.end);
-                } else {
-                        overallTask.percentage = (int) (progress * PERCENTAGEMAX / overallTask.end);
-                }
+    /**
+     * Optional, When the current process is done call this method. Or let the
+     * garbage collector free the object
+     */
+    public synchronized void processFinished() {
+        if (Double.compare(subprocess_done, subprocess_size) != 0) {
+            this.parentProcess
+                    .pushProgression(1 - (subprocess_done / subprocess_size));
+            subprocess_done = subprocess_size;
         }
+    }
 
-        @Override
-        public int getOverallProgress() {
-                return overallTask.percentage;
+    @Override
+    protected synchronized void finalize() throws Throwable {
+        // do finalization here
+        if (this.parentProcess != null) {
+            processFinished();
         }
+        super.finalize();
+    }
 
-        @Override
-        public String toString() {
-                StringBuilder ret = new StringBuilder().append(overallTask.taskName).append(": ");
-                ret.append(overallTask.percentage).append("\n");
-                if (currentTask != null) {
-                        ret.append(currentTask.taskName).append(": ");
-                        ret.append(currentTask.percentage).append("\n");
-                }
+    @Override
+    public void progressTo(long progress) {
+        pushProgression(progress - subprocess_done);
+    }
 
-                return ret.toString();
+    @Override
+    public double getOverallProgress() {
+        if(parentProcess != null) {
+            return parentProcess.getOverallProgress();
+        } else {
+            return subprocess_done / subprocess_size;
         }
+    }
 
-        @Override
-        public synchronized boolean isCancelled() {
-                return cancelled;
-        }
+    @Override
+    public long getCurrentProgress() {
+        return (long)Math.floor(subprocess_done);
+    }
 
-        @Override
-        public synchronized void setCancelled(boolean cancelled) {
-                this.cancelled = cancelled;
-        }
+    @Override
+    public long getEnd() {
+        return subprocess_size;
+    }
 
-        @Override
-        public String getCurrentTaskName() {
-                if (currentTask != null) {
-                        return currentTask.taskName;
-                } else {
-                        return null;
-                }
-        }
+    @Override
+    public boolean isCancelled() {
+        return parentProcess != null && parentProcess.isCancelled();
+    }
 
-        @Override
-        public int getCurrentProgress() {
-                if (currentTask != null) {
-                        return currentTask.percentage;
-                } else {
-                        return 0;
-                }
+    @Override
+    public void setCancelled(boolean cancelled) {
+        if(parentProcess != null) {
+            parentProcess.setCancelled(cancelled);
         }
+    }
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        if(parentProcess != null) {
+            parentProcess.removePropertyChangeListener(listener);
+        }
+    }
 }
