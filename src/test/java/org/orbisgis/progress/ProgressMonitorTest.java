@@ -70,8 +70,10 @@ public class ProgressMonitorTest {
         ProgressMonitor pm = new RootProgressMonitor("open file", 100);
         ProgressListener pl = new ProgressListener();
         CancelListener cl = new CancelListener();
+        TaskListener tl = new TaskListener();
         pm.addPropertyChangeListener(ProgressMonitor.PROP_PROGRESSION, pl);
         pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cl);
+        pm.addPropertyChangeListener(ProgressMonitor.PROP_TASKNAME, tl);
         for(int i=0; i < 100; i++) {
             assertEquals(i / 100., pl.lastSeenProgress, 1e-12);
             pm.endTask();
@@ -80,6 +82,8 @@ public class ProgressMonitorTest {
         assertEquals(false, cl.canceled);
         pm.setCancelled(true);
         assertEquals(true, cl.canceled);
+        pm.setTaskName("hello");
+        assertEquals("hello", tl.taskName);
     }
 
     @Test
@@ -104,6 +108,15 @@ public class ProgressMonitorTest {
         @Override
         public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
             canceled = (Boolean)propertyChangeEvent.getNewValue();
+        }
+    }
+
+    private static class TaskListener implements PropertyChangeListener {
+        String taskName = "";
+
+        @Override
+        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+            taskName = (String)propertyChangeEvent.getNewValue();
         }
     }
 }

@@ -94,6 +94,8 @@ public class RootProgressMonitor extends DefaultProgressMonitor {
 
     @Override
     public void setTaskName(String taskName) {
+        String oldTaskName = this.taskName;
         this.taskName = taskName;
+        listeners.firePropertyChange(PROP_TASKNAME, oldTaskName, taskName);
     }
 }

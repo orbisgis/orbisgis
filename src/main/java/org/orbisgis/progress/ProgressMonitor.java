@@ -48,6 +48,7 @@ import java.beans.PropertyChangeListener;
 public interface ProgressMonitor {
         static final String PROP_PROGRESSION = "P";
         static final String PROP_CANCEL = "C";
+        static final String PROP_TASKNAME = "T";
 
         /**
          * Create a new child task to this parent task.
