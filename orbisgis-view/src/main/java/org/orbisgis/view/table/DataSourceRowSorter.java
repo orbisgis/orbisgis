@@ -29,6 +29,7 @@
 package org.orbisgis.view.table;
 
 import java.beans.EventHandler;
+import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,8 +38,7 @@ import java.util.Map;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import org.apache.log4j.Logger;
-import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.driver.DriverException;
+import org.h2gis.utilities.SFSUtilities;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.background.BackgroundJob;
@@ -78,7 +78,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
          */
         public void onRowSortDone(SortJobEventSorted sortData) {
                 int[] oldViewToModel = getViewToModelArray();
-                viewToModel = new ArrayList<Integer>(sortData.getViewToModelIndex());
+                viewToModel = new ArrayList<>(sortData.getViewToModelIndex());
                 initModelToView();
                 sortedColumns.clear();
                 sortedColumns.add(sortData.getSortRequest());
@@ -89,7 +89,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
          * Create the model to view from viewToModel
          */
         private void initModelToView() {
-                modelToView = new HashMap<Integer,Integer>();
+                modelToView = new HashMap<>();
                 for(int viewIndex = 0;viewIndex < viewToModel.size();viewIndex++) {
                         Integer modelIndex = viewToModel.get(viewIndex);
                         modelToView.put(modelIndex, viewIndex);
@@ -111,18 +111,17 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 if(isSortable(column)) {
                         SortKey sortRequest=new SortKey(column, SortOrder.ASCENDING);
                         //Find if the user already set an order
-                        for(int i=0;i<sortedColumns.size();i++) {
-                                SortKey col = sortedColumns.get(i);
-                                if(col.getColumn()==column) {
-                                        SortOrder order;
-                                        if(col.getSortOrder().equals(SortOrder.ASCENDING)) {
-                                                order = SortOrder.DESCENDING;
-                                        } else {
-                                                order = SortOrder.ASCENDING;
-                                        }
-                                        sortRequest = new SortKey(column, order);
-                                        break;
+                        for (SortKey col : sortedColumns) {
+                            if (col.getColumn() == column) {
+                                SortOrder order;
+                                if (col.getSortOrder().equals(SortOrder.ASCENDING)) {
+                                    order = SortOrder.DESCENDING;
+                                } else {
+                                    order = SortOrder.ASCENDING;
                                 }
+                                sortRequest = new SortKey(column, order);
+                                break;
+                            }
                         }
                         //Multiple order is not available
                         //To enable it, a new TableHeaderRenderer need to be defined
@@ -181,13 +180,15 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         public void setSortKey(SortKey sortRequest) {
                 if (sortRequest != null) {     
                         //Check if the sort request is not on the geometry column
+                        int sortIndex = sortRequest.getColumn();
+                        ResultSetMetaData meta = this.model.get
                         int geoIndex = -1;
                         try {
                                 geoIndex = MetadataUtilities.getGeometryFieldIndex(this.model.getDataSource().getMetadata());
                         } catch (DriverException ex) {
                                 LOGGER.error(ex.getLocalizedMessage(),ex);
                         }
-                        if(sortRequest.getColumn()==geoIndex) {
+                        if(==geoIndex) {
                                 //Ignore sort request
                                 return;
                         }
