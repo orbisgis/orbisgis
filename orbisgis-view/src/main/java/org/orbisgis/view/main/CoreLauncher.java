@@ -114,8 +114,8 @@ public class CoreLauncher {
             while(showWorkspaceSelectionDialog) {
                 showWorkspaceSelectionDialog = false;
                 try {
-                    viewCore = new Core(coreWorkspace, debugMode, loadingFrame);
-                    viewCore.startup(loadingFrame);
+                    viewCore = new Core(coreWorkspace, debugMode, loadingFrame.getProgressMonitor());
+                    viewCore.startup(loadingFrame.getProgressMonitor());
                 } catch (InterruptedException ex) {
                     // Do not print user cancel action.
                     // Close the splash screen

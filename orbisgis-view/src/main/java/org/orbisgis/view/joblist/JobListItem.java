@@ -32,10 +32,12 @@ package org.orbisgis.view.joblist;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.Timer;
+
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.Job;
-import org.orbisgis.view.background.ProgressListener;
 import org.orbisgis.sif.common.ContainerItemProperties;
 
 /**
@@ -47,8 +49,8 @@ import org.orbisgis.sif.common.ContainerItemProperties;
 public class JobListItem extends ContainerItemProperties {
         private static final long serialVersionUID = 1L;
         private Job job;
-        private ProgressListener listener = 
-                EventHandler.create(ProgressListener.class,
+        private PropertyChangeListener listener =
+                EventHandler.create(PropertyChangeListener.class,
                                     this,
                                     "onJobUpdate");
         private JobListItemPanel itemPanel;
@@ -71,7 +73,7 @@ public class JobListItem extends ContainerItemProperties {
          * @return 
          */
         public JobListItem listenToJob(boolean simplifiedPanel) {
-                job.addProgressListener(listener);    
+                job.getProgressMonitor().addPropertyChangeListener(ProgressMonitor.PROP_PROGRESSION, listener);
                 itemPanel = new JobListItemPanel(job,simplifiedPanel);
                 onJobUpdate();
                 fetchProgressionTimer = new Timer(PROGRESSION_TIMER_INTERVAL,new TimerFetchListener());
@@ -82,7 +84,7 @@ public class JobListItem extends ContainerItemProperties {
          * Stop listening to the job and the timer
          */
         public void dispose() {
-                job.removeProgressListener(listener);
+                job.getProgressMonitor().removePropertyChangeListener(listener);
                 if(fetchProgressionTimer!=null) {
                         fetchProgressionTimer.stop();
                 }

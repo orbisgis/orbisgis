@@ -39,6 +39,8 @@ import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -154,16 +156,19 @@ public class ExecuteScriptProcess implements BackgroundJob {
                     LOGGER.info(I18N.tr("Done in {0} seconds",(System.currentTimeMillis() - debQuery) / 1000.));
 
                 }
-                pm.progressTo(splitter.getLineIndex());
+                pm.endTask();
             }
         }
 
         @Override
-        public void run(ProgressMonitor pm) {
+        public void run(ProgressMonitor progress) {
                 long t1 = System.currentTimeMillis();
-                pm.init(I18N.tr("Execute SQL Request"), panel.getScriptPanel().getLineCount());
+                ProgressMonitor pm = progress.startTask(I18N.tr("Execute SQL Request"), panel.getScriptPanel().getLineCount());
                 try(Connection connection = ds.getConnection()) {
                     try(Statement st = connection.createStatement()) {
+                        // If user click on cancel, cancel the execution
+                        pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL ,
+                                EventHandler.create(PropertyChangeListener.class, st, "cancel"));
                         if(splitterFactory != null) {
                             parseAndExecuteScript(pm, st);
                         } else {

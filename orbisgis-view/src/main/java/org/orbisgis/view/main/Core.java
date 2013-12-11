@@ -125,7 +125,8 @@ public class Core {
      * @param debugMode Show additional information for debugging purposes
      * @note Call startup() to init Swing
      */
-    public Core(CoreWorkspace coreWorkspace, boolean debugMode, ProgressMonitor progressInfo) throws InvocationTargetException, InterruptedException {
+    public Core(CoreWorkspace coreWorkspace, boolean debugMode, ProgressMonitor parentProgress) throws InvocationTargetException, InterruptedException {
+        ProgressMonitor progressInfo = parentProgress.startTask(I18N.tr("Loading Workspace.."),100);
         MainContext.initConsoleLogger(debugMode);
         // Declare empty main frame
         mainFrame = new MainFrame();
@@ -142,20 +143,19 @@ public class Core {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }
         UIFactory.setMainFrame(mainFrame);
-        progressInfo.init(I18N.tr("Loading Workspace.."), 100);
         initMainContext(debugMode, coreWorkspace);
         progressInfo.progressTo(10);
         this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());
         Services.registerService(ViewWorkspace.class, I18N.tr("Contains view folders path"),
                 viewWorkspace);
-        progressInfo.init(I18N.tr("Register GUI Sql functions.."), 100);
+        progressInfo.setTaskName(I18N.tr("Register GUI Sql functions.."));
         addSQLFunctions();
         progressInfo.progressTo(11);
         //Load plugin host
-        progressInfo.init(I18N.tr("Load the plugin framework.."), 100);
+        progressInfo.setTaskName(I18N.tr("Load the plugin framework.."));
         startPluginHost();
         progressInfo.progressTo(18);
-        progressInfo.init(I18N.tr("Connecting to the database.."), 100);
+        progressInfo.setTaskName(I18N.tr("Connecting to the database.."));
         // Init database
         try {
             mainContext.initDataBase("sa","sa");
@@ -390,12 +390,11 @@ public class Core {
         return pluginFramework;
     }
 
-    private void initialize(ProgressMonitor progress) {
-        progress.init(I18N.tr("Loading the main window"), 100);
+    private void initialize(ProgressMonitor parentProgress) {
+        ProgressMonitor progress = parentProgress.startTask(I18N.tr("Loading the main window"), 100);
         makeMainFrame();
-        progress.progressTo(30);
-
-        progress.init(I18N.tr("Loading docking system and frames"), 100);
+        progress.endTask();
+        progress.setTaskName(I18N.tr("Loading docking system and frames"));
         //Initiate the docking management system
         DockingManagerImpl dockManagerImpl = new DockingManagerImpl(mainFrame);
         dockManager = dockManagerImpl;
@@ -405,25 +404,25 @@ public class Core {
         singleFrameTracker.open();
         toolBarTracker = new MenuItemServiceTracker<MainWindow, ToolBarAction>(pluginFramework.getHostBundleContext(), ToolBarAction.class, dockManagerImpl, mainFrame);
         toolBarTracker.open();
-        progress.progressTo(35);
+        progress.endTask();
 
         //Load the log panels
         makeLoggingPanels();
-        progress.progressTo(40);
+        progress.endTask();
 
         //Load the editor factories manager
         makeEditorManager(dockManager);
-        progress.progressTo(50);
+        progress.endTask();
 
         //Load the GeoCatalog
         makeGeoCatalogPanel();
-        progress.progressTo(55);
+        progress.endTask();
 
         //Load Built-ins Editors
         loadEditorFactories();
-        progress.progressTo(60);
+        progress.endTask();
 
-        progress.init(I18N.tr("Restore the former layout.."), 100);
+        progress.setTaskName(I18N.tr("Restore the former layout.."));
         //Load the docking layout and editors opened in last OrbisGis instance
         File savedDockingLayout = new File(viewWorkspace.getDockingLayoutPath());
         if (!savedDockingLayout.exists()) {
@@ -432,7 +431,7 @@ public class Core {
             copyDefaultDockingLayout(savedDockingLayout);
         }
         dockManager.setDockingLayoutPersistanceFilePath(viewWorkspace.getDockingLayoutPath());
-        progress.progressTo(70);
+        progress.endTask();
         addCoreMenu();
     }
 
