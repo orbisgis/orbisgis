@@ -28,8 +28,8 @@
  */
 package org.orbisgis.view.table.filters;
 
-import org.gdms.data.DataSource;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.table.TableEditableElement;
 
 /**
  * Common interface for all table selection filters
@@ -42,12 +42,12 @@ public interface TableSelectionFilter {
          * @param pm
          * @param source Table data source 
          */
-        void initialize(ProgressMonitor pm,DataSource source);
+        void initialize(ProgressMonitor pm,TableEditableElement source);
         
         /***
          * @param rowId Row index (data source row)
          * @param source Table data set
          * @return True will select this row
          */
-        boolean isSelected(int rowId, DataSource source);
+        boolean isSelected(int rowId, TableEditableElement source);
 }

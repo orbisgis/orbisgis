@@ -30,14 +30,10 @@ package org.orbisgis.view.table;
 
 import java.sql.SQLException;
 import java.sql.Types;
-import java.text.ParseException;
-import java.util.Iterator;
 import javax.sql.RowSet;
-import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.api.ReversibleRowSet;
-import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.view.edition.EditableSource;
 import org.xnap.commons.i18n.I18n;

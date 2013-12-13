@@ -38,11 +38,13 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.sql.DataSource;
 import javax.swing.*;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.event.ListSelectionEvent;
@@ -57,30 +59,17 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
-import org.gdms.driver.DriverException;
-import org.gdms.source.SourceListener;
-import org.gdms.source.SourceRemovalEvent;
-import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
-import org.orbisgis.view.components.gdms.ValueInputVerifier;
 import org.orbisgis.view.docking.DockingLocation;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
@@ -111,7 +100,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         private static final Logger LOGGER = Logger.getLogger("gui."+TableEditor.class);
         
         private static final long serialVersionUID = 1L;
-        private TableEditableElementImpl tableEditableElement;
+        private TableEditableElement tableEditableElement;
         private DockingPanelParameters dockingPanelParameters;
         private JTable table;
         private JScrollPane tableScrollPane;
@@ -131,14 +120,15 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 EventHandler.create(PropertyChangeListener.class,this,
                 "onEditableSelectionChange","newValue");
         private ActionCommands popupActions = new ActionCommands();
+        private DataSource dataSource;
 
         /**
          * Constructor
          * @param element Source to read and edit
          */
-        public TableEditor(TableEditableElementImpl element) {
+        public TableEditor(TableEditableElement element, DataSource dataSource) {
                 super(new BorderLayout());
-
+                this.dataSource = dataSource;
                 //Add a listener to the source manager to close the table when
                 //the source is removed
                 this.tableEditableElement = element;
@@ -220,7 +210,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 List<TableSelectionFilter> filters = filterManager.getFilters();
                 if(!filterRunning.getAndSet(true)) {
                         BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.nonBlockingBackgroundOperation(new SearchJob(filters.get(0), table, tableModel.getDataSource(),filterRunning));
+                        bm.nonBlockingBackgroundOperation(new SearchJob(filters.get(0), table, tableEditableElement,filterRunning));
                 } else {
                         LOGGER.info(I18N.tr("Searching request is already launched. Please wait a moment, or cancel it."));
                 }
@@ -405,7 +395,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         LOGGER.error("MapContext lost between popup creation and click");
                         return;
                 }                
-                ZoomToSelectionJob zoomJob = new ZoomToSelectionJob(source, modelSelection, mapContext);
+                ZoomToSelectionJob zoomJob = new ZoomToSelectionJob(dataSource, tableEditableElement.getTableReference() ,modelSelection, mapContext);
                 launchJob(zoomJob);                
         }
         
@@ -435,16 +425,20 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
             Set<Integer> selection = getTableModelSelection();
             // If there is a nonempty selection, then ask the user to name it.
             if (!selection.isEmpty()) {
-                String newName = CreateSourceFromSelection.showNewNameDialog(
-                        this, tableModel.getDataSource());
-                // If newName is not null, then the user clicked OK and entered
-                // a valid name.
-                if (newName != null) {
-                    BackgroundManager bm = Services.getService(BackgroundManager.class);
-                    bm.backgroundOperation(
-                            new CreateSourceFromSelection(
-                                    tableModel.getDataSource(),
-                                    selection, newName));
+                try {
+                    String newName = CreateSourceFromSelection.showNewNameDialog(
+                            this, dataSource, tableEditableElement.getTableReference());
+                    // If newName is not null, then the user clicked OK and entered
+                    // a valid name.
+                    if (newName != null) {
+                        BackgroundManager bm = Services.getService(BackgroundManager.class);
+                        bm.backgroundOperation(
+                                new CreateSourceFromSelection(
+                                        dataSource,
+                                        selection, tableEditableElement.getTableReference(), newName));
+                    }
+                } catch (SQLException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
             }
         }

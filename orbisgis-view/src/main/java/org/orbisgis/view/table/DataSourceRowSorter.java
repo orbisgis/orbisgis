@@ -30,6 +30,7 @@ package org.orbisgis.view.table;
 
 import java.beans.EventHandler;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,7 +39,6 @@ import java.util.Map;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import org.apache.log4j.Logger;
-import org.h2gis.utilities.SFSUtilities;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.background.BackgroundJob;
@@ -60,7 +60,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         //The model can be filtered, then a model row can not be in the view
         private Map<Integer,Integer> modelToView = null;
         //Sorted columns
-        private List<SortKey> sortedColumns = new ArrayList<SortKey>();
+        private List<SortKey> sortedColumns = new ArrayList<>();
         
         public DataSourceRowSorter(DataSourceTableModel model) {
                 this.model = model;
@@ -74,7 +74,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         /**
          * Called by the Sort job listener
          * Update the internal indexes and inform the table.
-         * @param sortData 
+         * @param sortData Sort result
          */
         public void onRowSortDone(SortJobEventSorted sortData) {
                 int[] oldViewToModel = getViewToModelArray();
@@ -175,22 +175,15 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         /**
          * Sort the column in the provided order
          *
-         * @param sortRequest
+         * @param sortRequest The key to sort
          */
         public void setSortKey(SortKey sortRequest) {
                 if (sortRequest != null) {     
                         //Check if the sort request is not on the geometry column
                         int sortIndex = sortRequest.getColumn();
-                        ResultSetMetaData meta = this.model.get
-                        int geoIndex = -1;
-                        try {
-                                geoIndex = MetadataUtilities.getGeometryFieldIndex(this.model.getDataSource().getMetadata());
-                        } catch (DriverException ex) {
-                                LOGGER.error(ex.getLocalizedMessage(),ex);
-                        }
-                        if(==geoIndex) {
-                                //Ignore sort request
-                                return;
+                        if(!isSortable(sortIndex)) {
+                            //Ignore sort request
+                            return;
                         }
                         launchSortProcess(sortRequest);
                 } else {
@@ -225,7 +218,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 int[] oldViewToModel = getViewToModelArray();
                 if(rowsFilter!=null) {
                         //Update the internal list
-                        viewToModel = new ArrayList<Integer>(rowsFilter);
+                        viewToModel = new ArrayList<>(rowsFilter);
                         initModelToView();
                 } else {
                         viewToModel = null;
@@ -247,13 +240,13 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
 
 
         private boolean isSortable(int columnIndex) {
-                int geoIndex = -1;                
-                try {
-                        geoIndex = MetadataUtilities.getGeometryFieldIndex(model.getDataSource().getMetadata());
-                } catch (DriverException ex) {
-                        LOGGER.error(ex.getLocalizedMessage(),ex);
-                }
-                return geoIndex!=columnIndex;
+            try {
+                ResultSetMetaData meta = model.getRowSet().getMetaData();
+                return !meta.getColumnTypeName(columnIndex).equalsIgnoreCase("geometry");
+            } catch (SQLException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+                return false;
+            }
         }
 
         @Override

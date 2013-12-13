@@ -43,14 +43,12 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import org.gdms.data.DataSource;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DriverException;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -160,7 +158,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 }
 
                 @Override
-                public boolean isSelected(int rowId, DataSource source) {
+                public boolean isSelected(int rowId, TableEditableElement source) {
                         Value val;
                         try {
 
@@ -183,7 +181,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 }
 
                 @Override
-                public void initialize(ProgressMonitor pm, DataSource source) {
+                public void initialize(ProgressMonitor pm, TableEditableElement source) {
                         //Nothing to do
                 }
         }
