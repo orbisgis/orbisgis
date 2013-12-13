@@ -132,8 +132,13 @@ public class CreateSourceFromSelection implements BackgroundJob {
                                 }
                             }
                             // Copy content using pk
-                            int primaryKeyIndex = JDBCUtilities.primaryKeyIndex();
-                            String primaryKeyName = JDBCUtilities.getFieldIndex(connection.getMetaData(), tableName, primaryKeyIndex);
+                            DatabaseMetaData meta = connection.getMetaData();
+                            int primaryKeyIndex = JDBCUtilities.getIntegerPrimaryKey(meta, tableName);
+                            if(primaryKeyIndex == 0) {
+                                // Should never happen because the check is done before the creation of this class
+                                throw new SQLException("Cannot create table from table selection that does not contains a primary key");
+                            }
+                            String primaryKeyName = JDBCUtilities.getFieldName(meta, tableName, primaryKeyIndex);
                             st.execute(String.format("CREATE TABLE %s AS SELECT a.* FROM %s a,%s b " +
                                     "WHERE a.%s = b.ROWID ",TableLocation.parse(newName),
                                     TableLocation.parse(tableName),tempTableName, primaryKeyName));
