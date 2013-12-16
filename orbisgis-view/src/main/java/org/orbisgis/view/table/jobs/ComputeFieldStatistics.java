@@ -30,16 +30,16 @@ package org.orbisgis.view.table.jobs;
 
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import javax.sql.DataSource;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.SortedSet;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
-import org.apache.commons.math3.stat.descriptive.moment.Mean;
-import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.core.common.IntegerUnion;
@@ -47,8 +47,6 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import javax.sql.DataSource;
 
 /**
  * This job compute a numeric column statistics.
@@ -77,7 +75,7 @@ public class ComputeFieldStatistics implements BackgroundJob {
                 this.columnId = columnId;
                 table = tableName;
         }
-        
+
         private static String[] computeStatsSQL(DataSource dataSource, String tableName, String columnName, ProgressMonitor pm) throws SQLException {
             String[] stats = new String[STATS.values().length];
             StringBuilder sb = new StringBuilder();
@@ -92,12 +90,20 @@ public class ComputeFieldStatistics implements BackgroundJob {
                 sb.append(func.name());
             }
             try(Connection connection = dataSource.getConnection();
-                Statement st = connection.createStatement();
-                ResultSet rs = st.executeQuery(String.format("SELECT %s FROM %s",sb.toString(), tableName ))) {
-                if(rs.next()) {
-                    for(STATS func : STATS.values()) {
-                        stats[func.ordinal()] = rs.getString(func.name());
+                Statement st = connection.createStatement()) {
+
+                // Cancel select
+                PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+                pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
+                        listener);
+                try(ResultSet rs = st.executeQuery(String.format("SELECT %s FROM %s",sb.toString(), tableName ))) {
+                    if(rs.next()) {
+                        for(STATS func : STATS.values()) {
+                            stats[func.ordinal()] = rs.getString(func.name());
+                        }
                     }
+                } finally {
+                    pm.removePropertyChangeListener(listener);
                 }
             }
             return stats;
@@ -126,6 +132,8 @@ public class ComputeFieldStatistics implements BackgroundJob {
                             fetchProgress.endTask();
                         }
                     }
+                } finally {
+                    pm.removePropertyChangeListener(listener);
                 }
             }
             res[STATS.SUM.ordinal()] = Double.valueOf(stats.getSum()).toString();
