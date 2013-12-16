@@ -29,29 +29,28 @@
 package org.orbisgis.view.table.jobs;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
+import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.schema.DefaultMetadata;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.driver.memory.MemoryDataSetDriver;
-import org.gdms.sql.engine.Engine;
-import org.gdms.sql.engine.SQLScript;
-import org.gdms.sql.engine.SQLStatement;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
+
 /**
- *
+ * This job compute a numeric column statistics.
  * @author Nicolas Fortin
  */
 public class ComputeFieldStatistics implements BackgroundJob {
@@ -60,14 +59,54 @@ public class ComputeFieldStatistics implements BackgroundJob {
         private Set<Integer> statisticsRowFilter;
         private DataSource ds;
         private int columnId;
+        private String table;
+        private enum STATS { COUNT, SUM, AVG, STDDEV_SAMP, MIN, MAX}
 
-        public ComputeFieldStatistics(Set<Integer> statisticsRowFilter, DataSource dataSource, int columnId) {
+        /**
+         * Constructor
+         * @param statisticsRowFilter Row id filter (not primary key)
+         * @param dataSource JDBC Datasource
+         * @param columnId Column Id [0-n]
+         * @param tableName Table identifier
+         */
+        public ComputeFieldStatistics(Set<Integer> statisticsRowFilter, DataSource dataSource, int columnId, String tableName) {
                 this.statisticsRowFilter = statisticsRowFilter;
                 this.ds = dataSource;
                 this.columnId = columnId;
+                table = tableName;
         }
         
-        
+        private static String[] computeStatsSQL(DataSource dataSource, String tableName, String columnName) throws SQLException {
+            String[] stats = new String[STATS.values().length];
+            StringBuilder sb = new StringBuilder();
+            for(STATS func : STATS.values()) {
+                if(sb.length()!=0) {
+                    sb.append(", ");
+                }
+                sb.append(func.name());
+                sb.append("(");
+                sb.append(columnName);
+                sb.append(") ");
+                sb.append(func.name());
+            }
+            try(Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery(String.format("SELECT %s FROM %s",sb.toString(), tableName ))) {
+                if(rs.next()) {
+                    for(STATS func : STATS.values()) {
+                        stats[func.ordinal()] = rs.getString(func.name());
+                    }
+                }
+            }
+            return stats;
+        }
+
+        private static String[] computeStatsLocal(DataSource dataSource, String tableName, String columnName, SortedSet<Integer> rowNum) throws SQLException {
+            String[] res = new String[STATS.values().length];
+            SummaryStatistics stats = new SummaryStatistics();
+
+            return res;
+        }
         
         @Override
         public void run(ProgressMonitor pm) {
@@ -122,21 +161,6 @@ public class ComputeFieldStatistics implements BackgroundJob {
                         LOGGER.error(ex.getLocalizedMessage(),ex);
                 }                
         }
-
-        private String makeFilteredData(DataSourceFactory dsf,String fieldName) throws DriverException {
-
-                int fieldIndex = ds.getFieldIndexByName(fieldName);
-                int fieldType = ds.getFieldType(fieldIndex).getTypeCode();
-
-                DefaultMetadata metadata = new DefaultMetadata();
-                metadata.addField(fieldName, fieldType);
-                MemoryDataSetDriver driver = new MemoryDataSetDriver(metadata);
-                for (Integer rowId : statisticsRowFilter) {
-                        driver.addValues(new Value[]{ds.getFieldValue(rowId,
-                                        fieldIndex)});
-                }                
-                return dsf.getDataSource(driver, DriverManager.DEFAULT_SINGLE_TABLE_NAME).getName();
-        }        
         
         @Override
         public String getTaskName() {

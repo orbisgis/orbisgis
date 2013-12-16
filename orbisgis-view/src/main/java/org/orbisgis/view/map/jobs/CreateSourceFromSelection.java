@@ -96,9 +96,50 @@ public class CreateSourceFromSelection implements BackgroundJob {
             this.newName = newName;
         }
 
+        /**
+         * Create a temporary table that contains
+         * @param dataSource
+         * @param pm
+         * @param selectedRows
+         * @return The temporary table name
+         * @throws SQLException
+         */
+        public static String createIndexTempTable(DataSource dataSource, ProgressMonitor pm, Set<Integer> selectedRows) throws SQLException {
+            ProgressMonitor insertProgress = pm.startTask(selectedRows.size());
+            // Populate the new source
+            try(Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+                // Create row id table
+                String tempTableName = getNewUniqueName(TableLocation.parse("CREATE_SOURCE"), dataSource);
+                st.execute(String.format("CREATE LOCAL TEMPORARY TABLE %s(ROWID integer)", tempTableName));
+                // Prepare insert statement
+                PreparedStatement insertSt = connection.prepareStatement(String.format("INSERT INTO %s VALUES(?)", tempTableName));
+                // Cancel insert
+                PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, insertSt, "cancel");
+                insertProgress.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
+                        listener);
+                int batchSize = 0;
+                for (Integer sel : selectedRows){
+                    insertSt.setInt(1, sel);
+                    insertSt.addBatch();
+                    batchSize++;
+                    insertProgress.endTask();
+                    if(batchSize >= INSERT_BATCH_SIZE) {
+                        batchSize = 0;
+                        insertSt.executeBatch();
+                    }
+                    if(insertProgress.isCancelled()) {
+                        break;
+                    }
+                }
+                insertProgress.removePropertyChangeListener(listener);
+                return tempTableName;
+            }
+        }
+
         @Override
         public void run(ProgressMonitor pm) {
-                ProgressMonitor insertProgress = pm.startTask(getTaskName(), selectedRows.size());
+
                 try {
                         // Find an unique name to register
                         if (newName == null) {
@@ -109,28 +150,10 @@ public class CreateSourceFromSelection implements BackgroundJob {
                         try(Connection connection = dataSource.getConnection();
                             Statement st = connection.createStatement()) {
                             // Create row id table
-                            String tempTableName = getNewUniqueName(TableLocation.parse("CREATE_SOURCE"), dataSource);
-                            st.execute(String.format("CREATE LOCAL TEMPORARY TABLE %s(ROWID integer)", tempTableName));
-                            // Prepare insert statement
-                            PreparedStatement insertSt = connection.prepareStatement(String.format("INSERT INTO %s VALUES(?)", tempTableName));
-                            // Cancel insert
-                            PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, insertSt, "cancel");
-                            insertProgress.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
+                            String tempTableName = createIndexTempTable(dataSource, pm, selectedRows);
+                            PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+                            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
                                     listener);
-                            int batchSize = 0;
-                            for (Integer sel : selectedRows){
-                                insertSt.setInt(1, sel);
-                                insertSt.addBatch();
-                                batchSize++;
-                                insertProgress.endTask();
-                                if(batchSize >= INSERT_BATCH_SIZE) {
-                                    batchSize = 0;
-                                    insertSt.executeBatch();
-                                }
-                                if(insertProgress.isCancelled()) {
-                                    break;
-                                }
-                            }
                             // Copy content using pk
                             DatabaseMetaData meta = connection.getMetaData();
                             int primaryKeyIndex = JDBCUtilities.getIntegerPrimaryKey(meta, tableName);
@@ -142,7 +165,7 @@ public class CreateSourceFromSelection implements BackgroundJob {
                             st.execute(String.format("CREATE TABLE %s AS SELECT a.* FROM %s a,%s b " +
                                     "WHERE a.%s = b.ROWID ",TableLocation.parse(newName),
                                     TableLocation.parse(tableName),tempTableName, primaryKeyName));
-                            insertProgress.removePropertyChangeListener(listener);
+                            pm.removePropertyChangeListener(listener);
                         }
                 } catch (SQLException e) {
                         GUILOGGER.error("The selection cannot be created.", e);
