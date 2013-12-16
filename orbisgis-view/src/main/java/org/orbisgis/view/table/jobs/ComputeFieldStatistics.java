@@ -28,20 +28,21 @@
  */
 package org.orbisgis.view.table.jobs;
 
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.JDBCUtilities;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;
@@ -60,6 +61,7 @@ public class ComputeFieldStatistics implements BackgroundJob {
         private DataSource ds;
         private int columnId;
         private String table;
+        /** SQL function to evaluate */
         private enum STATS { COUNT, SUM, AVG, STDDEV_SAMP, MIN, MAX}
 
         /**
@@ -76,7 +78,7 @@ public class ComputeFieldStatistics implements BackgroundJob {
                 table = tableName;
         }
         
-        private static String[] computeStatsSQL(DataSource dataSource, String tableName, String columnName) throws SQLException {
+        private static String[] computeStatsSQL(DataSource dataSource, String tableName, String columnName, ProgressMonitor pm) throws SQLException {
             String[] stats = new String[STATS.values().length];
             StringBuilder sb = new StringBuilder();
             for(STATS func : STATS.values()) {
@@ -101,66 +103,74 @@ public class ComputeFieldStatistics implements BackgroundJob {
             return stats;
         }
 
-        private static String[] computeStatsLocal(DataSource dataSource, String tableName, String columnName, SortedSet<Integer> rowNum) throws SQLException {
+        private static String[] computeStatsLocal(DataSource dataSource, String tableName, String columnName, SortedSet<Integer> rowNum, ProgressMonitor pm) throws SQLException {
             String[] res = new String[STATS.values().length];
             SummaryStatistics stats = new SummaryStatistics();
-
+            try(Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+                // Cancel select
+                PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+                pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
+                        listener);
+                try (ResultSet rs = st.executeQuery(String.format("SELECT %s FROM %s",columnName, tableName ))) {
+                    Iterator<Integer> it = rowNum.iterator();
+                    Integer fetch = null;
+                    if(it.hasNext()) {
+                        fetch = it.next();
+                    }
+                    ProgressMonitor fetchProgress = pm.startTask(rowNum.size());
+                    while(rs.next() && fetch != null && !pm.isCancelled()) {
+                        if(fetch.equals(rs.getRow())) {
+                            stats.addValue(rs.getDouble(columnName));
+                            fetch = it.next();
+                            fetchProgress.endTask();
+                        }
+                    }
+                }
+            }
+            res[STATS.SUM.ordinal()] = Double.valueOf(stats.getSum()).toString();
+            res[STATS.AVG.ordinal()] = Double.valueOf(stats.getMean()).toString();
+            res[STATS.COUNT.ordinal()] = Long.valueOf(stats.getN()).toString();
+            res[STATS.MIN.ordinal()] = Double.valueOf(stats.getMin()).toString();
+            res[STATS.MAX.ordinal()] = Double.valueOf(stats.getMax()).toString();
+            res[STATS.STDDEV_SAMP.ordinal()] = Double.valueOf(stats.getStandardDeviation()).toString();
             return res;
         }
-        
-        @Override
-        public void run(ProgressMonitor pm) {
-                try {
-                        final DataSourceFactory dsf = ds.getDataSourceFactory();
-                        Metadata metadata = ds.getMetadata();
-                        String fieldName = metadata.getFieldName(columnId);
-                        String tableName = ds.getName();
-                        long rowCount = ds.getRowCount();
-                        boolean doRowFiltering = !statisticsRowFilter.isEmpty() && statisticsRowFilter.size() < ds.getRowCount();
-                        if(doRowFiltering) {
-                                // Create a smaller data source then compute the stats
-                                rowCount = statisticsRowFilter.size();
-                                tableName = makeFilteredData(dsf,fieldName);                                
-                        }
-                        // Compute statistics for the whole table
-                        SQLScript s = Engine.loadScript(
-                                ComputeFieldStatistics.class.getResourceAsStream("compute_stats.bsql"));
-                        LOGGER.debug("Set Table name : "+tableName);
-                        //Retrieve the first statement
-                        SQLStatement statement = s.getStatements()[0];
-                        statement.setFieldParameter("fieldName", fieldName);
-                        statement.setTableParameter("tableName", tableName);
-                        statement.setDataSourceFactory(dsf);
-                        statement.prepare();
-                        DataSet dataSet = statement.execute();
-                        //Read statistics
-                        Value[] row = dataSet.getRow(0);
-                        String[] rowLabels = dataSet.getMetadata().getFieldNames();
-                        Map<String,Value> values = new HashMap<String,Value>();
-                        for(int col=0;col<row.length;col++) {
-                                values.put(rowLabels[col],row[col]);
-                        }
-                        // Show table statistics
-                        StringBuilder message = new StringBuilder();
-                        message.append(I18N.tr("\nTable {0}, statistics of the column {1}.\n",ds.getName(),fieldName));
-                        message.append(I18N.tr("Row count : {0}\n",rowCount));
-                        message.append(I18N.tr("Minimum : {0}\n",values.get("min")));
-                        message.append(I18N.tr("Maximum : {0}\n",values.get("max")));
-                        message.append(I18N.tr("Sum : {0}\n",values.get("sum")));
-                        message.append(I18N.tr("Average : {0}\n",values.get("avg")));
-                        message.append(I18N.tr("Standard deviation : {0}\n",values.get("std")));
-                        LOGGER.info(message.toString());                        
-                        //Free temporary tables
-                        if(doRowFiltering) {
-                                dsf.getSourceManager().remove(tableName);
-                        }
-                        statement.cleanUp();
-                } catch (DriverException ex) {
-                        LOGGER.error(ex.getLocalizedMessage(),ex);
-                }  catch (IOException ex) {
-                        LOGGER.error(ex.getLocalizedMessage(),ex);
-                }                
+
+    @Override
+    public void run(ProgressMonitor pm) {
+        try {
+            String fieldName;
+            try (Connection connection = ds.getConnection()) {
+                fieldName = JDBCUtilities.getFieldName(connection.getMetaData(), table, columnId);
+            }
+            boolean doRowFiltering = !statisticsRowFilter.isEmpty();
+            String[] stats;
+            if (doRowFiltering) {
+                SortedSet<Integer> sortedSet;
+                if (statisticsRowFilter instanceof SortedSet) {
+                    sortedSet = (SortedSet<Integer>) statisticsRowFilter;
+                } else {
+                    sortedSet = new IntegerUnion(statisticsRowFilter);
+                }
+                stats = computeStatsLocal(ds, table, fieldName, sortedSet, pm);
+            } else {
+                stats = computeStatsSQL(ds, table, fieldName, pm);
+            }
+            // Show table statistics
+            StringBuilder message = new StringBuilder();
+            message.append(I18N.tr("\nTable {0}, statistics of the column {1}.\n", table, fieldName));
+            message.append(I18N.tr("Row count : {0}\n", stats[STATS.COUNT.ordinal()]));
+            message.append(I18N.tr("Minimum : {0}\n", stats[STATS.MIN.ordinal()]));
+            message.append(I18N.tr("Maximum : {0}\n", stats[STATS.MAX.ordinal()]));
+            message.append(I18N.tr("Sum : {0}\n", stats[STATS.SUM.ordinal()]));
+            message.append(I18N.tr("Average : {0}\n", stats[STATS.AVG.ordinal()]));
+            message.append(I18N.tr("Standard deviation : {0}\n", stats[STATS.STDDEV_SAMP.ordinal()]));
+            LOGGER.info(message.toString());
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
+    }
         
         @Override
         public String getTaskName() {
