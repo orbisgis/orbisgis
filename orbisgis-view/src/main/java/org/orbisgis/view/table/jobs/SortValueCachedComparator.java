@@ -29,19 +29,18 @@
 package org.orbisgis.view.table.jobs;
 
 import java.util.Comparator;
-import org.gdms.data.values.Value;
 
 /**
  *
  * A comparator with pre-loaded values,
- * faster than non-cached comparator but require more memory
+ * does not require primary key but require more memory
  * @author Nicolas Fortin
  */
 public class SortValueCachedComparator implements Comparator<Integer> {
 
-        private Value[] values;
+        private Comparable<Object>[] values;
 
-        public SortValueCachedComparator(Value[] values) {
+        public SortValueCachedComparator(Comparable<Object>[] values) {
                 this.values = values;
         }
         

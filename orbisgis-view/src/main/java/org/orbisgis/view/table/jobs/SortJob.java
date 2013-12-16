@@ -28,18 +28,24 @@
  */
 package org.orbisgis.view.table.jobs;
 
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.TreeSet;
+import javax.sql.DataSource;
+import javax.sql.RowSet;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
+
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.Type;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DriverException;
+import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.Listener;
@@ -67,6 +73,7 @@ public class SortJob implements BackgroundJob {
         private String columnSortName;
         private ListenerContainer<SortJobEventSorted> eventSortedListeners = new ListenerContainer<SortJobEventSorted>();
         private Collection<Integer> modelIndex;
+        private DataSource dataSource;
 
         /**
          * 
@@ -74,16 +81,13 @@ public class SortJob implements BackgroundJob {
          * @param tableModel 
          * @param modelIndex Current state of Index, can be null if the index is the same as the model
          */
-        public SortJob(SortKey sortRequest, DataSourceTableModel tableModel, Collection<Integer> modelIndex) {
+        public SortJob(SortKey sortRequest, DataSourceTableModel tableModel, Collection<Integer> modelIndex, DataSource dataSource) {
                 this.sortRequest = sortRequest;
                 this.columnToSort = sortRequest.getColumn();
                 this.modelIndex = modelIndex;
+                this.dataSource = dataSource;
                 model = tableModel;
-                try {
-                        columnSortName = model.getDataSource().getMetadata().getFieldName(columnToSort);
-                } catch (DriverException ex) {
-                        LOGGER.error(I18N.tr("Driver error"), ex);
-                }
+                columnSortName = model.getColumnName(columnToSort);
         }
 
         public ListenerContainer<SortJobEventSorted> getEventSortedListeners() {
@@ -121,53 +125,48 @@ public class SortJob implements BackgroundJob {
                         modelIndex = new IntegerUnion(0, model.getRowCount() - 1);
                 }
                 int rowCount = modelIndex.size();
-                DataSource source = model.getDataSource();
-                //Create a sorted collection, to follow the progression of order
-                //The comparator will read the integer value and
-                //use the data source to compare
-                Comparator<Integer> comparator;
-                try {
-                        Type fieldType = source.getMetadata().getFieldType(columnToSort);
-                        if (fieldType.getTypeCode() == Type.STRING) {
-                                //Do not cache values
-                                comparator = new SortValueComparator(source, columnToSort);
+                try(Connection connection = dataSource.getConnection();
+                    Statement st = connection.createStatement()) {
+
+                        PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+                        pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
+                            listener);
+                        int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), model.getTableName());
+                        final Collection<Integer> columnValues;
+                        if (pkIndex > 0) {
+                                // Do not cache values
+                                // Use SQL sort
+
                         } else {
                                 //Cache values
-                                pm.startTask(I18N.tr("Cache table values"), 100);
-                                Value[] cache = new Value[(int)source.getRowCount()];
-                                for (int i = 0; i < source.getRowCount(); i++) {
-                                        cache[i] = source.getFieldValue(i, columnToSort);
-                                        if (i / 100 == i / 100.0) {
-                                                if (pm.isCancelled()) {
-                                                        return;
-                                                } else {
-                                                        pm.progressTo(100 * i / rowCount);
-                                                }
-                                        }
+                                ProgressMonitor cacheProgress = pm.startTask(I18N.tr("Cache table values"), rowCount);
+                                Object[] cache = new Object[rowCount];
+                                try(ResultSet rs = st.executeQuery(""))
+                                while(rs.next()) {
+                                    cache[i] = source.getFieldValue(i, columnToSort);
+                                    cacheProgress.endTask();
                                 }
-                                pm.endTask();
                                 comparator = new SortValueCachedComparator(cache);
+                                if (sortRequest.getSortOrder().equals(SortOrder.DESCENDING)) {
+                                    comparator = Collections.reverseOrder(comparator);
+                                }
+                                columnValues = sortArray(modelIndex, comparator, pm);
                         }
-                        if (sortRequest.getSortOrder().equals(SortOrder.DESCENDING)) {
-                                comparator = Collections.reverseOrder(comparator);
-                        }
-                        final Collection<Integer> columnValues = sortArray(modelIndex, comparator, pm);
+                        pm.removePropertyChangeListener(listener);
                         SwingUtilities.invokeLater(new Runnable() {
 
-                                @Override
-                                public void run() {
-                                        try {
-                                                //Update the table model on the swing thread
-                                                eventSortedListeners.callListeners(new SortJobEventSorted(sortRequest,columnValues , this));
-                                        } catch (EventException ex) {
-                                                //Ignore
-                                        }
+                            @Override
+                            public void run() {
+                                try {
+                                    //Update the table model on the swing thread
+                                    eventSortedListeners.callListeners(new SortJobEventSorted(sortRequest, columnValues, this));
+                                } catch (EventException ex) {
+                                    //Ignore
                                 }
+                            }
                         });
 
-                } catch (IllegalStateException ex) {
-                        LOGGER.error(I18N.tr("Driver error"), ex);
-                } catch (DriverException ex) {
+                } catch (IllegalStateException | SQLException ex) {
                         LOGGER.error(I18N.tr("Driver error"), ex);
                 }
         }

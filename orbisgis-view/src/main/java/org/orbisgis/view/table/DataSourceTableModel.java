@@ -189,6 +189,13 @@ public class DataSourceTableModel extends AbstractTableModel {
                 }
         }
 
+        /**
+         * @return Table identifier behind this model
+         */
+        public String getTableName() {
+            return element.getTableReference();
+        }
+
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return false;
