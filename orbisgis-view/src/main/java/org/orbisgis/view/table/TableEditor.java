@@ -38,7 +38,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,6 +59,9 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
@@ -453,14 +456,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 int rowId = table.convertRowIndexToModel(viewRowId);
                 //
                 //Build the appropriate search filter
-                String cellValue;
-                try {
-                        cellValue = tableModel.getDataSource().
-                        getFieldValue(rowId,colId).toString();
-                } catch ( DriverException ex) {
-                        LOGGER.error(ex.getLocalizedMessage(),ex);
-                        return;
-                }
+                String cellValue = tableModel.getValueAt(rowId, colId).toString();
                 DefaultActiveFilter filter = new FieldsContainsFilterFactory.
                         FilterParameters(colId, cellValue, true, true);
                 //Clear current filter
@@ -505,12 +501,17 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 pop.add(optimalWidth);
                 // Additionnal functions for specific columns
                 boolean isGeometryField = false;
-                try {
-                        int typeCode = tableModel.getDataSource().
-                                getMetadata().getFieldType(col).getTypeCode();
-                        isGeometryField = (typeCode & MetadataUtilities.ANYGEOMETRY) != 0;
-                } catch (DriverException ex) {
-                        LOGGER.error(ex.getLocalizedMessage(), ex);
+                try(Connection connection = dataSource.getConnection()) {
+                    List<String> geomFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableEditableElement.getTableReference()));
+                    ResultSetMetaData meta =  tableEditableElement.getRowSet().getMetaData();
+                    for(String geomField : geomFields) {
+                        int gIndex = JDBCUtilities.getFieldIndex(meta, geomField);
+                        if(col.equals(gIndex)) {
+                            isGeometryField = true;
+                        }
+                    }
+                } catch (SQLException | EditableElementException ex ){
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
                 if (!isGeometryField) {
                         pop.addSeparator();
@@ -597,34 +598,49 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         public void onMenuSortDescending() {
                 tableSorter.setSortKey(new SortKey(popupCellAdress.x,SortOrder.DESCENDING));                
         }
-        
+
         /**
          * Show the selected field informations
          */
         public void onMenuShowInformations() {
-                int col = popupCellAdress.x;
-                try {
-                        Metadata metadata = tableModel.getDataSource().getMetadata();
-                        Type colType = tableModel.getColumnType(col);
-                        StringBuilder infos = new StringBuilder();
-                        infos.append(I18N.tr("\nField name :\t{0}\n",metadata.getFieldName(col)));
-                        infos.append(I18N.tr("Field type :\t{0}\n",
-                                TypeFactory.getTypeName(colType.getTypeCode())));
-                        //Constraints
-                        Constraint[] cons = colType.getConstraints();
-                        infos.append(I18N.tr("Constraints :\n"));
-			for (Constraint constraint : cons) {
-				infos.append(I18N.tr("\t{0} :\t{1}\n",
-                                        ConstraintFactory.getConstraintName(constraint.getConstraintCode()),
-                                        constraint.getConstraintHumanValue()));
-			}
-                        LOGGER.info(infos.toString());
-                } catch( DriverException ex) {
-                        LOGGER.error(ex.getLocalizedMessage(),ex);
+            int col = popupCellAdress.x + 1;
+            try(Connection connection = dataSource.getConnection()) {
+                String colName,typeName;
+                DatabaseMetaData meta = connection.getMetaData();
+                TableLocation table = TableLocation.parse(tableEditableElement.getTableReference());
+                StringBuilder infos = new StringBuilder();
+                try(ResultSet rs = meta.getColumns(table.getCatalog(), table.getSchema(), table.getTable(), null)) {
+                    while (rs.next()) {
+                        if(rs.getInt("ORDINAL_POSITION") == col) {
+                            infos.append(I18N.tr("\nField name :\t{0}\n",rs.getString("COLUMN_NAME")));
+                            infos.append(I18N.tr("Field type :\t{0}\n",rs.getString("TYPE_NAME")));
+                            String remarks = rs.getString("REMARKS");
+                            if(remarks != null && !remarks.isEmpty()) {
+                                infos.append(I18N.tr("Field remarks :\t{0}\n",remarks));
+                            }
+                            break;
+                        }
+                    }
                 }
+                infos.append(I18N.tr("Constraints :\n"));
+                try(ResultSet rs = meta.getIndexInfo(table.getCatalog(), table.getSchema(), table.getTable(), true, false)) {
+                    while (rs.next()) {
+                        if(rs.getInt("ORDINAL_POSITION") == col) {
+                            String filter = rs.getString("FILTER_CONDITION");
+                            if(filter != null && !filter.isEmpty()) {
+                                infos.append(I18N.tr("\t{0} :\t{1}\n",
+                                       rs.getString("INDEX_NAME"),filter));
+                            }
+                        }
+                    }
+                }
+                LOGGER.info(infos.toString());
+            } catch( SQLException ex) {
+                LOGGER.error(ex.getLocalizedMessage(),ex);
+            }
         }
-        
-        private IntegerUnion getTableModelSelection() {
+
+    private IntegerUnion getTableModelSelection() {
                 IntegerUnion selectionModelRowId = new IntegerUnion();
                 for (int viewRowId : table.getSelectedRows()) {
                         selectionModelRowId.add(tableSorter.convertRowIndexToModel(viewRowId));
@@ -837,7 +853,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          *  Update the title label.
          */
         private void updateTitle() {
-                String sourceName = tableEditableElement.getSourceName();
+                String sourceName = tableEditableElement.getTableReference();
                 int tableSelectedRowCount = table.getSelectedRowCount();
                 int tableRowCount = table.getRowCount();
                 // Message is different if the table is filtered
@@ -852,7 +868,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 }                
         }
         
-        private void resetRenderers() {
+        private void resetRenderers() throws SQLException{
                 for (int i = 0; i < tableModel.getColumnCount(); i++) {
                         TableColumn col = table.getColumnModel().getColumn(i);
                         if (isNumeric(i)) {
@@ -884,37 +900,37 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         TableColumn col = new TableColumn(i);
                         String columnName = tableModel.getColumnName(i);
                         col.setHeaderValue(columnName);
-                        // Create DataSource specific field editor using native editor
-                        TableCellEditor cellEditor = table.getDefaultEditor(tableModel.getColumnClass(i));
-                        if(cellEditor instanceof DefaultCellEditor) {
-                                Component component = ((DefaultCellEditor) cellEditor).getComponent();
-                                if(component instanceof JTextField) {
-                                        ValueInputVerifier verifier = new ValueInputVerifier(tableModel.getDataSource(),i);
-                                        col.setCellEditor(new ValidatorCellEditor(verifier));
-                                }
-                        }
                         colModel.addColumn(col);
                 }
                 table.setColumnModel(colModel);
         }
+
         /**
          * @param column Column index
          * @return True if the field type is numeric
          */
         private boolean isNumeric(int column) {
-                int columnType = tableModel.getColumnType(column).getTypeCode();
-                switch (columnType) {
-                        case Type.BYTE:
-                        case Type.DOUBLE:
-                        case Type.FLOAT:
-                        case Type.INT:
-                        case Type.LONG:
-                        case Type.SHORT:
-                                return true;
-                        default:
-                                return false;
+                try {
+                    int columnType = tableModel.getColumnType(column);
+                    switch (columnType) {
+                            case Types.FLOAT:
+                            case Types.DOUBLE:
+                            case Types.TINYINT:
+                            case Types.SMALLINT:
+                            case Types.INTEGER:
+                            case Types.BIGINT:
+                            case Types.DECIMAL:
+                            case Types.NUMERIC:
+                                    return true;
+                            default:
+                                    return false;
+                    }
+                }catch (SQLException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                    return false;
                 }
         }
+
         @Override
         public EditableElement getEditableElement() {
                 return tableEditableElement;
