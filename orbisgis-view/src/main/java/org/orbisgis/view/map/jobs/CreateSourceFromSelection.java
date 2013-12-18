@@ -43,6 +43,8 @@ import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.core.jdbc.CreateTable;
+import org.orbisgis.core.jdbc.MetaData;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;
@@ -96,61 +98,20 @@ public class CreateSourceFromSelection implements BackgroundJob {
             this.newName = newName;
         }
 
-        /**
-         * Create a temporary table that contains
-         * @param dataSource
-         * @param pm
-         * @param selectedRows
-         * @return The temporary table name
-         * @throws SQLException
-         */
-        public static String createIndexTempTable(DataSource dataSource, ProgressMonitor pm, Set<Integer> selectedRows) throws SQLException {
-            ProgressMonitor insertProgress = pm.startTask(selectedRows.size());
-            // Populate the new source
-            try(Connection connection = dataSource.getConnection();
-                Statement st = connection.createStatement()) {
-                // Create row id table
-                String tempTableName = getNewUniqueName(TableLocation.parse("CREATE_SOURCE"), dataSource);
-                st.execute(String.format("CREATE LOCAL TEMPORARY TABLE %s(ROWID integer)", tempTableName));
-                // Prepare insert statement
-                PreparedStatement insertSt = connection.prepareStatement(String.format("INSERT INTO %s VALUES(?)", tempTableName));
-                // Cancel insert
-                PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, insertSt, "cancel");
-                insertProgress.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
-                        listener);
-                int batchSize = 0;
-                for (Integer sel : selectedRows){
-                    insertSt.setInt(1, sel);
-                    insertSt.addBatch();
-                    batchSize++;
-                    insertProgress.endTask();
-                    if(batchSize >= INSERT_BATCH_SIZE) {
-                        batchSize = 0;
-                        insertSt.executeBatch();
-                    }
-                    if(insertProgress.isCancelled()) {
-                        break;
-                    }
-                }
-                insertProgress.removePropertyChangeListener(listener);
-                return tempTableName;
-            }
-        }
-
         @Override
         public void run(ProgressMonitor pm) {
 
                 try {
                         // Find an unique name to register
                         if (newName == null) {
-                            newName = getNewUniqueName(TableLocation.parse(tableName),dataSource);
+                            newName = MetaData.getNewUniqueName(tableName,dataSource,"selection");
                         }
 
                         // Populate the new source
                         try(Connection connection = dataSource.getConnection();
                             Statement st = connection.createStatement()) {
                             // Create row id table
-                            String tempTableName = createIndexTempTable(dataSource, pm, selectedRows);
+                            String tempTableName = CreateTable.createIndexTempTable(dataSource, pm, selectedRows, INSERT_BATCH_SIZE);
                             PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
                             pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
                                     listener);
@@ -186,34 +147,6 @@ public class CreateSourceFromSelection implements BackgroundJob {
         }
 
         /**
-         * Returns a new unique name when registering a {@link DataSource}.
-         * @param tableName Table identifier
-         * @param dataSource JDBC connection
-         * @return New unique name
-         */
-        private static String getNewUniqueName(TableLocation tableName, DataSource dataSource) throws SQLException {
-                TableLocation uniqueName;
-                int index = 0;
-                uniqueName = new TableLocation(tableName.getCatalog(),tableName.getSchema(),
-                        I18N.tr("{0}_selection", tableName.getTable()));
-                try(Connection connection = dataSource.getConnection()) {
-                    DatabaseMetaData meta = connection.getMetaData();
-                    while (tableExists(uniqueName, meta)) {
-                        index++;
-                        uniqueName = new TableLocation(tableName.getCatalog(),tableName.getSchema(),
-                                I18N.tr("{0}_selection_{1}", tableName.getTable(), index));
-                    }
-                    return uniqueName.toString();
-                }
-        }
-
-        private static boolean tableExists(TableLocation location, DatabaseMetaData meta) throws SQLException {
-            try(ResultSet rs = meta.getTables(location.getCatalog(), location.getSchema(), location.getTable(), null)) {
-                return rs.next();
-            }
-        }
-
-        /**
          * Show an input dialog that ask for destination table.
          * @param parent Parent component to attach Dialog
          * @param dataSource JDBC dataSource
@@ -231,7 +164,7 @@ public class CreateSourceFromSelection implements BackgroundJob {
                 newName = JOptionPane.showInputDialog(
                         parent,
                         message.getText(),
-                        getNewUniqueName(TableLocation.parse(sourceTable), dataSource));
+                        MetaData.getNewUniqueName(sourceTable, dataSource, I18N.tr("selection")));
                 // Check if the user canceled the operation.
                 if (newName == null) {
                     // Just exit
@@ -245,7 +178,7 @@ public class CreateSourceFromSelection implements BackgroundJob {
                             message.setText(I18N.tr("You must enter a non-empty name.")
                                     + "\n" + I18N.tr(newNameMessage));
                         } // Check for a source that already exists with that name.
-                        else if (tableExists(TableLocation.parse(newName), meta)) {
+                        else if (MetaData.tableExists(newName, meta)) {
                             message.setText(I18N.tr("A datasource with that name already exists.")
                                     + "\n" + I18N.tr(newNameMessage));
                         } // The user entered a non-empty, unique name.
