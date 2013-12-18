@@ -39,7 +39,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.TreeSet;
 import javax.sql.DataSource;
-import javax.sql.RowSet;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
@@ -50,6 +49,8 @@ import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
+import org.orbisgis.core.jdbc.CreateTable;
+import org.orbisgis.core.jdbc.SortValueCachedComparator;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.table.DataSourceTableModel;
@@ -93,82 +94,36 @@ public class SortJob implements BackgroundJob {
         public ListenerContainer<SortJobEventSorted> getEventSortedListeners() {
                 return eventSortedListeners;
         }
-        
-        
 
-        public static Collection<Integer> sortArray(Collection<Integer> modelIndex, Comparator<Integer> comparator, ProgressMonitor pm) throws IllegalStateException, DriverException {
-                int rowCount = modelIndex.size();
-                Collection<Integer> columnValues = new TreeSet<Integer>(comparator);
-                int processedRows = 0;
-                for (int i : modelIndex) {
-                        columnValues.add(new Integer(i));
-                        if (i / 100 == i / 100.0) {
-                                if (pm.isCancelled()) {
-                                        throw new IllegalStateException(I18N.tr("Aborted by user"));
-                                } else {
-                                        pm.progressTo(100 * processedRows / rowCount);
-                                }
-                        }
-                        processedRows++;
-                }
-                return columnValues;
-        }
 
         @Override
         public void run(ProgressMonitor pm) {
-                if (model.getRowCount() < 2) {
-                        return;
-                }
-                // Retrieve the index if the model have a restricted set of rows
-                if (modelIndex == null) {
-                        //Create an array [0 1 ..rows]
-                        modelIndex = new IntegerUnion(0, model.getRowCount() - 1);
-                }
-                int rowCount = modelIndex.size();
-                try(Connection connection = dataSource.getConnection();
-                    Statement st = connection.createStatement()) {
+            if (model.getRowCount() < 2) {
+                return;
+            }
+            // Retrieve the index if the model have a restricted set of rows
+            if (modelIndex == null) {
+                //Create an array [0 1 ..rows]
+                modelIndex = new IntegerUnion(0, model.getRowCount() - 1);
+            }
+            try(Connection connection = dataSource.getConnection()) {
+                final Collection<Integer> sortedRow = CreateTable.getSortedColumnRowIndex(connection, model.getTableName(), columnSortName, sortRequest.getSortOrder() == SortOrder.ASCENDING, pm);
+                SwingUtilities.invokeLater(new Runnable() {
 
-                        PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
-                        pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
-                            listener);
-                        int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), model.getTableName());
-                        final Collection<Integer> columnValues;
-                        if (pkIndex > 0) {
-                                // Do not cache values
-                                // Use SQL sort
-
-                        } else {
-                                //Cache values
-                                ProgressMonitor cacheProgress = pm.startTask(I18N.tr("Cache table values"), rowCount);
-                                Object[] cache = new Object[rowCount];
-                                try(ResultSet rs = st.executeQuery(""))
-                                while(rs.next()) {
-                                    cache[i] = source.getFieldValue(i, columnToSort);
-                                    cacheProgress.endTask();
-                                }
-                                comparator = new SortValueCachedComparator(cache);
-                                if (sortRequest.getSortOrder().equals(SortOrder.DESCENDING)) {
-                                    comparator = Collections.reverseOrder(comparator);
-                                }
-                                columnValues = sortArray(modelIndex, comparator, pm);
+                    @Override
+                    public void run() {
+                        try {
+                            //Update the table model on the swing thread
+                            eventSortedListeners.callListeners(new SortJobEventSorted(sortRequest, sortedRow, this));
+                        } catch (EventException ex) {
+                            //Ignore
                         }
-                        pm.removePropertyChangeListener(listener);
-                        SwingUtilities.invokeLater(new Runnable() {
+                    }
+                });
 
-                            @Override
-                            public void run() {
-                                try {
-                                    //Update the table model on the swing thread
-                                    eventSortedListeners.callListeners(new SortJobEventSorted(sortRequest, columnValues, this));
-                                } catch (EventException ex) {
-                                    //Ignore
-                                }
-                            }
-                        });
-
-                } catch (IllegalStateException | SQLException ex) {
-                        LOGGER.error(I18N.tr("Driver error"), ex);
-                }
+            } catch (IllegalStateException | SQLException ex) {
+                LOGGER.error(I18N.tr("Driver error"), ex);
+            }
         }
 
         @Override

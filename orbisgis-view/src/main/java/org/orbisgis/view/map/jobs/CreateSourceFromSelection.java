@@ -34,14 +34,11 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.jdbc.CreateTable;
 import org.orbisgis.core.jdbc.MetaData;
@@ -51,7 +48,8 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 /**
  * A background job to create a source from a selection.
@@ -102,21 +100,21 @@ public class CreateSourceFromSelection implements BackgroundJob {
         public void run(ProgressMonitor pm) {
 
                 try {
-                        // Find an unique name to register
-                        if (newName == null) {
-                            newName = MetaData.getNewUniqueName(tableName,dataSource,"selection");
-                        }
 
                         // Populate the new source
                         try(Connection connection = dataSource.getConnection();
                             Statement st = connection.createStatement()) {
+                            DatabaseMetaData meta = connection.getMetaData();
+                            // Find an unique name to register
+                            if (newName == null) {
+                                newName = MetaData.getNewUniqueName(tableName,meta,"selection");
+                            }
                             // Create row id table
-                            String tempTableName = CreateTable.createIndexTempTable(dataSource, pm, selectedRows, INSERT_BATCH_SIZE);
+                            String tempTableName = CreateTable.createIndexTempTable(connection, pm, selectedRows, INSERT_BATCH_SIZE);
                             PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
                             pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
                                     listener);
                             // Copy content using pk
-                            DatabaseMetaData meta = connection.getMetaData();
                             int primaryKeyIndex = JDBCUtilities.getIntegerPrimaryKey(meta, tableName);
                             if(primaryKeyIndex == 0) {
                                 // Should never happen because the check is done before the creation of this class
@@ -160,20 +158,20 @@ public class CreateSourceFromSelection implements BackgroundJob {
             boolean inputAccepted = false;
             final String newNameMessage = I18n.marktr("New name for the datasource:");
             JLabel message = new JLabel(I18N.tr(newNameMessage));
-            while (!inputAccepted) {
-                newName = JOptionPane.showInputDialog(
-                        parent,
-                        message.getText(),
-                        MetaData.getNewUniqueName(sourceTable, dataSource, I18N.tr("selection")));
-                // Check if the user canceled the operation.
-                if (newName == null) {
-                    // Just exit
-                    inputAccepted = true;
-                } // The user clicked OK.
-                else {
-                    // Check for an empty name.
-                    try(Connection connection = dataSource.getConnection()) {
-                        DatabaseMetaData meta = connection.getMetaData();
+            try(Connection connection = dataSource.getConnection()) {
+                DatabaseMetaData meta = connection.getMetaData();
+                while (!inputAccepted) {
+                    newName = JOptionPane.showInputDialog(
+                            parent,
+                            message.getText(),
+                            MetaData.getNewUniqueName(sourceTable, meta, I18N.tr("selection")));
+                    // Check if the user canceled the operation.
+                    if (newName == null) {
+                        // Just exit
+                        inputAccepted = true;
+                    } // The user clicked OK.
+                    else {
+                        // Check for an empty name.
                         if (newName.isEmpty()) {
                             message.setText(I18N.tr("You must enter a non-empty name.")
                                     + "\n" + I18N.tr(newNameMessage));

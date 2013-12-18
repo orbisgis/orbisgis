@@ -28,12 +28,16 @@
  */
 package org.orbisgis.core.jdbc;
 
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
-import javax.sql.DataSource;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Nicolas Fortin
@@ -82,6 +86,34 @@ public class MetaData {
         TableLocation location = TableLocation.parse(tableName);
         try(ResultSet rs = meta.getTables(location.getCatalog(), location.getSchema(), location.getTable(), null)) {
             return rs.next();
+        }
+    }
+
+    /**
+     * Compute the map of primary key to row id.
+     * @param connection Active connection, not closed by this function
+     * @param table Table identifier [[catalog.]schema.]table
+     * @param pkColumn Integer primary key column index of the table {@link JDBCUtilities#getIntegerPrimaryKey(java.sql.DatabaseMetaData, String)}
+     * @return Map\<primary key, row id\>. Row id is the {@link java.sql.ResultSet#getRow()} of the "select * from table"
+     */
+    public static Map<Integer,Integer> primaryKeyToRowId(Connection connection, String table, int pkColumn) throws SQLException {
+        TableLocation tableLocation = TableLocation.parse(table);
+        int rowCount=0;
+        try(Statement st = connection.createStatement()) {
+            DatabaseMetaData meta = connection.getMetaData();
+            try(ResultSet rs = st.executeQuery("SELECT COUNT(*) cpt from "+tableLocation.toString())) {
+                if(rs.next()) {
+                    rowCount = rs.getInt(1);
+                }
+            }
+            String pkFieldName = JDBCUtilities.getFieldName(meta,table, pkColumn);
+            Map<Integer,Integer> rowMap = new HashMap<>(rowCount);
+            try(ResultSet rs = st.executeQuery("SELECT "+pkFieldName+" from "+tableLocation.toString())) {
+                if(rs.next()) {
+                    rowMap.put(rs.getInt(1), rs.getRow());
+                }
+            }
+            return rowMap;
         }
     }
 }

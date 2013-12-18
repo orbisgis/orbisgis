@@ -28,32 +28,42 @@
  */
 package org.orbisgis.core.jdbc;
 
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.progress.ProgressMonitor;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
-import javax.sql.DataSource;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.TreeSet;
 
 /**
+ * Methods that need write rights on database
  * @author Nicolas Fortin
  */
 public class CreateTable {
+    protected final static I18n I18N = I18nFactory.getI18n(CreateTable.class);
 
     /**
      * Create a temporary table that contains
      * @param connection JDBC connection
      * @param pm Progress monitor
-     * @param selectedRows Integer to add in temp table
+     * @param selectedRows Integer to add in temp table,elements must be unique as it will be added a primary key
      * @return The temporary table name
      * @throws java.sql.SQLException
      */
-    public static String createIndexTempTable(Connection connection, ProgressMonitor pm, Set<Integer> selectedRows,int insertBatchSize) throws SQLException {
+    public static String createIndexTempTable(Connection connection, ProgressMonitor pm, Collection<Integer> selectedRows,int insertBatchSize) throws SQLException {
         DatabaseMetaData meta = connection.getMetaData();
         ProgressMonitor insertProgress = pm.startTask(selectedRows.size());
         // Populate the new source
@@ -93,6 +103,58 @@ public class CreateTable {
                 insertProgress.removePropertyChangeListener(listener);
             }
             return tempTableName;
+        }
+    }
+
+    public static Collection<Integer> getSortedColumnRowIndex(Connection connection, String table, String columnName, boolean ascending, ProgressMonitor progressMonitor) throws SQLException {
+        TableLocation tableLocation = TableLocation.parse(table);
+        Collection<Integer> columnValues = new ArrayList<>();
+        try(Statement st = connection.createStatement()) {
+            int rowCount = 0;
+            try(ResultSet rs = st.executeQuery("SELECT COUNT(*) cpt from "+tableLocation.toString())) {
+                if(rs.next()) {
+                    rowCount = rs.getInt(1);
+                }
+            }
+            ProgressMonitor pm = progressMonitor.startTask(rowCount);
+            PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
+                    listener);
+            try {
+                int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), table);
+                if (pkIndex > 0) {
+                    // Do not cache values
+                    // Use SQL sort
+
+                } else {
+                    //Cache values
+                    ProgressMonitor cacheProgress = pm.startTask(I18N.tr("Cache table values"), rowCount);
+                    Comparable[] cache = new Comparable[rowCount];
+                    try(ResultSet rs = st.executeQuery("select "+columnName+" from "+table)) {
+                        int i = 0;
+                        while(rs.next()) {
+                            Object obj = rs.getObject(1);
+                            if(!(obj instanceof Comparable)) {
+                                throw new SQLException(I18N.tr("Could only sort comparable database object type"));
+                            }
+                            cache[i++] = (Comparable)obj;
+                            cacheProgress.endTask();
+                        }
+                    }
+                    Comparator<Integer> comparator = new SortValueCachedComparator(cache);
+                    if (!ascending) {
+                        comparator = Collections.reverseOrder(comparator);
+                    }
+                    columnValues = new TreeSet<>(comparator);
+                    for (int i = 0; i < rowCount; i++) {
+                        columnValues.add(i);
+                        pm.endTask();
+                    }
+                }
+            } finally {
+                pm.removePropertyChangeListener(listener);
+            }
+            return columnValues;
         }
     }
 }
