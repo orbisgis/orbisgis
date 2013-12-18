@@ -1,4 +1,4 @@
-package org.orbisgis.core;
+package org.orbisgis.core.jdbc;
 
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;

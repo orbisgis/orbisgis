@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core;
+package org.orbisgis.core.jdbc;
 
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.api.ReversibleRowSet;

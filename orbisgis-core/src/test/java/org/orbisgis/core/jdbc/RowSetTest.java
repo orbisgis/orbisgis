@@ -28,8 +28,6 @@ import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.TableLocation;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.core.ReadRowSetImpl;
-import org.orbisgis.core.api.ReversibleRowSet;
 
 import javax.sql.DataSource;
 import javax.sql.RowSet;

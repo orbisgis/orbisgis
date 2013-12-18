@@ -84,6 +84,9 @@ public class CreateTable {
                     break;
                 }
             }
+            if(batchSize > 0) {
+                insertSt.executeBatch();
+            }
             insertProgress.removePropertyChangeListener(listener);
             return tempTableName;
         }

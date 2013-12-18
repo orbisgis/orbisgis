@@ -29,7 +29,7 @@ package org.orbisgis.view.geocatalog;
 
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.ReversibleRowSetImpl;
+import org.orbisgis.core.jdbc.ReversibleRowSetImpl;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.api.ReversibleRowSet;
 import org.orbisgis.progress.NullProgressMonitor;
