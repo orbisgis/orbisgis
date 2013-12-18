@@ -43,12 +43,12 @@ public class MetaData {
     /**
      * Returns a new unique name when registering a {@link javax.sql.DataSource}.
      * @param table Table identifier
-     * @param dataSource JDBC connection
+     * @param meta JDBC meta data
      * @param baseName Destination table additional name, may be empty
      *
      * @return New unique name
      */
-    public static String getNewUniqueName(String table, DataSource dataSource,String baseName) throws SQLException {
+    public static String getNewUniqueName(String table, DatabaseMetaData meta,String baseName) throws SQLException {
         TableLocation uniqueName;
         TableLocation tableName = TableLocation.parse(table);
         int index = 0;
@@ -58,20 +58,17 @@ public class MetaData {
         } else {
             uniqueName = tableName;
         }
-        try(Connection connection = dataSource.getConnection()) {
-            DatabaseMetaData meta = connection.getMetaData();
-            while (tableExists(uniqueName.toString(), meta)) {
-                index++;
-                if(!baseName.isEmpty()) {
-                    uniqueName = new TableLocation(tableName.getCatalog(),tableName.getSchema(),
-                            tableName.getTable()+"_"+baseName+"_"+index);
-                } else {
-                    uniqueName = new TableLocation(tableName.getCatalog(),tableName.getSchema(),
-                            tableName.getTable()+"_"+index);
-                }
+        while (tableExists(uniqueName.toString(), meta)) {
+            index++;
+            if(!baseName.isEmpty()) {
+                uniqueName = new TableLocation(tableName.getCatalog(),tableName.getSchema(),
+                        tableName.getTable()+"_"+baseName+"_"+index);
+            } else {
+                uniqueName = new TableLocation(tableName.getCatalog(),tableName.getSchema(),
+                        tableName.getTable()+"_"+index);
             }
-            return uniqueName.toString();
         }
+        return uniqueName.toString();
     }
 
     /**

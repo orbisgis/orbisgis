@@ -34,6 +34,7 @@ import javax.sql.DataSource;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -46,23 +47,23 @@ public class CreateTable {
 
     /**
      * Create a temporary table that contains
-     * @param dataSource JDBC data source
+     * @param connection JDBC connection
      * @param pm Progress monitor
      * @param selectedRows Integer to add in temp table
      * @return The temporary table name
      * @throws java.sql.SQLException
      */
-    public static String createIndexTempTable(DataSource dataSource, ProgressMonitor pm, Set<Integer> selectedRows,int insertBatchSize) throws SQLException {
+    public static String createIndexTempTable(Connection connection, ProgressMonitor pm, Set<Integer> selectedRows,int insertBatchSize) throws SQLException {
+        DatabaseMetaData meta = connection.getMetaData();
         ProgressMonitor insertProgress = pm.startTask(selectedRows.size());
         // Populate the new source
-        try(Connection connection = dataSource.getConnection();
-            Statement st = connection.createStatement()) {
+        try(Statement st = connection.createStatement()) {
             // Create row id table
             String tempTableName = "CREATE_SOURCE";
-            if(MetaData.tableExists(tempTableName, connection.getMetaData())) {
-                tempTableName = MetaData.getNewUniqueName(tempTableName, dataSource, "");
+            if(MetaData.tableExists(tempTableName, meta)) {
+                tempTableName = MetaData.getNewUniqueName(tempTableName, meta, "");
             }
-            MetaData.getNewUniqueName(tempTableName, dataSource, "");
+            MetaData.getNewUniqueName(tempTableName, connection.getMetaData(), "");
             st.execute(String.format("CREATE LOCAL TEMPORARY TABLE %s(ROWID integer primary key)", tempTableName));
             // Prepare insert statement
             PreparedStatement insertSt = connection.prepareStatement(String.format("INSERT INTO %s VALUES(?)", tempTableName));
@@ -70,24 +71,27 @@ public class CreateTable {
             PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, insertSt, "cancel");
             insertProgress.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
                     listener);
-            int batchSize = 0;
-            for (Integer sel : selectedRows){
-                insertSt.setInt(1, sel);
-                insertSt.addBatch();
-                batchSize++;
-                insertProgress.endTask();
-                if(batchSize >= insertBatchSize) {
-                    batchSize = 0;
+            try {
+                int batchSize = 0;
+                for (Integer sel : selectedRows){
+                    insertSt.setInt(1, sel);
+                    insertSt.addBatch();
+                    batchSize++;
+                    insertProgress.endTask();
+                    if(batchSize >= insertBatchSize) {
+                        batchSize = 0;
+                        insertSt.executeBatch();
+                    }
+                    if(insertProgress.isCancelled()) {
+                        break;
+                    }
+                }
+                if(batchSize > 0) {
                     insertSt.executeBatch();
                 }
-                if(insertProgress.isCancelled()) {
-                    break;
-                }
+            } finally {
+                insertProgress.removePropertyChangeListener(listener);
             }
-            if(batchSize > 0) {
-                insertSt.executeBatch();
-            }
-            insertProgress.removePropertyChangeListener(listener);
             return tempTableName;
         }
     }
