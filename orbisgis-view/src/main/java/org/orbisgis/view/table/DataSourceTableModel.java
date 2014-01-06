@@ -97,7 +97,7 @@ public class DataSourceTableModel extends AbstractTableModel {
         @Override
         public String getColumnName(int col) {
                 try {
-                        return getRowSet().getMetaData().getColumnName(col);
+                        return getRowSet().getMetaData().getColumnName(col + 1);
                 } catch (SQLException e) {
                         LOGGER.error(e.getLocalizedMessage(), e);
                         return null;
@@ -142,7 +142,7 @@ public class DataSourceTableModel extends AbstractTableModel {
          * @throws SQLException The model cannot read the source metadata
          */
         public int getColumnType(int col) throws SQLException {
-            return getRowSet().getMetaData().getColumnType(col);
+            return getRowSet().getMetaData().getColumnType(col + 1);
         }
         
         @Override
@@ -182,7 +182,7 @@ public class DataSourceTableModel extends AbstractTableModel {
         public Object getValueAt(int row, int col) {
                 try {
                         RowSet rowSet = getRowSet();
-                        rowSet.absolute(row);
+                        rowSet.absolute(row + 1);
                         return rowSet.getObject(col + 1);
                 } catch (SQLException e) {
                         return ""; //Cannot log the error, this method is called several times

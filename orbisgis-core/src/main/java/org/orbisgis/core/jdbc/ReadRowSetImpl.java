@@ -31,9 +31,6 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 
 /**
  * RowSet implementation that can be only linked with a table (or view).
@@ -44,8 +41,6 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
     private static final int WAITING_FOR_RESULTSET = 5;
     private final TableLocation location;
     private final DataSource dataSource;
-    private Map<Long, Object[]> rowCache = new HashMap<>();
-    private SortedSet<Long> cachedRows = new TreeSet<>();
     private Object[] currentRow;
     private long rowId = 0;
     /** If the table has been updated or never read, rowCount is set to -1 (unknown) */
@@ -53,8 +48,6 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
     private int cachedColumnCount = -1;
     private Map<String, Integer> cachedColumnNames;
     private boolean wasNull = true;
-
-    private int rowFetchSize = 100;
     protected final ResultSetHolder resultSetHolder;
 
     /**
@@ -114,19 +107,7 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
             throw new SQLException("Not in a valid row "+rowId+"/"+getRowCount());
         }
         if(currentRow == null) {
-            synchronized (resultSetHolder) {
-                checkResultSet();
-                ResultSet rs = resultSetHolder.getResultSet();
-                final int columnCount = getColumnCount();
-                if(rs.absolute((int)rowId)) {
-                    Object[] row = new Object[columnCount];
-                    for(int idColumn=1; idColumn <= columnCount; idColumn++) {
-                        row[idColumn-1] = rs.getObject(idColumn);
-                    }
-                    rowCache.put(rowId, row);
-                    cachedRows.add(rowId);
-                }
-            }
+            updateRowCache();
         }
     }
 
@@ -134,8 +115,6 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
      * Clear local cache of rows
      */
     protected void clearRowCache() {
-        rowCache.clear();
-        cachedRows.clear();
         currentRow = null;
     }
 
@@ -143,41 +122,26 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
      * Read the content of the DB near the current row id
      */
     protected void updateRowCache() throws SQLException {
-        if(!rowCache.containsKey(rowId)) {
-            synchronized (resultSetHolder) {
-                checkResultSet();
-                ResultSet rs = resultSetHolder.getResultSet();
-                final int columnCount = getColumnCount();
-                if(cachedColumnNames == null) {
-                    cachedColumnNames = new HashMap<>(columnCount);
-                    ResultSetMetaData metaData = rs.getMetaData();
-                    for(int idColumn=1; idColumn <= columnCount; idColumn++) {
-                        cachedColumnNames.put(metaData.getColumnName(idColumn).toUpperCase(), idColumn);
-                    }
+        synchronized (resultSetHolder) {
+            checkResultSet();
+            ResultSet rs = resultSetHolder.getResultSet();
+            final int columnCount = getColumnCount();
+            if(cachedColumnNames == null) {
+                cachedColumnNames = new HashMap<>(columnCount);
+                ResultSetMetaData metaData = rs.getMetaData();
+                for(int idColumn=1; idColumn <= columnCount; idColumn++) {
+                    cachedColumnNames.put(metaData.getColumnName(idColumn).toUpperCase(), idColumn);
                 }
-                // Cache values
-                long begin = Math.max(1, rowId - (int)(rowFetchSize * 0.25));
-                long end = rowId + (int)(rowFetchSize * 0.75);
-                for(long fetchId = begin; fetchId < end; fetchId ++) {
-                    if(!rowCache.containsKey(fetchId)) {
-                        if(rs.absolute((int)fetchId)) {
-                            Object[] row = new Object[columnCount];
-                            for(int idColumn=1; idColumn <= columnCount; idColumn++) {
-                                row[idColumn-1] = rs.getObject(idColumn);
-                            }
-                            rowCache.put(fetchId, row);
-                            cachedRows.add(fetchId);
-                            while(cachedRows.size() > rowFetchSize) {
-                                Long oldRow = cachedRows.first();
-                                cachedRows.remove(oldRow);
-                                rowCache.remove(oldRow);
-                            }
-                        }
-                    }
+            }
+            if(rs.absolute((int)rowId)) {
+                if(currentRow == null){
+                    currentRow = new Object[columnCount];
+                }
+                for(int idColumn=1; idColumn <= columnCount; idColumn++) {
+                    currentRow[idColumn-1] = rs.getObject(idColumn);
                 }
             }
         }
-        currentRow = rowCache.get(rowId);
     }
 
     /**
@@ -804,12 +768,11 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
 
     @Override
     public void setFetchSize(int i) throws SQLException {
-        rowFetchSize = i;
     }
 
     @Override
     public int getFetchSize() throws SQLException {
-        return rowFetchSize;
+        return 1;
     }
 
     @Override
@@ -855,9 +818,9 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
     @Override
     public void refreshRow() throws SQLException {
         synchronized (resultSetHolder) {
+            currentRow = null;
             checkResultSet();
             resultSetHolder.getResultSet().refreshRow();
-            rowCache.remove(rowId);
             moveCursorTo(rowId);
         }
     }
