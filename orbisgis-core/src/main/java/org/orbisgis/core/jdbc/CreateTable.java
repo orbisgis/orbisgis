@@ -46,6 +46,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeSet;
 
 /**
@@ -56,7 +58,7 @@ public class CreateTable {
     protected final static I18n I18N = I18nFactory.getI18n(CreateTable.class);
 
     /**
-     * Create a temporary table that contains
+     * Create a temporary table that contains the provided collection of integers.
      * @param connection JDBC connection
      * @param pm Progress monitor
      * @param selectedRows Integer to add in temp table,elements must be unique as it will be added a primary key
@@ -103,58 +105,6 @@ public class CreateTable {
                 insertProgress.removePropertyChangeListener(listener);
             }
             return tempTableName;
-        }
-    }
-
-    public static Collection<Integer> getSortedColumnRowIndex(Connection connection, String table, String columnName, boolean ascending, ProgressMonitor progressMonitor) throws SQLException {
-        TableLocation tableLocation = TableLocation.parse(table);
-        Collection<Integer> columnValues = new ArrayList<>();
-        try(Statement st = connection.createStatement()) {
-            int rowCount = 0;
-            try(ResultSet rs = st.executeQuery("SELECT COUNT(*) cpt from "+tableLocation.toString())) {
-                if(rs.next()) {
-                    rowCount = rs.getInt(1);
-                }
-            }
-            ProgressMonitor pm = progressMonitor.startTask(rowCount);
-            PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
-            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
-                    listener);
-            try {
-                int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), table);
-                if (pkIndex > 0) {
-                    // Do not cache values
-                    // Use SQL sort
-
-                } else {
-                    //Cache values
-                    ProgressMonitor cacheProgress = pm.startTask(I18N.tr("Cache table values"), rowCount);
-                    Comparable[] cache = new Comparable[rowCount];
-                    try(ResultSet rs = st.executeQuery("select "+columnName+" from "+table)) {
-                        int i = 0;
-                        while(rs.next()) {
-                            Object obj = rs.getObject(1);
-                            if(!(obj instanceof Comparable)) {
-                                throw new SQLException(I18N.tr("Could only sort comparable database object type"));
-                            }
-                            cache[i++] = (Comparable)obj;
-                            cacheProgress.endTask();
-                        }
-                    }
-                    Comparator<Integer> comparator = new SortValueCachedComparator(cache);
-                    if (!ascending) {
-                        comparator = Collections.reverseOrder(comparator);
-                    }
-                    columnValues = new TreeSet<>(comparator);
-                    for (int i = 0; i < rowCount; i++) {
-                        columnValues.add(i);
-                        pm.endTask();
-                    }
-                }
-            } finally {
-                pm.removePropertyChangeListener(listener);
-            }
-            return columnValues;
         }
     }
 }
