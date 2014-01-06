@@ -104,11 +104,9 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
         private static class SQLFilter implements TableSelectionFilter {
                 Collection<Integer> modelRowsIdResult;
                 String whereText;
-                private Map<Integer, Integer> primaryKeyToRowId;
 
-                public SQLFilter(String whereText, Map<Integer, Integer> primaryKeyToRowId) {
+                public SQLFilter(String whereText) {
                         this.whereText = whereText;
-                        this.primaryKeyToRowId = primaryKeyToRowId;
                 }
                 
                 @Override

@@ -705,7 +705,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 table.setModel(tableModel);
                 updateTableColumnModel();
                 quickAutoResize();
-                tableSorter = new DataSourceRowSorter(tableModel);
+                tableSorter = new DataSourceRowSorter(tableModel, dataSource);
                 tableSorter.addRowSorterListener(
                         EventHandler.create(RowSorterListener.class,this,
                         "onShownRowsChanged"));

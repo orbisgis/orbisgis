@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import org.apache.log4j.Logger;
@@ -61,9 +62,11 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         private Map<Integer,Integer> modelToView = null;
         //Sorted columns
         private List<SortKey> sortedColumns = new ArrayList<>();
+        private DataSource dataSource;
         
-        public DataSourceRowSorter(DataSourceTableModel model) {
+        public DataSourceRowSorter(DataSourceTableModel model, DataSource dataSource) {
                 this.model = model;
+                this.dataSource = dataSource;
         }
         
         @Override
@@ -133,7 +136,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         }
         
         private void launchSortProcess(SortKey sortInformation) {
-                SortJob sortJob = new SortJob(sortInformation, model, viewToModel);
+                SortJob sortJob = new SortJob(sortInformation, model, viewToModel, dataSource);
                 sortJob.getEventSortedListeners().addListener(this, EventHandler.create(SortJob.SortJobListener.class,this,"onRowSortDone",""));
                 launchJob(sortJob);
         }

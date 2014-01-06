@@ -36,6 +36,8 @@ import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.sql.SQLException;
+import javax.sql.RowSet;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -47,6 +49,7 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
+import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
@@ -97,7 +100,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 searchedTextBox.setPreferredSize(new Dimension(Short.MAX_VALUE,Short.MIN_VALUE));
                 
                 //Field selection
-                JComboBox fieldSelection = new JComboBox();
+                JComboBox<String> fieldSelection = new JComboBox<>();
                 fieldSelection.addItem(I18N.tr("All"));
                 for(int i=0; i< table.getColumnCount(); i++) {
                         fieldSelection.addItem(table.getColumnName(i));
@@ -141,8 +144,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                         }
                 }
 
-                private boolean isFieldContains(Value field) {
-                        String fieldValue = field.toString();
+                private boolean isFieldContains(String fieldValue) {
                         if(!params.isWholeWord()) {
                                 if(!params.isMatchCase()) {
                                         fieldValue=fieldValue.toLowerCase();
@@ -159,23 +161,23 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
 
                 @Override
                 public boolean isSelected(int rowId, TableEditableElement source) {
-                        Value val;
                         try {
-
-                                if (params.getColumnId() != -1) {
-                                        val = source.getFieldValue(rowId, params.getColumnId());
-                                        return isFieldContains(val);
-
-                                } else {
-                                        Value[] values = source.getRow(rowId);
-                                        for (Value value : values) {
-                                                if (isFieldContains(value)) {
-                                                        return true;
-                                                }
+                                final RowSet rowSet = source.getRowSet();
+                                synchronized (source.getRowSet()) {
+                                    rowSet.absolute(rowId);
+                                    if (params.getColumnId() != -1) {
+                                        return isFieldContains(rowSet.getString(params.getColumnId()));
+                                    } else {
+                                        int columnCount = rowSet.getMetaData().getColumnCount();
+                                        for(int col = 1; col < columnCount; col++) {
+                                            if(isFieldContains(rowSet.getString(columnCount))) {
+                                                return true;
+                                            }
                                         }
                                         return false;
+                                    }
                                 }
-                        } catch (DriverException ex) {
+                        } catch (SQLException | EditableElementException ex) {
                                 throw new IllegalStateException(I18N.tr("Filter driver error"), ex);
                         }
                 }
