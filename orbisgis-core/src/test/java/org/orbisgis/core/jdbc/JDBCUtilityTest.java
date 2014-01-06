@@ -32,13 +32,17 @@ import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.progress.NullProgressMonitor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
 
@@ -109,6 +113,30 @@ public class JDBCUtilityTest {
             } finally {
                 st.execute("DROP TABLE inttable IF EXISTS");
             }
+        }
+    }
+
+    private static void checkStats(String[] props) {
+        assertEquals(0, Double.valueOf(props[ReadTable.STATS.MIN.ordinal()]).intValue());
+        assertEquals(78, Double.valueOf(props[ReadTable.STATS.MAX.ordinal()]).intValue());
+        assertEquals(19.5, Double.valueOf(props[ReadTable.STATS.AVG.ordinal()]),1e-12);
+        assertEquals(10, Double.valueOf(props[ReadTable.STATS.COUNT.ordinal()]).intValue());
+        assertEquals(24.998888864196434, Double.valueOf(props[ReadTable.STATS.STDDEV_SAMP.ordinal()]),1e-15);
+        assertEquals(195, Double.valueOf(props[ReadTable.STATS.SUM.ordinal()]).intValue());
+    }
+
+    @Test
+    public void testStats() throws SQLException {
+        Set<Integer> indexes = new TreeSet<>(Arrays.asList(new Integer[]{0, 2, 3, 4, 8, 10, 15, 30, 45, 78}));
+        try(Statement st = connection.createStatement()) {
+            String table = CreateTable.createIndexTempTable(connection, new NullProgressMonitor(), indexes, 5);
+            // Do stats using sql
+            String[] props = ReadTable.computeStatsSQL(connection, table, "ROWID", new NullProgressMonitor());
+            checkStats(props);
+            // Do stats using apache math
+            props = ReadTable.computeStatsLocal(connection, table, "ROWID", new IntegerUnion(1,10), new NullProgressMonitor());
+            checkStats(props);
+            st.execute("DROP TABLE "+table);
         }
     }
 }

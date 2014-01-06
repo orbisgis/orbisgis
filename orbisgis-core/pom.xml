@@ -132,6 +132,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-math3</artifactId>
+          <version>3.2</version>
+        </dependency>
+        <dependency>
             <groupId>batik</groupId>
             <artifactId>batik-svggen</artifactId>
             <version>1.6</version>

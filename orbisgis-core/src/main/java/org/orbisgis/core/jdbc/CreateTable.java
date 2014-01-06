@@ -62,7 +62,7 @@ public class CreateTable {
      * @param connection JDBC connection
      * @param pm Progress monitor
      * @param selectedRows Integer to add in temp table,elements must be unique as it will be added a primary key
-     * @return The temporary table name
+     * @return The temporary table name with a column named ROWID
      * @throws java.sql.SQLException
      */
     public static String createIndexTempTable(Connection connection, ProgressMonitor pm, Collection<Integer> selectedRows,int insertBatchSize) throws SQLException {

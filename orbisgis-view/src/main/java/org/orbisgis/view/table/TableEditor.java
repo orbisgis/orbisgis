@@ -657,7 +657,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 if (selectionModelRowId.isEmpty() && tableSorter.isFiltered()) {
                         selectionModelRowId.addAll(tableSorter.getViewToModelIndex());
                 }
-                launchJob(new ComputeFieldStatistics(selectionModelRowId, tableModel.getDataSource(), popupCellAdress.x));
+                launchJob(new ComputeFieldStatistics(selectionModelRowId, dataSource, popupCellAdress.x, tableEditableElement.getTableReference()));
         }
 
         /**
@@ -732,7 +732,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 initPopupActions();
         }
         private void initPopupActions() {
-                popupActions.addAction(new ActionRemoveColumn(this));
+                // TODO Edition
+                // popupActions.addAction(new ActionRemoveColumn(this));
         }
         /**
          * Frame visibility state change
@@ -754,10 +755,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                                 LOGGER.debug("Close table "+dockingPanelParameters.getTitle());
                                 tableEditableElement.close(new NullProgressMonitor());                                
                                 tableEditableElement.removePropertyChangeListener(editableSelectionListener);
-                                Services.getService(DataManager.class).getSourceManager().removeSourceListener(sourceListener);
-                        } catch (UnsupportedOperationException ex) {
-                                LOGGER.error(ex.getLocalizedMessage(),ex);
-                        } catch (EditableElementException ex) {
+                        } catch (UnsupportedOperationException | EditableElementException ex) {
                                 LOGGER.error(ex.getLocalizedMessage(),ex);
                         }
                 }
@@ -868,7 +866,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 }                
         }
         
-        private void resetRenderers() throws SQLException{
+        private void resetRenderers() {
                 for (int i = 0; i < tableModel.getColumnCount(); i++) {
                         TableColumn col = table.getColumnModel().getColumn(i);
                         if (isNumeric(i)) {
@@ -957,17 +955,15 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 public void run(ProgressMonitor pm) {
                         try {
                                 tableEditableElement.open(pm);
-                        } catch (UnsupportedOperationException ex) {
-                                LOGGER.error(I18N.tr("Error while loading the table editor"), ex);
-                        } catch (EditableElementException ex) {
+                        } catch (UnsupportedOperationException | EditableElementException ex) {
                                 LOGGER.error(I18N.tr("Error while loading the table editor"), ex);
                         }
-                        readDataSource();
+                    readDataSource();
                 }
 
                 @Override
                 public String getTaskName() {
-                        return I18N.tr("Open the data source {0}", tableEditableElement.getSourceName());
+                        return I18N.tr("Open the table {0}", tableEditableElement.getTableReference());
                 }
         }
 

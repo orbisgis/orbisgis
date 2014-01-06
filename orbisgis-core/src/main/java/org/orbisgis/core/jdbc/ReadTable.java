@@ -34,6 +34,7 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
@@ -46,14 +47,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.TreeSet;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 /**
  * JDBC operations that does not affect database.
  * @author Nicolas Fortin
  */
 public class ReadTable {
+    /** SQL function to evaluate */
+    public enum STATS { COUNT, SUM, AVG, STDDEV_SAMP, MIN, MAX}
     protected final static I18n I18N = I18nFactory.getI18n(ReadTable.class);
 
     public static Collection<Integer> getSortedColumnRowIndex(Connection connection, String table, String columnName, boolean ascending, ProgressMonitor progressMonitor) throws SQLException {
@@ -133,5 +139,85 @@ public class ReadTable {
             }
             return columnValues;
         }
+    }
+
+    /**
+     * Compute numeric stats of the specified table column.
+     * @param connection Available connection
+     * @param tableName Table name
+     * @param columnName Column name
+     * @param pm Progress monitor
+     * @return An array of attributes {@link STATS}
+     * @throws SQLException
+     */
+    public static String[] computeStatsSQL(Connection connection, String tableName, String columnName, ProgressMonitor pm) throws SQLException {
+        String[] stats = new String[STATS.values().length];
+        StringBuilder sb = new StringBuilder();
+        for(STATS func : STATS.values()) {
+            if(sb.length()!=0) {
+                sb.append(", ");
+            }
+            sb.append(func.name());
+            sb.append("(");
+            sb.append(columnName);
+            sb.append("::double) ");
+            sb.append(func.name());
+        }
+        try(Statement st = connection.createStatement()) {
+
+            // Cancel select
+            PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
+                    listener);
+            try(ResultSet rs = st.executeQuery(String.format("SELECT %s FROM %s",sb.toString(), tableName ))) {
+                if(rs.next()) {
+                    for(STATS func : STATS.values()) {
+                        stats[func.ordinal()] = rs.getString(func.name());
+                    }
+                }
+            } finally {
+                pm.removePropertyChangeListener(listener);
+            }
+        }
+        return stats;
+    }
+
+    /**
+     * Compute numeric stats of the specified table column using a limited input rows. Stats are not done in the sql side.
+     * @param connection Available connection
+     * @param tableName Table name
+     * @param columnName Column name
+     * @param rowNum Row id
+     * @param pm Progress monitor
+     * @return An array of attributes {@link STATS}
+     * @throws SQLException
+     */
+    public static String[] computeStatsLocal(Connection connection, String tableName, String columnName, SortedSet<Integer> rowNum, ProgressMonitor pm) throws SQLException {
+        String[] res = new String[STATS.values().length];
+        SummaryStatistics stats = new SummaryStatistics();
+        try(Statement st = connection.createStatement()) {
+            // Cancel select
+            PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
+                    listener);
+            try (ResultSet rs = st.executeQuery(String.format("SELECT %s FROM %s",columnName, tableName ))) {
+                ProgressMonitor fetchProgress = pm.startTask(rowNum.size());
+                while(rs.next() && !pm.isCancelled()) {
+                    if(rowNum.contains(rs.getRow())) {
+                        stats.addValue(rs.getDouble(columnName));
+                        fetchProgress.endTask();
+                    }
+                }
+            } finally {
+                pm.removePropertyChangeListener(listener);
+            }
+        }
+        res[STATS.SUM.ordinal()] = Double.valueOf(stats.getSum()).toString();
+        res[STATS.AVG.ordinal()] = Double.valueOf(stats.getMean()).toString();
+        res[STATS.COUNT.ordinal()] = Long.valueOf(stats.getN()).toString();
+        res[STATS.MIN.ordinal()] = Double.valueOf(stats.getMin()).toString();
+        res[STATS.MAX.ordinal()] = Double.valueOf(stats.getMax()).toString();
+        res[STATS.STDDEV_SAMP.ordinal()] = Double.valueOf(stats.getStandardDeviation()).toString();
+        return res;
     }
 }

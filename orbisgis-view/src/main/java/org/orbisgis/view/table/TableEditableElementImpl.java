@@ -32,8 +32,6 @@ import java.util.Collections;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.common.IntegerUnion;
-import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.view.geocatalog.EditableSourceImpl;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -45,8 +43,6 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class TableEditableElementImpl extends EditableSourceImpl implements TableEditableElement {
         public static final String TYPE_ID = "TableEditableElement";
-        // Properties names
-        public static final String PROP_SELECTION = "selection";
         private static final Logger LOGGER = Logger.getLogger(TableEditableElementImpl.class);
         // Properties
         protected IntegerUnion selectedGeometries;

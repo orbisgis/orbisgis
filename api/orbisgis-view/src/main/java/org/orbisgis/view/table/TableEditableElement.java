@@ -8,6 +8,9 @@ import java.util.Set;
  * @author Nicolas Fortin
  */
 public interface TableEditableElement extends EditableSource {
+    // Properties names
+    public static final String PROP_SELECTION = "selection";
+
 
     /**
      * @return the selected rows in the table
