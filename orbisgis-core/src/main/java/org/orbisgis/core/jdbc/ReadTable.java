@@ -67,13 +67,13 @@ public class ReadTable {
                 }
             }
             columnValues = new ArrayList<>(rowCount);
-            ProgressMonitor pm = progressMonitor.startTask(rowCount);
             PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
-            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
+            progressMonitor.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
                     listener);
             try {
                 int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), table.toUpperCase());
                 if (pkIndex > 0) {
+                    ProgressMonitor jobProgress = progressMonitor.startTask(2);
                     // Do not cache values
                     // Use SQL sort
                     DatabaseMetaData meta = connection.getMetaData();
@@ -83,23 +83,28 @@ public class ReadTable {
                         desc = " DESC";
                     }
                     // Create a map of Row Id to Pk Value
+                    ProgressMonitor cacheProgress = jobProgress.startTask(I18N.tr("Cache primary key values"), rowCount);
                     Map<Long, Integer> pkValueToRowId = new HashMap<>(rowCount);
                     int rowId=0;
                     try(ResultSet rs = st.executeQuery("select "+pkFieldName+" from "+table)) {
                         while(rs.next()) {
                             rowId++;
                             pkValueToRowId.put(rs.getLong(1), rowId);
+                            cacheProgress.endTask();
                         }
                     }
                     // Read ordered pk values
+                    ProgressMonitor sortProgress = jobProgress.startTask(I18N.tr("Read sorted keys"), rowCount);
                     try(ResultSet rs = st.executeQuery("select "+pkFieldName+" from "+table+" ORDER BY "+columnName+desc)) {
                         while(rs.next()) {
                             columnValues.add(pkValueToRowId.get(rs.getLong(1)));
+                            sortProgress.endTask();
                         }
                     }
                 } else {
+                    ProgressMonitor jobProgress = progressMonitor.startTask(2);
                     //Cache values
-                    ProgressMonitor cacheProgress = pm.startTask(I18N.tr("Cache table values"), rowCount);
+                    ProgressMonitor cacheProgress = jobProgress.startTask(I18N.tr("Cache table values"), rowCount);
                     Comparable[] cache = new Comparable[rowCount];
                     try(ResultSet rs = st.executeQuery("select "+columnName+" from "+table)) {
                         int i = 0;
@@ -112,6 +117,7 @@ public class ReadTable {
                             cacheProgress.endTask();
                         }
                     }
+                    ProgressMonitor sortProgress = jobProgress.startTask(I18N.tr("Sort table values"), rowCount);
                     Comparator<Integer> comparator = new SortValueCachedComparator(cache);
                     if (!ascending) {
                         comparator = Collections.reverseOrder(comparator);
@@ -119,11 +125,11 @@ public class ReadTable {
                     columnValues = new TreeSet<>(comparator);
                     for (int i = 1; i <= rowCount; i++) {
                         columnValues.add(i);
-                        pm.endTask();
+                        sortProgress.endTask();
                     }
                 }
             } finally {
-                pm.removePropertyChangeListener(listener);
+                progressMonitor.removePropertyChangeListener(listener);
             }
             return columnValues;
         }

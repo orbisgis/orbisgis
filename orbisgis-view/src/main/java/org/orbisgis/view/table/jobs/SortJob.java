@@ -50,6 +50,7 @@ import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.core.jdbc.CreateTable;
+import org.orbisgis.core.jdbc.ReadTable;
 import org.orbisgis.core.jdbc.SortValueCachedComparator;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
@@ -107,7 +108,7 @@ public class SortJob implements BackgroundJob {
                 modelIndex = new IntegerUnion(0, model.getRowCount() - 1);
             }
             try(Connection connection = dataSource.getConnection()) {
-                final Collection<Integer> sortedRow = CreateTable.getSortedColumnRowIndex(connection, model.getTableName(), columnSortName, sortRequest.getSortOrder() == SortOrder.ASCENDING, pm);
+                final Collection<Integer> sortedRow = ReadTable.getSortedColumnRowIndex(connection, model.getTableName(), columnSortName, sortRequest.getSortOrder() == SortOrder.ASCENDING, pm);
                 SwingUtilities.invokeLater(new Runnable() {
 
                     @Override
