@@ -166,11 +166,11 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                                 synchronized (source.getRowSet()) {
                                     rowSet.absolute(rowId);
                                     if (params.getColumnId() != -1) {
-                                        return isFieldContains(rowSet.getString(params.getColumnId()));
+                                        return isFieldContains(rowSet.getString(params.getColumnId() + 1));
                                     } else {
                                         int columnCount = rowSet.getMetaData().getColumnCount();
                                         for(int col = 1; col < columnCount; col++) {
-                                            if(isFieldContains(rowSet.getString(columnCount))) {
+                                            if(isFieldContains(rowSet.getString(col))) {
                                                 return true;
                                             }
                                         }

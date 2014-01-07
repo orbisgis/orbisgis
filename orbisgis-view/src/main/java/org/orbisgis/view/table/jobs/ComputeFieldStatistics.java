@@ -74,7 +74,7 @@ public class ComputeFieldStatistics implements BackgroundJob {
         try {
             String fieldName;
             try (Connection connection = ds.getConnection()) {
-                fieldName = JDBCUtilities.getFieldName(connection.getMetaData(), table, columnId);
+                fieldName = JDBCUtilities.getFieldName(connection.getMetaData(), table, columnId + 1);
             }
             boolean doRowFiltering = !statisticsRowFilter.isEmpty();
             String[] stats;

@@ -145,7 +145,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         }
 
         private List<Action> getDockActions() {
-                List<Action> actions = new LinkedList<Action>();
+                List<Action> actions = new LinkedList<>();
                 /*
                 TODO Edition
                 if(tableEditableElement.getDataSource().isEditable()) {
