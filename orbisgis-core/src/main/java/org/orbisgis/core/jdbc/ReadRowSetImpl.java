@@ -1824,15 +1824,9 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
             if(getStatus() == ResultSetHolder.STATUS.CLOSED || getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
                 Thread resultSetThread = new Thread(this, "ResultSet of "+command);
                 resultSetThread.start();
-                while(getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
-                    try {
-                        Thread.sleep(WAITING_FOR_RESULTSET);
-                    } catch (InterruptedException e) {
-                        throw new SQLException(e);
-                    }
-                }
             }
-            while(getStatus() == ResultSetHolder.STATUS.STARTED) {
+            // Wait execution of request
+            while(getStatus() != STATUS.READY) {
                 try {
                     Thread.sleep(WAITING_FOR_RESULTSET);
                 } catch (InterruptedException e) {

@@ -95,7 +95,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 modelToView = new HashMap<>();
                 for(int viewIndex = 0;viewIndex < viewToModel.size();viewIndex++) {
                         Integer modelIndex = viewToModel.get(viewIndex);
-                        modelToView.put(modelIndex, viewIndex);
+                        modelToView.put(modelIndex - 1, viewIndex);
                 }
         }
         private int[] getViewToModelArray() {
@@ -146,7 +146,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 if(viewToModel==null) {
                         return index;
                 } else {
-                        return viewToModel.get(index);
+                        return viewToModel.get(index) - 1;
                 }
         }
 
@@ -245,7 +245,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         private boolean isSortable(int columnIndex) {
             try {
                 ResultSetMetaData meta = model.getRowSet().getMetaData();
-                return !meta.getColumnTypeName(columnIndex).equalsIgnoreCase("geometry");
+                return !meta.getColumnTypeName(columnIndex + 1).equalsIgnoreCase("geometry");
             } catch (SQLException ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
                 return false;

@@ -577,7 +577,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         }
         
         private void launchJob(BackgroundJob job) {
-                Services.getService(BackgroundManager.class).backgroundOperation(job);
+                Services.getService(BackgroundManager.class).nonBlockingBackgroundOperation(job);
         }
         
         /**
