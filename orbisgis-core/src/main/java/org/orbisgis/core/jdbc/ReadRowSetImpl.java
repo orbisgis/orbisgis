@@ -1785,9 +1785,6 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
                 while(lastUsage + RESULT_SET_TIMEOUT > System.currentTimeMillis() || openCount != 0) {
                     Thread.sleep(SLEEP_TIME);
                 }
-                // Do not release the ResultSet while it is used
-                synchronized (this) {
-                }
             } catch (Exception ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
             } finally {
@@ -1827,6 +1824,7 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
                     throw new SQLException(e);
                 }
             }
+            lastUsage = System.currentTimeMillis();
             openCount++;
             return new Resource(this, resultSet);
         }
