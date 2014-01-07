@@ -164,7 +164,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                         try {
                                 final RowSet rowSet = source.getRowSet();
                                 synchronized (source.getRowSet()) {
-                                    rowSet.absolute(rowId);
+                                    rowSet.absolute(rowId + 1);
                                     if (params.getColumnId() != -1) {
                                         return isFieldContains(rowSet.getString(params.getColumnId() + 1));
                                     } else {

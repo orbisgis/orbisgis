@@ -1,5 +1,6 @@
 package org.orbisgis.core.jdbc;
 
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
 
@@ -49,6 +50,8 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
     private Map<String, Integer> cachedColumnNames;
     private boolean wasNull = true;
     protected final ResultSetHolder resultSetHolder;
+    private static final int CACHE_SIZE = 100;
+    private Map<Long, Object[]> cache = new LRUMap<>(CACHE_SIZE);
 
     /**
      * Constructor.
@@ -103,27 +106,39 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
      * Read the content of the DB near the current row id
      */
     protected void updateRowCache() throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                ResultSet rs = res.getResultSet();
-                final int columnCount = getColumnCount();
-                if(cachedColumnNames == null) {
-                    cachedColumnNames = new HashMap<>(columnCount);
-                    ResultSetMetaData metaData = rs.getMetaData();
-                    for(int idColumn=1; idColumn <= columnCount; idColumn++) {
-                        cachedColumnNames.put(metaData.getColumnName(idColumn).toUpperCase(), idColumn);
+        if(!cache.containsKey(rowId)) {
+            synchronized (resultSetHolder) {
+                try(Resource res = resultSetHolder.getResource()) {
+                    ResultSet rs = res.getResultSet();
+                    final int columnCount = getColumnCount();
+                    if(cachedColumnNames == null) {
+                        cachedColumnNames = new HashMap<>(columnCount);
+                        ResultSetMetaData metaData = rs.getMetaData();
+                        for(int idColumn=1; idColumn <= columnCount; idColumn++) {
+                            cachedColumnNames.put(metaData.getColumnName(idColumn).toUpperCase(), idColumn);
+                        }
                     }
-                }
-                if(rs.absolute((int)rowId)) {
-                    if(currentRow == null){
-                        currentRow = new Object[columnCount];
-                    }
-                    for(int idColumn=1; idColumn <= columnCount; idColumn++) {
-                        currentRow[idColumn-1] = rs.getObject(idColumn);
+                    // Cache values
+                    long begin = Math.max(1, rowId - (int)(CACHE_SIZE * 0.25));
+                    long end = rowId + (int)(CACHE_SIZE * 0.75);
+                    long cursorRow = rs.getRow();
+                    for(long fetchId = begin; fetchId < end; fetchId ++) {
+                        // If it is not in cache and the fetch line is after cursor (or if requested line is before cursor)
+                        if((fetchId >= cursorRow  || rowId < cursorRow) && !cache.containsKey(fetchId)) {
+                            if(rs.absolute((int)fetchId)) {
+                                cursorRow = fetchId;
+                                Object[] row = new Object[columnCount];
+                                for(int idColumn=1; idColumn <= columnCount; idColumn++) {
+                                    row[idColumn-1] = rs.getObject(idColumn);
+                                }
+                                cache.put(fetchId, row);
+                            }
+                        }
                     }
                 }
             }
         }
+        currentRow = cache.get(rowId);
     }
 
     /**
