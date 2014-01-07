@@ -118,22 +118,12 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
                             cachedColumnNames.put(metaData.getColumnName(idColumn).toUpperCase(), idColumn);
                         }
                     }
-                    // Cache values
-                    long begin = Math.max(1, rowId - (int)(CACHE_SIZE * 0.25));
-                    long end = rowId + (int)(CACHE_SIZE * 0.75);
-                    long cursorRow = rs.getRow();
-                    for(long fetchId = begin; fetchId < end; fetchId ++) {
-                        // If it is not in cache and the fetch line is after cursor (or if requested line is before cursor)
-                        if((fetchId >= cursorRow  || rowId < cursorRow) && !cache.containsKey(fetchId)) {
-                            if(rs.absolute((int)fetchId)) {
-                                cursorRow = fetchId;
-                                Object[] row = new Object[columnCount];
-                                for(int idColumn=1; idColumn <= columnCount; idColumn++) {
-                                    row[idColumn-1] = rs.getObject(idColumn);
-                                }
-                                cache.put(fetchId, row);
-                            }
+                    if(rs.absolute((int)rowId)) {
+                        Object[] row = new Object[columnCount];
+                        for(int idColumn=1; idColumn <= columnCount; idColumn++) {
+                            row[idColumn-1] = rs.getObject(idColumn);
                         }
+                        cache.put(rowId, row);
                     }
                 }
             }
