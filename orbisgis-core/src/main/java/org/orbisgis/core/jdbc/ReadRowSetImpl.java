@@ -2,7 +2,10 @@ package org.orbisgis.core.jdbc;
 
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.core.api.ReadRowSet;
+import org.orbisgis.progress.ProgressMonitor;
 
 import javax.sql.DataSource;
 import javax.sql.RowSet;
@@ -38,7 +41,7 @@ import java.util.Map;
  *
  * @author Nicolas Fortin
  */
-public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, ResultSetMetaData {
+public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, ResultSetMetaData, ReadRowSet {
     private static final int WAITING_FOR_RESULTSET = 5;
     private final TableLocation location;
     private final DataSource dataSource;
@@ -49,19 +52,34 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
     private int cachedColumnCount = -1;
     private Map<String, Integer> cachedColumnNames;
     private boolean wasNull = true;
+    /** Used to managed table without primary key (ResultSet are kept {@link ResultSetHolder#RESULT_SET_TIMEOUT} */
     protected final ResultSetHolder resultSetHolder;
     private static final int CACHE_SIZE = 100;
     private Map<Long, Object[]> cache = new LRUMap<>(CACHE_SIZE);
+    /** If the table contains a unique non null index then this variable contain the map between the row id [1-n] to the primary key value */
+    private Map<Integer, Object> rowPk;
+    private String pk_name = "";
 
     /**
-     * Constructor.
+     * Constructor. Call {@link #init(org.orbisgis.progress.ProgressMonitor)} after the creation of this instance.
      * @param dataSource Connection properties
      * @param location Table location
      */
     public ReadRowSetImpl(DataSource dataSource, TableLocation location) {
         this.dataSource = dataSource;
         this.location = location;
-        resultSetHolder =new ResultSetHolder(this, getCommand());
+        resultSetHolder = new ResultSetHolder(this, getCommand());
+    }
+
+    @Override
+    public void init(ProgressMonitor pm) throws SQLException {
+        try(Connection connection = dataSource.getConnection()) {
+            int pkId = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), location.toString());
+            if(pkId > 0) {
+                // This table has a Primary key, get the field name
+                pk_name = JDBCUtilities.getFieldName(connection.getMetaData(), location.toString(), pkId);
+            }
+        }
     }
 
     private void setWasNull(boolean wasNull) {

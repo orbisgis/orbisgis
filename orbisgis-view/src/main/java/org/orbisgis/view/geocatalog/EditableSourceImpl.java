@@ -112,6 +112,11 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
             DataSource dataSource = Services.getService(DataSource.class);
             if(dataSource != null) {
                 rowSet = new ReversibleRowSetImpl(dataSource, TableLocation.parse(tableReference));
+                try {
+                    rowSet.init(progressMonitor);
+                } catch (SQLException ex) {
+                    throw new EditableElementException(ex);
+                }
                 setOpen(true);
             }
         }
