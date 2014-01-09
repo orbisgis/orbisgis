@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.api.ReadRowSet;
+import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 
 import javax.sql.DataSource;
@@ -21,6 +22,7 @@ import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.NClob;
+import java.sql.PreparedStatement;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -61,25 +63,96 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
     private String pk_name = "";
 
     /**
-     * Constructor. Call {@link #init(org.orbisgis.progress.ProgressMonitor)} after the creation of this instance.
+     * Constructor.
      * @param dataSource Connection properties
      * @param location Table location
+     * @throws IllegalArgumentException If one of the argument is incorrect, that lead to a SQL exception
      */
     public ReadRowSetImpl(DataSource dataSource, TableLocation location) {
-        this.dataSource = dataSource;
-        this.location = location;
-        resultSetHolder = new ResultSetHolder(this, getCommand());
+        this(dataSource, location, "", new NullProgressMonitor());
     }
 
-    @Override
-    public void init(ProgressMonitor pm) throws SQLException {
-        try(Connection connection = dataSource.getConnection()) {
+    /**
+     * Constructor, row set based on primary key, significant faster on large table
+     * @param dataSource Connection properties
+     * @param location Table location
+     * @param pk_name Primary key name
+     * @param pm Progress monitor, caching of pk values.
+     * @throws IllegalArgumentException If one of the argument is incorrect, that lead to a SQL exception
+     */
+    public ReadRowSetImpl(DataSource dataSource, TableLocation location, String pk_name, ProgressMonitor pm) {
+        this.dataSource = dataSource;
+        this.location = location;
+        this.pk_name = pk_name;
+        if(pk_name.isEmpty()) {
+            resultSetHolder = new ResultSetHolder(this, getCommand());
+        } else {
+            resultSetHolder = new ResultSetHolder(this, getCommand()+" LIMIT 0");
+            try {
+                cachePrimaryKey(pm);
+            } catch (SQLException ex) {
+                throw new IllegalArgumentException(ex);
+            }
+        }
+    }
+
+    private void cachePrimaryKey(ProgressMonitor pm) throws SQLException {
+        ProgressMonitor cachePm = pm.startTask(getRowCount());
+        if(rowPk == null) {
+            rowPk = new HashMap<>((int)getRowCount());
+        } else {
+            rowPk.clear();
+        }
+        try(Connection connection = dataSource.getConnection();
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery("SELECT "+pk_name+" FROM "+location)) {
+            // Cache the primary key values
+            int pkRowId = 0;
+            while(rs.next()) {
+                pkRowId++;
+                rowPk.put(pkRowId, rs.getObject(1));
+                cachePm.endTask();
+            }
+        } catch (SQLException ex) {
+            throw new IllegalArgumentException(ex);
+        }
+    }
+
+    /**
+     * Find the primary key name of the table.
+     * @param dataSource Connection properties
+     * @param location Table location
+     * @return The primary key name or empty
+     * @throws SQLException
+     */
+    public static String getPkName(DataSource dataSource, TableLocation location) throws SQLException {
+        String pkName = "";
+        try(Connection connection = dataSource.getConnection();
+            Statement st = connection.createStatement()) {
             int pkId = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), location.toString());
             if(pkId > 0) {
                 // This table has a Primary key, get the field name
-                pk_name = JDBCUtilities.getFieldName(connection.getMetaData(), location.toString(), pkId);
+                pkName = JDBCUtilities.getFieldName(connection.getMetaData(), location.toString(), pkId);
+            } else {
+                // Check for DB specific primary key
+                // _ROWID_ for H2
+                if(JDBCUtilities.isH2DataBase(connection.getMetaData())) {
+                    try(ResultSet rs = st.executeQuery("select _ROWID_ from "+location+" LIMIT 0")) {
+                        pkName = "_ROWID_";
+                    } catch (SQLException ex) {
+                        //Ignore, key does not exists
+                    }
+                } else {
+                    // oid for PostgreSQL
+                    try(ResultSet rs = st.executeQuery("select oid from "+location+" LIMIT 0")) {
+                        pkName = "oid";
+                    } catch (SQLException ex) {
+                        //Ignore, key does not exists
+                    }
+                }
             }
         }
+        return pkName;
     }
 
     private void setWasNull(boolean wasNull) {
@@ -136,12 +209,29 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
                             cachedColumnNames.put(metaData.getColumnName(idColumn).toUpperCase(), idColumn);
                         }
                     }
-                    if(rs.absolute((int)rowId)) {
-                        Object[] row = new Object[columnCount];
-                        for(int idColumn=1; idColumn <= columnCount; idColumn++) {
-                            row[idColumn-1] = rs.getObject(idColumn);
+                    if(rowPk == null) {
+                        if(rs.absolute((int)rowId)) {
+                            Object[] row = new Object[columnCount];
+                            for(int idColumn=1; idColumn <= columnCount; idColumn++) {
+                                row[idColumn-1] = rs.getObject(idColumn);
+                            }
+                            cache.put(rowId, row);
                         }
-                        cache.put(rowId, row);
+                    } else {
+                        // Acquire row values by using primary key
+                        try(Connection connection = dataSource.getConnection();
+                            PreparedStatement st = connection.prepareStatement(getCommand()+" WHERE "+pk_name+" = ?")) {
+                            st.setObject(1, rowPk.get((int)rowId));
+                            try(ResultSet lineRs = st.executeQuery()) {
+                                Object[] row = new Object[columnCount];
+                                if(lineRs.next()) {
+                                    for(int idColumn=1; idColumn <= columnCount; idColumn++) {
+                                        row[idColumn-1] = lineRs.getObject(idColumn);
+                                    }
+                                }
+                                cache.put(rowId, row);
+                            }
+                        }
                     }
                 }
             }

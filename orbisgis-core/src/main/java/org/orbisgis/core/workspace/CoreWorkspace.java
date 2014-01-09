@@ -136,7 +136,7 @@ public class CoreWorkspace implements Serializable {
         }
 
         private static String getDefaultJDBCConnectionString(String workspaceFolder) {
-            return "jdbc:h2:" + new File(workspaceFolder + File.separator + "database").toURI().getRawPath();
+            return "jdbc:h2:" + new File(workspaceFolder + File.separator + "database;DB_CLOSE_DELAY=30").toURI().getRawPath();
         }
         /**
          * Read the file located at {@link #getDataBaseUriFilePath()}
