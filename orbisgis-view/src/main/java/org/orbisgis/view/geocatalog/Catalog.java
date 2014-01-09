@@ -67,6 +67,7 @@ import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
+import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.actions.ActionOnNonEmptySourceList;
 import org.orbisgis.view.geocatalog.actions.ActionOnSelection;
@@ -82,6 +83,7 @@ import org.orbisgis.view.geocatalog.filters.factories.SourceTypeIs;
 import org.orbisgis.view.geocatalog.io.ExportInFileOperation;
 import org.orbisgis.view.geocatalog.renderer.DataSourceListCellRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.table.TableEditableElement;
 import org.orbisgis.view.table.TableEditableElementImpl;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -300,11 +302,14 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          * the table editor
          */
         public void onMenuShowTable() {
-                String[] res = getSelectedSources();
-                EditorManager editorManager = Services.getService(EditorManager.class);
-                for (String source : res) {
-                        TableEditableElementImpl tableDocument = new TableEditableElementImpl(source);
-                        editorManager.openEditable(tableDocument);
+                BackgroundManager manager = Services.getService(BackgroundManager.class);
+                if(manager != null) {
+                    String[] res = getSelectedSources();
+                    for (String source : res) {
+                            TableEditableElementImpl tableDocument = new TableEditableElementImpl(source);
+                            OpenTableEditor job = new OpenTableEditor(tableDocument);
+                            manager.nonBlockingBackgroundOperation(job);
+                    }
                 }
         }
 
@@ -746,7 +751,29 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             return sourceList.getSelectionModel();
         }
 
+        private static class OpenTableEditor implements BackgroundJob {
+            private TableEditableElement source;
 
+            private OpenTableEditor(TableEditableElement source) {
+                this.source = source;
+            }
+
+            @Override
+            public void run(ProgressMonitor pm) {
+                try {
+                    source.open(pm);
+                    EditorManager editorManager = Services.getService(EditorManager.class);
+                    editorManager.openEditable(source);
+                } catch (EditableElementException ex) {
+                    LOGGER.error(I18N.tr("Cannot open the table editor"),ex);
+                }
+            }
+
+            @Override
+            public String getTaskName() {
+                return I18N.tr("Open source file");
+            }
+        }
         private static class ImportFile implements BackgroundJob {
             private DriverFunction driverFunction;
             private File file;

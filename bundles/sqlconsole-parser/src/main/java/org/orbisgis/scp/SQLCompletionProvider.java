@@ -95,7 +95,7 @@ public class SQLCompletionProvider extends CompletionProviderBase {
             Connection connection = dataSource.getConnection();
             try {
                 DbContents contents = new DbContents();
-                contents.readContents(connection.getMetaData());
+                contents.readContents("jdbc:h2:", connection);
                 DbContextRule columnRule = new DbContextRule(contents, DbContextRule.COLUMN);
                 DbContextRule newAliasRule = new DbContextRule(contents, DbContextRule.NEW_TABLE_ALIAS);
                 DbContextRule aliasRule = new DbContextRule(contents, DbContextRule.TABLE_ALIAS);
