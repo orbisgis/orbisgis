@@ -67,6 +67,7 @@ import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
+import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.actions.ActionOnNonEmptySourceList;
@@ -763,7 +764,11 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 try {
                     source.open(pm);
                     EditorManager editorManager = Services.getService(EditorManager.class);
-                    editorManager.openEditable(source);
+                    if(SwingUtilities.isEventDispatchThread()) {
+                        editorManager.openEditable(source);
+                    } else {
+                        SwingUtilities.invokeLater(new OpenEditableInSwingThread(source, editorManager));
+                    }
                 } catch (EditableElementException ex) {
                     LOGGER.error(I18N.tr("Cannot open the table editor"),ex);
                 }
@@ -772,6 +777,24 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             @Override
             public String getTaskName() {
                 return I18N.tr("Open source file");
+            }
+        }
+
+        /**
+         * Open window in swing process
+         */
+        private static class OpenEditableInSwingThread implements Runnable {
+            EditableElement element;
+            EditorManager editorManager;
+
+            private OpenEditableInSwingThread(EditableElement element, EditorManager editorManager) {
+                this.element = element;
+                this.editorManager = editorManager;
+            }
+
+            @Override
+            public void run() {
+                editorManager.openEditable(element);
             }
         }
         private static class ImportFile implements BackgroundJob {
