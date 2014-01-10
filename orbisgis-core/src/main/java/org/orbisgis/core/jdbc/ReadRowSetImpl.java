@@ -61,6 +61,7 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
     /** If the table contains a unique non null index then this variable contain the map between the row id [1-n] to the primary key value */
     private Map<Integer, Object> rowPk;
     private String pk_name = "";
+    private static final String H2_SYSTEM_PK_COLUMN = "_ROWID_";
 
     /**
      * Constructor.
@@ -88,10 +89,15 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
             resultSetHolder = new ResultSetHolder(this, getCommand());
         } else {
             resultSetHolder = new ResultSetHolder(this, getCommand()+" LIMIT 0");
-            try {
-                cachePrimaryKey(pm);
-            } catch (SQLException ex) {
-                throw new IllegalArgumentException(ex);
+            // Do not cache _ROWID_
+            if(!H2_SYSTEM_PK_COLUMN.equals(pk_name)) {
+                try {
+                    cachePrimaryKey(pm);
+                } catch (SQLException ex) {
+                    throw new IllegalArgumentException(ex);
+                }
+            } else {
+                rowPk = new HashMap<>();
             }
         }
     }
@@ -130,26 +136,15 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
         try(Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement()) {
             int pkId = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), location.toString());
-            if(pkId > 0) {
+            if(JDBCUtilities.isH2DataBase(connection.getMetaData())) {
+                try(ResultSet rs = st.executeQuery("select _ROWID_ from "+location+" LIMIT 0")) {
+                    pkName = H2_SYSTEM_PK_COLUMN;
+                } catch (SQLException ex) {
+                    //Ignore, key does not exists
+                }
+            } else if(pkId > 0) {
                 // This table has a Primary key, get the field name
                 pkName = JDBCUtilities.getFieldName(connection.getMetaData(), location.toString(), pkId);
-            } else {
-                // Check for DB specific primary key
-                // _ROWID_ for H2
-                if(JDBCUtilities.isH2DataBase(connection.getMetaData())) {
-                    try(ResultSet rs = st.executeQuery("select _ROWID_ from "+location+" LIMIT 0")) {
-                        pkName = "_ROWID_";
-                    } catch (SQLException ex) {
-                        //Ignore, key does not exists
-                    }
-                } else {
-                    // oid for PostgreSQL
-                    try(ResultSet rs = st.executeQuery("select oid from "+location+" LIMIT 0")) {
-                        pkName = "oid";
-                    } catch (SQLException ex) {
-                        //Ignore, key does not exists
-                    }
-                }
             }
         }
         return pkName;
@@ -221,7 +216,11 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
                         // Acquire row values by using primary key
                         try(Connection connection = dataSource.getConnection();
                             PreparedStatement st = connection.prepareStatement(getCommand()+" WHERE "+pk_name+" = ?")) {
-                            st.setObject(1, rowPk.get((int)rowId));
+                            if(!H2_SYSTEM_PK_COLUMN.equals(pk_name)) {
+                                st.setObject(1, rowPk.get((int)rowId));
+                            } else {
+                                st.setObject(1, rowId);
+                            }
                             try(ResultSet lineRs = st.executeQuery()) {
                                 Object[] row = new Object[columnCount];
                                 if(lineRs.next()) {
