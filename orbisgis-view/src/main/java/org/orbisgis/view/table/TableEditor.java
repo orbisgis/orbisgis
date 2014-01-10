@@ -186,14 +186,12 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          */
         public void onPopupBecomeInvisible() {
                 cellHighlight.setLocation(-1, -1);
-                tableModel.fireTableCellUpdated(popupCellAdress.y, popupCellAdress.x);
         }
         /**
          * The popup is shown, the cell border need to be set
          */
         public void onPopupBecomeVisible() {
                 cellHighlight.setLocation(popupCellAdress);
-                tableModel.fireTableCellUpdated(popupCellAdress.y, popupCellAdress.x);
         }
         private JComponent makeFilterManager() {
                 JPanel filterComp = filterManager.makeFilterPanel(false);
@@ -506,7 +504,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                     ResultSetMetaData meta =  tableEditableElement.getRowSet().getMetaData();
                     for(String geomField : geomFields) {
                         int gIndex = JDBCUtilities.getFieldIndex(meta, geomField);
-                        if(col.equals(gIndex)) {
+                        if(col.equals(gIndex - 1)) {
                             isGeometryField = true;
                         }
                     }

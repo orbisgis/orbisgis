@@ -31,11 +31,7 @@ package org.orbisgis.view.table;
 import java.beans.EventHandler;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.sql.DataSource;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
@@ -81,7 +77,12 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
          */
         public void onRowSortDone(SortJobEventSorted sortData) {
                 int[] oldViewToModel = getViewToModelArray();
-                viewToModel = new ArrayList<>(sortData.getViewToModelIndex());
+                Collection<Integer> viewToModelJDBC = sortData.getViewToModelIndex();
+                // Sorted is done using JDBC Index
+                viewToModel = new ArrayList<>(viewToModelJDBC.size());
+                for(int i : viewToModelJDBC) {
+                    viewToModel.add(i - 1);
+                }
                 initModelToView();
                 sortedColumns.clear();
                 sortedColumns.add(sortData.getSortRequest());
@@ -95,7 +96,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 modelToView = new HashMap<>();
                 for(int viewIndex = 0;viewIndex < viewToModel.size();viewIndex++) {
                         Integer modelIndex = viewToModel.get(viewIndex);
-                        modelToView.put(modelIndex - 1, viewIndex);
+                        modelToView.put(modelIndex, viewIndex);
                 }
         }
         private int[] getViewToModelArray() {
@@ -146,7 +147,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 if(viewToModel==null) {
                         return index;
                 } else {
-                        return viewToModel.get(index) - 1;
+                        return viewToModel.get(index);
                 }
         }
 
