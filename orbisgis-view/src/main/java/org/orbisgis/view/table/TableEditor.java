@@ -198,7 +198,15 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 filterManager.setUserCanRemoveFilter(false);
                 FieldsContainsFilterFactory factory = new FieldsContainsFilterFactory(table);
                 filterManager.registerFilterFactory(factory);
-                filterManager.registerFilterFactory(new WhereSQLFilterFactory());
+                // SQL Filter is only available if there is a primary key
+                try(Connection connection = dataSource.getConnection()) {
+                    int idPk = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), tableEditableElement.getTableReference());
+                    if(idPk > 0) {
+                        filterManager.registerFilterFactory(new WhereSQLFilterFactory());
+                    }
+                } catch (SQLException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
                 filterManager.addFilter(factory.getDefaultFilterValue());
                 filterManager.getEventFilterChange().addListener(this, EventHandler.create(FilterFactoryManager.FilterChangeListener.class, this, "onApplySelectionFilter"));
                 return filterComp;

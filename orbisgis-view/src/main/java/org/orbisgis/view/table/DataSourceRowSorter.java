@@ -59,6 +59,8 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         //Sorted columns
         private List<SortKey> sortedColumns = new ArrayList<>();
         private DataSource dataSource;
+        // Sort result given through JDBC
+        private Collection<Integer> viewToModelJDBC;
         
         public DataSourceRowSorter(DataSourceTableModel model, DataSource dataSource) {
                 this.model = model;
@@ -69,6 +71,26 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         public DataSourceTableModel getModel() {
                 return model;
         }
+
+        private void applyJDBCSort(int[] oldViewToModel) {
+            Set<Integer> filter = null;
+            if(viewToModel != null) {
+                filter = new HashSet<>(viewToModel);
+            }
+            // Sorted is done using JDBC Index
+            // And it is not filtered
+            viewToModel = new ArrayList<>(viewToModelJDBC.size());
+            for(int i : viewToModelJDBC) {
+                if(filter == null) {
+                    viewToModel.add(i - 1);
+                } else if(filter.contains(i - 1)) {
+                    viewToModel.add(i - 1);
+                }
+            }
+            initModelToView();
+            fireSortOrderChanged();
+            fireRowSorterChanged(oldViewToModel);
+        }
         
         /**
          * Called by the Sort job listener
@@ -77,17 +99,10 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
          */
         public void onRowSortDone(SortJobEventSorted sortData) {
                 int[] oldViewToModel = getViewToModelArray();
-                Collection<Integer> viewToModelJDBC = sortData.getViewToModelIndex();
-                // Sorted is done using JDBC Index
-                viewToModel = new ArrayList<>(viewToModelJDBC.size());
-                for(int i : viewToModelJDBC) {
-                    viewToModel.add(i - 1);
-                }
-                initModelToView();
+                viewToModelJDBC = sortData.getViewToModelIndex();
                 sortedColumns.clear();
                 sortedColumns.add(sortData.getSortRequest());
-                fireSortOrderChanged();
-                fireRowSorterChanged(oldViewToModel);
+                applyJDBCSort(oldViewToModel);
         }
         /**
          * Create the model to view from viewToModel
@@ -114,6 +129,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         public void toggleSortOrder(int column) {
                 if(isSortable(column)) {
                         SortKey sortRequest=new SortKey(column, SortOrder.ASCENDING);
+                        boolean doReverse = true;
                         //Find if the user already set an order
                         for (SortKey col : sortedColumns) {
                             if (col.getColumn() == column) {
@@ -124,6 +140,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                                     order = SortOrder.ASCENDING;
                                 }
                                 sortRequest = new SortKey(column, order);
+                                doReverse = false;
                                 break;
                             }
                         }
@@ -132,7 +149,18 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                         //UIManager.getIcon("Table.ascendingSortIcon");
                         //UIManager.getIcon("Table.descendingSortIcon");
                         //http://www.jroller.com/nweber/entry/multi_column_sorting_w_mustang
-                        launchSortProcess(sortRequest);
+                        if(doReverse || viewToModelJDBC == null) {
+                            launchSortProcess(sortRequest);
+                        } else {
+                            // The user reverse the already sorted column
+                            int[] oldViewToModel = getViewToModelArray();
+                            ArrayList<Integer> reversed = new ArrayList<>(viewToModelJDBC);
+                            Collections.reverse(reversed);
+                            viewToModelJDBC = reversed;
+                            sortedColumns.clear();
+                            sortedColumns.add(sortRequest);
+                            applyJDBCSort(oldViewToModel);
+                        }
                 }
         }
         
@@ -227,11 +255,9 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 } else {
                         viewToModel = null;
                         modelToView = null;
-                }                
-                fireSortOrderChanged();
-                fireRowSorterChanged(oldViewToModel);
-                //Do sorting
-                refreshSorter();
+                }
+                // Apply sort on filtered result
+                applyJDBCSort(oldViewToModel);
         }
 
         /**
