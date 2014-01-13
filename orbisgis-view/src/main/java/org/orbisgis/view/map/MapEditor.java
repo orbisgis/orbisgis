@@ -31,7 +31,6 @@ package org.orbisgis.view.map;
 import com.vividsolutions.jts.geom.Envelope;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
@@ -68,8 +67,7 @@ import org.orbisgis.view.map.mapsManager.TreeLeafMapElement;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.toolbar.ActionAutomaton;
-import org.orbisgis.view.map.tools.ZoomInTool;
-import org.orbisgis.view.map.tools.ZoomOutTool;
+import org.orbisgis.view.map.tools.*;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -289,9 +287,6 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             try {
                 mapContext = (MapContext) element.getObject();
                 mapContext.addPropertyChangeListener(MapContext.PROP_ACTIVELAYER, activeLayerListener);
-                //We (unfortunately) need a cross reference here : this way, we'll
-                //be able to retrieve the MapTransform from the Toc..
-                element.setMapEditor(this);
                 mapControl.setMapContext(mapContext);
                 mapControl.getMapTransform().setExtent(mapContext.getBoundingBox());
                 mapControl.setElement(this);
