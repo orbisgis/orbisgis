@@ -28,13 +28,14 @@
  */
 package org.orbisgis.view.background;
 
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.RootProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+/**
+ * Encapsulate a background job in order to attach Thread instance and job identifier.
+ */
 public class Job implements BackgroundJob {
 
     private JobId processId;
