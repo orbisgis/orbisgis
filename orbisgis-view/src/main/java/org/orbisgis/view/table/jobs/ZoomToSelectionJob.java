@@ -29,7 +29,6 @@
 package org.orbisgis.view.table.jobs;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -47,7 +46,7 @@ import java.sql.Statement;
 import java.util.List;
 
 /**
- *
+ * Fetch selection extent and apply it to the map context.
  * @author Nicolas Fortin
  */
 public class ZoomToSelectionJob implements BackgroundJob {
@@ -58,6 +57,13 @@ public class ZoomToSelectionJob implements BackgroundJob {
         private int[] modelSelection;
         private MapContext mapContext;
 
+        /**
+         * Constructor.
+         * @param dataSource Active data source
+         * @param tableName Table location
+         * @param modelSelection Selected rows
+         * @param mapContext Loaded map context
+         */
         public ZoomToSelectionJob(DataSource dataSource,String tableName, int[] modelSelection, MapContext mapContext) {
                 this.dataSource = dataSource;
                 this.tableName = tableName;

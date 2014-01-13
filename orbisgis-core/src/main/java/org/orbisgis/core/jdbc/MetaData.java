@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Class utility to extract information from JDBC Metadata
  * @author Nicolas Fortin
  */
 public class MetaData {
