@@ -54,6 +54,7 @@ import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditableElementException;
+import org.orbisgis.view.edition.EditableSource;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.ext.MapEditorAction;
@@ -401,8 +402,9 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
         // Drawing tools
         actions.addAction(new DefaultAction(MapEditorAction.A_DRAWING_GROUP,I18N.tr("Graphic tools")).setMenuGroup(true));
-        actions.addAction(new ActionAutomaton(MapEditorAction.A_FENCE,new FencePolygonTool(),this)
-                .setParent(MapEditorAction.A_DRAWING_GROUP));
+        // TODO Fence tool
+        //actions.addAction(new ActionAutomaton(MapEditorAction.A_FENCE,new FencePolygonTool(),this)
+        //        .setParent(MapEditorAction.A_DRAWING_GROUP));
         actions.addAction(new ActionAutomaton(MapEditorAction.A_PICK_COORDINATES, new PickCoordinatesPointTool(),this)
                 .setParent(MapEditorAction.A_DRAWING_GROUP));
 
