@@ -41,7 +41,7 @@ import javax.swing.text.Document;
 public class ScriptSplitterFactoryImpl implements ScriptSplitterFactory {
 
     @Override
-    public ScriptSplitter create(Document document) {
-        return new DocumentSQLReader(document);
+    public ScriptSplitter create(Document document, boolean skipComments) {
+        return new DocumentSQLReader(document, skipComments);
     }
 }

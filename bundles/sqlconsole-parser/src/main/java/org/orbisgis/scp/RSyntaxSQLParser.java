@@ -102,40 +102,37 @@ public class RSyntaxSQLParser extends AbstractParser {
         DocumentSQLReader documentReader = new DocumentSQLReader(doc);
         long start = System.currentTimeMillis();
         try {
-            Connection connection = dataSource.getConnection();
-            try {
-                while(documentReader.hasNext()) {
+            try (Connection connection = dataSource.getConnection()) {
+                while (documentReader.hasNext()) {
                     String statement = documentReader.next();
-                    if(!documentReader.isInsideRemark()) {
+                    if (!documentReader.isInsideRemark()) {
                         try {
                             connection.prepareStatement(statement);
                         } catch (SQLException ex) {
-                                // Find the beginning of the rightmost word in error
-                                int syntaxErrorPosition = ex.getLocalizedMessage().indexOf("[*]");
-                                int syntaxErrorLength;
-                                if(syntaxErrorPosition == -1) {
-                                    // Could not find exact position, underline all the statement (remove preceding line break)
-                                    syntaxErrorPosition = statement.indexOf(statement.trim());
-                                    syntaxErrorLength = statement.length() - syntaxErrorPosition;
-                                } else {
-                                    int[] syntaxWord = getLastWordPositionAndLength(ex.getLocalizedMessage(), syntaxErrorPosition);
-                                    String word = ex.getLocalizedMessage().substring(syntaxWord[WORD_POSITION], syntaxWord[WORD_POSITION]+syntaxWord[WORD_LENGTH]);
-                                    syntaxErrorPosition = statement.toLowerCase().indexOf(word.toLowerCase());
-                                    syntaxErrorLength = syntaxWord[WORD_LENGTH];
-                                }
-                                // Compute syntax error position from the beginning of the document, (-1 is length of ; char)
-                                int syntaxErrorPositionOffset = Math.min(docLength,
-                                        documentReader.getPosition() + syntaxErrorPosition);
-                                DefaultParserNotice notice = new DefaultParserNotice(this, ex.getLocalizedMessage(),
-                                        documentReader.getLineIndex(syntaxErrorPositionOffset),syntaxErrorPositionOffset,
-                                        syntaxErrorLength);
-                                notice.setLevel(ParserNotice.ERROR);
-                                res.addNotice(notice);
+                            // Find the beginning of the rightmost word in error
+                            int syntaxErrorPosition = ex.getLocalizedMessage().indexOf("[*]");
+                            int syntaxErrorLength;
+                            if (syntaxErrorPosition == -1) {
+                                // Could not find exact position, underline all the statement (remove preceding line break)
+                                syntaxErrorPosition = statement.indexOf(statement.trim());
+                                syntaxErrorLength = statement.length() - syntaxErrorPosition;
+                            } else {
+                                int[] syntaxWord = getLastWordPositionAndLength(ex.getLocalizedMessage(), syntaxErrorPosition);
+                                String word = ex.getLocalizedMessage().substring(syntaxWord[WORD_POSITION], syntaxWord[WORD_POSITION] + syntaxWord[WORD_LENGTH]);
+                                syntaxErrorPosition = statement.toLowerCase().indexOf(word.toLowerCase());
+                                syntaxErrorLength = syntaxWord[WORD_LENGTH];
+                            }
+                            // Compute syntax error position from the beginning of the document, (-1 is length of ; char)
+                            int syntaxErrorPositionOffset = Math.min(docLength,
+                                    documentReader.getPosition() + syntaxErrorPosition);
+                            DefaultParserNotice notice = new DefaultParserNotice(this, ex.getLocalizedMessage(),
+                                    documentReader.getLineIndex(syntaxErrorPositionOffset), syntaxErrorPositionOffset,
+                                    syntaxErrorLength);
+                            notice.setLevel(ParserNotice.ERROR);
+                            res.addNotice(notice);
                         }
                     }
                 }
-            } finally {
-                connection.close();
             }
         } catch (SQLException ex) {
             log.trace(ex.getLocalizedMessage(), ex);

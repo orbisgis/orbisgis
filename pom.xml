@@ -59,6 +59,7 @@
                 <gettext-commons-version>0.9.8</gettext-commons-version>
                 <cts-version>1.3.1</cts-version>
                 <org.osgi.service.obr-version>1.0.2</org.osgi.service.obr-version>
+                <org.orbisgis.commons-version>1.4.1-SNAPSHOT</org.orbisgis.commons-version>
         </properties>
         <scm>
                 <connection>scm:git:https://github.com/irstv/orbisgis.git</connection>

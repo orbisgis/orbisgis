@@ -148,7 +148,7 @@ public final class MapElement extends AbstractEditableElement {
                         for(ILayer layer : mapContext.getLayers()) {
                                 String table = layer.getTableReference();
                                 if(table!=null && !table.isEmpty()) {
-                                        if(JDBCUtilities.isTemporaryTable(connection,TableLocation.parse(table))) {
+                                        if(JDBCUtilities.isTemporaryTable(connection,table)) {
                                                 return true;
                                         }
                                 }

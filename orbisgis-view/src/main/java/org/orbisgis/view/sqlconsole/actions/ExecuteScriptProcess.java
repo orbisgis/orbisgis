@@ -39,6 +39,8 @@ import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -122,46 +124,55 @@ public class ExecuteScriptProcess implements BackgroundJob {
             LOGGER.info(lines.toString());
         }
 
+        private void parseAndExecuteScript(ProgressMonitor pm, Statement st) throws SQLException {
+            ScriptSplitter splitter = splitterFactory.create(panel.getScriptPanel().getDocument(), true);
+            while(splitter.hasNext()) {
+                String query = splitter.next();
+                // Some query need to be shown to the user
+                String lc_query = query.trim().toLowerCase();
+                String[] executeQueryCommands = new String[] {"select", "explain", "call", "show", "script"};
+                boolean doExecuteQuery = false;
+                for(String command : executeQueryCommands) {
+                    if(lc_query.startsWith(command)) {
+                        doExecuteQuery = true;
+                        break;
+                    }
+                }
+                if(doExecuteQuery) {
+                    try {
+                        printSelect(query, st);
+                    } catch (SQLException ex) {
+                        //May not accept executeQuery but simple query
+                        if(!lc_query.startsWith("select")) {
+                            st.execute(query);
+                        } else {
+                            throw ex;
+                        }
+                    }
+                } else {
+                    LOGGER.info(I18N.tr("Execute line {0}/{1}:\n{2}",splitter.getLineIndex() + 1,panel.getScriptPanel().getLineCount(),query));
+                    long debQuery = System.currentTimeMillis();
+                    st.execute(query);
+                    LOGGER.info(I18N.tr("Done in {0} seconds",(System.currentTimeMillis() - debQuery) / 1000.));
+
+                }
+                pm.endTask();
+            }
+        }
+
         @Override
-        public void run(ProgressMonitor pm) {
-                ScriptSplitter splitter = splitterFactory.create(panel.getScriptPanel().getDocument());
+        public void run(ProgressMonitor progress) {
                 long t1 = System.currentTimeMillis();
-                pm.init(I18N.tr("Execute SQL Request"), panel.getScriptPanel().getLineCount());
+                ProgressMonitor pm = progress.startTask(I18N.tr("Execute SQL Request"), panel.getScriptPanel().getLineCount());
                 try(Connection connection = ds.getConnection()) {
                     try(Statement st = connection.createStatement()) {
-                        while(splitter.hasNext()) {
-                            if(!splitter.isInsideRemark()) {
-                                String query = splitter.next();
-                                // Some query need to be shown to the user
-                                String lc_query = query.trim().toLowerCase();
-                                String[] executeQueryCommands = new String[] {"select", "explain", "call", "show", "script"};
-                                boolean doExecuteQuery = false;
-                                for(String command : executeQueryCommands) {
-                                    if(lc_query.startsWith(command)) {
-                                        doExecuteQuery = true;
-                                        break;
-                                    }
-                                }
-                                if(doExecuteQuery) {
-                                    try {
-                                        printSelect(query, st);
-                                    } catch (SQLException ex) {
-                                        //May not accept executeQuery but simple query
-                                        if(!lc_query.startsWith("select")) {
-                                            st.execute(query);
-                                        } else {
-                                            throw ex;
-                                        }
-                                    }
-                                } else {
-                                    LOGGER.info(I18N.tr("Execute line {0}/{1}:\n{2}",splitter.getLineIndex() + 1,panel.getScriptPanel().getLineCount(),query));
-                                    long debQuery = System.currentTimeMillis();
-                                    st.execute(query);
-                                    LOGGER.info(I18N.tr("Done in {0} seconds",(System.currentTimeMillis() - debQuery) / 1000.));
-
-                                }
-                            }
-                            pm.progressTo(splitter.getLineIndex());
+                        // If user click on cancel, cancel the execution
+                        pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL ,
+                                EventHandler.create(PropertyChangeListener.class, st, "cancel"));
+                        if(splitterFactory != null) {
+                            parseAndExecuteScript(pm, st);
+                        } else {
+                            st.execute(panel.getScriptPanel().getText());
                         }
                     }
                 } catch (SQLException ex) {

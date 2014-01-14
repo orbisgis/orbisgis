@@ -30,6 +30,7 @@ package org.orbisgis.view.main;
 
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -107,19 +108,33 @@ public class CoreLauncher {
          * Create the view component and set visible
          */
         public void launch() {
-                // Load splash screen
-                final LoadingFrame loadingFrame = showLoadingFrame();
+            // Load splash screen
+            final LoadingFrame loadingFrame = showLoadingFrame();
+            boolean showWorkspaceSelectionDialog = true;
+            while(showWorkspaceSelectionDialog) {
+                showWorkspaceSelectionDialog = false;
                 try {
-                        viewCore = new Core(coreWorkspace, debugMode, loadingFrame);
-                        viewCore.startup(loadingFrame);
+                    viewCore = new Core(coreWorkspace, debugMode, loadingFrame.getProgressMonitor());
+                    viewCore.startup(loadingFrame.getProgressMonitor());
                 } catch (InterruptedException ex) {
-                        // Do not print user cancel action.
-                        // Close the splash screen
-                        LOGGER.info("Loading of OrbisGIS canceled by user.");
-                        stopApplication(loadingFrame);
+                    // Do not print user cancel action.
+                    // Close the splash screen
+                    LOGGER.info("Loading of OrbisGIS canceled by user.");
+                    stopApplication(loadingFrame);
                 } catch (Exception ex) {
-                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                    LOGGER.error(ex.getLocalizedMessage(),ex);
+                    try {
+                        coreWorkspace.setDefaultWorkspace(null);
+                        coreWorkspace.setWorkspaceFolder(null);
+                        if(viewCore != null) {
+                            viewCore.dispose();
+                        }
+                        showWorkspaceSelectionDialog = true;
+                    } catch (IOException ioex) {
+                        LOGGER.error(ioex.getLocalizedMessage(), ioex);
                         stopApplication(loadingFrame);
-                }                
+                    }
+                }
+            }
         }
 }

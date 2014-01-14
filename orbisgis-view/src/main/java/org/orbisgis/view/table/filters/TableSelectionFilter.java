@@ -26,31 +26,28 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table.jobs;
+package org.orbisgis.view.table.filters;
 
-import java.util.Comparator;
-import org.gdms.data.values.Value;
+import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.table.TableEditableElement;
 
 /**
- *
- * A comparator with pre-loaded values,
- * faster than non-cached comparator but require more memory
+ * Common interface for all table selection filters
  * @author Nicolas Fortin
  */
-public class SortValueCachedComparator implements Comparator<Integer> {
-
-        private Value[] values;
-
-        public SortValueCachedComparator(Value[] values) {
-                this.values = values;
-        }
+public interface TableSelectionFilter {
         
-        @Override
-        public int compare(Integer t, Integer t1) {
-                int res = values[t].compareTo(values[t1]);
-                if(res==0) {
-                        res = t.compareTo(t1); //TreeSet remove duplicates
-                }
-                return res;
-        }        
+        /**
+         * If necessary do the initialisation of this filter
+         * @param pm
+         * @param source Table data source 
+         */
+        void initialize(ProgressMonitor pm,TableEditableElement source);
+        
+        /***
+         * @param rowId Row index (data source row)
+         * @param source Table data set
+         * @return True will select this row
+         */
+        boolean isSelected(int rowId, TableEditableElement source);
 }

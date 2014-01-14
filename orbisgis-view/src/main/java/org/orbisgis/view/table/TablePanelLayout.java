@@ -77,7 +77,7 @@ public class TablePanelLayout implements DockingPanelLayout {
         @Override
         public void writeStream(DataOutputStream out) throws IOException {
                 //DataSource
-                out.writeUTF(tableEditableElement.getSourceName());
+                out.writeUTF(tableEditableElement.getTableReference());
                 //Selection
                 writeSelection(out);
         }
@@ -105,24 +105,22 @@ public class TablePanelLayout implements DockingPanelLayout {
                 try {
                         ObjectInputStream selectionIn = new ObjectInputStream(in);
                         return (IntegerUnion)selectionIn.readObject();
-                } catch (ClassNotFoundException ex) {
-                        LOGGER.error(I18N.tr("Selection deserialisation failed"),ex);
-                }  catch (IOException ex) {
+                } catch (ClassNotFoundException | IOException ex) {
                         LOGGER.error(I18N.tr("Selection deserialisation failed"),ex);
                 }
-                return new IntegerUnion();
+            return new IntegerUnion();
         }
         @Override
         public void readStream(DataInputStream in) throws IOException {
                 //DataSource
                 String dataSourceName = in.readUTF();
-                tableEditableElement = new TableEditableElement(
+                tableEditableElement = new TableEditableElementImpl(
                 readSelection(in),dataSourceName);
         }
         
         @Override
         public void writeXML(XElement element) {
-                element.addString(PROP_DATA_SOURCE_NAME,tableEditableElement.getSourceName());
+                element.addString(PROP_DATA_SOURCE_NAME,tableEditableElement.getTableReference());
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 try {
                         writeSelection(bytes);
@@ -135,7 +133,7 @@ public class TablePanelLayout implements DockingPanelLayout {
         @Override
         public void readXML(XElement element) {
                 ByteArrayInputStream in = new ByteArrayInputStream(element.getByteArray(PROP_SELECTION));
-                tableEditableElement = new TableEditableElement(readSelection(in),
+                tableEditableElement = new TableEditableElementImpl(readSelection(in),
                                 element.getString(PROP_DATA_SOURCE_NAME));
 
         }

@@ -47,9 +47,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>commons</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>${org.orbisgis.commons-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

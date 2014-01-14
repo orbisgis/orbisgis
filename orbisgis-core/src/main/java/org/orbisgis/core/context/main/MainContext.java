@@ -55,6 +55,8 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -181,6 +183,11 @@ public class MainContext {
             try {
                 DataSourceFactory dataSourceFactory = pluginHost.getHostBundleContext().getService(dbDriverReference);
                 dataSource = SFSUtilities.wrapSpatialDataSource(dataSourceFactory.createDataSource(properties));
+                // Check DataSource
+                try(Connection connection = dataSource.getConnection()) {
+                    DatabaseMetaData meta = connection.getMetaData();
+                    LOGGER.info(I18N.tr("Data source available {0} version {1}", meta.getDriverName(), meta.getDriverVersion()));
+                }
                 // Register the connection factory in service hosts
                 Services.registerService(DataSource.class,"OrbisGIS main DataSource",dataSource);
                 // Register DataSource, will be used to register spatial features

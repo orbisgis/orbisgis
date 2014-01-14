@@ -118,7 +118,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>commons</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>${org.orbisgis.commons-version}</version>
         </dependency>
         <dependency>
             <groupId>gov.nih.imagej</groupId>
@@ -126,10 +126,20 @@
             <version>1.46</version>
         </dependency>
         <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-collections4</artifactId>
+          <version>4.0</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.10</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-math3</artifactId>
+          <version>3.2</version>
         </dependency>
         <dependency>
             <groupId>batik</groupId>

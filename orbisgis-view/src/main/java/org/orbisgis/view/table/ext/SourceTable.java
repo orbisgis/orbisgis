@@ -1,4 +1,4 @@
-/**
+/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
@@ -26,34 +26,33 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core;
 
-import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.api.ReversibleRowSet;
+package org.orbisgis.view.table.ext;
 
-import javax.sql.DataSource;
-import javax.swing.event.UndoableEditListener;
-import java.util.ArrayList;
-import java.util.List;
+import org.orbisgis.view.edition.EditableSource;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * @author Nicolas Fortin
  */
-public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRowSet {
-    private final List<UndoableEditListener> undoListenerList = new ArrayList<>();
+public interface SourceTable {
 
-    public ReversibleRowSetImpl(DataSource dataSource, TableLocation location) {
-        super(dataSource, location);
-    }
+        /**
+        * @return The source document opened in the Table.
+        */
+        EditableSource getTableEditableElement();
+
+        /**
+        * @return The swing JTable component.
+        */
+        JTable getTable();
 
 
-    @Override
-    public void addUndoableEditListener(UndoableEditListener listener) {
-        undoListenerList.add(listener);
-    }
-
-    @Override
-    public void removeUndoableEditListener(UndoableEditListener listener) {
-        undoListenerList.remove(listener);
-    }
+        /**
+         * Use this property on the isEnabled action in order to show/hide your action depending on the popup location.
+         * {@link java.awt.Point#getY()} is equal to -1 if the user right click on table top header.
+         * @return The last right clicked popup cell address Col(x) and row(y)
+         */
+        Point getPopupCellAdress();
 }

@@ -33,20 +33,20 @@ import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeSet;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.FilterDataSourceDecorator;
-import org.gdms.driver.DriverException;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -58,6 +58,8 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
         public static final String FACTORY_ID  ="WhereSQLFilterFactory";
         private final static I18n I18N = I18nFactory.getI18n(WhereSQLFilterFactory.class);
         private static final Logger LOGGER = Logger.getLogger(WhereSQLFilterFactory.class);
+        /** Map Table primary key to the row id of regular select * from mytable */
+        private Map<Integer, Integer> primaryKeyToRowId = new HashMap<>();
 
         @Override
         public DefaultActiveFilter getDefaultFilterValue() {
@@ -108,26 +110,13 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
                 }
                 
                 @Override
-                public boolean isSelected(int rowId, DataSource source) {
+                public boolean isSelected(int rowId, TableEditableElement source) {
                         return modelRowsIdResult.contains(rowId);
                 }
 
                 @Override
-                public void initialize(ProgressMonitor pm, DataSource source) {
-                        pm.startTask(I18N.tr("Run SQL request"), 100);
-                        modelRowsIdResult = new TreeSet<Integer>();
-                        try {
-                                FilterDataSourceDecorator filterDataSourceDecorator = new FilterDataSourceDecorator(
-                                        source);
-                                filterDataSourceDecorator.setFilter(whereText);
-                                filterDataSourceDecorator.open();
-                                modelRowsIdResult.addAll(filterDataSourceDecorator.getIndexMap());
-                                filterDataSourceDecorator.close();
-                        } catch (DriverException e1) {
-                                LOGGER.error(e1.getLocalizedMessage(),e1);
-                        } finally {
-                                pm.endTask();
-                        }
+                public void initialize(ProgressMonitor progress, TableEditableElement source) {
+                         progress.setTaskName(I18N.tr("Run filter by sql request"));
                 }
         }
 }

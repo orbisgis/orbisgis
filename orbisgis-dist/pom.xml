@@ -76,6 +76,7 @@
                             <overWriteSnapshots>false</overWriteSnapshots>
                             <overWriteIfNewer>true</overWriteIfNewer>
                             <excludeTransitive>true</excludeTransitive>
+                            <stripVersion>true</stripVersion>
                             <includeArtifactIds>h2,h2spatial-ext,h2drivers,h2spatial-ext-osgi,h2spatial,h2spatial-osgi
                                 ,slf4j-api,slf4j-log4j12,org.apache.felix.shell.gui,org.apache.felix.bundlerepository,
                                 org.osgi.service.obr,orbisgis-omanager,orbisgis-omanager-plugin,org.apache.felix.shell,
@@ -133,109 +134,91 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>sqlconsole-parser</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>orbisgis-oshell</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.shell</artifactId>
             <version>1.4.3</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>orbisgis-omanager</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>orbisgis-omanager-plugin</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.service.obr</artifactId>
             <version>1.0.2</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.bundlerepository</artifactId>
             <version>1.6.6</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.shell.gui</artifactId>
             <version>0.9.0-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <version>${org.osgi.compendium-version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${h2-package}</groupId>
             <artifactId>h2</artifactId>
             <version>${h2-version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial-ext-osgi</artifactId>
             <version>${h2-gis-version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>h2drivers</artifactId>
             <version>${h2-gis-version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial-ext</artifactId>
             <version>${h2-gis-version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial</artifactId>
             <version>${h2-gis-version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial-osgi</artifactId>
             <version>${h2-gis-version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${sl4j-version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>${sl4j-version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.scr</artifactId>
             <version>1.6.2</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
           <groupId>${project.groupId}</groupId>

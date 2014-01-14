@@ -118,7 +118,12 @@ public class WorkspaceSelectionDialog {
         // If the user clicked OK, then update the workspace.
         if (userChoice == JOptionPane.OK_OPTION) {
             String chosenWorkspacePath = comboBox.getValue();
-            validate(chosenWorkspacePath);
+            if (!ViewWorkspace.isWorkspaceValid(new File(chosenWorkspacePath))) {
+                LOGGER.error(I18N.tr("The workspace folder version is invalid " +
+                        "(!=OrbisGIS {0}), or the folder is not empty",
+                        CoreWorkspace.MAJOR_VERSION));
+                return null;
+            }
             try {
                 updateWorkspace(coreWorkspace, comboBox, currentWorkspacePath,
                         chosenWorkspacePath, defaultCheckBox.isSelected());
@@ -131,19 +136,6 @@ public class WorkspaceSelectionDialog {
         }
 
         return null;
-    }
-
-    /**
-     * Makes sure the chosen workspace is valid.
-     *
-     * @param chosenWorkspacePath Workspace path
-     */
-    private static void validate(String chosenWorkspacePath) {
-        if (!ViewWorkspace.isWorkspaceValid(new File(chosenWorkspacePath))) {
-            LOGGER.error(I18N.tr("The workspace folder version is invalid " +
-                    "(!=OrbisGIS {0}), or the folder is not empty",
-                    CoreWorkspace.MAJOR_VERSION));
-        }
     }
 
     /**

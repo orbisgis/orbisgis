@@ -31,6 +31,8 @@ package org.orbisgis.core;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.sql.Connection;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.orbisgis.core.layerModel.ILayer;
@@ -329,15 +331,24 @@ public class MapContextTest extends AbstractTest {
 		FileUtils.copyFile(new File("../src/test/resources/data/bv_sap.shx"), shx);
 		MapContext mc = new OwsMapContext();
 		mc.open(null);
-		mc.getLayerModel().addLayer(mc.createLayer("youhou",shp.toURI()));
+        ILayer layer = mc.createLayer("youhou",shp.toURI());
+        String linkedTable = layer.getTableReference();
+		mc.getLayerModel().addLayer(layer);
 		mc.getLayerModel().addLayer(mc.createLayer("yaha",originalShp.toURI()));
 		mc.close(null);
-		assertTrue(shp.delete());
-        assertTrue(dbf.delete());
-        assertTrue(shx.delete());
-		mc.open(null);
-		assertEquals(1, mc.getLayerModel().getLayerCount());
-		mc.close(null);
+        try {
+            assertTrue(shp.delete());
+            assertTrue(dbf.delete());
+            assertTrue(shx.delete());
+            mc.open(null);
+            assertEquals(1, mc.getLayerModel().getLayerCount());
+            mc.close(null);
+        } finally {
+            try(Connection connection = dataSource.getConnection()) {
+                System.out.println("DROP TABLE IF EXISTS "+linkedTable);
+                connection.createStatement().execute("DROP TABLE IF EXISTS "+linkedTable);
+            }
+        }
 	}
 
 //    @Test(expected = IllegalArgumentException.class)

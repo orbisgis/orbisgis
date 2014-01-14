@@ -41,10 +41,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * by the table editor.
  * 
  */
-public class TableEditableElementImpl extends EditableSourceImpl {
+public class TableEditableElementImpl extends EditableSourceImpl implements TableEditableElement {
         public static final String TYPE_ID = "TableEditableElement";
-        // Properties names
-        public static final String PROP_SELECTION = "selection";
         private static final Logger LOGGER = Logger.getLogger(TableEditableElementImpl.class);
         // Properties
         protected IntegerUnion selectedGeometries;
@@ -68,27 +66,18 @@ public class TableEditableElementImpl extends EditableSourceImpl {
             return i18n.tr("Table \"{0}\"", getTableReference());
         }
 
-
-        /**
-         * Get the selected geometries in the table
-         * @return
-         */
+        @Override
         public Set<Integer> getSelection() {
             return Collections.unmodifiableSet(selectedGeometries);
         }
 
-        /**
-         * Set the selected geometries in the table
-         * @param selection 
-         */
+        @Override
         public void setSelection(Set<Integer> selection) {
                 LOGGER.debug("Editable selection change");
                 Set<Integer> oldSelection = this.selectedGeometries;
                 this.selectedGeometries = new IntegerUnion(selection);
                 propertyChangeSupport.firePropertyChange(PROP_SELECTION, oldSelection, getSelection());
         }
-        
-        
 
         @Override
         public String getTypeId() {

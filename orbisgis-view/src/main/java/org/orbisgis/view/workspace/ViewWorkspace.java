@@ -49,8 +49,6 @@ public class ViewWorkspace {
     public static final String PROP_DOCKINGLAYOUTFILE = "dockingLayoutFile";
     public static final String PROP_SIFPATH = "SIFPath";
     public static final String PROP_MAPCONTEXTPATH = "mapContextPath";
-    public static final String CITY_VERSION = "La Rochelle";
-    private static final String VERSION_FILE = "org.orbisgis.version.txt";
     
     private PropertyChangeSupport propertySupport;
     private CoreWorkspace coreWorkspace;
@@ -178,41 +176,13 @@ public class ViewWorkspace {
     public void removePropertyChangeListener(String prop,PropertyChangeListener listener) {
         propertySupport.removePropertyChangeListener(prop,listener);
     }
-    private static void writeVersionFile(File versionFile) throws IOException {
-        BufferedWriter writer = null;
-        try {
-                writer = new BufferedWriter(new FileWriter(versionFile));
-                writer.write(Integer.toString(CoreWorkspace.MAJOR_VERSION));
-                writer.newLine();
-                writer.write(Integer.toString(CoreWorkspace.MINOR_VERSION));
-                writer.newLine();
-                writer.write(Integer.toString(CoreWorkspace.REVISION_VERSION));
-                writer.newLine();
-                writer.write(ViewWorkspace.CITY_VERSION);
-                writer.newLine();
-        } finally {
-                if (writer != null) {
-                        writer.close();
-                }
-        }                  
-    }
     /**
      * Create minimal resource inside an empty workspace folder
      * @param workspaceFolder
      * @throws IOException Error while writing files or the folder is not empty
      */
     public static void initWorkspaceFolder(File workspaceFolder) throws IOException {
-        if(!workspaceFolder.exists()) {
-                workspaceFolder.mkdirs();
-        }
-        if(workspaceFolder.listFiles().length!=0) {
-                // This method must be called with empty folder only
-                throw new IOException("Workspace folder must be empty");
-        }
-        File versionFile = new File(workspaceFolder,VERSION_FILE);
-        if(!versionFile.exists()) {
-                writeVersionFile(versionFile);
-        }                            
+        CoreWorkspace.initWorkspaceFolder(workspaceFolder);
     }
     /**
      * Check if the provided folder can be loaded has the workspace
@@ -231,7 +201,7 @@ public class ViewWorkspace {
         if(workspaceFolder.listFiles().length==0) {
                 return true;
         }
-        File versionFile = new File(workspaceFolder,VERSION_FILE);
+        File versionFile = new File(workspaceFolder, CoreWorkspace.VERSION_FILE);
         if(!versionFile.exists()) {
                 return false;
         }       

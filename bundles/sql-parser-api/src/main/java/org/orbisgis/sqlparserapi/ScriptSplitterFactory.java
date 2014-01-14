@@ -34,5 +34,5 @@ import javax.swing.text.Document;
  * @author Nicolas Fortin
  */
 public interface ScriptSplitterFactory {
-    ScriptSplitter create(Document document);
+    ScriptSplitter create(Document document, boolean skipComments);
 }

@@ -28,8 +28,8 @@ import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.TableLocation;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.core.ReadRowSetImpl;
-import org.orbisgis.core.api.ReversibleRowSet;
+import org.orbisgis.core.api.ReadRowSet;
+import org.orbisgis.progress.NullProgressMonitor;
 
 import javax.sql.DataSource;
 import javax.sql.RowSet;
@@ -63,7 +63,7 @@ public class RowSetTest {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer, str varchar(30), flt float)");
             st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
-            try (RowSet rs = new ReadRowSetImpl(dataSource, TableLocation.parse("test"))) {
+            try (ReadRowSet rs = new ReadRowSetImpl(dataSource, TableLocation.parse("TEST"))) {
                 rs.addRowSetListener(rowSetListener);
                 assertFalse(rowSetListener.isCursorMoved());
                 assertTrue(rs.next());
@@ -87,7 +87,44 @@ public class RowSetTest {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer, str varchar(30), flt float)");
             st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
-            try (RowSet rs = new ReadRowSetImpl(dataSource, TableLocation.parse("test"))) {
+            TableLocation table = TableLocation.parse("TEST");
+            try (ReadRowSet rs = new ReadRowSetImpl(dataSource, table)) {
+                assertTrue(rs.next());
+                assertEquals(42, rs.getInt(1));
+                assertEquals("marvin", rs.getString(2));
+                assertEquals(10.1010, rs.getFloat(3), 1e-6);
+                assertTrue(rs.next());
+                assertEquals(666, rs.getInt(1));
+                assertEquals("satan", rs.getString(2));
+                assertEquals(1/3, rs.getFloat(3), 1e-6);
+                assertFalse(rs.next());
+                assertTrue(rs.previous());
+                assertEquals(666, rs.getInt(1));
+                assertEquals("satan", rs.getString(2));
+                assertEquals(1/3, rs.getFloat(3), 1e-6);
+                assertTrue(rs.first());
+                assertEquals(42, rs.getInt(1));
+                assertEquals("marvin", rs.getString(2));
+                assertEquals(10.1010, rs.getFloat(3), 1e-6);
+                assertTrue(rs.absolute(1));
+                assertEquals(42, rs.getInt(1));
+                assertEquals("marvin", rs.getString(2));
+                assertEquals(10.1010, rs.getFloat(3), 1e-6);
+            }
+            st.execute("drop table if exists test");
+        }
+    }
+
+    @Test
+    public void testReadTableWithPk() throws SQLException {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+            st.execute("drop table if exists test");
+            st.execute("create table test (id integer primary key, str varchar(30), flt float)");
+            st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
+            TableLocation table = TableLocation.parse("TEST");
+            try (ReadRowSet rs = new ReadRowSetImpl(dataSource, table, ReadRowSetImpl.getPkName(dataSource, table), new NullProgressMonitor())) {
                 assertTrue(rs.next());
                 assertEquals(42, rs.getInt(1));
                 assertEquals("marvin", rs.getString(2));
