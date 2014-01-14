@@ -11,41 +11,28 @@ import org.orbisgis.progress.ProgressMonitor;
 import javax.sql.DataSource;
 import javax.sql.RowSet;
 import javax.sql.rowset.BaseRowSet;
+import javax.sql.rowset.JdbcRowSet;
+import javax.sql.rowset.RowSetWarning;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.NClob;
-import java.sql.PreparedStatement;
-import java.sql.Ref;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.RowId;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.sql.SQLWarning;
-import java.sql.SQLXML;
-import java.sql.Statement;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * RowSet implementation that can be only linked with a table (or view).
  *
  * @author Nicolas Fortin
  */
-public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, ResultSetMetaData, ReadRowSet {
+public class ReadRowSetImpl extends BaseRowSet implements JdbcRowSet, DataSource, ResultSetMetaData, ReadRowSet {
     private static final int WAITING_FOR_RESULTSET = 5;
-    private final TableLocation location;
+    private TableLocation location;
     private final DataSource dataSource;
     private Object[] currentRow;
     private long rowId = 0;
@@ -64,16 +51,6 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
     private static final String H2_SYSTEM_PK_COLUMN = "_ROWID_";
 
     /**
-     * Constructor.
-     * @param dataSource Connection properties
-     * @param location Table location
-     * @throws IllegalArgumentException If one of the argument is incorrect, that lead to a SQL exception
-     */
-    public ReadRowSetImpl(DataSource dataSource, TableLocation location) {
-        this(dataSource, location, "", new NullProgressMonitor());
-    }
-
-    /**
      * Constructor, row set based on primary key, significant faster on large table
      * @param dataSource Connection properties
      * @param location Table location
@@ -81,25 +58,9 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
      * @param pm Progress monitor, caching of pk values.
      * @throws IllegalArgumentException If one of the argument is incorrect, that lead to a SQL exception
      */
-    public ReadRowSetImpl(DataSource dataSource, TableLocation location, String pk_name, ProgressMonitor pm) {
+    public ReadRowSetImpl(DataSource dataSource) {
         this.dataSource = dataSource;
-        this.location = location;
-        this.pk_name = pk_name;
-        if(pk_name.isEmpty()) {
-            resultSetHolder = new ResultSetHolder(this, getCommand());
-        } else {
-            resultSetHolder = new ResultSetHolder(this, getCommand()+" LIMIT 0");
-            // Do not cache _ROWID_
-            if(!H2_SYSTEM_PK_COLUMN.equals(pk_name)) {
-                try {
-                    cachePrimaryKey(pm);
-                } catch (SQLException ex) {
-                    throw new IllegalArgumentException(ex);
-                }
-            } else {
-                rowPk = new HashMap<>();
-            }
-        }
+        resultSetHolder = new ResultSetHolder(this);
     }
 
     private void cachePrimaryKey(ProgressMonitor pm) throws SQLException {
@@ -138,7 +99,7 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
             int pkId = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), location.toString());
             if(JDBCUtilities.isH2DataBase(connection.getMetaData())) {
                 try(ResultSet rs = st.executeQuery("select _ROWID_ from "+location+" LIMIT 0")) {
-                    pkName = H2_SYSTEM_PK_COLUMN;
+                    pkName = rs.getMetaData().getColumnName(1);
                 } catch (SQLException ex) {
                     //Ignore, key does not exists
                 }
@@ -268,12 +229,60 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
 
     @Override
     public void setCommand(String s) throws SQLException {
-        throw new SQLException("Cannot set command");
+        // Extract catalog,schema and table name
+        final Pattern commandPattern = Pattern.compile("from\\s+((([\"`][^\"`]+[\"`])|(\\w+))\\.){0,2}(([\"`][^\"`]+[\"`])|(\\w+))", Pattern.CASE_INSENSITIVE);
+        final Pattern commandPatternTable = Pattern.compile("^from\\s+");
+        String table = "";
+        Matcher matcher = commandPattern.matcher(s);
+        if (matcher.find()) {
+            Matcher tableMatcher = commandPatternTable.matcher(matcher.group());
+            if(tableMatcher.find()) {
+                table = matcher.group().substring(tableMatcher.group().length());
+            }
+        }
+        if(table.isEmpty()) {
+            throw new SQLException("Command does not contain a table name, should be like this \"select * from tablename\"");
+        }
+        this.location = TableLocation.parse(table);
+        this.pk_name = ReadRowSetImpl.getPkName(dataSource, location);
+    }
+
+    @Override
+    public void initialize(String tableIdentifier, String pk_name, ProgressMonitor pm) throws SQLException {
+        initialize(TableLocation.parse(tableIdentifier), pk_name, pm);
+    }
+
+    /**
+     * Initialize this row set. This method cache primary key.
+     * @param location Table location
+     * @param pk_name Primary key name {@link org.orbisgis.core.jdbc.ReadRowSetImpl#getPkName(javax.sql.DataSource, org.h2gis.utilities.TableLocation)}
+     * @param pm Progress monitor Progression of primary key caching
+     */
+    public void initialize(TableLocation location,String pk_name, ProgressMonitor pm) throws SQLException {
+        this.location = location;
+        this.pk_name = pk_name;
+        if(!pk_name.isEmpty()) {
+            resultSetHolder.setCommand(getCommand()+" LIMIT 0");
+            // Do not cache _ROWID_
+            if(!H2_SYSTEM_PK_COLUMN.equals(pk_name)) {
+                cachePrimaryKey(pm);
+            } else {
+                rowPk = new HashMap<>();
+            }
+        } else {
+            resultSetHolder.setCommand(getCommand());
+        }
     }
 
     @Override
     public void execute() throws SQLException {
-        resultSetHolder.getResource();
+        if(resultSetHolder.getCommand() != null) {
+            throw new SQLException("This row set is already executed");
+        }
+        if(location == null) {
+            throw new SQLException("You must execute RowSet.setCommand(String sql) first");
+        }
+        initialize(location, pk_name, new NullProgressMonitor());
     }
 
     @Override
@@ -1859,6 +1868,86 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
     }
 
     @Override
+    public RowSetWarning getRowSetWarnings() throws SQLException {
+        throw new SQLFeatureNotSupportedException("getRowSetWarnings not supported");
+    }
+
+    @Override
+    public void commit() throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public boolean getAutoCommit() throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void setAutoCommit(boolean autoCommit) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void rollback() throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void rollback(Savepoint s) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void setMatchColumn(int columnIdx) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void setMatchColumn(int[] columnIdxes) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void setMatchColumn(String columnName) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void setMatchColumn(String[] columnNames) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public int[] getMatchColumnIndexes() throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public String[] getMatchColumnNames() throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void unsetMatchColumn(int columnIdx) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void unsetMatchColumn(int[] columnIdxes) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void unsetMatchColumn(String columnName) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void unsetMatchColumn(String[] columnName) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
     public <T> T unwrap(Class<T> tClass) throws SQLException {
         throw new SQLFeatureNotSupportedException("Not a RowSet wrapper");
     }
@@ -1879,9 +1968,22 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
         private static final Logger LOGGER = Logger.getLogger(ResultSetHolder.class);
         private int openCount = 0;
 
-        private ResultSetHolder(DataSource dataSource, String command) {
+        private ResultSetHolder(DataSource dataSource) {
             this.dataSource = dataSource;
+        }
+
+        /**
+         * @param command SQL command to execute
+         */
+        public void setCommand(String command) {
             this.command = command;
+        }
+
+        /**
+         * @return SQL Command, may be null if not set
+         */
+        public String getCommand() {
+            return command;
         }
 
         @Override

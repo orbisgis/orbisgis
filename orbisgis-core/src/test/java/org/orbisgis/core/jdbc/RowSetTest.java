@@ -63,7 +63,9 @@ public class RowSetTest {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer, str varchar(30), flt float)");
             st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
-            try (ReadRowSet rs = new ReadRowSetImpl(dataSource, TableLocation.parse("TEST"))) {
+            try (ReadRowSet rs = new ReadRowSetImpl(dataSource)) {
+                rs.setCommand("select * from TEST");
+                rs.execute();
                 rs.addRowSetListener(rowSetListener);
                 assertFalse(rowSetListener.isCursorMoved());
                 assertTrue(rs.next());
@@ -88,7 +90,9 @@ public class RowSetTest {
             st.execute("create table test (id integer, str varchar(30), flt float)");
             st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
             TableLocation table = TableLocation.parse("TEST");
-            try (ReadRowSet rs = new ReadRowSetImpl(dataSource, table)) {
+            try (ReadRowSet rs = new ReadRowSetImpl(dataSource)) {
+                rs.setCommand("select * from TEST");
+                rs.execute();
                 assertTrue(rs.next());
                 assertEquals(42, rs.getInt(1));
                 assertEquals("marvin", rs.getString(2));
@@ -124,7 +128,8 @@ public class RowSetTest {
             st.execute("create table test (id integer primary key, str varchar(30), flt float)");
             st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
             TableLocation table = TableLocation.parse("TEST");
-            try (ReadRowSet rs = new ReadRowSetImpl(dataSource, table, ReadRowSetImpl.getPkName(dataSource, table), new NullProgressMonitor())) {
+            try (ReadRowSetImpl rs = new ReadRowSetImpl(dataSource)) {
+                rs.initialize(table, "id",new NullProgressMonitor());
                 assertTrue(rs.next());
                 assertEquals(42, rs.getInt(1));
                 assertEquals("marvin", rs.getString(2));

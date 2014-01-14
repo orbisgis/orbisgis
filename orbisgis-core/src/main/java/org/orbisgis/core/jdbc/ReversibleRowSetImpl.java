@@ -34,6 +34,7 @@ import org.orbisgis.progress.ProgressMonitor;
 
 import javax.sql.DataSource;
 import javax.swing.event.UndoableEditListener;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,12 +44,19 @@ import java.util.List;
 public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRowSet {
     private final List<UndoableEditListener> undoListenerList = new ArrayList<>();
 
-    public ReversibleRowSetImpl(DataSource dataSource, TableLocation location) {
-        super(dataSource, location);
+    public ReversibleRowSetImpl(DataSource dataSource) {
+        super(dataSource);
     }
 
-    public ReversibleRowSetImpl(DataSource dataSource, TableLocation location, String pk_name, ProgressMonitor pm) {
-        super(dataSource, location, pk_name, pm);
+    /**
+     * Initialize this row set
+     * @param location Table location
+     * @param pk_name Primary key name {@link org.orbisgis.core.jdbc.ReadRowSetImpl#getPkName(javax.sql.DataSource, org.h2gis.utilities.TableLocation)}
+     * @param pm Progress monitor Progression of primary key caching
+     */
+    public ReversibleRowSetImpl(DataSource dataSource, TableLocation location, String pk_name, ProgressMonitor pm) throws SQLException {
+        super(dataSource);
+        initialize(location, pk_name, pm);
     }
 
     @Override

@@ -73,6 +73,7 @@ import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
 import javax.swing.*;
 import javax.swing.event.TreeExpansionListener;
 import java.awt.*;
@@ -83,6 +84,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -114,6 +116,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     private PropertyChangeListener activeLayerListener = EventHandler.create(PropertyChangeListener.class,this,"onActiveLayerChange","");
     private ActionCommands actions = new ActionCommands();
     private MapEditorPersistence mapEditorPersistence = new MapEditorPersistence();
+    private DataSource dataSource;
 
     private boolean userChangedWidth = false;
     private boolean userChangedHeight = false;
@@ -121,8 +124,9 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     /**
      * Constructor
      */
-    public MapEditor() {
+    public MapEditor(DataSource dataSource) {
         super(new BorderLayout());
+        this.dataSource = dataSource;
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName("map_editor");
         updateMapLabel();
@@ -678,22 +682,22 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 Set<Integer> selection = layer.getSelection();
                 // If there is a nonempty selection, then ask the user to name it.
                 if (!selection.isEmpty()) {
-                    String newName = CreateSourceFromSelection.showNewNameDialog(
-                            this, layer.getDataSource());
-                    // If newName is not null, then the user clicked OK and
-                    // entered a valid name.
-                    if (newName != null) {
-                        BackgroundManager bm = Services.getService(
-                                BackgroundManager.class);
-                        bm.backgroundOperation(
-                                new CreateSourceFromSelection(
-                                        layer.getDataSource(),
-                                        selection, newName));
+                    try {
+                        String newName = CreateSourceFromSelection.showNewNameDialog(
+                                this,dataSource, layer.getTableReference());
+                        // If newName is not null, then the user clicked OK and
+                        // entered a valid name.
+                        if (newName != null) {
+                            BackgroundManager bm = Services.getService(
+                                    BackgroundManager.class);
+                            bm.backgroundOperation(new CreateSourceFromSelection(dataSource,selection,
+                                    layer.getTableReference(), newName));
+                        }
+                    } catch (SQLException ex) {
+                        GUILOGGER.error(ex.getLocalizedMessage(), ex);
                     }
                 } else {
-                    GUILOGGER.warn(
-                            I18N.tr("Layer {0} has no selected geometries.",
-                                    layer.getName()));
+                    GUILOGGER.warn(I18N.tr("Layer {0} has no selected geometries.",layer.getName()));
                 }
             }
         }
@@ -823,20 +827,18 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         }
 
         @Override
-        public void run(org.orbisgis.progress.ProgressMonitor pm) {
+        public void run(ProgressMonitor progress) {
+            ProgressMonitor pm = progress.startTask(editableList.length);
             ILayer dropLayer = mapContext.getLayerModel();
             int i=0;
             for(EditableElement eElement : editableList) {
-                pm.progressTo(100 * i++ / editableList.length);
                 if(eElement instanceof EditableSource) {
                     try {
                         EditableSource edit = (EditableSource) eElement;
-                        if(edit.getDataSource() == null){
-                            edit.open(new NullProgressMonitor());
-                            edit.close(new NullProgressMonitor());
+                        if(!edit.isOpen()){
+                            edit.open(pm);
                         }
-                        DataSource source = edit.getDataSource();
-                        dropLayer.addLayer(mapContext.createLayer(source));
+                        dropLayer.addLayer(mapContext.createLayer(edit.getTableReference()));
                     } catch (LayerException e) {
                         //This layer can not be inserted, we continue to the next layer
                         GUILOGGER.warn(I18N.tr("Unable to create and drop the layer"),e);

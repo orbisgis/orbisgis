@@ -66,6 +66,7 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
@@ -73,12 +74,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceListener;
-import org.gdms.data.edition.EditionEvent;
-import org.gdms.data.edition.EditionListener;
-import org.gdms.data.edition.MultipleEditionEvent;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
@@ -187,6 +182,8 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
             activeLayer = (ILayer)evt.getNewValue();
             if (activeLayer != null) {
                 activeLayer.addLayerListener(layerListener);
+                //TODO add jdbc listener
+                /*
                 if (activeLayer.getDataSource().isEditable()) {
                     try {
                         activeLayer.getDataSource().addEditionListener(layerListener);
@@ -195,6 +192,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                     }
                 }
                 activeLayer.getDataSource().addDataSourceListener(layerListener);
+                */
             }
             setTool(ToolManager.this.defaultTool);
             recalculateHandlers();
@@ -203,10 +201,13 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         private void removeSourceListener() {
             if (activeLayer != null) {
                 activeLayer.removeLayerListener(layerListener);
+                //TODO remove jdbc listener
+                /*
                 if (activeLayer.getDataSource().isEditable()) {
                     activeLayer.getDataSource().removeEditionListener(layerListener);
                 }
                 activeLayer.getDataSource().removeDataSourceListener(layerListener);
+                */
                 setTool(defaultTool);
             }
         }
@@ -659,7 +660,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                         return;
                 }
 
-                DataSource sds = activeLayer.getDataSource();
+                String tableName = activeLayer.getTableReference();
                 Set<Integer> selection = activeLayer.getSelection();
                 try {
                         for (int selectedRow : selection) {
@@ -671,7 +672,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                                         currentHandlers.addAll(Arrays.asList(handlers));
                                 }
                         }
-                } catch (DriverException e) {
+                } catch (SQLException e) {
                         UILOGGER.warn(
                                 I18N.tr("Cannot recalculate the handlers"), e);
                 }

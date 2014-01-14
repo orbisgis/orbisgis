@@ -2,58 +2,56 @@ package org.orbisgis.core;
 
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.api.DataManager;
+import org.orbisgis.core.api.ReversibleRowSet;
+import org.orbisgis.core.jdbc.ReversibleRowSetImpl;
 import org.orbisgis.utils.FileUtils;
 
+import javax.sql.RowSetEvent;
+import javax.sql.RowSetListener;
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.FilteredRowSet;
 import javax.sql.rowset.JoinRowSet;
-import javax.sql.rowset.RowSetFactory;
-import javax.sql.rowset.RowSetProvider;
 import javax.sql.DataSource;
 import javax.sql.rowset.JdbcRowSet;
 import javax.sql.rowset.WebRowSet;
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.net.URI;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implementation of the DataManager service.
  * @author Nicolas Fortin
  */
-public class DataManagerImpl implements DataManager {
+public class DataManagerImpl implements DataManager,RowSetListener {
     private DataSource dataSource;
+    private Map<String, WeakReference<ReversibleRowSet>> rowSetMap = new HashMap<>();
 
     @Override
     public CachedRowSet createCachedRowSet() throws SQLException {
-        RowSetFactory factory = RowSetProvider.newFactory();
-        return factory.createCachedRowSet();
+        throw new SQLFeatureNotSupportedException();
     }
 
     @Override
     public FilteredRowSet createFilteredRowSet() throws SQLException {
-        RowSetFactory factory = RowSetProvider.newFactory();
-        return factory.createFilteredRowSet();
+        throw new SQLFeatureNotSupportedException();
     }
 
     @Override
     public JdbcRowSet createJdbcRowSet() throws SQLException {
-        return getRowSet();
+        return new ReversibleRowSetImpl(dataSource);
     }
 
     @Override
     public JoinRowSet createJoinRowSet() throws SQLException {
-        RowSetFactory factory = RowSetProvider.newFactory();
-        return factory.createJoinRowSet();
+        throw new SQLFeatureNotSupportedException();
     }
 
     @Override
     public WebRowSet createWebRowSet() throws SQLException {
-        RowSetFactory factory = RowSetProvider.newFactory();
-        return factory.createWebRowSet();
+        throw new SQLFeatureNotSupportedException();
     }
 
     /**
@@ -66,13 +64,6 @@ public class DataManagerImpl implements DataManager {
     @Override
     public void dispose() {
 
-    }
-
-    private JdbcRowSet getRowSet() throws SQLException {
-        RowSetFactory factory = RowSetProvider.newFactory();
-        JdbcRowSet rowSet = factory.createJdbcRowSet();
-        rowSet.setDataSourceName(dataSource.toString());
-        return rowSet;
     }
 
     private String findUniqueTableName(String originalTableName) throws SQLException{
@@ -101,8 +92,16 @@ public class DataManagerImpl implements DataManager {
                 DatabaseMetaData meta = connection.getMetaData();
                 try(ResultSet tablesRs = meta.getTables(null,null,null,null)) {
                     while(tablesRs.next()) {
-                        if(tablesRs.getString("REMARKS").equals(path.getAbsolutePath())) {
-                            return new TableLocation(tablesRs.getString("TABLE_CAT"), tablesRs.getString("TABLE_SCHEM"), tablesRs.getString("TABLE_NAME")).toString();
+                        String remarks = tablesRs.getString("REMARKS");
+                        if(remarks!= null && remarks.toLowerCase().startsWith("file:")) {
+                            try {
+                                URI filePath = URI.create(remarks);
+                                if(filePath.equals(path.toURI())) {
+                                    return new TableLocation(tablesRs.getString("TABLE_CAT"), tablesRs.getString("TABLE_SCHEM"), tablesRs.getString("TABLE_NAME")).toString();
+                                }
+                            } catch (Exception ex) {
+                                //Ignore, not an URI
+                            }
                         }
                     }
                 }
@@ -135,5 +134,20 @@ public class DataManagerImpl implements DataManager {
             rs.close();
         }
         return exists;
+    }
+
+    @Override
+    public void rowSetChanged(RowSetEvent event) {
+        //TODO raise this event on other rowset
+    }
+
+    @Override
+    public void rowChanged(RowSetEvent event) {
+        //TODO raise this event on other rowset
+    }
+
+    @Override
+    public void cursorMoved(RowSetEvent event) {
+        //TODO raise this event on other rowset
     }
 }
