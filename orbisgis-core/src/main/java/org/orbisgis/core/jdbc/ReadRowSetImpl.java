@@ -1,8 +1,11 @@
 package org.orbisgis.core.jdbc;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.api.ReadRowSet;
@@ -22,6 +25,7 @@ import java.net.URL;
 import java.sql.*;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,6 +54,7 @@ public class ReadRowSetImpl extends BaseRowSet implements JdbcRowSet, DataSource
     private Map<Integer, Object> rowPk;
     private String pk_name = "";
     private static final String H2_SYSTEM_PK_COLUMN = "_ROWID_";
+    private int firstGeometryIndex = -1;
 
     /**
      * Constructor, row set based on primary key, significant faster on large table
@@ -1199,7 +1204,7 @@ public class ReadRowSetImpl extends BaseRowSet implements JdbcRowSet, DataSource
 
     @Override
     public boolean isWrapperFor(Class<?> aClass) throws SQLException {
-        return false;
+        return aClass.isAssignableFrom(SpatialResultSet.class);
     }
 
     // DataSource methods
@@ -1952,7 +1957,62 @@ public class ReadRowSetImpl extends BaseRowSet implements JdbcRowSet, DataSource
 
     @Override
     public <T> T unwrap(Class<T> tClass) throws SQLException {
-        throw new SQLFeatureNotSupportedException("Not a RowSet wrapper");
+        if(tClass.isAssignableFrom(SpatialResultSet.class)) {
+            return tClass.cast(this);
+        } else {
+            throw new SQLFeatureNotSupportedException("Not a RowSet wrapper");
+        }
+    }
+
+    @Override
+    public Geometry getGeometry(int columnIndex) throws SQLException {
+        Object field =  getObject(columnIndex);
+        if(field==null) {
+            return null;
+        }
+        if(field instanceof Geometry) {
+            return (Geometry)field;
+        } else {
+            throw new SQLException("The column "+getMetaData().getColumnName(columnIndex)+ " is not a Geometry");
+        }
+    }
+
+    @Override
+    public Geometry getGeometry(String columnLabel) throws SQLException {
+        Object field =  getObject(columnLabel);
+        if(field==null) {
+            return null;
+        }
+        if(field instanceof Geometry) {
+            return (Geometry)field;
+        } else {
+            throw new SQLException("The column "+columnLabel+ " is not a Geometry");
+        }
+    }
+
+    @Override
+    public Geometry getGeometry() throws SQLException {
+        if(firstGeometryIndex == -1) {
+            try(Connection connection = dataSource.getConnection()) {
+                List<String> geoFields = SFSUtilities.getGeometryFields(connection, location);
+                if(!geoFields.isEmpty()) {
+                    firstGeometryIndex = JDBCUtilities.getFieldIndex(getMetaData(), geoFields.get(0));
+                } else {
+                    throw new SQLException("No geometry column found");
+                }
+            }
+        }
+        return getGeometry(firstGeometryIndex);
+    }
+
+    @Override
+    public void updateGeometry(int columnIndex, Geometry geometry) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void updateGeometry(String columnLabel, Geometry geometry) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
 
     /**
@@ -2044,7 +2104,7 @@ public class ReadRowSetImpl extends BaseRowSet implements JdbcRowSet, DataSource
          * Even if the timer should close the result set, the connection is not closed
          */
         public void onResourceClosed() {
-            openCount--;
+            openCount = Math.max(0, openCount-1);
         }
     }
 

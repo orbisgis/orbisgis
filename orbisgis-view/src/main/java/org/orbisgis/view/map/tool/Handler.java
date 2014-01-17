@@ -55,11 +55,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
+import com.vividsolutions.jts.geom.TopologyException;
 import org.orbisgis.core.map.MapTransform;
 
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.gdms.geometryUtils.GeometryException;
 
 /**
  * Implementations of this interface represents the handlers of the geometries
@@ -107,7 +107,7 @@ public interface Handler {
 	 *             If the vertex cannot be removed due to geometrical
 	 *             constraints (i.e. a line must have at least two points, ...)
 	 */
-	public Geometry remove() throws GeometryException;
+	public Geometry remove() throws TopologyException;
 
 	/**
 	 * Returns the geometry id this handler belongs to

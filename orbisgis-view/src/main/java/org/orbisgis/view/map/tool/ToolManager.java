@@ -70,10 +70,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
+import javax.sql.RowSet;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.SFSUtilities;
+import org.orbisgis.core.DataManagerImpl;
+import org.orbisgis.core.Services;
+import org.orbisgis.core.api.DataManager;
+import org.orbisgis.core.api.ReversibleRowSet;
 import org.orbisgis.core.layerModel.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
@@ -131,6 +137,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         private AreaSymbolizer areaSymbolizer;
         private LineSymbolizer lineSymbolizer;
         private PointSymbolizer pointSymbolizer;
+        private ReversibleRowSet activeLayerRowSet;
 
 
 
@@ -180,8 +187,28 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         public void activeLayerChanged(PropertyChangeEvent evt) {
             removeSourceListener();
             activeLayer = (ILayer)evt.getNewValue();
+            if(activeLayerRowSet != null) {
+                try {
+                    activeLayerRowSet.close();
+                } catch (SQLException ex ) {
+                    UILOGGER.error(ex.getLocalizedMessage(), ex);
+                }
+            }
             if (activeLayer != null) {
                 activeLayer.addLayerListener(layerListener);
+                DataManager dataManager = Services.getService(DataManager.class);
+                try {
+                    RowSet rowSet = dataManager.createJdbcRowSet();
+                    if(rowSet instanceof ReversibleRowSet) {
+                        activeLayerRowSet = (ReversibleRowSet)rowSet;
+                        activeLayerRowSet.setCommand("SELECT * FROM "+activeLayer.getTableReference());
+                        activeLayerRowSet.execute();
+                    } else {
+                        UILOGGER.warn(I18N.tr("Unable to generate edition tool on the table %s for the map editor, edition is deactivated", activeLayer.getTableReference()));
+                    }
+                } catch (SQLException ex ) {
+                    UILOGGER.warn(ex.getLocalizedMessage(), ex);
+                }
                 //TODO add jdbc listener
                 /*
                 if (activeLayer.getDataSource().isEditable()) {
@@ -193,6 +220,8 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 }
                 activeLayer.getDataSource().addDataSourceListener(layerListener);
                 */
+            } else {
+                activeLayerRowSet = null;
             }
             setTool(ToolManager.this.defaultTool);
             recalculateHandlers();
@@ -381,13 +410,16 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                                 error = e.getMessage();
                         }
                         Graphics2D g2 = (Graphics2D) g;
-                        for (int i = 0; i < geomToDraw.size(); i++) {
-                                Geometry geometry = geomToDraw.get(i);
+                        for (Geometry geometry : geomToDraw) {
+                            try {
                                 BufferedImage bi = new BufferedImage(mapTransform.getWidth(),
                                         mapTransform.getHeight(), BufferedImage.TYPE_INT_ARGB);
                                 Graphics2D graphics = bi.createGraphics();
                                 drawFeature(graphics, geometry, mapTransform, new AllowAllRenderContext());
                                 g2.drawImage(bi, 0, 0, null);
+                            } catch (SQLException ex) {
+                                UILOGGER.debug(ex.getLocalizedMessage(), ex);
+                            }
                         }
                         if (adjustedPoint != null) {
                                 g2.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND,
@@ -416,8 +448,6 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                         UILOGGER.error(I18N.tr("Error while drawing the feature, ")+ pe.getMessage());
                 } catch(IOException ie) {
                         UILOGGER.error(I18N.tr("Error while accessing data, ")+ ie.getMessage());
-                } catch(DriverException de){
-                        UILOGGER.error(I18N.tr("Error while accessing data, ")+ de.getMessage());
                 }
         }
 
@@ -656,16 +686,14 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 clearHandlers();
 
                 if ((activeLayer == null) || (!activeLayer.isVisible())
-                        || (activeLayer.getSelection().isEmpty())) {
+                        || (activeLayer.getSelection().isEmpty()) || activeLayerRowSet == null) {
                         return;
                 }
-
-                String tableName = activeLayer.getTableReference();
                 Set<Integer> selection = activeLayer.getSelection();
                 try {
                         for (int selectedRow : selection) {
                                 Primitive p;
-                                Geometry geometry = sds.getGeometry(selectedRow);
+                                Geometry geometry = activeLayerRowSet.getGeometry(selectedRow);
                                 if (geometry != null) {
                                         p = new Primitive(geometry, selectedRow);
                                         Handler[] handlers = p.getHandlers();
@@ -745,34 +773,10 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         }
 
         private class ToolLayerListener extends LayerListenerAdapter implements
-                LayerListener, EditionListener, DataSourceListener {
+                LayerListener {
 
                 @Override
                 public void selectionChanged(SelectionEvent e) {
-                        recalculateHandlers();
-                }
-
-                @Override
-                public void multipleModification(MultipleEditionEvent e) {
-                        recalculateHandlers();
-                }
-
-                @Override
-                public void singleModification(EditionEvent e) {
-                        recalculateHandlers();
-                }
-
-                @Override
-                public void cancel(DataSource ds) {
-                        clearHandlers();
-                }
-
-                @Override
-                public void commit(DataSource ds) {
-                }
-
-                @Override
-                public void open(DataSource ds) {
                         recalculateHandlers();
                 }
         }
@@ -825,12 +829,12 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
          * @param mapTransform
          * @param allowAllRenderContext
          * @throws IOException
-         * @throws DriverException
+         * @throws java.sql.SQLException
          * @throws ParameterException
          */
         private void drawFeature(Graphics2D graphics, Geometry geometry,
                         MapTransform mapTransform, AllowAllRenderContext allowAllRenderContext)
-                        throws IOException, DriverException, ParameterException {
+                        throws IOException, SQLException, ParameterException {
                 if(geometry instanceof com.vividsolutions.jts.geom.Point ||
                         geometry instanceof  MultiPoint){
                         pointSymbolizer.draw(graphics, null, -1, false, mapTransform, geometry, allowAllRenderContext);
@@ -839,7 +843,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 } else if(geometry instanceof Polygon || geometry instanceof MultiPolygon){
                         areaSymbolizer.draw(graphics, null, -1, false, mapTransform, geometry, allowAllRenderContext);
                 } else {
-                        //We are dealing with a geoemtry collection
+                        //We are dealing with a geometry collection
                         GeometryCollection gc = (GeometryCollection) geometry;
                         int num = gc.getNumGeometries();
                         for(int i=0; i<num; i++){

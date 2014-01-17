@@ -1,8 +1,8 @@
 package org.orbisgis.core.api;
 
+import org.h2gis.utilities.SpatialResultSet;
 import org.orbisgis.progress.ProgressMonitor;
 
-import javax.sql.RowSet;
 import javax.sql.rowset.JdbcRowSet;
 import java.sql.SQLException;
 
@@ -10,7 +10,7 @@ import java.sql.SQLException;
  * A ReadRowSet can be initialized using {@link JdbcRowSet#setCommand(String)}
  * @author Nicolas Fortin
  */
-public interface ReadRowSet extends JdbcRowSet {
+public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
     /**
      * @return Number of rows inside the table
      */
