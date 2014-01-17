@@ -39,12 +39,6 @@ import java.beans.PropertyChangeListener;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import org.apache.log4j.Logger;
-import org.gdms.data.ClosedDataSourceException;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceListener;
-import org.gdms.data.edition.EditionEvent;
-import org.gdms.data.edition.EditionListener;
-import org.gdms.data.edition.MultipleEditionEvent;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.*;
 import org.orbisgis.core.map.MapTransform;
@@ -172,17 +166,7 @@ public class MapControl extends JComponent implements ContainerListener {
 	private void addLayerListenerRecursively(ILayer rootLayer,
 			RefreshLayerListener refreshLayerListener) {
 		rootLayer.addLayerListener(refreshLayerListener);
-		DataSource dataSource = rootLayer.getDataSource();
-		if (dataSource != null) {
-                        if (dataSource.isEditable()) {
-                                try {
-                                        dataSource.addEditionListener(refreshLayerListener);
-                                } catch (UnsupportedOperationException ex) {
-                                        LOGGER.warn(I18N.tr("The MapEditor cannot listen to source modifications"), ex);
-                                }
-                        }
-			dataSource.addDataSourceListener(refreshLayerListener);
-		}
+        // TODO add edition listener on EditorManager
 		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
 			addLayerListenerRecursively(rootLayer.getLayer(i),
 					refreshLayerListener);
@@ -192,17 +176,7 @@ public class MapControl extends JComponent implements ContainerListener {
 	private void removeLayerListenerRecursively(ILayer rootLayer,
 			RefreshLayerListener refreshLayerListener) {
 		rootLayer.removeLayerListener(refreshLayerListener);
-		DataSource dataSource = rootLayer.getDataSource();
-		if (dataSource != null) {
-                        if (dataSource.isEditable()) {
-                                try {
-                                        dataSource.removeEditionListener(refreshLayerListener);
-                                } catch (UnsupportedOperationException ex) {
-                                        // ignore
-                                }
-                        }
-			dataSource.removeDataSourceListener(refreshLayerListener);
-		}
+        // TODO remove edition listener on EditorManager
 		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
 			removeLayerListenerRecursively(rootLayer.getLayer(i),
 					refreshLayerListener);
@@ -321,12 +295,7 @@ public class MapControl extends JComponent implements ContainerListener {
                                 pm = this.pm;
                         }
                         try {
-                                mapContext.draw(mapTransform, pm);
-                        } catch (ClosedDataSourceException e) {
-                                invalidateImage();
-                                if (!cancel) {
-                                        throw e;
-                                }
+                            mapContext.draw(mapTransform, pm);
                         } finally {
                                 awaitingDrawing.set(false);
                                 MapControl.this.repaint();
