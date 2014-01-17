@@ -29,10 +29,15 @@
 package org.orbisgis.view.map.jobs;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Set;
-import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
+import java.util.SortedSet;
+
+import org.apache.log4j.Logger;
+import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.core.jdbc.ReadTable;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
@@ -40,97 +45,59 @@ import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
+
 /**
  * Zoom to provided layer selection
  * @author Nicolas Fortin
  */
 public class ZoomToSelection implements BackgroundJob {
         private static final I18n I18N = I18nFactory.getI18n(ZoomToSelection.class);
-        
+        private static final Logger LOGGER = Logger.getLogger(ZoomToSelection.class);
         private MapContext mapContext;
         private ILayer[] layers;
+        private DataSource dataSource;
 
-        public ZoomToSelection(MapContext mapContext, ILayer[] layers) {
-                this.mapContext = mapContext;
-                this.layers = layers;
-        }        
-        
-        @Override
+        public ZoomToSelection(MapContext mapContext, ILayer[] layers, DataSource dataSource) {
+            this.mapContext = mapContext;
+            this.layers = layers;
+            this.dataSource = dataSource;
+        }
+
+    @Override
         public void run(ProgressMonitor pm) {
+            try {
                 Envelope selectionEnvelope = new Envelope();
                 for(ILayer layer : layers) {
-                        try {
-                                if(layer.isVisible()) {
-                                        Envelope layerEnv = getLayerSelectionEnvelope(pm, layer);
-                                        if(layerEnv!=null) {
-                                                selectionEnvelope.expandToInclude(layerEnv);
-                                        }
-                                        if(pm.isCancelled()) {
-                                                return;
-                                        }
-                                }
-                        } catch(DriverException ex) {
-                                I18N.tr("Unable to compute the zoom extent",ex);
-                                return;
+                    if(layer.isVisible()) {
+                        Envelope layerEnv = getLayerSelectionEnvelope(pm, layer);
+                        if(layerEnv!=null) {
+                            selectionEnvelope.expandToInclude(layerEnv);
                         }
+                        if(pm.isCancelled()) {
+                            return;
+                        }
+                    }
                 }
                 if(!selectionEnvelope.isNull()) {
-                        mapContext.setBoundingBox(selectionEnvelope);
+                    mapContext.setBoundingBox(selectionEnvelope);
                 }
+            } catch (SQLException ex ){
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+            }
         }
 
-        private Envelope getLayerSelectionEnvelope(ProgressMonitor pm, ILayer layer) throws DriverException {
-                Envelope selectionEnvelope = new Envelope();
-                DataSource dataSource = layer.getDataSource();
-                if(dataSource!=null) {
-                        pm.startTask(I18N.tr("Compute envelope of {0}",layer.getName()), 100);
-                        boolean isVectorial = dataSource.isVectorial();
-                        boolean isRaster = dataSource.isRaster();
-                        //Evaluate the selection bounding box
-                        Set<Integer> modelSelection = layer.getSelection();
-                        int selectionSize = modelSelection.size();
-                        int done = 0;
-                        if (isVectorial) {
-                                for (int modelId : modelSelection) {
-                                        Envelope rowEnvelope = getVectorialRowEnvelope(dataSource,modelId);
-                                        if (rowEnvelope != null) {
-                                                selectionEnvelope.expandToInclude(rowEnvelope);
-                                        }
-                                        if (pm.isCancelled()) {
-                                                return null;
-                                        } else {
-                                                pm.progressTo(done / selectionSize * 100);
-                                        }
-                                        done++;
-                                }
-                        } else if (isRaster) {
-                                for (int modelId : modelSelection) {
-                                        selectionEnvelope.expandToInclude(getRasterRowEnvelope(dataSource, modelId));
-                                        if (pm.isCancelled()) {
-                                                return null;
-                                        } else {
-                                                pm.progressTo(done / selectionSize * 100);
-                                        }
-                                        done++;
-                                }
-                        }
-                        pm.endTask();
-                        return selectionEnvelope;
+        private Envelope getLayerSelectionEnvelope(ProgressMonitor pm, ILayer layer) throws SQLException {
+            try(Connection connection = dataSource.getConnection()) {
+                SortedSet<Integer> sortedSet;
+                Set<Integer> data = layer.getSelection();
+                if(data instanceof SortedSet) {
+                    sortedSet = (SortedSet<Integer>)data;
                 } else {
-                        return null;
+                    sortedSet = new IntegerUnion(data);
                 }
-        }
-
-        private Envelope getVectorialRowEnvelope(DataSource dataSource, int rowId) throws DriverException {
-                Geometry geometry = dataSource.getGeometry(rowId);
-                if (geometry != null) {
-                        return geometry.getEnvelopeInternal();
-                }
-                return null;
-        }
-        
-        private Envelope getRasterRowEnvelope(DataSource dataSource, int rowId) throws DriverException {
-                return dataSource.getRaster(rowId).getMetadata().getEnvelope();
+                return ReadTable.getTableSelectionEnvelope(connection, layer.getTableReference(),sortedSet, pm);
+            }
         }
         
         @Override

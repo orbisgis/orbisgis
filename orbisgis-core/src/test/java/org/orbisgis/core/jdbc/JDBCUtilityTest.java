@@ -28,8 +28,10 @@
  */
 package org.orbisgis.core.jdbc;
 
+import com.vividsolutions.jts.geom.Envelope;
 import org.h2.Driver;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -39,11 +41,7 @@ import org.orbisgis.progress.NullProgressMonitor;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -56,7 +54,7 @@ public class JDBCUtilityTest {
     @BeforeClass
     public static void tearUp() throws Exception {
         Driver.load();
-        connection = SpatialH2UT.createSpatialDataBase(JDBCUtilityTest.class.getSimpleName(), false);
+        connection = SFSUtilities.wrapConnection(SpatialH2UT.createSpatialDataBase(JDBCUtilityTest.class.getSimpleName(), true));
     }
 
     @AfterClass
@@ -141,6 +139,23 @@ public class JDBCUtilityTest {
             props = ReadTable.computeStatsLocal(connection, table, "ROWID", new IntegerUnion(1,10), new NullProgressMonitor());
             checkStats(props);
             st.execute("DROP TABLE "+table);
+        }
+    }
+
+    private static SortedSet<Integer> getRows(Integer... rowId) {
+        SortedSet<Integer> rows = new IntegerUnion();
+        Collections.addAll(rows, rowId);
+        return rows;
+    }
+
+    @Test
+    public void testReadTableSelectionEnvelope() throws SQLException {
+        try(Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS PTS");
+            st.execute("CREATE TABLE PTS(id integer primary key auto_increment, the_geom POINT)");
+            st.execute("INSERT INTO PTS(the_geom) VALUES ('POINT(10 10)'),('POINT(15 15)'),('POINT(20 20)'),('POINT(25 25)')");
+            assertEquals(new Envelope(10,15,10,15), ReadTable.getTableSelectionEnvelope(connection, "PTS", getRows(1, 2), new NullProgressMonitor()));
+            st.execute("DROP TABLE IF EXISTS PTS");
         }
     }
 }

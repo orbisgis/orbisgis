@@ -28,7 +28,10 @@
  */
 package org.orbisgis.core.jdbc;
 
+import com.vividsolutions.jts.geom.Envelope;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
@@ -42,15 +45,8 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
+
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 /**
@@ -219,5 +215,53 @@ public class ReadTable {
         res[STATS.MAX.ordinal()] = Double.valueOf(stats.getMax()).toString();
         res[STATS.STDDEV_SAMP.ordinal()] = Double.valueOf(stats.getStandardDeviation()).toString();
         return res;
+    }
+
+    /**
+     * Retrieve the envelope of selection of lines
+     * @param connection Active connection
+     * @param tableName Table identifier [[catalog.]schema.]table
+     * @param rowsId Line number [1-n]
+     * @param pm Progress monitor
+     * @return Envelope of rows
+     * @throws SQLException
+     */
+    public static Envelope getTableSelectionEnvelope(Connection connection, String tableName, SortedSet<Integer> rowsId, ProgressMonitor pm) throws SQLException {
+        try(Statement st = connection.createStatement()) {
+            PropertyChangeListener cancelListener =  EventHandler.create(PropertyChangeListener.class, st, "cancel");
+            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,cancelListener);
+            try {
+                Envelope selectionEnvelope = null;
+                List<String> geomFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName));
+                if(geomFields.isEmpty()) {
+                    throw new SQLException(I18N.tr("Table table {0} does not contain any geometry fields", tableName));
+                }
+                String geomField = geomFields.get(0);
+                int offset = rowsId.first() - 1;
+                String request = "SELECT ST_Envelope(`"+geomField+"`, ST_SRID(`"+geomField+"`)) FROM "+tableName+ " LIMIT "+(rowsId.last()-rowsId.first()+1)+" OFFSET "+offset;
+                ProgressMonitor selectPm = pm.startTask(rowsId.size());
+                try(SpatialResultSet rs = st.executeQuery(request).unwrap(SpatialResultSet.class)) {
+                    //Evaluate the selection bounding box
+                    for(int modelId : rowsId) {
+                        if(rs.absolute(modelId-offset)) {
+                            Envelope rowEnvelope = rs.getGeometry().getEnvelopeInternal();
+                            if(selectionEnvelope != null) {
+                                selectionEnvelope.expandToInclude(rowEnvelope);
+                            } else {
+                                selectionEnvelope = rowEnvelope;
+                            }
+                            if(pm.isCancelled()) {
+                                throw new SQLException("Operation canceled by user");
+                            } else {
+                                selectPm.endTask();
+                            }
+                        }
+                    }
+                }
+                return selectionEnvelope;
+            } finally {
+                pm.removePropertyChangeListener(cancelListener);
+            }
+        }
     }
 }

@@ -29,6 +29,7 @@ package org.orbisgis.view.geocatalog;
 
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.jdbc.ReadRowSetImpl;
 import org.orbisgis.core.jdbc.ReversibleRowSetImpl;
 import org.orbisgis.core.Services;
@@ -111,10 +112,11 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
             throws UnsupportedOperationException, EditableElementException {
         if(rowSet == null) {
             DataSource dataSource = Services.getService(DataSource.class);
-            if(dataSource != null) {
+            DataManager dataManager = Services.getService(DataManager.class);
+            if(dataSource != null && dataManager != null) {
                 try {
                     String pkName = ReadRowSetImpl.getPkName(dataSource, TableLocation.parse(tableReference));
-                    rowSet = new ReversibleRowSetImpl(dataSource, TableLocation.parse(tableReference), pkName, progressMonitor);
+                    rowSet = new ReversibleRowSetImpl(dataSource, dataManager, TableLocation.parse(tableReference), pkName, progressMonitor);
                 } catch (SQLException | IllegalArgumentException ex) {
                     throw new EditableElementException(ex);
                 }

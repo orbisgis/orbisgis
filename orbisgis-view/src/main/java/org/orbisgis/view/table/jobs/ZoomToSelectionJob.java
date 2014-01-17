@@ -32,6 +32,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.core.jdbc.ReadTable;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
@@ -39,11 +40,14 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Fetch selection extent and apply it to the map context.
@@ -74,44 +78,13 @@ public class ZoomToSelectionJob implements BackgroundJob {
         @Override
         public void run(ProgressMonitor pm) {
                 Envelope selectionEnvelope = null;
-                try(Connection connection = dataSource.getConnection();
-                    Statement st = connection.createStatement();
-                ) {
-                    List<String> geomFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName));
-                    if(geomFields.isEmpty()) {
-                        throw new SQLException(I18N.tr("Table table {0} does not contain any geometry fields", tableName));
-                    }
-                    String geomField = geomFields.get(0);
-                    String request = "SELECT ST_XMIN(ST_Envelope(`"+geomField+"`)) XMIN, " +
-                            "ST_XMAX(ST_Envelope(`"+geomField+"`)) XMAX, " +
-                            "ST_YMIN(ST_Envelope(`"+geomField+"`)) YMIN, " +
-                            "ST_YMAX(ST_Envelope(`"+geomField+"`)) YMAX, FROM "+tableName;
-                    try(ResultSet rs = st.executeQuery(request)) {
-                            //Evaluate the selection bounding box
-                            int done=0;
-                            for(int modelId : modelSelection) {
-                                    rs.absolute(modelId);
-                                    Envelope rowEnvelope = new Envelope(rs.getDouble("XMIN"),rs.getDouble("XMAX"),
-                                            rs.getDouble("YMIN"),rs.getDouble("YMAX"));
-                                    if(selectionEnvelope != null) {
-                                            selectionEnvelope.expandToInclude(rowEnvelope);
-                                    } else {
-                                        selectionEnvelope = rowEnvelope;
-                                    }
-                                    if(pm.isCancelled()) {
-                                            return;
-                                    } else {
-                                            pm.progressTo(done / modelSelection.length * 100);
-                                    }
-                                    done++;
-                            }
+                try(Connection connection = dataSource.getConnection()) {
+                    selectionEnvelope = ReadTable.getTableSelectionEnvelope(connection, tableName, modelSelection, pm);
+                    if(selectionEnvelope!=null) {
+                        mapContext.setBoundingBox(selectionEnvelope);
                     }
                 }catch (SQLException ex) {
                         LOGGER.error(I18N.tr("Unable to establish the selection bounding box"),ex);
-                        return;
-                }
-                if(selectionEnvelope!=null) {
-                        mapContext.setBoundingBox(selectionEnvelope);                                
                 }
         }
 

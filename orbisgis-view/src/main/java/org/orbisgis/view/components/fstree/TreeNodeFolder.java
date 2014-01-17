@@ -342,7 +342,7 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
         }
         /**
          * Return the appropriate file path to not overwrite existing files
-         * @param basePath Path of the file
+         * @param fullPath Path of the file
          * @return Non existing file path
          */
         private static File getUniqueFileName(final File fullPath) {
@@ -453,7 +453,8 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                                         File dest = new File(getFilePath(), treeFilePath.getName());
                                         if (!dest.exists()) {
                                                 // Move the folder
-                                                FileUtils.moveToDirectory(treeFilePath, getFilePath(), false);
+                                                FileUtils.copyDirectory(treeFilePath, getFilePath(), false);
+                                                FileUtils.deleteDirectory(treeFilePath);
                                         } else {
                                                 LOGGER.warn(I18N.tr("Destination file {0} already exists, cannot move {1}", dest, treeFilePath));
                                         }
