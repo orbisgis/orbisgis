@@ -4,6 +4,7 @@ import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.api.ReadRowSet;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
@@ -53,9 +54,6 @@ public class ReadRowSetImpl extends BaseRowSet implements JdbcRowSet, DataSource
     /**
      * Constructor, row set based on primary key, significant faster on large table
      * @param dataSource Connection properties
-     * @param location Table location
-     * @param pk_name Primary key name
-     * @param pm Progress monitor, caching of pk values.
      * @throws IllegalArgumentException If one of the argument is incorrect, that lead to a SQL exception
      */
     public ReadRowSetImpl(DataSource dataSource) {
@@ -231,7 +229,7 @@ public class ReadRowSetImpl extends BaseRowSet implements JdbcRowSet, DataSource
     public void setCommand(String s) throws SQLException {
         // Extract catalog,schema and table name
         final Pattern commandPattern = Pattern.compile("from\\s+((([\"`][^\"`]+[\"`])|(\\w+))\\.){0,2}(([\"`][^\"`]+[\"`])|(\\w+))", Pattern.CASE_INSENSITIVE);
-        final Pattern commandPatternTable = Pattern.compile("^from\\s+");
+        final Pattern commandPatternTable = Pattern.compile("^from\\s+", Pattern.CASE_INSENSITIVE);
         String table = "";
         Matcher matcher = commandPattern.matcher(s);
         if (matcher.find()) {
@@ -245,6 +243,11 @@ public class ReadRowSetImpl extends BaseRowSet implements JdbcRowSet, DataSource
         }
         this.location = TableLocation.parse(table);
         this.pk_name = ReadRowSetImpl.getPkName(dataSource, location);
+    }
+
+    @Override
+    public String getTable() {
+        return location.toString();
     }
 
     @Override

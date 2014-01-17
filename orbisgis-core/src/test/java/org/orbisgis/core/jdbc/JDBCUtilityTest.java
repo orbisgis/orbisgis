@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.jdbc;
 
+import org.h2.Driver;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -54,12 +55,15 @@ public class JDBCUtilityTest {
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        connection = SpatialH2UT.createSpatialDataBase(JDBCUtilityTest.class.getName(), false);
+        Driver.load();
+        connection = SpatialH2UT.createSpatialDataBase(JDBCUtilityTest.class.getSimpleName(), false);
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
-        connection.close();
+        if(connection!=null) {
+            connection.close();
+        }
     }
 
     @Test

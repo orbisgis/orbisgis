@@ -117,7 +117,7 @@ public class Layer extends BeanLayer {
             try {
                 tableReference =  dm.registerDataSource(dataURI);
             } catch (Exception ex) {
-                throw new LayerException(I18N.tr("Unable to load the data source uri {0}.", dataURI), ex);
+                LOGGER.warn(I18N.tr("Unable to load the data source uri {0}.", dataURI), ex);
             }
         } else if(dataURI == null) {
             // Check if the table exists

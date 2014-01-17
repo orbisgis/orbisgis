@@ -1,33 +1,32 @@
 package org.orbisgis.core;
 
+import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.api.DataManager;
-import org.orbisgis.core.api.ReversibleRowSet;
+import org.orbisgis.core.api.ReadRowSet;
 import org.orbisgis.core.jdbc.ReversibleRowSetImpl;
 import org.orbisgis.utils.FileUtils;
-
-import javax.sql.RowSetEvent;
-import javax.sql.RowSetListener;
-import javax.sql.rowset.CachedRowSet;
-import javax.sql.rowset.FilteredRowSet;
-import javax.sql.rowset.JoinRowSet;
+import javax.sql.rowset.*;
 import javax.sql.DataSource;
-import javax.sql.rowset.JdbcRowSet;
-import javax.sql.rowset.WebRowSet;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Implementation of the DataManager service.
  * @author Nicolas Fortin
  */
-public class DataManagerImpl implements DataManager,RowSetListener {
+public class DataManagerImpl implements DataManager {
     private DataSource dataSource;
-    private Map<String, WeakReference<ReversibleRowSet>> rowSetMap = new HashMap<>();
+    /** ReversibleRowSet fire row updates to their DataManager  */
+    private Map<String, List<UndoableEditListener>> tableEditionListener = new HashMap<>();
+    private static final Logger LOG = Logger.getLogger(DataManagerImpl.class);
 
     @Override
     public CachedRowSet createCachedRowSet() throws SQLException {
@@ -41,7 +40,7 @@ public class DataManagerImpl implements DataManager,RowSetListener {
 
     @Override
     public JdbcRowSet createJdbcRowSet() throws SQLException {
-        return new ReversibleRowSetImpl(dataSource);
+        return new ReversibleRowSetImpl(dataSource, this);
     }
 
     @Override
@@ -136,18 +135,41 @@ public class DataManagerImpl implements DataManager,RowSetListener {
         return exists;
     }
 
+
     @Override
-    public void rowSetChanged(RowSetEvent event) {
-        //TODO raise this event on other rowset
+    public void addUndoableEditListener(String table, UndoableEditListener listener) {
+        String parsedTable = TableLocation.parse(table).toString();
+        List<UndoableEditListener> listeners = tableEditionListener.get(parsedTable);
+        if(listeners == null) {
+            listeners = new ArrayList<>();
+            tableEditionListener.put(parsedTable, listeners);
+        }
+        listeners.add(listener);
     }
 
     @Override
-    public void rowChanged(RowSetEvent event) {
-        //TODO raise this event on other rowset
+    public void removeUndoableEditListener(String table, UndoableEditListener listener) {
+        String parsedTable = TableLocation.parse(table).toString();
+        List<UndoableEditListener> listeners = tableEditionListener.get(parsedTable);
+        if(listeners != null) {
+            listeners.remove(listener);
+        }
     }
 
     @Override
-    public void cursorMoved(RowSetEvent event) {
-        //TODO raise this event on other rowset
+    public void fireUndoableEditHappened(UndoableEditEvent e) {
+        if(e.getSource() != null && e.getSource() instanceof ReadRowSet) {
+            String table = TableLocation.parse(((ReadRowSet) e.getSource()).getTable()).toString();
+            List<UndoableEditListener> listeners = tableEditionListener.get(table);
+            if(listeners != null) {
+                for(UndoableEditListener listener : listeners) {
+                    try {
+                        listener.undoableEditHappened(e);
+                    } catch (Exception ex) {
+                        LOG.error(ex.getLocalizedMessage(), ex);
+                    }
+                }
+            }
+        }
     }
 }

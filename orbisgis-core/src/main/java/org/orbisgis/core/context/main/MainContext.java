@@ -53,6 +53,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import javax.sql.rowset.RowSetFactory;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -202,7 +203,8 @@ public class MainContext {
                 // Create and register DataManager
                 dataManager = new DataManagerImpl(dataSource);
                 Services.registerService(DataManager.class,"OrbisGIS source registration helper",dataManager);
-                pluginHost.getHostBundleContext().registerService(DataManager.class,dataManager,null);
+                pluginHost.getHostBundleContext().registerService(DataManager.class, dataManager, null);
+                pluginHost.getHostBundleContext().registerService(RowSetFactory.class,dataManager,null);
             } finally {
                 pluginHost.getHostBundleContext().ungetService(dbDriverReference);
             }

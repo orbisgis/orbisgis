@@ -23,4 +23,9 @@ public interface ReadRowSet extends JdbcRowSet {
      * @param pm Progress monitor Progression of primary key caching
      */
     public void initialize(String tableIdentifier,String pk_name, ProgressMonitor pm) throws SQLException;
+
+    /**
+     * @return The table identifier [[catalog.]schema.]table
+     */
+    public String getTable();
 }

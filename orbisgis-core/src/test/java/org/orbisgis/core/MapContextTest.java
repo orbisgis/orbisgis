@@ -341,12 +341,14 @@ public class MapContextTest extends AbstractTest {
             assertTrue(dbf.delete());
             assertTrue(shx.delete());
             mc.open(null);
-            assertEquals(1, mc.getLayerModel().getLayerCount());
+            // Unreachable data does not mean delete layer style
+            assertEquals(2, mc.getLayerModel().getLayerCount());
             mc.close(null);
         } finally {
             try(Connection connection = dataSource.getConnection()) {
-                System.out.println("DROP TABLE IF EXISTS "+linkedTable);
-                connection.createStatement().execute("DROP TABLE IF EXISTS "+linkedTable);
+                if(!linkedTable.isEmpty()) {
+                    connection.createStatement().execute("DROP TABLE IF EXISTS "+linkedTable);
+                }
             }
         }
 	}

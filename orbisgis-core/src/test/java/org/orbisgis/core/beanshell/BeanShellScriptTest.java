@@ -111,21 +111,15 @@ public class BeanShellScriptTest {
                 System.setOut(psbak);
             }
         }
-
-        @Test
-        public void testMapDisplayScript() throws Exception {
-                assumeTrue(!GraphicsEnvironment.isHeadless());
-                BeanshellScript.execute(mainParams("../src/test/resources/beanshell/mapDisplayDatasource.bsh"));
-                Thread.sleep(3000);
-                assertTrue(true);
-        }
-//
+//  This unit test display a window, and is already covered by testDrawOwsInImage
 //        @Test
-//        public void testMapToPng() throws Exception {
-//                BeanshellScript.execute(mainParams("src/test/resources/beanshell/datatsourceTopng.bsh"));
+//        public void testMapDisplayScript() throws Exception {
+//                assumeTrue(!GraphicsEnvironment.isHeadless());
+//                BeanshellScript.execute(mainParams("../src/test/resources/beanshell/mapDisplayDatasource.bsh"));
+//                Thread.sleep(3000);
 //                assertTrue(true);
 //        }
-        
+
         @Test
         public void testSeveralArguments() throws Exception {
                 BeanshellScript.execute(mainParams("../src/test/resources/beanshell/testSeveralArguments.bsh", "orbis","1"));

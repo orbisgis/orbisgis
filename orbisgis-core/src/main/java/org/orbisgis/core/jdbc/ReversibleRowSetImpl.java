@@ -29,6 +29,7 @@
 package org.orbisgis.core.jdbc;
 
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.api.ReversibleRowSet;
 import org.orbisgis.progress.ProgressMonitor;
 
@@ -39,13 +40,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Implementation of {@link ReversibleRowSet}
  * @author Nicolas Fortin
  */
 public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRowSet {
-    private final List<UndoableEditListener> undoListenerList = new ArrayList<>();
+    private DataManager manager;
 
-    public ReversibleRowSetImpl(DataSource dataSource) {
+    public ReversibleRowSetImpl(DataSource dataSource, DataManager manager) {
         super(dataSource);
+        this.manager = manager;
     }
 
     /**
@@ -54,18 +57,19 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
      * @param pk_name Primary key name {@link org.orbisgis.core.jdbc.ReadRowSetImpl#getPkName(javax.sql.DataSource, org.h2gis.utilities.TableLocation)}
      * @param pm Progress monitor Progression of primary key caching
      */
-    public ReversibleRowSetImpl(DataSource dataSource, TableLocation location, String pk_name, ProgressMonitor pm) throws SQLException {
+    public ReversibleRowSetImpl(DataSource dataSource, DataManager manager, TableLocation location, String pk_name, ProgressMonitor pm) throws SQLException {
         super(dataSource);
+        this.manager = manager;
         initialize(location, pk_name, pm);
     }
 
     @Override
     public void addUndoableEditListener(UndoableEditListener listener) {
-        undoListenerList.add(listener);
+        manager.addUndoableEditListener(getTable(),listener);
     }
 
     @Override
     public void removeUndoableEditListener(UndoableEditListener listener) {
-        undoListenerList.remove(listener);
+        manager.removeUndoableEditListener(getTable(),listener);
     }
 }

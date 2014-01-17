@@ -30,6 +30,8 @@ package org.orbisgis.core.api;
 
 import javax.sql.DataSource;
 import javax.sql.rowset.RowSetFactory;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import java.net.URI;
 import java.sql.SQLException;
 
@@ -62,4 +64,23 @@ public interface DataManager extends RowSetFactory {
      * @return DataSource of this DataManager
      */
     DataSource getDataSource();
+
+    /**
+     * Table update done through ReversibleRowSet will be fire through theses listeners
+     * @param table Table identifier [[catalog.]schema.]table
+     * @param listener Listener instance
+     */
+    void addUndoableEditListener(String table, UndoableEditListener listener);
+
+    /**
+     * Remove registered listener
+     * @param table Table identifier [[catalog.]schema.]table
+     * @param listener Listener instance to remove
+     */
+    void removeUndoableEditListener(String table, UndoableEditListener listener);
+
+    /**
+     * @param e Event to fire
+     */
+    void fireUndoableEditHappened(UndoableEditEvent e);
 }
