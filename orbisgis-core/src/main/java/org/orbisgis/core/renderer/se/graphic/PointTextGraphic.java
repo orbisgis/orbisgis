@@ -160,7 +160,7 @@ public final class PointTextGraphic extends Graphic implements UomNode {
                 Rectangle2D.Double bounds = new Rectangle2D.Double(px - 5, py - 5, 10, 10);
                 Shape atShp = at.createTransformedShape(bounds);
 
-                pointLabel.draw(g2, map, atShp, selected, mt, null);
+                pointLabel.draw(g2, map, atShp, selected, mt);
         }
 
 

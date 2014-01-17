@@ -38,7 +38,6 @@ import java.util.Map;
 import net.opengis.se._2_0.core.FontType;
 import net.opengis.se._2_0.core.StyledTextType;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -421,14 +420,13 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * @param selected If true, the input geometry has been selected
      * @param mt The current MapTransform
      * @param at The configured affine transformation
-     * @param perm The rendering permissions
      * @throws ParameterException
      * @throws IOException
      */
     public void draw(Graphics2D g2, Map<String, Object> map,
-            boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
+            boolean selected, MapTransform mt, AffineTransform at) throws ParameterException, IOException {
         String txt = this.text.getValue(map);
-        draw(g2, txt, map, selected, mt, at, perm, Label.VerticalAlignment.TOP);
+        draw(g2, txt, map, selected, mt, at, Label.VerticalAlignment.TOP);
     }
 
     /**
@@ -438,16 +436,15 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * @param selected If true, the input geometry has been selected
      * @param mt The current MapTransform
      * @param at The configured affine transformation
-     * @param perm The rendering permissions
      * @param va The needed vertical alignment
      * @throws ParameterException
      * @throws IOException
      */
     public void draw(Graphics2D g2, Map<String, Object> map,
-            boolean selected, MapTransform mt, AffineTransform at, RenderContext perm,
+            boolean selected, MapTransform mt, AffineTransform at,
             Label.VerticalAlignment va) throws ParameterException, IOException {
         String txt = this.text.getValue(map);
-        draw(g2, txt, map, selected, mt, at, perm, va);
+        draw(g2, txt, map, selected, mt, at, va);
     }
 
     /**
@@ -464,15 +461,14 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * Used to compute the font's size.
      * @param at
      * The AffineTransform that we must apply to the shape before returning it.
-     * @param perm The rendering permissions
      * @return The needed Shape
      * @throws ParameterException
      * @throws IOException
      */
     public Shape getOutline(Graphics2D g2, String text, Map<String, Object> map,
-            MapTransform mt, AffineTransform at, RenderContext perm)
+            MapTransform mt, AffineTransform at)
             throws ParameterException, IOException {
-        return getOutline(g2, text, map, mt, at, perm, Label.VerticalAlignment.TOP);
+        return getOutline(g2, text, map, mt, at, Label.VerticalAlignment.TOP);
     }
 
     /**
@@ -488,7 +484,6 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * Used to compute the font's size.
      * @param at
      * The AffineTransform that we must apply to the shape before returning it.
-     * @param perm The rendering permissions
      * @param va
      * The {@code Label.VerticalAlignment} we must use to determine where to put
      * the baseline of {@code text}.
@@ -500,7 +495,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * If an error occurred while retrieving the {@code Font}.
      */
     public Shape getOutline(Graphics2D g2, String text, Map<String, Object> map,
-            MapTransform mt, AffineTransform at, RenderContext perm, Label.VerticalAlignment va)
+            MapTransform mt, AffineTransform at, Label.VerticalAlignment va)
             throws ParameterException, IOException {
         Font font = getFont(map, mt);
         TextLayout tl = new TextLayout(text, font, g2.getFontRenderContext());
@@ -580,17 +575,16 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      * @param selected If true, the input geometry has been selected
      * @param mt The current MapTransform
      * @param at The configured affine transformation
-     * @param perm The rendering permissions
      * @param va The needed vertical alignment
      * @throws ParameterException
      * @throws IOException
      */
     public void draw(Graphics2D g2, String text, Map<String, Object> map,
-            boolean selected, MapTransform mt, AffineTransform at, RenderContext perm,
+            boolean selected, MapTransform mt, AffineTransform at,
             Label.VerticalAlignment va) throws ParameterException, IOException {
 
         ArrayList<Shape> outlines = new ArrayList<Shape>();
-        outlines.add(getOutline(g2, text, map, mt, at, perm, va));
+        outlines.add(getOutline(g2, text, map, mt, at, va));
         drawOutlines(g2, outlines, map, selected, mt);
     }
 

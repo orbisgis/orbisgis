@@ -141,7 +141,7 @@ public abstract class Renderer {
          * @return the number of rendered objects
          */
         public int drawVector(Graphics2D g2, MapTransform mt, ILayer layer,
-                ProgressMonitor pm, RenderContext perm) throws SQLException {
+                ProgressMonitor pm) throws SQLException {
                 Envelope extent = mt.getAdjustedExtent();
                 int layerCount = 0;
                 String tableReference = layer.getTableReference();
@@ -162,7 +162,7 @@ public abstract class Renderer {
                         // Extract into drawSeLayer method !
                         List<Style> styles = layer.getStyles();
                         for(Style style : styles){
-                                layerCount +=drawStyle(style, rs.unwrap(SpatialResultSet.class), g2, mt, layer, pm, perm, rowCount, extent);
+                                layerCount +=drawStyle(style, rs.unwrap(SpatialResultSet.class), g2, mt, layer, pm, rowCount, extent);
                         }
                 } catch (SQLException ex) {
                         printEx(ex, layer, g2);
@@ -173,7 +173,7 @@ public abstract class Renderer {
         }
 
         private int drawStyle(Style style, SpatialResultSet rs,Graphics2D g2,MapTransform mt, ILayer layer,
-                        ProgressMonitor pm, RenderContext perm, long rowCount, Envelope extent) throws SQLException {
+                        ProgressMonitor pm, long rowCount, Envelope extent) throws SQLException {
                 int layerCount = 0;
                 LinkedList<Symbolizer> symbs = new LinkedList<Symbolizer>();
                 try {
@@ -225,7 +225,7 @@ public abstract class Renderer {
                                                 List<Symbolizer> sl = r.getCompositeSymbolizer().getSymbolizerList();
                                                 for (Symbolizer s : sl) {
                                                         boolean res = drawFeature(s, theGeom, rs, row,
-                                                                extent, emphasis, mt, perm);
+                                                                extent, emphasis, mt);
                                                 }
                                                 endFeature(row, rs);
                                         }
@@ -246,7 +246,7 @@ public abstract class Renderer {
 
         private boolean drawFeature(Symbolizer s, Geometry geom, ResultSet rs,
                         Integer originalIndex, Envelope extent, boolean selected,
-                        MapTransform mt, RenderContext perm) throws ParameterException,
+                        MapTransform mt) throws ParameterException,
                         IOException, SQLException {
                 Geometry theGeom = geom;
                 boolean somethingReached = false;
@@ -263,7 +263,7 @@ public abstract class Renderer {
                 if(somethingReached || theGeom != null){
                         Graphics2D g2S;
                         g2S = getGraphics2D(s);
-                        s.draw(g2S, rs, originalIndex, selected, mt, theGeom, perm);
+                        s.draw(g2S, rs, originalIndex, selected, mt, theGeom);
                         releaseGraphics2D(g2S);
                         return true;
                 }else {
@@ -345,9 +345,6 @@ public abstract class Renderer {
                 }
 
                 // long total1 = System.currentTimeMillis();
-
-                Envelope graphicExtent = new Envelope(0, 0, mt.getWidth(), mt.getHeight());
-                DefaultRendererPermission perm = new DefaultRendererPermission(graphicExtent);
                 int numLayers = layers.length;
                 for (int i = numLayers - 1; i >= 0; i--) {
                         if (pm.isCancelled()) {
@@ -360,7 +357,7 @@ public abstract class Renderer {
                                                 //
                                                 // if (layer.isStream()) {
                                                 //   drawStreamLayer(g2, layer, width, height, extent, pm);
-                                                this.drawVector(g2, mt, layer, pm, perm);
+                                                this.drawVector(g2, mt, layer, pm);
                                                 // TODO
                                                 // if (layer.isRaster()) {
                                                 // this.drawRaster(g2, mt, layer,width,height, pm, perm);
@@ -425,9 +422,8 @@ public abstract class Renderer {
      * @param width
      * @param height
      * @param pm
-     * @param perm
      */
-    private void drawRaster(Graphics2D g2, MapTransform mt, ILayer layer, int width, int height, ProgressMonitor pm, DefaultRendererPermission perm) throws SQLException {
+    private void drawRaster(Graphics2D g2, MapTransform mt, ILayer layer, int width, int height, ProgressMonitor pm) throws SQLException {
         //TODO Raster with h2
         throw new UnsupportedOperationException("Not supported yet.");
         /*
@@ -516,56 +512,4 @@ public abstract class Renderer {
 
         return bufferedImage;
     }
-
-        private static class DefaultRendererPermission implements RenderContext {
-
-                private Quadtree quadtree;
-                private Envelope drawExtent;
-                //private Area extent;
-
-                DefaultRendererPermission(Envelope drawExtent) {
-                        this.drawExtent = drawExtent;
-                        this.quadtree = new Quadtree();
-                        //this.extent = new Area(new Rectangle2D.Double(drawExtent.getMinX(), drawExtent.getMinY(), drawExtent.getWidth(), drawExtent.getHeight()));
-                }
-
-                @Override
-                public void addUsedArea(Envelope area) {
-                        quadtree.insert(area, area);
-                }
-
-                @Override
-                public boolean canDraw(Envelope area) {
-                        List<Envelope> list = quadtree.query(area);
-                        for (Envelope envelope : list) {
-                                if ((envelope.intersects(area)) || envelope.contains(area)) {
-                                        return false;
-                                }
-                        }
-
-                        return true;
-                }
-
-                @Override
-                public Geometry getValidGeometry(Geometry geometry, double distance) {
-                        List<Envelope> list = quadtree.query(geometry.getEnvelopeInternal());
-                        GeometryFactory geometryFactory = new GeometryFactory();
-                        Geometry theGeom = geometry;
-                        for (Envelope envelope : list) {
-                                theGeom = theGeom.difference(geometryFactory.toGeometry(
-                                        envelope).buffer(distance, 1));
-                        }
-                        theGeom = theGeom.intersection(geometryFactory.toGeometry(drawExtent));
-
-                        if (theGeom.isEmpty()) {
-                                return null;
-                        } else {
-                                return theGeom;
-                        }
-                }
-        }
-
-        
-
-       
 }

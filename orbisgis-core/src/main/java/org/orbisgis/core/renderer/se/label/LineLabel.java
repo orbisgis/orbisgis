@@ -42,7 +42,6 @@ import net.opengis.se._2_0.core.LineLabelType;
 import net.opengis.se._2_0.core.ObjectFactory;
 
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
@@ -111,7 +110,7 @@ public class LineLabel extends Label {
      */
     @Override
     public void draw(Graphics2D g2, Map<String,Object> map,
-            Shape shp, boolean selected, MapTransform mt, RenderContext perm)
+            Shape shp, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
 
         Rectangle2D bounds = getLabel().getBounds(g2, map, mt);
@@ -217,7 +216,7 @@ public class LineLabel extends Label {
                 AffineTransform at = AffineTransform.getTranslateInstance(pAt.x, pAt.y);
                 at.concatenate(AffineTransform.getRotateInstance(theta));
                 currentPos += glyphWidth;
-                outlines.add(getLabel().getOutline(g2, glyph, map, mt, at, perm, vA));
+                outlines.add(getLabel().getOutline(g2, glyph, map, mt, at, vA));
             } else {
                 //System.out.println ("Space...");
                 //currentPos += emWidth*way;
