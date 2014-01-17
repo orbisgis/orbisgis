@@ -233,7 +233,7 @@ public class MapControl extends JComponent implements ContainerListener {
 				mapTransform.setImage(inProcessImage);
 
 				// now we start the actual drawer
-				drawer = new Drawer();
+				drawer = new Drawer(mapContext, awaitingDrawing, this);
 				BackgroundManager bm = Services.getService(BackgroundManager.class);
                                 bm.nonBlockingBackgroundOperation(
                                         new DefaultJobId(JOB_DRAWING_PREFIX_ID +
@@ -275,112 +275,45 @@ public class MapControl extends JComponent implements ContainerListener {
 		repaint();
 	}
 
-	public class Drawer implements BackgroundJob {
+	private static class Drawer implements BackgroundJob {
+        private MapContext mapContext;
+        private AtomicBoolean awaitingDrawing;
+        private MapControl mapControl;
+        private ProgressMonitor pm;
 
-		private boolean cancel = false;
-		private CancellablePM pm;
+        private Drawer(MapContext mapContext, AtomicBoolean awaitingDrawing, MapControl mapControl) {
+            this.mapContext = mapContext;
+            this.awaitingDrawing = awaitingDrawing;
+            this.mapControl = mapControl;
+        }
 
-		public Drawer() {
-		}
+        @Override
+        public String getTaskName() {
+            return I18N.tr("Drawing");
+        }
 
-                @Override
-		public String getTaskName() {
-			return I18N.tr("Drawing");
-		}
+        @Override
+        public void run(ProgressMonitor pm) {
+            this.pm = pm;
+            try {
+                mapContext.draw(mapControl.getMapTransform(), pm);
+            } finally {
+                awaitingDrawing.set(false);
+                mapControl.repaint();
+            }
+        }
 
-                @Override
-		public void run(ProgressMonitor pm) {
-			synchronized (this) {
-                                this.pm = new CancellablePM(cancel, pm);
-                                pm = this.pm;
-                        }
-                        try {
-                            mapContext.draw(mapTransform, pm);
-                        } finally {
-                                awaitingDrawing.set(false);
-                                MapControl.this.repaint();
-                        }
+        public void cancel() {
+            synchronized (this) {
+                if (pm != null) {
+                    if(!pm.isCancelled()) {
+                        LOGGER.debug("Cancel drawing !");
+                    }
+                    pm.setCancelled(true);
                 }
-
-		public void cancel() {
-			synchronized (this) {
-                                if(!cancel) {
-                                    LOGGER.debug("Cancel drawing !");
-                                }
-				if (pm != null) {
-					pm.cancel = true;
-					cancel = true;
-				} else {
-					cancel = true;
-				}
-			}
-		}
-	}
-
-	private class CancellablePM implements ProgressMonitor {
-
-		private ProgressMonitor decoratedPM;
-		private boolean cancel;
-                private long lastIntermediateDrawPaint = System.currentTimeMillis();
-
-		public CancellablePM(boolean cancel, ProgressMonitor pm) {
-			this.decoratedPM = pm;
-			this.cancel = cancel;
-		}
-
-                @Override
-		public void endTask() {
-			decoratedPM.endTask();
-		}
-
-                @Override
-		public int getCurrentProgress() {
-			return decoratedPM.getCurrentProgress();
-		}
-
-                @Override
-		public String getCurrentTaskName() {
-			return decoratedPM.getCurrentTaskName();
-		}
-
-                @Override
-		public int getOverallProgress() {
-			return decoratedPM.getOverallProgress();
-		}
-
-                @Override
-		public void init(String taskName, long i) {
-			decoratedPM.init(taskName, i);
-		}
-
-                @Override
-		public boolean isCancelled() {
-			return cancel || decoratedPM.isCancelled();
-		}
-
-                @Override
-		public void progressTo(long progress) {
-			decoratedPM.progressTo(progress);
-		}
-
-                @Override
-		public void startTask(String taskName, long i) {
-			decoratedPM.startTask(taskName, i);
-                        //Show the current state of the drawing on new task
-                        long curTime = System.currentTimeMillis();
-                        if(!cancel && status != DIRTY && curTime-lastIntermediateDrawPaint > INTERMEDIATE_DRAW_PAINT_INTERVAL) {
-                            lastIntermediateDrawPaint=curTime;
-                            LOGGER.debug("Task "+taskName+" paint the drawing");
-                            MapControl.this.repaint();
-                        }
-		}
-
-                @Override
-                public void setCancelled(boolean cancelled) {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-	}
+            }
+        }
+    }
 
 	public MapTransform getMapTransform() {
 		return mapTransform;
@@ -401,8 +334,7 @@ public class MapControl extends JComponent implements ContainerListener {
             }
 	}
 
-    private class RefreshLayerListener implements LayerListener,
-            EditionListener, DataSourceListener {
+    private class RefreshLayerListener implements LayerListener {
 
         @Override
         public void layerAdded(LayerCollectionEvent listener) {
@@ -470,30 +402,6 @@ public class MapControl extends JComponent implements ContainerListener {
                         //TODO use the bean property selection event (when feature/table-editor will be merged) to find if the redraw has to be done
                         invalidateImage();
 		}
-
-                @Override
-		public void multipleModification(MultipleEditionEvent e) {
-			invalidateImage();
-		}
-
-                @Override
-		public void singleModification(EditionEvent e) {
-			invalidateImage();
-		}
-
-                @Override
-		public void cancel(DataSource ds) {
-		}
-
-                @Override
-		public void commit(DataSource ds) {
-		}
-
-                @Override
-		public void open(DataSource ds) {
-			invalidateImage();
-		}
-
 	}
 
         /**
