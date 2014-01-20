@@ -4,6 +4,8 @@ import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.api.ReadRowSet;
+import org.orbisgis.core.api.ReversibleRowSet;
+import org.orbisgis.core.jdbc.ReadRowSetImpl;
 import org.orbisgis.core.jdbc.ReversibleRowSetImpl;
 import org.orbisgis.utils.FileUtils;
 import javax.sql.rowset.*;
@@ -39,8 +41,18 @@ public class DataManagerImpl implements DataManager {
     }
 
     @Override
-    public JdbcRowSet createJdbcRowSet() throws SQLException {
+    public ReversibleRowSet createReversibleRowSet() throws SQLException {
         return new ReversibleRowSetImpl(dataSource, this);
+    }
+
+    @Override
+    public ReadRowSet createReadRowSet() throws SQLException {
+        return new ReadRowSetImpl(dataSource);
+    }
+
+    @Override
+    public JdbcRowSet createJdbcRowSet() throws SQLException {
+        return createReversibleRowSet();
     }
 
     @Override

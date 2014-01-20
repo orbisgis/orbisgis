@@ -141,21 +141,4 @@ public class JDBCUtilityTest {
             st.execute("DROP TABLE "+table);
         }
     }
-
-    private static SortedSet<Integer> getRows(Integer... rowId) {
-        SortedSet<Integer> rows = new IntegerUnion();
-        Collections.addAll(rows, rowId);
-        return rows;
-    }
-
-    @Test
-    public void testReadTableSelectionEnvelope() throws SQLException {
-        try(Statement st = connection.createStatement()) {
-            st.execute("DROP TABLE IF EXISTS PTS");
-            st.execute("CREATE TABLE PTS(id integer primary key auto_increment, the_geom POINT)");
-            st.execute("INSERT INTO PTS(the_geom) VALUES ('POINT(10 10)'),('POINT(15 15)'),('POINT(20 20)'),('POINT(25 25)')");
-            assertEquals(new Envelope(10,15,10,15), ReadTable.getTableSelectionEnvelope(connection, "PTS", getRows(1, 2), new NullProgressMonitor()));
-            st.execute("DROP TABLE IF EXISTS PTS");
-        }
-    }
 }

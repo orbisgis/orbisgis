@@ -17,12 +17,18 @@ public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
     long getRowCount() throws SQLException;
 
     /**
-     * Initialize this row set.
+     * Initialize this row set. Same code as {@link #execute()}.
      * @param tableIdentifier Table identifier [[catalog.]schema.]table]
      * @param pk_name Primary key name to use with
      * @param pm Progress monitor Progression of primary key caching
      */
     public void initialize(String tableIdentifier,String pk_name, ProgressMonitor pm) throws SQLException;
+
+    /**
+     * Call this after {@link #setCommand(String)}. Cache the default primary key values then execute the command.
+     * @param pm Progress monitor Progression of primary key caching
+     */
+    public void execute(ProgressMonitor pm) throws SQLException;
 
     /**
      * @return The table identifier [[catalog.]schema.]table

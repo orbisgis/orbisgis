@@ -24,6 +24,7 @@
  */
 package org.orbisgis.core.jdbc;
 
+import com.vividsolutions.jts.geom.Envelope;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.TableLocation;
 import org.junit.BeforeClass;
@@ -31,6 +32,7 @@ import org.junit.Test;
 import org.orbisgis.core.DataManagerImpl;
 import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.api.ReadRowSet;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.progress.NullProgressMonitor;
 
 import javax.sql.DataSource;
@@ -42,6 +44,8 @@ import javax.sql.rowset.RowSetFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
+import java.util.SortedSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -56,6 +60,28 @@ public class RowSetTest {
     @BeforeClass
     public static void tearUp() throws Exception {
         dataSource = SpatialH2UT.createDataSource("ReversibleRowSetTest", true);
+    }
+
+    @Test
+    public void testReadTableSelectionEnvelope() throws SQLException {
+        DataManager dataManager = new DataManagerImpl(dataSource);
+        try(Connection connection = dataSource.getConnection();
+            Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS PTS");
+            st.execute("CREATE TABLE PTS(id integer primary key auto_increment, the_geom POINT)");
+            st.execute("INSERT INTO PTS(the_geom) VALUES ('POINT(10 10)'),('POINT(15 15)'),('POINT(20 20)'),('POINT(25 25)')");
+            assertEquals(new Envelope(10,25,10,25), ReadTable.getTableSelectionEnvelope(dataManager, "PTS", getRows(1,2,3,4), new NullProgressMonitor()));
+            assertEquals(new Envelope(10,15,10,15), ReadTable.getTableSelectionEnvelope(dataManager, "PTS", getRows(1, 2), new NullProgressMonitor()));
+            assertEquals(new Envelope(15,20,15,20), ReadTable.getTableSelectionEnvelope(dataManager, "PTS", getRows(2, 3), new NullProgressMonitor()));
+            assertEquals(new Envelope(25,25,25,25), ReadTable.getTableSelectionEnvelope(dataManager, "PTS", getRows(4, 4), new NullProgressMonitor()));
+            st.execute("DROP TABLE IF EXISTS PTS");
+        }
+    }
+
+    private static SortedSet<Integer> getRows(Integer... rowId) {
+        SortedSet<Integer> rows = new IntegerUnion();
+        Collections.addAll(rows, rowId);
+        return rows;
     }
 
     @Test

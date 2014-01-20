@@ -66,6 +66,19 @@ public interface DataManager extends RowSetFactory {
     DataSource getDataSource();
 
     /**
+     * Same as {@link javax.sql.rowset.RowSetFactory#createJdbcRowSet()}
+     * @return A RowSet that manage {@link UndoableEditListener}
+     * @throws SQLException
+     */
+    public ReversibleRowSet createReversibleRowSet() throws SQLException;
+
+    /**
+     * @return A read only RowSet
+     * @throws SQLException
+     */
+    public ReadRowSet createReadRowSet() throws SQLException;
+
+    /**
      * Table update done through ReversibleRowSet will be fire through theses listeners
      * @param table Table identifier [[catalog.]schema.]table
      * @param listener Listener instance

@@ -33,6 +33,8 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.core.api.DataManager;
+import org.orbisgis.core.api.ReadRowSet;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -219,15 +221,16 @@ public class ReadTable {
 
     /**
      * Retrieve the envelope of selection of lines
-     * @param connection Active connection
+     * @param manager Data Manager
      * @param tableName Table identifier [[catalog.]schema.]table
      * @param rowsId Line number [1-n]
      * @param pm Progress monitor
      * @return Envelope of rows
      * @throws SQLException
      */
-    public static Envelope getTableSelectionEnvelope(Connection connection, String tableName, SortedSet<Integer> rowsId, ProgressMonitor pm) throws SQLException {
-        try(Statement st = connection.createStatement()) {
+    public static Envelope getTableSelectionEnvelope(DataManager manager, String tableName, SortedSet<Integer> rowsId, ProgressMonitor pm) throws SQLException {
+        try( Connection connection = manager.getDataSource().getConnection();
+                Statement st = connection.createStatement()) {
             PropertyChangeListener cancelListener =  EventHandler.create(PropertyChangeListener.class, st, "cancel");
             pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,cancelListener);
             try {
@@ -237,14 +240,15 @@ public class ReadTable {
                     throw new SQLException(I18N.tr("Table table {0} does not contain any geometry fields", tableName));
                 }
                 String geomField = geomFields.get(0);
-                int offset = rowsId.first() - 1;
-                String request = "SELECT ST_Envelope(`"+geomField+"`, ST_SRID(`"+geomField+"`)) FROM "+tableName+ " LIMIT "+(rowsId.last()-rowsId.first()+1)+" OFFSET "+offset;
+                String request = "SELECT ST_Envelope(`"+geomField+"`, ST_SRID(`"+geomField+"`)) env_geom FROM "+tableName;
                 ProgressMonitor selectPm = pm.startTask(rowsId.size());
-                try(SpatialResultSet rs = st.executeQuery(request).unwrap(SpatialResultSet.class)) {
+                try(ReadRowSet rs = manager.createReadRowSet()) {
+                    rs.setCommand(request);
+                    rs.execute(pm);
                     //Evaluate the selection bounding box
                     for(int modelId : rowsId) {
-                        if(rs.absolute(modelId-offset)) {
-                            Envelope rowEnvelope = rs.getGeometry().getEnvelopeInternal();
+                        if(rs.absolute(modelId)) {
+                            Envelope rowEnvelope = rs.getGeometry("env_geom").getEnvelopeInternal();
                             if(selectionEnvelope != null) {
                                 selectionEnvelope.expandToInclude(rowEnvelope);
                             } else {

@@ -53,6 +53,7 @@ public class ReadRowSetImpl extends BaseRowSet implements JdbcRowSet, DataSource
     /** If the table contains a unique non null index then this variable contain the map between the row id [1-n] to the primary key value */
     private Map<Integer, Object> rowPk;
     private String pk_name = "";
+    private String select_fields = "*";
     private static final String H2_SYSTEM_PK_COLUMN = "_ROWID_";
     private int firstGeometryIndex = -1;
 
@@ -227,16 +228,21 @@ public class ReadRowSetImpl extends BaseRowSet implements JdbcRowSet, DataSource
 
     @Override
     public String getCommand() {
-        return String.format("SELECT * FROM %s", location);
+        return String.format("SELECT "+select_fields+" FROM %s", location);
     }
 
     @Override
     public void setCommand(String s) throws SQLException {
         // Extract catalog,schema and table name
+        final Pattern selectFieldPattern = Pattern.compile("^select(.+?)from", Pattern.CASE_INSENSITIVE);
         final Pattern commandPattern = Pattern.compile("from\\s+((([\"`][^\"`]+[\"`])|(\\w+))\\.){0,2}(([\"`][^\"`]+[\"`])|(\\w+))", Pattern.CASE_INSENSITIVE);
         final Pattern commandPatternTable = Pattern.compile("^from\\s+", Pattern.CASE_INSENSITIVE);
         String table = "";
         Matcher matcher = commandPattern.matcher(s);
+        Matcher selectFieldMatcher = selectFieldPattern.matcher(s);
+        if(selectFieldMatcher.find()) {
+            select_fields = selectFieldMatcher.group(1);
+        }
         if (matcher.find()) {
             Matcher tableMatcher = commandPatternTable.matcher(matcher.group());
             if(tableMatcher.find()) {
@@ -269,6 +275,11 @@ public class ReadRowSetImpl extends BaseRowSet implements JdbcRowSet, DataSource
     public void initialize(TableLocation location,String pk_name, ProgressMonitor pm) throws SQLException {
         this.location = location;
         this.pk_name = pk_name;
+        execute(pm);
+    }
+
+    @Override
+    public void execute(ProgressMonitor pm) throws SQLException {
         if(!pk_name.isEmpty()) {
             resultSetHolder.setCommand(getCommand()+" LIMIT 0");
             // Do not cache _ROWID_
