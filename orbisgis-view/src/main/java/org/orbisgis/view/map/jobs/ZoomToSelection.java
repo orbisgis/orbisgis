@@ -30,12 +30,12 @@ package org.orbisgis.view.map.jobs;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Set;
 import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.jdbc.ReadTable;
 import org.orbisgis.core.layerModel.ILayer;
@@ -44,8 +44,6 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import javax.sql.DataSource;
 
 /**
  * Zoom to provided layer selection
@@ -56,13 +54,13 @@ public class ZoomToSelection implements BackgroundJob {
         private static final Logger LOGGER = Logger.getLogger(ZoomToSelection.class);
         private MapContext mapContext;
         private ILayer[] layers;
-        private DataSource dataSource;
+        private DataManager dataManager;
 
-        public ZoomToSelection(MapContext mapContext, ILayer[] layers, DataSource dataSource) {
-            this.mapContext = mapContext;
-            this.layers = layers;
-            this.dataSource = dataSource;
-        }
+    public ZoomToSelection(MapContext mapContext, ILayer[] layers, DataManager dataManager) {
+        this.mapContext = mapContext;
+        this.layers = layers;
+        this.dataManager = dataManager;
+    }
 
     @Override
         public void run(ProgressMonitor pm) {
@@ -88,16 +86,14 @@ public class ZoomToSelection implements BackgroundJob {
         }
 
         private Envelope getLayerSelectionEnvelope(ProgressMonitor pm, ILayer layer) throws SQLException {
-            try(Connection connection = dataSource.getConnection()) {
-                SortedSet<Integer> sortedSet;
-                Set<Integer> data = layer.getSelection();
-                if(data instanceof SortedSet) {
-                    sortedSet = (SortedSet<Integer>)data;
-                } else {
-                    sortedSet = new IntegerUnion(data);
-                }
-                return ReadTable.getTableSelectionEnvelope(connection, layer.getTableReference(),sortedSet, pm);
+            SortedSet<Integer> sortedSet;
+            Set<Integer> data = layer.getSelection();
+            if(data instanceof SortedSet) {
+                sortedSet = (SortedSet<Integer>)data;
+            } else {
+                sortedSet = new IntegerUnion(data);
             }
+            return ReadTable.getTableSelectionEnvelope(dataManager, layer.getTableReference(),sortedSet, pm);
         }
         
         @Override

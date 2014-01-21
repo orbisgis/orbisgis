@@ -32,6 +32,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
@@ -116,7 +117,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     private PropertyChangeListener activeLayerListener = EventHandler.create(PropertyChangeListener.class,this,"onActiveLayerChange","");
     private ActionCommands actions = new ActionCommands();
     private MapEditorPersistence mapEditorPersistence = new MapEditorPersistence();
-    private DataSource dataSource;
+    private DataManager dataManager;
 
     private boolean userChangedWidth = false;
     private boolean userChangedHeight = false;
@@ -124,9 +125,9 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     /**
      * Constructor
      */
-    public MapEditor(DataSource dataSource) {
+    public MapEditor(DataManager dataManager) {
         super(new BorderLayout());
-        this.dataSource = dataSource;
+        this.dataManager = dataManager;
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName("map_editor");
         updateMapLabel();
@@ -654,7 +655,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
      */
     public void onZoomToSelection() {
             BackgroundManager bm = Services.getService(BackgroundManager.class);
-            bm.backgroundOperation(new ZoomToSelection(mapContext, mapContext.getLayers()));
+            bm.backgroundOperation(new ZoomToSelection(mapContext, mapContext.getLayers(), dataManager));
     }
 
 
@@ -684,13 +685,13 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 if (!selection.isEmpty()) {
                     try {
                         String newName = CreateSourceFromSelection.showNewNameDialog(
-                                this,dataSource, layer.getTableReference());
+                                this,dataManager.getDataSource(), layer.getTableReference());
                         // If newName is not null, then the user clicked OK and
                         // entered a valid name.
                         if (newName != null) {
                             BackgroundManager bm = Services.getService(
                                     BackgroundManager.class);
-                            bm.backgroundOperation(new CreateSourceFromSelection(dataSource,selection,
+                            bm.backgroundOperation(new CreateSourceFromSelection(dataManager.getDataSource(),selection,
                                     layer.getTableReference(), newName));
                         }
                     } catch (SQLException ex) {

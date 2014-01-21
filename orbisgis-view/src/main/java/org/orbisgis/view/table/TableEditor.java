@@ -63,6 +63,7 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
@@ -124,14 +125,16 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 "onEditableSelectionChange","newValue");
         private ActionCommands popupActions = new ActionCommands();
         private DataSource dataSource;
+        private DataManager dataManager;
 
         /**
          * Constructor
          * @param element Source to read and edit
          */
-        public TableEditor(TableEditableElement element, DataSource dataSource) {
+        public TableEditor(TableEditableElement element, DataManager dataManager) {
                 super(new BorderLayout());
-                this.dataSource = dataSource;
+                this.dataManager = dataManager;
+                this.dataSource = dataManager.getDataSource();
                 //Add a listener to the source manager to close the table when
                 //the source is removed
                 this.tableEditableElement = element;
@@ -404,7 +407,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         LOGGER.error("MapContext lost between popup creation and click");
                         return;
                 }                
-                ZoomToSelectionJob zoomJob = new ZoomToSelectionJob(dataSource, tableEditableElement.getTableReference() ,modelSelection, mapContext);
+                ZoomToSelectionJob zoomJob = new ZoomToSelectionJob(dataManager, tableEditableElement.getTableReference()
+                        ,new IntegerUnion(modelSelection), mapContext);
                 launchJob(zoomJob);                
         }
         

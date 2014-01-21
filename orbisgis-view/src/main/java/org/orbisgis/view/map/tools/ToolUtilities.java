@@ -29,16 +29,18 @@
 package org.orbisgis.view.map.tools;
 
 import com.vividsolutions.jts.geom.Coordinate;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryDimensionConstraint;
-import org.gdms.data.types.Type;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DriverException;
+import org.h2gis.utilities.GeometryTypeCodes;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.sif.UIFactory;
@@ -53,17 +55,27 @@ public class ToolUtilities {
     private static final Logger LOGGER = Logger.getLogger(ToolUtilities.class);
 
 
-    public static double getActiveLayerInitialZ(MapContext mapContext) {
-		DataSource sds = mapContext.getActiveLayer()
-				.getDataSource();
-		try {
-			Type type = sds.getFieldType(sds.getSpatialFieldIndex());
-			if (type.getIntConstraint(Constraint.DIMENSION_3D_GEOMETRY) == 3) {
-				return 0;
-			}
-		} catch (DriverException e) {
-            LOGGER.error(e.getLocalizedMessage(),e);
-		}
+    public static double getActiveLayerInitialZ(Connection connection ,MapContext mapContext) {
+		String table = mapContext.getActiveLayer().getTableReference();
+        if(!table.isEmpty()) {
+            TableLocation tableLocation = TableLocation.parse(table);
+            try(PreparedStatement st = SFSUtilities.prepareInformationSchemaStatement(connection,
+                    tableLocation.getCatalog(),tableLocation.getSchema(),tableLocation.getTable(), "GEOMETRY_COLUMNS","");
+                ResultSet rs = st.executeQuery()) {
+                if(rs.next()) {
+                    switch (rs.getInt("coord_dimension")) {
+                        case 3: //XYZ
+                        case 4: //XYZM
+                            return 0;
+                        default: //2 and 5 XYM
+                            return Double.NaN;
+                    }
+                }
+            } catch (SQLException ex) {
+                LOGGER.debug(ex.getLocalizedMessage(), ex);
+                return Double.NaN;
+            }
+        }
 		return Double.NaN;
 	}
 
@@ -77,7 +89,7 @@ public class ToolUtilities {
 	 * @throws TransitionException
 	 */
 	public static Value[] populateNotNullFields(DataSource sds,
-			Value[] row) throws DriverException, TransitionException {
+			Value[] row) throws SQLException, TransitionException {
 		Value[] ret = new Value[row.length];
 		for (int i = 0; i < sds.getFieldCount(); i++) {
 			Type type = sds.getFieldType(i);
@@ -156,47 +168,29 @@ public class ToolUtilities {
 	}
 
         /**
-         * Check that the geometry of the active layer of vc is valid against the list
+         * Check that the geometry of the active layer can contain one of the list of geometry types.
          * of geometry types.
          * @param vc
          * @param geometryTypes
-         *      The geometry type codes we are testing. They are listed in {@link Type}.
+         *      The OGC geometry type codes we are testing. They are listed in {@link org.h2gis.utilities.GeometryTypeCodes}.
          * @return 
          */
-	public static boolean geometryTypeIs(MapContext vc, Type... geometryTypes) {
+	public static boolean geometryTypeIs(Connection connection, MapContext vc, int... geometryTypes) {
 		ILayer activeLayer = vc.getActiveLayer();
-		if (activeLayer == null) {
-			return false;
-		} else {
+		if (activeLayer != null && geometryTypes.length > 0) {
 			try {
-				DataSource sds = activeLayer.getDataSource();
-				Type type = sds.getFieldType(sds.getSpatialFieldIndex());
-				int geometryType = type.getTypeCode();
-				if (geometryType == -1) {
-					return true;
-				} else {
-					for (Type geomType : geometryTypes) {
-						if ((geomType.getTypeCode() & geometryType)==geometryType) {
-                                                        GeometryDimensionConstraint gdc =
-                                                                (GeometryDimensionConstraint) 
-                                                                geomType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
-                                                        if(gdc == null){
-                                                                return true;
-                                                        } else {
-                                                                GeometryDimensionConstraint gdc2 =
-                                                                        (GeometryDimensionConstraint) 
-                                                                        type.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
-                                                                
-                                                                return gdc2 != null && gdc.getDimension() == gdc2.getDimension();
-                                                        }
-						}
-					}
-				}
-			} catch (DriverException e) {
-                LOGGER.error(e.getLocalizedMessage(),e);
-			}
-			return false;
-		}
+				String table = activeLayer.getTableReference();
+                if(!table.isEmpty()) {
+                    TableLocation tableLocation = TableLocation.parse(activeLayer.getTableReference());
+                    int tableGeoType = SFSUtilities.getGeometryType(connection, tableLocation,
+                            SFSUtilities.getGeometryFields(connection,tableLocation).get(0));
+                    return tableGeoType == geometryTypes[0] ||  tableGeoType == GeometryTypeCodes.GEOMETRY;
+                }
+            } catch (SQLException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+            }
+        }
+        return false;
 	}
 
 	public static boolean layerCountGreaterThan(MapContext vc, int i) {

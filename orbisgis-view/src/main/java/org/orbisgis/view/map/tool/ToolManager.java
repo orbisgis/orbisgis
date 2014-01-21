@@ -75,15 +75,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.apache.log4j.Logger;
-import org.h2gis.utilities.SFSUtilities;
-import org.orbisgis.core.DataManagerImpl;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.api.ReversibleRowSet;
 import org.orbisgis.core.layerModel.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
-import org.orbisgis.core.renderer.AllowAllRenderContext;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
@@ -415,7 +412,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                                 BufferedImage bi = new BufferedImage(mapTransform.getWidth(),
                                         mapTransform.getHeight(), BufferedImage.TYPE_INT_ARGB);
                                 Graphics2D graphics = bi.createGraphics();
-                                drawFeature(graphics, geometry, mapTransform, new AllowAllRenderContext());
+                                drawFeature(graphics, geometry, mapTransform);
                                 g2.drawImage(bi, 0, 0, null);
                             } catch (SQLException ex) {
                                 UILOGGER.debug(ex.getLocalizedMessage(), ex);
@@ -827,28 +824,27 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
          * @param graphics
          * @param geometry
          * @param mapTransform
-         * @param allowAllRenderContext
          * @throws IOException
          * @throws java.sql.SQLException
          * @throws ParameterException
          */
         private void drawFeature(Graphics2D graphics, Geometry geometry,
-                        MapTransform mapTransform, AllowAllRenderContext allowAllRenderContext)
+                        MapTransform mapTransform)
                         throws IOException, SQLException, ParameterException {
                 if(geometry instanceof com.vividsolutions.jts.geom.Point ||
                         geometry instanceof  MultiPoint){
-                        pointSymbolizer.draw(graphics, null, -1, false, mapTransform, geometry, allowAllRenderContext);
+                        pointSymbolizer.draw(graphics, null, -1, false, mapTransform, geometry);
                 } else if(geometry instanceof LineString || geometry instanceof MultiLineString){
-                        lineSymbolizer.draw(graphics, null, -1, false, mapTransform, geometry, allowAllRenderContext);
+                        lineSymbolizer.draw(graphics, null, -1, false, mapTransform, geometry);
                 } else if(geometry instanceof Polygon || geometry instanceof MultiPolygon){
-                        areaSymbolizer.draw(graphics, null, -1, false, mapTransform, geometry, allowAllRenderContext);
+                        areaSymbolizer.draw(graphics, null, -1, false, mapTransform, geometry);
                 } else {
                         //We are dealing with a geometry collection
                         GeometryCollection gc = (GeometryCollection) geometry;
                         int num = gc.getNumGeometries();
                         for(int i=0; i<num; i++){
                                 Geometry geom = gc.getGeometryN(i);
-                                drawFeature(graphics, geom, mapTransform, allowAllRenderContext);
+                                drawFeature(graphics, geom, mapTransform);
                         }
                 }
         }

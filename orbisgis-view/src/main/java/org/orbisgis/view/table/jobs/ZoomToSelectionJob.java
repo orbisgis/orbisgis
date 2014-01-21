@@ -30,24 +30,15 @@ package org.orbisgis.view.table.jobs;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.apache.log4j.Logger;
-import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.jdbc.ReadTable;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import javax.sql.DataSource;
-import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * Fetch selection extent and apply it to the map context.
@@ -56,30 +47,33 @@ import java.util.Set;
 public class ZoomToSelectionJob implements BackgroundJob {
         private static final Logger LOGGER = Logger.getLogger(ZoomToSelectionJob.class);
         protected final static I18n I18N = I18nFactory.getI18n(ZoomToSelectionJob.class);
-        private DataSource dataSource;
+        private DataManager dataManager;
         private String tableName;
-        private int[] modelSelection;
+        private SortedSet<Integer> modelSelection;
         private MapContext mapContext;
+
 
         /**
          * Constructor.
-         * @param dataSource Active data source
+         * @param dataManager data manager
          * @param tableName Table location
          * @param modelSelection Selected rows
          * @param mapContext Loaded map context
          */
-        public ZoomToSelectionJob(DataSource dataSource,String tableName, int[] modelSelection, MapContext mapContext) {
-                this.dataSource = dataSource;
-                this.tableName = tableName;
-                this.modelSelection = modelSelection;
-                this.mapContext = mapContext;
+        public ZoomToSelectionJob(DataManager dataManager, String tableName, SortedSet<Integer> modelSelection, MapContext mapContext) {
+            this.dataManager = dataManager;
+            this.tableName = tableName;
+            this.modelSelection = modelSelection;
+            this.mapContext = mapContext;
         }
+
+
         
         @Override
         public void run(ProgressMonitor pm) {
                 Envelope selectionEnvelope = null;
-                try(Connection connection = dataSource.getConnection()) {
-                    selectionEnvelope = ReadTable.getTableSelectionEnvelope(connection, tableName, modelSelection, pm);
+                try {
+                    selectionEnvelope = ReadTable.getTableSelectionEnvelope(dataManager, tableName, modelSelection, pm);
                     if(selectionEnvelope!=null) {
                         mapContext.setBoundingBox(selectionEnvelope);
                     }

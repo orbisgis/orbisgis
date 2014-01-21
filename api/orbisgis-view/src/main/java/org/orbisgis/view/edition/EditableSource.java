@@ -34,6 +34,7 @@ import org.orbisgis.core.api.ReversibleRowSet;
  * @author Nicolas Fortin
  */
 public interface EditableSource extends EditableElement {
+    public static final String EDITABLE_RESOURCE_TYPE = "EditableSource";
 
     /**
      * @return True if the table can be modified

@@ -37,8 +37,8 @@ import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.edition.EditableSource;
 import org.orbisgis.view.edition.TransferableEditableElement;
-import org.orbisgis.view.geocatalog.EditableSource;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -53,7 +53,7 @@ public class MapTransferHandler  extends TransferHandler{
     }
     static final private Logger GUILOGGER = Logger.getLogger("gui."+MapTransferHandler.class);
     static final private I18n I18N = I18nFactory.getI18n(MapTransferHandler.class);
-    private ListenerContainer<EditableTransferEvent> transferEditableEvent = new ListenerContainer<EditableTransferEvent>();
+    private ListenerContainer<EditableTransferEvent> transferEditableEvent = new ListenerContainer<>();
 
     /**
      * If this method return true, this transfer handler fire the transfer editable event
