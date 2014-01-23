@@ -189,8 +189,6 @@ public class MainContext {
                     DatabaseMetaData meta = connection.getMetaData();
                     LOGGER.info(I18N.tr("Data source available {0} version {1}", meta.getDriverName(), meta.getDriverVersion()));
                 }
-                // Register the connection factory in service hosts
-                Services.registerService(DataSource.class,"OrbisGIS main DataSource",dataSource);
                 // Register DataSource, will be used to register spatial features
                 pluginHost.getHostBundleContext().registerService(DataSource.class,dataSource,null);
                 // Register DataSource in JNI for RowSet factory
@@ -202,7 +200,6 @@ public class MainContext {
                 }
                 // Create and register DataManager
                 dataManager = new DataManagerImpl(dataSource);
-                Services.registerService(DataManager.class,"OrbisGIS source registration helper",dataManager);
                 pluginHost.getHostBundleContext().registerService(DataManager.class, dataManager, null);
                 pluginHost.getHostBundleContext().registerService(RowSetFactory.class,dataManager,null);
             } finally {

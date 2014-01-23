@@ -141,20 +141,16 @@ public final class MapElement extends AbstractEditableElement {
             this.modified = modified;
         }        
         private boolean hasTemporaryTables() {
-                DataSource dataSource = Services.getService(DataSource.class);
                 try {
-                    Connection connection = dataSource.getConnection();
-                    try {
-                        for(ILayer layer : mapContext.getLayers()) {
-                                String table = layer.getTableReference();
-                                if(table!=null && !table.isEmpty()) {
-                                        if(JDBCUtilities.isTemporaryTable(connection,table)) {
-                                                return true;
-                                        }
+                    try (Connection connection = mapContext.getDataManager().getDataSource().getConnection()) {
+                        for (ILayer layer : mapContext.getLayers()) {
+                            String table = layer.getTableReference();
+                            if (table != null && !table.isEmpty()) {
+                                if (JDBCUtilities.isTemporaryTable(connection, table)) {
+                                    return true;
                                 }
+                            }
                         }
-                    } finally {
-                        connection.close();
                     }
                 } catch (SQLException ex) {
                     LOGGER.error(I18N.tr("Error while checking temporary table"));

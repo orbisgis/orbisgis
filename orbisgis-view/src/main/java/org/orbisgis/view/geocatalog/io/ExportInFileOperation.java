@@ -56,6 +56,7 @@ public class ExportInFileOperation implements BackgroundJob {
         private File savedFile;
         private String sourceName;
         private DriverFunction driverFunction;
+        private DataSource dataSource;
 
         /**
          * This class is used to export a source on disk.
@@ -63,10 +64,11 @@ public class ExportInFileOperation implements BackgroundJob {
          * @param sourceName Table identifier
          * @param savedFile Destination
          */
-        public ExportInFileOperation(String sourceName, File savedFile, DriverFunction driverFunction) {
+        public ExportInFileOperation(String sourceName, File savedFile, DriverFunction driverFunction, DataSource dataSource) {
                 this.sourceName = sourceName;
                 this.savedFile = savedFile;
                 this.driverFunction = driverFunction;
+                this.dataSource = dataSource;
         }
 
         @Override
@@ -76,8 +78,7 @@ public class ExportInFileOperation implements BackgroundJob {
 
         @Override
         public void run(ProgressMonitor pm) {
-                DataSource ds = Services.getService(DataSource.class);
-                try(Connection connection = ds.getConnection()) {
+                try(Connection connection = dataSource.getConnection()) {
                     driverFunction.exportTable(connection, sourceName , savedFile, new H2GISProgressMonitor(pm));
                 } catch (SQLException | IOException ex) {
                     LOGGER.error(I18N.tr("Cannot create the file"), ex);

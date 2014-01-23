@@ -193,9 +193,8 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
             }
             if (activeLayer != null) {
                 activeLayer.addLayerListener(layerListener);
-                DataManager dataManager = Services.getService(DataManager.class);
                 try {
-                    RowSet rowSet = dataManager.createJdbcRowSet();
+                    RowSet rowSet = activeLayer.getDataManager().createJdbcRowSet();
                     if(rowSet instanceof ReversibleRowSet) {
                         activeLayerRowSet = (ReversibleRowSet)rowSet;
                         activeLayerRowSet.setCommand("SELECT * FROM "+activeLayer.getTableReference());

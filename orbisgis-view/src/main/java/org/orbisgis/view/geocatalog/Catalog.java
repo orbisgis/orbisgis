@@ -340,7 +340,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                         //When opening file in geocatalog, cannot found a driver able to load ex:.JPG extension
                         LOGGER.error(I18N.tr("No driver found for {0} extension", ext));
                     } else {
-                        ImportFile importFileJob = new ImportFile(this, driverFunction, file, FileUtils.getNameFromURI(file.toURI()));
+                        ImportFile importFileJob = new ImportFile(this, driverFunction, file, FileUtils.getNameFromURI(file.toURI()), dataManager.getDataSource());
                         BackgroundManager bm = Services.getService(BackgroundManager.class);
                         bm.nonBlockingBackgroundOperation(importFileJob);
                     }
@@ -407,8 +407,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                     I18N.tr("Delete GeoCatalog tables"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (option == JOptionPane.YES_OPTION) {
-                DataSource ds = Services.getService(DataSource.class);
-                try(Connection connection = ds.getConnection()) {
+                try(Connection connection = dataManager.getDataSource().getConnection()) {
                     connection.setAutoCommit(false);
                     for (String resource : res) {
                         TableLocation tableLocation = TableLocation.parse(resource);
@@ -433,7 +432,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          */
         public void onMenuSaveInfile() {
                 String[] res = getSelectedSources();
-                DataSource ds = Services.getService(DataSource.class);
                 for (String source : res) {
                         final SaveFilePanel outfilePanel = new SaveFilePanel(
                                 "Geocatalog.SaveInFile",
@@ -448,7 +446,8 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                                 final File savedFile = outfilePanel.getSelectedFile().getAbsoluteFile();
                                 BackgroundManager bm = Services.getService(BackgroundManager.class);
                                 bm.backgroundOperation(new ExportInFileOperation(source,
-                                savedFile, getDriverFromExt(FilenameUtils.getExtension(savedFile.getName()), DriverFunction.IMPORT_DRIVER_TYPE.COPY)));
+                                savedFile, getDriverFromExt(FilenameUtils.getExtension(savedFile.getName()),
+                                        DriverFunction.IMPORT_DRIVER_TYPE.COPY),dataManager.getDataSource()));
                         }
 
                 }
@@ -505,7 +504,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          */
         public void onMenuAddWMSServer() {
                 /*
-                DataManager dm = Services.getService(DataManager.class);
                 SourceManager sm = dm.getSourceManager();
                 SRSPanel srsPanel = new SRSPanel();
                 LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel(srsPanel);
@@ -677,8 +675,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                         "onMouseActionOnSourceList",
                         "")); //This method ask the event data as argument
                 //Create the list content manager
-                DataSource dataSource = Services.getService(DataSource.class);
-                sourceListContent = new SourceListModel(dataSource);
+                sourceListContent = new SourceListModel(dataManager.getDataSource());
                 //Replace the default model by the GeoCatalog model
                 sourceList.setModel(sourceListContent);
                 SourceListTransferHandler transferHandler = new SourceListTransferHandler();
@@ -790,16 +787,18 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             }
         }
         private static class ImportFile implements BackgroundJob {
+            private GeoCatalogExt catalog;
             private DriverFunction driverFunction;
             private File file;
             private String tableName;
-            private GeoCatalogExt catalog;
+            private DataSource dataSource;
 
-            private ImportFile(GeoCatalogExt catalog, DriverFunction driverFunction, File file, String tableName) {
+            private ImportFile(GeoCatalogExt catalog, DriverFunction driverFunction, File file, String tableName, DataSource dataSource) {
                 this.catalog = catalog;
                 this.driverFunction = driverFunction;
                 this.file = file;
                 this.tableName = tableName;
+                this.dataSource = dataSource;
             }
 
             @Override
@@ -809,8 +808,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
 
             @Override
             public void run(ProgressMonitor pm) {
-                DataSource ds = Services.getService(DataSource.class);
-                try(Connection connection = ds.getConnection()) {
+                try(Connection connection = dataSource.getConnection()) {
                     driverFunction.importFile(connection, tableName ,file, new H2GISProgressMonitor(pm));
                 } catch (SQLException | IOException ex) {
                     LOGGER.error(I18N.tr("Cannot import the file"), ex);

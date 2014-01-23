@@ -58,6 +58,7 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
     private boolean editing = false;
     private final Logger logger = Logger.getLogger(EditableSourceImpl.class);
     private final I18n i18n = I18nFactory.getI18n(EditableSourceImpl.class);
+    private DataManager dataManager;
 
     /**
      * Construct a source from name. A new instance of DataSource will be
@@ -65,11 +66,12 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
      *
      * @param tableReference
      */
-    public EditableSourceImpl(String tableReference) {
+    public EditableSourceImpl(String tableReference, DataManager dataManager) {
         if (tableReference == null) {
             throw new IllegalArgumentException("Source name must "
                     + "not be null");
         }
+        this.dataManager = dataManager;
         this.tableReference = tableReference;
         setId(tableReference);
     }
@@ -110,17 +112,13 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
     public void open(ProgressMonitor progressMonitor)
             throws UnsupportedOperationException, EditableElementException {
         if(rowSet == null) {
-            DataSource dataSource = Services.getService(DataSource.class);
-            DataManager dataManager = Services.getService(DataManager.class);
-            if(dataSource != null && dataManager != null) {
-                try {
-                    String pkName = ReadRowSetImpl.getPkName(dataSource, TableLocation.parse(tableReference));
-                    rowSet = new ReversibleRowSetImpl(dataSource, dataManager, TableLocation.parse(tableReference), pkName, progressMonitor);
-                } catch (SQLException | IllegalArgumentException ex) {
-                    throw new EditableElementException(ex);
-                }
-                setOpen(true);
+            try {
+                String pkName = ReadRowSetImpl.getPkName(dataManager.getDataSource(), TableLocation.parse(tableReference));
+                rowSet = new ReversibleRowSetImpl(dataManager.getDataSource(), dataManager, TableLocation.parse(tableReference), pkName, progressMonitor);
+            } catch (SQLException | IllegalArgumentException ex) {
+                throw new EditableElementException(ex);
             }
+            setOpen(true);
         }
     }
 
