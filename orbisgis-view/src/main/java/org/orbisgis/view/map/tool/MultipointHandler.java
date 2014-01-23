@@ -51,75 +51,60 @@
  */
 package org.orbisgis.view.map.tool;
 
+import java.util.ArrayList;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.TopologyException;
+import org.gdms.geometryUtils.GeometryEdit;
 import org.gdms.geometryUtils.GeometryException;
+import org.gdms.geometryUtils.GeometryTypeUtil;
+import org.h2gis.utilities.TableLocation;
 
-public class MultiPolygonHandler extends AbstractHandler implements Handler {
+public class MultipointHandler extends AbstractHandler implements Handler {
 
-        private int polygonIndex;
-        private int holeIndex;
+        private int pointIndex;
 
-        public MultiPolygonHandler(com.vividsolutions.jts.geom.Geometry g,
-                int polygonIndex, int holeIndex, int vertexIndex, Coordinate p,
-                int geomIndex) {
+        public MultipointHandler(Geometry g, int pointIndex, int vertexIndex,
+                Coordinate p, int geomIndex) {
                 super(g, vertexIndex, p, geomIndex);
-                this.polygonIndex = polygonIndex;
-                this.holeIndex = holeIndex;
+                this.pointIndex = pointIndex;
         }
 
-        /**
-         * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#moveTo(double,
-         *      double)
-         */
         public Geometry moveTo(double x, double y)
                 throws CannotChangeGeometryException {
-                MultiPolygon mp = (MultiPolygon) geometry.clone();
-                Polygon[] polygons = new Polygon[mp.getNumGeometries()];
-                for (int i = 0; i < polygons.length; i++) {
-                        if (i == polygonIndex) {
-				PolygonHandler handler = new PolygonHandler((Polygon) mp
-						.getGeometryN(i), holeIndex, vertexIndex, null,
+                Coordinate p = new Coordinate(x, y);
+                MultiPoint mp = (MultiPoint) geometry.clone();
+                Point[] points = new Point[mp.getNumGeometries()];
+                for (int i = 0; i < points.length; i++) {
+                        if (i == pointIndex) {
+                                PointHandler handler = new PointHandler((Point) mp.getGeometryN(i), GeometryTypeUtil.POINT_GEOMETRY_TYPE, 0, p,
                                         geomIndex);
-                                polygons[i] = handler.moveJTSTo(x, y);
+                                points[i] = (Point) handler.moveJTSTo(x, y);
                         } else {
-                                polygons[i] = (Polygon) mp.getGeometryN(i);
+                                points[i] = (Point) mp.getGeometryN(i);
                         }
+
                 }
 
-                mp = gf.createMultiPolygon(polygons);
-
+                mp = gf.createMultiPoint(points);
                 if (!mp.isValid()) {
-                        throw new CannotChangeGeometryException(I18N.tr("Invalid multipolygon"));
+                        throw new CannotChangeGeometryException(I18N.tr("Invalid MultiPoint"));
                 }
 
                 return mp;
         }
 
-        /**
-         * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#remove()
-         */
-        public Geometry remove() throws GeometryException {
+        public Geometry remove() throws TableLocation {
 
-                MultiPolygon mp = (MultiPolygon) geometry;
-                Polygon[] polygons = new Polygon[mp.getNumGeometries()];
-                int vIndex = vertexIndex;
-                for (int i = 0; i < polygons.length; i++) {
-                        if (i == polygonIndex) {
-				PolygonHandler handler = new PolygonHandler((Polygon) mp
-						.getGeometryN(i), holeIndex, vIndex, null, geomIndex);
-                                polygons[i] = (Polygon) handler.removeVertex();
-                        } else {
-                                polygons[i] = (Polygon) mp.getGeometryN(i);
-                        }
-                }
+                MultiPoint mp = (MultiPoint) geometry;
 
-                mp = gf.createMultiPolygon(polygons);
-
+                mp = GeometryEdit.removeVertex(mp, pointIndex);
+                
                 if (!mp.isValid()) {
-                        throw new GeometryException(I18N.tr("Invalid multipolygon"));
+                        throw new TopologyException(I18N.tr("Invalid MultiPoint"));
                 }
 
                 return mp;

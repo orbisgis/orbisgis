@@ -53,9 +53,7 @@ package org.orbisgis.view.map.tool;
 
 import java.util.ArrayList;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import org.gdms.geometryUtils.GeometryTypeUtil;
+import com.vividsolutions.jts.geom.*;
 
 /**
  * A wrapper around GDBMS Geometry in order to provide the handler related
@@ -72,7 +70,7 @@ public class Primitive {
          *
          * @param g
          *            Geometry to be wrapped
-         * @param geometryIndex
+         * @param geomIndex
          *            index of the geometry in the Theme it was read
          */
         public Primitive(Geometry g, int geomIndex) {
@@ -84,7 +82,7 @@ public class Primitive {
                 Coordinate[] hndPoints;
                 Handler[] ret;
                 ArrayList<Handler> retArray;
-                if (GeometryTypeUtil.isPoint(geometry) || GeometryTypeUtil.isLineString(geometry)) {
+                if (geometry instanceof Point || geometry instanceof LineString) {
                         hndPoints = geometry.getCoordinates();
                         ret = new Handler[hndPoints.length];
                         for (int i = 0; i < hndPoints.length; i++) {
@@ -92,7 +90,7 @@ public class Primitive {
                                         i, hndPoints[i], geomIndex);
                         }
                         return ret;
-                } else if (GeometryTypeUtil.isMultiPoint(geometry)) {
+                } else if (geometry instanceof MultiPoint) {
                         retArray = new ArrayList<Handler>();
                         for (int g = 0; g < geometry.getNumGeometries(); g++) {
                                 hndPoints = geometry.getGeometryN(g).getCoordinates();
@@ -101,8 +99,8 @@ public class Primitive {
                                                 hndPoints[i], geomIndex));
                                 }
                         }
-                        return retArray.toArray(new Handler[0]);
-                } else if (GeometryTypeUtil.isMultiLineString(geometry)) {
+                        return retArray.toArray(new Handler[retArray.size()]);
+                } else if (geometry instanceof MultiLineString) {
                         retArray = new ArrayList<Handler>();
                         for (int g = 0; g < geometry.getNumGeometries(); g++) {
                                 hndPoints = geometry.getGeometryN(g).getCoordinates();
@@ -111,8 +109,8 @@ public class Primitive {
                                                 hndPoints[i], geomIndex));
                                 }
                         }
-                        return retArray.toArray(new Handler[0]);
-                } else if (GeometryTypeUtil.isPolygon(geometry)) {
+                        return retArray.toArray(new Handler[retArray.size()]);
+                } else if (geometry instanceof Polygon) {
                         retArray = new ArrayList<Handler>();
                         for (int g = 0; g < geometry.getNumGeometries(); g++) {
                                 hndPoints = geometry.getGeometryN(g).getCoordinates();
@@ -121,8 +119,8 @@ public class Primitive {
                                                 hndPoints[i], geomIndex));
                                 }
                         }
-                        return retArray.toArray(new Handler[0]);
-                } else if (GeometryTypeUtil.isMultiPolygon(geometry)) {
+                        return retArray.toArray(new Handler[retArray.size()]);
+                } else if (geometry instanceof MultiPolygon) {
                         retArray = new ArrayList<Handler>();
                         for (int g = 0; g < geometry.getNumGeometries(); g++) {
                                 Geometry pol = geometry.getGeometryN(g);
@@ -134,7 +132,7 @@ public class Primitive {
                                         }
                                 }
                         }
-                        return retArray.toArray(new Handler[0]);
+                        return retArray.toArray(new Handler[retArray.size()]);
                 }
 
                 throw new UnsupportedOperationException("for geometry type : " + geometry.getGeometryType()); //$NON-NLS-1$

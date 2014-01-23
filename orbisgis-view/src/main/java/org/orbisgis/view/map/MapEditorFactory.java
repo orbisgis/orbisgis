@@ -28,13 +28,13 @@
  */
 package org.orbisgis.view.map;
 
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.SingleEditorFactory;
 import org.orbisgis.view.main.frames.ext.ToolBarAction;
 import org.orbisgis.view.map.ext.MapEditorAction;
 import org.orbisgis.view.map.ext.MapEditorExtension;
-import org.orbisgis.view.map.toolbar.DrawingToolBar;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
@@ -44,18 +44,23 @@ import org.osgi.framework.ServiceRegistration;
 public class MapEditorFactory implements SingleEditorFactory {
         public static final String FACTORY_ID = "MapFactory";
         private MapEditor mapPanel = null;
-        private DrawingToolBar drawingToolBar;
+        //TODO reactive drawing
+        //private DrawingToolBar drawingToolBar;
         private ServiceRegistration<ToolBarAction> drawingToolbarService;
         private MenuItemServiceTracker<MapEditorExtension,MapEditorAction> mapEditorExt;
         private BundleContext hostBundle;
+        private DataManager dataManager;
 
         /**
          * Factory constructor
-         * @param bc BundleContext for MapEditor extensions
+         * @param hostBundle BundleContext for MapEditor extensions
+         * @param dataManager DataManager instance
          */
-        public MapEditorFactory(BundleContext bc) {
-            hostBundle = bc;
+        public MapEditorFactory(BundleContext hostBundle, DataManager dataManager) {
+            this.hostBundle = hostBundle;
+            this.dataManager = dataManager;
         }
+
 
         @Override
         public void dispose() {
@@ -73,13 +78,14 @@ public class MapEditorFactory implements SingleEditorFactory {
         @Override
         public EditorDockable[] getSinglePanels() {
                 if(mapPanel==null) {
-                        mapPanel = new MapEditor();
+                        mapPanel = new MapEditor(dataManager);
                         //Plugins Action will be added to ActionCommands of MapEditor
                         mapEditorExt = new MenuItemServiceTracker<MapEditorExtension,MapEditorAction>(hostBundle,MapEditorAction.class,mapPanel.getActionCommands(),mapPanel);
                         mapEditorExt.open(); // Start loading actions
                         // Create Drawing ToolBar
-                        drawingToolBar = new DrawingToolBar(mapPanel);
-                        drawingToolbarService = hostBundle.registerService(ToolBarAction.class,drawingToolBar,null);
+                        // TODO reactive drawing
+                        // drawingToolBar = new DrawingToolBar(mapPanel);
+                        // drawingToolbarService = hostBundle.registerService(ToolBarAction.class,drawingToolBar,null);
                 }
                 return new EditorDockable[] {mapPanel};
         }
