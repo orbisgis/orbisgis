@@ -31,18 +31,14 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.geometryUtils;
+package org.orbisgis.core.geometryUtils;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.impl.PackedCoordinateSequence;
 import com.vividsolutions.jts.io.WKTReader;
 import org.junit.Test;
+import org.orbisgis.core.geometryUtils.filter.CoordinateSequenceDimensionFilter;
 
 import static org.junit.Assert.*;
-
-import org.gdms.geometryUtils.filter.CoordinateSequenceDimensionFilter;
 
 /**
  *
@@ -62,53 +58,5 @@ public class GeometryTypeUtilTest {
                 cd = new CoordinateSequenceDimensionFilter();
                 geom.apply(cd);
                 assertTrue(cd.getDimension() == 3);
-        }
-
-       
-        /**
-         * Test several geometries
-         * @throws Exception
-         */
-        @Test
-        public void testGeometryTypes() throws Exception {
-                Geometry geom = wKTReader.read("POINT(0 0)");
-                assertTrue(GeometryTypeUtil.isPoint(geom));
-                geom = wKTReader.read("MULTIPOINT((0 0), (1 1))");
-                assertTrue(GeometryTypeUtil.isMultiPoint(geom));
-                geom = wKTReader.read("LINESTRING(0 0, 1 1)");
-                assertTrue(GeometryTypeUtil.isLineString(geom));
-                geom = wKTReader.read("MULTILINESTRING((0 0, 1 1),(0 0, 1 1))");
-                assertTrue(GeometryTypeUtil.isMultiLineString(geom));
-                geom = wKTReader.read("LINEARRING(0 0, 1 1, 2 2 , 0 0)");
-                assertTrue(GeometryTypeUtil.isLinearRing(geom));
-                geom = wKTReader.read("POLYGON (( 131 166, 131 266, 210 266, 210 166, 131 166 ))");
-                assertTrue(GeometryTypeUtil.isPolygon(geom));
-                geom = wKTReader.read("MULTIPOLYGON ((( 131 166, 131 266, 210 266, 210 166, 131 166 )), (( 267 144, 267 239, 362 239, 362 144, 267 144 )))");
-                assertTrue(GeometryTypeUtil.isMultiPolygon(geom));
-
-        }
-
-        /**
-         * Test if a geometry has a z value or not
-         * @throws Exception
-         */
-        @Test
-        public void testGeometryHasZ() throws Exception {
-                Geometry geom = wKTReader.read("POINT(0 0)");
-                assertFalse(GeometryTypeUtil.is25Geometry(geom));
-                geom = wKTReader.read("MULTIPOINT((0 0) , (1 1 10))");
-                assertTrue(GeometryTypeUtil.is25Geometry(geom));
-                geom = wKTReader.read("LINESTRING(0 0 12, 1 1 12)");
-                assertTrue(GeometryTypeUtil.is25Geometry(geom));
-                geom = wKTReader.read("MULTILINESTRING((0 0, 1 1),(0 0, 1 1 1))");
-                assertTrue(GeometryTypeUtil.is25Geometry(geom));
-        }
-        
-        @Test
-        public void regressionIssue1() throws Exception {
-                PackedCoordinateSequence.Double seq = new PackedCoordinateSequence.Double(new double[]{1, 4}, 2);
-                Point p = new Point(seq, new GeometryFactory());
-
-                assertFalse(GeometryTypeUtil.is25Geometry(p));
         }
 }

@@ -29,7 +29,7 @@
  *
  * or contact directly: info@orbisgis.org
  */
-package org.gdms.geometryUtils;
+package org.orbisgis.core.geometryUtils;
 
 import org.junit.Test;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -251,7 +251,7 @@ public class GeometryEditTest {
         pols = GeometryEdit.splitPolygonWithLine(polygon, line);
         for (int i = 0; i < pols.getNumGeometries(); i++) {
             Geometry pol = pols.getGeometryN(i);        
-            assertTrue(GeometryTypeUtil.is25Geometry(pol));
+            assertEquals(3,pol.getDimension());
         }
 
     }
