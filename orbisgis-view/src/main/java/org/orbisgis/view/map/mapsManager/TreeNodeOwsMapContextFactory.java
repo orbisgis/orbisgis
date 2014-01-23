@@ -36,6 +36,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import org.apache.log4j.Logger;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactory;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;
@@ -51,16 +52,19 @@ public class TreeNodeOwsMapContextFactory implements TreeNodeFileFactory {
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeOwsMapContextFactory.class);
         private static final String ACTION_ADD_OWS_MAP = "TreeNodeOwsMapContextFactory:NewEmptyMap";
         private static final Logger LOGGER = Logger.getLogger(TreeNodeOwsMapContextFactory.class);
-        
+        private DataManager dataManager;
+
         /**
-         * Constructor
+         * Constructor.
+         * @param dataManager DataManager used to initialize map context.
          */
-        public TreeNodeOwsMapContextFactory() {
+        public TreeNodeOwsMapContextFactory(DataManager dataManager) {
+            this.dataManager = dataManager;
         }
-        
+
         @Override
         public TreeLeafMapElement create(File filePath) {
-                return new TreeLeafMapContextFile(filePath);
+                return new TreeLeafMapContextFile(filePath, dataManager);
         }
 
         /**
@@ -68,7 +72,7 @@ public class TreeNodeOwsMapContextFactory implements TreeNodeFileFactory {
          *
          * @param folderNode Where to create an empty map
          */
-        private static void onCreateEmptyMap(TreeNodeFolder folderNode) {
+        private static void onCreateEmptyMap(TreeNodeFolder folderNode, DataManager dataManager) {
                 File folderPath = folderNode.getFilePath();                
                 String folderName = JOptionPane.showInputDialog(UIFactory.getMainFrame(), I18N.tr("Enter the Map file name"), I18N.tr("MyMap"));
                 if(folderName!=null) {
@@ -81,7 +85,7 @@ public class TreeNodeOwsMapContextFactory implements TreeNodeFileFactory {
                                         LOGGER.error(I18N.tr("The specified file name already exist"));
                                         return;
                                 }
-                                if(TreeLeafMapContextFile.createEmptyMapContext(mapContextFile)) {
+                                if(TreeLeafMapContextFile.createEmptyMapContext(mapContextFile, dataManager)) {
                                         folderNode.updateTree();
                                 }
                         } catch (Throwable ex) {
@@ -97,7 +101,7 @@ public class TreeNodeOwsMapContextFactory implements TreeNodeFileFactory {
                         JMenuItem createEmptyMap = new JMenuItem(I18N.tr("New empty map"));
                         createEmptyMap.setActionCommand(ACTION_ADD_OWS_MAP);
                         createEmptyMap.setToolTipText(I18N.tr("Create a new OWS Map in this folder"));
-                        createEmptyMap.addActionListener(new CreateEmptyMap(folderNode));
+                        createEmptyMap.addActionListener(new CreateEmptyMap(folderNode, dataManager));
                         MenuCommonFunctions.updateOrInsertMenuItem(menu, createEmptyMap);
                 }
         }
@@ -107,14 +111,21 @@ public class TreeNodeOwsMapContextFactory implements TreeNodeFileFactory {
          */
         private static class CreateEmptyMap implements ActionListener {
                 TreeNodeFolder folderNode;
+                DataManager dataManager;
 
-                public CreateEmptyMap(TreeNodeFolder folderNode) {
-                        this.folderNode = folderNode;
+                /**
+                 * Constructor
+                 * @param folderNode Location of folder
+                 * @param dataManager DataManager used to initialize map context.
+                 */
+                public CreateEmptyMap(TreeNodeFolder folderNode, DataManager dataManager) {
+                    this.folderNode = folderNode;
+                    this.dataManager = dataManager;
                 }
-                
+
                 @Override
                 public void actionPerformed(ActionEvent ae) {
-                        onCreateEmptyMap(folderNode);
+                        onCreateEmptyMap(folderNode, dataManager);
                 }
                 
         }

@@ -42,6 +42,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.layerModel.mapcatalog.Workspace;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
@@ -67,9 +68,11 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
         AtomicBoolean downloaded = new AtomicBoolean(false);
         private SERVER_STATUS serverStatus = SERVER_STATUS.DISCONNECTED;
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeMapCatalogServer.class);
+        private DataManager dataManager;
                 
-        public TreeNodeMapCatalogServer(URL serverUrl) {
+        public TreeNodeMapCatalogServer(URL serverUrl, DataManager dataManager) {
                 setServerUrl(serverUrl);
+                this.dataManager = dataManager;
         }
         
         private void setServerUrl(URL serverUrl) {
@@ -121,7 +124,7 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
                 model.insertNodeInto(busyNode, this, 0);
                 // Launch the download job
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.nonBlockingBackgroundOperation(new DownloadWorkspaces(this,busyNode));
+                bm.nonBlockingBackgroundOperation(new DownloadWorkspaces(this,busyNode,dataManager));
                 
         }
         @Override

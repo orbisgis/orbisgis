@@ -41,6 +41,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.core.renderer.se.common.Description;
@@ -61,9 +62,9 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
         private static final Logger LOGGER = Logger.getLogger(TreeLeafMapContextFile.class);
         private static final I18n I18N = I18nFactory.getI18n(TreeLeafMapContextFile.class);
                 
-        public TreeLeafMapContextFile(File mapContextFilePath) {
+        public TreeLeafMapContextFile(File mapContextFilePath, DataManager dataManager) {
                 // For fast loading, take the filename as the ows title
-                super(mapContextFilePath);
+                super(mapContextFilePath, dataManager);
                 setLabel(FilenameUtils.getBaseName(mapContextFilePath.getName()));
                 setEditable(false);
         }
@@ -73,10 +74,10 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
          * @param fileName
          * @return
          */
-        public static boolean createEmptyMapContext(File fileName) {
+        public static boolean createEmptyMapContext(File fileName, DataManager dataManager) {
                 
                 //Create an empty map context
-                OwsMapContext emptyMapContext = new OwsMapContext();                
+                OwsMapContext emptyMapContext = new OwsMapContext(dataManager);
                 try {
                         //Set minimal informations
                         emptyMapContext.open(null);
@@ -152,17 +153,17 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
                 throw new UnsupportedOperationException("Not supported.");
         }
         
-        private OwsMapContext getMapContext() throws FileNotFoundException {
-                OwsMapContext mapContext = new OwsMapContext();
+        private OwsMapContext getMapContext(DataManager dataManager) throws FileNotFoundException {
+                OwsMapContext mapContext = new OwsMapContext(dataManager);
                 mapContext.read(new FileInputStream(getFilePath()));
                 mapContext.setLocation(getFilePath().toURI());
                 return mapContext;
         }
 
         @Override
-        public MapElement getMapElement(ProgressMonitor pm) {
+        public MapElement getMapElement(ProgressMonitor pm, DataManager dataManager) {
                 try {
-                        MapElement mapElement = new MapElement(getMapContext(), getFilePath());
+                        MapElement mapElement = new MapElement(getMapContext(dataManager), getFilePath());
                         return mapElement;
                 } catch(FileNotFoundException ex) {
                         throw new IllegalStateException(ex);

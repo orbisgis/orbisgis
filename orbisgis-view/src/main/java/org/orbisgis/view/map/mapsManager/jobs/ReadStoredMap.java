@@ -49,10 +49,19 @@ public class ReadStoredMap implements BackgroundJob {
         private static final I18n I18N = I18nFactory.getI18n(ReadStoredMap.class);
         List<TreeLeafMapElement> mapContextFiles;
 
+        /**
+         * Constructor using only one leaf map element
+         * @param mapContextFile
+         */
         public ReadStoredMap(TreeLeafMapElement mapContextFile) {
-                mapContextFiles = new ArrayList<TreeLeafMapElement>();
+                mapContextFiles = new ArrayList<>();
                 mapContextFiles.add(mapContextFile);
-        }       
+        }
+
+        /**
+         * Constructor using multiple leaf map element
+         * @param mapContextFiles Array of map elements.
+        */
         public ReadStoredMap(List<TreeLeafMapElement> mapContextFiles) {
                 this.mapContextFiles = mapContextFiles;
         }       
@@ -61,7 +70,7 @@ public class ReadStoredMap implements BackgroundJob {
         public void run(ProgressMonitor pm) {
                 for(int elIndex=0; elIndex<mapContextFiles.size();elIndex++) {
                         TreeLeafMapElement mapEl = mapContextFiles.get(elIndex);
-                        MapContext el = mapEl.getMapElement(pm).getMapContext();
+                        MapContext el = mapEl.getMapElement(pm, mapEl.getDataManager()).getMapContext();
                         if(el instanceof OwsMapContext) {
                                 OwsMapContext mapContext = (OwsMapContext)el;
                                 if(mapContext.getJAXBObject().getGeneral()!=null) {

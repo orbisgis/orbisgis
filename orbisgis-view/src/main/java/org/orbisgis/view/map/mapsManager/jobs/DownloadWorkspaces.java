@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.layerModel.mapcatalog.ConnectionProperties;
 import org.orbisgis.core.layerModel.mapcatalog.RemoteMapCatalog;
 import org.orbisgis.core.layerModel.mapcatalog.Workspace;
@@ -51,10 +52,12 @@ public class DownloadWorkspaces implements BackgroundJob {
         private TreeNodeMapCatalogServer server;
         private TreeNodeBusy treeNodeBusyHint;
         private static final Logger LOGGER = Logger.getLogger(DownloadWorkspaces.class);
+        private DataManager dataManager;
         
-        public DownloadWorkspaces(TreeNodeMapCatalogServer server, TreeNodeBusy treeNodeBusyHint) {
+        public DownloadWorkspaces(TreeNodeMapCatalogServer server, TreeNodeBusy treeNodeBusyHint, DataManager dataManager) {
                 this.server = server;
                 this.treeNodeBusyHint = treeNodeBusyHint;
+                this.dataManager = dataManager;
         }
         
         @Override
@@ -62,7 +65,7 @@ public class DownloadWorkspaces implements BackgroundJob {
                 //
                 try {
                         treeNodeBusyHint.setDoAnimation(true);
-                        ConnectionProperties parameters = new ConnectionProperties(server.getServerUrl());
+                        ConnectionProperties parameters = new ConnectionProperties(server.getServerUrl(), dataManager);
                         RemoteMapCatalog mapServer = new RemoteMapCatalog(parameters);
                         List<Workspace> workspaces = mapServer.getWorkspaces();
                         SwingUtilities.invokeLater(new FeedServerNode(server, workspaces));

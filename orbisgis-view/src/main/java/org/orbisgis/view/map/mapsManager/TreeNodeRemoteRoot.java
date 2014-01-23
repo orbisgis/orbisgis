@@ -42,6 +42,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import org.apache.log4j.Logger;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
 import org.orbisgis.view.components.fstree.PopupTreeNode;
@@ -62,13 +63,15 @@ public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements Pop
         private List<String> serverList;
         private MapsManagerPersistence mapsManagerPersistence;
         private AtomicBoolean onUpdateSerialisation = new AtomicBoolean(false);
+        private DataManager dataManager;
 
         /**
          * Default constructor
          */
-        public TreeNodeRemoteRoot() {
+        public TreeNodeRemoteRoot(DataManager dataManager) {
                 setLabel(I18N.tr("Remote"));
                 setEditable(false);
+                this.dataManager = dataManager;
         }
 
         /**
@@ -117,7 +120,7 @@ public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements Pop
                 for (String serverAddress : serverList) {
                         try {
                                 URL serverUrl = new URL(serverAddress);
-                                model.insertNodeInto(new TreeNodeMapCatalogServer(serverUrl), this, getChildCount());
+                                model.insertNodeInto(new TreeNodeMapCatalogServer(serverUrl, dataManager), this, getChildCount());
                         } catch (MalformedURLException ex) {
                                 LOGGER.error(I18N.tr("Cannot load map catalog server {0}", serverAddress), ex);
                         }
@@ -158,7 +161,7 @@ public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements Pop
                 if(serverURLString!=null && !serverURLString.isEmpty()) {
                         try {
                                 URL serverURL = new URL(serverURLString);
-                                model.insertNodeInto(new TreeNodeMapCatalogServer(serverURL), this, getChildCount());
+                                model.insertNodeInto(new TreeNodeMapCatalogServer(serverURL, dataManager), this, getChildCount());
                         } catch( MalformedURLException ex) {
                                 LOGGER.error(I18N.tr("You type an incorrect URL {0}",serverURLString),ex);
                         }

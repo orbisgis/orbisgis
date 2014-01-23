@@ -51,6 +51,7 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.FileTree;
 import org.orbisgis.view.components.fstree.FileTreeModel;
@@ -76,6 +77,7 @@ public class MapsManager extends JPanel {
         private JScrollPane scrollPane;
         private File loadedMap;
         private TreeNodeLocalRoot rootFolder;
+        private DataManager dataManager;
 
         // Store all the compatible map context
         
@@ -83,7 +85,7 @@ public class MapsManager extends JPanel {
         /**
          * Default constructor
          */
-        public MapsManager() {
+        public MapsManager(String mapContextPath, DataManager dataManager) {
                 super(new BorderLayout());
                 treeModel = new FileTreeModel(rootNode, true);
                 treeModel.setAsksAllowsChildren(true);
@@ -91,17 +93,15 @@ public class MapsManager extends JPanel {
                 tree = new FileTree(treeModel);
                 tree.setEditable(true);
                 tree.setShowsRootHandles(true);
-                // Retrieve the default ows maps folder
-                ViewWorkspace workspace = Services.getService(ViewWorkspace.class);
                 // Add the root folder
-                File rootFolderPath = new File(workspace.getMapContextPath());
+                File rootFolderPath = new File(mapContextPath);
                 if(!rootFolderPath.exists()) {
                     rootFolderPath.mkdirs();
                 }
                 TreeNodeFolder workspaceFolder = new TreeNodeFolder(rootFolderPath,tree);
                 workspaceFolder.setLabel(I18N.tr("default"));
                 rootFolder = new TreeNodeLocalRoot(tree);
-                rootRemote = new TreeNodeRemoteRoot();
+                rootRemote = new TreeNodeRemoteRoot(dataManager);
                 initInternalFactories(); // Init file readers
                 treeModel.insertNodeInto(rootFolder, rootNode, rootNode.getChildCount());
                 treeModel.insertNodeInto(workspaceFolder, rootFolder, rootFolder.getChildCount());
@@ -179,7 +179,7 @@ public class MapsManager extends JPanel {
         *  Load built-ins map factory
         */
         private void initInternalFactories() {
-                tree.addFactory("ows",new TreeNodeOwsMapContextFactory());
+                tree.addFactory("ows",new TreeNodeOwsMapContextFactory(dataManager));
         }
         /**
          * 

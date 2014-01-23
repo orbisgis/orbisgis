@@ -45,6 +45,7 @@ import javax.swing.JOptionPane;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerCollectionEvent;
 import org.orbisgis.core.layerModel.LayerException;
@@ -91,16 +92,15 @@ public final class MapElement extends AbstractEditableElement {
 
     /**
      * Constructor that read the provided map context file
-     * @param mapContextFile
+     * @param mapContextFile Xml file
+     * @param manager Where to register MapContext URI
      */
-    public MapElement(File mapContextFile) {
-        mapContext = new OwsMapContext();
+    public MapElement(File mapContextFile, DataManager manager) {
+        mapContext = new OwsMapContext(manager);
         try {
             mapContext.read(new FileInputStream(mapContextFile));
             mapContext.setLocation(mapContextFile.toURI());
-        } catch (FileNotFoundException ex) {
-            LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
-        } catch (IllegalArgumentException ex) {
+        } catch (FileNotFoundException | IllegalArgumentException ex) {
             LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
         }
         this.mapContextFile = mapContextFile;

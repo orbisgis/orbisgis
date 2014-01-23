@@ -316,7 +316,7 @@ public class Core {
      */
     private void makeGeoCatalogPanel() {
         //The geo-catalog view content is read from the SourceContext
-        geoCatalog = new Catalog();
+        geoCatalog = new Catalog(mainContext.getDataManager());
         // Catalog extensions
         geoCatalog.registeTrackers(pluginFramework.getHostBundleContext());
         //Add the view as a new Docking Panel

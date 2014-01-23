@@ -36,6 +36,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundManager;
@@ -63,9 +64,11 @@ public abstract class TreeLeafMapElement extends AbstractTreeNodeLeaf implements
         private static final I18n I18N = I18nFactory.getI18n(TreeLeafMapElement.class);
         private boolean loaded = false;
         private File filePath; // Call getFilePath() instead of using this variable
+        private DataManager dataManager;
 
-        public TreeLeafMapElement(File filePath) {
+        public TreeLeafMapElement(File filePath, DataManager dataManager) {
                 this.filePath = filePath;
+                this.dataManager = dataManager;
         }
 
         
@@ -101,14 +104,14 @@ public abstract class TreeLeafMapElement extends AbstractTreeNodeLeaf implements
          * @param pm 
          * @return 
          */
-        abstract public MapElement getMapElement(ProgressMonitor pm);  
+        abstract public MapElement getMapElement(ProgressMonitor pm, DataManager dataManager);
                
         /**
          * Open the selected map file (only the first one selected)
          */
         public void onOpenMap() {
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.backgroundOperation(new ReadMapContextJob(getMapElement(new NullProgressMonitor())));
+                bm.backgroundOperation(new ReadMapContextJob(getMapElement(new NullProgressMonitor(), dataManager)));
         }
 
         @Override
@@ -136,8 +139,15 @@ public abstract class TreeLeafMapElement extends AbstractTreeNodeLeaf implements
         public boolean completeTransferable(TransferableList transferable) {
                 transferable.addTransferable(new TransferableNodePaths(this));
                 if(!transferable.isDataFlavorSupported(TransferableMap.mapFlavor)) {
-                        transferable.addTransferable(new TransferableMap(getMapElement(new NullProgressMonitor())));
+                        transferable.addTransferable(new TransferableMap(getMapElement(new NullProgressMonitor(), dataManager)));
                 }
                 return true;
+        }
+
+        /**
+         * @return Map use this database to register URI.
+         */
+        public DataManager getDataManager() {
+            return dataManager;
         }
 }

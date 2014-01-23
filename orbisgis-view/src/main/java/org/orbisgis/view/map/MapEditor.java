@@ -110,7 +110,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     private AtomicBoolean processingCursor = new AtomicBoolean(false);
     private Point lastCursorPosition = new Point();
     private AtomicBoolean initialised = new AtomicBoolean(false);
-    private MapsManager mapsManager = new MapsManager();
+    private MapsManager mapsManager;
     private JLayeredPane layeredPane = new JLayeredPane();
     private ComponentListener sizeListener = EventHandler.create(ComponentListener.class,this,"updateMapControlSize",null,"componentResized");
     private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified");
@@ -125,8 +125,9 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     /**
      * Constructor
      */
-    public MapEditor(DataManager dataManager) {
+    public MapEditor(ViewWorkspace viewWorkspace, DataManager dataManager) {
         super(new BorderLayout());
+        this.mapsManager = new MapsManager(viewWorkspace.getMapContextPath(),dataManager);
         this.dataManager = dataManager;
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName("map_editor");
@@ -212,16 +213,16 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
                 File serialisedMapContextPath = new File(viewWorkspace.getMapContextPath() + File.separator, mapEditorPersistence.getDefaultMapContext());
                 if(!serialisedMapContextPath.exists()) {
-                        createDefaultMapContext();
+                        createDefaultMapContext(dataManager);
                 } else {
                         TreeLeafMapElement defaultMap = (TreeLeafMapElement)mapsManager.getFactoryManager().create(serialisedMapContextPath);
                         try {
-                                MapElement mapElementToLoad = defaultMap.getMapElement(new NullProgressMonitor());
+                                MapElement mapElementToLoad = defaultMap.getMapElement(new NullProgressMonitor(), dataManager);
                                 backgroundManager.backgroundOperation(new ReadMapContextJob(mapElementToLoad));
                         } catch(IllegalArgumentException ex) {
                                 //Map XML is invalid
                                 GUILOGGER.warn(I18N.tr("Fail to load the map context, starting with an empty map context"),ex);
-                                createDefaultMapContext();
+                                createDefaultMapContext(dataManager);
                         }
                 }
         }
@@ -229,7 +230,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
        /**
         * Create the default map context, create it if the map folder is empty
         */
-        private static void createDefaultMapContext() {
+        private static void createDefaultMapContext(DataManager dataManager) {
                 BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
                 ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
 
@@ -242,9 +243,9 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
                 if (!mapContextFile.exists()) {
                         //Create an empty map context
-                        TreeLeafMapContextFile.createEmptyMapContext(mapContextFile);
+                        TreeLeafMapContextFile.createEmptyMapContext(mapContextFile, dataManager);
                 }
-                MapElement editableMap = new MapElement(mapContextFile);
+                MapElement editableMap = new MapElement(mapContextFile, dataManager);
                 backgroundManager.backgroundOperation(new ReadMapContextJob(editableMap));
         }
 
@@ -334,7 +335,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         if(mapElement!=null && mapFilePath.equals(mapElement.getMapContextFile())) {
             return;
         }
-        MapElement mapElement = new MapElement(mapFilePath);
+        MapElement mapElement = new MapElement(mapFilePath, dataManager);
         BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
         backgroundManager.backgroundOperation(new ReadMapContextJob(mapElement));
     }

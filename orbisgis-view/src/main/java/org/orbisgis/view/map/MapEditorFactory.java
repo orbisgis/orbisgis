@@ -35,6 +35,7 @@ import org.orbisgis.view.edition.SingleEditorFactory;
 import org.orbisgis.view.main.frames.ext.ToolBarAction;
 import org.orbisgis.view.map.ext.MapEditorAction;
 import org.orbisgis.view.map.ext.MapEditorExtension;
+import org.orbisgis.view.workspace.ViewWorkspace;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
@@ -50,15 +51,18 @@ public class MapEditorFactory implements SingleEditorFactory {
         private MenuItemServiceTracker<MapEditorExtension,MapEditorAction> mapEditorExt;
         private BundleContext hostBundle;
         private DataManager dataManager;
+        private ViewWorkspace viewWorkspace;
 
         /**
          * Factory constructor
          * @param hostBundle BundleContext for MapEditor extensions
          * @param dataManager DataManager instance
+         * @param viewWorkspace Location of workspace folders
          */
-        public MapEditorFactory(BundleContext hostBundle, DataManager dataManager) {
+        public MapEditorFactory(BundleContext hostBundle, DataManager dataManager, ViewWorkspace viewWorkspace) {
             this.hostBundle = hostBundle;
             this.dataManager = dataManager;
+            this.viewWorkspace = viewWorkspace;
         }
 
 
@@ -78,7 +82,7 @@ public class MapEditorFactory implements SingleEditorFactory {
         @Override
         public EditorDockable[] getSinglePanels() {
                 if(mapPanel==null) {
-                        mapPanel = new MapEditor(dataManager);
+                        mapPanel = new MapEditor(viewWorkspace,dataManager);
                         //Plugins Action will be added to ActionCommands of MapEditor
                         mapEditorExt = new MenuItemServiceTracker<MapEditorExtension,MapEditorAction>(hostBundle,MapEditorAction.class,mapPanel.getActionCommands(),mapPanel);
                         mapEditorExt.open(); // Start loading actions
