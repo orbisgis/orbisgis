@@ -31,7 +31,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.geometryUtils;
+package org.orbisgis.core.geometryUtils;
 
 import java.util.ArrayList;
 
@@ -44,7 +44,9 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
@@ -114,17 +116,13 @@ public final class GeometryClean {
         public static Geometry removeDuplicateCoordinates(Geometry geom) {
                 if (geom.isEmpty()) {
                         return geom;
-                } else if (GeometryTypeUtil.isPoint(geom) || GeometryTypeUtil.isMultiPoint(geom)) {
+                } else if (geom instanceof Point || geom instanceof MultiPoint) {
                         return geom;
-                } else if (GeometryTypeUtil.isLineString(geom)) {
+                } else if (geom instanceof LineString) {
                         return removeDuplicateCoordinates((LineString) geom);
-                } else if (GeometryTypeUtil.isMultiLineString(geom)) {
-                        return removeDuplicateCoordinates((MultiLineString) geom);
-                } else if (GeometryTypeUtil.isPolygon(geom)) {
+                } else if (geom instanceof Polygon) {
                         return removeDuplicateCoordinates((Polygon) geom);
-                } else if (GeometryTypeUtil.isMultiPolygon(geom)) {
-                        return removeDuplicateCoordinates((MultiPolygon) geom);
-                } else if (GeometryTypeUtil.isGeometryCollection(geom)) {
+                } else if (geom instanceof GeometryCollection) {
                         return removeDuplicateCoordinates((GeometryCollection) geom);
                 }
                 return null;

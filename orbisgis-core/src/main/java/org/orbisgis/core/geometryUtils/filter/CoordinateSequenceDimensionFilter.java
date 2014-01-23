@@ -31,7 +31,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.geometryUtils.filter;
+package org.orbisgis.core.geometryUtils.filter;
 
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFilter;

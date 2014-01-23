@@ -31,7 +31,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.geometryUtils.filter;
+package org.orbisgis.core.geometryUtils.filter;
 
 import java.awt.geom.Rectangle2D;
 

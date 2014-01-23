@@ -55,8 +55,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
-import org.gdms.geometryUtils.GeometryException;
-import org.gdms.geometryUtils.GeometryTypeUtil;
 
 public class MultilineHandler extends AbstractHandler implements Handler {
 
@@ -68,10 +66,6 @@ public class MultilineHandler extends AbstractHandler implements Handler {
                 this.linestringIndex = linestringIndex;
         }
 
-        /**
-         * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#moveTo(double,
-         *      double)
-         */
         public Geometry moveTo(double x, double y)
                 throws CannotChangeGeometryException {
                 Coordinate p = new Coordinate(x, y);

@@ -62,7 +62,7 @@
  * (250)385-6040
  * www.vividsolutions.com
  */
-package org.gdms.geometryUtils;
+package org.orbisgis.core.geometryUtils;
 
 import com.vividsolutions.jts.geom.LineSegment;
 

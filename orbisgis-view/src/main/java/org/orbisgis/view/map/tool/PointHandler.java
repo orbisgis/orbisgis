@@ -59,18 +59,14 @@ import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiPoint;
-import org.gdms.geometryUtils.GeometryEdit;
-import org.gdms.geometryUtils.GeometryException;
-import org.gdms.geometryUtils.GeometryTypeUtil;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.TopologyException;
 
 public class PointHandler extends AbstractHandler implements Handler {
 
-        private String geometryType;
-
-        public PointHandler(Geometry g, String geometryType, int vertexIndex,
+    public PointHandler(Geometry g, int vertexIndex,
                 Coordinate p, int geomIndex) {
                 super(g, vertexIndex, p, geomIndex);
-                this.geometryType = geometryType;
         }
 
         public com.vividsolutions.jts.geom.Geometry moveJTSTo(final double x,
@@ -110,29 +106,25 @@ public class PointHandler extends AbstractHandler implements Handler {
         }
 
         public com.vividsolutions.jts.geom.Geometry removeVertex()
-                throws GeometryException {
-                if (GeometryTypeUtil.isMultiPoint(geometry)) {
+                throws TopologyException {
+                if (geometry instanceof MultiPoint) {
                         return GeometryEdit.removeVertex((MultiPoint) geometry, vertexIndex);
-                } else if (GeometryTypeUtil.isLineString(geometry)) {
+                } else if (geometry instanceof LineString) {
                         return GeometryEdit.removeVertex((LineString) geometry, vertexIndex);
                 }
 
                 throw new RuntimeException();
         }
 
-        /**
-         * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#remove()
-         */
         @Override
-        public Geometry remove() throws GeometryException {
-                if (GeometryTypeUtil.isPoint(geometry)) {
-                        throw new GeometryException(
+        public Geometry remove() throws TopologyException {
+                if (geometry instanceof Point) {
+                        throw new TopologyException(
                                 I18N.tr("Cannot remove a vertex from a point geometry")); //$NON-NLS-1$
-                } else if ((GeometryTypeUtil.isLineString(geometry))
-                        || (GeometryTypeUtil.isMultiPoint(geometry))) {
+                } else if (geometry instanceof LineString || geometry instanceof MultiPoint) {
                         com.vividsolutions.jts.geom.Geometry g = removeVertex();
                         if (!g.isValid()) {
-                                throw new GeometryException(
+                                throw new TopologyException(
                                         I18N.tr("The geometry is not valid"));
                         }
                         return g;

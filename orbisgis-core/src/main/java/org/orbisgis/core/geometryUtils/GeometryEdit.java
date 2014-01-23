@@ -60,7 +60,7 @@
  * (250)385-6040
  * www.vividsolutions.com
  */
-package org.gdms.geometryUtils;
+package org.orbisgis.core.geometryUtils;
 
 import com.vividsolutions.jts.algorithm.RobustLineIntersector;
 import java.util.ArrayList;
@@ -84,6 +84,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.TopologyException;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jts.linearref.LinearLocation;
 import com.vividsolutions.jts.noding.IntersectionAdder;
@@ -311,9 +312,9 @@ public final class GeometryEdit {
      * @return
      */
     public static Geometry reverse3D(Geometry geometry) {
-        if (GeometryTypeUtil.isMultiLineString(geometry)) {
+        if (geometry instanceof MultiLineString) {
             return reverse3D((MultiLineString) geometry);
-        } else if (GeometryTypeUtil.isLineString(geometry)) {
+        } else if (geometry instanceof LineString) {
             return reverse3D((LineString) geometry);
         }
 
@@ -526,7 +527,7 @@ public final class GeometryEdit {
     /**
      * Split a geometry at intersections and return a list of sublinestrings
      *
-     * @param lineString
+     * @param tobeNodes
      *
      */
     public static Geometry geometryNoders(Geometry tobeNodes) {
@@ -632,9 +633,9 @@ public final class GeometryEdit {
      * @param lineString
      * @param vertexPoint
      * @return
-     * @throws GeometryException
+     * @throws com.vividsolutions.jts.geom.TopologyException
      */
-    public static Geometry insertVertexInLineString(LineString lineString, Point vertexPoint) throws GeometryException {
+    public static Geometry insertVertexInLineString(LineString lineString, Point vertexPoint) throws TopologyException {
         return insertVertexInLineString(lineString, vertexPoint, -1);
     }
 
@@ -645,10 +646,10 @@ public final class GeometryEdit {
      * @param vertexPoint
      * @param tolerance
      * @return
-     * @throws GeometryException
+     * @throws com.vividsolutions.jts.geom.TopologyException
      */
     public static LineString insertVertexInLineString(LineString lineString, Point vertexPoint,
-            double tolerance) throws GeometryException {
+            double tolerance) throws TopologyException {
         GeometryLocation geomLocation = getVertexToSnap(lineString, vertexPoint, tolerance);
         if (geomLocation != null) {
             Coordinate[] coords = lineString.getCoordinates();
@@ -718,10 +719,10 @@ public final class GeometryEdit {
      * @param polygon
      * @param vertexPoint
      * @return
-     * @throws GeometryException
+     * @throws TopologyException
      */
     public static Geometry insertVertexInPolygon(Polygon polygon,
-            Point vertexPoint) throws GeometryException {
+            Point vertexPoint) throws TopologyException {
         return insertVertexInPolygon(polygon, vertexPoint, -1);
 
     }
@@ -733,10 +734,10 @@ public final class GeometryEdit {
      * @param vertexPoint
      * @param tolerance
      * @return
-     * @throws GeometryException
+     * @throws TopologyException
      */
     public static Polygon insertVertexInPolygon(Polygon polygon,
-            Point vertexPoint, double tolerance) throws GeometryException {
+            Point vertexPoint, double tolerance) throws TopologyException {
         LinearRing inserted = insertVertexInLinearRing(polygon.getExteriorRing(), vertexPoint, tolerance);
         if (inserted != null) {
             LinearRing[] holes = new LinearRing[polygon.getNumInteriorRing()];
@@ -746,7 +747,7 @@ public final class GeometryEdit {
             Polygon ret = FACTORY.createPolygon(inserted, holes);
 
             if (!ret.isValid()) {
-                throw new GeometryException(I18N.getString("gdms.geometryUtils.geometryException.geometryNotValid"));
+                throw new TopologyException(I18N.getString("gdms.geometryUtils.geometryException.geometryNotValid"));
             }
 
             return ret;
@@ -767,7 +768,7 @@ public final class GeometryEdit {
                 Polygon ret = FACTORY.createPolygon(FACTORY.createLinearRing(polygon.getExteriorRing().getCoordinates()), holes);
 
                 if (!ret.isValid()) {
-                    throw new GeometryException(I18N.getString("gdms.geometryUtils.geometryException.geometryNotValid"));
+                    throw new TopologyException(I18N.getString("gdms.geometryUtils.geometryException.geometryNotValid"));
                 }
 
                 return ret;
@@ -800,9 +801,9 @@ public final class GeometryEdit {
      * @param geom
      * @param point
      * @return
-     * @throws GeometryException
+     * @throws TopologyException
      */
-    public static Geometry insertVertex(Geometry geom, Point point) throws GeometryException {
+    public static Geometry insertVertex(Geometry geom, Point point) throws TopologyException {
         return insertVertex(geom, point, -1);
     }
 
@@ -818,7 +819,7 @@ public final class GeometryEdit {
      * geometry to be in an invalid shape
      */
     public static Geometry insertVertex(Geometry geometry, Point vertexPoint, double tolerance)
-            throws GeometryException {
+            throws TopologyException {
         if (geometry instanceof MultiPoint) {
             return insertVertexInMultipoint(geometry, vertexPoint);
         } else if (geometry instanceof LineString) {
@@ -964,14 +965,14 @@ public final class GeometryEdit {
      * @param minNumVertex
      * @return
      *
-     * @throws GeometryException
+     * @throws TopologyException
      */
     public static Coordinate[] removeVertex(int vertexIndex,
             Geometry g, int minNumVertex)
-            throws GeometryException {
+            throws TopologyException {
         Coordinate[] coords = g.getCoordinates();
         if (coords.length <= minNumVertex) {
-            throw new GeometryException(
+            throw new TopologyException(
                     I18N.getString("orbisgis.org.orbisgis.ui.tool.AbstractHandler.invalidGeometryToFewVertex")); //$NON-NLS-1$  
         }
         Coordinate[] newCoords = new Coordinate[coords.length - 1];
@@ -993,9 +994,9 @@ public final class GeometryEdit {
      * @param geometry
      * @param vertexIndex
      * @return
-     * @throws GeometryException
+     * @throws TopologyException
      */
-    public static MultiPoint removeVertex(MultiPoint geometry, int vertexIndex) throws GeometryException {
+    public static MultiPoint removeVertex(MultiPoint geometry, int vertexIndex) throws TopologyException {
         return FACTORY.createMultiPoint(removeVertex(vertexIndex, geometry, 1));
     }
 
@@ -1005,9 +1006,9 @@ public final class GeometryEdit {
      * @param geometry
      * @param vertexIndex
      * @return
-     * @throws GeometryException
+     * @throws TopologyException
      */
-    public static LineString removeVertex(LineString geometry, int vertexIndex) throws GeometryException {
+    public static LineString removeVertex(LineString geometry, int vertexIndex) throws TopologyException {
         return FACTORY.createLineString(removeVertex(vertexIndex, geometry, 2));
     }
 
@@ -1090,9 +1091,9 @@ public final class GeometryEdit {
      * @return
      */
     public static Geometry removeHole(Geometry geometry) {
-        if (GeometryTypeUtil.isPolygon(geometry)) {
+        if (geometry instanceof Polygon) {
             return removeHolePolygon((Polygon) geometry);
-        } else if (GeometryTypeUtil.isMultiPolygon(geometry)) {
+        } else if (geometry instanceof MultiPolygon) {
             return removeHoleMultiPolygon((MultiPolygon) geometry);
         }
         return null;

@@ -51,16 +51,11 @@
  */
 package org.orbisgis.view.map.tool;
 
-import java.util.ArrayList;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.TopologyException;
-import org.gdms.geometryUtils.GeometryEdit;
-import org.gdms.geometryUtils.GeometryException;
-import org.gdms.geometryUtils.GeometryTypeUtil;
 import org.h2gis.utilities.TableLocation;
 
 public class MultipointHandler extends AbstractHandler implements Handler {

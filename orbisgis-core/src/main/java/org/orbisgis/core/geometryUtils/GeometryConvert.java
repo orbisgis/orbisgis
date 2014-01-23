@@ -31,7 +31,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.geometryUtils;
+package org.orbisgis.core.geometryUtils;
 
 import java.util.Set;
 import java.util.TreeSet;
