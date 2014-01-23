@@ -299,7 +299,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 if(manager != null) {
                     String[] res = getSelectedSources();
                     for (String source : res) {
-                            TableEditableElementImpl tableDocument = new TableEditableElementImpl(source);
+                            TableEditableElementImpl tableDocument = new TableEditableElementImpl(source, dataManager);
                             OpenTableEditor job = new OpenTableEditor(tableDocument);
                             manager.nonBlockingBackgroundOperation(job);
                     }
@@ -678,7 +678,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 sourceListContent = new SourceListModel(dataManager.getDataSource());
                 //Replace the default model by the GeoCatalog model
                 sourceList.setModel(sourceListContent);
-                SourceListTransferHandler transferHandler = new SourceListTransferHandler();
+                SourceListTransferHandler transferHandler = new SourceListTransferHandler(dataManager);
                 //Call the method this.onDropURI when the user drop uri(like files) on the list control
                 transferHandler.getDropListenerHandler().addListener(this,
                         EventHandler.create(SourceListTransferHandler.DropUriListener.class, this, "onDropURI", "uriList"));

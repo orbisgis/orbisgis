@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.edition;
 
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.api.ReversibleRowSet;
 
 /**
@@ -59,4 +60,9 @@ public interface EditableSource extends EditableElement {
      * @return the Editing
      */
     public boolean isEditing();
+
+    /**
+     * @return Data manager where the source come from.
+     */
+    DataManager getDataManager();
 }

@@ -77,6 +77,11 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
     }
 
     @Override
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    @Override
     public String toString() {
         return i18n.tr("Source {0}", tableReference);
     }

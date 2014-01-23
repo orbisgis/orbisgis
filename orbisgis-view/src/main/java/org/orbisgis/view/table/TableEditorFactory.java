@@ -102,7 +102,7 @@ public class TableEditorFactory implements MultipleEditorFactory {
 
         @Override
         public DockingPanelLayout makeEmptyLayout() {
-                return new TablePanelLayout();
+                return new TablePanelLayout(dataManager);
         }
 
         @Override
