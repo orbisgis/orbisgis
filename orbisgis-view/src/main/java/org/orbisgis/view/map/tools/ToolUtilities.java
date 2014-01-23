@@ -36,17 +36,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.GeometryTypeCodes;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.view.components.sif.AskValidRow;
 import org.orbisgis.view.components.sif.AskValidValue;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.TransitionException;
+
+import javax.sql.DataSource;
 
 /**
  * Common utility for automatons.
@@ -85,32 +90,35 @@ public class ToolUtilities {
 	 * @param sds
 	 * @param row
 	 * @return
-	 * @throws DriverException
+	 * @throws java.sql.SQLException
 	 * @throws TransitionException
 	 */
-	public static Value[] populateNotNullFields(DataSource sds,
-			Value[] row) throws SQLException, TransitionException {
-		Value[] ret = new Value[row.length];
-		for (int i = 0; i < sds.getFieldCount(); i++) {
-			Type type = sds.getFieldType(i);
-			if (type.getBooleanConstraint(Constraint.NOT_NULL)
-					&& !type.getBooleanConstraint(Constraint.AUTO_INCREMENT) &&
-                    row[i]==null) {
-				AskValidValue av = new AskValidValue(sds, i);
-				if (UIFactory.showDialog(av)) {
-					try {
-						ret[i] = av.getUserValue();
-					} catch (ParseException e) {
-						throw new TransitionException("bug!");
-					}
-				} else {
-					throw new TransitionException("Insertion cancelled");
-				}
-			} else {
-				ret[i] = row[i];
-			}
-		}
-
+	public static Object[] populateNotNullFields(DataSource sds,String tableReference,
+			Object[] row) throws SQLException, TransitionException {
+        Object[] ret = new Object[row.length];
+        TableLocation table = TableLocation.parse(tableReference);
+        try(Connection connection = sds.getConnection();
+            ResultSet rs = connection.getMetaData().getColumns(table.getCatalog(), table.getSchema(), table.getTable(), null)) {
+            while(rs.next()) {
+                boolean refuseNull = "NO".equals(rs.getString("IS_NULLABLE"));
+                boolean isAutoIncrement = "YES".equals(rs.getString("IS_AUTOINCREMENT"));
+                int columnId = rs.getInt("ORDINAL_POSITION")-1;
+                if(refuseNull && !isAutoIncrement) {
+                    AskValidValue av = new AskValidValue(sds, tableReference, rs.getString("COLUMN_NAME"));
+                    if (UIFactory.showDialog(av)) {
+                        try {
+                            ret[columnId] = av.getUserValue();
+                        } catch (ParseException e) {
+                            throw new TransitionException("Cannot parse user value");
+                        }
+                    } else {
+                        throw new TransitionException("Insertion cancelled");
+                    }
+                } else {
+                    ret[columnId] = row[columnId];
+                }
+            }
+        }
 		return ret;
 	}
 
@@ -119,7 +127,7 @@ public class ToolUtilities {
 		if (points.isEmpty()) {
 			return points;
 		} else {
-			ArrayList<Coordinate> ret = new ArrayList<Coordinate>();
+			ArrayList<Coordinate> ret = new ArrayList<>();
 			for (int i = 0; i < points.size() - 1; i++) {
 				if (!points.get(i).equals(points.get(i + 1))) {
 					ret.add(points.get(i));
@@ -130,9 +138,20 @@ public class ToolUtilities {
 		}
 	}
 
-	public static boolean isActiveLayerEditable(MapContext vc) {
+	public static boolean isActiveLayerEditable(MapContext vc, Connection connection) throws SQLException {
+        // A primary key must be defined in the table
 		ILayer activeLayer = vc.getActiveLayer();
-        return activeLayer != null && activeLayer.getDataSource().isEditable();
+        if(activeLayer == null) {
+            return false;
+        } else {
+            String table = activeLayer.getTableReference();
+            if(table!=null && !table.isEmpty()) {
+                int pk = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), activeLayer.getTableReference());
+                return pk>0;
+            } else {
+                return false;
+            }
+        }
 	}
 
 	public static boolean isActiveLayerVisible(MapContext vc) {
