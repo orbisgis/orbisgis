@@ -227,7 +227,7 @@ public class LayerModelTest extends AbstractTest {
 
         @Test
         public void testInternationalizedTitle() throws Exception {
-                Layer bl = new Layer("youhou", "vector1");
+                Layer bl = new Layer("youhou", "vector1", getDataManager());
                 Description desc = new Description();
                 desc.addTitle(Locale.FRENCH, "youhou title");
                 bl.setDescription(desc);
