@@ -49,7 +49,7 @@ public class MapContextTest extends AbstractTest {
 
     @Test
 	public void testRemoveSelectedLayer() throws Exception {
-		MapContext mc = new OwsMapContext();
+		MapContext mc = new OwsMapContext(getDataManager());
 		mc.open(null);
 		ILayer layer = mc.createLayer(getDataManager().registerDataSource(
 				new File("../src/test/resources/data/bv_sap.shp").toURI()));
@@ -64,7 +64,7 @@ public class MapContextTest extends AbstractTest {
 
     @Test
 	public void testSetBadLayerSelection() throws Exception {
-		MapContext mc = new OwsMapContext();
+		MapContext mc = new OwsMapContext(getDataManager());
 		mc.open(null);
 		ILayer layer = mc.createLayer(getDataManager().registerDataSource(
 				new File("../src/test/resources/data/bv_sap.shp").toURI()));
@@ -80,7 +80,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testRemoveActiveLayer() throws Exception {
-		MapContext mc = new OwsMapContext();
+		MapContext mc = new OwsMapContext(getDataManager());
 		mc.open(null);
 		ILayer layer = mc.createLayer(getDataManager().registerDataSource(
 				new File("../src/test/resources/data/bv_sap.shp").toURI()));
@@ -94,7 +94,7 @@ public class MapContextTest extends AbstractTest {
     @Test
 	public void testSaveAndRecoverTwoNestedCollections() throws Exception {
                 //Define a MapContext
-		MapContext mc = new OwsMapContext();
+		MapContext mc = new OwsMapContext(getDataManager());
 		mc.open(null);
         ILayer layer1 = mc.createLayerCollection("a");
         ILayer layer2 = mc.createLayerCollection("a");
@@ -108,7 +108,7 @@ public class MapContextTest extends AbstractTest {
 		mc.close(null);
                 
                 //Define a new MapContext from previous MapContext serialisation
-		mc = new OwsMapContext();
+		mc = new OwsMapContext(getDataManager());
 		mc.read(new ByteArrayInputStream(map.toByteArray()));
 		mc.open(null);
 		ILayer layer1_ = mc.getLayerModel().getLayer(0);
@@ -120,7 +120,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testOperateOnClosedMapContext() throws Exception {
-		MapContext mc = new OwsMapContext();
+		MapContext mc = new OwsMapContext(getDataManager());
 		try {
 			mc.getSelectedLayers();
 			assertTrue(false);
@@ -160,7 +160,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testIsOpen() throws Exception {
-		MapContext mc = new OwsMapContext();
+		MapContext mc = new OwsMapContext(getDataManager());
 		assertTrue(!mc.isOpen());
 		mc.open(new NullProgressMonitor());
 		assertTrue(mc.isOpen());
@@ -168,7 +168,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testOpenTwice() throws Exception {
-		MapContext mc = new OwsMapContext();
+		MapContext mc = new OwsMapContext(getDataManager());
 		mc.open(new NullProgressMonitor());
 		try {
 			mc.open(new NullProgressMonitor());
@@ -179,7 +179,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testCloseClosedMap() throws Exception {
-		MapContext mc = new OwsMapContext();
+		MapContext mc = new OwsMapContext(getDataManager());
 		try {
 			mc.close(new NullProgressMonitor());
 			assertTrue(false);
@@ -189,7 +189,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testWriteOnOpenMap() throws Exception {
-		MapContext mc = new OwsMapContext();
+		MapContext mc = new OwsMapContext(getDataManager());
                 
                 
 
@@ -210,7 +210,7 @@ public class MapContextTest extends AbstractTest {
                 ByteArrayOutputStream map = new ByteArrayOutputStream();
 		mc.write(map);
 
-		MapContext mc2 = new OwsMapContext();
+		MapContext mc2 = new OwsMapContext(getDataManager());
                 mc2.read(new ByteArrayInputStream(map.toByteArray()));
 		mc2.open(null);
 		assertTrue(mc2.getLayerModel().getLayerCount() == 1);
@@ -223,7 +223,7 @@ public class MapContextTest extends AbstractTest {
 	}
 
 	private MapContext getSampleMapContext() throws LayerException {
-		MapContext mc = new OwsMapContext();
+		MapContext mc = new OwsMapContext(getDataManager());
 		mc.open(null);
 		ILayer layer = mc.createLayerCollection("a");
 		mc.getLayerModel().addLayer(layer);
@@ -237,7 +237,7 @@ public class MapContextTest extends AbstractTest {
                 ByteArrayOutputStream map = new ByteArrayOutputStream();
 		mc.write(map);
 
-		MapContext mc2 = new OwsMapContext();
+		MapContext mc2 = new OwsMapContext(getDataManager());
 		mc2.read(new ByteArrayInputStream(map.toByteArray()));
 		mc2.open(null);
 		assertTrue(mc2.getLayerModel().getLayerCount() == 1);
@@ -285,7 +285,7 @@ public class MapContextTest extends AbstractTest {
                 ByteArrayOutputStream map = new ByteArrayOutputStream();
 		mc.write(map);
 
-		MapContext mc2 = new OwsMapContext();
+		MapContext mc2 = new OwsMapContext(getDataManager());
 		// set DATA
                 mc2.read(new ByteArrayInputStream(map.toByteArray()));
 		// modify
@@ -299,7 +299,7 @@ public class MapContextTest extends AbstractTest {
                 ByteArrayOutputStream map2 = new ByteArrayOutputStream();
 		mc2.write(map2);
 		// check obj is good
-		MapContext mc3 = new OwsMapContext();
+		MapContext mc3 = new OwsMapContext(getDataManager());
 		mc3.read(new ByteArrayInputStream(map2.toByteArray()));
 		mc3.open(null);
 		assertTrue(mc3.getLayerModel().getLayerCount() == 2);
@@ -308,7 +308,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testActiveLayerClearedOnClose() throws Exception {
-		MapContext mc = new OwsMapContext();
+		MapContext mc = new OwsMapContext(getDataManager());
 		mc.open(null);
 		ILayer layer = mc.createLayer(getDataManager().registerDataSource(
 				new File("../src/test/resources/data/bv_sap.shp").toURI()));
@@ -329,7 +329,7 @@ public class MapContextTest extends AbstractTest {
 		FileUtils.copyFile(originalShp, shp);
 		FileUtils.copyFile(new File("../src/test/resources/data/bv_sap.dbf"), dbf);
 		FileUtils.copyFile(new File("../src/test/resources/data/bv_sap.shx"), shx);
-		MapContext mc = new OwsMapContext();
+		MapContext mc = new OwsMapContext(getDataManager());
 		mc.open(null);
         ILayer layer = mc.createLayer("youhou",shp.toURI());
         String linkedTable = layer.getTableReference();

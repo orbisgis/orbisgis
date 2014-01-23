@@ -30,11 +30,11 @@ package org.orbisgis.core;
 
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.beanshell.BeanShellScriptTest;
 import org.orbisgis.core.beanshell.BeanshellScript;
+import org.orbisgis.core.context.main.MainContext;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -47,11 +47,13 @@ import java.sql.SQLException;
 public abstract class AbstractTest {
     private static Connection connection;
     protected static DataSource dataSource;
+    protected static MainContext mainContext;
 
     @BeforeClass
     public static void init() throws Exception {
         BeanshellScript.init(BeanShellScriptTest.mainParams("../src/test/resources/beanshell/helloWorld.bsh"));
-        dataSource =  Services.getService(DataSource.class);
+        mainContext = BeanshellScript.getMainContext();
+        dataSource =  mainContext.getDataSource();
     }
 
     @AfterClass
@@ -86,6 +88,6 @@ public abstract class AbstractTest {
     }
 
     protected DataManager getDataManager() {
-        return Services.getService(DataManager.class);
+        return mainContext.getDataManager();
     }
 }

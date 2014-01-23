@@ -56,18 +56,27 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.TopologyException;
-import org.h2gis.utilities.TableLocation;
+import org.orbisgis.core.geometryUtils.GeometryEdit;
 
 public class MultipointHandler extends AbstractHandler implements Handler {
 
         private int pointIndex;
 
+        /**
+         * Draw multi point selection
+         * @param g
+         * @param pointIndex
+         * @param vertexIndex
+         * @param p
+         * @param geomIndex
+         */
         public MultipointHandler(Geometry g, int pointIndex, int vertexIndex,
                 Coordinate p, int geomIndex) {
                 super(g, vertexIndex, p, geomIndex);
                 this.pointIndex = pointIndex;
         }
 
+        @Override
         public Geometry moveTo(double x, double y)
                 throws CannotChangeGeometryException {
                 Coordinate p = new Coordinate(x, y);
@@ -75,7 +84,7 @@ public class MultipointHandler extends AbstractHandler implements Handler {
                 Point[] points = new Point[mp.getNumGeometries()];
                 for (int i = 0; i < points.length; i++) {
                         if (i == pointIndex) {
-                                PointHandler handler = new PointHandler((Point) mp.getGeometryN(i), GeometryTypeUtil.POINT_GEOMETRY_TYPE, 0, p,
+                                PointHandler handler = new PointHandler(mp.getGeometryN(i), 0, p,
                                         geomIndex);
                                 points[i] = (Point) handler.moveJTSTo(x, y);
                         } else {
@@ -92,7 +101,8 @@ public class MultipointHandler extends AbstractHandler implements Handler {
                 return mp;
         }
 
-        public Geometry remove() throws TableLocation {
+        @Override
+        public Geometry remove() throws TopologyException {
 
                 MultiPoint mp = (MultiPoint) geometry;
 

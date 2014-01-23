@@ -86,7 +86,7 @@ public class Primitive {
                         hndPoints = geometry.getCoordinates();
                         ret = new Handler[hndPoints.length];
                         for (int i = 0; i < hndPoints.length; i++) {
-                                ret[i] = new PointHandler(geometry, geometry.getGeometryType(),
+                                ret[i] = new PointHandler(geometry,
                                         i, hndPoints[i], geomIndex);
                         }
                         return ret;

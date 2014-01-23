@@ -240,6 +240,15 @@ public class MainContext {
     }
 
     /**
+     * @return The data manager
+     * Null if {@link #initDataBase(String, String)}
+     * has not been called or failed.
+     */
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    /**
      * Free resources
      */
     public void dispose() {

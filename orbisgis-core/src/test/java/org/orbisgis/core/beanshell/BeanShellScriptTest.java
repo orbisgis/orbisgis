@@ -28,21 +28,16 @@
  */
 package org.orbisgis.core.beanshell;
 
-
-import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Arrays;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.core.Services;
 
 import javax.sql.DataSource;
 
@@ -128,7 +123,7 @@ public class BeanShellScriptTest {
 
         @Test
         public void testDrawOwsInImage() throws Exception {
-            DataSource ds = Services.getService(DataSource.class);
+            DataSource ds = BeanshellScript.getMainContext().getDataSource();
             Connection connection = ds.getConnection();
             try {
                 connection.createStatement().execute("DROP TABLE IF EXISTS LANDCOVER2000");

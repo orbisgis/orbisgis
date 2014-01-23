@@ -234,4 +234,11 @@ public final class BeanshellScript {
 
         private BeanshellScript() {
         }
+
+        /**
+         * @return Application context
+         */
+        public static MainContext getMainContext() {
+            return mainContext;
+        }
 }

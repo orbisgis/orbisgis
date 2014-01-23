@@ -33,6 +33,8 @@ import java.beans.PropertyChangeListener;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
+
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.common.Description;
@@ -45,6 +47,13 @@ public interface ILayer {
         public static final String PROP_STYLES = "styles";
         public static final String PROP_SELECTION = "selection";
         public static final String PROP_SOURCE_URI = "sourceUri";
+
+
+
+        /**
+         * @return Resource manager used by this Layer, NULL if this layer does not hold data.
+         */
+        DataManager getDataManager();
         
         
         /**

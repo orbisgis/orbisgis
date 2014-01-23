@@ -62,6 +62,7 @@ import net.opengis.ows_context.StyleType;
 import net.opengis.ows_context.URLType;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.api.DataManager;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.Renderer;
@@ -91,42 +92,40 @@ public final class OwsMapContext extends BeanMapContext {
         private boolean open = false;
         private OWSContextType jaxbMapContext = null; //Persistent form of the MapContext
         private long idTime;
+        private DataManager dataManager;
 
         /**
          * Default constructor
          */
-        public OwsMapContext() {
+        public OwsMapContext(DataManager dataManager) {
                 openerListener = new OpenerListener();
                 setRootLayer(createLayerCollection("root"));
 
                 //Create an empty map context
                 jaxbMapContext = createJaxbMapContext();
                 idTime = System.currentTimeMillis();
+                this.dataManager = dataManager;
+        }
+
+        @Override
+        public DataManager getDataManager() {
+            return dataManager;
         }
 
         @Override
         public ILayer createLayer(String layerName, String tableRef) throws LayerException {
-
-            // Get DataSource
-            DataSource dataSource = Services.getService(DataSource.class);
-            if(dataSource!=null) {
-                try {
-                    Connection connection = dataSource.getConnection();
-                    try {
-                        List<String> geoFields = SFSUtilities.getGeometryFields(connection,SFSUtilities.splitCatalogSchemaTableName(tableRef));
-                        if (!geoFields.isEmpty()) {
-                            return new Layer(layerName, tableRef);
-                        } else {
-                            throw new LayerException(I18N.tr("The source contains no spatial info"));
-                        }
-                    } finally {
-                        connection.close();
+            try {
+                try (Connection connection = dataManager.getDataSource().getConnection()) {
+                    List<String> geoFields = SFSUtilities.getGeometryFields(connection, SFSUtilities.splitCatalogSchemaTableName(tableRef));
+                    if (!geoFields.isEmpty()) {
+                        return new Layer(layerName, tableRef, dataManager);
+                    } else {
+                        throw new LayerException(I18N.tr("The source contains no spatial info"));
                     }
-                } catch (SQLException ex) {
-                    throw new LayerException("Cannot retrieve spatial metadata",ex);
                 }
+            } catch (SQLException ex) {
+                throw new LayerException("Cannot retrieve spatial metadata",ex);
             }
-            throw new LayerException("Cannot retrieve table metadata");
         }
 
         @Override
@@ -136,7 +135,7 @@ public final class OwsMapContext extends BeanMapContext {
 
         @Override
         public ILayer createLayer(String layerName, URI source) throws LayerException {
-            return new Layer(layerName, source);
+            return new Layer(layerName, source, dataManager);
         }
 
         @Override

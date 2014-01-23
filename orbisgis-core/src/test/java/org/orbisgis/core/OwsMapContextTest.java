@@ -51,7 +51,7 @@ public class OwsMapContextTest extends AbstractTest  {
         
     @Test
 	public void testRemoveSelectedLayer() throws Exception {
-		MapContext mc = new OwsMapContext();
+		MapContext mc = new OwsMapContext(getDataManager());
 		mc.open(null);
 		ILayer layer = mc.createLayer(getDataManager().registerDataSource(new URI("../src/test/resources/data/bv_sap.shp")));
 		mc.getLayerModel().addLayer(layer);
@@ -72,7 +72,7 @@ public class OwsMapContextTest extends AbstractTest  {
         Description mapDescription = new Description();
         mapDescription.addTitle(locale, title);
         mapDescription.addAbstract(locale, mapAbstract);
-        MapContext mc = new OwsMapContext();
+        MapContext mc = new OwsMapContext(getDataManager());
         mc.open(null);
         mc.setDescription(mapDescription);
         mc.close(null);
@@ -80,7 +80,7 @@ public class OwsMapContextTest extends AbstractTest  {
         mc.write(mapData);
         // Map data contain the serialisation
         // Read this data with another instance
-        MapContext mc2 = new OwsMapContext();
+        MapContext mc2 = new OwsMapContext(getDataManager());
         mc2.read(new ByteArrayInputStream(mapData.toByteArray()));
         mc2.open(null);
         // Test default title
@@ -99,7 +99,7 @@ public class OwsMapContextTest extends AbstractTest  {
      * @throws Exception
      */
     private void saveAs(String imagePath, MapImageWriter.Format format) throws Exception {
-        MapContext mc = new OwsMapContext();
+        MapContext mc = new OwsMapContext(getDataManager());
         mc.open(null);
         ILayer layer = mc.createLayer(URI.create("../src/test/resources/data/landcover2000.shp"));
         mc.getLayerModel().addLayer(layer);

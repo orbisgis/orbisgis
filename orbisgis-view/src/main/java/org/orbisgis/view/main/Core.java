@@ -331,7 +331,7 @@ public class Core {
             //editors.addEditorFactory(new MapEditorFactory(pluginFramework.getHostBundleContext()));
             editors.addEditorFactory(new SQLConsoleFactory(pluginFramework.getHostBundleContext()));
             TableEditorFactory tableEditorFactory = new TableEditorFactory();
-            tableEditorFactory.setDataSource(mainContext.getDataSource());
+            tableEditorFactory.setDataManager(mainContext.getDataManager());
             editors.addEditorFactory(tableEditorFactory);
             //editors.addEditorFactory(new BeanShellFrameFactory());
     }

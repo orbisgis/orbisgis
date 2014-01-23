@@ -55,6 +55,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.TopologyException;
 
 public class MultilineHandler extends AbstractHandler implements Handler {
 
@@ -73,7 +74,7 @@ public class MultilineHandler extends AbstractHandler implements Handler {
                 LineString[] lineString = new LineString[mls.getNumGeometries()];
                 for (int i = 0; i < lineString.length; i++) {
                         if (i == linestringIndex) {
-                                PointHandler handler = new PointHandler((LineString) mls.getGeometryN(i), GeometryTypeUtil.LINESTRING_GEOMETRY_TYPE,
+                                PointHandler handler = new PointHandler(mls.getGeometryN(i),
                                         vertexIndex, p, geomIndex);
                                 lineString[i] = (LineString) handler.moveJTSTo(x, y);
                         } else {
@@ -90,17 +91,14 @@ public class MultilineHandler extends AbstractHandler implements Handler {
                 return mls;
         }
 
-        /**
-         * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#remove()
-         */
-        public Geometry remove() throws GeometryException {
+        public Geometry remove() throws TopologyException {
 
                 MultiLineString mls = (MultiLineString) geometry;
                 LineString[] linestrings = new LineString[mls.getNumGeometries()];
                 int vIndex = vertexIndex;
                 for (int i = 0; i < linestrings.length; i++) {
                         if (i == linestringIndex) {
-                                PointHandler handler = new PointHandler((LineString) mls.getGeometryN(i), GeometryTypeUtil.LINESTRING_GEOMETRY_TYPE, vIndex,
+                                PointHandler handler = new PointHandler(mls.getGeometryN(i), vIndex,
                                         null, geomIndex);
                                 linestrings[i] = (LineString) handler.removeVertex();
                         } else {
@@ -110,7 +108,7 @@ public class MultilineHandler extends AbstractHandler implements Handler {
 
                 mls = gf.createMultiLineString(linestrings);
                 if (!mls.isValid()) {
-                        throw new GeometryException(I18N.tr("Invalid MultiLineString"));
+                        throw new TopologyException(I18N.tr("Invalid MultiLineString"));
                 }
 
                 return mls;

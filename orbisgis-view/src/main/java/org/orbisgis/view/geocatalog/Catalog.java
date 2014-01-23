@@ -120,6 +120,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         private MenuItemServiceTracker<TitleActionBar,GeoCatalogMenu> dockingActionTracker;
         private ServiceTracker<DriverFunction, DriverFunction> driverFunctionTracker;
         private List<DriverFunction> fileDrivers = new LinkedList<>();
+        private DataManager dataManager;
 
         /**
          * For the Unit test purpose
@@ -143,8 +144,9 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         /**
          * Default constructor
          */
-        public Catalog() {
+        public Catalog(DataManager dataManager) {
                 super(new BorderLayout());
+                this.dataManager = dataManager;
                 dockingParameters.setName("geocatalog");
                 dockingParameters.setTitle(I18N.tr("GeoCatalog"));
                 dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("geocatalog"));
@@ -153,7 +155,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 //then add the scroll pane in this panel
                 add(new JScrollPane(makeSourceList()), BorderLayout.CENTER);
                 //Init the filter factory manager
-                filterFactoryManager = new FilterFactoryManager<IFilter,DefaultActiveFilter>();
+                filterFactoryManager = new FilterFactoryManager<>();
                 //Set the factory that must be shown when the user click on add filter button
                 filterFactoryManager.setDefaultFilterFactory(DEFAULT_FILTER_FACTORY);
                 //Set listener on filter change event, this event will update the filters
@@ -210,24 +212,14 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         }
 
         /**
-         * Use service to return the data manager
-         *
-         * @return DataManager instance
-         */
-        private DataManager getDataManager() {
-                return Services.getService(DataManager.class);
-        }
-
-        /**
          * DataSource URI drop. Currently used on file drop by the {@link  SourceListTransferHandler}.
          *
          * @param uriDrop Uniform Resource Identifier
          */
         public void onDropURI(List<URI> uriDrop) {
-                DataManager src = getDataManager();
                 for (URI uri : uriDrop) {
                         try {
-                            src.registerDataSource(uri);
+                            dataManager.registerDataSource(uri);
                             refreshSourceList();
                         } catch (SQLException ex) {
                             LOGGER.error("Cannot load dropped data source", ex);

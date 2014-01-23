@@ -28,6 +28,8 @@
  */
 package org.orbisgis.core.layerModel.mapcatalog;
 
+import org.orbisgis.core.api.DataManager;
+
 import java.net.URL;
 
 /**
@@ -42,16 +44,25 @@ public class ConnectionProperties {
         private int connectionTimeOut = DEFAULT_CONNECTION_TIMEOUT; // In milliseconds
 
         private URL apiUrl;
+        private DataManager dataManager;
 
         /**
          * Constructor with mandatory parameters
          * @param catalogApiUrl Catalog API URL
+         * @param dataManager Loaded map context will register data into this manager.
          */
-        public ConnectionProperties(URL catalogApiUrl) {
+        public ConnectionProperties(URL catalogApiUrl, DataManager dataManager) {
                 this.apiUrl = catalogApiUrl;
+                this.dataManager = dataManager;
         }
 
-        
+        /**
+         * @return Loaded map context will register data into this manager.
+         */
+        public DataManager getDataManager() {
+            return dataManager;
+        }
+
         /**
          * Get the value of catalogApiUrl
          *

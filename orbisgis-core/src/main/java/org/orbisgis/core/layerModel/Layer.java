@@ -50,21 +50,29 @@ public class Layer extends BeanLayer {
 
 	private String tableReference;
     private URI dataURI;
+    private DataManager dataManager;
 
-	public Layer(String name, String tableReference) {
+	public Layer(String name, String tableReference,DataManager dataManager) {
 		super(name);
 		this.tableReference = tableReference;
+        this.dataManager = dataManager;
 	}
 
-    public Layer(String name, URI dataURI) {
+    public Layer(String name, URI dataURI,DataManager dataManager) {
         super(name);
         this.dataURI = dataURI;
+        this.dataManager = dataManager;
         if(JDBC_REFERENCE_SCHEME.equalsIgnoreCase(dataURI.getScheme())) {
             String path =  dataURI.getPath(); // ex: /myschema.mytable
             tableReference = path.substring(1);
         } else {
             tableReference = "";
         }
+    }
+
+    @Override
+    public DataManager getDataManager() {
+        return dataManager;
     }
 
     @Override
@@ -91,9 +99,7 @@ public class Layer extends BeanLayer {
     @Override
 	public Envelope getEnvelope() {
 		Envelope result = new Envelope();
-        DataSource dataSource = Services.getService(DataSource.class);
-        try {
-            Connection connection = dataSource.getConnection();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
             try {
                 return SFSUtilities.getTableEnvelope(connection, SFSUtilities.splitCatalogSchemaTableName(tableReference),"");
             } finally {
@@ -112,17 +118,16 @@ public class Layer extends BeanLayer {
 
         @Override
 	public void open() throws LayerException {
-        DataManager dm = Services.getService(DataManager.class);
         if(tableReference.isEmpty()) {
             try {
-                tableReference =  dm.registerDataSource(dataURI);
+                tableReference =  dataManager.registerDataSource(dataURI);
             } catch (Exception ex) {
                 LOGGER.warn(I18N.tr("Unable to load the data source uri {0}.", dataURI), ex);
             }
         } else if(dataURI == null) {
             // Check if the table exists
             try {
-                if(!dm.isTableExists(tableReference)) {
+                if(!dataManager.isTableExists(tableReference)) {
                     LOGGER.warn(I18N.tr("Specified table '{0}' does not exists, and no source URI is given", tableReference));
                 }
             } catch (SQLException ex) {
@@ -147,12 +152,10 @@ public class Layer extends BeanLayer {
 
     @Override
 	public boolean isVectorial() throws LayerException {
-        DataSource dataSource = Services.getService(DataSource.class);
-        if(dataSource==null || getTableReference()==null) {
+        if(getTableReference()==null) {
             throw new LayerException("This layer is not opened");
         }
-        try {
-            Connection connection = dataSource.getConnection();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
             try {
                 return !SFSUtilities.getGeometryFields(connection,SFSUtilities.splitCatalogSchemaTableName(getTableReference())).isEmpty();
             } finally {

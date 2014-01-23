@@ -145,9 +145,7 @@ public abstract class Renderer {
                 Envelope extent = mt.getAdjustedExtent();
                 int layerCount = 0;
                 String tableReference = layer.getTableReference();
-                DataSource dataSource = Services.getService(DataSource.class);
-                Connection connection = dataSource.getConnection();
-                try {
+                try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
                         List<String> geometryFields = SFSUtilities.getGeometryFields(connection, SFSUtilities.splitCatalogSchemaTableName(tableReference));
                         if(geometryFields.isEmpty()) {
                             throw new SQLException(I18N.tr("Table {0} does not contains geometry fields",tableReference));
@@ -166,8 +164,6 @@ public abstract class Renderer {
                         }
                 } catch (SQLException ex) {
                         printEx(ex, layer, g2);
-                } finally {
-                        connection.close();
                 }
                 return layerCount;
         }

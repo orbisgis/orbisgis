@@ -56,8 +56,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
-import org.gdms.geometryUtils.GeometryEdit;
-import org.gdms.geometryUtils.GeometryException;
+import com.vividsolutions.jts.geom.TopologyException;
+import org.orbisgis.core.geometryUtils.GeometryEdit;
 
 public class PolygonHandler extends AbstractHandler implements Handler {
 
@@ -70,7 +70,7 @@ public class PolygonHandler extends AbstractHandler implements Handler {
 	}
 
 	public com.vividsolutions.jts.geom.Geometry removeVertex()
-			throws GeometryException {
+			throws TopologyException {
 		com.vividsolutions.jts.geom.Geometry ret = null;
 		Polygon p = (Polygon) geometry;
 		if (holeIndex == -1) {
@@ -100,20 +100,17 @@ public class PolygonHandler extends AbstractHandler implements Handler {
 		}
 
 		if (!ret.isValid()) {
-			throw new GeometryException(I18N.tr("The geometry is not valid"));
+			throw new TopologyException(I18N.tr("The geometry is not valid"));
 		}
 
 		return ret;
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#remove()
-	 */
-        @Override
-	public Geometry remove() throws GeometryException {
+    @Override
+	public Geometry remove() throws TopologyException {
 		com.vividsolutions.jts.geom.Geometry ret = removeVertex();
 		if (!ret.isValid()) {
-			throw new GeometryException(I18N.tr("The geometry is not valid"));
+			throw new TopologyException(I18N.tr("The geometry is not valid"));
 		}
 		return ret;
 	}
@@ -138,11 +135,7 @@ public class PolygonHandler extends AbstractHandler implements Handler {
 		return p;
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#moveTo(double,
-	 *      double)
-	 */
-        @Override
+    @Override
 	public Geometry moveTo(double x, double y)
 			throws CannotChangeGeometryException {
 		com.vividsolutions.jts.geom.Geometry g = moveJTSTo(x, y);
@@ -154,7 +147,7 @@ public class PolygonHandler extends AbstractHandler implements Handler {
 
 	private LinearRing removePolygonVertex(int vertexIndex,
 			com.vividsolutions.jts.geom.Geometry p)
-			throws GeometryException {
+			throws TopologyException {
 		Coordinate[] coords = GeometryEdit.removeVertex(vertexIndex, p, 4);
 		if (vertexIndex == 0) {
 			coords[coords.length - 1].x = coords[0].x;
@@ -163,7 +156,7 @@ public class PolygonHandler extends AbstractHandler implements Handler {
 
 		LinearRing ret = gf.createLinearRing(coords);
 		if (!ret.isValid()) {
-			throw new GeometryException(I18N.tr("The geometry is not valid"));
+			throw new TopologyException(I18N.tr("The geometry is not valid"));
 		}
 
 		return ret;

@@ -77,7 +77,7 @@ public class Gallery extends AbstractTest {
 
             g2.setRenderingHints(mt.getCurrentRenderContext().getRenderingHints());
 
-            ILayer layer = new Layer("swiss", tableReference);
+            ILayer layer = new Layer("swiss", tableReference, getDataManager());
 
             Style style = new Style(layer, stylePath);
             layer.setStyle(0,style);

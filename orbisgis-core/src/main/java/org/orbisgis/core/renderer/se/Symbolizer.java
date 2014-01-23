@@ -267,9 +267,11 @@ public abstract class Symbolizer extends AbstractSymbolizerNode implements Symbo
         if(featuresMap == null){
             featuresMap = new HashMap<String,Object>();
         }
-        sds.absolute((int)fid);
-        for(String s : features){
-            featuresMap.put(s, sds.getObject(s));
+        if(sds != null) {
+            sds.absolute((int)fid);
+            for(String s : features){
+                featuresMap.put(s, sds.getObject(s));
+            }
         }
         return featuresMap;
     }

@@ -59,9 +59,6 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Iterator;
-import org.gdms.data.DataSource;
-import org.gdms.data.indexes.DefaultSpatialIndexQuery;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
@@ -145,16 +142,6 @@ public abstract class AbstractSelectionTool extends Selection {
         }
 
         protected abstract ILayer getLayer(MapContext mc);
-
-        private Iterator<Integer> queryLayer(DataSource ds,
-                Rectangle2DDouble rect) throws DriverException {
-                String geomFieldName = ds.getMetadata().getFieldName(
-                        ds.getSpatialFieldIndex());
-                Envelope env = new Envelope(rect.getMinX(), rect.getMaxX(), rect.getMinY(), rect.getMaxY());
-
-            return ds.queryIndex(new DefaultSpatialIndexQuery(geomFieldName,
-                    env));
-        }
 
     
         @Override

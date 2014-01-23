@@ -61,6 +61,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.TopologyException;
+import org.orbisgis.core.geometryUtils.GeometryEdit;
 
 public class PointHandler extends AbstractHandler implements Handler {
 
