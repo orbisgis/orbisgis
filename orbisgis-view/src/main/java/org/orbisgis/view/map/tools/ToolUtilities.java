@@ -138,7 +138,7 @@ public class ToolUtilities {
 		}
 	}
 
-	public static boolean isActiveLayerEditable(MapContext vc, Connection connection) throws SQLException {
+	public static boolean isActiveLayerEditable(MapContext vc) throws SQLException {
         // A primary key must be defined in the table
 		ILayer activeLayer = vc.getActiveLayer();
         if(activeLayer == null) {
@@ -146,8 +146,10 @@ public class ToolUtilities {
         } else {
             String table = activeLayer.getTableReference();
             if(table!=null && !table.isEmpty()) {
-                int pk = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), activeLayer.getTableReference());
-                return pk>0;
+                try(Connection connection = vc.getDataManager().getDataSource().getConnection()) {
+                    int pk = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), activeLayer.getTableReference());
+                    return pk>0;
+                }
             } else {
                 return false;
             }
