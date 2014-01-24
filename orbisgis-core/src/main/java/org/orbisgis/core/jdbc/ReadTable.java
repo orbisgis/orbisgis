@@ -29,6 +29,7 @@
 package org.orbisgis.core.jdbc;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
@@ -45,6 +46,7 @@ import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
@@ -137,6 +139,47 @@ public class ReadTable {
             }
             return columnValues;
         }
+    }
+
+
+
+
+    public static String resultSetToString(String query, Statement st,int maxFieldLength, int maxPrintedRows, boolean addColumns) throws SQLException {
+        // Select generate a ResultSet
+        ResultSet rs = st.executeQuery(query);
+        // Print headers
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        StringBuilder lines = new StringBuilder();
+        StringBuilder formatStringBuilder = new StringBuilder();
+        String[] header = new String[columnCount];
+        for(int idColumn = 1; idColumn <= columnCount; idColumn++) {
+            header[idColumn-1] = metaData.getColumnLabel(idColumn)+"("+metaData.getColumnTypeName(idColumn)+")";
+            formatStringBuilder.append("%-"+maxFieldLength+"s");
+        }
+        if(addColumns) {
+            lines.append(String.format(formatStringBuilder.toString(), header));
+            lines.append("\n");
+        }
+        int shownLines = 0;
+        while(rs.next() && shownLines < maxPrintedRows) {
+            String[] row = new String[columnCount];
+            for(int idColumn = 1; idColumn <= columnCount; idColumn ++) {
+                String value = rs.getString(idColumn);
+                if(value != null) {
+                    if(value.length() > maxFieldLength) {
+                        value = value.substring(0, maxFieldLength-2) + "..";
+                    }
+                } else {
+                    value = "NULL";
+                }
+                row[idColumn-1] = value;
+            }
+            shownLines++;
+            lines.append(String.format(formatStringBuilder.toString(),row));
+            lines.append("\n");
+        }
+        return lines.toString();
     }
 
     /**

@@ -31,6 +31,7 @@ package org.orbisgis.view.sqlconsole.actions;
 import javax.sql.DataSource;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
+import org.orbisgis.core.jdbc.ReadTable;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sqlparserapi.ScriptSplitter;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
@@ -87,43 +88,6 @@ public class ExecuteScriptProcess implements BackgroundJob {
                 }
         }
 
-        public void printSelect(String query, Statement st) throws SQLException {
-            // Select generate a ResultSet
-            ResultSet rs = st.executeQuery(query);
-            // Print headers
-            LOGGER.info(query+ ": ");
-            ResultSetMetaData metaData = rs.getMetaData();
-            int columnCount = metaData.getColumnCount();
-            StringBuilder formatStringBuilder = new StringBuilder();
-            String[] header = new String[columnCount];
-            for(int idColumn = 1; idColumn <= columnCount; idColumn++) {
-                header[idColumn-1] = metaData.getColumnLabel(idColumn)+"("+metaData.getColumnTypeName(idColumn)+")";
-                formatStringBuilder.append("%-"+MAX_FIELD_LENGTH+"s");
-            }
-            int shownLines = 0;
-            StringBuilder lines = new StringBuilder("\n");
-            lines.append(String.format(formatStringBuilder.toString(), header));
-            lines.append("\n");
-            while(rs.next() && shownLines < MAX_PRINTED_ROWS) {
-                String[] row = new String[columnCount];
-                for(int idColumn = 1; idColumn <= columnCount; idColumn ++) {
-                    String value = rs.getString(idColumn);
-                    if(value != null) {
-                        if(value.length() > MAX_FIELD_LENGTH) {
-                            value = value.substring(0, MAX_FIELD_LENGTH-2) + "..";
-                        }
-                    } else {
-                        value = "NULL";
-                    }
-                    row[idColumn-1] = value;
-                }
-                shownLines++;
-                lines.append(String.format(formatStringBuilder.toString(),row));
-                lines.append("\n");
-            }
-            LOGGER.info(lines.toString());
-        }
-
         private void parseAndExecuteScript(ProgressMonitor pm, Statement st) throws SQLException {
             ScriptSplitter splitter = splitterFactory.create(panel.getScriptPanel().getDocument(), true);
             while(splitter.hasNext()) {
@@ -140,7 +104,8 @@ public class ExecuteScriptProcess implements BackgroundJob {
                 }
                 if(doExecuteQuery) {
                     try {
-                        printSelect(query, st);
+                        LOGGER.info(query + ": ");
+                        LOGGER.info("\n"+ReadTable.resultSetToString(query, st, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, true));
                     } catch (SQLException ex) {
                         //May not accept executeQuery but simple query
                         if(!lc_query.startsWith("select")) {

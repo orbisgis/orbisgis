@@ -53,7 +53,6 @@ package org.orbisgis.view.map.tools;
 
 import java.util.Observable;
 import javax.swing.ImageIcon;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -88,13 +87,9 @@ public class SelectionTool extends AbstractSelectionTool {
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
         ILayer selectedLayer = getLayer(vc);
 		if (selectedLayer!=null) {
-			try {
-                    if (selectedLayer.isVectorial()) {
-                            return selectedLayer.isVisible();
-                    }
-			} catch (DriverException e) {
-				return false;
-		    }
+            if (!selectedLayer.getTableReference().isEmpty()) {
+                    return selectedLayer.isVisible();
+            }
 		}
 		return false;
 	}

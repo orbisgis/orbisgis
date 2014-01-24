@@ -27,37 +27,31 @@
  */
 package org.orbisgis.view.map.tools;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.io.WKTWriter;
 import java.awt.geom.Rectangle2D;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Observable;
-import java.util.logging.Level;
+import javax.sql.DataSource;
 import javax.swing.ImageIcon;
+
+import com.vividsolutions.jts.geom.GeometryFactory;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.indexes.DefaultSpatialIndexQuery;
-import org.gdms.data.indexes.IndexException;
-import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
-import org.orbisgis.core.DataManager;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.core.jdbc.MetaData;
+import org.orbisgis.core.jdbc.ReadTable;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.DefaultJobId;
-import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -72,6 +66,11 @@ import org.orbisgis.view.table.TableEditor;
 public class InfoTool extends AbstractRectangleTool {
 
     private static Logger UILOGGER = Logger.getLogger("gui." + InfoTool.class);
+    private static Logger POPUPLOGGER = Logger.getLogger("popup." + InfoTool.class);
+    private static final int MAX_PRINTED_ROWS = 100;
+    private static final int MAX_FIELD_LENGTH = 10;
+    /** Info is shown on popup if the attributes length is not superior than this constant*/
+    private static final int POPUP_MAX_LENGTH = 200;
 
     @Override
     public void update(Observable o, Object arg) {
@@ -83,33 +82,23 @@ public class InfoTool extends AbstractRectangleTool {
             boolean smallerThanTolerance, MapContext vc, ToolManager tm)
             throws TransitionException {
         ILayer layer = vc.getSelectedLayers()[0];
-        DataSource sds = layer.getDataSource();
+        double minx = rect.getMinX();
+        double miny = rect.getMinY();
+        double maxx = rect.getMaxX();
+        double maxy = rect.getMaxY();
+        BackgroundManager bm = Services.getService(BackgroundManager.class);
+        bm.backgroundOperation(new DefaultJobId(
+                "org.orbisgis.jobs.InfoTool"), new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), vc.getDataManager().getDataSource(),layer.getTableReference()));
 
-        try {
-            double minx = rect.getMinX();
-            double miny = rect.getMinY();
-            double maxx = rect.getMaxX();
-            double maxy = rect.getMaxY();
-            BackgroundManager bm = Services.getService(BackgroundManager.class);
-            bm.backgroundOperation(new DefaultJobId(
-                    "org.orbisgis.jobs.InfoTool"), new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), sds));
-        } catch (DriverLoadException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
     public boolean isEnabled(MapContext vc, ToolManager tm) {
         if (vc.getSelectedLayers().length == 1) {
-            try {
-                if (vc.getSelectedLayers()[0].isVectorial()) {
-                    return vc.getSelectedLayers()[0].isVisible();
-                }
-            } catch (DriverException e) {
-                return false;
+            if (!vc.getSelectedLayers()[0].getTableReference().isEmpty()) {
+                return vc.getSelectedLayers()[0].isVisible();
             }
         }
-
         return false;
     }
 
@@ -119,18 +108,18 @@ public class InfoTool extends AbstractRectangleTool {
     }
 
     /**
-     * This class is used to open the selected features in a table component. If
-     * the table is closed a new table is openned. The selected feature replace
-     * the current selection if there is one.
+     * This class is used to print the selected features in the console, or in the popup if there is only one feature.
      */
     private class PopulateViewJob implements BackgroundJob {
 
         private final Envelope envelope;
         private final DataSource sds;
+        private final String tableReference;
 
-        private PopulateViewJob(Envelope envelope, DataSource sds) {
+        private PopulateViewJob(Envelope envelope, DataSource sds, String tableReference) {
             this.envelope = envelope;
             this.sds = sds;
+            this.tableReference = tableReference;
         }
 
         @Override
@@ -140,38 +129,19 @@ public class InfoTool extends AbstractRectangleTool {
 
         @Override
         public void run(ProgressMonitor pm) {
-            try {
-                UILOGGER.debug("Info query: " + envelope.toString());
-                if (!pm.isCancelled()) {
-                    DataManager dm = Services.getService(DataManager.class);
-                    DataSourceFactory dsf = dm.getDataSourceFactory();
-                    int geomFieldindex = MetadataUtilities.getGeometryFieldIndex(sds.getMetadata());
-                    String geomField = sds.getMetadata().getFieldName(geomFieldindex);
-                    if (!dsf.getIndexManager().isIndexed(sds, geomField)) {
-                        dsf.getIndexManager().buildIndex(sds, geomField, pm);
-                    }
-                    DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(geomField, envelope);
-                    Iterator<Integer> iterator = sds.queryIndex(dsf, query);
-                    if (iterator.hasNext()) {
-                        IntegerUnion newSel = new IntegerUnion();
-                        newSel.addAll(IteratorUtils.toList(iterator));
-                        TableEditableElement tableOpenned = getOpennedTable(sds.getName());
-                        if (tableOpenned == null) {
-                            tableOpenned = new TableEditableElement(sds);
-                            EditorManager em = Services.getService(EditorManager.class);
-                            em.openEditable(tableOpenned);
-                        }
-                        tableOpenned.setSelection(newSel);
-                    }
+            GeometryFactory factory = new GeometryFactory();
+            String envelopeWKT = factory.toGeometry(envelope).toText();
+            try(Connection connection = SFSUtilities.wrapConnection(sds.getConnection())) {
+                String geomFieldName = SFSUtilities.getGeometryFields(connection,
+                        TableLocation.parse(tableReference)).get(0);
+                String query = String.format("SELECT * FROM %s WHERE %s && ST_GeomFromText('%s')",tableReference,MetaData.escapeFieldName(geomFieldName),envelopeWKT);
+                String lines = ReadTable.resultSetToString(query, connection.createStatement(), MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, false);
+                UILOGGER.info(lines);
+                if(lines.length() <= POPUP_MAX_LENGTH) {
+                    POPUPLOGGER.info(lines);
                 }
-            } catch (DriverLoadException e) {
-                UILOGGER.error("Cannot execute the query", e);
-            } catch (DriverException e) {
-                UILOGGER.error("Cannot obtain the geometry field", e);
-            } catch (NoSuchTableException e) {
-                UILOGGER.error("Cannot obtain the data", e);
-            } catch (IndexException e) {
-                UILOGGER.error("Cannot build the spatial index", e);
+            } catch (SQLException ex) {
+                UILOGGER.error(ex.getLocalizedMessage(), ex);
             }
         }
     }
