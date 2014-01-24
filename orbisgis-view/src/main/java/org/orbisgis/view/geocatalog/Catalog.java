@@ -322,10 +322,14 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         private void importFile(DriverFunction.IMPORT_DRIVER_TYPE type) {
             OpenFilePanel linkSourcePanel = new OpenFilePanel("Geocatalog.LinkFile" ,I18N.tr("Select the file to "));
             for(DriverFunction driverFunction : fileDrivers) {
-                if(driverFunction.getImportDriverType() == type) {
-                    for(String fileExt : driverFunction.getImportFormats()) {
-                        linkSourcePanel.addFilter(fileExt, driverFunction.getFormatDescription(fileExt));
+                try {
+                    if(driverFunction.getImportDriverType() == type) {
+                        for(String fileExt : driverFunction.getImportFormats()) {
+                            linkSourcePanel.addFilter(fileExt, driverFunction.getFormatDescription(fileExt));
+                        }
                     }
+                } catch (Exception ex) {
+                    LOGGER.debug(ex.getLocalizedMessage(), ex);
                 }
             }
             linkSourcePanel.loadState();

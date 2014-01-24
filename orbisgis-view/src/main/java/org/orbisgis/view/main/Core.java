@@ -73,6 +73,7 @@ import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.main.frames.ext.MainFrameAction;
 import org.orbisgis.view.main.frames.ext.MainWindow;
 import org.orbisgis.view.main.frames.ext.ToolBarAction;
+import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.output.OutputManager;
 import org.orbisgis.view.sqlconsole.SQLConsoleFactory;
 import org.orbisgis.view.table.TableEditorFactory;
@@ -328,7 +329,7 @@ public class Core {
      */
     private void loadEditorFactories() {
             //editors.addEditorFactory(new TocEditorFactory(pluginFramework.getHostBundleContext()));
-            //editors.addEditorFactory(new MapEditorFactory(pluginFramework.getHostBundleContext()));
+            editors.addEditorFactory(new MapEditorFactory(pluginFramework.getHostBundleContext(), mainContext.getDataManager(), viewWorkspace));
             editors.addEditorFactory(new SQLConsoleFactory(pluginFramework.getHostBundleContext()));
             TableEditorFactory tableEditorFactory = new TableEditorFactory();
             tableEditorFactory.setDataManager(mainContext.getDataManager());
