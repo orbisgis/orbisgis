@@ -1,6 +1,8 @@
 package org.orbisgis.core.jdbc;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
@@ -51,7 +53,7 @@ public class ReadRowSetImpl extends BaseRowSet implements JdbcRowSet, DataSource
     private static final int CACHE_SIZE = 100;
     private Map<Long, Object[]> cache = new LRUMap<>(CACHE_SIZE);
     /** If the table contains a unique non null index then this variable contain the map between the row id [1-n] to the primary key value */
-    private Map<Integer, Object> rowPk;
+    private BidiMap<Integer, Object> rowPk;
     private String pk_name = "";
     private String select_fields = "*";
     private static final String H2_SYSTEM_PK_COLUMN = "_ROWID_";
@@ -70,7 +72,7 @@ public class ReadRowSetImpl extends BaseRowSet implements JdbcRowSet, DataSource
     private void cachePrimaryKey(ProgressMonitor pm) throws SQLException {
         ProgressMonitor cachePm = pm.startTask(getRowCount());
         if(rowPk == null) {
-            rowPk = new HashMap<>((int)getRowCount());
+            rowPk = new DualHashBidiMap<>();
         } else {
             rowPk.clear();
         }
@@ -181,7 +183,7 @@ public class ReadRowSetImpl extends BaseRowSet implements JdbcRowSet, DataSource
                         // Acquire row values by using primary key
                         try(Connection connection = dataSource.getConnection();
                             PreparedStatement st = connection.prepareStatement(getCommand()+" WHERE "+pk_name+" = ?")) {
-                            if(!H2_SYSTEM_PK_COLUMN.equals(pk_name)) {
+                            if(!isUsePkRowLine()) {
                                 st.setObject(1, rowPk.get((int)rowId));
                             } else {
                                 st.setObject(1, rowId);
@@ -283,14 +285,18 @@ public class ReadRowSetImpl extends BaseRowSet implements JdbcRowSet, DataSource
         if(!pk_name.isEmpty()) {
             resultSetHolder.setCommand(getCommand()+" LIMIT 0");
             // Do not cache _ROWID_
-            if(!H2_SYSTEM_PK_COLUMN.equals(pk_name)) {
+            if(!isUsePkRowLine()) {
                 cachePrimaryKey(pm);
             } else {
-                rowPk = new HashMap<>();
+                rowPk = new DualHashBidiMap<>();
             }
         } else {
             resultSetHolder.setCommand(getCommand());
         }
+    }
+
+    protected boolean isUsePkRowLine() {
+        return H2_SYSTEM_PK_COLUMN.equals(pk_name);
     }
 
     @Override
@@ -2024,6 +2030,22 @@ public class ReadRowSetImpl extends BaseRowSet implements JdbcRowSet, DataSource
     @Override
     public void updateGeometry(String columnLabel, Geometry geometry) throws SQLException {
         throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public String getPkName() {
+        return pk_name;
+    }
+
+    @Override
+    public Integer getRowId(Object primaryKeyRowValue) {
+        if(isUsePkRowLine()) {
+            return (int)(primaryKeyRowValue);
+        } else if(!pk_name.isEmpty()) {
+            return rowPk.getKey(primaryKeyRowValue);
+        } else {
+            throw new IllegalStateException("The RowSet has not been initialised");
+        }
     }
 
     /**

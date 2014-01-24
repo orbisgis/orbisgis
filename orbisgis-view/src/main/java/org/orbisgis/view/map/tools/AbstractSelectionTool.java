@@ -56,10 +56,19 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Iterator;
+
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
+import org.orbisgis.core.api.ReversibleRowSet;
 import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.core.jdbc.MetaData;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
@@ -86,60 +95,64 @@ public abstract class AbstractSelectionTool extends Selection {
                 }
         }
 
-        /**
-         * @param mc 
-         * @param tm 
-         * @throws TransitionException 
-         * @throws FinishedAutomatonException
-         */
-        @Override
-        public void transitionTo_OnePoint(MapContext mc, ToolManager tm)
-                throws TransitionException, FinishedAutomatonException {
-                Rectangle2DDouble p = new Rectangle2DDouble(tm.getValues()[0]
-                        - tm.getTolerance() / 2, tm.getValues()[1] - tm.getTolerance()
-                        / 2, tm.getTolerance(), tm.getTolerance());
+    /**
+     * @param mc
+     * @param tm
+     * @throws TransitionException
+     * @throws FinishedAutomatonException
+     */
+    @Override
+    public void transitionTo_OnePoint(MapContext mc, ToolManager tm)
+            throws TransitionException, FinishedAutomatonException {
+        Rectangle2DDouble p = new Rectangle2DDouble(tm.getValues()[0]
+                - tm.getTolerance() / 2, tm.getValues()[1] - tm.getTolerance()
+                / 2, tm.getTolerance(), tm.getTolerance());
 
-                Geometry selectionRect = p.getEnvelope(ToolManager.toolsGeometryFactory);
+        Geometry selectionRect = p.getEnvelope(ToolManager.toolsGeometryFactory);
 
-                ILayer activeLayer = getLayer(mc);
-                DataSource ds = activeLayer.getDataSource();
-                try {
-                        Iterator<Integer> l = queryLayer(activeLayer.getDataSource(), p);
-                        while (l.hasNext()) {
-                                int rowIndex = l.next();
-                                Geometry g = ds.getGeometry(rowIndex);
-                                if (g != null) {
-                                        if (g.intersects(selectionRect)) {
-                                                if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
-                                                        IntegerUnion newSelection = new IntegerUnion(activeLayer.getSelection());
-                                                        if(!newSelection.remove(rowIndex)) {
-                                                                newSelection.add(rowIndex);
-                                                        }
-                                                        activeLayer.setSelection(newSelection);
-                                                        if (!newSelection.isEmpty()) {
-                                                                transition(Code.SELECTION);
-                                                        } else {
-                                                                transition(Code.INIT);
-                                                        }
-
-                                                        return;
-                                                } else {
-                                                        IntegerUnion newSelection =  new IntegerUnion(rowIndex);
-                                                        activeLayer.setSelection(newSelection);
-                                                        transition(Code.SELECTION);
-                                                        return;
-                                                }
-                                        }
-                                }
+        ILayer activeLayer = getLayer(mc);
+        ReversibleRowSet rowSet = tm.getActiveLayerRowSet();
+        if(rowSet == null || rowSet.getPkName().isEmpty()) {
+            transition(Code.NO_SELECTION);
+        } else {
+            // Get all primary value where default geometry intersects a bounding box
+            try(Connection connection = activeLayer.getDataManager().getDataSource().getConnection();
+                PreparedStatement st = connection.prepareStatement(String.format("SELECT %s FROM %s WHERE %s && ?::geometry",
+                        MetaData.escapeFieldName(rowSet.getPkName()),activeLayer.getTableReference(),
+                        SFSUtilities.getGeometryFields(connection,
+                                TableLocation.parse(activeLayer.getTableReference())).get(0)))) {
+                st.setString(1, selectionRect.toString());
+                try(ResultSet rs = st.executeQuery()) {
+                    while (rs.next()) {
+                        int rowIndex = rowSet.getRowId(rs.getObject(1));
+                        if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
+                            IntegerUnion newSelection = new IntegerUnion(activeLayer.getSelection());
+                            if(!newSelection.remove(rowIndex)) {
+                                newSelection.add(rowIndex);
+                            }
+                            activeLayer.setSelection(newSelection);
+                            if (!newSelection.isEmpty()) {
+                                transition(Code.SELECTION);
+                            } else {
+                                transition(Code.INIT);
+                            }
+                            return;
+                        } else {
+                            IntegerUnion newSelection =  new IntegerUnion(rowIndex);
+                            activeLayer.setSelection(newSelection);
+                            transition(Code.SELECTION);
+                            return;
                         }
-
-                        transition(Code.NO_SELECTION);
-                        rect.setRect(tm.getValues()[0], tm.getValues()[1], 0, 0);
-                } catch (DriverException e) {
-                        transition(Code.NO_SELECTION);
-                        throw new TransitionException(e);
+                    }
                 }
+                transition(Code.NO_SELECTION);
+                rect.setRect(tm.getValues()[0], tm.getValues()[1], 0, 0);
+            } catch (SQLException e) {
+                transition(Code.NO_SELECTION);
+                throw new TransitionException(e);
+            }
         }
+    }
 
         protected abstract ILayer getLayer(MapContext mc);
 

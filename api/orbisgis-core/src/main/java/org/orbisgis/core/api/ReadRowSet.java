@@ -34,4 +34,15 @@ public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
      * @return The table identifier [[catalog.]schema.]table
      */
     public String getTable();
+
+    /**
+     * @return The primary key column name used to map filtered row to row line number. Empty string if there is no primary key.
+     */
+    public String getPkName();
+
+    /**
+     * @param primaryKeyRowValue The {@link #getPkName()} value of a row
+     * @return Corresponding {@link #getRow()} value or null if there is no such object in the table.
+     */
+    public Integer getRowId(Object primaryKeyRowValue);
 }

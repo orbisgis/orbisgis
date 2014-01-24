@@ -69,6 +69,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import javax.sql.RowSet;
 import javax.swing.ImageIcon;
@@ -135,8 +137,6 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         private LineSymbolizer lineSymbolizer;
         private PointSymbolizer pointSymbolizer;
         private ReversibleRowSet activeLayerRowSet;
-
-
 
         /**
          * Creates a new EditionToolAdapter.
@@ -221,6 +221,13 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
             }
             setTool(ToolManager.this.defaultTool);
             recalculateHandlers();
+        }
+
+        /**
+         * @return The active layer rowset, null if there is no active layer
+         */
+        public ReversibleRowSet getActiveLayerRowSet() {
+            return activeLayerRowSet;
         }
 
         private void removeSourceListener() {

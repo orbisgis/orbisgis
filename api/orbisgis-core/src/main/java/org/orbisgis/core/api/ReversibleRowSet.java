@@ -40,9 +40,9 @@ public interface ReversibleRowSet extends ReadRowSet {
      * @param listener Undoable edit listener
      */
     void addUndoableEditListener(UndoableEditListener listener);
+
     /**
      * @param listener Undoable edit listener
      */
     void removeUndoableEditListener(UndoableEditListener listener);
-
 }

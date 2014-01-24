@@ -76,6 +76,15 @@ public class MetaData {
     }
 
     /**
+     * Return escaped field name for sql request.
+     * @param fieldName Field name ex: My field
+     * @return quoted string ex: "My field"
+     */
+    public static String escapeFieldName(String fieldName) {
+        return "\""+fieldName.replace("\"","\"\"")+"\"";
+    }
+
+    /**
      *
      * @param tableName Table identifier
      * @param meta DatabaseMetaData instance
