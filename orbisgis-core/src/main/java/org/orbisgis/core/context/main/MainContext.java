@@ -37,7 +37,7 @@ import org.apache.log4j.spi.Filter;
 import org.apache.log4j.varia.LevelRangeFilter;
 import org.orbisgis.core.DataManagerImpl;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.api.DataManager;
+import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.plugin.BundleReference;
 import org.orbisgis.core.plugin.BundleTools;
 import org.orbisgis.core.plugin.PluginHost;

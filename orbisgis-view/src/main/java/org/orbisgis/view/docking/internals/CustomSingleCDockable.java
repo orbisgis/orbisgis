@@ -33,7 +33,7 @@ import bibliothek.gui.dock.common.action.CAction;
 import java.awt.Component;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.orbisgis.view.docking.DockingPanel;
+import org.orbisgis.viewapi.docking.DockingPanel;
 
 /**
  * A custom cdockable that contains a reference to the dockingPanel instance.

@@ -36,7 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import net.opengis.ows_context.LayerType;
-import org.orbisgis.core.api.DataManager;
+import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 

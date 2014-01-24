@@ -37,7 +37,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
 
-import org.orbisgis.view.components.actions.DefaultAction;
+import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.view.docking.internals.actions.CToggleButton;
 
 /**

@@ -44,39 +44,27 @@ import org.xnap.commons.i18n.I18nFactory;
  * 
  */
 
-public class CoreWorkspace implements Serializable {
+public class CoreWorkspace implements org.orbisgis.coreapi.workspace.CoreWorkspace {
         private static final Logger LOGGER = Logger.getLogger(CoreWorkspace.class);
         private static final I18n I18N = I18nFactory.getI18n(CoreWorkspace.class);
         private static final long serialVersionUID = 6L; /*<! Update this integer while adding properties (1 for each new property)*/
 
-        public static final int MAJOR_VERSION = 4; // Load a workspace only if the major version is equal
-        public static final int MINOR_VERSION = 1; // increment on new features
-        public static final int REVISION_VERSION = 0; // increment on fix
-        private PropertyChangeSupport propertySupport;
+    private PropertyChangeSupport propertySupport;
         private String applicationFolder = new File(System.getProperty("user.home"))
                 .getAbsolutePath() + File.separator + ".OrbisGIS" + File.separator
                 + MAJOR_VERSION + "." + MINOR_VERSION;
-        public static final String PROP_APPLICATIONFOLDER = "applicationFolder";
-        private String workspaceFolder;
-        public static final String PROP_WORKSPACEFOLDER = "workspaceFolder";
-        private String resultsFolder;
-        public static final String PROP_RESULTSFOLDER = "resultsFolder";
-        private String sourceFolder;
-        public static final String PROP_SOURCEFOLDER = "sourceFolder";
-        private String pluginFolder = "plugins";
-        public static final String PROP_PLUGINFOLDER = "pluginFolder";
-        private String tempFolder;
+    private String workspaceFolder;
+    private String resultsFolder;
+    private String sourceFolder;
+    private String pluginFolder = "plugins";
+    private String tempFolder;
         private String pluginCache = "cache";
-        public static final String PROP_PLUGINCACHE = "pluginCache";
-        private String logFile = "orbisgis.log";
-        public static final String PROP_LOGFILE = "logFile";
-        private static final String CURRENT_WORKSPACE_FILENAME = "currentWorkspace.txt";
+    private String logFile = "orbisgis.log";
+    private static final String CURRENT_WORKSPACE_FILENAME = "currentWorkspace.txt";
         private static final String ALL_WORKSPACE_FILENAME = "workspaces.txt";
         private static final String dataBaseUriFile = "database.uri";
-        public static final String VERSION_FILE = "org.orbisgis.version.txt";
-        public static final String CITY_VERSION = "La Rochelle";
 
-        /**
+    /**
          * bean constructor
          */
         public CoreWorkspace() {
@@ -138,10 +126,7 @@ public class CoreWorkspace implements Serializable {
         private static String getDefaultJDBCConnectionString(String workspaceFolder) {
             return "jdbc:h2:" + new File(workspaceFolder + File.separator + "database;DB_CLOSE_DELAY=30").toURI().getRawPath();
         }
-        /**
-         * Read the file located at {@link #getDataBaseUriFilePath()}
-         * @return Content of the workspace database uri
-         */
+        @Override
         public String getJDBCConnectionReference() {
             String uriFile = getDataBaseUriFilePath();
             if(uriFile==null) {
@@ -163,11 +148,7 @@ public class CoreWorkspace implements Serializable {
             LOGGER.warn(I18N.tr("Unable to read the JDBC URI from workspace folder"));
             return getDefaultJDBCConnectionString(getWorkspaceFolder());
         }
-        /**
-         * Get the value of dataBaseUriFile
-         *
-         * @return the value of dataBaseUriFile or null if workspaceFolder is not defined
-         */
+        @Override
         public String getDataBaseUriFilePath() {
                 if(workspaceFolder==null) {
                     return null;
@@ -175,11 +156,7 @@ public class CoreWorkspace implements Serializable {
                 return workspaceFolder + File.separator + dataBaseUriFile;
         }
 
-        /**
-         * Get the value of pluginCache
-         *
-         * @return the value of pluginCache
-         */
+        @Override
         public String getPluginCache() {
                 return applicationFolder + File.separator + pluginCache;
         }
@@ -195,18 +172,12 @@ public class CoreWorkspace implements Serializable {
                 propertySupport.firePropertyChange(PROP_PLUGINCACHE, oldPluginCache, pluginCache);
         }
 
-        /**
-         * Get the value of logFile
-         *
-         * @return the value of logFile
-         */
+        @Override
         public String getLogFile() {
                 return logFile;
         }
 
-        /**
-         * @return The full path of the log file
-         */
+        @Override
         public String getLogPath() {
                 return applicationFolder + File.separator + logFile;
         }
@@ -245,11 +216,7 @@ public class CoreWorkspace implements Serializable {
                 }
         }
 
-        /**
-         * Read the workspace path list
-         *
-         * @return
-         */
+        @Override
         public List<File> readKnownWorkspacesPath() {
                 List<File> knownPath = new ArrayList<File>();
 
@@ -316,11 +283,7 @@ public class CoreWorkspace implements Serializable {
                 }
         }
 
-        /**
-         *
-         * @return The default workspace folder or null if there is no default
-         * workspace
-         */
+        @Override
         public File readDefaultWorkspacePath() {
 
                 File currentWK = new File(applicationFolder + File.separator + CURRENT_WORKSPACE_FILENAME);
@@ -357,11 +320,7 @@ public class CoreWorkspace implements Serializable {
                 tempFolder = "temp";
         }
 
-        /**
-         * Get the value of applicationFolder
-         *
-         * @return the value of applicationFolder
-         */
+        @Override
         public String getApplicationFolder() {
                 return applicationFolder;
         }
@@ -377,11 +336,7 @@ public class CoreWorkspace implements Serializable {
                 propertySupport.firePropertyChange(PROP_APPLICATIONFOLDER, oldApplicationFolder, applicationFolder);
         }
 
-        /**
-         * Get the value of tempFolder
-         *
-         * @return the value of tempFolder
-         */
+        @Override
         public String getTempFolder() {
                 return workspaceFolder + File.separator + tempFolder;
         }
@@ -395,11 +350,7 @@ public class CoreWorkspace implements Serializable {
                 this.tempFolder = tempFolder;
         }
 
-        /**
-         * Get the value of pluginFolder
-         *
-         * @return the value of pluginFolder
-         */
+        @Override
         public String getPluginFolder() {
                 return applicationFolder + File.separator + pluginFolder;
         }
@@ -415,11 +366,7 @@ public class CoreWorkspace implements Serializable {
                 propertySupport.firePropertyChange(PROP_PLUGINFOLDER, oldPluginFolder, pluginFolder);
         }
 
-        /**
-         * Get the value of sourceFolder
-         *
-         * @return the value of sourceFolder
-         */
+        @Override
         public String getSourceFolder() {
                 return workspaceFolder + File.separator + sourceFolder;
         }
@@ -435,11 +382,7 @@ public class CoreWorkspace implements Serializable {
                 propertySupport.firePropertyChange(PROP_SOURCEFOLDER, oldSourceFolder, sourceFolder);
         }
 
-        /**
-         * Get the value of resultsFolder
-         *
-         * @return the value of resultsFolder
-         */
+        @Override
         public String getResultsFolder() {
                 return workspaceFolder + File.separator + resultsFolder;
         }
@@ -455,11 +398,7 @@ public class CoreWorkspace implements Serializable {
                 propertySupport.firePropertyChange(PROP_RESULTSFOLDER, oldResultsFolder, resultsFolder);
         }
 
-        /**
-         * Get the value of workspaceFolder
-         *
-         * @return the value of workspaceFolder
-         */
+        @Override
         public String getWorkspaceFolder() {
                 return workspaceFolder;
         }
@@ -475,46 +414,22 @@ public class CoreWorkspace implements Serializable {
                 propertySupport.firePropertyChange(PROP_WORKSPACEFOLDER, oldWorkspaceFolder, workspaceFolder);
         }
 
-        /**
-         * Add a property-change listener for all properties. The listener is
-         * called for all properties.
-         *
-         * @param listener The PropertyChangeListener instance
-         * @note Use EventHandler.create to build the PropertyChangeListener
-         * instance
-         */
+        @Override
         public void addPropertyChangeListener(PropertyChangeListener listener) {
                 propertySupport.addPropertyChangeListener(listener);
         }
 
-        /**
-         * Add a property-change listener for a specific property. The listener
-         * is called only when there is a change to the specified property.
-         *
-         * @param prop The static property name PROP_..
-         * @param listener The PropertyChangeListener instance
-         * @note Use EventHandler.create to build the PropertyChangeListener
-         * instance
-         */
+        @Override
         public void addPropertyChangeListener(String prop, PropertyChangeListener listener) {
                 propertySupport.addPropertyChangeListener(prop, listener);
         }
 
-        /**
-         * Remove the specified listener from the list
-         *
-         * @param listener The listener instance
-         */
+        @Override
         public void removePropertyChangeListener(PropertyChangeListener listener) {
                 propertySupport.removePropertyChangeListener(listener);
         }
 
-        /**
-         * Remove the specified listener for a specified property from the list
-         *
-         * @param prop The static property name PROP_..
-         * @param listener The listener instance
-         */
+        @Override
         public void removePropertyChangeListener(String prop, PropertyChangeListener listener) {
                 propertySupport.removePropertyChangeListener(prop, listener);
         }

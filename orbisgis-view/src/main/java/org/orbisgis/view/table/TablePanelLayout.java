@@ -39,10 +39,11 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Set;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.api.DataManager;
+import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.common.IntegerUnion;
-import org.orbisgis.view.docking.DockingPanelLayout;
-import org.orbisgis.view.util.XElement;
+import org.orbisgis.viewapi.docking.DockingPanelLayout;
+import org.orbisgis.viewapi.table.TableEditableElement;
+import org.orbisgis.viewapi.util.XElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

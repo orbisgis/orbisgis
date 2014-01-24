@@ -9,8 +9,7 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.api.DataManager;
-import org.orbisgis.core.api.ReadRowSet;
+import org.orbisgis.coreapi.api.ReadRowSet;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 

@@ -33,10 +33,15 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.orbisgis.view.docking.DockingManager;
-import org.orbisgis.view.docking.DockingPanel;
-import org.orbisgis.view.docking.DockingPanelLayout;
+import org.orbisgis.viewapi.docking.DockingManager;
+import org.orbisgis.viewapi.docking.DockingPanel;
+import org.orbisgis.viewapi.docking.DockingPanelLayout;
 import org.orbisgis.view.edition.dialogs.SaveDocuments;
+import org.orbisgis.viewapi.edition.EditableElement;
+import org.orbisgis.viewapi.edition.EditorDockable;
+import org.orbisgis.viewapi.edition.EditorFactory;
+import org.orbisgis.viewapi.edition.MultipleEditorFactory;
+import org.orbisgis.viewapi.edition.SingleEditorFactory;
 
 /**
  * The editor Manager is responsible of all EditorFactories.
@@ -44,7 +49,7 @@ import org.orbisgis.view.edition.dialogs.SaveDocuments;
  */
 
 
-public class EditorManager {
+public class EditorManager implements org.orbisgis.viewapi.edition.EditorManager {
     private List<EditorFactory> factories = new ArrayList<EditorFactory>();
     private DockingManager dockingManager;
 
@@ -53,11 +58,7 @@ public class EditorManager {
         }
     
     
-        /**
-        * Add a new editor factory, if the factory is a SingleEditorFactory then
-        * the panels are immediately shown
-        * @param editorFactory 
-        */
+        @Override
         public void addEditorFactory(EditorFactory editorFactory) {
                 factories.add(editorFactory);
                 if(editorFactory instanceof MultipleEditorFactory) {
@@ -69,10 +70,7 @@ public class EditorManager {
                         }
                 }
         }
-        /**
-         * Return all editor's editable
-         * @return Collection of EditableElement returned by editor.getEditableElement()
-         */
+        @Override
         public Collection<EditableElement> getEditableElements() {
                 Set<EditableElement> editables = new HashSet<EditableElement>();
                 for(EditorDockable editor : getEditors()) {
@@ -83,10 +81,7 @@ public class EditorManager {
                 return editables;
         }
         
-        /**
-         * 
-         * @return All shown editors
-         */
+        @Override
         public Collection<EditorDockable> getEditors() {
                 List<EditorDockable> editors = new ArrayList<EditorDockable>();
                 for( DockingPanel panel : dockingManager.getPanels()) {
@@ -97,10 +92,7 @@ public class EditorManager {
                 return editors;
         }
 
-        /**
-        * Open this editable with all compatible factories.
-        * @param editableElement 
-        */
+        @Override
         public void openEditable(EditableElement editableElement) {
                 Set<EditableElement> ignoreModifiedEditables = new HashSet<EditableElement>();
                 // Open the element in editors

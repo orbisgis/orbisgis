@@ -28,7 +28,7 @@
  */
 package org.orbisgis.core.layerModel.mapcatalog;
 
-import org.orbisgis.core.api.DataManager;
+import org.orbisgis.coreapi.api.DataManager;
 
 import java.net.URL;
 

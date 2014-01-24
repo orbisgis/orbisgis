@@ -29,18 +29,15 @@
 package org.orbisgis.core.jdbc;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.api.DataManager;
-import org.orbisgis.core.api.ReadRowSet;
+import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.coreapi.api.ReadRowSet;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.sql.DataSource;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;

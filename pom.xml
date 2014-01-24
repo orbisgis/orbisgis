@@ -30,6 +30,7 @@
                 <module>bundles/orbisgis-oshell</module>
                 <module>bundles/orbisgis-omanager</module>
                 <module>bundles/orbisgis-omanager-plugin</module>
+                <module>bundles/map-editor-api</module>
                 <module>orbisgis-view</module>
                 <module>bundles/map-editor</module>
                 <module>orbisgis-dist</module>

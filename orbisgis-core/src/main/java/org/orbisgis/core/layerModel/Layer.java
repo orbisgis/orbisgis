@@ -36,13 +36,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.api.DataManager;
+
+import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 import org.h2gis.utilities.SFSUtilities;
-
-import javax.sql.DataSource;
 
 public class Layer extends BeanLayer {
     // When dataURI is not specified, this layer use the tableReference instead of external URI

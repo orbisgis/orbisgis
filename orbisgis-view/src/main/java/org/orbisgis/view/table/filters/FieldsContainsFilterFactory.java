@@ -49,9 +49,9 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
-import org.orbisgis.view.edition.EditableElementException;
+import org.orbisgis.viewapi.edition.EditableElementException;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.table.TableEditableElement;
+import org.orbisgis.viewapi.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

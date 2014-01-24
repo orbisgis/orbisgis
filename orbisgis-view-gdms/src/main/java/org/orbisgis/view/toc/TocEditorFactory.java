@@ -31,7 +31,6 @@ package org.orbisgis.view.toc;
 import org.orbisgis.view.components.actions.*;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.SingleEditorFactory;
-import org.orbisgis.view.toc.ext.*;
 import org.osgi.framework.*;
 
 /**

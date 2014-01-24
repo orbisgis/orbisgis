@@ -2,9 +2,9 @@ package org.orbisgis.core;
 
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.api.DataManager;
-import org.orbisgis.core.api.ReadRowSet;
-import org.orbisgis.core.api.ReversibleRowSet;
+import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.coreapi.api.ReadRowSet;
+import org.orbisgis.coreapi.api.ReversibleRowSet;
 import org.orbisgis.core.jdbc.ReadRowSetImpl;
 import org.orbisgis.core.jdbc.ReversibleRowSetImpl;
 import org.orbisgis.utils.FileUtils;

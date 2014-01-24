@@ -28,9 +28,10 @@
  */
 package org.orbisgis.view.edition;
 
-import org.orbisgis.view.docking.DockingPanel;
-import org.orbisgis.view.docking.DockingPanelFactory;
-import org.orbisgis.view.docking.DockingPanelLayout;
+import org.orbisgis.viewapi.docking.DockingPanel;
+import org.orbisgis.viewapi.docking.DockingPanelFactory;
+import org.orbisgis.viewapi.docking.DockingPanelLayout;
+import org.orbisgis.viewapi.edition.MultipleEditorFactory;
 
 /**
  * MultipleEditorFactory must define EditorPanels instead of DockingPanel

@@ -58,22 +58,21 @@ import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
-import org.orbisgis.view.components.actions.DefaultAction;
+import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
-import org.orbisgis.view.docking.DockingManager;
+import org.orbisgis.viewapi.docking.DockingManager;
 import org.orbisgis.view.docking.DockingManagerImpl;
 import org.orbisgis.view.docking.internals.DockingPanelTracker;
-import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.viewapi.edition.EditableElement;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.edition.dialogs.SaveDocuments;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.main.bundles.BundleFromResources;
 import org.orbisgis.view.main.frames.MainFrame;
-import org.orbisgis.view.main.frames.ext.MainFrameAction;
-import org.orbisgis.view.main.frames.ext.MainWindow;
-import org.orbisgis.view.main.frames.ext.ToolBarAction;
-import org.orbisgis.view.map.MapEditorFactory;
+import org.orbisgis.viewapi.main.frames.ext.MainFrameAction;
+import org.orbisgis.viewapi.main.frames.ext.MainWindow;
+import org.orbisgis.viewapi.main.frames.ext.ToolBarAction;
 import org.orbisgis.view.output.OutputManager;
 import org.orbisgis.view.sqlconsole.SQLConsoleFactory;
 import org.orbisgis.view.table.TableEditorFactory;
@@ -329,7 +328,7 @@ public class Core {
      */
     private void loadEditorFactories() {
             //editors.addEditorFactory(new TocEditorFactory(pluginFramework.getHostBundleContext()));
-            editors.addEditorFactory(new MapEditorFactory(pluginFramework.getHostBundleContext(), mainContext.getDataManager(), viewWorkspace));
+            //editors.addEditorFactory(new MapEditorFactory(pluginFramework.getHostBundleContext(), mainContext.getDataManager(), viewWorkspace));
             editors.addEditorFactory(new SQLConsoleFactory(pluginFramework.getHostBundleContext()));
             TableEditorFactory tableEditorFactory = new TableEditorFactory();
             tableEditorFactory.setDataManager(mainContext.getDataManager());

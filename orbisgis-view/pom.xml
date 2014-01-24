@@ -114,6 +114,11 @@
                     <artifactId>orbisgis-core</artifactId>
                     <version>${project.version}</version>
                 </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>map-editor-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
                 <!--
                 <dependency>
                         <groupId>${project.groupId}</groupId>

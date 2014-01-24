@@ -29,7 +29,7 @@
 package org.orbisgis.view.table.filters;
 
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.view.table.TableEditableElement;
+import org.orbisgis.viewapi.table.TableEditableElement;
 
 /**
  * Common interface for all table selection filters

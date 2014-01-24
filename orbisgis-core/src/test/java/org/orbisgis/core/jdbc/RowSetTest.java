@@ -30,13 +30,12 @@ import org.h2gis.utilities.TableLocation;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.orbisgis.core.DataManagerImpl;
-import org.orbisgis.core.api.DataManager;
-import org.orbisgis.core.api.ReadRowSet;
+import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.coreapi.api.ReadRowSet;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.progress.NullProgressMonitor;
 
 import javax.sql.DataSource;
-import javax.sql.RowSet;
 import javax.sql.RowSetEvent;
 import javax.sql.RowSetListener;
 import javax.sql.rowset.JdbcRowSet;

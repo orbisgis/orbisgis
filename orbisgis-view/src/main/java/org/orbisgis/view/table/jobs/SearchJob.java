@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.table.TableEditableElement;
+import org.orbisgis.viewapi.table.TableEditableElement;
 import org.orbisgis.view.table.filters.TableSelectionFilter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
