@@ -151,9 +151,9 @@ public abstract class Renderer {
                             throw new SQLException(I18N.tr("Table {0} does not contains geometry fields",tableReference));
                         }
                         PreparedStatement st = connection.prepareStatement(
-                                String.format("select * from %s where %s && $1::Geometry",tableReference,geometryFields.get(0)));
+                                String.format("select * from %s where %s && $1",tableReference,geometryFields.get(0)));
                         GeometryFactory geometryFactory = new GeometryFactory();
-                        st.setString(1, geometryFactory.toGeometry(extent).toText()); // Filter geometry by envelope
+                        st.setObject(1, geometryFactory.toGeometry(extent)); // Filter geometry by envelope
                         ResultSet rs = st.executeQuery();
                         // long tV1 = System.currentTimeMillis();
                         long rowCount = 100; // TODO do a count(*) cpt
