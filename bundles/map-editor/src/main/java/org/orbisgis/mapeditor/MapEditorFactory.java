@@ -66,6 +66,14 @@ public class MapEditorFactory implements SingleEditorFactory {
             this.dataManager = dataManager;
         }
 
+        /**
+         * @param dataManager DataManager
+         */
+        public void unsetDataManager(DataManager dataManager) {
+            this.dataManager = null;
+            dispose();
+        }
+
         @Activate
         public void Activate(BundleContext bundleContext) {
             this.hostBundle = bundleContext;
@@ -76,20 +84,11 @@ public class MapEditorFactory implements SingleEditorFactory {
             this.viewWorkspace = viewWorkspace;
         }
 
-        @Reference
-        public void unsetViewWorkspace() {
+        public void unsetViewWorkspace(ViewWorkspace viewWorkspace) {
             this.viewWorkspace = null;
             dispose();
         }
 
-        /**
-         * @param dataManager DataManager
-         */
-        @Reference
-        public void unsetDataManager(DataManager dataManager) {
-            this.dataManager = null;
-            dispose();
-        }
 
         @Override
         public void dispose() {

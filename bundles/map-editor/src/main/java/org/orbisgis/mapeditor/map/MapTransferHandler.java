@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
+import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.viewapi.edition.EditableElement;
 import org.orbisgis.viewapi.edition.EditableSource;
 import org.orbisgis.view.edition.TransferableEditableElement;
