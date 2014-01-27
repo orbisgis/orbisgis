@@ -29,20 +29,17 @@
 package org.orbisgis.view.docking.internals;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.view.edition.EditorManager;
-import org.orbisgis.viewapi.docking.DockingManager;
-import org.orbisgis.viewapi.docking.DockingPanelFactory;
 import org.orbisgis.viewapi.edition.EditorFactory;
+import org.orbisgis.viewapi.edition.EditorManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
-
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 
 /**
  * Show {@link EditorFactory} registered services.
  * When a bundle register the Service {@link EditorFactory}, this tracker catch the event
- * and register the provided {@link EditorFactory} instance to the {@link EditorManager}.
+ * and register the provided {@link EditorFactory} instance to the {@link org.orbisgis.view.edition.EditorManagerImpl}.
  * @author Nicolas Fortin
  */
 public class EditorFactoryTracker extends ServiceTracker<EditorFactory, EditorFactory> {
@@ -127,7 +124,7 @@ public class EditorFactoryTracker extends ServiceTracker<EditorFactory, EditorFa
                                         break;
                                 case ADDED:
                                         editorFactory = hostBundle.getService(reference);
-                                        editorManager.removeEditorFactory(editorFactory);
+                                        editorManager.addEditorFactory(editorFactory);
                                         break;
                         }
                 }                

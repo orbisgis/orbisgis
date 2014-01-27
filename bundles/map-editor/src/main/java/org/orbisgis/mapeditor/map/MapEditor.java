@@ -57,7 +57,7 @@ import org.orbisgis.viewapi.docking.DockingPanelParameters;
 import org.orbisgis.viewapi.edition.EditableElement;
 import org.orbisgis.viewapi.edition.EditableElementException;
 import org.orbisgis.viewapi.edition.EditableSource;
-import org.orbisgis.view.edition.EditorManager;
+import org.orbisgis.view.edition.EditorManagerImpl;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.mapeditor.map.ext.MapEditorAction;
 import org.orbisgis.mapeditor.map.ext.MapEditorExtension;
@@ -854,7 +854,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                         SwingUtilities.invokeLater(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                        EditorManager em = Services.getService(EditorManager.class);
+                                                        EditorManagerImpl em = Services.getService(EditorManagerImpl.class);
                                                         em.openEditable(mapElement);
                                                 }
                                         });

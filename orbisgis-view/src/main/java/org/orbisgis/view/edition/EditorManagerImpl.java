@@ -49,11 +49,11 @@ import org.orbisgis.viewapi.edition.SingleEditorFactory;
  */
 
 
-public class EditorManager implements org.orbisgis.viewapi.edition.EditorManager {
+public class EditorManagerImpl implements org.orbisgis.viewapi.edition.EditorManager {
     private List<EditorFactory> factories = new ArrayList<EditorFactory>();
     private DockingManager dockingManager;
 
-        public EditorManager(DockingManager dockingManager) {
+        public EditorManagerImpl(DockingManager dockingManager) {
                 this.dockingManager = dockingManager;
         }
     

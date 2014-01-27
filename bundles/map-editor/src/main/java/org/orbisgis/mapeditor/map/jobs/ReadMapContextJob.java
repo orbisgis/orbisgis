@@ -32,7 +32,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.edition.EditorManager;
+import org.orbisgis.view.edition.EditorManagerImpl;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -52,7 +52,7 @@ public class ReadMapContextJob implements BackgroundJob {
 
         @Override
         public void run(ProgressMonitor pm) {
-                EditorManager editors = Services.getService(EditorManager.class);
+                EditorManagerImpl editors = Services.getService(EditorManagerImpl.class);
                 editableMap.open(pm);
                 editors.openEditable(editableMap);
         }

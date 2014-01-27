@@ -38,7 +38,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Private-Package>org.orbisgis.map-editor.internal.*</Private-Package>
+                        <Private-Package>org.orbisgis.mapeditor.*</Private-Package>
                         <Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
                     </instructions>
                 </configuration>

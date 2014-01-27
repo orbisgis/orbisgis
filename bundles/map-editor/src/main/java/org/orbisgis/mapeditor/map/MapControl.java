@@ -166,7 +166,7 @@ public class MapControl extends JComponent implements ContainerListener {
 	private void addLayerListenerRecursively(ILayer rootLayer,
 			RefreshLayerListener refreshLayerListener) {
 		rootLayer.addLayerListener(refreshLayerListener);
-        // TODO add edition listener on EditorManager
+        // TODO add edition listener on EditorManagerImpl
 		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
 			addLayerListenerRecursively(rootLayer.getLayer(i),
 					refreshLayerListener);
@@ -176,7 +176,7 @@ public class MapControl extends JComponent implements ContainerListener {
 	private void removeLayerListenerRecursively(ILayer rootLayer,
 			RefreshLayerListener refreshLayerListener) {
 		rootLayer.removeLayerListener(refreshLayerListener);
-        // TODO remove edition listener on EditorManager
+        // TODO remove edition listener on EditorManagerImpl
 		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
 			removeLayerListenerRecursively(rootLayer.getLayer(i),
 					refreshLayerListener);

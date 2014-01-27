@@ -48,8 +48,8 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.DefaultJobId;
+import org.orbisgis.view.edition.EditorManagerImpl;
 import org.orbisgis.viewapi.edition.EditorDockable;
-import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
@@ -149,7 +149,7 @@ public class InfoTool extends AbstractRectangleTool {
      * @return
      */
     public TableEditableElement getOpennedTable(String sourceName) {
-        EditorManager em = Services.getService(EditorManager.class);
+        EditorManagerImpl em = Services.getService(EditorManagerImpl.class);
         for (EditorDockable editor : em.getEditors()) {
             if (editor instanceof TableEditor && editor.getEditableElement().getId().equals(sourceName)) {
                 return (TableEditableElement) editor.getEditableElement();

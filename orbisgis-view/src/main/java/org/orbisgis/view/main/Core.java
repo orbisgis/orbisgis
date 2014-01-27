@@ -59,13 +59,13 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
 import org.orbisgis.view.docking.internals.EditorFactoryTracker;
+import org.orbisgis.view.edition.EditorManagerImpl;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.viewapi.docking.DockingManager;
 import org.orbisgis.view.docking.DockingManagerImpl;
 import org.orbisgis.view.docking.internals.DockingPanelTracker;
 import org.orbisgis.viewapi.edition.EditableElement;
-import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.edition.dialogs.SaveDocuments;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -97,7 +97,7 @@ public class Core {
     private static final int BUFFER_LENGTH = 4096;
     /////////////////////
     //view package
-    private EditorManager editors;         /*!< Management of editors */
+    private EditorManagerImpl editors;         /*!< Management of editors */
 
     private MainFrame mainFrame;     /*!< The main window */
 
@@ -175,6 +175,7 @@ public class Core {
         try {
             mainContext.startBundleHost(BundleFromResources.SPECIFIC_BEHAVIOUR_BUNDLES);
             pluginFramework = mainContext.getPluginHost();
+            pluginFramework.getHostBundleContext().registerService(org.orbisgis.viewapi.workspace.ViewWorkspace.class, viewWorkspace, null);
         } catch (Exception ex) {
             LOGGER.error(I18N.tr("Loading of plugins is aborted"), ex);
         }
@@ -364,11 +365,13 @@ public class Core {
      * @param dm Instance of docking manager
      */
     private void makeEditorManager(DockingManager dm) {
-        editors = new EditorManager(dm);
-        Services.registerService(EditorManager.class,
+        editors = new EditorManagerImpl(dm);
+        Services.registerService(org.orbisgis.viewapi.edition.EditorManager.class,
                 I18N.tr("Use this instance to open an editable element (map,data source..)"),
                 editors);
-
+        pluginFramework.getHostBundleContext().registerService(org.orbisgis.viewapi.edition.EditorManager.class, editors, null);
+        editorFactoryTracker = new EditorFactoryTracker(pluginFramework.getHostBundleContext(), editors);
+        editorFactoryTracker.open();
     }
 
     /**
@@ -407,8 +410,6 @@ public class Core {
         // Initiate the docking panel tracker
         singleFrameTracker = new DockingPanelTracker(pluginFramework.getHostBundleContext(), dockManager);
         singleFrameTracker.open();
-        editorFactoryTracker = new EditorFactoryTracker(pluginFramework.getHostBundleContext(), editors);
-        editorFactoryTracker.close();
         toolBarTracker = new MenuItemServiceTracker<MainWindow, ToolBarAction>(pluginFramework.getHostBundleContext(), ToolBarAction.class, dockManagerImpl, mainFrame);
         toolBarTracker.open();
         progress.endTask();

@@ -32,6 +32,7 @@ import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.mapeditor.map.MapEditor;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.viewapi.edition.EditorDockable;
+import org.orbisgis.viewapi.edition.EditorFactory;
 import org.orbisgis.viewapi.edition.SingleEditorFactory;
 import org.orbisgis.viewapi.main.frames.ext.ToolBarAction;
 import org.orbisgis.mapeditor.map.ext.MapEditorAction;
@@ -46,7 +47,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * MapEditor cannot be opened twice, the the factory is a SingleEditorFactory.
  */
-@Component
+@Component(service = EditorFactory.class, immediate = true)
 public class MapEditorFactory implements SingleEditorFactory {
         public static final String FACTORY_ID = "MapFactory";
         private MapEditor mapPanel = null;
