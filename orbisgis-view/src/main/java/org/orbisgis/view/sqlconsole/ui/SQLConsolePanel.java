@@ -109,14 +109,15 @@ public class SQLConsolePanel extends JPanel {
         private DefaultAction blockCommentAction;
         private DefaultAction formatSQLAction;
         private DefaultAction saveAction;
-        
+        private DataSource dataSource;
         
         /**
          * Creates a console for sql.
          */
-        public SQLConsolePanel() {
+        public SQLConsolePanel(DataSource dataSource) {
                 super(new BorderLayout());
-                sqlFunctionsPanel = new SQLFunctionsPanel();
+                this.dataSource = dataSource;
+                sqlFunctionsPanel = new SQLFunctionsPanel(dataSource);
                 initActions();
                 JPanel split = new JPanel();
                 split.setLayout(new BorderLayout());
@@ -286,7 +287,6 @@ public class SQLConsolePanel extends JPanel {
                     if(mapElement!=null) {
                         mapContext = mapElement.getMapContext();
                     }
-                    DataSource dataSource = Services.getService(DataSource.class);
                     bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(this, dataSource, splitterFactory));
                 }
         }
@@ -410,7 +410,7 @@ public class SQLConsolePanel extends JPanel {
 
                 if (infoToolBar == null) {
                         infoToolBar = new JToolBar();
-                        infoToolBar.setTransferHandler(new ScriptPanelTransferHandler(scriptPanel));
+                        infoToolBar.setTransferHandler(new ScriptPanelTransferHandler(scriptPanel, dataSource));
                         statusMessage = new JLabel();
                         infoToolBar.add(statusMessage);
                         infoToolBar.setFloatable(false);

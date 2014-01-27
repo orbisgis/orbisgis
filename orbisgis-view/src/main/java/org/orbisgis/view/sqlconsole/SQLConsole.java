@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.sqlconsole;
 
+import javax.sql.DataSource;
 import javax.swing.*;
 
 import org.orbisgis.mapeditorapi.MapElement;
@@ -49,15 +50,16 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class SQLConsole implements EditorDockable,SQLConsoleEditor {
         private DockingPanelParameters dockingPanelParameters = new DockingPanelParameters();
-        private SQLConsolePanel sqlPanel = new SQLConsolePanel();
+        private SQLConsolePanel sqlPanel;
         protected final static I18n I18N = I18nFactory.getI18n(SQLConsole.class);
         
-        public SQLConsole() {
+        public SQLConsole(DataSource dataSource) {
                 dockingPanelParameters.setTitle(I18N.tr("SQL Console"));
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("script_code"));
                 dockingPanelParameters.setDockActions(sqlPanel.getActions().getActions());
                 // Tools that will be created later will also be set in the docking panel
                 // thanks to this listener
+                sqlPanel = new SQLConsolePanel(dataSource);
                 sqlPanel.getActions().addPropertyChangeListener(
                         new ActionDockingListener(dockingPanelParameters));
         }

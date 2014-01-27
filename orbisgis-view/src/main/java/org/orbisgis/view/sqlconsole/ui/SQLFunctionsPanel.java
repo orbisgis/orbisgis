@@ -31,6 +31,7 @@ package org.orbisgis.view.sqlconsole.ui;
 import java.awt.BorderLayout;
 import java.beans.EventHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.sql.DataSource;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -64,10 +65,10 @@ public class SQLFunctionsPanel extends JPanel {
         
         protected final static I18n I18N = I18nFactory.getI18n(SQLFunctionsPanel.class);
         
-        public SQLFunctionsPanel() {
+        public SQLFunctionsPanel(DataSource dataSource) {
                 this.setLayout(new BorderLayout());
                 expandedPanel = new JPanel(new BorderLayout());
-                functionListModel = new FunctionListModel();
+                functionListModel = new FunctionListModel(dataSource);
                 functionLabelCount = new JLabel(I18N.tr("Functions count = {0}",0));
 
                 list = new FunctionList();
