@@ -28,6 +28,7 @@
  */
 package org.orbisgis.mapeditor.map.mapsManager.jobs;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.SwingUtilities;
@@ -53,11 +54,13 @@ public class DownloadWorkspaces implements BackgroundJob {
         private TreeNodeBusy treeNodeBusyHint;
         private static final Logger LOGGER = Logger.getLogger(DownloadWorkspaces.class);
         private DataManager dataManager;
+        private File mapsFolder;
         
-        public DownloadWorkspaces(TreeNodeMapCatalogServer server, TreeNodeBusy treeNodeBusyHint, DataManager dataManager) {
+        public DownloadWorkspaces(TreeNodeMapCatalogServer server, TreeNodeBusy treeNodeBusyHint, DataManager dataManager, File mapsFolder) {
                 this.server = server;
                 this.treeNodeBusyHint = treeNodeBusyHint;
                 this.dataManager = dataManager;
+                this.mapsFolder = mapsFolder;
         }
         
         @Override
@@ -65,7 +68,7 @@ public class DownloadWorkspaces implements BackgroundJob {
                 //
                 try {
                         treeNodeBusyHint.setDoAnimation(true);
-                        ConnectionProperties parameters = new ConnectionProperties(server.getServerUrl(), dataManager);
+                        ConnectionProperties parameters = new ConnectionProperties(server.getServerUrl(), dataManager, mapsFolder);
                         RemoteMapCatalog mapServer = new RemoteMapCatalog(parameters);
                         List<Workspace> workspaces = mapServer.getWorkspaces();
                         SwingUtilities.invokeLater(new FeedServerNode(server, workspaces));

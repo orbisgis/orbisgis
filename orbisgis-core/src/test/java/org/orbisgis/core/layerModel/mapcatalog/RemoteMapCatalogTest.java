@@ -64,7 +64,7 @@ public class RemoteMapCatalogTest {
                 parser = factory.createXMLStreamReader(in);
                 RemoteMapCatalog mapCatalog =
                         new RemoteMapCatalog(
-                        new ConnectionProperties(apiUrl, null));
+                        new ConnectionProperties(apiUrl, null, new File("target/maps")));
                 List<Workspace> workspaces = new ArrayList<Workspace>();                
                 mapCatalog.parseXML(workspaces, parser);                        
                 parser.close();

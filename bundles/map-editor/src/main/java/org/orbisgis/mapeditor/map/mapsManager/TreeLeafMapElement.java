@@ -51,6 +51,7 @@ import org.orbisgis.view.components.fstree.TreeNodePath;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.mapeditor.map.TransferableMap;
 import org.orbisgis.mapeditor.map.jobs.ReadMapContextJob;
+import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -65,10 +66,12 @@ public abstract class TreeLeafMapElement extends AbstractTreeNodeLeaf implements
         private boolean loaded = false;
         private File filePath; // Call getFilePath() instead of using this variable
         private DataManager dataManager;
+        private EditorManager editorManager;
 
-        public TreeLeafMapElement(File filePath, DataManager dataManager) {
+        public TreeLeafMapElement(File filePath, DataManager dataManager,EditorManager editorManager) {
                 this.filePath = filePath;
                 this.dataManager = dataManager;
+                this.editorManager = editorManager;
         }
 
         
@@ -111,7 +114,7 @@ public abstract class TreeLeafMapElement extends AbstractTreeNodeLeaf implements
          */
         public void onOpenMap() {
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.backgroundOperation(new ReadMapContextJob(getMapElement(new NullProgressMonitor(), dataManager)));
+                bm.backgroundOperation(new ReadMapContextJob(getMapElement(new NullProgressMonitor(), dataManager), editorManager));
         }
 
         @Override

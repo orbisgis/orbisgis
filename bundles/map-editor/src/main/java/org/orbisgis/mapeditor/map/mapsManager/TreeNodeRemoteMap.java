@@ -109,7 +109,7 @@ public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeC
 
         @Override
         public boolean completeTransferable(TransferableList transferable) {
-                transferable.addTransferable(new TransferableRemoteMap(remoteMapConnection));
+                transferable.addTransferable(new TransferableRemoteMap(remoteMapConnection, remoteMapConnection.getcParams().getMapFolderCache()));
                 return true;
         }
 

@@ -28,11 +28,10 @@
  */
 package org.orbisgis.mapeditor.map.jobs;
 
-import org.orbisgis.core.Services;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.edition.EditorManagerImpl;
+import org.orbisgis.viewapi.edition.EditorManager;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -42,23 +41,28 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class ReadMapContextJob implements BackgroundJob {
 
-        private static final I18n I18N = I18nFactory.getI18n(ReadMapContextJob.class);   
-        MapElement editableMap;
+    private static final I18n I18N = I18nFactory.getI18n(ReadMapContextJob.class);
+    private MapElement editableMap;
+    private EditorManager editorManager;
 
-        public ReadMapContextJob(MapElement editableMap) {
-                this.editableMap = editableMap;
-        }
-        
+    /**
+     * Constructor.
+     * @param editableMap Instance of editable map.
+     * @param editorManager Instance of editor manager.
+     */
+    public ReadMapContextJob(MapElement editableMap, EditorManager editorManager) {
+        this.editableMap = editableMap;
+        this.editorManager = editorManager;
+    }
 
-        @Override
-        public void run(ProgressMonitor pm) {
-                EditorManagerImpl editors = Services.getService(EditorManagerImpl.class);
-                editableMap.open(pm);
-                editors.openEditable(editableMap);
-        }
+    @Override
+    public void run(ProgressMonitor pm) {
+        editableMap.open(pm);
+        editorManager.openEditable(editableMap);
+    }
 
-        @Override
-        public String getTaskName() {
-                return I18N.tr("Open the map context");
-        }
+    @Override
+    public String getTaskName() {
+        return I18N.tr("Open the map context");
+    }
 }

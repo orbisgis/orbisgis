@@ -33,6 +33,7 @@ import org.orbisgis.mapeditor.map.MapEditor;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.viewapi.edition.EditorDockable;
 import org.orbisgis.viewapi.edition.EditorFactory;
+import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.edition.SingleEditorFactory;
 import org.orbisgis.viewapi.main.frames.ext.ToolBarAction;
 import org.orbisgis.mapeditor.map.ext.MapEditorAction;
@@ -58,6 +59,16 @@ public class MapEditorFactory implements SingleEditorFactory {
         private BundleContext hostBundle;
         private DataManager dataManager;
         private ViewWorkspace viewWorkspace;
+        private EditorManager editorManager;
+
+        @Reference
+        public void setEditorManager(EditorManager editorManager) {
+            this.editorManager = editorManager;
+        }
+
+        public void unsetEditorManager(EditorManager editorManager) {
+            dispose();
+        }
 
         /**
          * @param dataManager DataManager
@@ -71,7 +82,6 @@ public class MapEditorFactory implements SingleEditorFactory {
          * @param dataManager DataManager
          */
         public void unsetDataManager(DataManager dataManager) {
-            this.dataManager = null;
             dispose();
         }
 
@@ -86,7 +96,6 @@ public class MapEditorFactory implements SingleEditorFactory {
         }
 
         public void unsetViewWorkspace(ViewWorkspace viewWorkspace) {
-            this.viewWorkspace = null;
             dispose();
         }
 
@@ -107,7 +116,7 @@ public class MapEditorFactory implements SingleEditorFactory {
         @Override
         public EditorDockable[] getSinglePanels() {
                 if(mapPanel==null) {
-                        mapPanel = new MapEditor(viewWorkspace,dataManager);
+                        mapPanel = new MapEditor(viewWorkspace,dataManager,editorManager);
                         //Plugins Action will be added to ActionCommands of MapEditor
                         mapEditorExt = new MenuItemServiceTracker<MapEditorExtension,MapEditorAction>(hostBundle,MapEditorAction.class,mapPanel.getActionCommands(),mapPanel);
                         mapEditorExt.open(); // Start loading actions

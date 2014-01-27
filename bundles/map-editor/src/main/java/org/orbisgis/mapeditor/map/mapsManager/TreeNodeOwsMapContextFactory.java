@@ -40,6 +40,7 @@ import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactory;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;
+import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -53,18 +54,19 @@ public class TreeNodeOwsMapContextFactory implements TreeNodeFileFactory {
         private static final String ACTION_ADD_OWS_MAP = "TreeNodeOwsMapContextFactory:NewEmptyMap";
         private static final Logger LOGGER = Logger.getLogger(TreeNodeOwsMapContextFactory.class);
         private DataManager dataManager;
-
+        private EditorManager editorManager;
         /**
          * Constructor.
          * @param dataManager DataManager used to initialize map context.
          */
-        public TreeNodeOwsMapContextFactory(DataManager dataManager) {
+        public TreeNodeOwsMapContextFactory(DataManager dataManager, EditorManager editorManager) {
             this.dataManager = dataManager;
+            this.editorManager = editorManager;
         }
 
         @Override
         public TreeLeafMapElement create(File filePath) {
-                return new TreeLeafMapContextFile(filePath, dataManager);
+                return new TreeLeafMapContextFile(filePath, dataManager, editorManager);
         }
 
         /**

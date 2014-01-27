@@ -56,10 +56,12 @@ import org.xnap.commons.i18n.I18nFactory;
 public class TransferableRemoteMap extends TransferableMap {
         private static final Logger LOGGER = Logger.getLogger(TransferableRemoteMap.class);
         private static final I18n I18N = I18nFactory.getI18n(TransferableRemoteMap.class);
-        private RemoteMapContext remoteMap;
+        private final RemoteMapContext remoteMap;
+        private final File mapContextFolder;
 
-        public TransferableRemoteMap(RemoteMapContext remoteMap) {
+        public TransferableRemoteMap(RemoteMapContext remoteMap,File mapContextFolder) {
                 this.remoteMap = remoteMap;
+                this.mapContextFolder = mapContextFolder;
         }
 
         @Override
@@ -87,9 +89,7 @@ public class TransferableRemoteMap extends TransferableMap {
         public Object getTransferData(DataFlavor df) throws UnsupportedFlavorException {
                 if(df.equals(TransferableMap.mapFlavor) || df.equals(TransferableEditableElement.editableElementFlavor) ) {
                         //Find appropriate file name
-                        ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
                         //Load the map context
-                        File mapContextFolder = new File(viewWorkspace.getMapContextPath());
                         if (!mapContextFolder.exists()) {
                                 mapContextFolder.mkdir();
                         }

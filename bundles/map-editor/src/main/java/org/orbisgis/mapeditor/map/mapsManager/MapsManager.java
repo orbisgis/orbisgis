@@ -54,6 +54,7 @@ import org.orbisgis.view.components.fstree.FileTreeModel;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.ReadStoredMap;
+import org.orbisgis.viewapi.edition.EditorManager;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -73,6 +74,7 @@ public class MapsManager extends JPanel {
         private File loadedMap;
         private TreeNodeLocalRoot rootFolder;
         private DataManager dataManager;
+        private EditorManager editorManager;
 
         // Store all the compatible map context
         
@@ -80,8 +82,10 @@ public class MapsManager extends JPanel {
         /**
          * Default constructor
          */
-        public MapsManager(String mapContextPath, DataManager dataManager) {
+        public MapsManager(String mapContextPath, DataManager dataManager, EditorManager editorManager) {
                 super(new BorderLayout());
+                this.editorManager = editorManager;
+                this.dataManager = dataManager;
                 treeModel = new FileTreeModel(rootNode, true);
                 treeModel.setAsksAllowsChildren(true);
                 // Add the tree in the panel                
@@ -96,7 +100,7 @@ public class MapsManager extends JPanel {
                 TreeNodeFolder workspaceFolder = new TreeNodeFolder(rootFolderPath,tree);
                 workspaceFolder.setLabel(I18N.tr("default"));
                 rootFolder = new TreeNodeLocalRoot(tree);
-                rootRemote = new TreeNodeRemoteRoot(dataManager);
+                rootRemote = new TreeNodeRemoteRoot(dataManager, new File(mapContextPath));
                 initInternalFactories(); // Init file readers
                 treeModel.insertNodeInto(rootFolder, rootNode, rootNode.getChildCount());
                 treeModel.insertNodeInto(workspaceFolder, rootFolder, rootFolder.getChildCount());
@@ -174,7 +178,7 @@ public class MapsManager extends JPanel {
         *  Load built-ins map factory
         */
         private void initInternalFactories() {
-                tree.addFactory("ows",new TreeNodeOwsMapContextFactory(dataManager));
+                tree.addFactory("ows",new TreeNodeOwsMapContextFactory(dataManager, editorManager));
         }
         /**
          * 

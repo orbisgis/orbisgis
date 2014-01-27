@@ -31,6 +31,7 @@ package org.orbisgis.mapeditor.map.mapsManager;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -69,10 +70,12 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
         private SERVER_STATUS serverStatus = SERVER_STATUS.DISCONNECTED;
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeMapCatalogServer.class);
         private DataManager dataManager;
+        private File mapsFolder;
                 
-        public TreeNodeMapCatalogServer(URL serverUrl, DataManager dataManager) {
+        public TreeNodeMapCatalogServer(URL serverUrl, DataManager dataManager,File mapsFolder) {
                 setServerUrl(serverUrl);
                 this.dataManager = dataManager;
+                this.mapsFolder = mapsFolder;
         }
         
         private void setServerUrl(URL serverUrl) {
@@ -124,7 +127,7 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
                 model.insertNodeInto(busyNode, this, 0);
                 // Launch the download job
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.nonBlockingBackgroundOperation(new DownloadWorkspaces(this,busyNode,dataManager));
+                bm.nonBlockingBackgroundOperation(new DownloadWorkspaces(this,busyNode,dataManager, mapsFolder));
                 
         }
         @Override

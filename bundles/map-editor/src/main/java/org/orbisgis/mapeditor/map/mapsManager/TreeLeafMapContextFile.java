@@ -50,6 +50,7 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -62,9 +63,9 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
         private static final Logger LOGGER = Logger.getLogger(TreeLeafMapContextFile.class);
         private static final I18n I18N = I18nFactory.getI18n(TreeLeafMapContextFile.class);
                 
-        public TreeLeafMapContextFile(File mapContextFilePath, DataManager dataManager) {
+        public TreeLeafMapContextFile(File mapContextFilePath, DataManager dataManager, EditorManager editorManager) {
                 // For fast loading, take the filename as the ows title
-                super(mapContextFilePath, dataManager);
+                super(mapContextFilePath, dataManager, editorManager);
                 setLabel(FilenameUtils.getBaseName(mapContextFilePath.getName()));
                 setEditable(false);
         }
