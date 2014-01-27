@@ -70,6 +70,19 @@ public class EditorManager implements org.orbisgis.viewapi.edition.EditorManager
                         }
                 }
         }
+
+        @Override
+        public void removeEditorFactory(EditorFactory editorFactory) {
+            factories.remove(editorFactory);
+            if(editorFactory instanceof MultipleEditorFactory) {
+                dockingManager.unregisterPanelFactory(editorFactory.getId());
+            } else {
+                for(EditorDockable dockPanel : ((SingleEditorFactory)editorFactory).getSinglePanels()) {
+                    dockingManager.removeDockingPanel(dockPanel.getDockingParameters().getName());
+                }
+            }
+        }
+
         @Override
         public Collection<EditableElement> getEditableElements() {
                 Set<EditableElement> editables = new HashSet<EditableElement>();

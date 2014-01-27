@@ -315,19 +315,17 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
             //Show dialog
             dialog.openDialog( owner, true );
         }
-        /**
-         * The multiple instances panels can be shown at the next start of application
-         * if their factory is registered 
-         * before loading the layout
-         * @param factoryName
-         * @param factory  
-         */
+
         @Override
         public void registerPanelFactory(String factoryName,DockingPanelFactory factory) {
             InternalCommonFactory dockingFramesFactory = new InternalCommonFactory(factory,commonControl);
             commonControl.addMultipleDockableFactory(factoryName, dockingFramesFactory);
         }
-        
+
+        @Override
+        public void unregisterPanelFactory(String factoryName) {
+            commonControl.removeMultipleDockableFactory(factoryName);
+        }
         /**
          * Free docking resources and save the layout
          */

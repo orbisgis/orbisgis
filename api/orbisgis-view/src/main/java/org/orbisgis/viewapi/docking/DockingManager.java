@@ -101,6 +101,12 @@ public interface DockingManager {
          * @param factory  
          */
         public void registerPanelFactory(String factoryName,DockingPanelFactory factory);
+
+        /**
+         * Remove PanelFactory
+         * @param factoryName Factory identifier
+         */
+        public void unregisterPanelFactory(String factoryName);
         
         /**
          * Free docking resources and save the layout

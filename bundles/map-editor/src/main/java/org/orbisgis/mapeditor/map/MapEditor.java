@@ -137,6 +137,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         dockingPanelParameters.setExternalizable(false);
         dockingPanelParameters.setCloseable(false);
         dockingPanelParameters.setLayout(mapEditorPersistence);
+        dockingPanelParameters.setVisible(true);
         layeredPane.add(mapControl,1);
         layeredPane.add(mapsManager, 0);
         mapsManager.setVisible(false);

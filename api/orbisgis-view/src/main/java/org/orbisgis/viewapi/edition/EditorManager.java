@@ -14,6 +14,12 @@ public interface EditorManager {
     void addEditorFactory(EditorFactory editorFactory);
 
     /**
+     * Remove an editor factory.
+     * @param editorFactory
+     */
+    void removeEditorFactory(EditorFactory editorFactory);
+
+    /**
      * Return all editor's editable
      * @return Collection of EditableElement returned by editor.getEditableElement()
      */

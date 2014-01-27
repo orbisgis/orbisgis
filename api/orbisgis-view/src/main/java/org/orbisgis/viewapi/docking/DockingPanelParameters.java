@@ -93,7 +93,7 @@ public class DockingPanelParameters implements Serializable, PropertyHost, Vetoa
         private String name = "";
         private DockingPanelLayout layout = null;        
         private DockingLocation defaultDockingLocation = new DockingLocation(DockingLocation.Location.TOP_OF, "");
-        private List<Action> dockActions = new ArrayList<Action>();
+        private List<Action> dockActions = new ArrayList<>();
 
         /**
          * Get the value of defaultDockingLocation
@@ -232,7 +232,7 @@ public class DockingPanelParameters implements Serializable, PropertyHost, Vetoa
         }
 
         /**
-         * Get the value of name
+         * This is the unique identifier of this panel.Do not change this value if it is already set.
          *
          * @return the value of name
          */

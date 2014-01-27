@@ -58,6 +58,7 @@ import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
+import org.orbisgis.view.docking.internals.EditorFactoryTracker;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.viewapi.docking.DockingManager;
@@ -118,6 +119,7 @@ public class Core {
     // Plugins
     private PluginHost pluginFramework;
     private DockingPanelTracker singleFrameTracker;
+    private EditorFactoryTracker editorFactoryTracker;
     private MenuItemServiceTracker<MainWindow, ToolBarAction> toolBarTracker;
 
     /**
@@ -405,6 +407,8 @@ public class Core {
         // Initiate the docking panel tracker
         singleFrameTracker = new DockingPanelTracker(pluginFramework.getHostBundleContext(), dockManager);
         singleFrameTracker.open();
+        editorFactoryTracker = new EditorFactoryTracker(pluginFramework.getHostBundleContext(), editors);
+        editorFactoryTracker.close();
         toolBarTracker = new MenuItemServiceTracker<MainWindow, ToolBarAction>(pluginFramework.getHostBundleContext(), ToolBarAction.class, dockManagerImpl, mainFrame);
         toolBarTracker.open();
         progress.endTask();
@@ -533,6 +537,9 @@ public class Core {
         mainFrame.dispose();
         if (singleFrameTracker != null) {
             singleFrameTracker.close();
+        }
+        if(editorFactoryTracker != null) {
+            editorFactoryTracker.close();
         }
         if (toolBarTracker != null) {
             toolBarTracker.close();
