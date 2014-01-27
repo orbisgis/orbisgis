@@ -54,12 +54,12 @@ public class SQLConsole implements EditorDockable,SQLConsoleEditor {
         protected final static I18n I18N = I18nFactory.getI18n(SQLConsole.class);
         
         public SQLConsole(DataSource dataSource) {
+                sqlPanel = new SQLConsolePanel(dataSource);
                 dockingPanelParameters.setTitle(I18N.tr("SQL Console"));
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("script_code"));
                 dockingPanelParameters.setDockActions(sqlPanel.getActions().getActions());
                 // Tools that will be created later will also be set in the docking panel
                 // thanks to this listener
-                sqlPanel = new SQLConsolePanel(dataSource);
                 sqlPanel.getActions().addPropertyChangeListener(
                         new ActionDockingListener(dockingPanelParameters));
         }
