@@ -92,8 +92,8 @@ public class DataManagerImpl implements DataManager {
             // Uri is incomplete, resolve it by using working directory
             uri = new File("./").toURI().resolve(uri);
         }
-        String tableName = findUniqueTableName(FileUtils.getNameFromURI(uri));
-        if("file".equals(uri.getScheme())) {
+        String tableName = findUniqueTableName(FileUtils.getNameFromURI(uri).toUpperCase());
+        if("file".equalsIgnoreCase(uri.getScheme())) {
             File path = new File(uri);
             if(!path.exists()) {
                 throw new SQLException("Specified source does not exists");
@@ -136,15 +136,11 @@ public class DataManagerImpl implements DataManager {
 
     @Override
     public boolean isTableExists(String tableName) throws SQLException {
-        boolean exists;
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement st = connection.prepareStatement("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE UPPER(TABLE_NAME) = ?");
-            st.setString(1, tableName.toUpperCase());
-            ResultSet rs = st.executeQuery();
-            exists = rs.next();
-            rs.close();
+        TableLocation tableLocation = TableLocation.parse(tableName);
+        try (Connection connection = dataSource.getConnection();
+            ResultSet rs = connection.getMetaData().getTables(tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable(), null)) {
+            return rs.next();
         }
-        return exists;
     }
 
 

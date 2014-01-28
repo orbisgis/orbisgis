@@ -49,9 +49,6 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 import javax.sql.rowset.RowSetFactory;
 import java.io.File;
@@ -191,13 +188,6 @@ public class MainContext {
                 }
                 // Register DataSource, will be used to register spatial features
                 pluginHost.getHostBundleContext().registerService(DataSource.class,dataSource,null);
-                // Register DataSource in JNI for RowSet factory
-                try {
-                    InitialContext ic = new InitialContext();
-                    ic.bind(dataSource.toString(), dataSource);
-                } catch (NamingException ex ) {
-                    LOGGER.error("Unable to register DataSource into java initial context", ex);
-                }
                 // Create and register DataManager
                 dataManager = new DataManagerImpl(dataSource);
                 pluginHost.getHostBundleContext().registerService(DataManager.class, dataManager, null);
