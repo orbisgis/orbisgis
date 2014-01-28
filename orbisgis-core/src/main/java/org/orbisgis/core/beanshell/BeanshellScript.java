@@ -207,6 +207,7 @@ public final class BeanshellScript {
          */
         public static void execute(String[] args) throws EvalError, FileNotFoundException {
                 interpreter.set("bsh.args", args);
+                interpreter.set("bsh.dataManager", mainContext.getDataManager());
                 interpreter.setOut(System.out);
                 interpreter.setClassLoader(mainContext.getClass().getClassLoader());
                 FileReader reader = new FileReader(new File(args[0]));

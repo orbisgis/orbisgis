@@ -31,6 +31,7 @@
  */
 package org.orbisgis.core.geometryUtils;
 
+import org.h2gis.utilities.GeometryTypeCodes;
 import org.junit.Test;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -253,7 +254,7 @@ public class GeometryEditTest {
         pols = GeometryEdit.splitPolygonWithLine(polygon, line);
         for (int i = 0; i < pols.getNumGeometries(); i++) {
             Geometry pol = pols.getGeometryN(i);        
-            assertEquals(3, pol.);
+            assertTrue(GeometryTypeUtil.is25Geometry(pol));
         }
 
     }

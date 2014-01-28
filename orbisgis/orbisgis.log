@@ -22,3 +22,7 @@
 /home/fortin/GithubProjects/orbisgis/bundle
  INFO [main] (MainContext.java:119) - Waiting for bundle stability
  WARN [main] (CoreWorkspace.java:163) - Unable to read the JDBC URI from workspace folder
+ WARN [main] (BundleTools.java:174) - The bundle folder does not exists :
+/home/fortin/GithubProjects/orbisgis/bundle
+ INFO [main] (MainContext.java:119) - Waiting for bundle stability
+ WARN [main] (CoreWorkspace.java:148) - Unable to read the JDBC URI from workspace folder

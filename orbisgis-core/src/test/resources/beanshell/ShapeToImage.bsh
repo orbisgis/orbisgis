@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
 public class mapDisplay {
     public static void run(File owsPath) throws FileNotFoundException, LayerException, IOException {
             // Read OWS file
-            MapContext mapContext = new OwsMapContext();
+            MapContext mapContext = new OwsMapContext(bsh.dataManager);
             mapContext.read(new FileInputStream(owsPath));
             mapContext.setLocation(owsPath.toURI());
             // Load shape file

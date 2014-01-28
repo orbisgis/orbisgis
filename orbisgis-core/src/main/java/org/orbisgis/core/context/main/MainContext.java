@@ -196,7 +196,7 @@ public class MainContext {
                     InitialContext ic = new InitialContext();
                     ic.bind(dataSource.toString(), dataSource);
                 } catch (NamingException ex ) {
-                    LOGGER.error("Unable to register DataSource into java initial context");
+                    LOGGER.error("Unable to register DataSource into java initial context", ex);
                 }
                 // Create and register DataManager
                 dataManager = new DataManagerImpl(dataSource);
