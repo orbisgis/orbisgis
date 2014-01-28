@@ -29,28 +29,94 @@
 package org.orbisgis.progress;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import static org.junit.Assert.assertEquals;
 
 public class ProgressMonitorTest {
 
-        @Test
-	public void testUsage() throws Exception {
-		ProgressMonitor pm = new DefaultProgressMonitor("open file", 100);
-		pm.startTask("read header", 200);
-		assertEquals(0, pm.getOverallProgress());
-		for (int i = 0; i < 200; i++) {
-			pm.progressTo(i);
-			assertEquals(i / 2, pm.getCurrentProgress());
-		}
-		pm.endTask();
-		pm.progressTo(100);
-	}
-
-        @Test
-        public void regressionTest698() {
-                ProgressMonitor pm = new DefaultProgressMonitor("open file", 0);
-                // this should not throw any error (used to produce a /0 exception)
-                pm.progressTo(100);
+    @Test
+    public void testUsage() throws Exception {
+        ProgressMonitor pm = new RootProgressMonitor("open file", 200);
+        assertEquals(0, pm.getCurrentProgress());
+        assertEquals(0, pm.getOverallProgress(),1e-12);
+        assertEquals(200, pm.getEnd());
+        for (int i = 0; i < 200; i++) {
+            pm.endTask();
+            assertEquals(i + 1, pm.getCurrentProgress());
+            assertEquals((i + 1) / 200., pm.getOverallProgress(), 1e-12);
         }
+        assertEquals(200, pm.getCurrentProgress());
+    }
+
+    @Test
+    public void testSubTask() throws Exception {
+        ProgressMonitor pm = new RootProgressMonitor("loops", 200);
+        for(int i=0; i < 200; i++) {
+            ProgressMonitor subProcess = pm.startTask(5);
+            assertEquals(0, subProcess.getCurrentProgress());
+            for(int j=0; j< 5; j++) {
+                subProcess.endTask();
+                assertEquals(j + 1, subProcess.getCurrentProgress());
+                assertEquals((i / 200.) + ((j + 1) / (5. * 200)), subProcess.getOverallProgress(), 1e-12);
+            }
+            assertEquals(5, subProcess.getCurrentProgress());
+        }
+        assertEquals(1, pm.getOverallProgress(), 1e-12);
+    }
+
+    @Test
+    public void testListeners() throws Exception {
+        ProgressMonitor pm = new RootProgressMonitor("open file", 100);
+        ProgressListener pl = new ProgressListener();
+        CancelListener cl = new CancelListener();
+        TaskListener tl = new TaskListener();
+        pm.addPropertyChangeListener(ProgressMonitor.PROP_PROGRESSION, pl);
+        pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cl);
+        pm.addPropertyChangeListener(ProgressMonitor.PROP_TASKNAME, tl);
+        for(int i=0; i < 100; i++) {
+            assertEquals(i / 100., pl.lastSeenProgress, 1e-12);
+            pm.endTask();
+            assertEquals((i+1) / 100., pl.lastSeenProgress, 1e-12);
+        }
+        assertEquals(false, cl.canceled);
+        pm.setCancelled(true);
+        assertEquals(true, cl.canceled);
+        pm.setTaskName("hello");
+        assertEquals("hello", tl.taskName);
+    }
+
+    @Test
+    public void regressionTest698() {
+        ProgressMonitor pm = new RootProgressMonitor("open file", 0);
+        // this should not throw any error (used to produce a /0 exception)
+        pm.progressTo(100);
+    }
+
+    private static class ProgressListener implements PropertyChangeListener {
+        double lastSeenProgress = 0;
+
+        @Override
+        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+            lastSeenProgress = (Double)propertyChangeEvent.getNewValue();
+        }
+    }
+
+    private static class CancelListener implements PropertyChangeListener {
+        boolean canceled = false;
+
+        @Override
+        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+            canceled = (Boolean)propertyChangeEvent.getNewValue();
+        }
+    }
+
+    private static class TaskListener implements PropertyChangeListener {
+        String taskName = "";
+
+        @Override
+        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+            taskName = (String)propertyChangeEvent.getNewValue();
+        }
+    }
 }

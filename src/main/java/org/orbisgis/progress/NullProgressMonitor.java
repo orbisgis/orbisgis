@@ -28,6 +28,8 @@
  */
 package org.orbisgis.progress;
 
+import java.beans.PropertyChangeListener;
+
 /**
  * Empty ProgressMonitor
  *
@@ -37,45 +39,62 @@ package org.orbisgis.progress;
  * @author Antoine Gourlay <antoine@gourlay.fr>
  */
 public class NullProgressMonitor implements ProgressMonitor {
+    @Override
+    public void addPropertyChangeListener(String property, PropertyChangeListener listener) {
+    }
 
-        @Override
-        public void endTask() {
-        }
+    @Override
+    public ProgressMonitor startTask(String taskName, long end) {
+        return this;
+    }
 
-        @Override
-        public void init(String taskName, long end) {
-        }
+    @Override
+    public ProgressMonitor startTask(long end) {
+        return this;
+    }
 
-        @Override
-        public void progressTo(long progress) {
-        }
+    @Override
+    public void endTask() {
+    }
 
-        @Override
-        public boolean isCancelled() {
-                return false;
-        }
+    @Override
+    public String getCurrentTaskName() {
+        return "";
+    }
 
-        @Override
-        public String getCurrentTaskName() {
-                return null;
-        }
+    @Override
+    public void setTaskName(String taskName) {
+    }
 
-        @Override
-        public int getOverallProgress() {
-                return 0;
-        }
+    @Override
+    public void progressTo(long progress) {
+    }
 
-        @Override
-        public void startTask(String taskName, long end) {
-        }
+    @Override
+    public double getOverallProgress() {
+        return 0;
+    }
 
-        @Override
-        public int getCurrentProgress() {
-                return 0;
-        }
+    @Override
+    public long getCurrentProgress() {
+        return 0;
+    }
 
-        @Override
-        public void setCancelled(boolean cancelled) {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
+    @Override
+    public long getEnd() {
+        return 0;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return false;
+    }
+
+    @Override
+    public void setCancelled(boolean cancelled) {
+    }
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+    }
 }
