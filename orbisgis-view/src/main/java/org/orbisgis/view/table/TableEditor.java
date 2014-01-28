@@ -70,7 +70,6 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
-import org.orbisgis.view.edition.EditorManagerImpl;
 import org.orbisgis.view.table.jobs.CreateSourceFromSelection;
 import org.orbisgis.viewapi.docking.DockingLocation;
 import org.orbisgis.viewapi.docking.DockingPanelParameters;
@@ -87,6 +86,7 @@ import org.orbisgis.view.table.jobs.ComputeFieldStatistics;
 import org.orbisgis.view.table.jobs.OptimalWidthJob;
 import org.orbisgis.view.table.jobs.SearchJob;
 import org.orbisgis.view.table.jobs.ZoomToSelectionJob;
+import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -362,7 +362,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * This menu is shown only if the current data is loaded and shown in the toc
          */
         private boolean isDataOnShownMapContext() {
-                EditorManagerImpl editorManager = Services.getService(EditorManagerImpl.class);
+                EditorManager editorManager = Services.getService(EditorManager.class);
                 for(EditableElement editable : editorManager.getEditableElements()) {
                         if(editable instanceof MapElement) {
                                 MapElement mapEditable = (MapElement)editable;
@@ -390,7 +390,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 }
                 //Retrieve the MapContext
                 MapContext mapContext=null;
-                EditorManagerImpl editorManager = Services.getService(EditorManagerImpl.class);
+                EditorManager editorManager = Services.getService(EditorManager.class);
                 for(EditableElement editable : editorManager.getEditableElements()) {
                         if(editable instanceof MapElement) {
                                 MapElement mapEditable = (MapElement)editable;

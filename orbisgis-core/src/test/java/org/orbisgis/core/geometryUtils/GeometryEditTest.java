@@ -40,6 +40,8 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.operation.distance.GeometryLocation;
+import org.orbisgis.core.jdbc.MetaData;
+
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -251,7 +253,7 @@ public class GeometryEditTest {
         pols = GeometryEdit.splitPolygonWithLine(polygon, line);
         for (int i = 0; i < pols.getNumGeometries(); i++) {
             Geometry pol = pols.getGeometryN(i);        
-            assertEquals(3,pol.getDimension());
+            assertEquals(3, pol.);
         }
 
     }

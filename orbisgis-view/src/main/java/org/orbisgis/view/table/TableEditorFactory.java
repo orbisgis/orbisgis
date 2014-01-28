@@ -32,11 +32,11 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.view.edition.EditorManagerImpl;
 import org.orbisgis.viewapi.docking.DockingPanelLayout;
 import org.orbisgis.viewapi.edition.EditableElement;
 import org.orbisgis.viewapi.edition.EditableElementException;
 import org.orbisgis.viewapi.edition.EditorDockable;
+import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.edition.MultipleEditorFactory;
 import org.orbisgis.viewapi.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
@@ -90,7 +90,7 @@ public class TableEditorFactory implements MultipleEditorFactory {
         }
         
         private boolean isEditableAlreadyOpened(EditableElement editable) {
-                EditorManagerImpl em = Services.getService(EditorManagerImpl.class);
+                EditorManager em = Services.getService(EditorManager.class);
                 for(EditorDockable editor : em.getEditors()) {
                         if(editor instanceof TableEditor && editable.equals(editor.getEditableElement())) {
                                 return true;

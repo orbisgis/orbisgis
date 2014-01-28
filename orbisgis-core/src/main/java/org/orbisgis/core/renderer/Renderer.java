@@ -34,6 +34,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -154,13 +156,19 @@ public abstract class Renderer {
                                 String.format("select * from %s where %s && $1",tableReference,geometryFields.get(0)));
                         GeometryFactory geometryFactory = new GeometryFactory();
                         st.setObject(1, geometryFactory.toGeometry(extent)); // Filter geometry by envelope
-                        ResultSet rs = st.executeQuery();
-                        // long tV1 = System.currentTimeMillis();
-                        long rowCount = 100; // TODO do a count(*) cpt
-                        // Extract into drawSeLayer method !
-                        List<Style> styles = layer.getStyles();
-                        for(Style style : styles){
-                                layerCount +=drawStyle(style, rs.unwrap(SpatialResultSet.class), g2, mt, layer, pm, rowCount, extent);
+                        PropertyChangeListener cancelListener = EventHandler.create(PropertyChangeListener.class, st,"cancel");
+                        pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelListener);
+                        try {
+                            ResultSet rs = st.executeQuery();
+                            // long tV1 = System.currentTimeMillis();
+                            long rowCount = 100; // TODO do a count(*) cpt
+                            // Extract into drawSeLayer method !
+                            List<Style> styles = layer.getStyles();
+                            for(Style style : styles){
+                                    layerCount +=drawStyle(style, rs.unwrap(SpatialResultSet.class), g2, mt, layer, pm, rowCount, extent);
+                            }
+                        } finally {
+                            pm.removePropertyChangeListener(cancelListener);
                         }
                 } catch (SQLException ex) {
                         printEx(ex, layer, g2);
