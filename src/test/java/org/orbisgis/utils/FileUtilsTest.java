@@ -57,5 +57,8 @@ public class FileUtilsTest {
                 
                 u = URI.create("jdbc://toto.com:4567/mydb?tableName=helloworld");
                 assertEquals("helloworld", FileUtils.getNameFromURI(u));
+
+                u = URI.create("jdbc:h2:/home/user/OrbisGIS/database?catalog=&schema=&table=LANDCOVER2000");
+                assertEquals("LANDCOVER2000", FileUtils.getNameFromURI(u));
         }
 }
