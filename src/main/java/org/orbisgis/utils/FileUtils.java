@@ -628,7 +628,7 @@ public final class FileUtils {
                 if ("file".equalsIgnoreCase(u.getScheme())) {
                         return FilenameUtils.removeExtension(new File(u.getPath()).getName());
                 } else {
-                        if(u.getScheme().equalsIgnoreCase("jdbc")) {
+                        if("jdbc".equalsIgnoreCase(u.getScheme())) {
                             try {
                                 u = URI.create(u.getSchemeSpecificPart());
                             } catch (IllegalArgumentException ex) {
