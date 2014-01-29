@@ -33,25 +33,20 @@ import org.orbisgis.viewapi.edition.EditorDockable;
 import org.orbisgis.viewapi.edition.SingleEditorFactory;
 import org.orbisgis.viewapi.toc.ext.TocActionFactory;
 import org.orbisgis.viewapi.toc.ext.TocExt;
-import org.osgi.framework.*;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * This factory creates only one instance of Toc.
  */
+@Component
 public class TocEditorFactory implements SingleEditorFactory {
         public static final String FACTORY_ID = "TocFactory";
         private BundleContext bundleContext;
         // Looking for toc popup plugins
         private MenuItemServiceTracker<TocExt,TocActionFactory> popupActionTracker;
         private Toc tocPanel = null;
-
-        /**
-         *
-         * @param bundleContext Bundle context in order to track toc plugins.
-         */
-        public TocEditorFactory(BundleContext bundleContext) {
-            this.bundleContext = bundleContext;
-        }
 
         @Override
         public void dispose() {
@@ -70,6 +65,11 @@ public class TocEditorFactory implements SingleEditorFactory {
                         }
                 }
                 return new EditorDockable[] {tocPanel};
+        }
+
+        @Activate
+        public void activate(BundleContext bundleContext) {
+            this.bundleContext = bundleContext;
         }
 
         @Override
