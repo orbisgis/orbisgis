@@ -33,6 +33,7 @@
                 <module>bundles/map-editor-api</module>
                 <module>orbisgis-view</module>
                 <module>bundles/map-editor</module>
+                <module>bundles/toc</module>
                 <module>orbisgis-dist</module>
         </modules>
         <profiles>

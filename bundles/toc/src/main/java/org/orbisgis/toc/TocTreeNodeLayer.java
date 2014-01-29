@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc;
+package org.orbisgis.toc;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -161,7 +161,7 @@ public class TocTreeNodeLayer implements MutableTreeNode {
                         String label = o.toString();
                         //User change the layer label
                         if(label.isEmpty()) {
-                                layer.setName(layer.getDataSource().getName());
+                                layer.setName(layer.getName());
                         } else {
                                 layer.setName(label);
                         }

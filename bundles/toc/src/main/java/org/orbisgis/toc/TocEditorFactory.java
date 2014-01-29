@@ -26,11 +26,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc;
+package org.orbisgis.toc;
 
 import org.orbisgis.view.components.actions.*;
-import org.orbisgis.view.edition.EditorDockable;
-import org.orbisgis.view.edition.SingleEditorFactory;
+import org.orbisgis.viewapi.edition.EditorDockable;
+import org.orbisgis.viewapi.edition.SingleEditorFactory;
+import org.orbisgis.viewapi.toc.ext.TocActionFactory;
+import org.orbisgis.viewapi.toc.ext.TocExt;
 import org.osgi.framework.*;
 
 /**

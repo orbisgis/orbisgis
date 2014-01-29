@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc;
+package org.orbisgis.toc;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.BorderLayout;
@@ -51,10 +51,6 @@ import javax.swing.tree.TreeSelectionModel;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.StyleType;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.Type;
-import org.gdms.driver.DriverException;
-import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.*;
@@ -65,6 +61,7 @@ import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.SIFWizard;
 import org.orbisgis.sif.UIFactory;
@@ -77,21 +74,20 @@ import org.orbisgis.view.background.Job;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.docking.DockingPanelParameters;
-import org.orbisgis.view.edition.EditableElement;
-import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.EditableTransferEvent;
 import org.orbisgis.view.map.MapControl;
 import org.orbisgis.view.map.MapEditor;
-import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.map.jobs.ZoomToSelection;
-import org.orbisgis.view.table.TableEditableElement;
 import org.orbisgis.view.toc.actions.*;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.SimpleStyleEditor;
 import org.orbisgis.view.toc.actions.cui.legends.wizard.LegendWizard;
+import org.orbisgis.viewapi.edition.EditableElement;
+import org.orbisgis.viewapi.edition.EditorDockable;
+import org.orbisgis.viewapi.toc.ext.TocExt;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -110,7 +106,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         private transient MapContext mapContext = null;
         private JTree tree;
         private transient DefaultTreeModel treeModel;
-        private transient TocRenderer treeRenderer;
+        private transient org.orbisgis.view.toc.TocRenderer treeRenderer;
         //When this boolean is false, the selection event is not fired
         private AtomicBoolean fireSelectionEvent = new AtomicBoolean(true);
         //When this boolean is false, the selection is not propagated to tables

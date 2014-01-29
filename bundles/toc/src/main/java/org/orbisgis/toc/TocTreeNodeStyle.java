@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */ 
-package org.orbisgis.view.toc;
+package org.orbisgis.toc;
 
 import java.util.Enumeration;
 import javax.swing.tree.MutableTreeNode;
