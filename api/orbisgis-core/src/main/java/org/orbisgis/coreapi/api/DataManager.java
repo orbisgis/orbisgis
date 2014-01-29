@@ -96,4 +96,11 @@ public interface DataManager extends RowSetFactory {
      * @param e Event to fire
      */
     void fireUndoableEditHappened(UndoableEditEvent e);
+
+    /**
+     * @param originalTableName Table name if not exists
+     * @return Table name concatenated with "_1" if originalTableName already exists
+     * @throws SQLException Exception while querying database
+     */
+    public String findUniqueTableName(String originalTableName) throws SQLException;
 }

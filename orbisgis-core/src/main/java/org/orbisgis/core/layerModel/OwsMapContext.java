@@ -30,6 +30,8 @@ package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -72,6 +74,7 @@ import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.URIUtility;
+import org.orbisgis.utils.FileUtils;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -138,7 +141,26 @@ public final class OwsMapContext extends BeanMapContext {
 
         @Override
         public ILayer createLayer(URI source) throws LayerException {
-            return createLayer(org.orbisgis.utils.FileUtils.getNameFromURI(source), source);
+            if(!source.isAbsolute()) {
+                // If URI is not absolute ex URI.create("../folder/myfile.shp"), then create a canonical URI
+                try {
+                    source = new File(location != null ? new File(location) : new File("./"),
+                            source.toString()).getCanonicalFile().toURI();
+                } catch (IOException ex) {
+                    throw new LayerException(ex);
+                }
+            }
+            String layerName;
+            try {
+                layerName = FileUtils.getNameFromURI(source);
+            } catch (UnsupportedOperationException ex) {
+                try {
+                    layerName = dataManager.findUniqueTableName(I18N.tr("Layer"));
+                } catch (SQLException ex2) {
+                    throw new LayerException(ex2);
+                }
+            }
+            return createLayer(layerName, source);
         }
 
     @Override

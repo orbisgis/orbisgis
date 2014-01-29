@@ -2,6 +2,7 @@ package org.orbisgis.core;
 
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.URIUtility;
 import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.coreapi.api.ReadRowSet;
 import org.orbisgis.coreapi.api.ReversibleRowSet;
@@ -13,6 +14,7 @@ import javax.sql.DataSource;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.sql.*;
 import java.util.ArrayList;
@@ -77,7 +79,8 @@ public class DataManagerImpl implements DataManager {
 
     }
 
-    private String findUniqueTableName(String originalTableName) throws SQLException{
+    @Override
+    public String findUniqueTableName(String originalTableName) throws SQLException {
         String tableName = originalTableName;
         int offset = 0;
         while(isTableExists(tableName)) {
@@ -124,6 +127,21 @@ public class DataManagerImpl implements DataManager {
                 st.execute();
             }
             return tableName;
+        } else if("jdbc".equalsIgnoreCase(uri.getScheme())) {
+            // A link to a remote or local database
+            try(Connection connection = dataSource.getConnection()) {
+                String withoutQuery = uri.toString().replace("?"+URI.create(uri.getSchemeSpecificPart()).getQuery(),"");
+                if(connection.getMetaData().getURL().equalsIgnoreCase(withoutQuery)) {
+                    // Extract catalog, schema and table name
+                    Map<String,String> query = URIUtility.getQueryKeyValuePairs(URI.create(uri.getSchemeSpecificPart()));
+                    return new TableLocation(query.get("catalog"),query.get("schema"),query.get("table")).toString();
+                } else {
+                    // External JDBC connection not supported yet
+                    throw new SQLException("URI not supported by DataManager:\n"+uri);
+                }
+            } catch (Exception ex) {
+                throw new SQLException("URI not supported by DataManager:\n"+uri);
+            }
         } else {
             throw new SQLException("URI not supported by DataManager:\n"+uri);
         }

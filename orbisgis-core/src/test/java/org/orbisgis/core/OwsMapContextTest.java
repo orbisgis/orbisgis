@@ -35,11 +35,18 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.URI;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import org.h2gis.drivers.shp.SHPDriverFunction;
+import org.h2gis.drivers.shp.internal.SHPDriver;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
+import org.h2gis.utilities.TableLocation;
 import org.junit.Test;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
@@ -48,6 +55,8 @@ import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.core.map.export.MapImageWriter;
 import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.progress.NullProgressMonitor;
+
+import javax.swing.plaf.nimbus.State;
 
 /**
  *
@@ -116,7 +125,7 @@ public class OwsMapContextTest extends AbstractTest  {
     }
 
     @Test
-    public void makeLayerUriFromTableName() throws Exception {
+    public void makeLayerUriFromTableFile() throws Exception {
         File dataFile = new File("../src/test/resources/data/landcover2000.shp").getCanonicalFile();
         File mapContextLocation = new File("landco_db.ows");
         String tableReference = getDataManager().registerDataSource(dataFile.toURI());
@@ -138,6 +147,37 @@ public class OwsMapContextTest extends AbstractTest  {
         newMapContext.open(new NullProgressMonitor());
         assertEquals(1, newMapContext.getLayers().length);
         assertEquals(dataFile.toURI(), newMapContext.getLayers()[0].getDataUri());
+    }
+
+    @Test
+    public void makeLayerUriFromNativeTable() throws Exception {
+        File dataFile = new File("../src/test/resources/data/landcover2000.shp").getCanonicalFile();
+        File mapContextLocation = new File("landco_db2.ows");
+        SHPDriverFunction shpDriver = new SHPDriverFunction();
+        try(Connection connection = getConnection();
+            Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS LANDCOVER2000");
+            shpDriver.importFile(connection, "LANDCOVER2000", dataFile, new EmptyProgressVisitor());
+        }
+        MapContext mc = new OwsMapContext(getDataManager());
+        mc.setLocation(mapContextLocation.toURI());
+        mc.open(new NullProgressMonitor());
+        ILayer layer = mc.createLayer("LANDCOVER2000");
+        mc.getLayerModel().addLayer(layer);
+        mc.close(new NullProgressMonitor());
+        try(FileOutputStream out = new FileOutputStream(mapContextLocation)) {
+            mc.write(out);
+        }
+        // Open the map context
+        MapContext newMapContext = new OwsMapContext(getDataManager());
+        newMapContext.setLocation(mapContextLocation.toURI());
+        try(FileInputStream in = new FileInputStream(mapContextLocation)) {
+            newMapContext.read(in);
+        }
+        newMapContext.open(new NullProgressMonitor());
+        assertEquals(1, newMapContext.getLayers().length);
+        assertTrue(newMapContext.getLayers()[0].getDataUri().toString().contains("table=LANDCOVER2000"));
+        assertEquals(TableLocation.parse("LANDCOVER2000").getTable(), TableLocation.parse(newMapContext.getLayers()[0].getTableReference()).getTable());
     }
 
     @Test
