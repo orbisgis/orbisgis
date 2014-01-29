@@ -171,7 +171,9 @@ public abstract class Renderer {
                             pm.removePropertyChangeListener(cancelListener);
                         }
                 } catch (SQLException ex) {
-                        printEx(ex, layer, g2);
+                        if(!pm.isCancelled()) {
+                            printEx(ex, layer, g2);
+                        }
                 }
                 return layerCount;
         }
