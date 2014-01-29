@@ -32,11 +32,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.URI;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Locale;
 
@@ -44,19 +42,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.h2gis.drivers.shp.SHPDriverFunction;
-import org.h2gis.drivers.shp.internal.SHPDriver;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.utilities.TableLocation;
 import org.junit.Test;
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.core.map.export.MapImageWriter;
 import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.progress.NullProgressMonitor;
-
-import javax.swing.plaf.nimbus.State;
 
 /**
  *
