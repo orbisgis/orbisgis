@@ -691,12 +691,11 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         public void addNotify() {
                 super.addNotify();
                 if(!initialised.getAndSet(true)) {
-                        launchJob(new OpenEditableElement());
+                        launchJob(new OpenEditableElement(this, tableEditableElement));
                 }
         }
         
         private void quickAutoResize() {
-                          
                 autoResizeColWidth(Math.min(5, tableModel.getRowCount()));
         }
         
@@ -955,7 +954,15 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 return this;
         }
         
-        private class OpenEditableElement implements BackgroundJob {
+        private static class OpenEditableElement implements BackgroundJob {
+
+                private TableEditor tableEditor;
+                private TableEditableElement tableEditableElement;
+
+                private OpenEditableElement(TableEditor tableEditor, TableEditableElement el) {
+                    this.tableEditor = tableEditor;
+                    this.tableEditableElement = el;
+                }
 
                 @Override
                 public void run(ProgressMonitor pm) {
@@ -964,13 +971,29 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         } catch (UnsupportedOperationException | EditableElementException ex) {
                                 LOGGER.error(I18N.tr("Error while loading the table editor"), ex);
                         }
-                    readDataSource();
+                    if(SwingUtilities.isEventDispatchThread()) {
+                        tableEditor.readDataSource();
+                    } else {
+                        SwingUtilities.invokeLater(new ReadDataSource(tableEditor));
+                    }
                 }
 
                 @Override
                 public String getTaskName() {
                         return I18N.tr("Open the table {0}", tableEditableElement.getTableReference());
                 }
+        }
+        private static class ReadDataSource implements Runnable {
+            private TableEditor tableEditor;
+
+            private ReadDataSource(TableEditor tableEditor) {
+                this.tableEditor = tableEditor;
+            }
+
+            @Override
+            public void run() {
+                tableEditor.readDataSource();
+            }
         }
 
         @Override

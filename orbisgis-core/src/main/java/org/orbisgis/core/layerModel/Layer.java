@@ -49,6 +49,7 @@ public class Layer extends BeanLayer {
 	private String tableReference;
     private URI dataURI;
     private DataManager dataManager;
+    private Envelope envelope;
 
 	public Layer(String name, String tableReference,DataManager dataManager) {
 		super(name);
@@ -96,17 +97,15 @@ public class Layer extends BeanLayer {
 
     @Override
 	public Envelope getEnvelope() {
-		Envelope result = new Envelope();
-        try(Connection connection = dataManager.getDataSource().getConnection()) {
-            try {
-                return SFSUtilities.getTableEnvelope(connection, SFSUtilities.splitCatalogSchemaTableName(tableReference),"");
-            } finally {
-                connection.close();
+        // TODO reset envelope when the Table is updated
+        if(envelope == null) {
+            try(Connection connection = dataManager.getDataSource().getConnection()) {
+                envelope = SFSUtilities.getTableEnvelope(connection, SFSUtilities.splitCatalogSchemaTableName(tableReference),"");
+            } catch (SQLException ex) {
+                LOGGER.error(I18N.tr("Cannot compute layer envelope"),ex);
             }
-        } catch (SQLException ex) {
-            LOGGER.error(I18N.tr("Cannot compute layer envelope"),ex);
         }
-		return result;
+		return envelope;
 	}
 
     @Override
