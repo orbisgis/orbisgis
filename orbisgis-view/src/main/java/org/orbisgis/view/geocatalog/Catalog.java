@@ -417,7 +417,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                         TableLocation tableLocation = TableLocation.parse(resource);
                         try(Statement st = connection.createStatement()) {
                             st.execute(String.format("drop table %s", tableLocation));
-
                         } catch (SQLException ex) {
                             LOGGER.error(I18N.tr("Cannot remove the source {0}", resource), ex);
                             connection.rollback();
@@ -429,6 +428,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                     LOGGER.error(I18N.trc("Tables are database tables, drop means delete tables", "Cannot drop the tables"), ex);
                 }
             }
+            refreshSourceList();
         }
 
         /**

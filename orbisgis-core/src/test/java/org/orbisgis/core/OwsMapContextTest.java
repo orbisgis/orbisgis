@@ -31,12 +31,18 @@ package org.orbisgis.core;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.Locale;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.core.map.export.MapImageWriter;
@@ -107,6 +113,31 @@ public class OwsMapContextTest extends AbstractTest  {
         FileOutputStream out = new FileOutputStream(new File(imagePath));
         mapImageWriter.setFormat(format);
         mapImageWriter.write(out, new NullProgressMonitor());
+    }
+
+    @Test
+    public void makeLayerUriFromTableName() throws Exception {
+        File dataFile = new File("../src/test/resources/data/landcover2000.shp").getCanonicalFile();
+        File mapContextLocation = new File("landco_db.ows");
+        String tableReference = getDataManager().registerDataSource(dataFile.toURI());
+        MapContext mc = new OwsMapContext(getDataManager());
+        mc.setLocation(mapContextLocation.toURI());
+        mc.open(new NullProgressMonitor());
+        ILayer layer = mc.createLayer(tableReference);
+        mc.getLayerModel().addLayer(layer);
+        mc.close(new NullProgressMonitor());
+        try(FileOutputStream out = new FileOutputStream(mapContextLocation)) {
+            mc.write(out);
+        }
+        // Open the map context
+        MapContext newMapContext = new OwsMapContext(getDataManager());
+        newMapContext.setLocation(mapContextLocation.toURI());
+        try(FileInputStream in = new FileInputStream(mapContextLocation)) {
+            newMapContext.read(in);
+        }
+        newMapContext.open(new NullProgressMonitor());
+        assertEquals(1, newMapContext.getLayers().length);
+        assertEquals(dataFile.toURI(), newMapContext.getLayers()[0].getDataUri());
     }
 
     @Test

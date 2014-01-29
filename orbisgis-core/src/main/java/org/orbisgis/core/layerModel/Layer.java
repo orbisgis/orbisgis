@@ -30,13 +30,21 @@ package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.URIUtility;
 import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
@@ -79,7 +87,34 @@ public class Layer extends BeanLayer {
         if(dataURI!=null) {
             return dataURI;
         } else {
-            return URI.create(JDBC_REFERENCE_SCHEME+":/"+tableReference);
+            TableLocation table = TableLocation.parse(tableReference);
+            try(Connection connection = dataManager.getDataSource().getConnection()) {
+                // Look at table remarks if there is a file reference
+                DatabaseMetaData meta = connection.getMetaData();
+                try(ResultSet tablesRs = meta.getTables(table.getCatalog(),table.getSchema(),table.getTable(),null)) {
+                    if(tablesRs.next()) {
+                        String remarks = tablesRs.getString("REMARKS");
+                        if(remarks!= null && remarks.toLowerCase().startsWith("file:")) {
+                            try {
+                                // The table is extracted from a file
+                                URI fileUri =  URI.create(remarks);
+                                if(new File(fileUri).exists()) {
+                                    return fileUri;
+                                }
+                            } catch (Exception ex) {
+                                //Ignore, not an URI
+                            }
+                        }
+                    }
+                }
+                // Extract table location on database
+                URI databaseUri = URI.create(meta.getURL());
+                String query = String.format("catalog=%s&schema=%s&table=%s",table.getCatalog(),table.getSchema(), table.getTable());
+                return URI.create(databaseUri.toString()+"?"+query);
+            } catch (SQLException|IllegalArgumentException ex) {
+                LOGGER.warn(I18N.tr("Unable to create URI from Layer.Please fix the layer named {0}", getName()));
+                return null;
+            }
         }
     }
 
@@ -171,7 +206,7 @@ public class Layer extends BeanLayer {
 	@Override
 	public List<Rule> getRenderingRule() throws LayerException {
                 List<Style> styles = getStyles();
-                ArrayList<Rule> ret = new ArrayList<Rule>();
+                ArrayList<Rule> ret = new ArrayList<>();
                 for(Style s : styles){
                         if(s!=null){
                                 ret.addAll(s.getRules());
