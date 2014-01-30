@@ -32,10 +32,10 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.view.edition.AbstractEditableElement;
-import org.orbisgis.view.edition.EditableElementException;
-import org.orbisgis.view.map.MapElement;
+import org.orbisgis.viewapi.edition.AbstractEditableElement;
+import org.orbisgis.viewapi.edition.EditableElementException;
 
 /**
  * This editable correspond to a Layer on the {@link Toc}.

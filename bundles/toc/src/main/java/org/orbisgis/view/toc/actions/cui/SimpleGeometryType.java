@@ -28,14 +28,15 @@
  */
 package org.orbisgis.view.toc.actions.cui;
 
-import org.gdms.data.types.Type;
+import org.h2gis.utilities.GeometryTypeCodes;
 
 /**
  * A simple representation of geometry types. We don't have as much types here
- * as in {@link Type}, and that's on purpose. Indeed, values defined here are
- * intended to be used in GUI, considergin that most of the times, we will
- * processe multipoints and points the same way, for instance.
+ * as in {@link org.h2gis.utilities.GeometryTypeCodes}, and that's on purpose. Indeed, values defined here are
+ * intended to be used in GUI, consider in that most of the times, we will
+ * process multi-points and points the same way, for instance.
  * @author Alexis Guéganno
+ * @author Nicolas Fortin
  */
 public class SimpleGeometryType {
 
@@ -46,33 +47,32 @@ public class SimpleGeometryType {
         public static final int POLYGON = 4;
         public static final int ALL = POINT | LINE | POLYGON;
 
-        /**
-         * Gets the simple representation of {@code type}.
-         *
-         * @param type
-         * @return One of the constants defined in this class
-         * @throws IllegalArgumentException If {@code type} is not a geometry
-         * type.
-         *
-         */
-        public static int getSimpleType(Type type){
-                int tc = type.getTypeCode();
-                switch(tc){
-                        case Type.POINT:
-                        case Type.MULTIPOINT:
-                                return POINT;
-                        case Type.LINESTRING:
-                        case Type.MULTILINESTRING:
-                                return LINE;
-                        case Type.POLYGON:
-                        case Type.MULTIPOLYGON:
-                                return POLYGON;
-                        case Type.GEOMETRYCOLLECTION:
-                        case Type.GEOMETRY:
-                                return ALL;
-                        default:
-                                throw new IllegalArgumentException("Can't recognize " +
-                                        tc + " as a geometry type");
-                }
+    /**
+     * Gets the simple representation of {@code type}.
+     *
+     * @param type One of {@link org.h2gis.utilities.GeometryTypeCodes}
+     * @return One of the constants defined in this class
+     * @throws IllegalArgumentException If {@code type} is not a geometry
+     * type.
+     *
+     */
+    public static int getSimpleType(int type){
+        switch(type){
+            case GeometryTypeCodes.POINT:
+            case GeometryTypeCodes.MULTIPOINT:
+                return POINT;
+            case GeometryTypeCodes.LINESTRING:
+            case GeometryTypeCodes.MULTILINESTRING:
+                return LINE;
+            case GeometryTypeCodes.POLYGON:
+            case GeometryTypeCodes.MULTIPOLYGON:
+                return POLYGON;
+            case GeometryTypeCodes.GEOMCOLLECTION:
+            case GeometryTypeCodes.GEOMETRY:
+                return ALL;
+            default:
+                throw new IllegalArgumentException("Can't recognize " +
+                        type + " as a geometry type");
         }
+    }
 }

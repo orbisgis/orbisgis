@@ -30,6 +30,7 @@ package org.orbisgis.view.toc.actions.cui.legends.wizard;
 
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.sif.UIFactory;
@@ -46,6 +47,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.Component;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * This UIPanel intends to host a ILegendPanel instance that will
@@ -70,15 +73,13 @@ public class ThematicMapWizard implements UIPanel, LegendContext {
      */
     public ThematicMapWizard(ILayer l, MapTransform m){
         layer = l;
-        try {
-            SFSUtilities.getGeometryType()
-            Type type = layer.getDataSource().getMetadata().getFieldType(
-                    layer.getDataSource().getSpatialFieldIndex());
-            this.geometryType = (type == null)
-                    ? SimpleGeometryType.ALL
-                    : SimpleGeometryType.getSimpleType(type);
+        try(Connection connection = l.getDataManager().getDataSource().getConnection()) {
+            TableLocation tableLocation = TableLocation.parse(l.getTableReference());
+            int type = SFSUtilities.getGeometryType(connection, tableLocation,
+                    SFSUtilities.getGeometryFields(connection, tableLocation).get(0));
+            this.geometryType = SimpleGeometryType.getSimpleType(type);
             mt = m;
-        } catch (DriverException e) {
+        } catch (SQLException e) {
             LOGGER.error("Error while reading the data source");
         }
 

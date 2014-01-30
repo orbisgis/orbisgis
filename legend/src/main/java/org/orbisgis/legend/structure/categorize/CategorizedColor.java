@@ -1,7 +1,5 @@
 package org.orbisgis.legend.structure.categorize;
 
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
@@ -164,8 +162,8 @@ public class CategorizedColor extends CategorizedLegend<Color>{
             Color col = get(d);
             if(col == null){
                 Categorize2Color c2s = (Categorize2Color) parameter;
-                Map<String,Value> inp = new HashMap<String, Value>();
-                inp.put(getField(), ValueFactory.createValue(d));
+                Map<String,Object> inp = new HashMap<>();
+                inp.put(getField(), d);
                 try {
                     return c2s.getColor(inp);
                 } catch (ParameterException e) {

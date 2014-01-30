@@ -35,9 +35,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.view.edition.TransferableEditableElement;
-import org.orbisgis.view.map.MapElement;
+import org.orbisgis.viewapi.edition.EditableElement;
 
 /**
  * Transfer of a collection of ILayer.
