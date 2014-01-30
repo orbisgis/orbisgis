@@ -33,14 +33,13 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JComponent;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.TreePath;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.edition.EditorTransferHandler;
 import org.orbisgis.view.edition.TransferableEditableElement;
-import org.orbisgis.view.map.MapTransferHandler;
+import org.orbisgis.viewapi.edition.EditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -53,7 +52,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * 
  * Export EditableLayer
  */
-public class TocTransferHandler extends MapTransferHandler {
+public class TocTransferHandler extends EditorTransferHandler {
     private static final Logger LOGGER = Logger.getLogger(TocTransferHandler.class);
     private static final I18n I18N = I18nFactory.getI18n(TocTransferHandler.class);
     private Toc toc;
@@ -64,8 +63,7 @@ public class TocTransferHandler extends MapTransferHandler {
 
     @Override
     protected boolean canImportEditableElement(EditableElement editableElement) {
-        return editableElement.getTypeId().equals(EditableLayer.EDITABLE_LAYER_TYPE) ||
-                super.canImportEditableElement(editableElement);
+        return editableElement.getTypeId().equals(EditableLayer.EDITABLE_LAYER_TYPE);
     }
 
     @Override

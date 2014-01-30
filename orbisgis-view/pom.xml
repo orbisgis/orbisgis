@@ -119,13 +119,6 @@
                     <artifactId>map-editor-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
-                <!--
-                <dependency>
-                        <groupId>${project.groupId}</groupId>
-                        <artifactId>legend-monomap</artifactId>
-                        <version>0.1-SNAPSHOT</version>
-                </dependency>
-                -->
                 <dependency>
                         <groupId>com.fifesoft</groupId>
                         <artifactId>languagesupport</artifactId>

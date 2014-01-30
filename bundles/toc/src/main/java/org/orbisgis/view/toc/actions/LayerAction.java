@@ -29,16 +29,19 @@
 package org.orbisgis.view.toc.actions;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.toc.TocTreeNodeLayer;
 import org.orbisgis.view.toc.TocTreeSelectionIterable;
-import org.orbisgis.view.toc.ext.TocExt;
+import org.orbisgis.viewapi.components.actions.DefaultAction;
+import org.orbisgis.viewapi.toc.ext.TocExt;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Layer related Actions.
@@ -141,13 +144,12 @@ public class LayerAction extends DefaultAction {
             }
             hasRealLayer = !layerNode.getLayer().acceptsChilds();
             if(onVectorSourceOnly && !hasNonVectorSource) {
-                DataSource dataSource = layer.getDataSource();
-                if(dataSource!=null) {
-                    try {
-                        hasNonVectorSource = !dataSource.isVectorial();
-                    } catch (DriverException ex) {
-                        LOGGER.debug(ex.getLocalizedMessage(),ex);
-                    }
+                try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
+                    TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
+                    List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableLocation);
+                    hasNonVectorSource = geomFields.isEmpty();
+                } catch (SQLException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
             }
         }

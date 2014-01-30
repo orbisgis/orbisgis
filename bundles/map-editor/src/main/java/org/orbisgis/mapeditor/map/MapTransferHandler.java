@@ -28,18 +28,11 @@
  */
 package org.orbisgis.mapeditor.map;
 
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
-import javax.swing.TransferHandler;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.events.EventException;
-import org.orbisgis.core.events.Listener;
-import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.mapeditorapi.MapElement;
+import org.orbisgis.view.edition.EditorTransferHandler;
 import org.orbisgis.viewapi.edition.EditableElement;
 import org.orbisgis.viewapi.edition.EditableSource;
-import org.orbisgis.view.edition.TransferableEditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -47,83 +40,23 @@ import org.xnap.commons.i18n.I18nFactory;
  * Swing Handler for dragging EditableElement.
  * Supports MapElement and EditableSource.
  */
-public class MapTransferHandler  extends TransferHandler{
+public class MapTransferHandler  extends EditorTransferHandler {
     private static final long serialVersionUID = 1L;
-    public interface EditableTransferListener extends Listener<EditableTransferEvent> {
-            
-    }
-    static final private Logger GUILOGGER = Logger.getLogger("gui."+MapTransferHandler.class);
+
+    static final private Logger GUILOGGER = Logger.getLogger("gui." + MapTransferHandler.class);
     static final private I18n I18N = I18nFactory.getI18n(MapTransferHandler.class);
-    private ListenerContainer<EditableTransferEvent> transferEditableEvent = new ListenerContainer<>();
 
     /**
      * If this method return true, this transfer handler fire the transfer editable event
-     * @param editableElement
+     * @param editableElement Droped editable element.
      * @return True if this handler accept the editable element
      */
     protected boolean canImportEditableElement(EditableElement editableElement) {
-        return editableElement.getTypeId().equals(EditableSource.EDITABLE_RESOURCE_TYPE) ||
+        boolean canImport = editableElement.getTypeId().equals(EditableSource.EDITABLE_RESOURCE_TYPE) ||
                 editableElement.getTypeId().equals(MapElement.EDITABLE_TYPE);
-    }
-    /**
-     * MapEditor support MapElement and EditableSource only
-     * @param editableArray Array Of Editable
-     * @return 
-     */
-    private boolean canImportEditableElements(EditableElement[] editableArray) {
-        for(EditableElement ee : editableArray) {
-            if(!canImportEditableElement(ee)) {
-                return false;
-            }
+        if(!canImport) {
+            GUILOGGER.error(I18N.tr("The map editor accept only map and geometry data source."));
         }
-        return true;
+        return canImport;
     }
-    @Override
-    public boolean canImport(TransferSupport ts) {
-        return ts.isDataFlavorSupported(TransferableEditableElement.editableElementFlavor);
-    }
-
-    /**
-     * To add and remove editable transfer listener
-     * @return 
-     */
-    public ListenerContainer<EditableTransferEvent> getTransferEditableEvent() {
-        return transferEditableEvent;
-    }
-
-    
-    @Override
-    public boolean importData(TransferSupport ts) {
-        //cancel the import if it is not a drop operation
-        if(!ts.isDrop()) {
-            return false;
-        }
-        
-        if(ts.isDataFlavorSupported(TransferableEditableElement.editableElementFlavor)) {
-            //This is an Editable Element
-            try {
-                //A transferable element
-                Transferable trans = ts.getTransferable();
-                EditableElement[] editableList = (EditableElement[])trans.getTransferData(TransferableEditableElement.editableElementFlavor);
-                if(canImportEditableElements(editableList)) {
-                    try {
-                        //All elements are compatible
-                        transferEditableEvent.callListeners(new EditableTransferEvent(editableList, ts.getDropLocation() ,ts.getComponent()));
-                    } catch (EventException ex) {
-                        GUILOGGER.error(I18N.tr("Error while drop Editable"),ex);
-                        return false;
-                    }
-                    return true;
-                }else{
-                    GUILOGGER.error(I18N.tr("The map editor accept only map and geometry data source."));
-                }
-            } catch (UnsupportedFlavorException ex) {
-                return false;
-            } catch (IOException ex) {
-                return false;
-            }            
-        }        
-        return false;
-    }
-    
 }

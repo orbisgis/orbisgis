@@ -55,7 +55,6 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.*;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.classification.ClassificationMethodException;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.SeExceptions;
@@ -72,21 +71,18 @@ import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.components.actions.ActionCommands;
-import org.orbisgis.view.components.actions.DefaultAction;
-import org.orbisgis.view.docking.DockingPanelParameters;
-import org.orbisgis.view.edition.EditorManager;
-import org.orbisgis.view.geocatalog.EditableSource;
+import org.orbisgis.view.edition.EditableTransferListener;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.map.EditableTransferEvent;
-import org.orbisgis.view.map.MapControl;
-import org.orbisgis.view.map.MapEditor;
-import org.orbisgis.view.map.jobs.ZoomToSelection;
 import org.orbisgis.view.toc.actions.*;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.SimpleStyleEditor;
 import org.orbisgis.view.toc.actions.cui.legends.wizard.LegendWizard;
+import org.orbisgis.viewapi.components.actions.DefaultAction;
+import org.orbisgis.viewapi.docking.DockingPanelParameters;
 import org.orbisgis.viewapi.edition.EditableElement;
 import org.orbisgis.viewapi.edition.EditorDockable;
+import org.orbisgis.viewapi.table.TableEditableElement;
+import org.orbisgis.viewapi.toc.ext.TocActionFactory;
 import org.orbisgis.viewapi.toc.ext.TocExt;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -120,7 +116,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         //Loaded editable map
         private transient MapElement mapElement = null;
         // Linked table editable element, for geometry selection
-        private Map<String, TableEditableElement> linkedEditableElements = new HashMap<String, TableEditableElement>();
+        private Map<String, TableEditableElement> linkedEditableElements = new HashMap<>();
         private PropertyChangeListener tableSelectionChangeListener = EventHandler.create(PropertyChangeListener.class,this,"onTableSelectionChange","source");
         private PropertyChangeListener tableEditableClose = EventHandler.create(PropertyChangeListener.class,this,"onTableEditableClose","source");
         private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified","");
@@ -277,6 +273,8 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
             }
         }
         public void onMenuCommitDataSource() {
+            // TODO clear UNDO/REDO history
+            /*
             if(mapContext!=null) {
                 List<ILayer> selectedLayers = getSelectedLayers();
                 if(!selectedLayers.isEmpty()) {
@@ -294,12 +292,15 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     }
                 }
             }
+            */
         }
 
         /**
          * The user cancels modifications on layer node
          */
         public void onMenuSyncDataSource() {
+            // TODO UNDO All commands
+            /*
             int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
                     I18N.tr("Are you sure to cancel all your modifications ?"),
                     I18N.tr("Return to the original state"),
@@ -319,6 +320,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     }
                 }
             }
+            */
         }
         /**
          * The user starts or stops editing a layer's geometries
@@ -329,28 +331,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 if(!selectedLayers.isEmpty()) {
                     ILayer selectedLayer = selectedLayers.get(0);
                     if(mapContext.getActiveLayer()!=null && mapContext.getActiveLayer().equals(selectedLayer)) {
-                        DataSource source = selectedLayer.getDataSource();
-                        if(source!=null && source.isModified()) {
-                            int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
-                                    I18N.tr("The edited layer has unsaved changes. Do you want to keep theses modifications ?"),
-                                    I18N.tr("Save modifications"),
-                                    JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
-                            if(response == JOptionPane.YES_OPTION) {
-                                try {
-                                    source.commit();
-                                } catch (Exception ex) {
-                                    LOGGER.error(I18N.tr("Unable to save the modifications"),ex);
-                                }
-                            } else if(response == JOptionPane.NO_OPTION) {
-                                try {
-                                    source.syncWithSource();
-                                } catch (DriverException ex) {
-                                    LOGGER.error(ex.getLocalizedMessage(),ex);
-                                }
-                            } else if(response==JOptionPane.CANCEL_OPTION) {
-                                return;
-                            }
-                        }
                         mapContext.setActiveLayer(null);
                     }
                 }
@@ -364,58 +344,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         saveAction.setEnabled(mapElement.isModified());
                         treeModel.reload();
                 }
-        }
-        /**
-         * A linked table selection has been updated
-         *
-         * @param tableElement the selection container
-         */
-        public void onTableSelectionChange(TableEditableElement tableElement) {
-                if (!updateLayerSelection(tableElement.getSourceName(), tableElement.getSelection(), mapContext.getLayerModel())) {
-                        //This data source is no (more) in the MapContext
-                        unlinkTableSelectionListening(tableElement);
-                }
-        }
-        /**
-         * The open/close state of the table editable element change
-         * @param tableElement 
-         */
-        public void onTableEditableClose(TableEditableElement tableElement) {
-                if(!tableElement.isOpen()) {
-                        unlinkTableSelectionListening(tableElement);
-                }
-        }
-        /**
-         * Broke the selection link between the layers and the table selection container
-         * @param tableElement 
-         */
-        private void unlinkTableSelectionListening(TableEditableElement tableElement) {
-                tableElement.removePropertyChangeListener(tableSelectionChangeListener);
-                tableElement.removePropertyChangeListener(tableEditableClose);
-                linkedEditableElements.remove(tableElement.getSourceName());
-        }
-
-        /**
-         * Update all layers selection where the provided source name
-         * corresponding to the layer DataSource
-         * @param sourceName
-         * @param newSelection
-         * @param layer
-         * @return 
-         */
-        private boolean updateLayerSelection(String sourceName, Set<Integer> newSelection, ILayer layer) {
-                boolean updated = false;
-                if(layer.acceptsChilds()) {
-                        for(ILayer subLayer : layer.getChildren()) {
-                                updated = updated || updateLayerSelection(sourceName,newSelection,subLayer);
-                        }
-                } else {
-                        if(layer.getDataSource()!=null && layer.getDataSource().getName().equals(sourceName)) {
-                                layer.setSelection(newSelection);
-                                updated = true;
-                        }
-                }
-                return updated;
         }
         
         /**
@@ -478,7 +406,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 TocTransferHandler handler = new TocTransferHandler(this);
                 //Add a drop listener
                 handler.getTransferEditableEvent().addListener(this,
-                        EventHandler.create(TocTransferHandler.EditableTransferListener.class, this, "onDropEditableElement", ""));
+                        EventHandler.create(EditableTransferListener.class, this, "onDropEditableElement", ""));
                 tree.setDragEnabled(true);
                 tree.setTransferHandler(handler);
                 tree.setRootVisible(false);

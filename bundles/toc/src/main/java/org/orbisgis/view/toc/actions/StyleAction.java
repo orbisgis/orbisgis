@@ -29,17 +29,20 @@
 package org.orbisgis.view.toc.actions;
 
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.toc.TocTreeNodeStyle;
 import org.orbisgis.view.toc.TocTreeSelectionIterable;
-import org.orbisgis.view.toc.ext.TocExt;
+import org.orbisgis.viewapi.components.actions.DefaultAction;
+import org.orbisgis.viewapi.toc.ext.TocExt;
 
 /**
  * Action shown on style items
@@ -86,20 +89,19 @@ public class StyleAction extends DefaultAction {
     @Override
     public boolean isEnabled() {
         TocTreeSelectionIterable<TocTreeNodeStyle> styleIterator =
-                new TocTreeSelectionIterable<TocTreeNodeStyle>(toc.getTree().getSelectionPaths(),TocTreeNodeStyle.class);
+                new TocTreeSelectionIterable<>(toc.getTree().getSelectionPaths(),TocTreeNodeStyle.class);
         int styleSelectionCount = 0;
         boolean hasNonVectorSource = false;
         for(TocTreeNodeStyle styleNode : styleIterator) {
             styleSelectionCount++;
             ILayer layer = styleNode.getStyle().getLayer();
             if(onVectorSourceOnly && !hasNonVectorSource) {
-                DataSource source = layer.getDataSource();
-                try {
-                    if(source!=null) {
-                        hasNonVectorSource = !source.isVectorial();
-                    }
-                } catch (DriverException ex) {
-                    LOGGER.debug(ex.getLocalizedMessage(),ex);
+                try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
+                    TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
+                    List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableLocation);
+                    hasNonVectorSource = geomFields.isEmpty();
+                } catch (SQLException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
             }
         }
