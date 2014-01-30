@@ -42,7 +42,7 @@ final class Main
     private static boolean DEBUG_MODE=false;
 
     //Minimum supported java version
-    public static final char MIN_JAVA_VERSION = '7';
+    public static final char MIN_JAVA_VERSION = '6';
     
     /**
      * Utility class
@@ -73,7 +73,7 @@ final class Main
         parseCommandLine(args);
             //Check if the java version is greater than 1.6+
             if (!isVersion(MIN_JAVA_VERSION)) {
-                    JOptionPane.showMessageDialog(null, I18N.tr("OrbisGIS needs at least a java 1.7+"));
+                    JOptionPane.showMessageDialog(null, I18N.tr("OrbisGIS needs at least a java 1.6+"));
             } else {
                     // Listen to future workspace change
                     CoreLauncher coreLauncher = new CoreLauncher();
