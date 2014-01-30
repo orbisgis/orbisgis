@@ -3,7 +3,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
         <modelVersion>4.0.0</modelVersion>
         <packaging>bundle</packaging>
-        <groupId>org.orbisgis</groupId>
         <artifactId>orbisgis-omanager</artifactId>
         <name>OSGi Plugin Manager GUI</name>
         <description>Graphical user interface to manage OSGi bundles.</description>
@@ -24,14 +23,6 @@
                                                 <Bundle-Category>gui</Bundle-Category>
                                                 <Import-Service>org.osgi.service.obr.RepositoryAdmin</Import-Service>
                                         </instructions>
-                                </configuration>
-                        </plugin>
-                        <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-compiler-plugin</artifactId>
-                                <configuration>
-                                        <source>1.7</source>
-                                        <target>1.7</target>
                                 </configuration>
                         </plugin>
                         <plugin>

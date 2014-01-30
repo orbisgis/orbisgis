@@ -80,7 +80,7 @@ public class MainFrame extends JFrame implements MainWindow {
                     getVersion(), ViewWorkspace.CITY_VERSION, Locale.getDefault().getCountry()));
                     setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
             setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis"));
-            add(new JLayer<>(mainPanel, messageOverlay));
+            add(new JLayer<Container>(mainPanel, messageOverlay));
         }
 
         @Override
