@@ -34,9 +34,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.beans.EventHandler;
 import java.io.IOException;
+import java.sql.SQLException;
 import javax.swing.*;
 import org.apache.log4j.Logger;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.sif.CRFlowLayout;
 import org.xnap.commons.i18n.I18n;
@@ -46,82 +46,80 @@ import org.xnap.commons.i18n.I18nFactory;
  * Panel editor of the tree layer node.
  */
 public class TocTreeEditorLayerPanel extends JPanel implements TocTreeEditorPanel {
-        private static final long serialVersionUID = 1L;
-        private static final I18n I18N = I18nFactory.getI18n(Toc.class);
-        private static final Logger LOGGER = Logger.getLogger("gui." + TocTreeEditorLayerPanel.class);
-        private JCheckBox check;
-        private JLabel iconAndLabel;
-        private JTextField textField;
-        private ILayer layer;
-        
-        /**
-         * @return The edited layer label
-         */
-        @Override
-        public String getLabel() {
-                return textField.getText();
-        }
+    private static final long serialVersionUID = 1L;
+    private static final I18n I18N = I18nFactory.getI18n(Toc.class);
+    private static final Logger LOGGER = Logger.getLogger("gui." + TocTreeEditorLayerPanel.class);
+    private JCheckBox check;
+    private JLabel iconAndLabel;
+    private JTextField textField;
+    private ILayer layer;
 
-        public TocTreeEditorLayerPanel(final JTree tree,ILayer node) {
-                layer = node;
-                setOpaque(false);
-                FlowLayout fl = new FlowLayout(CRFlowLayout.LEADING);
-                fl.setHgap(0);
-                setLayout(fl);
-                check = new JCheckBox();
-                check.setOpaque(false);
-                iconAndLabel = new JLabel();
-                textField = new JTextField(14);
-                textField.addKeyListener(new KeyAdapter() {
+    /**
+     * @return The edited layer label
+     */
+    @Override
+    public String getLabel() {
+        return textField.getText();
+    }
 
-                        @Override
-                        public void keyTyped(KeyEvent e) {
-                                if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-                                        tree.stopEditing();
-                                }
-                        }
+    public TocTreeEditorLayerPanel(final JTree tree,ILayer node) {
+        layer = node;
+        setOpaque(false);
+        FlowLayout fl = new FlowLayout(CRFlowLayout.LEADING);
+        fl.setHgap(0);
+        setLayout(fl);
+        check = new JCheckBox();
+        check.setOpaque(false);
+        iconAndLabel = new JLabel();
+        textField = new JTextField(14);
+        textField.addKeyListener(new KeyAdapter() {
 
-                });
-                add(check);
-                add(iconAndLabel);
-                add(textField);
-                setNodeCosmetic(node);
-                //Add listeners
-                check.addActionListener(
-                        EventHandler.create(ActionListener.class,
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+                    tree.stopEditing();
+                }
+            }
+
+        });
+        add(check);
+        add(iconAndLabel);
+        add(textField);
+        setNodeCosmetic(node);
+        //Add listeners
+        check.addActionListener(
+                EventHandler.create(ActionListener.class,
                         node,
                         "setVisible",
                         "source.selected"));
+    }
+
+    /**
+     *
+     * @return The layer edited
+     */
+    @Override
+    public Object getValue() {
+        return layer;
+    }
+
+    private void setNodeCosmetic(ILayer node) {
+        check.setVisible(true);
+        check.setSelected(node.isVisible());
+
+        Icon icon = null;
+        try {
+            icon = TocAbstractRenderer.getLayerIcon(node);
+        } catch (SQLException | IOException e) {
+            LOGGER.error(e.getLocalizedMessage(), e);
         }
-
-        /**
-         * 
-         * @return The layer edited
-         */
-        @Override
-        public Object getValue() {
-                return layer;
+        if (icon != null) {
+            iconAndLabel.setIcon(icon);
         }
+        iconAndLabel.setVisible(true);
 
-        private void setNodeCosmetic(ILayer node) {
-                check.setVisible(true);
-                check.setSelected(node.isVisible());
-
-                Icon icon = null;
-                try {
-                        icon = TocAbstractRenderer.getLayerIcon(node);
-                } catch (DriverException e) {
-                        LOGGER.error(e);
-                } catch (IOException e) {
-                        LOGGER.error(e);
-                }
-                if (icon != null) {
-                        iconAndLabel.setIcon(icon);
-                }
-                iconAndLabel.setVisible(true);
-
-                textField.setText(node.getName());
-                textField.selectAll();
-        }
+        textField.setText(node.getName());
+        textField.selectAll();
+    }
 
 }        
