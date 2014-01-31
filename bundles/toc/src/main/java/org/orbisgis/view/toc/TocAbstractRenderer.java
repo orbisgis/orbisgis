@@ -30,15 +30,14 @@ package org.orbisgis.view.toc;
 
 import ij.ImagePlus;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import javax.swing.*;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryDimensionConstraint;
-import org.gdms.data.types.Type;
-import org.gdms.driver.DriverException;
+import org.h2gis.utilities.GeometryTypeCodes;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.view.components.renderers.TreeLaFRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -53,65 +52,45 @@ public abstract class TocAbstractRenderer extends TreeLaFRenderer {
                 super(tree);
         }
 
-        public static ImageIcon getLayerIcon(ILayer layer) throws DriverException,
-			IOException {
-		if (layer.acceptsChilds()) {
-			return OrbisGISIcon.getIcon("layers");
-		} else {
-			if (layer.isStream()) {
-				return OrbisGISIcon.getIcon("server_connect");
-			} else {
-                try {
-                    DataSource dataSource = layer.getDataSource();
-                    if (!dataSource.isOpen()) {
-                        return null;
-                    }
-                    int spatialField = dataSource.getSpatialFieldIndex();
+    public static ImageIcon getLayerIcon(ILayer layer) throws SQLException,
+            IOException {
+        if (layer.acceptsChilds()) {
+            return OrbisGISIcon.getIcon("layers");
+        } else {
+            if (layer.getTableReference().isEmpty() && layer.getDataUri() != null) {
+                return OrbisGISIcon.getIcon("server_connect");
+            } else {
+                try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
                     // Create a legend for each spatial field
-                    Metadata metadata = dataSource.getMetadata();
-                    Type fieldType = metadata.getFieldType(spatialField);
-                                    int typeCode = fieldType.getTypeCode();
-                    if ((typeCode & Type.GEOMETRY) != 0) {
-                                            switch(typeCode){
-                                                    case Type.NULL:
+                    int type = SFSUtilities.getGeometryType(connection, TableLocation.parse(layer.getTableReference()), "");
+                    if (type > 0) {
+                        switch(type){
+                            case GeometryTypeCodes.GEOMETRY:
+                            case GeometryTypeCodes.GEOMCOLLECTION:
                                 return OrbisGISIcon.getIcon("layermixe");
-                                                    case Type.GEOMETRY:
-                                                    case Type.GEOMETRYCOLLECTION:
-                                                            GeometryDimensionConstraint gdc =
-                                                                    (GeometryDimensionConstraint) fieldType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
-                                                            if(gdc == null){
-                                                                    return OrbisGISIcon.getIcon("layermixe");
-                                                            } else {
-                                                                    switch(gdc.getDimension()){
-                                                                            case GeometryDimensionConstraint.DIMENSION_POINT:
-                                                                                    return OrbisGISIcon.getIcon("layerpoint");
-                                                                            case GeometryDimensionConstraint.DIMENSION_CURVE:
-                                                                                    return OrbisGISIcon.getIcon("layerline");
-                                                                            case GeometryDimensionConstraint.DIMENSION_SURFACE:
-                                                                                    return OrbisGISIcon.getIcon("layerpolygon");
-                                                                            default :
-                                                                                    return OrbisGISIcon.getIcon("layerpolygon");                                                                }
-                                                            }
-                                                    case Type.POINT:
-                                                    case Type.MULTIPOINT:
+                            case GeometryTypeCodes.POINT:
+                            case GeometryTypeCodes.MULTIPOINT:
                                 return OrbisGISIcon.getIcon("layerpoint");
-                                                    case Type.LINESTRING:
-                                                    case Type.MULTILINESTRING:
+                            case GeometryTypeCodes.LINESTRING:
+                            case GeometryTypeCodes.MULTILINESTRING:
                                 return OrbisGISIcon.getIcon("layerline");
-                                                    case Type.POLYGON:
-                                                    case Type.MULTIPOLYGON:
+                            case GeometryTypeCodes.POLYGON:
+                            case GeometryTypeCodes.MULTIPOLYGON:
                                 return OrbisGISIcon.getIcon("layerpolygon");
-                                                    default:
-                                                            throw new RuntimeException(I18N.tr("Unable to find appropriate icon for typeCode {0}",typeCode)); //$NON-NLS-1$
-                                            }
+                            default:
+                                throw new RuntimeException(I18N.tr("Unable to find appropriate icon for typeCode {0}",type));
+                        }
 
                     } else {
+                        return OrbisGISIcon.getIcon("remove");
+                        // TODO Raster
+                        /*
                         if (layer.getRaster().getType() == ImagePlus.COLOR_RGB) {
                             return OrbisGISIcon.getIcon("layerrgb");
                         } else {
                             return OrbisGISIcon.getIcon("raster");
                         }
-
+                        */
                     }
                 } catch (Exception ex) {
                     // Error while reading datasource, may be a thread race condition
@@ -119,7 +98,7 @@ public abstract class TocAbstractRenderer extends TreeLaFRenderer {
                     return OrbisGISIcon.getIcon("remove");
                 }
             }
-		}
-	}
+        }
+    }
 
 }

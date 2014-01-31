@@ -29,10 +29,9 @@
 
 package org.orbisgis.view.toc.actions;
 
-import org.gdms.data.DataSource;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.view.toc.Toc;
-import org.orbisgis.view.toc.ext.TocActionFactory;
+import org.orbisgis.viewapi.toc.ext.TocActionFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -96,11 +95,11 @@ public class EditLayerSourceAction extends LayerAction {
     private boolean checkDataSource() {
         ILayer activeLayer = toc.getMapContext().getActiveLayer();
         for(ILayer layer : toc.getSelectedLayers()) {
-                    DataSource src = layer.getDataSource();
-                    if(src==null || !src.isEditable() ||
+                    if(layer.getTableReference()==null || !layer.getTableReference().isEmpty() ||
                             ((enabledOnActiveLayer && !layer.equals(activeLayer))
                             || (enabledOnNotActiveLayer && layer.equals(activeLayer))
-                            || (enabledOnModifiedLayer && !src.isModified()))) {
+                            )) {
+                        // TODO || (enabledOnModifiedLayer && !src.isModified())
                         return false;
                     }
         }
