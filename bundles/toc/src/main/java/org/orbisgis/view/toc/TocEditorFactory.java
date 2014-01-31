@@ -28,14 +28,16 @@
  */
 package org.orbisgis.view.toc;
 
-import org.orbisgis.view.components.actions.*;
+import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.viewapi.edition.EditorDockable;
+import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.edition.SingleEditorFactory;
 import org.orbisgis.viewapi.toc.ext.TocActionFactory;
 import org.orbisgis.viewapi.toc.ext.TocExt;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * This factory creates only one instance of Toc.
@@ -47,6 +49,7 @@ public class TocEditorFactory implements SingleEditorFactory {
         // Looking for toc popup plugins
         private MenuItemServiceTracker<TocExt,TocActionFactory> popupActionTracker;
         private Toc tocPanel = null;
+        private EditorManager editorManager;
 
         @Override
         public void dispose() {
@@ -55,10 +58,18 @@ public class TocEditorFactory implements SingleEditorFactory {
             }
         }
 
+        /**
+         * @param editorManager Management of editors, in order to open table editor from the toc
+         */
+        @Reference
+        public void setEditorManager(EditorManager editorManager) {
+            this.editorManager = editorManager;
+        }
+
         @Override
         public EditorDockable[] getSinglePanels() {
                 if(tocPanel==null) {
-                        tocPanel = new Toc();
+                        tocPanel = new Toc(editorManager);
                         if(bundleContext!=null) {
                             popupActionTracker = new MenuItemServiceTracker<TocExt, TocActionFactory>(bundleContext,TocActionFactory.class,tocPanel.getPopupActions(),tocPanel);
                             popupActionTracker.open();

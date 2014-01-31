@@ -28,12 +28,19 @@
  */
 package org.orbisgis.view.toc;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Rectangle;
 import java.io.IOException;
-import javax.swing.*;
+import java.sql.SQLException;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTree;
+
 import org.apache.log4j.Logger;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.renderer.se.Style;
@@ -45,14 +52,13 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  */
 public class TocRenderer extends TocAbstractRenderer {
         private static Logger UILOGGER = Logger.getLogger("gui."+ TocRenderer.class);
-        private static final long serialVersionUID = 1L;
         private static final int ROW_EMPTY_BORDER_SIZE = 2;
         private Rectangle checkBoxRect;
         private MapContext mapContext;
 
         /**
          * Builds a TocRenderer using the given JTree.
-         * @param tree
+         * @param tree JTree instance
          */
         public TocRenderer(JTree tree) {
                 super(tree);
@@ -60,7 +66,7 @@ public class TocRenderer extends TocAbstractRenderer {
 
         /**
          * Set the MapContext, used to check if a Layer is Active
-         * @param mapContext
+         * @param mapContext Map context instance
          */
         public void setMapContext(MapContext mapContext) {
             this.mapContext = mapContext;
@@ -90,16 +96,17 @@ public class TocRenderer extends TocAbstractRenderer {
                                         if(mapContext!=null && layerNode.equals(mapContext.getActiveLayer())) {
                                             nodeIcon = IconCellRendererUtility.mergeIcons
                                                     (nodeIcon, OrbisGISIcon.getIcon("edition/layer_edit"));
-                                        } else if(layerNode.getDataSource()!=null && layerNode.getDataSource().isModified()) {
+                                        } else if(!layerNode.getTableReference().isEmpty()) { // && layerNode.getDataSource().isModified()
+                                            // TODO Use UndoManager to check for layer modifications
                                             nodeIcon = IconCellRendererUtility.mergeIcons
                                                     (nodeIcon, OrbisGISIcon.getIcon("edition/layer_modify"));
                                         }
                                         rendererComponent.setIcon(nodeIcon);
                                         String nodeLabel = layerNode.getName();
                                         
-                                        if(layerNode.getDataSource()!=null &&
-                                                !nodeLabel.equals(layerNode.getDataSource().getName())) {
-                                                nodeLabel = I18N.tr("Layer:{0} DataSource :({1})",nodeLabel,layerNode.getDataSource().getName());
+                                        if(!layerNode.getTableReference().isEmpty() &&
+                                                !nodeLabel.equals(layerNode.getTableReference())) {
+                                                nodeLabel = I18N.tr("Layer:{0} DataSource :({1})",nodeLabel,layerNode.getTableReference());
                                         }
                                         rendererComponent.setText(nodeLabel);
                                         
@@ -118,10 +125,8 @@ public class TocRenderer extends TocAbstractRenderer {
                                 rendererComponent.setIcon(
                                         IconCellRendererUtility.mergeComponentAndIcon(
                                                 checkBox,rendererComponent.getIcon()));
-                        } catch (DriverException ex) {
-                                UILOGGER.error(ex);
-                        } catch (IOException ex) {
-                                UILOGGER.error(ex);
+                        } catch (SQLException | IOException ex) {
+                                UILOGGER.error(ex.getLocalizedMessage(), ex);
                         }
                 }
                 return nativeRendererComp;
