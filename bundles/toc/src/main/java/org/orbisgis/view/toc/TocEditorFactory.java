@@ -30,6 +30,7 @@ package org.orbisgis.view.toc;
 
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.viewapi.edition.EditorDockable;
+import org.orbisgis.viewapi.edition.EditorFactory;
 import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.edition.SingleEditorFactory;
 import org.orbisgis.viewapi.toc.ext.TocActionFactory;
@@ -42,49 +43,56 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * This factory creates only one instance of Toc.
  */
-@Component
+@Component( service = EditorFactory.class)
 public class TocEditorFactory implements SingleEditorFactory {
-        public static final String FACTORY_ID = "TocFactory";
-        private BundleContext bundleContext;
-        // Looking for toc popup plugins
-        private MenuItemServiceTracker<TocExt,TocActionFactory> popupActionTracker;
-        private Toc tocPanel = null;
-        private EditorManager editorManager;
+    public static final String FACTORY_ID = "TocFactory";
+    private BundleContext bundleContext;
+    // Looking for toc popup plugins
+    private MenuItemServiceTracker<TocExt,TocActionFactory> popupActionTracker;
+    private Toc tocPanel = null;
+    private EditorManager editorManager;
 
-        @Override
-        public void dispose() {
-            if(popupActionTracker!=null) {
-                popupActionTracker.close();
+    @Override
+    public void dispose() {
+        if(popupActionTracker!=null) {
+            popupActionTracker.close();
+        }
+    }
+
+    /**
+     * @param editorManager Management of editors, in order to open table editor from the toc
+     */
+    @Reference
+    public void setEditorManager(EditorManager editorManager) {
+        this.editorManager = editorManager;
+    }
+
+    /**
+     * @param editorManager Management of editors, in order to open table editor from the toc
+     */
+    public void unsetEditorManager(EditorManager editorManager) {
+        this.editorManager = null;
+    }
+
+    @Override
+    public EditorDockable[] getSinglePanels() {
+        if(tocPanel==null) {
+            tocPanel = new Toc(editorManager);
+            if(bundleContext!=null) {
+                popupActionTracker = new MenuItemServiceTracker<TocExt, TocActionFactory>(bundleContext,TocActionFactory.class,tocPanel.getPopupActions(),tocPanel);
+                popupActionTracker.open();
             }
         }
+        return new EditorDockable[] {tocPanel};
+    }
 
-        /**
-         * @param editorManager Management of editors, in order to open table editor from the toc
-         */
-        @Reference
-        public void setEditorManager(EditorManager editorManager) {
-            this.editorManager = editorManager;
-        }
+    @Activate
+    public void activate(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
 
-        @Override
-        public EditorDockable[] getSinglePanels() {
-                if(tocPanel==null) {
-                        tocPanel = new Toc(editorManager);
-                        if(bundleContext!=null) {
-                            popupActionTracker = new MenuItemServiceTracker<TocExt, TocActionFactory>(bundleContext,TocActionFactory.class,tocPanel.getPopupActions(),tocPanel);
-                            popupActionTracker.open();
-                        }
-                }
-                return new EditorDockable[] {tocPanel};
-        }
-
-        @Activate
-        public void activate(BundleContext bundleContext) {
-            this.bundleContext = bundleContext;
-        }
-
-        @Override
-        public String getId() {
-                return FACTORY_ID;
-        }
+    @Override
+    public String getId() {
+        return FACTORY_ID;
+    }
 }
