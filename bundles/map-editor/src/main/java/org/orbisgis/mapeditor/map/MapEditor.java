@@ -50,8 +50,10 @@ import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.sif.multiInputPanel.*;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.background.ZoomToSelection;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
+import org.orbisgis.view.edition.EditableTransferListener;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.viewapi.docking.DockingPanelParameters;
 import org.orbisgis.viewapi.edition.EditableElement;
@@ -62,7 +64,6 @@ import org.orbisgis.mapeditor.map.ext.MapEditorAction;
 import org.orbisgis.mapeditor.map.ext.MapEditorExtension;
 import org.orbisgis.view.table.jobs.CreateSourceFromSelection;
 import org.orbisgis.mapeditor.map.jobs.ReadMapContextJob;
-import org.orbisgis.mapeditor.map.jobs.ZoomToSelection;
 import org.orbisgis.mapeditor.map.mapsManager.MapsManager;
 import org.orbisgis.mapeditor.map.mapsManager.TreeLeafMapContextFile;
 import org.orbisgis.mapeditor.map.mapsManager.TreeLeafMapElement;
@@ -199,7 +200,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                         // Read the default map context file
                         initMapContext();
                         //Register listener
-                        dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(MapTransferHandler.EditableTransferListener.class, this, "onDropEditable", "editableList"));
+                        dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(EditableTransferListener.class, this, "onDropEditable", "editableList"));
                         mapControl.addMouseMotionListener(EventHandler.create(MouseMotionListener.class, this, "onMouseMove", "point", "mouseMoved"));
                         mapStatusBar.addVetoableChangeListener(
                                 MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
@@ -658,7 +659,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
      */
     public void onZoomToSelection() {
             BackgroundManager bm = Services.getService(BackgroundManager.class);
-            bm.backgroundOperation(new ZoomToSelection(mapContext, mapContext.getLayers(), dataManager));
+            bm.backgroundOperation(new ZoomToSelection(mapContext, mapContext.getLayers()));
     }
 
 

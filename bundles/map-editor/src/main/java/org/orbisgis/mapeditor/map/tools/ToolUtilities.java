@@ -203,8 +203,7 @@ public class ToolUtilities {
 				String table = activeLayer.getTableReference();
                 if(!table.isEmpty()) {
                     TableLocation tableLocation = TableLocation.parse(activeLayer.getTableReference());
-                    int tableGeoType = SFSUtilities.getGeometryType(connection, tableLocation,
-                            SFSUtilities.getGeometryFields(connection,tableLocation).get(0));
+                    int tableGeoType = SFSUtilities.getGeometryType(connection, tableLocation,"");
                     return tableGeoType == geometryTypes[0] ||  tableGeoType == GeometryTypeCodes.GEOMETRY;
                 }
             } catch (SQLException ex) {

@@ -127,6 +127,24 @@ public class MetaData {
     }
 
     /**
+     *
+     * @param connection Active connection, not closed by this function
+     * @param table Table identifier [[catalog.]schema.]table
+     * @param fieldName Field name ex: My field
+     * @return {@link java.sql.Types} value
+     * @throws SQLException If the column/table is not found.
+     */
+    public static int getFieldType(Connection connection, String table, String fieldName) throws SQLException {
+        TableLocation tableLocation = TableLocation.parse(table);
+        try(ResultSet rs = connection.getMetaData().getColumns(tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable(), fieldName)) {
+            if(rs.next()) {
+                return rs.getInt("DATA_TYPE");
+            }
+        }
+        throw new SQLException("Column or table not found");
+    }
+
+    /**
      * This method is used when user type a sql value in a field.
      * @param userInput User field input
      * @param sqlType Database column type {@link java.sql.Types}

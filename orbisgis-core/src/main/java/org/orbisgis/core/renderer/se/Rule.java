@@ -166,8 +166,7 @@ public final class Rule extends AbstractSymbolizerNode {
         try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
             String tableRef = layer.getTableReference();
             TableLocation location =  TableLocation.parse(tableRef);
-            String geometryField = SFSUtilities.getGeometryFields(connection, location).get(0);
-            return SFSUtilities.getGeometryType(connection, location, geometryField);
+            return SFSUtilities.getGeometryType(connection, location, "");
         }
     }
 

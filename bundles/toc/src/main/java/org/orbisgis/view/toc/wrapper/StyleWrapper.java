@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.view.toc.actions.cui.legends.ui.PnlStyle;
+import org.orbisgis.view.toc.actions.cui.legend.ui.PnlStyle;
 
 /**
  * A Symbolizer can be associated to legends through its {@code Rule}. However,

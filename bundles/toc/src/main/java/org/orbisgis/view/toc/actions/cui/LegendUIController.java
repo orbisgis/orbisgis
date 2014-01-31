@@ -29,6 +29,8 @@
 package org.orbisgis.view.toc.actions.cui;
 
 import java.awt.Dimension;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -36,8 +38,10 @@ import java.util.logging.Logger;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import org.gdms.data.types.Type;
-import org.gdms.driver.DriverException;
+
+import org.h2gis.utilities.GeometryTypeCodes;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -71,40 +75,35 @@ public final class LegendUIController {
 
 		this.style = new Style(fts.getJAXBElement(), fts.getLayer());
 
-		rootPanels = new ArrayList<ArrayList<LegendUIComponent>>();
-		rulePanels = new ArrayList<LegendUIRulePanel>();
+		rootPanels = new ArrayList<>();
+		rulePanels = new ArrayList<>();
 
-		availableSymbolizers = new ArrayList<String>();
+		availableSymbolizers = new ArrayList<>();
 
 		maxAllowedSize = new Dimension(1000, 750);
 
-                Type type = null;
+        int type;
 
-		try {
-			ILayer layer = style.getLayer();
-			type = layer.getDataSource().getMetadata().getFieldType(layer.getDataSource().getSpatialFieldIndex());
-		} catch (DriverException ex) {
+        ILayer layer = style.getLayer();
+        TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
+		try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
+            geometryType = SFSUtilities.getGeometryType(connection, tableLocation, "");
+		} catch (SQLException ex) {
 			Logger.getLogger(LegendUIController.class.getName()).log(Level.SEVERE, null, ex);
-		}
-
-		if (type == null) {
-			geometryType = Type.GEOMETRY;
-		} else {
-			geometryType = type.getTypeCode();
 		}
 
 		switch (geometryType) {
 			default:
-			case Type.GEOMETRY:
-			case Type.GEOMETRYCOLLECTION:
-			case Type.POLYGON:
-			case Type.MULTIPOLYGON:
+			case GeometryTypeCodes.GEOMETRY:
+			case GeometryTypeCodes.GEOMCOLLECTION:
+			case GeometryTypeCodes.POLYGON:
+			case GeometryTypeCodes.MULTIPOLYGON:
 				availableSymbolizers.add(I18N.tr("Area Symbolizer"));
-			case Type.LINESTRING:
-			case Type.MULTILINESTRING:
+			case GeometryTypeCodes.LINESTRING:
+			case GeometryTypeCodes.MULTILINESTRING:
 				availableSymbolizers.add(I18N.tr("Line Symbolizer"));
-			case Type.POINT:
-			case Type.MULTIPOINT:
+			case GeometryTypeCodes.POINT:
+			case GeometryTypeCodes.MULTIPOINT:
 				availableSymbolizers.add(I18N.tr("Point Symbolizer"));
 		}
 

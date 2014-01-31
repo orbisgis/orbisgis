@@ -40,24 +40,17 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import javax.sql.DataSource;
 import javax.swing.JPanel;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DataSet;
-import org.gdms.driver.DiskBufferDriver;
-import org.gdms.driver.DriverException;
-import org.gdms.sql.engine.Engine;
-import org.gdms.sql.engine.ParseException;
-import org.gdms.sql.engine.SQLScript;
-import org.gdms.sql.engine.SQLStatement;
-import org.gdms.sql.engine.SemanticException;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
@@ -78,19 +71,22 @@ public class CanvasSE extends JPanel {
         private GeometryFactory gf;
         private Geometry geom;
         private MapTransform mt;
-        private DataSet sample;
         private boolean displayed;
         private int width;
         private int height;
         private BufferedImage bi = null;
         public final static int WIDTH = 126;
         public final static int HEIGHT = 70;
+        /** Geometry and  */
+        private Map<String, Object> sample;
+        private DataSource dataSource;
 
     /**
      * Build this as a JPanel of size WIDTH*HEIGHT.
      */
-	public CanvasSE(Symbolizer sym) {
+	public CanvasSE(Symbolizer sym, DataSource dataSource) {
         this(sym, WIDTH, HEIGHT);
+        this.dataSource = dataSource;
 	}
 
     /**
@@ -134,34 +130,16 @@ public class CanvasSE extends JPanel {
             BufferedImage newBi = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
             Graphics2D g2 = (Graphics2D) newBi.getGraphics();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            if(sample == null){
-                setBasicDataSource();
-            }
             try {
                 g2.setBackground(new Color(255, 255, 255, 0));
                 g2.clearRect(0, 0, width, height);
-                if(sample instanceof DataSource){
-                    DataSource ds = (DataSource) sample;
-                    if(!ds.isOpen()){
-                        ds.open();
-                    }
+                try(Connection connection = dataSource.getConnection();
+                    PreparedStatement st = getQuery(connection);
+                    ResultSet rs = st.executeQuery()) {
+                    s.draw(g2, rs, 0, false, mt, geom);
                 }
-                if(sample instanceof DiskBufferDriver){
-                    DiskBufferDriver dbd = (DiskBufferDriver) sample;
-                    dbd.open();
-                }
-                s.draw(g2, sample, 0, false, mt, geom, null);
-                if(sample instanceof DataSource){
-                    ((DataSource) sample).close();
-                }
-                if(sample instanceof DiskBufferDriver){
-                    DiskBufferDriver dbd = (DiskBufferDriver) sample;
-                    dbd.close();
-                }
-            } catch (DriverException de){
-            } catch (ParameterException de){
-            } catch (IOException de){
-            } catch (IllegalArgumentException ie){
+            } catch (SQLException | ParameterException
+                   | IOException | IllegalArgumentException ie){
                     LOGGER.error(ie.getMessage());
             }
             this.bi = newBi;
@@ -191,26 +169,26 @@ public class CanvasSE extends JPanel {
         }
 
         /**
-         * Sets the associated {@code DataSource} so that it contains only a
-         * basic geometry in a field named the_geom.
+         * @return SQL query from sample map.
          */
-        public void setBasicDataSource(){
-                DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
-                try {
-                        SQLScript s = Engine.loadScript(CanvasSE.class.getResourceAsStream("GeometryOnly.bsql"));
-                        s.setValueParameter("geomText", ValueFactory.createValue(getSampleGeometry().toString()));
-                        s.setDataSourceFactory(dsf);
-                        SQLStatement st = s.getStatements()[0];
-                        st.prepare();
-                        sample = st.execute();
-                        st.cleanUp();
-                } catch (SemanticException ex) {
-                        LOGGER.warn(ex.getMessage(), ex);
-                } catch (DriverException ex) {
-                        LOGGER.error(ex.getMessage(), ex);
-                } catch (IOException ex) {
-                        LOGGER.warn(ex.getMessage(), ex);
-                }
+        private PreparedStatement getQuery(Connection connection) throws SQLException {
+            if(sample == null) {
+                sample = new HashMap<>();
+            }
+            StringBuilder sb = new StringBuilder(80+15*sample.size());
+            sb.append("SELECT ? as the_geom");
+            for(String fieldName : sample.keySet()){
+                sb.append(", ? as ");
+                sb.append(fieldName);
+            }
+            sb.append(";");
+            PreparedStatement st = connection.prepareStatement(sb.toString());
+            st.setObject(1, getSampleGeometry());
+            int index = 2;
+            for(String fieldName : sample.keySet()){
+                st.setObject(index++, sample.get(fieldName));
+            }
+            return st;
         }
         /**
          * Creates a sample {@link DataSource} that will be filled using :
@@ -222,47 +200,7 @@ public class CanvasSE extends JPanel {
          * @param input
          */
         public void setSampleDatasource(Map<String, Object> input){
-            StringBuilder sb = new StringBuilder(80+15*input.size());
-            sb.append("SELECT @{the_geom} :: GEOMETRY as the_geom");
-            Set<Map.Entry<String,Object>> es =input.entrySet();
-            for(Map.Entry<String, Object> ent : es){
-                    sb.append(", @{");
-                    sb.append(ent.getKey());
-                    sb.append("} as ");
-                    sb.append(ent.getKey());
-            }
-            sb.append(";");
-            try {
-                SQLScript sqlScript = Engine.parseScript(sb.toString(), DataSourceFactory.getDefaultProperties());
-                SQLStatement stat = sqlScript.getStatements()[0];
-                stat.setValueParameter("the_geom", ValueFactory.createValue(getSampleGeometry()));
-                for(Map.Entry<String, Object> ent : es){
-                    Value value = null;
-                    Object val = ent.getValue();
-                    if(val instanceof String || val instanceof StringParameter){
-                        value = ValueFactory.createValue(val.toString());
-                    } else if(val instanceof  Double) {
-                        value = ValueFactory.createValue((Double) val);
-                    } else if(val instanceof RealParameter) {
-                        value = ValueFactory.createValue(((RealParameter) val).getValue(null));
-                    }
-
-                    stat.setValueParameter(ent.getKey(), value);
-                }
-
-                DataManager dataManager = Services.getService(DataManager.class);
-                DataSourceFactory dsf = dataManager.getDataSourceFactory();
-                stat.setDataSourceFactory(dsf);
-                stat.prepare();
-                sample = stat.execute();
-                stat.cleanUp();
-            } catch (DriverException ex) {
-                    LOGGER.error("", ex);
-            } catch (ParseException ex) {
-                    LOGGER.error("", ex);
-            } catch (ParameterException ex) {
-                    LOGGER.error("", ex);
-            }
+            sample = new HashMap<>(input);
         }
 
         /**

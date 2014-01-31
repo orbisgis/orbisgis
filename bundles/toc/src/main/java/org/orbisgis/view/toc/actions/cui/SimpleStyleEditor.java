@@ -32,6 +32,8 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JLabel;
@@ -41,10 +43,8 @@ import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.Type;
-import org.gdms.driver.DriverException;
+import org.h2gis.utilities.JDBCUtilities;
+import org.orbisgis.core.jdbc.MetaData;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
@@ -58,8 +58,8 @@ import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanelFactory;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
-import org.orbisgis.view.toc.actions.cui.legends.ui.PnlRule;
-import org.orbisgis.view.toc.actions.cui.legends.ui.PnlStyle;
+import org.orbisgis.view.toc.actions.cui.legend.ui.PnlRule;
+import org.orbisgis.view.toc.actions.cui.legend.ui.PnlStyle;
 import org.orbisgis.view.toc.wrapper.RuleWrapper;
 import org.orbisgis.view.toc.wrapper.StyleWrapper;
 import org.xnap.commons.i18n.I18n;
@@ -93,10 +93,10 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      */
     private MapTransform mt;
     /**
-     * The type of the DataSource of the legend's layer currently being
-     * modified.
+     * The type of the Geometry of the legend's layer currently being
+     * modified. {@link org.h2gis.utilities.GeometryTypeCodes}
      */
-    private Type type;
+    private int type;
     /**
      * The layer we are editing.
      */
@@ -141,7 +141,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      * @param style Style
      */
     public SimpleStyleEditor(MapTransform mt,
-                             Type type,
+                             int type,
                              ILayer layer,
                              Style style) {
         // Set the layout.
@@ -153,9 +153,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
         this.layer = layer;
 
         // Get the geometry type and available legends.
-        this.geometryType = (type == null)
-                ? SimpleGeometryType.ALL
-                : SimpleGeometryType.getSimpleType(type);
+        this.geometryType = SimpleGeometryType.getSimpleType(type);
 
         // Initialize the dialog container, adding the empty dialog.
         cardLayout = new CardLayout();
@@ -317,14 +315,13 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
         // Get the legend corresponding to this symbolizer.
         Legend legend = LegendFactory.getLegend(symb);
         if(legend instanceof AbstractRecodedLegend){
-            DataSource dataSource = layer.getDataSource();
+            String table = layer.getTableReference();
             AbstractRecodedLegend leg = (AbstractRecodedLegend) legend;
-            try {
-                Metadata metadata = dataSource.getMetadata();
+            try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
                 String f = leg.getLookupFieldName();
-                int in = metadata.getFieldIndex(f);
-                leg.setComparator(AbstractRecodedLegend.getComparator(metadata.getFieldType(in)));
-            } catch (DriverException e) {
+                int type = MetaData.getFieldType(connection, table, f);
+                leg.setComparator(AbstractRecodedLegend.getComparator(type));
+            } catch (SQLException e) {
                 LOGGER.warn("Can't retrieve an accurate Comparator for this classification");
             }
         }

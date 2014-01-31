@@ -29,8 +29,8 @@
 package org.orbisgis.view.toc.actions.cui;
 
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
-import org.orbisgis.view.toc.actions.cui.legends.ui.PnlRule;
-import org.orbisgis.view.toc.actions.cui.legends.ui.PnlStyle;
+import org.orbisgis.view.toc.actions.cui.legend.ui.PnlRule;
+import org.orbisgis.view.toc.actions.cui.legend.ui.PnlStyle;
 import org.orbisgis.view.toc.wrapper.RuleWrapper;
 import org.orbisgis.view.toc.wrapper.StyleWrapper;
 

@@ -684,6 +684,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
 
         @Override
         public boolean match(EditableElement editableElement) {
+                //TODO Link table selection with layer selection
                 return false; //This editor cannot take another editable
         }
 

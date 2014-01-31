@@ -40,9 +40,22 @@ import java.awt.event.MouseEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -51,9 +64,21 @@ import javax.swing.tree.TreeSelectionModel;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.StyleType;
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
-import org.orbisgis.core.layerModel.*;
+import org.orbisgis.core.layerModel.BeanLayer;
+import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.layerModel.Layer;
+import org.orbisgis.core.layerModel.LayerCollection;
+import org.orbisgis.core.layerModel.LayerCollectionEvent;
+import org.orbisgis.core.layerModel.LayerException;
+import org.orbisgis.core.layerModel.LayerListener;
+import org.orbisgis.core.layerModel.LayerListenerEvent;
+import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.layerModel.MapContextListener;
+import org.orbisgis.core.layerModel.SelectionEvent;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.CompositeSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
@@ -69,18 +94,24 @@ import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.background.Job;
+import org.orbisgis.view.background.ZoomToSelection;
 import org.orbisgis.view.components.actions.ActionCommands;
+import org.orbisgis.view.edition.EditableTransferEvent;
 import org.orbisgis.view.edition.EditableTransferListener;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.toc.actions.*;
+import org.orbisgis.view.table.TableEditableElementImpl;
+import org.orbisgis.view.toc.actions.EditLayerSourceAction;
+import org.orbisgis.view.toc.actions.LayerAction;
+import org.orbisgis.view.toc.actions.StyleAction;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.SimpleStyleEditor;
-import org.orbisgis.view.toc.actions.cui.legends.wizard.LegendWizard;
+import org.orbisgis.view.toc.actions.cui.legend.wizard.LegendWizard;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.viewapi.docking.DockingPanelParameters;
 import org.orbisgis.viewapi.edition.EditableElement;
+import org.orbisgis.viewapi.edition.EditableSource;
 import org.orbisgis.viewapi.edition.EditorDockable;
+import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.table.TableEditableElement;
 import org.orbisgis.viewapi.toc.ext.TocActionFactory;
 import org.orbisgis.viewapi.toc.ext.TocExt;
@@ -115,20 +146,18 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         private PropertyChangeListener tocStyleListener = EventHandler.create(PropertyChangeListener.class,this,"onStyleChange","");
         //Loaded editable map
         private transient MapElement mapElement = null;
-        // Linked table editable element, for geometry selection
-        private Map<String, TableEditableElement> linkedEditableElements = new HashMap<>();
-        private PropertyChangeListener tableSelectionChangeListener = EventHandler.create(PropertyChangeListener.class,this,"onTableSelectionChange","source");
-        private PropertyChangeListener tableEditableClose = EventHandler.create(PropertyChangeListener.class,this,"onTableEditableClose","source");
         private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified","");
         private Action saveAction;
         // Actions containers
         private ActionCommands popupActions = new ActionCommands();
         private PropertyChangeListener mapContextPropertyChange = EventHandler.create(PropertyChangeListener.class,this,"onMapContextPropertyChange","");
+        private EditorManager editorManager;
         /**
          * Constructor
          */
-        public Toc() {
+        public Toc(EditorManager editorManager) {
                 super(new BorderLayout());
+                this.editorManager = editorManager;
                 //Set docking parameters
                 dockingPanelParameters = new DockingPanelParameters();
                 dockingPanelParameters.setName("toc");
@@ -488,17 +517,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 if (!newSelectedLayer.isEmpty()) {
                         mapContext.setSelectedLayers(newSelectedLayer.toArray(new ILayer[newSelectedLayer.size()]));
                 }
-
-
-                if (!sourceToDrop.isEmpty()) {
-                        BackgroundManager bm = Services.getService(BackgroundManager.class);//Cancel the drawing process
-                        bm.backgroundOperation(new DropDataSourceListProcess(dropNode, index, sourceToDrop));
-                        for(Job job : bm.getActiveJobs()) {
-                                if(job.getId().toString().startsWith(MapControl.JOB_DRAWING_PREFIX_ID)) {
-                                        job.cancel();
-                                }
-                        }
-                }
         }
 
         /**
@@ -518,9 +536,9 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                 //Update the mapcontext selection model
                                 //There are selection constraint, then
                                 //update also the jtree selection model
-                                List<Style> styles = new ArrayList<Style>();
-                                List<ILayer> layers = new ArrayList<ILayer>();
-                                List<TreePath> keptSelection = new ArrayList<TreePath>();
+                                List<Style> styles = new ArrayList<>();
+                                List<ILayer> layers = new ArrayList<>();
+                                List<TreePath> keptSelection = new ArrayList<>();
                                 TreePath[] paths = tree.getSelectionPaths();
                                 if(paths!=null) {
                                         for(TreePath path : paths) {
@@ -552,8 +570,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
 
         private void setEmptyLayerModel(JTree jTree) {
                 //Add the treeModel
-                DataManager dataManager = Services.getService(DataManager.class);
-                jTree.setModel(new DefaultTreeModel(new TocTreeNodeLayer(dataManager.createLayerCollection("root"))));
+                jTree.setModel(new DefaultTreeModel(new TocTreeNodeLayer(new LayerCollection("empty"))));
         }
 
         @Override
@@ -607,7 +624,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         /**
          * Load the specified MapElement in the toc
          *
-         * @param newMapElement
+         * @param newMapElement Map element to load into toc tree.
          */
         public void setEditableMap(MapElement newMapElement) {
                 if (newMapElement != null) {
@@ -615,9 +632,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         if (!importedMap.isOpen()) {
                                 try {
                                         importedMap.open(null);
-                                } catch (LayerException ex) {
-                                        throw new IllegalArgumentException(ex);
-                                } catch (IllegalStateException ex) {
+                                } catch (LayerException | IllegalStateException ex) {
                                         throw new IllegalArgumentException(ex);
                                 }
                         }
@@ -630,11 +645,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         this.mapContext.removeMapContextListener(tocMapContextListener);
                         this.mapContext.removePropertyChangeListener(mapContextPropertyChange);
                         mapElement.removePropertyChangeListener(modificationListener);
-                        // We make a copy of the list to avoid ConcurrentModificationExceptions. See #421.
-                        for(TableEditableElement editable : new ArrayList<TableEditableElement>(linkedEditableElements.values())) {
-                                unlinkTableSelectionListening(editable);
-                        }
-                        linkedEditableElements.clear();
                 }
 
 
@@ -660,7 +670,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         }
 
                         setTocSelection(mapContext);
-                        fetchForTableEditableElements();
                         //TODO ? repaint 
                 }
         }
@@ -743,42 +752,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
          */
         public void onDeleteLayer() {
                 ILayer[] selectedResources = mapContext.getSelectedLayers();
-                boolean saveDataSources = false;
-                // Check for modified sources
-                for (ILayer resource : selectedResources) {
-                    DataSource dataSource = resource.getDataSource();
-                    if(dataSource!=null && dataSource.isModified()) {
-                        int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
-                                I18N.tr("Some layers use modified data source, do you want to save these modifications before removing them ?"),
-                                I18N.tr("Save geometry edits"),
-                                JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
-                        if(response==JOptionPane.YES_OPTION) {
-                            saveDataSources = true;
-                        } else if(response==JOptionPane.CANCEL_OPTION) {
-                            return;
-                        }
-                        break;
-                    }
-                }
-                // Commit
-                if(saveDataSources) {
-                    for (ILayer resource : selectedResources) {
-                            DataSource dataSource = resource.getDataSource();
-                            if(dataSource!=null && dataSource.isModified()) {
-                                try {
-                                    dataSource.commit();
-                                } catch (Exception ex) {
-                                    int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
-                                            I18N.tr("The layer data source {0} can not be saved, are you sure you want to continue ?",resource.getName()),
-                                            I18N.tr("Errors on data source save process"),
-                                            JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
-                                    if(response==JOptionPane.NO_OPTION) {
-                                        return;
-                                    }
-                                }
-                            }
-                    }
-                }
                 // Remove layers
                 for (ILayer resource : selectedResources) {
                         try {
@@ -843,11 +816,10 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         */
         public void onMenuShowTable() {
                 ILayer[] layers = mapContext.getSelectedLayers();
-                EditorManager editorManager = Services.getService(EditorManager.class);
                 for (ILayer layer : layers) {
-                        DataSource source = layer.getDataSource();
-                        if(source!=null) {
-                                TableEditableElement tableDocument = new TableEditableElement(source);
+                        String table = layer.getTableReference();
+                        if(table!=null && !table.isEmpty()) {
+                                TableEditableElement tableDocument = new TableEditableElementImpl(layer.getTableReference(), layer.getDataManager());
                                 editorManager.openEditable(tableDocument);
                         }
                 }
@@ -882,8 +854,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
             if(styles.length == 1){
                 Style base = styles[0];
                 BeanLayer l = (BeanLayer) base.getLayer();
-                MapEditor editor = mapElement.getMapEditor();
-                MapTransform mt = editor.getMapControl().getMapTransform();
+                MapTransform mt = new MapTransform();
                 LegendWizard lw = new LegendWizard();
                 SIFWizard wizard = lw.getSIFWizard(l, mt);
                 //Show a wizard to add new thematic map in a Layer
@@ -909,8 +880,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     LegendWizard lw = new LegendWizard();
                     ILayer layer = layers[0];
                     if (isStyleAllowed(layer)) {
-                        MapEditor editor = mapElement.getMapEditor();
-                        MapTransform mt = editor.getMapControl().getMapTransform();
+                        MapTransform mt = new MapTransform();
                         SIFWizard wizard = lw.getSIFWizard(layer, mt);
                         if(UIFactory.showWizard(wizard)){
                             Style s = lw.getStyle();
@@ -960,32 +930,24 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
          * style.
          */
         public void onAdvancedEditor(){
-                try {
-                        Style[] styles = mapContext.getSelectedStyles();
-                        if(styles.length == 1){
-                                Style style = styles[0];
-                                ILayer layer = style.getLayer();
-                                if(isStyleAllowed(layer)){
-                                    int index = layer.indexOf(style);
-                                    // Obtain MapTransform
-                                    MapEditor editor = mapElement.getMapEditor();
-                                    MapTransform mt = editor.getMapControl().getMapTransform();
-                                    if (mt == null) {
-                                            JOptionPane.showMessageDialog(null,I18N.tr("Advanced Editor can't be loaded"));
-                                    }
-
-                                    LegendUIController controller = new LegendUIController(index,style);
-
-                                    if (UIFactory.showDialog((UIPanel)controller.getMainPanel())) {
-                                            layer.setStyle(index,controller.getEditedFeatureTypeStyle());
-                                    }
-                                }else{
-                                   LOGGER.info("This functionality is not supported."); 
-                                }
+            try {
+                Style[] styles = mapContext.getSelectedStyles();
+                if(styles.length == 1){
+                    Style style = styles[0];
+                    ILayer layer = style.getLayer();
+                    if(isStyleAllowed(layer)){
+                        int index = layer.indexOf(style);
+                        LegendUIController controller = new LegendUIController(index,style);
+                        if (UIFactory.showDialog((UIPanel)controller.getMainPanel())) {
+                            layer.setStyle(index,controller.getEditedFeatureTypeStyle());
                         }
-		} catch (SeExceptions.InvalidStyle ex) {
-			LOGGER.error(I18N.tr("Error while editing the legend"), ex);
-		}
+                    }else{
+                        LOGGER.info("This functionality is not supported.");
+                    }
+                }
+            } catch (SeExceptions.InvalidStyle ex) {
+                LOGGER.error(I18N.tr("Error while editing the legend"), ex);
+            }
         }
 
         /**
@@ -1001,15 +963,17 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                     final int index = layer.indexOf(style);
                                     //In order to be able to cancel all of our modifications,
                                     //we produce a copy of our style.
-                                    MapEditor editor = mapElement.getMapEditor();
                                     JAXBElement<StyleType> jest = style.getJAXBElement();
 
-                                    MapTransform mt = editor.getMapControl().getMapTransform();
-                                    Type typ = layer.getDataSource().getMetadata().getFieldType(
-                                            layer.getDataSource().getSpatialFieldIndex());
+                                    MapTransform mt = new MapTransform();
+                                    int geometryType;
+                                    TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
+                                    try(Connection connection = mapContext.getDataManager().getDataSource().getConnection()) {
+                                        geometryType = SFSUtilities.getGeometryType(connection, tableLocation,"");
+                                    }
                                     Style copy = new Style(jest, layer);
 
-                                    final SimpleStyleEditor pan = new SimpleStyleEditor(mt, typ, layer, copy);
+                                    final SimpleStyleEditor pan = new SimpleStyleEditor(mt, geometryType, layer, copy);
                                     ActionListener apply = new ActionListener() {
                                         @Override
                                         public void actionPerformed(ActionEvent actionEvent) {
@@ -1025,11 +989,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                         }
                                     };
                                     if (UIFactory.showApplyDialog(pan, apply)) {
-                                            try {
-                                                    layer.setStyle(index, pan.getStyleWrapper().getStyle());
-                                            } catch (ClassificationMethodException e) {
-                                                    LOGGER.error(e.getMessage());
-                                            }
+                                        layer.setStyle(index, pan.getStyleWrapper().getStyle());
                                     }
                                 }else{
                                     LOGGER.info(I18N.tr("Styles can be set only on vector layers."));
@@ -1038,7 +998,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                 //I don't know how this could happen : we are creating a style
                                 //from a valid style. Should be valid too, consequently...
                                 LOGGER.error(I18N.tr("The style you're trying to edit is not valid !"));
-                        } catch (DriverException de) {
+                        } catch (SQLException de) {
                                 LOGGER.error(I18N.tr("An error occurred while processing the DataSource"));
                         } catch (UnsupportedOperationException uoe){
                                  LOGGER_POPUP.info(I18N.tr("Cannot create the user interface for this style. \n"
@@ -1049,81 +1009,23 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
 
         @Override
         public boolean match(EditableElement editableElement) {
-                if(mapContext!=null && editableElement instanceof TableEditableElement) {
-                        // A table editor is going to be opened
-                        TableEditableElement tableElement = (TableEditableElement) editableElement;
-                        registerTableElement(tableElement);
-                }
                 return editableElement instanceof MapElement;
         }
 
-        private void registerTableElement(TableEditableElement tableElement) {
-                if (!linkedEditableElements.containsKey(
-                        tableElement.getSourceName())
-                        && hasDataSource(mapContext.getLayerModel(),
-                        tableElement.getSourceName())) {
-                        LOGGER.debug(I18N.tr("Link the editable element with the Toc"));
-                        //Need to track geometry selection with this element
-                        // MapContext selection change -> Table selection
-                        linkedEditableElements.put(tableElement.getSourceName(), tableElement);
-                        // Table selection change -> Layer selection
-                        tableElement.addPropertyChangeListener(TableEditableElement.PROP_SELECTION, tableSelectionChangeListener);
-                        //Unlink the table element when it is closed
-                        tableElement.addPropertyChangeListener(TableEditableElement.PROP_OPEN, tableEditableClose);
-                        //If the table has already an active selection, load it
-                        if (!tableElement.getSelection().isEmpty()) {
-                                onTableSelectionChange(tableElement);
-                        } else {
-                                if(mapContext!=null) {
-                                        //If the table has no selection set the current selection
-                                        ILayer[] layers = mapContext.getLayers();
-                                        Set<Integer> mergedSelection = new IntegerUnion();
-                                        for (ILayer layer : layers) {
-                                                DataSource source = layer.getDataSource();
-                                                if (source != null && source.getName().equals(tableElement.getSourceName())) {
-                                                        mergedSelection.addAll(layer.getSelection());
-                                                }
-                                        }
-                                        tableElement.setSelection(mergedSelection);
-                                }
-                        }
-                }
-        }
         @Override
         public EditableElement getEditableElement() {
                 return mapElement;
         }
-        
-        /**
-         * Link with all table editable element already in editors
-         */
-        private void fetchForTableEditableElements() {
-                //List all registered data source in the current map context
-                Set<String> dataSourceNames = new HashSet<String>();
-                for(ILayer layer : mapContext.getLayerModel().getLayersRecursively()) {
-                        DataSource source = layer.getDataSource();
-                        if(source!=null) {
-                                dataSourceNames.add(source.getName());
-                        }
-                }
-                //Fetch all editable
-                EditorManager manager = Services.getService(EditorManager.class);
-                for(EditableElement editable : manager.getEditableElements()) {
-                        if(editable instanceof TableEditableElement) {
-                                registerTableElement((TableEditableElement)editable);
-                        }
-                }
-        }
-        
+
         /**
          * Search in the layer the provided data source name
          * @param layer
          * @param sourceName
          */
         private boolean hasDataSource(ILayer layer,String sourceName) {
-                DataSource source = layer.getDataSource();
-                if(source!=null) {
-                        return source.getName().equals(sourceName);
+                String table = layer.getTableReference();
+                if(table!=null && !table.isEmpty()) {
+                        return table.equalsIgnoreCase(sourceName);
                 }
                 if(layer.acceptsChilds()) {
                         for(ILayer subLayer : layer.getChildren()) {
@@ -1170,16 +1072,8 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         * is currently supported
          */
         private boolean isStyleAllowed(ILayer layer) {
-            try {
-                if (layer.isVectorial()) {
-                    return true;
-                }
-            } catch (DriverException ex) {
-                return false;
-            }
-        return false;
-
-    }
+            return layer.getTableReference() != null && !layer.getTableReference().isEmpty();
+        }
         
         private class TocLayerListener implements LayerListener {
 
@@ -1191,7 +1085,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         TreeNode parentNode = new TocTreeNodeLayer(e.getParent());
                         addPropertyListeners(parentNode);
                         treeModel.nodeStructureChanged(parentNode);
-                        fetchForTableEditableElements();
                 }
 
                 @Override
@@ -1239,22 +1132,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
 
                 @Override
                 public void selectionChanged(SelectionEvent e) {
-                        //Layer data rows selection change
-                                ILayer layer = ((ILayer)e.getSource());
-                                DataSource src = layer.getDataSource();
-                                if (src!=null && 
-                                    linkedEditableElements.containsKey(src.getName()))
-                                {
-                                        if(fireRowSelectionEvent.getAndSet(false)) {
-                                                try {
-                                                        //Update table element selection
-                                                        TableEditableElement tableElement = linkedEditableElements.get(src.getName());
-                                                        tableElement.setSelection(layer.getSelection());
-                                                } finally {
-                                                        fireRowSelectionEvent.set(true);
-                                                }
-                                        }
-                                }
                 }
         }
 
@@ -1284,7 +1161,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 @Override
                 public void run(ProgressMonitor pm) {
                         List<TreePath> dropPaths = new ArrayList<TreePath>(draggedResources.size());
-                        DataManager dataManager = Services.getService(DataManager.class);
                         for (int i = 0; i < draggedResources.size(); i++) {
                                 String sourceName = draggedResources.get(i).getId();
                                 if (pm.isCancelled()) {
@@ -1292,7 +1168,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                 } else {
                                         pm.progressTo(100 * i / draggedResources.size());
                                         try {
-                                                    ILayer nl = mapContext.createLayer(dataManager.getDataSource(sourceName));
+                                                    ILayer nl = mapContext.createLayer(sourceName);
                                                     dropNode.insertLayer(nl, dropIndex);
                                                     dropPaths.add(getPathFromNode(new TocTreeNodeLayer(nl)));
                                         } catch (Exception e) {
