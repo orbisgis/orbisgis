@@ -36,7 +36,7 @@ import org.orbisgis.sif.components.WideComboBox;
  *
  * @author Adam Gouge
  */
-public abstract class AbsComboBox extends WideComboBox {
+public abstract class AbsComboBox<E> extends WideComboBox<E> {
 
     protected Legend legend;
 
@@ -55,7 +55,7 @@ public abstract class AbsComboBox extends WideComboBox {
      *
      * @param items Items to add, represented as Strings.
      */
-    public AbsComboBox(Object[] items) {
+    public AbsComboBox(E[] items) {
         super(items);
     }
 }

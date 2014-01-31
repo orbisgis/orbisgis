@@ -39,7 +39,7 @@ import java.awt.event.ActionListener;
  *
  * @author Adam Gouge
  */
-public abstract class PreviewComboBox extends AbsComboBox {
+public abstract class PreviewComboBox<E> extends AbsComboBox<E> {
 
     protected CanvasSE preview;
 
@@ -50,7 +50,7 @@ public abstract class PreviewComboBox extends AbsComboBox {
      * @param legend  Legend
      * @param preview Preview
      */
-    public PreviewComboBox(Object[] items,
+    public PreviewComboBox(E[] items,
                            Legend legend,
                            CanvasSE preview) {
         super(items);

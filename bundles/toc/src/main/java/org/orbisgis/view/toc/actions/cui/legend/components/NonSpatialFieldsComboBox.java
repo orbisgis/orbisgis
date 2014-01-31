@@ -56,7 +56,7 @@ public final class NonSpatialFieldsComboBox extends AbsFieldsComboBox {
     }
 
     @Override
-    protected boolean canAddField(int index) {
+    protected boolean canAddField(int index,int fieldTypeCode, String fieldTypeName) {
         try {
             return !TypeFactory.isSpatial(
                     tableIdentifier.getMetadata().getFieldType(index).getTypeCode());

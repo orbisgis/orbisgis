@@ -38,7 +38,7 @@ import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
  *
  * @author Adam Gouge
  */
-public class WKNComboBox extends PreviewComboBox {
+public class WKNComboBox extends PreviewComboBox<ContainerItem> {
 
     /**
      * Constructor
@@ -55,7 +55,7 @@ public class WKNComboBox extends PreviewComboBox {
 
     @Override
     protected void updatePreview() {
-        ContainerItem<WellKnownName> si = (ContainerItem<WellKnownName>) getSelectedItem();
+        ContainerItem<WellKnownName> si = getSelectedItem();
         ((ConstantFormPoint) legend).setWellKnownName(si.getKey().toString());
         preview.imageChanged();
     }

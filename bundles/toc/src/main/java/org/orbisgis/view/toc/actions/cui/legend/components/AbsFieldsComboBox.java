@@ -29,12 +29,17 @@
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.sif.components.WideComboBox;
 
+import javax.sql.DataSource;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Root class for combo boxes containing field names.
@@ -46,6 +51,7 @@ public abstract class AbsFieldsComboBox extends AbsComboBox {
     private static final Logger LOGGER = Logger.getLogger(AbsFieldsComboBox.class);
 
     protected String tableIdentifier;
+    protected DataSource dataSource;
 
     /**
      * Constructor
@@ -53,8 +59,9 @@ public abstract class AbsFieldsComboBox extends AbsComboBox {
      * @param tableIdentifier     DataSource
      * @param legend Legend
      */
-    public AbsFieldsComboBox(String tableIdentifier, final LookupFieldName legend) {
+    public AbsFieldsComboBox(DataSource dataSource, String tableIdentifier, final LookupFieldName legend) {
         super((Legend) legend);
+        this.dataSource = dataSource;
         if (tableIdentifier == null) {
             throw new IllegalStateException("A FieldsComboBox requires " +
                     "a non-null DataSource.");
@@ -89,23 +96,27 @@ public abstract class AbsFieldsComboBox extends AbsComboBox {
      * Add the fields.
      */
     private void addFields() {
-        try {
-            Metadata md = tableIdentifier.getMetadata();
-            int fc = md.getFieldCount();
-            for (int i = 0; i < fc; i++) {
-                if (canAddField(i)) {
-                    addItem(md.getFieldName(i));
+        TableLocation tableLocation = TableLocation.parse(tableIdentifier);
+        try(Connection connection = dataSource.getConnection();
+            ResultSet rs = connection.getMetaData().getColumns(tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable(), null)) {
+            while(rs.next()) {
+                if (canAddField(rs.getInt("ORDINAL_POSITION"), rs.getInt("DATA_TYPE"), rs.getString("TYPE_NAME"))) {
+                    addItem(rs.getString("COLUMN_NAME"));
                 }
             }
-        } catch (DriverException ex) {
-            LOGGER.error(ex);
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
     }
 
     /**
      * Determine which kind of fields to add.
+     * @param index Field index [1-n]
+     * @param fieldTypeCode Code from {@link java.sql.Types}
+     * @param fieldTypeName Type name
+     * @return True if the field will be added.
      */
-    protected abstract boolean canAddField(int index);
+    protected abstract boolean canAddField(int index,int fieldTypeCode, String fieldTypeName);
 
     /**
      * Used when the field against which the analysis is made changes.

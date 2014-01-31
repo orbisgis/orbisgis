@@ -36,6 +36,7 @@ import org.orbisgis.legend.IInterpolationLegend;
 import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
+import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,9 +60,10 @@ public abstract class ProportionalFieldsComboBox extends NumericalFieldsComboBox
      * @param preview Preview
      */
     protected ProportionalFieldsComboBox(DataSource ds,
+                                         String table,
                                          IInterpolationLegend legend,
                                          CanvasSE preview) {
-        super(ds, legend);
+        super(ds,table, legend);
         this.preview = preview;
     }
 
@@ -81,7 +83,7 @@ public abstract class ProportionalFieldsComboBox extends NumericalFieldsComboBox
         try {
             // Set the first and second data
             double[] minAndMax = ClassificationUtils
-                    .getMinAndMax(tableIdentifier, new RealAttribute(name));
+                    .getMinAndMax( tableIdentifier, new RealAttribute(name));
             setFirstAndSecondValues(minAndMax);
             // Set the sample data source for the preview.
             Map<String, Object> sample = new HashMap<String, Object>();

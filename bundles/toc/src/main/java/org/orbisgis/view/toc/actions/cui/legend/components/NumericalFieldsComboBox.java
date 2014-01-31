@@ -29,10 +29,9 @@
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.TypeFactory;
-import org.gdms.driver.DriverException;
 import org.orbisgis.legend.LookupFieldName;
+
+import javax.sql.DataSource;
 
 /**
  * A JComboBox containing the numerical fields of the given {@link DataSource}.
@@ -43,9 +42,9 @@ public class NumericalFieldsComboBox extends AbsFieldsComboBox {
 
     private static final Logger LOGGER = Logger.getLogger(NumericalFieldsComboBox.class);
 
-    protected NumericalFieldsComboBox(DataSource ds,
+    protected NumericalFieldsComboBox(DataSource ds,String table,
                                       final LookupFieldName legend) {
-        super(ds, legend);
+        super(ds,table, legend);
     }
 
     @Override
