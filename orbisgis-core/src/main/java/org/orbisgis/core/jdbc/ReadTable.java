@@ -29,6 +29,7 @@
 package org.orbisgis.core.jdbc;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -42,6 +43,7 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -58,6 +60,7 @@ public class ReadTable {
     /** SQL function to evaluate */
     public enum STATS { COUNT, SUM, AVG, STDDEV_SAMP, MIN, MAX}
     protected final static I18n I18N = I18nFactory.getI18n(ReadTable.class);
+    private static Logger LOGGER = Logger.getLogger(ReadTable.class);
 
     public static Collection<Integer> getSortedColumnRowIndex(Connection connection, String table, String columnName, boolean ascending, ProgressMonitor progressMonitor) throws SQLException {
         TableLocation tableLocation = TableLocation.parse(table);
@@ -138,7 +141,32 @@ public class ReadTable {
         }
     }
 
-
+    public static long getRowCount(Connection connection, String tableReference) throws SQLException {
+        TableLocation tableLocation = TableLocation.parse(tableReference);
+        if(JDBCUtilities.isH2DataBase(connection.getMetaData())) {
+            try(PreparedStatement st = SFSUtilities.prepareInformationSchemaStatement(connection,tableLocation.getCatalog(),
+                    tableLocation.getSchema(), tableLocation.getTable(), "INFORMATION_SCHEMA.TABLES", "",
+                    "TABLE_CATALOG","TABLE_SCHEMA","TABLE_NAME");
+                ResultSet rs = st.executeQuery()) {
+                if(rs.next()) {
+                    long estimatedRowCount = rs.getLong("ROW_COUNT_ESTIMATE");
+                    // 100 because H2 views est
+                    if(estimatedRowCount > 0 && !"VIEW".equalsIgnoreCase(rs.getString("TABLE_TYPE"))) {
+                        return estimatedRowCount;
+                    }
+                }
+            } catch (Exception ex) {
+                // This method failed, will use standard one
+                LOGGER.debug(ex.getLocalizedMessage(), ex);
+            }
+        }
+        // Use  precise row count
+        try(Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery("SELECT COUNT(*) cpt FROM "+tableReference)) {
+            rs.next();
+            return rs.getLong(1);
+        }
+    }
 
 
     public static String resultSetToString(String query, Statement st,int maxFieldLength, int maxPrintedRows, boolean addColumns) throws SQLException {

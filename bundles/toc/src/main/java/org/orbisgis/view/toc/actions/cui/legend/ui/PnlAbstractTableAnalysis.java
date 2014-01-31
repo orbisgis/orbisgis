@@ -30,7 +30,6 @@ package org.orbisgis.view.toc.actions.cui.legend.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.LineParameters;
@@ -47,6 +46,7 @@ import org.orbisgis.view.toc.actions.cui.legend.panels.TablePanel;
 import org.orbisgis.view.toc.actions.cui.legend.panels.Util;
 import org.xnap.commons.i18n.I18n;
 
+import javax.sql.DataSource;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
@@ -69,6 +69,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
 
     private MappedLegend<K,U> legend;
     private DataSource ds;
+    private String table;
     private SettingsPanel<K, U> settingsPanel;
     protected CanvasSE fallbackPreview;
     protected TablePanel<K, U> tablePanel;
@@ -89,7 +90,8 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
      */
     public PnlAbstractTableAnalysis(LegendContext lc,
                                     MappedLegend<K, U> legend) {
-        this.ds = lc.getLayer().getDataSource();
+        this.ds = lc.getLayer().getDataManager().getDataSource();
+        this.table = lc.getLayer().getTableReference();
         this.legend = legend;
     }
 
@@ -103,6 +105,13 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
      */
     public DataSource getDataSource() {
         return ds;
+    }
+
+    /**
+     * @return Table identifier [[Catalog.]Schema.]table
+     */
+    public String getTable() {
+        return table;
     }
 
     @Override
@@ -306,7 +315,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
                 getPreviewClass());
 
         settingsPanel = new SettingsPanel<K, U>(legend,
-                getDataSource(),
+                getDataSource(),table,
                 getPreview(),
                 tablePanel);
         glob.add(settingsPanel);

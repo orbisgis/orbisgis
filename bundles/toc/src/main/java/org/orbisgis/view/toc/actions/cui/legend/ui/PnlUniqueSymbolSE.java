@@ -31,6 +31,7 @@ package org.orbisgis.view.toc.actions.cui.legend.ui;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 
+import javax.sql.DataSource;
 import java.net.URL;
 
 /**

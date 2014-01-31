@@ -196,11 +196,11 @@ public class UIFactory {
          * @param applyListener The action associated to the Apply button
          * @return true if the dialog has been accepted, false if it has been cancelled.
          */
-        public static boolean showApplyDialog(UIPanel panel, ActionListener applyListener){
+        public static boolean showApplyDialog(UIPanel panel, ActionListener applyListener,boolean modal){
             ApplyDialog dlg = new ApplyDialog(mainFrame, applyListener);
             SimplePanel sp = new SimplePanel(dlg, panel);
             dlg.setComponent(sp);
-            dlg.setModal(true);
+            dlg.setModal(modal);
             dlg.pack();
             dlg.setLocationRelativeTo(mainFrame);
             dlg.setAlwaysOnTop(true);

@@ -28,8 +28,9 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.ui;
 
-import org.gdms.data.DataSource;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
+
+import javax.sql.DataSource;
 
 /**
  * Root class for proportional UIs.
@@ -42,6 +43,7 @@ public abstract class PnlProportional extends PnlNonClassification {
      * DataSource associated to the layer attached to the LegendContext.
      */
     protected DataSource ds;
+    protected String table;
 
     /**
      * Obtains the DataSource attached to the LegendContext's layer.
@@ -49,6 +51,7 @@ public abstract class PnlProportional extends PnlNonClassification {
      * @param lc LegendContext from which to obtain the DataSource.
      */
     public PnlProportional(LegendContext lc) {
-        this.ds = lc.getLayer().getDataSource();
+        super(lc.getLayer().getDataManager().getDataSource());
+        this.table = lc.getLayer().getTableReference();
     }
 }

@@ -31,9 +31,7 @@ package org.orbisgis.view.toc.actions.cui.legend.ui;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DriverException;
+import org.orbisgis.core.jdbc.MetaData;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
@@ -50,9 +48,14 @@ import org.orbisgis.view.toc.actions.cui.legend.stats.Thresholds;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.SortedSet;
@@ -73,7 +76,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
             new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
     public static final Integer[] THRESHOLDS_SQUARE =
             new Integer[]{2, 4, 8, 16};
-    private WideComboBox numberCombo;
+    private WideComboBox<Integer> numberCombo;
     private JButton createCl;
     private WideComboBox methodCombo;
     private DefaultComboBoxModel comboModel;
@@ -111,16 +114,14 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
 
     private Thresholds computeStats(String fieldName){
         DescriptiveStatistics stats = new DescriptiveStatistics();
-        DataSource ds = getDataSource();
-        try {
-            int fieldIndex = ds.getMetadata().getFieldIndex(fieldName);
-            long rowCount = ds.getRowCount();
-            for(long i=0; i<rowCount; i++){
-                Value val = ds.getFieldValue(i,fieldIndex);
-                stats.addValue(val.getAsDouble());
+        try(Connection connection = getDataSource().getConnection();
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery("select "+ MetaData.escapeFieldName(fieldName)+ " from "+getTable())) {
+            while(rs.next()) {
+                stats.addValue(rs.getDouble(1));
             }
-        } catch (DriverException e) {
-            LOGGER.warn(I18N.tr("The application has ended unexpectedly"));
+        } catch (SQLException e) {
+            LOGGER.warn(I18N.tr("The application has ended unexpectedly"),e);
         }
         return new Thresholds(stats,fieldName);
     }
@@ -131,7 +132,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
      */
     public JPanel getCreateClassificationPanel(){
         if(numberCombo == null){
-            numberCombo = new WideComboBox(getThresholdsNumber());
+            numberCombo = new WideComboBox<>(getThresholdsNumber());
         }
         comboModel = (DefaultComboBoxModel) numberCombo.getModel();
         createCl = new JButton(I18N.tr("Create"));

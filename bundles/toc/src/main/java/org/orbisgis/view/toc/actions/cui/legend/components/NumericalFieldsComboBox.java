@@ -29,6 +29,7 @@
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
 import org.apache.log4j.Logger;
+import org.orbisgis.core.jdbc.MetaData;
 import org.orbisgis.legend.LookupFieldName;
 
 import javax.sql.DataSource;
@@ -40,24 +41,14 @@ import javax.sql.DataSource;
  */
 public class NumericalFieldsComboBox extends AbsFieldsComboBox {
 
-    private static final Logger LOGGER = Logger.getLogger(NumericalFieldsComboBox.class);
-
     protected NumericalFieldsComboBox(DataSource ds,String table,
                                       final LookupFieldName legend) {
         super(ds,table, legend);
     }
 
     @Override
-    protected boolean canAddField(int index) {
-        try {
-            return TypeFactory.isNumerical(
-                    tableIdentifier.getMetadata().getFieldType(index).getTypeCode());
-        } catch (DriverException ex) {
-            LOGGER.error("Cannot at field at position " + index
-                    + " to the NumericalFieldsComboBox because the metadata " +
-                    "could not be recovered.");
-            return false;
-        }
+    protected boolean canAddField(int index, int fieldTypeCode, String fieldTypeName) {
+        return MetaData.isNumeric(fieldTypeCode);
     }
 
     /**
@@ -71,9 +62,9 @@ public class NumericalFieldsComboBox extends AbsFieldsComboBox {
      *         Classifications)
      */
     public static NumericalFieldsComboBox createInstance(
-            DataSource ds,
+            DataSource ds,String table,
             final LookupFieldName legend) {
-        NumericalFieldsComboBox box = new NumericalFieldsComboBox(ds, legend);
+        NumericalFieldsComboBox box = new NumericalFieldsComboBox(ds,table, legend);
         box.init();
         return box;
     }

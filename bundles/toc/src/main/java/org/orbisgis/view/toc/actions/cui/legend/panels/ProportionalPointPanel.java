@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.panels;
 
-import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
@@ -42,6 +41,7 @@ import org.orbisgis.view.toc.actions.cui.legend.components.WKNComboBox;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
 import javax.swing.*;
 
 /**
@@ -54,6 +54,7 @@ public class ProportionalPointPanel extends AbsPanel {
     private static final I18n I18N = I18nFactory.getI18n(ProportionalPointPanel.class);
 
     private DataSource dataSource;
+    private String table;
     private int geometryType;
 
     private PPointFieldsComboBox pPointFieldsComboBox;
@@ -76,10 +77,11 @@ public class ProportionalPointPanel extends AbsPanel {
     public ProportionalPointPanel(ProportionalPoint legend,
                                   CanvasSE preview,
                                   String title,
-                                  DataSource dataSource,
+                                  DataSource dataSource,String table,
                                   int geometryType) {
         super(legend, preview, title);
         this.dataSource = dataSource;
+        this.table = table;
         this.geometryType = geometryType;
         init();
         addComponents();
@@ -92,7 +94,7 @@ public class ProportionalPointPanel extends AbsPanel {
 
     @Override
     protected void init() {
-        pPointFieldsComboBox = new PPointFieldsComboBox(dataSource, getLegend(), preview);
+        pPointFieldsComboBox = new PPointFieldsComboBox(dataSource, table, getLegend(), preview);
         symbolUOMComboBox = new SymbolUOMComboBox(getLegend(), preview);
         wknComboBox = new WKNComboBox(getLegend(), preview);
         try {

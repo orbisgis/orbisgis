@@ -28,9 +28,11 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
-import org.gdms.data.DataSource;
+
 import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+
+import javax.sql.DataSource;
 
 /**
  * Field combo box for Proportional Points.
@@ -46,10 +48,10 @@ public final class PPointFieldsComboBox extends ProportionalFieldsComboBox {
      * @param legend  Legend
      * @param preview Preview
      */
-    public PPointFieldsComboBox(DataSource ds,
+    public PPointFieldsComboBox(DataSource ds,String table,
                                 ProportionalPoint legend,
                                 CanvasSE preview) {
-        super(ds, legend, preview);
+        super(ds,table, legend, preview);
         init();
     }
 

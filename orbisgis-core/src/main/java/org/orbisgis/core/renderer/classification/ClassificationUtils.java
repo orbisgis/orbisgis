@@ -28,9 +28,14 @@
  */
 package org.orbisgis.core.renderer.classification;
 
-import java.util.Arrays;
-import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.orbisgis.core.jdbc.MetaData;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
@@ -41,46 +46,53 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  */
 public class ClassificationUtils {
 
-        private ClassificationUtils(){};
+    private ClassificationUtils() {
+    }
 
-        /**
-         * Retrieves the double values in {@code sds} from {@code value} in
-         * ascending order.
-         * @param sds
-         * @param value
-         * @return
-         * @throws DriverException
-         * @throws ParameterException
-         */
-	public static double[] getSortedValues(DataSource sds, RealParameter value)
-			throws DriverException, ParameterException {
-
-		double[] values = new double[(int) sds.getRowCount()];
-		for (long i = 0; i < values.length; i++) {
-			values[(int)i] = value.getValue(sds, i);
-		}
-		Arrays.sort(values);
-		return values;
-	}
-
-        /**
-         * Gets the minimum and maximum values of {@code sds} from {@code value}.
-         * @param sds
-         * @param value
-         * @return
-         * A double array of length two that contains[min, max].
-         * @throws DriverException
-         * @throws ParameterException
-         */
-        public static double[] getMinAndMax(DataSource sds, RealParameter value)
-                throws DriverException, ParameterException{
-                double[] minAndMax = new double[]{Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
-                long rows =  sds.getRowCount();
-                for(long i = 0; i<rows; i++){
-                        double tmp = value.getValue(sds, i);
-                        minAndMax[0] = Math.min(tmp,minAndMax[0]);
-                        minAndMax[1] = Math.max(tmp,minAndMax[1]);
-                }
-                return minAndMax;
+    /**
+     * Retrieves the double values in {@code sds} from {@code value} in
+     * ascending order.
+     *
+     * @param connection
+     * @param table
+     * @param value
+     * @return
+     * @throws SQLException
+     * @throws ParameterException
+     */
+    public static List<Double> getSortedValues(Connection connection, String table, RealParameter value)
+            throws SQLException, ParameterException {
+        List<Double> values = new ArrayList<>();
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery("SELECT " + MetaData.escapeFieldName(value.toString()) + " fieldName FROM " + table + " ORDER BY fieldName")) {
+            while (rs.next()) {
+                values.add(rs.getDouble(1));
+            }
         }
+        return Collections.unmodifiableList(values);
+    }
+
+    /**
+     * Gets the minimum and maximum values of {@code table} from {@code value}.
+     *
+     * @param connection SQL Connection
+     * @param table      Table identifier
+     * @param value      Field
+     * @return [Min, Max] value
+     * @throws java.sql.SQLException
+     * @throws ParameterException
+     */
+    public static double[] getMinAndMax(Connection connection, String table, RealParameter value)
+            throws SQLException, ParameterException {
+        double[] minAndMax = new double[]{Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery("SELECT MIN(" + MetaData.escapeFieldName(value.toString()) + ") minValue," +
+                     " MAX(" + MetaData.escapeFieldName(value.toString()) + ") maxValue FROM " + table)) {
+            if (rs.next()) {
+                minAndMax[0] = rs.getDouble(1);
+                minAndMax[1] = rs.getDouble(2);
+            }
+        }
+        return minAndMax;
+    }
 }

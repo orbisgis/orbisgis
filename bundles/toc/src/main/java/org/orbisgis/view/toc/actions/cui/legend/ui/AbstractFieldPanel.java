@@ -31,6 +31,7 @@ package org.orbisgis.view.toc.actions.cui.legend.ui;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 
+import javax.sql.DataSource;
 import javax.swing.*;
 import java.awt.*;
 
@@ -51,6 +52,7 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
     /**
      * (Re)Build the {@code CanvasSE} instance used to display a preview of
      * the fallback symbol.
+     * @param ds Link to sql engine
      */
     public abstract void initPreview();
 

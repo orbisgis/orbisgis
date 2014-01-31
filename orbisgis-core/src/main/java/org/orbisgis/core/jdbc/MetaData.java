@@ -145,6 +145,27 @@ public class MetaData {
     }
 
     /**
+     * @param sqlType SQL type from {@link java.sql.Types}
+     * @return True if the type is numeric
+     */
+    public static boolean isNumeric(int sqlType) {
+        switch(sqlType) {
+            case Types.NUMERIC:
+            case Types.DECIMAL:
+            case Types.BIGINT:
+            case Types.SMALLINT:
+            case Types.TINYINT:
+            case Types.INTEGER:
+            case Types.REAL:
+            case Types.DOUBLE:
+            case Types.FLOAT:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
      * This method is used when user type a sql value in a field.
      * @param userInput User field input
      * @param sqlType Database column type {@link java.sql.Types}

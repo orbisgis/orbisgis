@@ -988,7 +988,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                             }
                                         }
                                     };
-                                    if (UIFactory.showApplyDialog(pan, apply)) {
+                                    if (UIFactory.showApplyDialog(pan, apply, false)) {
                                         layer.setStyle(index, pan.getStyleWrapper().getStyle());
                                     }
                                 }else{

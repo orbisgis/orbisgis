@@ -29,7 +29,6 @@
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.classification.ClassificationUtils;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.legend.IInterpolationLegend;
@@ -37,6 +36,7 @@ import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,13 +80,13 @@ public abstract class ProportionalFieldsComboBox extends NumericalFieldsComboBox
     protected void updateField(String name) {
         // Set the lookup field name.
         ((LookupFieldName) legend).setLookupFieldName(name);
-        try {
+        try(Connection connection = dataSource.getConnection()) {
             // Set the first and second data
             double[] minAndMax = ClassificationUtils
-                    .getMinAndMax( tableIdentifier, new RealAttribute(name));
+                    .getMinAndMax( connection, tableIdentifier, new RealAttribute(name));
             setFirstAndSecondValues(minAndMax);
             // Set the sample data source for the preview.
-            Map<String, Object> sample = new HashMap<String, Object>();
+            Map<String, Object> sample = new HashMap<>();
             sample.put(name, minAndMax[1]);
             preview.setSampleDatasource(sample);
             // Update the preview.

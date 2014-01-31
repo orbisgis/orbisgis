@@ -107,7 +107,7 @@ public final class PnlProportionalPointSE extends PnlProportional {
                     proportionalPoint,
                     getPreview(),
                     I18N.tr(MARK_SETTINGS),
-                    ds,
+                    ds,table,
                     geometryType));
 
                 // The preview is created only once while the other panels are
@@ -215,7 +215,7 @@ public final class PnlProportionalPointSE extends PnlProportional {
 
             // Update only a local preview until the changes are applied.
             // About #497
-            CanvasSE localPreview = new CanvasSE(usp.getSymbolizer());
+            CanvasSE localPreview = new CanvasSE(usp.getSymbolizer(), ds);
 
             glob.add(new LinePanel(usp,
                     localPreview,

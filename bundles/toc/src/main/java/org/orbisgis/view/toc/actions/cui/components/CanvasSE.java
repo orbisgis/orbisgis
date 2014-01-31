@@ -57,8 +57,6 @@ import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
  * This class is responsible for drawing a preview of what will be rendered on
@@ -79,14 +77,12 @@ public class CanvasSE extends JPanel {
         public final static int HEIGHT = 70;
         /** Geometry and  */
         private Map<String, Object> sample;
-        private DataSource dataSource;
 
     /**
      * Build this as a JPanel of size WIDTH*HEIGHT.
      */
-	public CanvasSE(Symbolizer sym, DataSource dataSource) {
+	public CanvasSE(Symbolizer sym) {
         this(sym, WIDTH, HEIGHT);
-        this.dataSource = dataSource;
 	}
 
     /**
@@ -133,11 +129,8 @@ public class CanvasSE extends JPanel {
             try {
                 g2.setBackground(new Color(255, 255, 255, 0));
                 g2.clearRect(0, 0, width, height);
-                try(Connection connection = dataSource.getConnection();
-                    PreparedStatement st = getQuery(connection);
-                    ResultSet rs = st.executeQuery()) {
-                    s.draw(g2, rs, 0, false, mt, geom);
-                }
+                ResultSet rs = getQuery();
+                s.draw(g2, rs, 0, false, mt, geom);
             } catch (SQLException | ParameterException
                    | IOException | IllegalArgumentException ie){
                     LOGGER.error(ie.getMessage());
@@ -154,7 +147,7 @@ public class CanvasSE extends JPanel {
 
         /**
          * Sets if the canvas must be drawn or not.
-         * @param dis
+         * @param dis new value
          */
         public void setDisplayed(boolean dis){
                 displayed = dis;
@@ -171,24 +164,20 @@ public class CanvasSE extends JPanel {
         /**
          * @return SQL query from sample map.
          */
-        private PreparedStatement getQuery(Connection connection) throws SQLException {
+        private ResultSet getQuery() throws SQLException {
             if(sample == null) {
                 sample = new HashMap<>();
             }
-            StringBuilder sb = new StringBuilder(80+15*sample.size());
-            sb.append("SELECT ? as the_geom");
-            for(String fieldName : sample.keySet()){
-                sb.append(", ? as ");
-                sb.append(fieldName);
+            Object[] values = new Object[sample.size() + 1];
+            String[] fieldsName = new String[sample.size() + 1];
+            int fieldId = 1;
+            fieldsName[0] = "THE_GEOM";
+            values[0] = getSampleGeometry();
+            for(Map.Entry<String,Object> entry : sample.entrySet()) {
+                values[fieldId] = entry.getValue();
+                fieldsName[fieldId] = entry.getKey();
             }
-            sb.append(";");
-            PreparedStatement st = connection.prepareStatement(sb.toString());
-            st.setObject(1, getSampleGeometry());
-            int index = 2;
-            for(String fieldName : sample.keySet()){
-                st.setObject(index++, sample.get(fieldName));
-            }
-            return st;
+            return new OneLineResultSet(fieldsName, values);
         }
         /**
          * Creates a sample {@link DataSource} that will be filled using :

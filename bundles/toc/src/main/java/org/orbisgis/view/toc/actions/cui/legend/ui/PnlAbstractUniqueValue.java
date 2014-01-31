@@ -30,12 +30,9 @@ package org.orbisgis.view.toc.actions.cui.legend.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.Type;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.jdbc.MetaData;
+import org.orbisgis.core.jdbc.ReadTable;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
@@ -59,7 +56,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -142,12 +144,10 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
      */
     public Comparator<String> getComparator(){
         String fieldName = getFieldName();
-        DataSource ds = getDataSource();
-        try {
-            Metadata metadata = ds.getMetadata();
-            Type type = metadata.getFieldType(metadata.getFieldIndex(fieldName));
+        try(Connection connection = getDataSource().getConnection()) {
+            int type = MetaData.getFieldType(connection, getTable(), fieldName);
             return AbstractRecodedLegend.getComparator(type);
-        } catch (DriverException e) {
+        } catch (SQLException e) {
             LOGGER.warn(I18N.tr("Can't build the analysis with an accurate comparator."),e);
         }
         return null;
@@ -240,12 +240,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
             String fieldName = getFieldName();
             SelectDistinctJob selectDistinct = new SelectDistinctJob(fieldName);
             BackgroundManager bm = Services.getService(BackgroundManager.class);
-            JobId jid = new DefaultJobId(JOB_NAME);
-            if(background == null){
-                background = new OperationListener();
-                bm.addBackgroundListener(background);
-            }
-            bm.nonBlockingBackgroundOperation(jid, selectDistinct);
+            bm.nonBlockingBackgroundOperation(selectDistinct);
         }
     }
 
@@ -292,52 +287,50 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
 
         /**
          * Gathers all the distinct values of the input DataSource in a {@link HashSet}.
-         * @param pm Used to be able to cancel the job.
+         * @param progress Used to be able to cancel the job.
          * @return The distinct values as String instances in a {@link HashSet} or null if the job has been cancelled.
          */
-        public TreeSet<String> getValues(final ProgressMonitor pm){
+        public TreeSet<String> getValues(ProgressMonitor progress){
             Comparator<String> comparator = getComparator();
-            TreeSet<String> ret = comparator != null ? new TreeSet<String>(comparator) : new TreeSet<String>();
-            try {
-                DataSource ds = getDataSource();
-                long rowCount=ds.getRowCount();
-                pm.startTask(I18N.tr("Retrieving classes"), 50);
-                pm.progressTo(0);
-                double m = rowCount>0 ?(double)50/rowCount : 0;
-                int n =0;
-                int fieldIndex = ds.getFieldIndexByName(fieldName);
-                final int warn = 100;
-                for(long i=0; i<rowCount; i++){
-                    Value val = ds.getFieldValue(i, fieldIndex);
-                    ret.add(val.toString());
-                    if(ret.size() == warn){
-                        final UIPanel cancel = new CancelPanel(warn);
-                        try{
-                            SwingUtilities.invokeAndWait(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if(!UIFactory.showDialog(cancel,true, true)){
-                                        pm.setCancelled(true);
+            TreeSet<String> ret = comparator != null ? new TreeSet<>(comparator) : new TreeSet<String>();
+            try(Connection connection = getDataSource().getConnection();
+                Statement st = connection.createStatement()) {
+                PropertyChangeListener cancelPm = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+                progress.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelPm);
+                try(ResultSet rs = st.executeQuery("SELECT DISTINCT "+MetaData.escapeFieldName(fieldName)+" FROM "+ getTable())) {
+                    final ProgressMonitor pm = progress.startTask(I18N.tr("Retrieving classes"),
+                            ReadTable.getRowCount(connection, getTable()));
+                    final int warn = 100;
+                    int size = 0;
+                    while(rs.next()) {
+                        ret.add(rs.getString(1));
+                        size++;
+                        if(size == warn){
+                            final UIPanel cancel = new CancelPanel(warn);
+                            try{
+                                SwingUtilities.invokeAndWait(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if(!UIFactory.showDialog(cancel,true, true)){
+                                            pm.setCancelled(true);
+                                        }
                                     }
-                                }
-                            });
-                        } catch (Exception ie){
-                            LOGGER.warn(I18N.tr("The application has ended unexpectedly"));
+                                });
+                            } catch (Exception ie){
+                                LOGGER.warn(I18N.tr("The application has ended unexpectedly"));
+                            }
+                        }
+                        pm.endTask();
+                        if(pm.isCancelled()) {
+                            return null;
                         }
                     }
-                    if(i*m>n && rowCount > 0){
-                        n++;
-                        pm.progressTo(50*i/rowCount);
-                    }
-                    if(pm.isCancelled()){
-                        pm.endTask();
-                        return null;
-                    }
+                } finally {
+                    progress.removePropertyChangeListener(cancelPm);
                 }
-            } catch (DriverException e) {
-                LOGGER.error("IO error while handling the input data source : " + e.getMessage());
+            } catch (SQLException e) {
+                LOGGER.error("IO error while handling the input data source",e);
             }
-            pm.endTask();
             return ret;
         }
 
@@ -391,103 +384,10 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
         public Component getComponent() {
             JPanel pan = new JPanel();
             JLabel lab = new JLabel();
-            StringBuilder sb = new StringBuilder();
-            sb.append(I18N.tr("<html><p>The analysis seems to generate more than "));
-            sb.append(threshold);
-            sb.append(I18N.tr(" different values...</p><p>Are you sure you want to continue ?</p></html>"));
-            lab.setText(sb.toString());
+            lab.setText(I18N.tr("<html><p>The analysis seems to generate more than ") + threshold +
+                    I18N.tr(" different values...</p><p>Are you sure you want to continue ?</p></html>"));
             pan.add(lab);
             return pan;
-        }
-    }
-
-    /**
-     * This progress listener listens to the progression of the background operation that retrieves data from
-     * the analysed source and builds a simple unique value classification with it.
-     */
-    public class DistinctListener implements ProgressListener {
-
-        private JDialog window;
-        private final JobListItem jli;
-        private int count = 0;
-
-        /**
-         * Builds the listener from the given {@code JobListItem}. Not that the construction ends by displaying
-         * a {@link JDialog} in modal mode that stays always on top of the application.
-         * @param jli The item that will provide the progress bar.
-         */
-        public DistinctListener(JobListItem jli){
-            this.jli = jli;
-            JDialog root = (JDialog) SwingUtilities.getRoot(PnlAbstractUniqueValue.this);
-            root.setEnabled(false);
-            this.window = new JDialog(root,I18N.tr("Operation in progress..."));
-            window.setLayout(new BorderLayout());
-            window.setAlwaysOnTop(true);
-            window.setVisible(true);
-            window.setModal(true);
-            window.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            window.add(jli.getItemPanel());
-            window.setLocationRelativeTo(root);
-            window.setMinimumSize(jli.getItemPanel().getPreferredSize());
-        }
-
-        @Override
-        public void progressChanged(Job job) {
-            window.pack();
-        }
-
-        @Override
-        public void subTaskStarted(Job job) {
-        }
-
-        @Override
-        public void subTaskFinished(Job job) {
-            count ++;
-            //I know I have two subtasks... This is unfortunate, but I don't find really efficient way to hide my
-            //dialog from the listener without that..
-            if(count >= 2){
-                window.setVisible(false);
-                JDialog root = (JDialog) SwingUtilities.getRoot(PnlAbstractUniqueValue.this);
-                root.setEnabled(true);
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        jli.dispose();
-                    }
-                });
-            }
-
-        }
-    }
-
-    /**
-     * This backgroundListener waits for operation on {@code Job} with {@link PnlRecodedLine#JOB_NAME} as its name.
-     * When such a {@link Job} is added, it adds a DistinctListener to the associated Job. When it is removed, it
-     * retrieves the gathered information and build a new classification from it.
-     */
-    public class OperationListener implements BackgroundListener {
-
-        @Override
-        public  void jobAdded(Job job) {
-            if(job.getId().is(new DefaultJobId(JOB_NAME))){
-                JobListItem jli = new JobListItem(job).listenToJob(true);
-                DistinctListener listener = new DistinctListener(jli);
-                job.addProgressListener(listener);
-            }
-        }
-
-        @Override
-        public void jobRemoved(Job job) {
-            if(job.getId().is(new DefaultJobId(JOB_NAME))){
-                JTable table = tablePanel.getJTable();
-                ((AbstractTableModel) table.getModel()).fireTableDataChanged();
-                table.invalidate();
-            }
-        }
-
-
-        @Override
-        public void jobReplaced(Job job) {
         }
     }
 }

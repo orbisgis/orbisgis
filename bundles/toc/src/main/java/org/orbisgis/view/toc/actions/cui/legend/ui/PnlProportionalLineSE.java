@@ -76,7 +76,7 @@ public final class PnlProportionalLineSE extends PnlProportional {
         @Override
         public void buildUI() {
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
-                glob.add(new ProportionalLinePanel(getLegend(), getPreview(), ds));
+                glob.add(new ProportionalLinePanel(getLegend(), getPreview(), ds, table));
                 glob.add(new PreviewPanel(getPreview()));
                 this.add(glob);
         }

@@ -72,15 +72,15 @@ public class ColorScheme {
      * Fills the inner collections using the dedicated resource file.
      */
     private static void load() {
-        rangeColorSchemeNames = new ArrayList<String>();
-        discreteColorSchemeNames = new ArrayList<String>();
-        nameToColorsMap = new HashMap<String,List<Color>>();
+        rangeColorSchemeNames = new ArrayList<>();
+        discreteColorSchemeNames = new ArrayList<>();
+        nameToColorsMap = new HashMap<>();
         InputStream stream = ColorScheme.class.getResourceAsStream("ColorScheme.txt");
         InputStreamReader br = new InputStreamReader(stream);
         LineIterator lineIterator = IOUtils.lineIterator(br);
         try{
             while(lineIterator.hasNext()){
-                String line = lineIterator.next();
+                String line = lineIterator.nextLine();
                 add(line);
             }
         }  finally {

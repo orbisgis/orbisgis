@@ -29,10 +29,9 @@
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.TypeFactory;
-import org.gdms.driver.DriverException;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
+
+import javax.sql.DataSource;
 
 /**
  * A JComboBox containing the non-spatial fields of the given {@link DataSource}.
@@ -40,31 +39,20 @@ import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
  * @author Adam Gouge
  */
 public final class NonSpatialFieldsComboBox extends AbsFieldsComboBox {
-
-    private static final Logger LOGGER = Logger.getLogger(NonSpatialFieldsComboBox.class);
-
     /**
      * Constructor
      *
      * @param ds     DataSource
      * @param legend Legend
      */
-    public NonSpatialFieldsComboBox(DataSource ds,
+    public NonSpatialFieldsComboBox(DataSource ds,String table,
                                     AbstractRecodedLegend legend) {
-        super(ds, legend);
+        super(ds,table, legend);
         init();
     }
 
     @Override
     protected boolean canAddField(int index,int fieldTypeCode, String fieldTypeName) {
-        try {
-            return !TypeFactory.isSpatial(
-                    tableIdentifier.getMetadata().getFieldType(index).getTypeCode());
-        } catch (DriverException ex) {
-            LOGGER.error("Cannot at field at position " + index
-                    + " to the NonSpatialFieldsComboBox because the metadata " +
-                    "could not be recovered.");
-            return false;
-        }
+        return !"geometry".equalsIgnoreCase(fieldTypeName);
     }
 }

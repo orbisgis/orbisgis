@@ -28,9 +28,10 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
-import org.gdms.data.DataSource;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+
+import javax.sql.DataSource;
 
 /**
  * Field combo box for Proportional Lines.
@@ -46,10 +47,10 @@ public final class PLineFieldsComboBox extends ProportionalFieldsComboBox {
      * @param legend  Legend
      * @param preview Preview
      */
-    public PLineFieldsComboBox(DataSource ds,
+    public PLineFieldsComboBox(DataSource ds,String table,
                                 ProportionalLine legend,
                                 CanvasSE preview) {
-        super(ds, legend, preview);
+        super(ds,table, legend, preview);
         init();
     }
 

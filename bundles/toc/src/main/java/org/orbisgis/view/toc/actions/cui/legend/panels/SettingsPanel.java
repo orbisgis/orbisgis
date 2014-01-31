@@ -29,7 +29,6 @@
 package org.orbisgis.view.toc.actions.cui.legend.panels;
 
 import net.miginfocom.swing.MigLayout;
-import org.gdms.data.DataSource;
 import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.OnVertexOnCentroid;
@@ -52,6 +51,7 @@ import org.orbisgis.view.toc.actions.cui.legend.components.SymbolUOMComboBox;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
 import javax.swing.*;
 
 /**
@@ -79,7 +79,7 @@ public final class SettingsPanel<K, U extends LineParameters> extends JPanel {
      * @param tablePanel Table Panel
      */
     public SettingsPanel(MappedLegend<K, U> legend,
-                         DataSource dataSource,
+                         DataSource dataSource,String table,
                          CanvasSE preview,
                          TablePanel<K, U> tablePanel) {
         super(new MigLayout("wrap 2", AbsPanel.COLUMN_CONSTRAINTS));
@@ -88,11 +88,11 @@ public final class SettingsPanel<K, U extends LineParameters> extends JPanel {
         this.tablePanel = tablePanel;
         if (legend instanceof AbstractCategorizedLegend) {
             this.fieldComboBox = NumericalFieldsComboBox.createInstance(
-                    dataSource,
+                    dataSource,table,
                     (AbstractCategorizedLegend) legend);
         } else if (legend instanceof AbstractRecodedLegend) {
             this.fieldComboBox = new NonSpatialFieldsComboBox(
-                    dataSource,
+                    dataSource,table,
                     (AbstractRecodedLegend) legend);
         } else {
             throw new IllegalStateException("Settings panels are only available" +

@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.panels;
 
-import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
@@ -45,6 +44,7 @@ import org.orbisgis.view.toc.actions.cui.legend.ui.PnlUniqueLineSE;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
 import javax.swing.*;
 
 /**
@@ -57,6 +57,7 @@ public class ProportionalLinePanel extends AbsPanel {
     private static final I18n I18N = I18nFactory.getI18n(ProportionalLinePanel.class);
 
     private DataSource dataSource;
+    private String table;
 
     private PLineFieldsComboBox pLineFieldsComboBox;
     private ColorLabel colorLabel;
@@ -76,8 +77,9 @@ public class ProportionalLinePanel extends AbsPanel {
      */
     public ProportionalLinePanel(ProportionalLine legend,
                                  CanvasSE preview,
-                                 DataSource dataSource) {
+                                 DataSource dataSource, String table) {
         super(legend, preview, I18N.tr(PnlUniqueLineSE.LINE_SETTINGS));
+        this.table = table;
         this.dataSource = dataSource;
         init();
         addComponents();
@@ -93,7 +95,7 @@ public class ProportionalLinePanel extends AbsPanel {
         ProportionalStrokeLegend strokeLegend = getLegend().getStrokeLegend();
         ConstantSolidFill fillAnalysis = (ConstantSolidFill) strokeLegend.getFillAnalysis();
 
-        pLineFieldsComboBox = new PLineFieldsComboBox(dataSource, getLegend(), preview);
+        pLineFieldsComboBox = new PLineFieldsComboBox(dataSource, table, getLegend(), preview);
         colorLabel = new ColorLabel(fillAnalysis, preview);
         lineUOMComboBox = new LineUOMComboBox(getLegend(), preview);
         try {
