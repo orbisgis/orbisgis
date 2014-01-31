@@ -89,7 +89,6 @@ import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.SIFWizard;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.view.background.BackgroundJob;
@@ -103,7 +102,6 @@ import org.orbisgis.view.table.TableEditableElementImpl;
 import org.orbisgis.view.toc.actions.EditLayerSourceAction;
 import org.orbisgis.view.toc.actions.LayerAction;
 import org.orbisgis.view.toc.actions.StyleAction;
-import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.SimpleStyleEditor;
 import org.orbisgis.view.toc.actions.cui.legend.wizard.LegendWizard;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
@@ -266,10 +264,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     I18N.tr("Simple style editor"), I18N.tr("Open the simple editor for SE styles"),
                     OrbisGISIcon.getIcon("palette_edit"),
                     EventHandler.create(ActionListener.class, this, "onSimpleEditor"),null).setOnSingleStyleSelection(true));
-            popupActions.addAction(new StyleAction(this,TocActionFactory.A_ADVANCED_EDITION,
-                    I18N.tr("Advanced style editor"), I18N.tr("Open the advanced editor for SE styles"),
-                    OrbisGISIcon.getIcon("palette_edit"),
-                    EventHandler.create(ActionListener.class, this, "onAdvancedEditor"),null).setOnSingleStyleSelection(true));
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_REMOVE_STYLE,
                     I18N.tr("Remove style"), I18N.tr("Remove this style from the associated layer."),
                     OrbisGISIcon.getIcon("palette_remove"),
@@ -923,31 +917,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                             LOGGER.info("This functionality is not supported.");
                         }
                 }
-        }
-
-        /**
-         * If used, this method opens an advanced editor for the currently selected
-         * style.
-         */
-        public void onAdvancedEditor(){
-            try {
-                Style[] styles = mapContext.getSelectedStyles();
-                if(styles.length == 1){
-                    Style style = styles[0];
-                    ILayer layer = style.getLayer();
-                    if(isStyleAllowed(layer)){
-                        int index = layer.indexOf(style);
-                        LegendUIController controller = new LegendUIController(index,style);
-                        if (UIFactory.showDialog((UIPanel)controller.getMainPanel())) {
-                            layer.setStyle(index,controller.getEditedFeatureTypeStyle());
-                        }
-                    }else{
-                        LOGGER.info("This functionality is not supported.");
-                    }
-                }
-            } catch (SeExceptions.InvalidStyle ex) {
-                LOGGER.error(I18N.tr("Error while editing the legend"), ex);
-            }
         }
 
         /**

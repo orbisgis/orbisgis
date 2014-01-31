@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.toc.actions.cui;
  
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;

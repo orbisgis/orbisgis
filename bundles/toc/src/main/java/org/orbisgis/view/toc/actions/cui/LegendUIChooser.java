@@ -28,9 +28,6 @@
 package org.orbisgis.view.toc.actions.cui;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.Type;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.legend.thematic.categorize.CategorizedArea;
 import org.orbisgis.legend.thematic.categorize.CategorizedLine;
@@ -57,7 +54,6 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.net.URL;
 import java.util.ArrayList;
-import org.gdms.data.schema.MetadataUtilities;
 
 /**
  * Displays a UI with a list of the legends supported by the layer being

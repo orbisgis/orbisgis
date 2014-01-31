@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.toc;
+package org.orbisgis.view.toc;
 
 import org.orbisgis.view.components.actions.*;
 import org.orbisgis.viewapi.edition.EditorDockable;
