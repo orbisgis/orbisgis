@@ -36,7 +36,6 @@ import javax.swing.event.CellEditorListener;
 import javax.swing.tree.TreeCellEditor;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.renderer.se.Style;
 
 public class TocTreeEditor implements TreeCellEditor {
@@ -110,11 +109,7 @@ public class TocTreeEditor implements TreeCellEditor {
                         if(lastEditedCell.getValue() instanceof ILayer) {
                                 ILayer l = (ILayer)lastEditedCell.getValue();
                                 //A layer with a data source can be set with an empty name
-                                if(lastEditedCell.getLabel().isEmpty() && l.getDataSource()==null) {
-                                        return false;
-                                } else {
-                                        return true;
-                                }
+                            return !(lastEditedCell.getLabel().isEmpty() && l.getTableReference() == null);
                         } else if(lastEditedCell.getValue() instanceof Style) {
                                 return !lastEditedCell.getLabel().isEmpty();
                         } else {
