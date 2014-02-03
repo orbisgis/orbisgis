@@ -187,65 +187,69 @@ public class MapControl extends JComponent implements ContainerListener {
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
         @Override
-	protected void paintComponent(Graphics g) {
-		BufferedImage mapTransformImage = mapTransform.getImage();
+        protected void paintComponent(Graphics g) {
+            BufferedImage mapTransformImage = mapTransform.getImage();
 
-                // we always fill the Graphics with an opaque color
-                // before drawing anything.
-                g.setColor(backColor);
-                g.fillRect(0, 0, getWidth(), getHeight());
-		// then we render on top the already computed image
-		// if it exists
-		if (mapTransformImage != null && status == UPDATED) {
-                    updatedImage = mapTransformImage;
-		}
-                    
-                if(updatedImage!=null){
-                    g.drawImage(updatedImage, 0, 0, null);
-                    toolManager.paintEdition(g);
-                }
+            // we always fill the Graphics with an opaque color
+            // before drawing anything.
+            g.setColor(backColor);
+            g.fillRect(0, 0, getWidth(), getHeight());
+            // then we render on top the already computed image
+            // if it exists
+            if (mapTransformImage != null && status == UPDATED) {
+                updatedImage = mapTransformImage;
+            }
 
-		// if the image itself is dirty
-		if (status == DIRTY && mapContext!=null) {
-                    if(!awaitingDrawing.getAndSet(true)) {
-                        setStatus(UPDATED);
-			// is never null, except at first loading with no layer
-			// in that case we do not draw anything
-				int width = this.getWidth();
-				int height = this.getHeight();
+            if(updatedImage!=null){
+                g.drawImage(updatedImage, 0, 0, null);
+                toolManager.paintEdition(g);
+            }
 
-				// getting an image to draw in
-				GraphicsConfiguration configuration = GraphicsEnvironment
-						.getLocalGraphicsEnvironment().getDefaultScreenDevice()
-						.getDefaultConfiguration();
-				BufferedImage inProcessImage = configuration
-						.createCompatibleImage(width, height,
-								BufferedImage.TYPE_INT_ARGB);
+            // if the image itself is dirty
+            if (status == DIRTY && mapContext!=null) {
+                if(!awaitingDrawing.getAndSet(true)) {
+                    setStatus(UPDATED);
+                    // is never null, except at first loading with no layer
+                    // in that case we do not draw anything
+                    int width = this.getWidth();
+                    int height = this.getHeight();
 
-				Graphics gImg = inProcessImage.createGraphics();
+                    // getting an image to draw in
+                    GraphicsConfiguration configuration = GraphicsEnvironment
+                            .getLocalGraphicsEnvironment().getDefaultScreenDevice()
+                            .getDefaultConfiguration();
+                    BufferedImage inProcessImage = configuration
+                            .createCompatibleImage(width, height,
+                                    BufferedImage.TYPE_INT_ARGB);
 
-				// filling image
-				gImg.setColor(backColor);
-				gImg.fillRect(0, 0, getWidth(), getHeight());
+                    Graphics gImg = inProcessImage.createGraphics();
 
-				// this is the new image
-				// mapTransform will update the AffineTransform
-				mapTransform.setImage(inProcessImage);
+                    // filling image
+                    gImg.setColor(backColor);
+                    gImg.fillRect(0, 0, getWidth(), getHeight());
 
-				// now we start the actual drawer
-				drawer = new Drawer(mapContext, awaitingDrawing, this);
-				BackgroundManager bm = Services.getService(BackgroundManager.class);
-                                bm.nonBlockingBackgroundOperation(
-                                        new DefaultJobId(JOB_DRAWING_PREFIX_ID +
-                                        mapControlId), drawer);
-                    } else {
-                        // Currently drawing with a mix of old and new map context !
-                        // Stop the drawing
-                        // The drawer will call paint when it will release the awaitingDrawing
+                    // this is the new image
+                    // mapTransform will update the AffineTransform
+                    mapTransform.setImage(inProcessImage);
+
+                    // now we start the actual drawer
+                    drawer = new Drawer(mapContext, awaitingDrawing, this);
+                    BackgroundManager bm = Services.getService(BackgroundManager.class);
+                    bm.nonBlockingBackgroundOperation(
+                            new DefaultJobId(JOB_DRAWING_PREFIX_ID +
+                                    mapControlId), drawer);
+                } else {
+                    // Currently drawing with a mix of old and new map context !
+                    // Stop the drawing
+                    // The drawer will call paint when it will release the awaitingDrawing
+                    try {
                         drawer.cancel();
+                    } catch (Exception ex) {
+                        // Ignore errors
                     }
-		}
-	}
+                }
+            }
+        }
 
 	/**
 	 * Returns the drawn image

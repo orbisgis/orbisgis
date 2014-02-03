@@ -67,6 +67,7 @@ import org.orbisgis.view.util.CommentUtil;
 import org.orbisgis.view.sqlconsole.blockComment.QuoteSQL;
 import org.orbisgis.view.sqlconsole.codereformat.CodeReformator;
 import org.orbisgis.view.sqlconsole.codereformat.CommentSpec;
+import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.sqlconsole.ui.ext.SQLAction;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -282,11 +283,6 @@ public class SQLConsolePanel extends JPanel {
         public void onExecute() {      
                 if (scriptPanel.getDocument().getLength() > 0) {
                     BackgroundManager bm = Services.getService(BackgroundManager.class);
-                    MapContext mapContext = null;
-                    MapElement mapElement = MapElement.fetchFirstMapElement();
-                    if(mapElement!=null) {
-                        mapContext = mapElement.getMapContext();
-                    }
                     bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(this, dataSource, splitterFactory));
                 }
         }

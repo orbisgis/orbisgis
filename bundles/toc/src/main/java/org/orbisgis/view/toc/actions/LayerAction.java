@@ -143,7 +143,7 @@ public class LayerAction extends DefaultAction {
                 rowSelection = !layer.getSelection().isEmpty();
             }
             hasRealLayer = !layerNode.getLayer().acceptsChilds();
-            if(onVectorSourceOnly && !hasNonVectorSource) {
+            if(hasRealLayer && onVectorSourceOnly && !hasNonVectorSource) {
                 try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
                     TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
                     List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableLocation);

@@ -108,8 +108,7 @@ public final class MapElement extends AbstractEditableElement {
          * Use the EditorManager service and search for the first available editable map.
          * @return The map context or null if it is not found.
          */
-        public static MapElement fetchFirstMapElement() {
-                EditorManager editorManager = Services.getService(EditorManager.class);
+        public static MapElement fetchFirstMapElement(EditorManager editorManager) {
                 for (EditableElement editable : editorManager.getEditableElements()) {
                         if (editable instanceof MapElement) {
                                 return (MapElement)editable;

@@ -31,7 +31,6 @@ package org.orbisgis.view.toc;
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -40,8 +39,6 @@ import java.awt.event.MouseEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -61,14 +58,9 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import javax.xml.bind.JAXBElement;
-import net.opengis.se._2_0.core.StyleType;
 import org.apache.log4j.Logger;
-import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
-import org.orbisgis.core.layerModel.BeanLayer;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.Layer;
 import org.orbisgis.core.layerModel.LayerCollection;
@@ -79,20 +71,16 @@ import org.orbisgis.core.layerModel.LayerListenerEvent;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.MapContextListener;
 import org.orbisgis.core.layerModel.SelectionEvent;
-import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.CompositeSymbolizer;
-import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.sif.SIFWizard;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.ZoomToSelection;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.edition.EditableTransferEvent;
@@ -154,6 +142,8 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         public Toc(EditorManager editorManager) {
                 super(new BorderLayout());
                 this.editorManager = editorManager;
+                // Find a map element among other editors
+                setEditableElement(MapElement.fetchFirstMapElement(editorManager));
                 //Set docking parameters
                 dockingPanelParameters = new DockingPanelParameters();
                 dockingPanelParameters.setName("toc");
@@ -163,6 +153,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 initPopupActions();
                 //Initialise an empty tree
                 add(new JScrollPane(makeTree()));
+                // Fetch Map
 
         }
         private void initTitleActions() {
@@ -508,6 +499,11 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 //Select moved layers
                 if (!newSelectedLayer.isEmpty()) {
                         mapContext.setSelectedLayers(newSelectedLayer.toArray(new ILayer[newSelectedLayer.size()]));
+                }
+
+                if (!sourceToDrop.isEmpty()) {
+                    BackgroundManager bm = Services.getService(BackgroundManager.class);//Cancel the drawing process
+                    bm.backgroundOperation(new DropDataSourceListProcess(dropNode, index, sourceToDrop));
                 }
         }
 

@@ -40,6 +40,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.view.edition.EditorTransferHandler;
 import org.orbisgis.view.edition.TransferableEditableElement;
 import org.orbisgis.viewapi.edition.EditableElement;
+import org.orbisgis.viewapi.edition.EditableSource;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -63,7 +64,8 @@ public class TocTransferHandler extends EditorTransferHandler {
 
     @Override
     protected boolean canImportEditableElement(EditableElement editableElement) {
-        return editableElement.getTypeId().equals(EditableLayer.EDITABLE_LAYER_TYPE);
+        String type = editableElement.getTypeId();
+        return type.equals(EditableLayer.EDITABLE_LAYER_TYPE) || type.equals(EditableSource.EDITABLE_RESOURCE_TYPE);
     }
 
     @Override
