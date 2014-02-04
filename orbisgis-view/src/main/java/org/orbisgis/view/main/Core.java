@@ -161,7 +161,7 @@ public class Core {
         progressInfo.setTaskName(I18N.tr("Connecting to the database.."));
         // Init database
         try {
-            mainContext.initDataBase("sa","sa");
+            mainContext.initDataBase(coreWorkspace.getDataBaseUser(),coreWorkspace.getDataBasePassword());
         } catch (SQLException ex) {
             throw new RuntimeException(ex.getLocalizedMessage(), ex);
         }

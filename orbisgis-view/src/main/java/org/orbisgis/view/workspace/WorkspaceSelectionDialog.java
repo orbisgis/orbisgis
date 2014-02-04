@@ -58,7 +58,7 @@ public class WorkspaceSelectionDialog extends JPanel {
 
     private static final int JDBC_USER_FIELD_COLUMNS = 6;
     private static final int JDBC_PASSWORD_FIELD_COLUMNS = 6;
-    private static final int JDBC_URL_FIELD_COLUMNS = 6;
+    private static final int JDBC_URL_FIELD_COLUMNS = 30;
     private static final int JDBC_URL_FIELD_ROWS = 4;
 
     private DirectoryComboBoxChoice comboBox;
@@ -237,14 +237,11 @@ public class WorkspaceSelectionDialog extends JPanel {
             coreWorkspace.setDefaultWorkspace(null);
         }
         String jdbcUri = wkDialog.getJdbcURI().getText();
+        // Create a temporary workspace to compute future path
+        CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();
+        tempWorkspace.setWorkspaceFolder(wkDialog.getComboBox().getValue());
         if(jdbcUri.isEmpty()) {
-            CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();
-            tempWorkspace.setWorkspaceFolder(wkDialog.getComboBox().getValue());
             jdbcUri = tempWorkspace.getJDBCConnectionReference();
-        }
-        // Save the database.uri file
-        try(FileWriter fileWriter = new FileWriter(coreWorkspace.getDataBaseUriFilePath())) {
-            fileWriter.write(jdbcUri+"\n");
         }
         // Save the workspace list, including the previous one
         List<File> workspaces = comboBox.getValues();
@@ -257,6 +254,10 @@ public class WorkspaceSelectionDialog extends JPanel {
         File[] files = wkFile.listFiles();
         if (!wkFile.exists() || (files != null && files.length == 0)) {
             ViewWorkspace.initWorkspaceFolder(wkFile);
+        }
+        // Save the database.uri file
+        try(FileWriter fileWriter = new FileWriter(tempWorkspace.getDataBaseUriFilePath())) {
+            fileWriter.write(jdbcUri+"\n");
         }
         // Do this at the end because there is trigger on property change
         coreWorkspace.setWorkspaceFolder(wkDialog.getComboBox().getValue());
