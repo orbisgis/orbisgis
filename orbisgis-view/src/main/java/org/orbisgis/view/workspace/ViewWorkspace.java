@@ -34,7 +34,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.core.workspace.CoreWorkspaceImpl;
 
 /**
  * View workspace contains file and folder information
@@ -46,8 +46,8 @@ public class ViewWorkspace implements org.orbisgis.viewapi.workspace.ViewWorkspa
     private static final long serialVersionUID = 1L;
 
     private PropertyChangeSupport propertySupport;
-    private CoreWorkspace coreWorkspace;
-    public ViewWorkspace(CoreWorkspace coreWorkspace) {
+    private CoreWorkspaceImpl coreWorkspace;
+    public ViewWorkspace(CoreWorkspaceImpl coreWorkspace) {
         propertySupport = new PropertyChangeSupport(this);
         this.coreWorkspace = coreWorkspace;
         SIFPath = coreWorkspace.getWorkspaceFolder() + File.separator + "sif" ;
@@ -63,7 +63,7 @@ public class ViewWorkspace implements org.orbisgis.viewapi.workspace.ViewWorkspa
         }
 
         @Override
-        public CoreWorkspace getCoreWorkspace() {
+        public CoreWorkspaceImpl getCoreWorkspace() {
                 return coreWorkspace;
         }
 
@@ -140,7 +140,7 @@ public class ViewWorkspace implements org.orbisgis.viewapi.workspace.ViewWorkspa
      * @throws IOException Error while writing files or the folder is not empty
      */
     public static void initWorkspaceFolder(File workspaceFolder) throws IOException {
-        CoreWorkspace.initWorkspaceFolder(workspaceFolder);
+        CoreWorkspaceImpl.initWorkspaceFolder(workspaceFolder);
     }
     /**
      * Check if the provided folder can be loaded has the workspace
@@ -159,7 +159,7 @@ public class ViewWorkspace implements org.orbisgis.viewapi.workspace.ViewWorkspa
         if(workspaceFolder.listFiles().length==0) {
                 return true;
         }
-        File versionFile = new File(workspaceFolder, CoreWorkspace.VERSION_FILE);
+        File versionFile = new File(workspaceFolder, CoreWorkspaceImpl.VERSION_FILE);
         if(!versionFile.exists()) {
                 return false;
         }       
@@ -170,7 +170,7 @@ public class ViewWorkspace implements org.orbisgis.viewapi.workspace.ViewWorkspa
                                versionFile));
                 String line = fileReader.readLine();
                 if(line!=null) {
-                        return Integer.valueOf(line).equals(CoreWorkspace.MAJOR_VERSION);
+                        return Integer.valueOf(line).equals(CoreWorkspaceImpl.MAJOR_VERSION);
                 }
         } catch (IOException e) {
                 throw new RuntimeException("Cannot read the workspace location", e);

@@ -227,8 +227,9 @@ public class BundleTools {
                 try {
                     if(b!=null) {
                         String installedBundleLocation = b.getLocation();
-                        if(!installedBundleLocation.equals(jarFile.toURI().toString())) {
-                            //if the location is not the same reinstall it
+                        if(!installedBundleLocation.equals(jarFile.toURI().toString())
+                                ||  (b.getVersion()!=null && "SNAPSHOT".equals(b.getVersion().getQualifier()))) {
+                            //if the location is not the same, or snapshot then reinstall it
                             b.uninstall();
                             b=null;
                         }

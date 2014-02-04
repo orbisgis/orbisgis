@@ -41,7 +41,7 @@ import java.util.Map;
 import org.orbisgis.core.context.main.MainContext;
 import org.orbisgis.core.plugin.BundleReference;
 import org.orbisgis.core.plugin.BundleTools;
-import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.core.workspace.CoreWorkspaceImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -95,7 +95,7 @@ public final class BeanshellScript {
          * This class is used to load a datasourcefactory
          */
         private static void servicesRegister(Map<String,String> parameters) throws IllegalArgumentException {
-                CoreWorkspace coreWorkspace = new CoreWorkspace();
+                CoreWorkspaceImpl coreWorkspace = new CoreWorkspaceImpl();
                 if(parameters.containsKey(ARG_APPFOLDER)) {
                     coreWorkspace.setApplicationFolder(new File(parameters.get(ARG_APPFOLDER)).getAbsolutePath());
                 }

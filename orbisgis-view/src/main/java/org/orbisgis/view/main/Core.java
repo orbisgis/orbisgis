@@ -51,7 +51,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
 import org.orbisgis.core.plugin.PluginHost;
-import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.core.workspace.CoreWorkspaceImpl;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.CustomButton;
@@ -128,7 +128,7 @@ public class Core {
      * @param debugMode Show additional information for debugging purposes
      * @note Call startup() to init Swing
      */
-    public Core(CoreWorkspace coreWorkspace, boolean debugMode, ProgressMonitor parentProgress) throws InvocationTargetException, InterruptedException {
+    public Core(CoreWorkspaceImpl coreWorkspace, boolean debugMode, ProgressMonitor parentProgress) throws InvocationTargetException, InterruptedException {
         ProgressMonitor progressInfo = parentProgress.startTask(I18N.tr("Loading Workspace.."),100);
         MainContext.initConsoleLogger(debugMode);
         // Declare empty main frame
@@ -184,7 +184,7 @@ public class Core {
     /**
      * Find the workspace folder or addDockingPanel a dialog to select one
      */
-    private void initMainContext(boolean debugMode, CoreWorkspace coreWorkspace) throws InterruptedException, InvocationTargetException, RuntimeException {
+    private void initMainContext(boolean debugMode, CoreWorkspaceImpl coreWorkspace) throws InterruptedException, InvocationTargetException, RuntimeException {
         String workspaceFolder = coreWorkspace.getWorkspaceFolder();
         if (workspaceFolder == null) {
             File defaultWorkspace = coreWorkspace.readDefaultWorkspacePath();
@@ -221,13 +221,13 @@ public class Core {
     }
 
     private static class PromptUserForSelectingWorkspace implements Runnable {
-        private CoreWorkspace coreWorkspace;
+        private CoreWorkspaceImpl coreWorkspace;
         /**
          * User do not cancel workspace selection
          */
         private boolean ok = false;
 
-        public PromptUserForSelectingWorkspace(CoreWorkspace coreWorkspace) {
+        public PromptUserForSelectingWorkspace(CoreWorkspaceImpl coreWorkspace) {
             this.coreWorkspace = coreWorkspace;
         }
 
@@ -243,9 +243,7 @@ public class Core {
         @Override
         public void run() {
             // Ask the user to select a workspace folder
-            File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, coreWorkspace);
-            if (newWorkspace != null) {
-                coreWorkspace.setWorkspaceFolder(newWorkspace.getAbsolutePath());
+            if (WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, coreWorkspace)) {
                 ok = true;
             }
         }

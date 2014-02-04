@@ -36,6 +36,26 @@ public interface CoreWorkspace extends Serializable {
     String getDataBaseUriFilePath();
 
     /**
+     * @return The database user
+     */
+    String getDataBaseUser();
+
+    /**
+     * @return The database password
+     */
+    String getDataBasePassword();
+
+    /**
+     * @param user New user name for database connection
+     */
+    void setDataBaseUser(String user);
+
+    /**
+     * @param password New password for database connection
+     */
+    void setDataBasePassword(String password);
+
+    /**
      * Get the value of pluginCache
      *
      * @return the value of pluginCache
