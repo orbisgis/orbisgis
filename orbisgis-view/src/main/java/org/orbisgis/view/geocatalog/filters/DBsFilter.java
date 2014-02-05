@@ -39,6 +39,6 @@ public class DBsFilter implements IFilter {
 
     @Override
     public boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException {
-        return tableProperties.getString("TABLE_TYPE").equalsIgnoreCase("LINKED TABLE");
+        return "LINKED TABLE".equalsIgnoreCase(tableProperties.getString("TABLE_TYPE"));
     }
 }

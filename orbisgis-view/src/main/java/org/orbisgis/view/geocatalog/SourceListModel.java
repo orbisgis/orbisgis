@@ -155,13 +155,18 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
             // GEOMETRY COLUMNS table doesn't exists
             LOGGER.trace(ex.getLocalizedMessage(), ex);
         }
-        switch(rs.getString("TABLE_TYPE")) {
-            case "SYSTEM_TABLE":
-                return "drive";
-            case "LINKED TABLE":
-                return "database";
-            default:
-                return "flatfile";
+        String tableType = rs.getString("table_type");
+        if(tableType != null) {
+            switch(tableType) {
+                case "SYSTEM_TABLE":
+                    return "drive";
+                case "LINKED TABLE":
+                    return "database";
+                default:
+                    return "flatfile";
+            }
+        } else {
+            return "flatfile";
         }
         //"remove";
         //"image";
@@ -288,7 +293,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
     private static final class DefaultFilter implements IFilter {
         @Override
         public boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException {
-            return !tableProperties.getString("TABLE_TYPE").equalsIgnoreCase("SYSTEM TABLE");
+            return !"SYSTEM TABLE".equalsIgnoreCase(tableProperties.getString("table_type"));
         }
     }
 

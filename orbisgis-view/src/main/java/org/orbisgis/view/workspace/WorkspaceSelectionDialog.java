@@ -260,6 +260,8 @@ public class WorkspaceSelectionDialog extends JPanel {
             fileWriter.write(jdbcUri+"\n");
         }
         // Do this at the end because there is trigger on property change
+        coreWorkspace.setDataBaseUser(wkDialog.getUser().getText());
+        coreWorkspace.setDataBasePassword(new String(wkDialog.getPassword().getPassword()));
         coreWorkspace.setWorkspaceFolder(wkDialog.getComboBox().getValue());
     }
 }

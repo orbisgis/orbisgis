@@ -39,6 +39,7 @@ public class FilesFilter implements IFilter {
 
     @Override
     public boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException {
-        return tableProperties.getString("REMARKS").startsWith("file://");
+        String remarks = tableProperties.getString("REMARKS");
+        return remarks != null && remarks.startsWith("file://");
     }
 }
