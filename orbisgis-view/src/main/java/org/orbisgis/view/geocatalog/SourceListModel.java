@@ -32,10 +32,13 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sql.DataSource;
 import javax.swing.AbstractListModel;
@@ -176,7 +179,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
 
     private static String addQuotesIfNecessary(String tableLocationPart) {
         if(tableLocationPart.contains(".")) {
-            return "`"+tableLocationPart+"`";
+            return "\""+tableLocationPart+"\"";
         } else {
             return tableLocationPart;
         }
@@ -209,11 +212,11 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
                 if(accepts && (!checkForDefaultFilter || defaultFilter.accepts(connection, location.toString(), rs))) {
                     // Make Label
                     StringBuilder label = new StringBuilder(addQuotesIfNecessary(location.getTable()));
-                    if(!location.getSchema().equalsIgnoreCase(defaultSchema)) {
+                    if(!location.getSchema().isEmpty() && !location.getSchema().equalsIgnoreCase(defaultSchema)) {
                         label.insert(0, ".");
                         label.insert(0, addQuotesIfNecessary(location.getSchema()));
                     }
-                    if(!location.getCatalog().equalsIgnoreCase(defaultCatalog)) {
+                    if(!location.getCatalog().isEmpty() && !location.getCatalog().equalsIgnoreCase(defaultCatalog)) {
                         label.insert(0, ".");
                         label.insert(0, addQuotesIfNecessary(location.getCatalog()));
                     }
@@ -288,12 +291,21 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
     }
 
     /**
-     * This filter is always applied, to hide system table
+     * This filter is always applied, to hide system tables
      */
     private static final class DefaultFilter implements IFilter {
+        private Set<String> system_tables = new HashSet<>(
+                Arrays.asList("spatial_ref_sys", "geography_columns", "geometry_columns","raster_columns","raster_overviews"));
+        private Set<String> system_schema = new HashSet<>(Arrays.asList("pg_catalog","information_schema"));
+        private Set<String> okTableType = new HashSet<>(Arrays.asList("table","view","view table"));
+
         @Override
         public boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException {
-            return !"SYSTEM TABLE".equalsIgnoreCase(tableProperties.getString("table_type"));
+            TableLocation location = TableLocation.parse(sourceName);
+            String tableType = tableProperties.getString("table_type");
+            return !(system_schema.contains(location.getSchema().toLowerCase()) ||
+                    system_tables.contains(location.getTable().toLowerCase())) &&
+                    tableType != null && okTableType.contains(tableType.toLowerCase());
         }
     }
 

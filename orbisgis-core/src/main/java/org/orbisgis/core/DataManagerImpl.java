@@ -95,12 +95,12 @@ public class DataManagerImpl implements DataManager {
             // Uri is incomplete, resolve it by using working directory
             uri = new File("./").toURI().resolve(uri);
         }
-        String tableName = findUniqueTableName(FileUtils.getNameFromURI(uri).toUpperCase());
         if("file".equalsIgnoreCase(uri.getScheme())) {
             File path = new File(uri);
             if(!path.exists()) {
                 throw new SQLException("Specified source does not exists");
             }
+            String tableName = findUniqueTableName(FileUtils.getNameFromURI(uri).toUpperCase());
             try (Connection connection = dataSource.getConnection()) {
                 // Find if a linked table use this file path
                 DatabaseMetaData meta = connection.getMetaData();
@@ -131,7 +131,7 @@ public class DataManagerImpl implements DataManager {
             // A link to a remote or local database
             try(Connection connection = dataSource.getConnection()) {
                 String withoutQuery = uri.toString().replace("?"+URI.create(uri.getSchemeSpecificPart()).getQuery(),"");
-                if(connection.getMetaData().getURL().equalsIgnoreCase(withoutQuery)) {
+                if(connection.getMetaData().getURL().startsWith(withoutQuery)) {
                     // Extract catalog, schema and table name
                     Map<String,String> query = URIUtility.getQueryKeyValuePairs(URI.create(uri.getSchemeSpecificPart()));
                     return new TableLocation(query.get("catalog"),query.get("schema"),query.get("table")).toString();

@@ -1365,8 +1365,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private static class ResultSetHolder implements Runnable,AutoCloseable {
         private static final int SLEEP_TIME = 1000;
         private static final int RESULT_SET_TIMEOUT = 60000;
-        public enum STATUS { NEVER_STARTED, STARTED , READY, CLOSED}
-
+        public enum STATUS { NEVER_STARTED, STARTED , READY, CLOSED, EXCEPTION}
+        private Exception ex;
         private ResultSet resultSet;
         private DataSource dataSource;
         private String command;
@@ -1408,8 +1408,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                 }
             } catch (Exception ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
+                this.ex = ex;
+                status = STATUS.EXCEPTION;
             } finally {
-                status = STATUS.CLOSED;
+                if(status != STATUS.EXCEPTION) {
+                    status = STATUS.CLOSED;
+                }
             }
         }
 
@@ -1426,13 +1430,20 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         }
 
         public Resource getResource() throws SQLException {
-            // Reactivate result set if necessary
-            if(getStatus() == ResultSetHolder.STATUS.CLOSED || getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
-                Thread resultSetThread = new Thread(this, "ResultSet of "+command);
-                resultSetThread.start();
-            }
             // Wait execution of request
             while(getStatus() != STATUS.READY) {
+                // Reactivate result set if necessary
+                if(getStatus() == ResultSetHolder.STATUS.CLOSED || getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
+                    Thread resultSetThread = new Thread(this, "ResultSet of "+command);
+                    resultSetThread.start();
+                }
+                if(status == STATUS.EXCEPTION) {
+                    if(ex instanceof SQLException) {
+                        throw (SQLException)ex;
+                    } else {
+                        throw new SQLException(ex);
+                    }
+                }
                 try {
                     Thread.sleep(WAITING_FOR_RESULTSET);
                 } catch (InterruptedException e) {

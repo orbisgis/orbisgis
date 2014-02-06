@@ -92,10 +92,9 @@ public class SQLCompletionProvider extends CompletionProviderBase {
         if(dataSource != null) {
             lastUpdate = System.currentTimeMillis();
             parser = Bnf.getInstance(null);
-            Connection connection = dataSource.getConnection();
-            try {
+            try (Connection connection = dataSource.getConnection()) {
                 DbContents contents = new DbContents();
-                contents.readContents("jdbc:h2:", connection);
+                contents.readContents(connection.getMetaData().getURL(), connection);
                 DbContextRule columnRule = new DbContextRule(contents, DbContextRule.COLUMN);
                 DbContextRule newAliasRule = new DbContextRule(contents, DbContextRule.NEW_TABLE_ALIAS);
                 DbContextRule aliasRule = new DbContextRule(contents, DbContextRule.TABLE_ALIAS);
@@ -111,8 +110,8 @@ public class SQLCompletionProvider extends CompletionProviderBase {
                 parser.updateTopic("schema_name", schemaRule);
                 parser.updateTopic("expression", procedureRule);
                 parser.linkStatements();
-            } finally {
-                connection.close();
+            } catch (SQLException ex) {
+                log.error(ex.getLocalizedMessage(), ex);
             }
         }
     }
