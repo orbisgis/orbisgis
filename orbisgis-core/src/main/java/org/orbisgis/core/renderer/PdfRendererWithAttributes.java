@@ -103,8 +103,6 @@ public class PdfRendererWithAttributes extends Renderer {
         try {
             String attributeName;
             attributeName = rs.getString(fieldName);
-            rs.absolute((int)id);
-
             PdfStructureElement e = new PdfStructureElement(top, new PdfName(attributeName));
             PdfDictionary userProperties = new PdfDictionary();
             userProperties.put(PdfName.O, PdfName.USERPROPERTIES);

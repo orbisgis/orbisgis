@@ -146,108 +146,106 @@ public abstract class Renderer {
                 ProgressMonitor pm) throws SQLException {
                 Envelope extent = mt.getAdjustedExtent();
                 int layerCount = 0;
-                String tableReference = layer.getTableReference();
-                try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
+                // long tV1 = System.currentTimeMillis();
+                long rowCount = 100; // TODO do a count(*) cpt
+                // Extract into drawSeLayer method !
+                List<Style> styles = layer.getStyles();
+                for(Style style : styles){
+                        layerCount +=drawStyle(style, g2, mt, layer, pm, rowCount, extent);
+                }
+                return layerCount;
+        }
+
+        private int drawStyle(Style style, Graphics2D g2,MapTransform mt, ILayer layer,
+                              ProgressMonitor pm, long rowCount, Envelope extent) throws SQLException {
+            int layerCount = 0;
+            LinkedList<Symbolizer> symbs = new LinkedList<Symbolizer>();
+            try {
+                // i.e. TextSymbolizer are always drawn above all other layer !! Should now be handle with symbolizer level
+                // Standard rules (with filter or no filter but not with elsefilter)
+                LinkedList<Rule> rList = new LinkedList<Rule>();
+                // Rule with ElseFilter
+                LinkedList<Rule> fRList = new LinkedList<Rule>();
+                // fetch symbolizers and rules
+                style.getSymbolizers(mt, symbs, rList, fRList);
+                // Create new dataSource with only feature in current extent
+                Set<Integer> selected = layer.getSelection();
+                // And now, features will be rendered
+                // Get a graphics for each symbolizer
+                initGraphics2D(symbs, g2, mt);
+                for (Rule r : rList) {
+                    beginLayer(r.getName());
+                    pm.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", 1);
+
+                    String tableReference = layer.getTableReference();
+                    try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
                         List<String> geometryFields = SFSUtilities.getGeometryFields(connection, SFSUtilities.splitCatalogSchemaTableName(tableReference));
                         if(geometryFields.isEmpty()) {
                             throw new SQLException(I18N.tr("Table {0} does not contains geometry fields",tableReference));
                         }
                         PreparedStatement st = connection.prepareStatement(
-                                String.format("select * from %s where %s && $1",tableReference,geometryFields.get(0)));
+                                String.format("select * from %s where %s && ?",tableReference,geometryFields.get(0)));
                         GeometryFactory geometryFactory = new GeometryFactory();
                         st.setObject(1, geometryFactory.toGeometry(extent)); // Filter geometry by envelope
                         PropertyChangeListener cancelListener = EventHandler.create(PropertyChangeListener.class, st,"cancel");
                         pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelListener);
                         try {
-                            ResultSet rs = st.executeQuery();
-                            // long tV1 = System.currentTimeMillis();
-                            long rowCount = 100; // TODO do a count(*) cpt
-                            // Extract into drawSeLayer method !
-                            List<Style> styles = layer.getStyles();
-                            for(Style style : styles){
-                                    layerCount +=drawStyle(style, rs.unwrap(SpatialResultSet.class), g2, mt, layer, pm, rowCount, extent);
+                            SpatialResultSet rs = st.executeQuery().unwrap(SpatialResultSet.class);
+                            int fieldID = rs.getMetaData().unwrap(SpatialResultSetMetaData.class).getFirstGeometryFieldIndex();
+                            int i = 0;
+                            while (rs.next()) {
+                                if (i / 1000 == i / 1000.0) {
+                                    if (pm.isCancelled()) {
+                                        break;
+                                    } else {
+                                        pm.progressTo((int) (100 * i / rowCount));
+                                    }
+                                }
+                                i++;
+                                if (layerCount % BATCH_SIZE == 0 && pm.isCancelled()) {
+                                    return layerCount;
+                                }
+                                Geometry theGeom = null;
+                                // If there is only one geometry, it is fetched now, otherwise, it up to symbolizers
+                                // to retrieve the correct geometry (through the Geometry attribute)
+                                if (fieldID >= 0) {
+                                    theGeom = rs.getGeometry(fieldID);
+                                }
+                                // Do not display the geometry when the envelope
+                                //doesn't intersect the current mapcontext area.
+                                if (theGeom == null || (theGeom != null &&
+                                        theGeom.getEnvelopeInternal().intersects(extent))) {
+                                    int row = rs.getRow();
+                                    boolean emphasis = selected.contains(row); //TODO find selection identifier
+
+                                    beginFeature(row, rs);
+
+                                    List<Symbolizer> sl = r.getCompositeSymbolizer().getSymbolizerList();
+                                    for (Symbolizer s : sl) {
+                                        boolean res = drawFeature(s, theGeom, rs, row,
+                                                extent, emphasis, mt);
+                                    }
+                                    endFeature(row, rs);
+                                }
                             }
+                            pm.endTask();
+                            endLayer(r.getName());
                         } finally {
                             pm.removePropertyChangeListener(cancelListener);
                         }
-                } catch (SQLException ex) {
+                    } catch (SQLException ex) {
                         if(!pm.isCancelled()) {
                             printEx(ex, layer, g2);
                         }
+                    }
                 }
-                return layerCount;
-        }
-
-        private int drawStyle(Style style, SpatialResultSet rs,Graphics2D g2,MapTransform mt, ILayer layer,
-                        ProgressMonitor pm, long rowCount, Envelope extent) throws SQLException {
-                int layerCount = 0;
-                LinkedList<Symbolizer> symbs = new LinkedList<Symbolizer>();
-                try {
-                        // i.e. TextSymbolizer are always drawn above all other layer !! Should now be handle with symbolizer level
-                        // Standard rules (with filter or no filter but not with elsefilter)
-                        LinkedList<Rule> rList = new LinkedList<Rule>();
-                        // Rule with ElseFilter
-                        LinkedList<Rule> fRList = new LinkedList<Rule>();
-                        // fetch symbolizers and rules
-                        style.getSymbolizers(mt, symbs, rList, fRList);
-                        // Create new dataSource with only feature in current extent
-                        Set<Integer> selected = layer.getSelection();
-                        // And now, features will be rendered
-                        // Get a graphics for each symbolizer
-                        initGraphics2D(symbs, g2, mt);
-                        for (Rule r : rList) {
-                                beginLayer(r.getName());
-                                pm.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", 100);
-                                int fieldID = rs.getMetaData().unwrap(SpatialResultSetMetaData.class).getFirstGeometryFieldIndex();
-                                int i = 0;
-                                rs.beforeFirst();
-                                while (rs.next()) {
-                                        if (i / 1000 == i / 1000.0) {
-                                                if (pm.isCancelled()) {
-                                                        break;
-                                                } else {
-                                                        pm.progressTo((int) (100 * i / rowCount));
-                                                }
-                                        }
-                                        i++;
-                                        if (layerCount % BATCH_SIZE == 0 && pm.isCancelled()) {
-                                                return layerCount;
-                                        }
-                                        Geometry theGeom = null;
-                                        // If there is only one geometry, it is fetched now, otherwise, it up to symbolizers
-                                        // to retrieve the correct geometry (through the Geometry attribute)
-                                        if (fieldID >= 0) {
-                                                theGeom = rs.getGeometry(fieldID);
-                                        }
-                                        // Do not display the geometry when the envelope
-                                        //doesn't intersect the current mapcontext area.
-                                        if (theGeom == null || (theGeom != null &&
-                                                    theGeom.getEnvelopeInternal().intersects(extent))) {
-                                                int row = rs.getRow();
-                                                boolean emphasis = selected.contains(row); //TODO find selection identifier
-
-                                                beginFeature(row, rs);
-
-                                                List<Symbolizer> sl = r.getCompositeSymbolizer().getSymbolizerList();
-                                                for (Symbolizer s : sl) {
-                                                        boolean res = drawFeature(s, theGeom, rs, row,
-                                                                extent, emphasis, mt);
-                                                }
-                                                endFeature(row, rs);
-                                        }
-                                }
-                                pm.endTask();
-                                endLayer(r.getName());
-                        }
-                        disposeLayer(g2);
-                } catch (ParameterException ex) {
-                        printEx(ex, layer, g2);
-                } catch (IOException ex) {
-                        printEx(ex, layer, g2);
-                } catch (SQLException ex) {
-                        printEx(ex, layer, g2);
-                }
-                return layerCount;
+                disposeLayer(g2);
+            } catch (ParameterException ex) {
+                printEx(ex, layer, g2);
+            } catch (IOException ex) {
+                printEx(ex, layer, g2);
+            }
+            return layerCount;
         }
 
         private boolean drawFeature(Symbolizer s, Geometry geom, ResultSet rs,

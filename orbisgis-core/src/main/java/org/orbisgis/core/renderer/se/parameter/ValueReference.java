@@ -148,7 +148,6 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
         if (this.fieldId == -1) {
             this.fieldId = getFieldIndexFromLabel(sds, fieldName);
         }
-        sds.absolute((int)fid);
         return sds.getObject(fieldId);
     }
 
