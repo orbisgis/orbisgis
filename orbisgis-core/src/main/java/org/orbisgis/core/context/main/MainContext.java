@@ -147,6 +147,7 @@ public class MainContext {
         String jdbcConnectionReference = coreWorkspace.getJDBCConnectionReference();
         if(!jdbcConnectionReference.isEmpty()) {
             Properties properties = JDBCUrlParser.parse(jdbcConnectionReference);
+            properties.setProperty(DataSourceFactory.JDBC_URL, jdbcConnectionReference);
             if(!userName.isEmpty()) {
                 properties.setProperty(DataSourceFactory.JDBC_USER,userName);
             }
