@@ -79,6 +79,9 @@ public class RealAttribute extends ValueReference implements RealParameter {
     @Override
     public Double getValue(ResultSet rs, long fid) throws ParameterException {
         try {
+            if(rs.getRow() != fid) {
+                rs.absolute((int)fid);
+            }
             Object value = this.getFieldValue(rs, fid);
             if (value instanceof Double) {
                 return (Double)value;

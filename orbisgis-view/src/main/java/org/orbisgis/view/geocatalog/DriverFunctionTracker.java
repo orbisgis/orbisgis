@@ -1,6 +1,7 @@
 package org.orbisgis.view.geocatalog;
 
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.orbisgis.coreapi.api.DriverFunctionContainer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;

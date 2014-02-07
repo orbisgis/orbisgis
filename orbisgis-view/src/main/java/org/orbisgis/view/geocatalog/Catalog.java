@@ -47,8 +47,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Arrays;
 import org.orbisgis.core.Services;
 import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.coreapi.api.DriverFunctionContainer;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
@@ -61,6 +63,7 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.H2GISProgressMonitor;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
+import org.orbisgis.view.geocatalog.jobs.ImportFiles;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
@@ -306,7 +309,8 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 }
         }
 
-        private DriverFunction getDriverFromExt(String ext,DriverFunction.IMPORT_DRIVER_TYPE type ) {
+        @Override
+        public DriverFunction getDriverFromExt(String ext,DriverFunction.IMPORT_DRIVER_TYPE type ) {
             for(DriverFunction driverFunction : fileDrivers) {
                 if(driverFunction.getImportDriverType() == type) {
                     for(String fileExt : driverFunction.getImportFormats()) {
@@ -336,19 +340,10 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             //Ask SIF to open the dialog
             if (UIFactory.showDialog(linkSourcePanel, true, true)) {
                 // We can retrieve the files that have been selected by the user
-                File[] files = linkSourcePanel.getSelectedFiles();
-                ImportFile importFileJob = new ImportFile(this, driverFunction, files, FileUtils.getNameFromURI(file.toURI()), dataManager.getDataSource());
+                List<File> files = Arrays.asList(linkSourcePanel.getSelectedFiles());
+                ImportFiles importFileJob = new ImportFiles(this, this, files, dataManager, type);
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
                 bm.nonBlockingBackgroundOperation(importFileJob);
-                for (File file : files) {
-                    String ext = FilenameUtils.getExtension(file.getName());
-                    DriverFunction driverFunction = getDriverFromExt(ext, type);
-                    if(driverFunction == null) {
-                        //When opening file in geocatalog, cannot found a driver able to load ex:.JPG extension
-                        LOGGER.error(I18N.tr("No driver found for {0} extension", ext));
-                    } else {
-                    }
-                }
             }
         }
 
@@ -788,46 +783,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             @Override
             public void run() {
                 editorManager.openEditable(element);
-            }
-        }
-        private static class ImportFile implements BackgroundJob {
-            private GeoCatalogExt catalog;
-            private DriverFunction driverFunction;
-            private List<File> files;
-            private String tableName;
-            private DataSource dataSource;
-
-            private ImportFile(GeoCatalogExt catalog, DriverFunction driverFunction, List<File> files, String tableName, DataSource dataSource) {
-                this.catalog = catalog;
-                this.driverFunction = driverFunction;
-                this.files = files;
-                this.tableName = tableName;
-                this.dataSource = dataSource;
-            }
-
-            @Override
-            public String getTaskName() {
-                return I18N.tr("Import file");
-            }
-
-            @Override
-            public void run(ProgressMonitor pm) {
-                try(Connection connection = dataSource.getConnection()) {
-                    ProgressMonitor filePm = pm.startTask(files.size());
-                    for(File file : files) {
-                        driverFunction.importFile(connection, tableName ,file, new H2GISProgressMonitor(filePm));
-                    }
-                } catch (SQLException ex) {
-                    LOGGER.error(I18N.tr("Cannot import the file"), ex);
-                    // Print additional information
-                    while((ex = ex.getNextException()) != null) {
-                        LOGGER.error(ex.getLocalizedMessage());
-                    }
-
-                } catch (IOException ex) {
-                    LOGGER.error(I18N.tr("Cannot import the file"), ex);
-                }
-                catalog.refreshSourceList();
             }
         }
 }
