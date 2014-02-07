@@ -28,19 +28,15 @@
  */
 package org.orbisgis.view.geocatalog.filters;
 
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * DataSource is vectorial.
  */
 public class VectorialFilter implements IFilter {
     @Override
-    public boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException {
-        return !SFSUtilities.getGeometryFields(connection, TableLocation.parse(sourceName)).isEmpty();
+    public boolean accepts(TableLocation table, Map<ATTRIBUTES, String> tableProperties) {
+        return tableProperties.containsKey(ATTRIBUTES.GEOMETRY_TYPE);
     }
 }

@@ -32,7 +32,10 @@ import java.awt.Component;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 import javax.swing.JTextField;
+
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.components.filter.TextFieldDocumentListener;
@@ -114,8 +117,8 @@ public class NameContains implements FilterFactory<IFilter,DefaultActiveFilter> 
         }
 
         @Override
-        public boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException {
-            return sourceName.toLowerCase().contains(nameFilter.toLowerCase());
+        public boolean accepts(TableLocation table, Map<ATTRIBUTES, String> tableProperties) {
+            return table.toString().toLowerCase().contains(nameFilter.toLowerCase());
         }
     }
 }

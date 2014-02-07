@@ -36,9 +36,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sql.DataSource;
@@ -65,8 +67,10 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
     private static final I18n I18N = I18nFactory.getI18n(SourceListModel.class);
     private static final Logger LOGGER = Logger.getLogger(SourceListModel.class);
     private static final long serialVersionUID = 1L;
-    private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE", "SYSTEM_TABLE","LINKED TABLE","VIEW", "EXTERNAL"};
-
+    private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE", "SYSTEM TABLE","LINKED TABLE","VIEW", "EXTERNAL"};
+    /** Non filtered tables */
+    private List<Map<IFilter.ATTRIBUTES, String>> allTables = new ArrayList<>();
+    /** Filtered tables */
     private ContainerItemProperties[] sourceList = new ContainerItemProperties[0];/*!< Sources */
     private List<IFilter> filters = new ArrayList<IFilter>(); /*!< Active filters */
     private DefaultFilter defaultFilter = new DefaultFilter();
@@ -74,7 +78,6 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
          * is pending to refresh the content of SourceListModel*/
     private DataSource dataSource;
     private CatalogComparator catalogComparator = new CatalogComparator();
-    private Set<String> tableWithGeometry = new HashSet<>();
 
     /**
      * Read filters components and generate filter instances
@@ -92,7 +95,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
         this.dataSource = dataSource;
         //Install listeners
         //Call readDatabase when a SourceManager fire an event
-        readDatabase();
+        onDataManagerChange();
     }
 
     /**
@@ -110,58 +113,45 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
         //This is useless to invoke a refresh thread because
         //The content will be soonly refreshed by another ReadDataManagerOnSwingThread
         if(!awaitingRefresh.getAndSet(true)) {
-            SwingUtilities.invokeLater(new ReadDataManagerOnSwingThread());
+            SwingUtilities.invokeLater(new ReadDataManagerOnSwingThread(this));
         }
     }
     /**
      * Refresh the JList on the swing thread
      */
-    private class ReadDataManagerOnSwingThread implements Runnable {
+    private static class ReadDataManagerOnSwingThread implements Runnable {
+        private SourceListModel model;
+
+        private ReadDataManagerOnSwingThread(SourceListModel model) {
+            this.model = model;
+        }
+
         /**
          * Refresh the JList on the swing thread
          */
         @Override
         public void run(){
-            awaitingRefresh.set(false);
-            readDatabase();
+            model.awaitingRefresh.set(false);
+            model.readDatabase();
+            model.doFilter();
         }
     }
-    /**
-     *
-     * @return True if at least one of filter is an instance of TableSystemFilter
-     */
-    private boolean isSystemTableFilterInFilters() {
-        for(IFilter filter : filters) {
-            if(filter instanceof TableSystemFilter) {
-                return true;
-            }
-        }
-        return false;
-    }
+
     /**
      * TODO stop timers
      */
     public void dispose() {
 
     }
+
     /**
      * Find the icon corresponding to a table reference
-     * @param rs result set obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
-     * @return The source item icon name, in org.orbisgis.view.icons package
      */
-    private String getIconName(Connection connection, ResultSet rs) throws SQLException {
-        if (rs == null) {
-            return "information_geo"; //Unknown source type
+    private String getIconName(TableLocation location, Map<IFilter.ATTRIBUTES, String> attr) {
+        if(attr.containsKey(IFilter.ATTRIBUTES.GEOMETRY_TYPE)) {
+            return "geofile";
         }
-        try {
-            if(tableWithGeometry.contains(new TableLocation(rs).toString())) {
-                return "geofile";
-            }
-        } catch (SQLException ex) {
-            // GEOMETRY COLUMNS table doesn't exists
-            LOGGER.trace(ex.getLocalizedMessage(), ex);
-        }
-        String tableType = rs.getString("table_type");
+        String tableType = attr.get(IFilter.ATTRIBUTES.TABLE_TYPE);
         if(tableType != null) {
             switch(tableType) {
                 case "SYSTEM_TABLE":
@@ -188,57 +178,26 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
         }
     }
 
-    /**
-     * Read the table list in the database
-     */
-    private void readDatabase() {
+    private void doFilter() {
+        boolean checkForDefaultFilter = true;
+        for(IFilter filter : filters) {
+            if(filter instanceof TableSystemFilter) {
+                checkForDefaultFilter = false;
+            }
+        }
         List<CatalogSourceItem> newModel = new LinkedList<>();
-        try (Connection connection = dataSource.getConnection()) {
-            // Fetch Geometry tables
-            tableWithGeometry.clear();
-            try(Statement st = connection.createStatement();
-                ResultSet rs = st.executeQuery(String.format("SELECT F_TABLE_CATALOG,F_TABLE_SCHEMA,F_TABLE_NAME FROM %s GROUP BY F_TABLE_CATALOG,F_TABLE_SCHEMA,F_TABLE_NAME",TableLocation.parse("GEOMETRY_COLUMNS")))) {
-                    while(rs.next()) {
-                        tableWithGeometry.add(new TableLocation(rs.getString("F_TABLE_CATALOG"),
-                                rs.getString("F_TABLE_SCHEMA"),rs.getString("F_TABLE_NAME")).toString());
-                    }
-            }
-            // Fetch all tables
-            try(ResultSet rs = connection.getMetaData().getTables(null, null, null, SHOWN_TABLE_TYPES)) {
-                final String defaultCatalog = connection.getCatalog();
-                final String defaultSchema = "PUBLIC";
-                boolean checkForDefaultFilter = true;
-                for(IFilter filter : filters) {
-                    if(filter instanceof TableSystemFilter) {
-                        checkForDefaultFilter = false;
-                    }
-                }
-                while(rs.next()) {
-                    TableLocation location = new TableLocation(rs);
-                    boolean accepts = true;
-                    for(IFilter filter : filters) {
-                        if(!filter.accepts(connection, location.toString(), rs)) {
-                            accepts = false;
-                            break;
-                        }
-                    }
-                    if(accepts && (!checkForDefaultFilter || defaultFilter.accepts(connection, location.toString(), rs))) {
-                        // Make Label
-                        StringBuilder label = new StringBuilder(addQuotesIfNecessary(location.getTable()));
-                        if(!location.getSchema().isEmpty() && !location.getSchema().equalsIgnoreCase(defaultSchema)) {
-                            label.insert(0, ".");
-                            label.insert(0, addQuotesIfNecessary(location.getSchema()));
-                        }
-                        if(!location.getCatalog().isEmpty() && !location.getCatalog().equalsIgnoreCase(defaultCatalog)) {
-                            label.insert(0, ".");
-                            label.insert(0, addQuotesIfNecessary(location.getCatalog()));
-                        }
-                        newModel.add(new CatalogSourceItem(location.toString(), label.toString(), getIconName(connection, rs)));
-                    }
+        for(Map<IFilter.ATTRIBUTES, String> tableAttr : allTables) {
+            boolean accepts = true;
+            TableLocation location = TableLocation.parse(tableAttr.get(IFilter.ATTRIBUTES.LOCATION));
+            for(IFilter filter : filters) {
+                if(!filter.accepts(location,tableAttr)) {
+                    accepts = false;
+                    break;
                 }
             }
-        } catch (SQLException ex) {
-            LOGGER.error(I18N.tr("Cannot read the table list"), ex);
+            if(accepts && (!checkForDefaultFilter || defaultFilter.accepts(location, tableAttr))) {
+                newModel.add(new CatalogSourceItem(location.toString(), tableAttr.get(IFilter.ATTRIBUTES.LABEL), getIconName(location, tableAttr)));
+            }
         }
         Collections.sort(newModel, catalogComparator);
         int oldLength = sourceList.length;
@@ -246,6 +205,67 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
         fireIntervalRemoved(this, 0, oldLength);
         sourceList = newModel.toArray(new ContainerItemProperties[newModel.size()]);
         fireIntervalAdded(this, 0, this.sourceList.length);
+    }
+
+    /**
+     * Read the table list in the database
+     */
+    private void readDatabase() {
+        allTables.clear();
+        try (Connection connection = dataSource.getConnection()) {
+            // Fetch Geometry tables
+            Map<String,String> tableGeometry = new HashMap<>();
+            try(Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery(String.format("SELECT * FROM %s",TableLocation.parse("geometry_columns")))) {
+                    while(rs.next()) {
+                        tableGeometry.put(new TableLocation(rs.getString("F_TABLE_CATALOG"),
+                                rs.getString("F_TABLE_SCHEMA"), rs.getString("F_TABLE_NAME")).toString(), rs.getString("TYPE"));
+                    }
+            }
+            // Fetch all tables
+            try(ResultSet rs = connection.getMetaData().getTables(null, null, null, SHOWN_TABLE_TYPES)) {
+                final String defaultCatalog = connection.getCatalog();
+                final String defaultSchema = "PUBLIC";
+                while(rs.next()) {
+                    Map<IFilter.ATTRIBUTES, String> tableAttr = new HashMap<>(IFilter.ATTRIBUTES.values().length);
+                    TableLocation location = new TableLocation(rs);
+                    if(location.getCatalog().isEmpty()) {
+                        // PostGIS return empty catalog on metadata
+                        location = new TableLocation(defaultCatalog, location.getSchema(), location.getTable());
+                    }
+                    // Make Label
+                    StringBuilder label = new StringBuilder(addQuotesIfNecessary(location.getTable()));
+                    if(!location.getSchema().isEmpty() && !location.getSchema().equalsIgnoreCase(defaultSchema)) {
+                        label.insert(0, ".");
+                        label.insert(0, addQuotesIfNecessary(location.getSchema()));
+                    }
+                    if(!location.getCatalog().isEmpty() && !location.getCatalog().equalsIgnoreCase(defaultCatalog)) {
+                        label.insert(0, ".");
+                        label.insert(0, addQuotesIfNecessary(location.getCatalog()));
+                    }
+                    tableAttr.put(IFilter.ATTRIBUTES.LOCATION, location.toString());
+                    tableAttr.put(IFilter.ATTRIBUTES.LABEL, label.toString());
+                    for(IFilter.ATTRIBUTES attribute : IFilter.ATTRIBUTES.values()) {
+                        putAttribute(tableAttr, attribute, rs);
+                    }
+                    String type = tableGeometry.get(location.toString());
+                    if(type != null) {
+                        tableAttr.put(IFilter.ATTRIBUTES.GEOMETRY_TYPE, type);
+                    }
+                    allTables.add(tableAttr);
+                }
+            }
+        } catch (SQLException ex) {
+            LOGGER.error(I18N.tr("Cannot read the table list"), ex);
+        }
+    }
+
+    private static void putAttribute(Map<IFilter.ATTRIBUTES, String> tableAttr, IFilter.ATTRIBUTES attribute, ResultSet rs) {
+        try {
+            tableAttr.put(attribute, rs.getString(attribute.toString().toLowerCase()));
+        } catch (SQLException ex) {
+            // Ignore
+        }
     }
 
     /**
@@ -293,7 +313,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
      */
     public void setFilters(List<IFilter> filters) {
         this.filters = filters;
-        readDatabase();
+        doFilter();
     }
 
     /**
@@ -301,22 +321,18 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
      */
     public void clearFilters() {
         this.filters.clear();
-        readDatabase();
+        doFilter();
     }
 
     /**
      * This filter is always applied, to hide system tables
      */
     private static final class DefaultFilter implements IFilter {
-        private Set<String> system_tables = new HashSet<>(
-                Arrays.asList("spatial_ref_sys", "geography_columns", "geometry_columns","raster_columns","raster_overviews"));
-        private Set<String> system_schema = new HashSet<>(Arrays.asList("pg_catalog","information_schema"));
+        private TableSystemFilter filter = new TableSystemFilter();
 
         @Override
-        public boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException {
-            TableLocation location = TableLocation.parse(sourceName);
-            return !(system_schema.contains(location.getSchema().toLowerCase()) ||
-                    system_tables.contains(location.getTable().toLowerCase()));
+        public boolean accepts(TableLocation table, Map<ATTRIBUTES, String> tableProperties) {
+            return !filter.accepts(table, tableProperties);
         }
     }
 

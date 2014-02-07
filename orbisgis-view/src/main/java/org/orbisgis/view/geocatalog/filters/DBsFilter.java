@@ -28,17 +28,19 @@
  */
 package org.orbisgis.view.geocatalog.filters;
 
+import org.h2gis.utilities.TableLocation;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * The DataBase source type filter.
  */
 public class DBsFilter implements IFilter {
-
     @Override
-    public boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException {
-        return "LINKED TABLE".equalsIgnoreCase(tableProperties.getString("TABLE_TYPE"));
+    public boolean accepts(TableLocation table, Map<ATTRIBUTES, String> tableProperties) {
+        return  "LINKED TABLE".equalsIgnoreCase(tableProperties.get(ATTRIBUTES.TABLE_TYPE));
     }
 }
