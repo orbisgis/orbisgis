@@ -17,6 +17,7 @@
                 <version>1</version>
         </parent>
         <modules>
+                <module>bundles/postgis-jts-osgi</module>
                 <module>wms-client</module>
                 <!-- <module>gdms</module> -->
                 <!-- <module>bundles/plugin-test</module>-->

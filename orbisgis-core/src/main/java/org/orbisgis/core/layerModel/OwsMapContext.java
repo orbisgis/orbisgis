@@ -61,6 +61,7 @@ import net.opengis.ows_context.StyleListType;
 import net.opengis.ows_context.StyleType;
 import net.opengis.ows_context.URLType;
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.map.MapTransform;
@@ -117,7 +118,7 @@ public final class OwsMapContext extends BeanMapContext {
         public ILayer createLayer(String layerName, String tableRef) throws LayerException {
             try {
                 try (Connection connection = dataManager.getDataSource().getConnection()) {
-                    List<String> geoFields = SFSUtilities.getGeometryFields(connection, SFSUtilities.splitCatalogSchemaTableName(tableRef));
+                    List<String> geoFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableRef));
                     if (!geoFields.isEmpty()) {
                         return new Layer(layerName, tableRef, dataManager);
                     } else {
@@ -131,7 +132,7 @@ public final class OwsMapContext extends BeanMapContext {
 
         @Override
         public ILayer createLayer(String tableRef) throws LayerException {
-                return createLayer(SFSUtilities.splitCatalogSchemaTableName(tableRef).getTable(), tableRef);
+                return createLayer(TableLocation.parse(tableRef).getTable(), tableRef);
         }
 
         @Override

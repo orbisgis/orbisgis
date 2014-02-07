@@ -45,6 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
@@ -179,7 +180,7 @@ public abstract class Renderer {
 
                     String tableReference = layer.getTableReference();
                     try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
-                        List<String> geometryFields = SFSUtilities.getGeometryFields(connection, SFSUtilities.splitCatalogSchemaTableName(tableReference));
+                        List<String> geometryFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableReference));
                         if(geometryFields.isEmpty()) {
                             throw new SQLException(I18N.tr("Table {0} does not contains geometry fields",tableReference));
                         }

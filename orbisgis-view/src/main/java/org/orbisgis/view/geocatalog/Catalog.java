@@ -337,6 +337,9 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             if (UIFactory.showDialog(linkSourcePanel, true, true)) {
                 // We can retrieve the files that have been selected by the user
                 File[] files = linkSourcePanel.getSelectedFiles();
+                ImportFile importFileJob = new ImportFile(this, driverFunction, files, FileUtils.getNameFromURI(file.toURI()), dataManager.getDataSource());
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.nonBlockingBackgroundOperation(importFileJob);
                 for (File file : files) {
                     String ext = FilenameUtils.getExtension(file.getName());
                     DriverFunction driverFunction = getDriverFromExt(ext, type);
@@ -344,9 +347,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                         //When opening file in geocatalog, cannot found a driver able to load ex:.JPG extension
                         LOGGER.error(I18N.tr("No driver found for {0} extension", ext));
                     } else {
-                        ImportFile importFileJob = new ImportFile(this, driverFunction, file, FileUtils.getNameFromURI(file.toURI()), dataManager.getDataSource());
-                        BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.nonBlockingBackgroundOperation(importFileJob);
                     }
                 }
             }
@@ -793,14 +793,14 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         private static class ImportFile implements BackgroundJob {
             private GeoCatalogExt catalog;
             private DriverFunction driverFunction;
-            private File file;
+            private List<File> files;
             private String tableName;
             private DataSource dataSource;
 
-            private ImportFile(GeoCatalogExt catalog, DriverFunction driverFunction, File file, String tableName, DataSource dataSource) {
+            private ImportFile(GeoCatalogExt catalog, DriverFunction driverFunction, List<File> files, String tableName, DataSource dataSource) {
                 this.catalog = catalog;
                 this.driverFunction = driverFunction;
-                this.file = file;
+                this.files = files;
                 this.tableName = tableName;
                 this.dataSource = dataSource;
             }
@@ -813,8 +813,18 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             @Override
             public void run(ProgressMonitor pm) {
                 try(Connection connection = dataSource.getConnection()) {
-                    driverFunction.importFile(connection, tableName ,file, new H2GISProgressMonitor(pm));
-                } catch (SQLException | IOException ex) {
+                    ProgressMonitor filePm = pm.startTask(files.size());
+                    for(File file : files) {
+                        driverFunction.importFile(connection, tableName ,file, new H2GISProgressMonitor(filePm));
+                    }
+                } catch (SQLException ex) {
+                    LOGGER.error(I18N.tr("Cannot import the file"), ex);
+                    // Print additional information
+                    while((ex = ex.getNextException()) != null) {
+                        LOGGER.error(ex.getLocalizedMessage());
+                    }
+
+                } catch (IOException ex) {
                     LOGGER.error(I18N.tr("Cannot import the file"), ex);
                 }
                 catalog.refreshSourceList();

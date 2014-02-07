@@ -127,7 +127,7 @@ public final class Rule extends AbstractSymbolizerNode {
                                 symb = new RasterSymbolizer();
                                 break;
                         */
-                        int typeCode = SFSUtilities.getGeometryType(connection,SFSUtilities.splitCatalogSchemaTableName(layer.getTableReference()),"");
+                        int typeCode = SFSUtilities.getGeometryType(connection,TableLocation.parse(layer.getTableReference()),"");
                         if(typeCode== GeometryTypeCodes.GEOMETRY || typeCode==GeometryTypeCodes.GEOMCOLLECTION) {
                             // No symbol for Geometry type code, parse the ResultSet
                             typeCode = getAccurateType(layer);

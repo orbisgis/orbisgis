@@ -135,7 +135,7 @@ public class Layer extends BeanLayer {
         // TODO reset envelope when the Table is updated
         if(envelope == null) {
             try(Connection connection = dataManager.getDataSource().getConnection()) {
-                envelope = SFSUtilities.getTableEnvelope(connection, SFSUtilities.splitCatalogSchemaTableName(tableReference),"");
+                envelope = SFSUtilities.getTableEnvelope(connection, TableLocation.parse(tableReference),"");
             } catch (SQLException ex) {
                 LOGGER.error(I18N.tr("Cannot compute layer envelope"),ex);
             }
@@ -189,7 +189,7 @@ public class Layer extends BeanLayer {
         }
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             try {
-                return !SFSUtilities.getGeometryFields(connection,SFSUtilities.splitCatalogSchemaTableName(getTableReference())).isEmpty();
+                return !SFSUtilities.getGeometryFields(connection,TableLocation.parse(getTableReference())).isEmpty();
             } finally {
                 connection.close();
             }
