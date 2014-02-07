@@ -217,6 +217,8 @@ public class WorkspaceSelectionDialog extends JPanel {
         CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();
         tempWorkspace.setWorkspaceFolder(getComboBox().getValue());
         jdbcURI.setText(tempWorkspace.getJDBCConnectionReference());
+        user.setText(tempWorkspace.getDataBaseUser());
+        password.setText(tempWorkspace.getDataBasePassword());
     }
 
     /**

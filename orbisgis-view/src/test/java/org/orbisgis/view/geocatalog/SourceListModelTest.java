@@ -39,6 +39,7 @@ public class SourceListModelTest {
     @Test
     public void testSourceList() throws SQLException {
         try( Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS userTable1");
             st.execute("create table userTable1 ( id integer primary key, pt POINT)");
             st.execute("create schema myschema");
             st.execute("create table myschema.userTable2 ( id integer primary key, pt POINT)");

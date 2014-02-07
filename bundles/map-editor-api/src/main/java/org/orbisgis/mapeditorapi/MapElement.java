@@ -83,7 +83,10 @@ public final class MapElement extends AbstractEditableElement {
         private File mapContextFile;
         
 	public MapElement(MapContext mapContext,File mapContextFile) {
-		this.mapContext = mapContext;
+                if(mapContext == null) {
+                    throw new IllegalArgumentException("MapContext argument cannot be null");
+                }
+		        this.mapContext = mapContext;
                 this.mapContextFile = mapContextFile;
                 mapId = String.valueOf(mapContext.getIdTime());
 	}
