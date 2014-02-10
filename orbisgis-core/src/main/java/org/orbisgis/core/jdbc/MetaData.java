@@ -166,6 +166,31 @@ public class MetaData {
     }
 
     /**
+     * @param sqlType SQL type from {@link java.sql.Types}
+     * @return True if the type is alphanumeric
+     */
+    public static boolean isAlphaNumeric(int sqlType) {
+        switch(sqlType) {
+            case Types.NUMERIC:
+            case Types.DECIMAL:
+            case Types.BIGINT:
+            case Types.SMALLINT:
+            case Types.TINYINT:
+            case Types.INTEGER:
+            case Types.REAL:
+            case Types.DOUBLE:
+            case Types.FLOAT:
+            case Types.CHAR:
+            case Types.VARCHAR:
+            case Types.LONGVARCHAR:
+            case Types.LONGNVARCHAR:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
      * This method is used when user type a sql value in a field.
      * @param userInput User field input
      * @param sqlType Database column type {@link java.sql.Types}

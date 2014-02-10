@@ -31,6 +31,8 @@ package org.orbisgis.view.table.filters;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.viewapi.table.TableEditableElement;
 
+import java.sql.SQLException;
+
 /**
  * Common interface for all table selection filters
  * @author Nicolas Fortin
@@ -42,7 +44,7 @@ public interface TableSelectionFilter {
          * @param pm
          * @param source Table data source 
          */
-        void initialize(ProgressMonitor pm,TableEditableElement source);
+        void initialize(ProgressMonitor pm,TableEditableElement source) throws SQLException;
         
         /***
          * @param rowId Row index (data source row)
