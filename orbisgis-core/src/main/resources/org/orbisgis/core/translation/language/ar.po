@@ -3,52 +3,52 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# gwendall.petit <gwendall.petit@ec-nantes.fr>, 2013
+# smadi <ilyes.smadi@gmail.com>, 2013-2014
 msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGIS\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-09 00:22+0100\n"
-"PO-Revision-Date: 2013-11-20 12:27+0000\n"
-"Last-Translator: gwendall.petit <gwendall.petit@ec-nantes.fr>\n"
-"Language-Team: English (United States) (http://www.transifex.com/projects/p/orbisgis/language/en_US/)\n"
+"PO-Revision-Date: 2014-01-01 20:52+0000\n"
+"Last-Translator: smadi <ilyes.smadi@gmail.com>\n"
+"Language-Team: Arabic (http://www.transifex.com/projects/p/orbisgis/language/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en_US\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: ar\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
 #: org/orbisgis/core/map/MapTransform.java:104
 msgid "Headless graphics environment, set current DPI to 96.0"
-msgstr "Headless graphics environment, set current DPI to 96.0"
+msgstr "محيط من دون مخرج للرسم البياني, تعين DPI بقبمة 96.0"
 
 #: org/orbisgis/core/renderer/classification/ProportionalMethod.java:84
 msgid "The parameter of the logarithmic function must be greater than 0"
-msgstr "The parameter of the logarithmic function must be greater than 0"
+msgstr "يجب أن تكون معلمة الدالة اللوغاريتمية أكبر من 0"
 
 #: org/orbisgis/core/renderer/util/SymbolUtil.java:75
 #: org/orbisgis/core/renderer/util/SymbolUtil.java:80
 msgid "Cannot draw the shape"
-msgstr "Cannot draw the shape"
+msgstr "لا يمكن رسم الشكل"
 
 #: org/orbisgis/core/renderer/Renderer.java:405
 #: org/orbisgis/core/renderer/Renderer.java:411
 #, java-format
 msgid "Layer {0} not drawn"
-msgstr "Layer {0} not drawn"
+msgstr "الطبقة {0} غير مرسومة"
 
 #: org/orbisgis/core/renderer/Renderer.java:430
 #: org/orbisgis/core/renderer/Renderer.java:433
 msgid "Cannot get Stream image"
-msgstr "Cannot get Stream image"
+msgstr "لا يمكن الحصول على تيار الصورة"
 
 #: org/orbisgis/core/renderer/se/common/Halo.java:266
 msgid "Perpendicular offset failed"
-msgstr "Perpendicular offset failed"
+msgstr "فشل التغير العمودي "
 
 #: org/orbisgis/core/renderer/se/common/Uom.java:112
 msgid "IN"
-msgstr "IN"
+msgstr "في"
 
 #: org/orbisgis/core/renderer/se/common/Uom.java:114
 msgid "MM"
@@ -60,7 +60,7 @@ msgstr "PT"
 
 #: org/orbisgis/core/renderer/se/common/Uom.java:118
 msgid "PERCENT"
-msgstr "PERCENT"
+msgstr "في المئة"
 
 #: org/orbisgis/core/renderer/se/common/Uom.java:120
 msgid "GM"
@@ -76,68 +76,68 @@ msgstr "PX"
 
 #: org/orbisgis/core/renderer/se/common/ShapeHelper.java:136
 msgid "CLOSE"
-msgstr "CLOSE"
+msgstr "أغلق"
 
 #: org/orbisgis/core/renderer/se/common/ShapeHelper.java:139
 #, java-format
 msgid "CUBIC TO {0}:{1}"
-msgstr "CUBIC TO {0}:{1}"
+msgstr "مكعب إلى {0}: {1}"
 
 #: org/orbisgis/core/renderer/se/common/ShapeHelper.java:142
 #, java-format
 msgid "LINE TO {0}:{1}"
-msgstr "LINE TO {0}:{1}"
+msgstr "خطر إلى{0}: {1}"
 
 #: org/orbisgis/core/renderer/se/common/ShapeHelper.java:145
 #, java-format
 msgid "MOVE TO {0}:{1}"
-msgstr "MOVE TO {0}:{1}"
+msgstr "أنتقل إلى {0}: {1}"
 
 #: org/orbisgis/core/renderer/se/common/ShapeHelper.java:148
 #, java-format
 msgid "QUAD TO {0}:{1}"
-msgstr "QUAD TO {0}:{1}"
+msgstr "QUAD إلى {0}: {1}"
 
 #: org/orbisgis/core/renderer/se/common/ShapeHelper.java:151
 msgid "!DEFAULT!"
-msgstr "!DEFAULT!"
+msgstr "!خطأ!"
 
 #: org/orbisgis/core/renderer/se/common/ShapeHelper.java:1125
 msgid "Unable to compute perpendicular offset"
-msgstr "Unable to compute perpendicular offset"
+msgstr "يستحيل حساب التغير العمودي"
 
 #: org/orbisgis/core/renderer/se/graphic/GraphicCollection.java:255
 msgid "Error during graphic composition"
-msgstr "Error during graphic composition"
+msgstr "خطأ أثناء إنشاء المنحنى "
 
 #: org/orbisgis/core/renderer/se/graphic/GraphicCollection.java:285
 msgid "Could not render graphic"
-msgstr "Could not render graphic"
+msgstr "يستحيل رسم المنحنى"
 
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:102
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:127
 msgid "SQUARE"
-msgstr "SQUARE"
+msgstr "مربع"
 
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:104
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:129
 msgid "HALFCIRCLE"
-msgstr "HALFCIRCLE"
+msgstr "نصف دائرة"
 
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:106
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:131
 msgid "TRIANGLE"
-msgstr "TRIANGLE"
+msgstr "مثلث"
 
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:108
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:133
 msgid "STAR"
-msgstr "STAR"
+msgstr "نجمة"
 
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:110
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:135
 msgid "CROSS"
-msgstr "CROSS"
+msgstr "صليب"
 
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:112
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:137
@@ -146,158 +146,158 @@ msgstr "X"
 
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:114
 msgid "CIRCLE"
-msgstr "CIRCLE"
+msgstr "دائرة"
 
 #: org/orbisgis/core/renderer/se/fill/DotMapFill.java:209
 msgid "Could not find position for mark within area"
-msgstr "Could not find position for mark within area"
+msgstr "يستحيل العثور على موضع للعلامة داخل المساحة"
 
 #: org/orbisgis/core/renderer/se/AreaSymbolizer.java:85
 msgid "Area Symbolizer"
-msgstr "Area Symbolizer"
+msgstr "رمز سطحي"
 
 #: org/orbisgis/core/renderer/se/PointSymbolizer.java:92
 msgid "Point Symbolizer"
-msgstr "Point Symbolizer"
+msgstr "رمز نقطي"
 
 #: org/orbisgis/core/renderer/se/stroke/PenStroke.java:450
 msgid "Dash array must be made of positive numbers separated with spaces."
-msgstr "Dash array must be made of positive numbers separated with spaces."
+msgstr "يجب أن يكون الشعاع النققي مكون من مجموعة أرقام موجبة مفصولة بمسافات."
 
 #: org/orbisgis/core/renderer/se/parameter/Recode.java:232
 #: org/orbisgis/core/renderer/se/parameter/Recode.java:255
 #, java-format
 msgid "Fallback ({0})"
-msgstr "Fallback ({0})"
+msgstr "قيمة إفتراضية ({0})"
 
 #: org/orbisgis/core/renderer/se/parameter/Categorize.java:138
 msgid "Manual"
-msgstr "Manual"
+msgstr "دليل"
 
 #: org/orbisgis/core/renderer/se/parameter/Categorize.java:139
 msgid "Natural breaks"
-msgstr "Natural breaks"
+msgstr "فواصل طبيعية"
 
 #: org/orbisgis/core/renderer/se/parameter/Categorize.java:140
 msgid "Quantiles"
-msgstr "Quantiles"
+msgstr "كوانتيليس"
 
 #: org/orbisgis/core/renderer/se/parameter/Categorize.java:141
 msgid "Equal Intervals"
-msgstr "Equal Intervals"
+msgstr "فترات متساوية"
 
 #: org/orbisgis/core/renderer/se/parameter/Categorize.java:142
 msgid "Mean - Standard deviation"
-msgstr "Mean - Standard deviation"
+msgstr "المتوسط ​​- الانحراف المعياري"
 
 #: org/orbisgis/core/renderer/se/parameter/Categorize.java:143
 msgid "Boxed means"
-msgstr "Boxed means"
+msgstr "معدل متداخل"
 
 #: org/orbisgis/core/renderer/se/parameter/Categorize.java:483
 msgid "Unable to categorize the feature"
-msgstr "Unable to categorize the feature"
+msgstr "يستحيل تصنيف المعطيات "
 
 #: org/orbisgis/core/renderer/se/parameter/string/Recode2String.java:91
 #: org/orbisgis/core/renderer/se/parameter/string/Recode2String.java:101
 msgid "Fallback"
-msgstr "Fallback"
+msgstr "قيمة إفتراضية"
 
 #: org/orbisgis/core/renderer/se/LineSymbolizer.java:85
 msgid "Line Symbolizer"
-msgstr "Line Symbolizer"
+msgstr "رمز خطي "
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:131
 #: org/orbisgis/core/layerModel/Layer.java:90
 #: org/orbisgis/core/layerModel/Layer.java:92
 msgid "Cannot close the data source"
-msgstr "Cannot close the data source"
+msgstr "لا يمكن إغلاق مصدر البيانات"
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:135
 msgid "Cannot check source contents"
-msgstr "Cannot check source contents"
+msgstr "لا يمكن التحقق من محتويات المصدر"
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:141
 msgid "The source contains no spatial info"
-msgstr "The source contains no spatial info"
+msgstr "المصدر لا يحتوي على  معلومات فضائية"
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:247
 #, java-format
 msgid "Cannot open layer : {0} "
-msgstr "Cannot open layer : {0} "
+msgstr "لا يمكن فتح الطبقة : {0}"
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:252
 #, java-format
 msgid "Cannot remove the layer {0}"
-msgstr "Cannot remove the layer {0}"
+msgstr "لا يمكن إزالة الطبقة {0}"
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:277
 #: org/orbisgis/core/layerModel/OwsMapContext.java:541
 #, java-format
 msgid "Cannot close layer {0}"
-msgstr "Cannot close layer {0}"
+msgstr "لا يمكن غلق الطبقة {0} "
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:316
 msgid "Layer provided for drawing is not from the map context layer model."
-msgstr "Layer provided for drawing is not from the map context layer model."
+msgstr "الطبقة المخصصة للرسم ليست من نموذج الخريطة"
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:341
 msgid "The map is not open"
-msgstr "The map is not open"
+msgstr "الخريطة ليست مفتوحة"
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:467
 #, java-format
 msgid "Unable to serialise the data source of layer {0}"
-msgstr "Unable to serialise the data source of layer {0}"
+msgstr "لا يمكن حفظ  مصدر بيانات الطبقة {0}"
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:485
 msgid "Unable to read the provided map context"
-msgstr "Unable to read the provided map context"
+msgstr "لا يمكن  قراءة سياق الخريطة المقدمة"
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:498
 msgid "Error raised while exporting the map context"
-msgstr "Error raised while exporting the map context"
+msgstr "حدث خطأ أثناء تصدير سياق الخريطة"
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:516
 msgid "The map must be closed to invoke this method"
-msgstr "The map must be closed to invoke this method"
+msgstr "يجب أن تكون الخريطة مغلقة لاستدعاء هذه الطريقة"
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:590
 msgid "Error while trying to find an absolute path for an external resource"
-msgstr "Error while trying to find an absolute path for an external resource"
+msgstr "خطأ أثناء محاولة العثور على المسار المطلق لمورد خارجي"
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:598
 #, java-format
 msgid "Unable to load the data source uri {0}."
-msgstr "Unable to load the data source uri {0}."
+msgstr "لا يمكن تحميل مصدر البيانات مع الرابط {0}."
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:614
 #, java-format
 msgid "Unable to parse the href URI {0}."
-msgstr "Unable to parse the href URI {0}."
+msgstr "لا يمكن تحليل الرابط {0}."
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:616
 #, java-format
 msgid "Unable to load the description of the layer {0}"
-msgstr "Unable to load the description of the layer {0}"
+msgstr ""
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:671
 #: org/orbisgis/core/layerModel/OwsMapContext.java:721
 msgid "The layer has not been imported"
-msgstr "The layer has not been imported"
+msgstr "لم يتم استيراد الطبقة"
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:732
 msgid "The map is already open"
-msgstr "The map is already open"
+msgstr "الخريطة مفتوحة  مسبقا "
 
 #: org/orbisgis/core/layerModel/OwsMapContext.java:789
 #, java-format
 msgid "Cannot associate layer {0}, this layer must be removed manually"
-msgstr "Cannot associate layer {0}, this layer must be removed manually"
+msgstr "لا يمكن ربط الطبقة {0}، ويجب إزالة هذه الطبقة يدويا"
 
 #: org/orbisgis/core/layerModel/AbstractLayer.java:163
 msgid "Cannot move a layer to its child"
-msgstr "Cannot move a layer to its child"
+msgstr "لا يمكن تحريك الطبقة إلى واحدة من اطفالها "
 
 #: org/orbisgis/core/layerModel/AbstractLayer.java:241
 #: org/orbisgis/core/layerModel/AbstractLayer.java:271
@@ -305,106 +305,106 @@ msgstr "Cannot move a layer to its child"
 #: org/orbisgis/core/layerModel/AbstractLayer.java:291
 #: org/orbisgis/core/layerModel/AbstractLayer.java:297
 msgid "This layer cannot have children"
-msgstr "This layer cannot have children"
+msgstr "هذه الطبقة لا يمكن أن يكون لها أطفال"
 
 #: org/orbisgis/core/layerModel/AbstractLayer.java:246
 #: org/orbisgis/core/layerModel/AbstractLayer.java:251
 msgid "This layer does not have children"
-msgstr "This layer does not have children"
+msgstr "هذه الطبقة ليس لها أطفال"
 
 #: org/orbisgis/core/layerModel/AbstractLayer.java:308
 msgid "This layer doesn't contain any child"
-msgstr "This layer doesn't contain any child"
+msgstr "هذه الطبقة لا تحتوى على أطفال"
 
 #: org/orbisgis/core/layerModel/Layer.java:71
 #, java-format
 msgid "Cannot get the extent of the layer {0}"
-msgstr "Cannot get the extent of the layer {0}"
+msgstr "لا يمكن الحصول على مدى الطبقة {0}"
 
 #: org/orbisgis/core/layerModel/Layer.java:114
 msgid "The layer cannot listen to source modifications"
-msgstr "The layer cannot listen to source modifications"
+msgstr "لا يمكن للطبقة تتبع تعديلات المصدر"
 
 #: org/orbisgis/core/layerModel/Layer.java:118
 msgid "Cannot open the layer"
-msgstr "Cannot open the layer"
+msgstr "لا يمكن فتح الطبقة"
 
 #: org/orbisgis/core/layerModel/Layer.java:126
 #, java-format
 msgid "The field is not {0}"
-msgstr "The field is not {0}"
+msgstr "المجال ليس {0}"
 
 #: org/orbisgis/core/layerModel/Layer.java:133
 #, java-format
 msgid "The field {0} is not found"
-msgstr "The field {0} is not found"
+msgstr "لم يتم العثور على الحقل {0} "
 
 #: org/orbisgis/core/layerModel/Layer.java:158
 msgid "This layer is not a raster"
-msgstr "This layer is not a raster"
+msgstr "هذه الطبقة ليست نقطية"
 
 #: org/orbisgis/core/layerModel/mapcatalog/RemoteMapCatalog.java:113
 #: org/orbisgis/core/layerModel/mapcatalog/Workspace.java:266
 #, java-format
 msgid "HTTP Error {0} message : {1}"
-msgstr "HTTP Error {0} message : {1}"
+msgstr "HTTP  خطأ {0} رسالة: {1}"
 
 #: org/orbisgis/core/layerModel/mapcatalog/RemoteMapCatalog.java:133
 #: org/orbisgis/core/layerModel/mapcatalog/Workspace.java:167
 #: org/orbisgis/core/layerModel/mapcatalog/Workspace.java:285
 msgid "Invalid XML content"
-msgstr "Invalid XML content"
+msgstr "محتوى XML غير صالح"
 
 #: org/orbisgis/core/layerModel/mapcatalog/Workspace.java:145
 #, java-format
 msgid "HTTP Error {0} message : {1} with the URL {2}"
-msgstr "HTTP Error {0} message : {1} with the URL {2}"
+msgstr "HTTP  خطأ {0} رسالة: {1} مع الرابط {2}"
 
 #: org/orbisgis/core/layerModel/mapcatalog/Workspace.java:206
 #, java-format
 msgid "Cannot parse the provided date {0}"
-msgstr "Cannot parse the provided date {0}"
+msgstr "لا يمكن تحليل التاريخ المقدم {0}"
 
 #: org/orbisgis/core/layerModel/mapcatalog/RemoteMapContext.java:77
 #, java-format
 msgid "HTTP Error {0} message : {1} while removing the map context from {2}"
-msgstr "HTTP Error {0} message : {1} while removing the map context from {2}"
+msgstr "HTTP  خطأ {0} رسالة: {1} أثناء إزالة محتوى الخرىطة من {2}"
 
 #: org/orbisgis/core/layerModel/mapcatalog/RemoteMapContext.java:190
 #, java-format
 msgid "HTTP Error {0} message : {1} while downloading from {2}"
-msgstr "HTTP Error {0} message : {1} while downloading from {2}"
+msgstr "HTTP  خطأ {0} رسالة: {1} أثناء التحميل من {2}"
 
 #: org/orbisgis/core/layerModel/LayerCollection.java:437
 msgid "Cannot do this operation on a layer collection"
-msgstr "Cannot do this operation on a layer collection"
+msgstr "لا يمكن أن تفعل هذه العملية على مجموعة الطبقات"
 
 #: org/orbisgis/core/layerModel/LayerCollection.java:442
 msgid "No row selection in a layer collection"
-msgstr "No row selection in a layer collection"
+msgstr "لا يمكن تحديد الصف في مجموعة الطبقات"
 
 #: org/orbisgis/core/plugin/BundleTools.java:202
 msgid "Could not read bundle manifest"
-msgstr "Could not read bundle manifest"
+msgstr "لا يمكن قراءة البيان من الحزمة"
 
 #: org/orbisgis/core/events/ListenerContainer.java:85
 msgid "This listener is already registered."
-msgstr "This listener is already registered."
+msgstr "هذا المستمع مسجل سابقا"
 
 #: org/orbisgis/core/events/ListenerContainer.java:152
 msgid "The listener stop the event process."
-msgstr "The listener stop the event process."
+msgstr "هذا المستمع أوقف الحدث."
 
 #: org/orbisgis/core/events/ListenerContainer.java:160
 msgid "The listener throw an unexpected error"
-msgstr "The listener throw an unexpected error"
+msgstr "المستمع أرجع خطأ غير متوقع"
 
 #: org/orbisgis/core/context/main/MainContext.java:104
 msgid ""
 "Access to the sources, to its properties (indexes, etc.) and its contents, "
 "either raster or vectorial"
-msgstr "Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial"
+msgstr "أصل إلى المصادر، إلى خصائصه (الفهارس، الخ) ومحتوياته، إما النقطية أوالإتجاهية"
 
 #: org/orbisgis/core/context/main/MainContext.java:107
 msgid "Contains folders path"
-msgstr "Contains folders path"
+msgstr "يحتوي مسار المجلدات"
