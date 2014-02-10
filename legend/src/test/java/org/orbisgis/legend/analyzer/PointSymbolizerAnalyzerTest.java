@@ -171,7 +171,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         uvp.setOnVertex();
         assertTrue(uvp.isOnVertex());
         assertTrue(ps.isOnVertex());
-        uvp.setOnCentroid();
+        uvp.setOnInterior();
         assertFalse(uvp.isOnVertex());
         assertFalse(ps.isOnVertex());
 

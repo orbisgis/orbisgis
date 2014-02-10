@@ -147,7 +147,7 @@ public class PnlRecodedPoint extends PnlAbstractUniqueValue<PointParameters> {
         if(leg.isOnVertex()){
             usl.setOnVertex();
         } else {
-            usl.setOnCentroid();
+            usl.setOnInterior();
         }
         return usl;
     }

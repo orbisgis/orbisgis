@@ -59,7 +59,7 @@
                                 <configuration>
                                         <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/legend/translation/language/</poDirectory>
                                         <targetBundle>i18n.orbisgis.legend</targetBundle>
-                                        <keywords>-ktr</keywords>
+                                        <keywords>-ktr -kmarktr</keywords>
                                         <outputFormat>properties</outputFormat>
                                 </configuration>
                         </plugin>

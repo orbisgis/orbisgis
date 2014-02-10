@@ -89,7 +89,7 @@ public class Util {
     }
 
     /**
-     * Updates the SymbolUom, OnVertexOnCentroid and StrokeUOM parameters
+     * Updates the SymbolUom, OnVertexOnInterior and StrokeUOM parameters
      * of the given SymbolizerLegend by using the given legend.
      *
      * @param legend Legend
@@ -103,13 +103,13 @@ public class Util {
                 && symLeg instanceof SymbolUom) {
             ((SymbolUom) symLeg).setSymbolUom(((SymbolUom) legend).getSymbolUom());
         }
-        // Set OnVertexOnCentroid from the legend if necessary.
-        if (legend instanceof OnVertexOnCentroid
-                && symLeg instanceof OnVertexOnCentroid) {
-            if (((OnVertexOnCentroid) legend).isOnVertex()) {
-                ((OnVertexOnCentroid) symLeg).setOnVertex();
+        // Set OnVertexOnInterior from the legend if necessary.
+        if (legend instanceof OnVertexOnInterior
+                && symLeg instanceof OnVertexOnInterior) {
+            if (((OnVertexOnInterior) legend).isOnVertex()) {
+                ((OnVertexOnInterior) symLeg).setOnVertex();
             } else {
-                ((OnVertexOnCentroid) symLeg).setOnCentroid();
+                ((OnVertexOnInterior) symLeg).setOnInterior();
             }
         }
     }

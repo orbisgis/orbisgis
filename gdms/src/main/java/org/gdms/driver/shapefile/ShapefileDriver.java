@@ -41,7 +41,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.cts.crs.CRSException;
 import org.cts.crs.CoordinateReferenceSystem;
-import org.cts.parser.prj.PrjWriter;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.*;
 import org.gdms.data.types.*;
@@ -336,9 +335,9 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
             crs = ((CRSConstraint) c[0]).getCRS();
         }
         if (crs != null) {
-            String prj = PrjWriter.crsToWKT(crs);
+            String prj = crs.toWKT();
             try {
-                FileUtils.setContents(file, prj);
+                org.apache.commons.io.FileUtils.write(file, prj);
             } catch (IOException ex) {
                 throw new DriverException("Cannot write the prj", ex);
             }

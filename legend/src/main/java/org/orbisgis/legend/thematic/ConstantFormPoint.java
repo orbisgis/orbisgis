@@ -40,7 +40,7 @@ import org.orbisgis.legend.thematic.uom.SymbolUom;
  * @author Alexis Guéganno
  */
 public abstract class ConstantFormPoint extends SymbolizerLegend
-    implements OnVertexOnCentroid, SymbolUom {
+    implements OnVertexOnInterior, SymbolUom {
 
     private PointSymbolizer pointSymbolizer;
 
@@ -107,7 +107,7 @@ public abstract class ConstantFormPoint extends SymbolizerLegend
     }
 
     @Override
-    public void setOnCentroid(){
+    public void setOnInterior(){
             pointSymbolizer.setOnVertex(false);
     }
 

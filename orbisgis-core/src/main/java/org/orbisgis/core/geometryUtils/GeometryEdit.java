@@ -70,7 +70,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateArrays;
 import com.vividsolutions.jts.geom.CoordinateFilter;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
@@ -86,18 +85,14 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.TopologyException;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
-import com.vividsolutions.jts.linearref.LinearLocation;
 import com.vividsolutions.jts.noding.IntersectionAdder;
 import com.vividsolutions.jts.noding.MCIndexNoder;
 import com.vividsolutions.jts.noding.NodedSegmentString;
 import com.vividsolutions.jts.noding.Noder;
-import com.vividsolutions.jts.noding.SegmentString;
 import com.vividsolutions.jts.operation.distance.DistanceOp;
 import com.vividsolutions.jts.operation.distance.GeometryLocation;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
-import java.util.HashMap;
-import java.util.Iterator;
 import org.orbisgis.utils.I18N;
 
 /**
@@ -910,7 +905,7 @@ public final class GeometryEdit {
     public static Geometry splitPolygonWithLine(Polygon polygon, LineString lineString) {
         Collection<Polygon> pols = polygonWithLineSplitter(polygon, lineString);
         if (pols != null) {
-            return FACTORY.buildGeometry(polygonWithLineSplitter(polygon, lineString));
+            return FACTORY.buildGeometry(pols);
         }
         return null;
     }

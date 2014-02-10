@@ -37,7 +37,7 @@
                                 <configuration>
                                         <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/view/translation/language/</poDirectory>
                                         <targetBundle>org.orbisgis.view.Messages</targetBundle>
-                                        <keywords>-ktr</keywords>
+                                        <keywords>-ktr -kmarktr</keywords>
                                         <outputFormat>properties</outputFormat>
                                 </configuration>
                         </plugin>

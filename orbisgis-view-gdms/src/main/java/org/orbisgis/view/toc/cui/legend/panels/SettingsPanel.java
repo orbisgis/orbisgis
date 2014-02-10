@@ -31,7 +31,7 @@ package org.orbisgis.view.toc.actions.cui.legend.panels;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.LineParameters;
-import org.orbisgis.legend.thematic.OnVertexOnCentroid;
+import org.orbisgis.legend.thematic.OnVertexOnInterior;
 import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
 import org.orbisgis.legend.thematic.categorize.CategorizedLine;
 import org.orbisgis.legend.thematic.categorize.CategorizedPoint;
@@ -137,7 +137,7 @@ public final class SettingsPanel<K, U extends LineParameters> extends JPanel {
                     AbsPanel.COMBO_BOX_CONSTRAINTS);
 
             add(new JLabel(I18N.tr(AbsPanel.PLACE_SYMBOL_ON)), "span 1 2");
-            add(new OnVertexOnCentroidButtonGroup((OnVertexOnCentroid) legend, preview, tablePanel),
+            add(new OnVertexOnInteriorButtonGroup((OnVertexOnInterior) legend, preview, tablePanel),
                     "span 1 2");
         }
         if (!line()) {

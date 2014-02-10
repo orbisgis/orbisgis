@@ -49,8 +49,8 @@ public class WKNComboBox extends PreviewComboBox<ContainerItem> {
     public WKNComboBox(ConstantFormPoint legend,
                        CanvasSE preview) {
         super(getItems(), legend, preview);
-        setSelectedItem(WellKnownName.fromString(legend.getWellKnownName())
-                .toLocalizedString());
+        WellKnownName value = WellKnownName.fromString(legend.getWellKnownName());
+        setSelectedItem(new ContainerItem<WellKnownName>(value, value.toLocalizedString()));
     }
 
     @Override
