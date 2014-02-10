@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
+import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.common.Description;
@@ -356,5 +357,10 @@ public interface MapContext {
 	 * @param crs
 	 */
 	// void setCoordinateReferenceSystem(CoordinateReferenceSystem crs);
+
+    /**
+     * @return Resource manager used by this MapContext
+     */
+    DataManager getDataManager();
 
 }

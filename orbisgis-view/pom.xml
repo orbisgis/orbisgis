@@ -37,7 +37,7 @@
                                 <configuration>
                                         <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/view/translation/language/</poDirectory>
                                         <targetBundle>org.orbisgis.view.Messages</targetBundle>
-                                        <keywords>-ktr</keywords>
+                                        <keywords>-ktr -kmarktr</keywords>
                                         <outputFormat>properties</outputFormat>
                                 </configuration>
                         </plugin>
@@ -114,13 +114,11 @@
                     <artifactId>orbisgis-core</artifactId>
                     <version>${project.version}</version>
                 </dependency>
-                <!--
                 <dependency>
-                        <groupId>${project.groupId}</groupId>
-                        <artifactId>legend-monomap</artifactId>
-                        <version>0.1-SNAPSHOT</version>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>map-editor-api</artifactId>
+                    <version>${project.version}</version>
                 </dependency>
-                -->
                 <dependency>
                         <groupId>com.fifesoft</groupId>
                         <artifactId>languagesupport</artifactId>
@@ -140,6 +138,12 @@
                     <groupId>${project.groupId}</groupId>
                     <artifactId>sql-parser-api</artifactId>
                     <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>cts</artifactId>
+                    <version>${cts-version}</version>
+                    <!-- https://github.com/irstv/CTS -->
                 </dependency>
         </dependencies>
 </project>

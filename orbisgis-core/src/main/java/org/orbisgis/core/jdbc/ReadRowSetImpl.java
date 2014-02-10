@@ -1,51 +1,41 @@
 package org.orbisgis.core.jdbc;
 
+import com.vividsolutions.jts.geom.Geometry;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.api.ReadRowSet;
+import org.orbisgis.coreapi.api.ReadRowSet;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 
 import javax.sql.DataSource;
 import javax.sql.RowSet;
-import javax.sql.rowset.BaseRowSet;
+import javax.sql.rowset.JdbcRowSet;
+import javax.sql.rowset.RowSetWarning;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
-import java.net.URL;
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.NClob;
-import java.sql.PreparedStatement;
-import java.sql.Ref;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.RowId;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.sql.SQLWarning;
-import java.sql.SQLXML;
-import java.sql.Statement;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Calendar;
+import java.sql.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * RowSet implementation that can be only linked with a table (or view).
  *
  * @author Nicolas Fortin
  */
-public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, ResultSetMetaData, ReadRowSet {
+public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSource, ResultSetMetaData, ReadRowSet {
     private static final int WAITING_FOR_RESULTSET = 5;
-    private final TableLocation location;
+    private TableLocation location;
     private final DataSource dataSource;
     private Object[] currentRow;
     private long rowId = 0;
@@ -59,53 +49,26 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
     private static final int CACHE_SIZE = 100;
     private Map<Long, Object[]> cache = new LRUMap<>(CACHE_SIZE);
     /** If the table contains a unique non null index then this variable contain the map between the row id [1-n] to the primary key value */
-    private Map<Integer, Object> rowPk;
+    private BidiMap<Integer, Object> rowPk;
     private String pk_name = "";
+    private String select_fields = "*";
     private static final String H2_SYSTEM_PK_COLUMN = "_ROWID_";
-
-    /**
-     * Constructor.
-     * @param dataSource Connection properties
-     * @param location Table location
-     * @throws IllegalArgumentException If one of the argument is incorrect, that lead to a SQL exception
-     */
-    public ReadRowSetImpl(DataSource dataSource, TableLocation location) {
-        this(dataSource, location, "", new NullProgressMonitor());
-    }
+    private int firstGeometryIndex = -1;
 
     /**
      * Constructor, row set based on primary key, significant faster on large table
      * @param dataSource Connection properties
-     * @param location Table location
-     * @param pk_name Primary key name
-     * @param pm Progress monitor, caching of pk values.
      * @throws IllegalArgumentException If one of the argument is incorrect, that lead to a SQL exception
      */
-    public ReadRowSetImpl(DataSource dataSource, TableLocation location, String pk_name, ProgressMonitor pm) {
+    public ReadRowSetImpl(DataSource dataSource) {
         this.dataSource = dataSource;
-        this.location = location;
-        this.pk_name = pk_name;
-        if(pk_name.isEmpty()) {
-            resultSetHolder = new ResultSetHolder(this, getCommand());
-        } else {
-            resultSetHolder = new ResultSetHolder(this, getCommand()+" LIMIT 0");
-            // Do not cache _ROWID_
-            if(!H2_SYSTEM_PK_COLUMN.equals(pk_name)) {
-                try {
-                    cachePrimaryKey(pm);
-                } catch (SQLException ex) {
-                    throw new IllegalArgumentException(ex);
-                }
-            } else {
-                rowPk = new HashMap<>();
-            }
-        }
+        resultSetHolder = new ResultSetHolder(this);
     }
 
     private void cachePrimaryKey(ProgressMonitor pm) throws SQLException {
         ProgressMonitor cachePm = pm.startTask(getRowCount());
         if(rowPk == null) {
-            rowPk = new HashMap<>((int)getRowCount());
+            rowPk = new DualHashBidiMap<>();
         } else {
             rowPk.clear();
         }
@@ -138,7 +101,7 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
             int pkId = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), location.toString());
             if(JDBCUtilities.isH2DataBase(connection.getMetaData())) {
                 try(ResultSet rs = st.executeQuery("select _ROWID_ from "+location+" LIMIT 0")) {
-                    pkName = H2_SYSTEM_PK_COLUMN;
+                    pkName = rs.getMetaData().getColumnName(1);
                 } catch (SQLException ex) {
                     //Ignore, key does not exists
                 }
@@ -152,14 +115,6 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
 
     private void setWasNull(boolean wasNull) {
         this.wasNull = wasNull;
-    }
-
-    protected int getColumnByLabel(String label) throws SQLException {
-        Integer columnId = cachedColumnNames.get(label.toUpperCase());
-        if(columnId == null) {
-            throw new SQLException("Column "+label+" does not exists");
-        }
-        return columnId;
     }
 
     protected void checkColumnIndex(int columnIndex) throws SQLException {
@@ -216,7 +171,7 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
                         // Acquire row values by using primary key
                         try(Connection connection = dataSource.getConnection();
                             PreparedStatement st = connection.prepareStatement(getCommand()+" WHERE "+pk_name+" = ?")) {
-                            if(!H2_SYSTEM_PK_COLUMN.equals(pk_name)) {
+                            if(!isUsePkRowLine()) {
                                 st.setObject(1, rowPk.get((int)rowId));
                             } else {
                                 st.setObject(1, rowId);
@@ -263,17 +218,84 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
 
     @Override
     public String getCommand() {
-        return String.format("SELECT * FROM %s", location);
+        return String.format("SELECT "+select_fields+" FROM %s", location);
     }
 
     @Override
     public void setCommand(String s) throws SQLException {
-        throw new SQLException("Cannot set command");
+        // Extract catalog,schema and table name
+        final Pattern selectFieldPattern = Pattern.compile("^select(.+?)from", Pattern.CASE_INSENSITIVE);
+        final Pattern commandPattern = Pattern.compile("from\\s+((([\"`][^\"`]+[\"`])|(\\w+))\\.){0,2}(([\"`][^\"`]+[\"`])|(\\w+))", Pattern.CASE_INSENSITIVE);
+        final Pattern commandPatternTable = Pattern.compile("^from\\s+", Pattern.CASE_INSENSITIVE);
+        String table = "";
+        Matcher matcher = commandPattern.matcher(s);
+        Matcher selectFieldMatcher = selectFieldPattern.matcher(s);
+        if(selectFieldMatcher.find()) {
+            select_fields = selectFieldMatcher.group(1);
+        }
+        if (matcher.find()) {
+            Matcher tableMatcher = commandPatternTable.matcher(matcher.group());
+            if(tableMatcher.find()) {
+                table = matcher.group().substring(tableMatcher.group().length());
+            }
+        }
+        if(table.isEmpty()) {
+            throw new SQLException("Command does not contain a table name, should be like this \"select * from tablename\"");
+        }
+        this.location = TableLocation.parse(table);
+        this.pk_name = ReadRowSetImpl.getPkName(dataSource, location);
+    }
+
+    @Override
+    public String getTable() {
+        return location.toString();
+    }
+
+    @Override
+    public void initialize(String tableIdentifier, String pk_name, ProgressMonitor pm) throws SQLException {
+        initialize(TableLocation.parse(tableIdentifier), pk_name, pm);
+    }
+
+    /**
+     * Initialize this row set. This method cache primary key.
+     * @param location Table location
+     * @param pk_name Primary key name {@link org.orbisgis.core.jdbc.ReadRowSetImpl#getPkName(javax.sql.DataSource, org.h2gis.utilities.TableLocation)}
+     * @param pm Progress monitor Progression of primary key caching
+     */
+    public void initialize(TableLocation location,String pk_name, ProgressMonitor pm) throws SQLException {
+        this.location = location;
+        this.pk_name = pk_name;
+        execute(pm);
+    }
+
+    @Override
+    public void execute(ProgressMonitor pm) throws SQLException {
+        if(!pk_name.isEmpty()) {
+            resultSetHolder.setCommand(getCommand()+" LIMIT 0");
+            // Do not cache _ROWID_
+            if(!isUsePkRowLine()) {
+                cachePrimaryKey(pm);
+            } else {
+                rowPk = new DualHashBidiMap<>();
+            }
+        } else {
+            resultSetHolder.setCommand(getCommand());
+        }
+    }
+
+    protected boolean isUsePkRowLine() {
+        return H2_SYSTEM_PK_COLUMN.equals(pk_name);
     }
 
     @Override
     public void execute() throws SQLException {
-        resultSetHolder.getResource();
+        if(resultSetHolder.getCommand() != null) {
+            throw new SQLException("This row set is already executed");
+        }
+        if(location == null) {
+            throw new SQLException("You must execute RowSet.setCommand(String sql) first");
+        }
+        initialize(location, pk_name, new NullProgressMonitor());
     }
 
     @Override
@@ -314,371 +336,6 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
         return wasNull;
     }
 
-    @Override
-    public String getString(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        } else {
-            return cell.toString();
-        }
-    }
-
-    @Override
-    public boolean getBoolean(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return false;
-        }
-
-        if(cell instanceof Boolean) {
-            return (Boolean)cell;
-        } else {
-            try {
-                return Boolean.valueOf(cell.toString());
-            } catch (Exception ex) {
-                throw new SQLException(ex);
-            }
-        }
-    }
-
-    @Override
-    public byte getByte(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return 0;
-        }
-
-        if(cell instanceof Byte) {
-            return (Byte)cell;
-        } else {
-            try {
-                return Byte.valueOf(cell.toString());
-            } catch (Exception ex) {
-                throw new SQLException(ex);
-            }
-        }
-    }
-
-    @Override
-    public short getShort(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return 0;
-        }
-
-        if(cell instanceof Number) {
-            return ((Number)cell).shortValue();
-        } else {
-            try {
-                return Short.valueOf(cell.toString());
-            } catch (Exception ex) {
-                throw new SQLException(ex);
-            }
-        }
-    }
-
-    @Override
-    public int getInt(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return 0;
-        }
-
-        if(cell instanceof Number) {
-            return ((Number)cell).intValue();
-        } else {
-            try {
-                return Integer.valueOf(cell.toString());
-            } catch (Exception ex) {
-                throw new SQLException(ex);
-            }
-        }
-    }
-
-    @Override
-    public long getLong(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return 0;
-        }
-
-        if(cell instanceof Number) {
-            return ((Number)cell).longValue();
-        } else {
-            try {
-                return Long.valueOf(cell.toString());
-            } catch (Exception ex) {
-                throw new SQLException(ex);
-            }
-        }
-    }
-
-    @Override
-    public float getFloat(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return 0;
-        }
-
-        if(cell instanceof Number) {
-            return ((Number)cell).floatValue();
-        } else {
-            try {
-                return Float.valueOf(cell.toString());
-            } catch (Exception ex) {
-                throw new SQLException(ex);
-            }
-        }
-    }
-
-    @Override
-    public double getDouble(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return 0;
-        }
-
-        if(cell instanceof Number) {
-            return ((Number)cell).doubleValue();
-        } else {
-            try {
-                return Double.valueOf(cell.toString());
-            } catch (Exception ex) {
-                throw new SQLException(ex);
-            }
-        }
-    }
-
-    @Override
-    public BigDecimal getBigDecimal(int i, int i2) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        }
-
-        try {
-            return new BigDecimal(cell.toString());
-        } catch (Exception ex) {
-            throw new SQLException(ex);
-        }
-    }
-
-    @Override
-    public byte[] getBytes(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        }
-
-        if(cell instanceof byte[]) {
-            return (byte[])cell;
-        } else {
-            try {
-                return cell.toString().getBytes();
-            } catch (Exception ex) {
-                throw new SQLException(ex);
-            }
-        }
-    }
-
-    @Override
-    public Date getDate(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        }
-
-        if(cell instanceof Date) {
-            return (Date)cell;
-        } else {
-            try {
-                return Date.valueOf(cell.toString());
-            } catch (Exception ex) {
-                throw new SQLException(ex);
-            }
-        }
-    }
-
-    @Override
-    public Time getTime(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        }
-
-        if(cell instanceof Time) {
-            return (Time)cell;
-        } else {
-            try {
-                return Time.valueOf(cell.toString());
-            } catch (Exception ex) {
-                throw new SQLException(ex);
-            }
-        }
-    }
-
-    @Override
-    public Timestamp getTimestamp(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        }
-
-        if(cell instanceof Timestamp) {
-            return (Timestamp)cell;
-        } else {
-            try {
-                return Timestamp.valueOf(cell.toString());
-            } catch (Exception ex) {
-                throw new SQLException(ex);
-            }
-        }
-    }
-
-    @Override
-    public InputStream getAsciiStream(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        }
-
-        if(cell instanceof InputStream) {
-            return (InputStream)cell;
-        } else {
-            throw new SQLException("Column is not an input stream");
-        }
-    }
-
-    @Override
-    public InputStream getUnicodeStream(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        }
-
-        if(cell instanceof InputStream) {
-            return (InputStream)cell;
-        } else {
-            throw new SQLException("Column is not an input stream");
-        }
-    }
-
-    @Override
-    public InputStream getBinaryStream(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        }
-
-        if(cell instanceof InputStream) {
-            return (InputStream)cell;
-        } else {
-            throw new SQLException("Column is not an input stream");
-        }
-    }
-
-    @Override
-    public String getString(String s) throws SQLException {
-        Object cell = getObject(s);
-
-        if(cell == null) {
-            return null;
-        } else {
-            return cell.toString();
-        }
-    }
-
-    @Override
-    public boolean getBoolean(String s) throws SQLException {
-        return getBoolean(getColumnByLabel(s));
-    }
-
-    @Override
-    public byte getByte(String s) throws SQLException {
-        return getByte(getColumnByLabel(s));
-    }
-
-    @Override
-    public short getShort(String s) throws SQLException {
-        return getByte(getColumnByLabel(s));
-    }
-
-    @Override
-    public int getInt(String s) throws SQLException {
-        return getInt(getColumnByLabel(s));
-    }
-
-    @Override
-    public long getLong(String s) throws SQLException {
-        return getLong(getColumnByLabel(s));
-    }
-
-    @Override
-    public float getFloat(String s) throws SQLException {
-        return getFloat(getColumnByLabel(s));
-    }
-
-    @Override
-    public double getDouble(String s) throws SQLException {
-        return getDouble(getColumnByLabel(s));
-    }
-
-    @Override
-    public BigDecimal getBigDecimal(String s, int i) throws SQLException {
-        return getBigDecimal(getColumnByLabel(s), i);
-    }
-
-    @Override
-    public byte[] getBytes(String s) throws SQLException {
-        return getBytes(getColumnByLabel(s));
-    }
-
-    @Override
-    public Date getDate(String s) throws SQLException {
-        return getDate(getColumnByLabel(s));
-    }
-
-    @Override
-    public Time getTime(String s) throws SQLException {
-        return getTime(getColumnByLabel(s));
-    }
-
-    @Override
-    public Timestamp getTimestamp(String s) throws SQLException {
-        return getTimestamp(getColumnByLabel(s));
-    }
-
-    @Override
-    public InputStream getAsciiStream(String s) throws SQLException {
-        return getAsciiStream(getColumnByLabel(s));
-    }
-
-    @Override
-    public InputStream getUnicodeStream(String s) throws SQLException {
-        return getUnicodeStream(getColumnByLabel(s));
-    }
-
-    @Override
-    public InputStream getBinaryStream(String s) throws SQLException {
-        return getBinaryStream(getColumnByLabel(s));
-    }
 
     @Override
     public SQLWarning getWarnings() throws SQLException {
@@ -722,57 +379,12 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
     }
 
     @Override
-    public Object getObject(String s) throws SQLException {
-        return getObject(getColumnByLabel(s));
-    }
-
-    @Override
-    public int findColumn(String s) throws SQLException {
-        return getColumnByLabel(s);
-    }
-
-    @Override
-    public Reader getCharacterStream(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
+    public int findColumn(String label) throws SQLException {
+        Integer columnId = cachedColumnNames.get(label.toUpperCase());
+        if(columnId == null) {
+            throw new SQLException("Column "+label+" does not exists");
         }
-
-        if(cell instanceof Reader) {
-            return (Reader)cell;
-        } else {
-            throw new SQLException("Column is not an character stream");
-        }
-    }
-
-    @Override
-    public Reader getCharacterStream(String s) throws SQLException {
-        return getCharacterStream(getColumnByLabel(s));
-    }
-
-    @Override
-    public BigDecimal getBigDecimal(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return new BigDecimal(0);
-        }
-
-        if(cell instanceof BigDecimal) {
-            return (BigDecimal)cell;
-        } else {
-            try {
-                return new BigDecimal(cell.toString());
-            } catch (Exception ex) {
-                throw new SQLException(ex);
-            }
-        }
-    }
-
-    @Override
-    public BigDecimal getBigDecimal(String s) throws SQLException {
-        return getBigDecimal(getColumnByLabel(s));
+        return columnId;
     }
 
     @Override
@@ -929,145 +541,6 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
         }
     }
 
-    @Override
-    public Object getObject(int i, Map<String, Class<?>> stringClassMap) throws SQLException {
-        return getObject(i);
-    }
-
-    @Override
-    public Ref getRef(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        }
-
-        if(cell instanceof Ref) {
-            return (Ref)cell;
-        } else {
-            throw new SQLException("Not instance of Ref class");
-        }
-    }
-
-    @Override
-    public Blob getBlob(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        }
-
-        if(cell instanceof Blob) {
-            return (Blob)cell;
-        } else {
-            throw new SQLException("Not instance of Blob class");
-        }
-    }
-
-    @Override
-    public Clob getClob(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        }
-
-        if(cell instanceof Clob) {
-            return (Clob)cell;
-        } else {
-            throw new SQLException("Not instance of Clob class");
-        }
-    }
-
-    @Override
-    public Array getArray(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        }
-
-        if(cell instanceof Array) {
-            return (Array)cell;
-        } else {
-            throw new SQLException("Not instance of Array class");
-        }
-    }
-
-    @Override
-    public Object getObject(String s, Map<String, Class<?>> stringClassMap) throws SQLException {
-        return getObject(getColumnByLabel(s), stringClassMap);
-    }
-
-    @Override
-    public Ref getRef(String s) throws SQLException {
-        return getRef(getColumnByLabel(s));
-    }
-
-    @Override
-    public Blob getBlob(String s) throws SQLException {
-        return getBlob(getColumnByLabel(s));
-    }
-
-    @Override
-    public Clob getClob(String s) throws SQLException {
-        return getClob(getColumnByLabel(s));
-    }
-
-    @Override
-    public Array getArray(String s) throws SQLException {
-        return getArray(getColumnByLabel(s));
-    }
-
-    @Override
-    public Date getDate(int i, Calendar calendar) throws SQLException {
-        return getDate(i);
-    }
-
-    @Override
-    public Date getDate(String s, Calendar calendar) throws SQLException {
-        return getDate(getColumnByLabel(s), calendar);
-    }
-
-    @Override
-    public Time getTime(int i, Calendar calendar) throws SQLException {
-        return getTime(i);
-    }
-
-    @Override
-    public Time getTime(String s, Calendar calendar) throws SQLException {
-        return getTime(getColumnByLabel(s), calendar);
-    }
-
-    @Override
-    public Timestamp getTimestamp(int i, Calendar calendar) throws SQLException {
-        return getTimestamp(i);
-    }
-
-    @Override
-    public Timestamp getTimestamp(String s, Calendar calendar) throws SQLException {
-        return getTimestamp(getColumnByLabel(s), calendar);
-    }
-
-    @Override
-    public URL getURL(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        }
-
-        if(cell instanceof URL) {
-            return (URL)cell;
-        } else {
-            throw new SQLException("Not instance of URL class");
-        }
-    }
-
-    @Override
-    public URL getURL(String s) throws SQLException {
-        return getURL(getColumnByLabel(s));
-    }
 
     @Override
     public RowId getRowId(int i) throws SQLException {
@@ -1080,7 +553,7 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
 
     @Override
     public RowId getRowId(String s) throws SQLException {
-        return getRowId(getColumnByLabel(s));
+        return getRowId(findColumn(s));
     }
 
     @Override
@@ -1095,99 +568,6 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
     @Override
     public boolean isClosed() throws SQLException {
         return false; // Never closed
-    }
-
-    @Override
-    public NClob getNClob(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        }
-
-        if(cell instanceof NClob) {
-            return (NClob)cell;
-        } else {
-            throw new SQLException("Not instance of NClob class");
-        }
-    }
-
-    @Override
-    public NClob getNClob(String s) throws SQLException {
-        return getNClob(getColumnByLabel(s));
-    }
-
-    @Override
-    public SQLXML getSQLXML(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        }
-
-        if(cell instanceof SQLXML) {
-            return (SQLXML)cell;
-        } else {
-            throw new SQLException("Not instance of SQLXML class");
-        }
-    }
-
-    @Override
-    public SQLXML getSQLXML(String s) throws SQLException {
-        return getSQLXML(getColumnByLabel(s));
-    }
-
-    @Override
-    public String getNString(int i) throws SQLException {
-        return getString(i);
-    }
-
-    @Override
-    public String getNString(String s) throws SQLException {
-        return getNString(getColumnByLabel(s));
-    }
-
-    @Override
-    public Reader getNCharacterStream(int i) throws SQLException {
-        Object cell = getObject(i);
-
-        if(cell == null) {
-            return null;
-        }
-
-        if(cell instanceof Reader) {
-            return (Reader)cell;
-        } else {
-            throw new SQLException("Not instance of URL class");
-        }
-    }
-
-    @Override
-    public Reader getNCharacterStream(String s) throws SQLException {
-        return getNCharacterStream(getColumnByLabel(s));
-    }
-
-    @Override
-    public <T> T getObject(int i, Class<T> tClass) throws SQLException {
-        Object obj = getObject(i);
-        if(obj == null) {
-            return null;
-        }
-        if(tClass == null || !tClass.isInstance(obj)) {
-            throw new SQLException(obj.getClass().getSimpleName()+" not instance of "
-                    + (tClass == null ? "NULL" : tClass.getSimpleName()));
-        }
-        return tClass.cast(obj);
-    }
-
-    @Override
-    public <T> T getObject(String s, Class<T> tClass) throws SQLException {
-        return getObject(getColumnByLabel(s), tClass);
-    }
-
-    @Override
-    public boolean isWrapperFor(Class<?> aClass) throws SQLException {
-        return false;
     }
 
     // DataSource methods
@@ -1859,8 +1239,124 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
     }
 
     @Override
-    public <T> T unwrap(Class<T> tClass) throws SQLException {
-        throw new SQLFeatureNotSupportedException("Not a RowSet wrapper");
+    public RowSetWarning getRowSetWarnings() throws SQLException {
+        throw new SQLFeatureNotSupportedException("getRowSetWarnings not supported");
+    }
+
+    @Override
+    public void commit() throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public boolean getAutoCommit() throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void setAutoCommit(boolean autoCommit) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void rollback() throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void rollback(Savepoint s) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void setMatchColumn(int columnIdx) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void setMatchColumn(int[] columnIdxes) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void setMatchColumn(String columnName) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void setMatchColumn(String[] columnNames) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public int[] getMatchColumnIndexes() throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public String[] getMatchColumnNames() throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void unsetMatchColumn(int columnIdx) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void unsetMatchColumn(int[] columnIdxes) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void unsetMatchColumn(String columnName) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void unsetMatchColumn(String[] columnName) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public Geometry getGeometry() throws SQLException {
+        if(firstGeometryIndex == -1) {
+            try(Connection connection = dataSource.getConnection()) {
+                List<String> geoFields = SFSUtilities.getGeometryFields(connection, location);
+                if(!geoFields.isEmpty()) {
+                    firstGeometryIndex = JDBCUtilities.getFieldIndex(getMetaData(), geoFields.get(0));
+                } else {
+                    throw new SQLException("No geometry column found");
+                }
+            }
+        }
+        return getGeometry(firstGeometryIndex);
+    }
+
+    @Override
+    public void updateGeometry(int columnIndex, Geometry geometry) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public void updateGeometry(String columnLabel, Geometry geometry) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Read only RowSet");
+    }
+
+    @Override
+    public String getPkName() {
+        return pk_name;
+    }
+
+    @Override
+    public Integer getRowId(Object primaryKeyRowValue) {
+        if(isUsePkRowLine()) {
+            return (int)(primaryKeyRowValue);
+        } else if(!pk_name.isEmpty()) {
+            return rowPk.getKey(primaryKeyRowValue);
+        } else {
+            throw new IllegalStateException("The RowSet has not been initialised");
+        }
     }
 
     /**
@@ -1869,8 +1365,8 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
     private static class ResultSetHolder implements Runnable,AutoCloseable {
         private static final int SLEEP_TIME = 1000;
         private static final int RESULT_SET_TIMEOUT = 60000;
-        public enum STATUS { NEVER_STARTED, STARTED , READY, CLOSED}
-
+        public enum STATUS { NEVER_STARTED, STARTED , READY, CLOSED, EXCEPTION}
+        private Exception ex;
         private ResultSet resultSet;
         private DataSource dataSource;
         private String command;
@@ -1879,9 +1375,22 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
         private static final Logger LOGGER = Logger.getLogger(ResultSetHolder.class);
         private int openCount = 0;
 
-        private ResultSetHolder(DataSource dataSource, String command) {
+        private ResultSetHolder(DataSource dataSource) {
             this.dataSource = dataSource;
+        }
+
+        /**
+         * @param command SQL command to execute
+         */
+        public void setCommand(String command) {
             this.command = command;
+        }
+
+        /**
+         * @return SQL Command, may be null if not set
+         */
+        public String getCommand() {
+            return command;
         }
 
         @Override
@@ -1899,8 +1408,12 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
                 }
             } catch (Exception ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
+                this.ex = ex;
+                status = STATUS.EXCEPTION;
             } finally {
-                status = STATUS.CLOSED;
+                if(status != STATUS.EXCEPTION) {
+                    status = STATUS.CLOSED;
+                }
             }
         }
 
@@ -1917,13 +1430,20 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
         }
 
         public Resource getResource() throws SQLException {
-            // Reactivate result set if necessary
-            if(getStatus() == ResultSetHolder.STATUS.CLOSED || getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
-                Thread resultSetThread = new Thread(this, "ResultSet of "+command);
-                resultSetThread.start();
-            }
             // Wait execution of request
             while(getStatus() != STATUS.READY) {
+                // Reactivate result set if necessary
+                if(getStatus() == ResultSetHolder.STATUS.CLOSED || getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
+                    Thread resultSetThread = new Thread(this, "ResultSet of "+command);
+                    resultSetThread.start();
+                }
+                if(status == STATUS.EXCEPTION) {
+                    if(ex instanceof SQLException) {
+                        throw (SQLException)ex;
+                    } else {
+                        throw new SQLException(ex);
+                    }
+                }
                 try {
                     Thread.sleep(WAITING_FOR_RESULTSET);
                 } catch (InterruptedException e) {
@@ -1939,7 +1459,7 @@ public class ReadRowSetImpl extends BaseRowSet implements RowSet, DataSource, Re
          * Even if the timer should close the result set, the connection is not closed
          */
         public void onResourceClosed() {
-            openCount--;
+            openCount = Math.max(0, openCount-1);
         }
     }
 

@@ -40,7 +40,7 @@ import bibliothek.gui.dock.common.action.CRadioButton;
 import bibliothek.gui.dock.common.action.CRadioGroup;
 import bibliothek.gui.dock.common.action.CSeparator;
 import org.orbisgis.view.components.actions.ActionCommands;
-import org.orbisgis.view.components.actions.ActionTools;
+import org.orbisgis.viewapi.components.actions.ActionTools;
 import java.util.Map.Entry;
 
 /**

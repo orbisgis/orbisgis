@@ -47,7 +47,7 @@ import org.orbisgis.core.renderer.se.common.Description;
 @Deprecated
 public class LayerModelTest extends AbstractTest {
 
-    private MapContext mc = new OwsMapContext();
+    private MapContext mc = new OwsMapContext(getDataManager());
 	private static final String dummy = "vector1";
 	private static final String dummy2 = "vector2";
 	private static final String dummy3 = "vector3";
@@ -227,7 +227,7 @@ public class LayerModelTest extends AbstractTest {
 
         @Test
         public void testInternationalizedTitle() throws Exception {
-                Layer bl = new Layer("youhou", "vector1");
+                Layer bl = new Layer("youhou", "vector1", getDataManager());
                 Description desc = new Description();
                 desc.addTitle(Locale.FRENCH, "youhou title");
                 bl.setDescription(desc);

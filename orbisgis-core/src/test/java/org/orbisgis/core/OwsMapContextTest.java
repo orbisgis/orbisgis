@@ -31,10 +31,19 @@ package org.orbisgis.core;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.URI;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.Locale;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import org.h2gis.drivers.shp.SHPDriverFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
+import org.h2gis.utilities.TableLocation;
 import org.junit.Test;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
@@ -51,7 +60,7 @@ public class OwsMapContextTest extends AbstractTest  {
         
     @Test
 	public void testRemoveSelectedLayer() throws Exception {
-		MapContext mc = new OwsMapContext();
+		MapContext mc = new OwsMapContext(getDataManager());
 		mc.open(null);
 		ILayer layer = mc.createLayer(getDataManager().registerDataSource(new URI("../src/test/resources/data/bv_sap.shp")));
 		mc.getLayerModel().addLayer(layer);
@@ -72,7 +81,7 @@ public class OwsMapContextTest extends AbstractTest  {
         Description mapDescription = new Description();
         mapDescription.addTitle(locale, title);
         mapDescription.addAbstract(locale, mapAbstract);
-        MapContext mc = new OwsMapContext();
+        MapContext mc = new OwsMapContext(getDataManager());
         mc.open(null);
         mc.setDescription(mapDescription);
         mc.close(null);
@@ -80,7 +89,7 @@ public class OwsMapContextTest extends AbstractTest  {
         mc.write(mapData);
         // Map data contain the serialisation
         // Read this data with another instance
-        MapContext mc2 = new OwsMapContext();
+        MapContext mc2 = new OwsMapContext(getDataManager());
         mc2.read(new ByteArrayInputStream(mapData.toByteArray()));
         mc2.open(null);
         // Test default title
@@ -99,7 +108,7 @@ public class OwsMapContextTest extends AbstractTest  {
      * @throws Exception
      */
     private void saveAs(String imagePath, MapImageWriter.Format format) throws Exception {
-        MapContext mc = new OwsMapContext();
+        MapContext mc = new OwsMapContext(getDataManager());
         mc.open(null);
         ILayer layer = mc.createLayer(URI.create("../src/test/resources/data/landcover2000.shp"));
         mc.getLayerModel().addLayer(layer);
@@ -107,6 +116,62 @@ public class OwsMapContextTest extends AbstractTest  {
         FileOutputStream out = new FileOutputStream(new File(imagePath));
         mapImageWriter.setFormat(format);
         mapImageWriter.write(out, new NullProgressMonitor());
+    }
+
+    @Test
+    public void makeLayerUriFromTableFile() throws Exception {
+        File dataFile = new File("../src/test/resources/data/landcover2000.shp").getCanonicalFile();
+        File mapContextLocation = new File("landco_db.ows");
+        String tableReference = getDataManager().registerDataSource(dataFile.toURI());
+        MapContext mc = new OwsMapContext(getDataManager());
+        mc.setLocation(mapContextLocation.toURI());
+        mc.open(new NullProgressMonitor());
+        ILayer layer = mc.createLayer(tableReference);
+        mc.getLayerModel().addLayer(layer);
+        mc.close(new NullProgressMonitor());
+        try(FileOutputStream out = new FileOutputStream(mapContextLocation)) {
+            mc.write(out);
+        }
+        // Open the map context
+        MapContext newMapContext = new OwsMapContext(getDataManager());
+        newMapContext.setLocation(mapContextLocation.toURI());
+        try(FileInputStream in = new FileInputStream(mapContextLocation)) {
+            newMapContext.read(in);
+        }
+        newMapContext.open(new NullProgressMonitor());
+        assertEquals(1, newMapContext.getLayers().length);
+        assertEquals(dataFile.toURI(), newMapContext.getLayers()[0].getDataUri());
+    }
+
+    @Test
+    public void makeLayerUriFromNativeTable() throws Exception {
+        File dataFile = new File("../src/test/resources/data/landcover2000.shp").getCanonicalFile();
+        File mapContextLocation = new File("landco_db2.ows");
+        SHPDriverFunction shpDriver = new SHPDriverFunction();
+        try(Connection connection = getConnection();
+            Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS LANDCOVER2000");
+            shpDriver.importFile(connection, "LANDCOVER2000", dataFile, new EmptyProgressVisitor());
+        }
+        MapContext mc = new OwsMapContext(getDataManager());
+        mc.setLocation(mapContextLocation.toURI());
+        mc.open(new NullProgressMonitor());
+        ILayer layer = mc.createLayer("LANDCOVER2000");
+        mc.getLayerModel().addLayer(layer);
+        mc.close(new NullProgressMonitor());
+        try(FileOutputStream out = new FileOutputStream(mapContextLocation)) {
+            mc.write(out);
+        }
+        // Open the map context
+        MapContext newMapContext = new OwsMapContext(getDataManager());
+        newMapContext.setLocation(mapContextLocation.toURI());
+        try(FileInputStream in = new FileInputStream(mapContextLocation)) {
+            newMapContext.read(in);
+        }
+        newMapContext.open(new NullProgressMonitor());
+        assertEquals(1, newMapContext.getLayers().length);
+        assertTrue(newMapContext.getLayers()[0].getDataUri().toString().contains("table=LANDCOVER2000"));
+        assertEquals(TableLocation.parse("LANDCOVER2000").getTable(), TableLocation.parse(newMapContext.getLayers()[0].getTableReference()).getTable());
     }
 
     @Test

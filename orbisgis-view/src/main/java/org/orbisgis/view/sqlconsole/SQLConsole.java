@@ -28,18 +28,19 @@
  */
 package org.orbisgis.view.sqlconsole;
 
+import javax.sql.DataSource;
 import javax.swing.*;
 
+import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
-import org.orbisgis.view.docking.DockingPanelParameters;
-import org.orbisgis.view.edition.EditableElement;
-import org.orbisgis.view.edition.EditorDockable;
+import org.orbisgis.viewapi.docking.DockingPanelParameters;
+import org.orbisgis.viewapi.edition.EditableElement;
+import org.orbisgis.viewapi.edition.EditorDockable;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
-import org.orbisgis.view.sqlconsole.ui.ext.SQLConsoleEditor;
+import org.orbisgis.viewapi.sqlconsole.ui.ext.SQLConsoleEditor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -49,10 +50,11 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class SQLConsole implements EditorDockable,SQLConsoleEditor {
         private DockingPanelParameters dockingPanelParameters = new DockingPanelParameters();
-        private SQLConsolePanel sqlPanel = new SQLConsolePanel();
+        private SQLConsolePanel sqlPanel;
         protected final static I18n I18N = I18nFactory.getI18n(SQLConsole.class);
         
-        public SQLConsole() {
+        public SQLConsole(DataSource dataSource) {
+                sqlPanel = new SQLConsolePanel(dataSource);
                 dockingPanelParameters.setTitle(I18N.tr("SQL Console"));
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("script_code"));
                 dockingPanelParameters.setDockActions(sqlPanel.getActions().getActions());

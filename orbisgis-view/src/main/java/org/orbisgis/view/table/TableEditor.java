@@ -29,15 +29,11 @@
 package org.orbisgis.view.table;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
 import java.sql.*;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -54,7 +50,6 @@ import javax.swing.event.RowSorterListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
@@ -63,9 +58,11 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
+import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
@@ -73,16 +70,14 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
-import org.orbisgis.view.docking.DockingLocation;
-import org.orbisgis.view.docking.DockingPanelParameters;
-import org.orbisgis.view.edition.EditableElement;
-import org.orbisgis.view.edition.EditableElementException;
-import org.orbisgis.view.edition.EditableSource;
-import org.orbisgis.view.edition.EditorDockable;
-import org.orbisgis.view.edition.EditorManager;
+import org.orbisgis.view.table.jobs.CreateSourceFromSelection;
+import org.orbisgis.viewapi.docking.DockingLocation;
+import org.orbisgis.viewapi.docking.DockingPanelParameters;
+import org.orbisgis.viewapi.edition.EditableElement;
+import org.orbisgis.viewapi.edition.EditableElementException;
+import org.orbisgis.viewapi.edition.EditableSource;
+import org.orbisgis.viewapi.edition.EditorDockable;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.map.MapElement;
-import org.orbisgis.view.map.jobs.CreateSourceFromSelection;
 import org.orbisgis.view.table.ext.SourceTable;
 import org.orbisgis.view.table.filters.FieldsContainsFilterFactory;
 import org.orbisgis.view.table.filters.TableSelectionFilter;
@@ -91,6 +86,8 @@ import org.orbisgis.view.table.jobs.ComputeFieldStatistics;
 import org.orbisgis.view.table.jobs.OptimalWidthJob;
 import org.orbisgis.view.table.jobs.SearchJob;
 import org.orbisgis.view.table.jobs.ZoomToSelectionJob;
+import org.orbisgis.viewapi.edition.EditorManager;
+import org.orbisgis.viewapi.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -124,14 +121,16 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 "onEditableSelectionChange","newValue");
         private ActionCommands popupActions = new ActionCommands();
         private DataSource dataSource;
+        private DataManager dataManager;
 
         /**
          * Constructor
          * @param element Source to read and edit
          */
-        public TableEditor(TableEditableElement element, DataSource dataSource) {
+        public TableEditor(TableEditableElement element, DataManager dataManager) {
                 super(new BorderLayout());
-                this.dataSource = dataSource;
+                this.dataManager = dataManager;
+                this.dataSource = dataManager.getDataSource();
                 //Add a listener to the source manager to close the table when
                 //the source is removed
                 this.tableEditableElement = element;
@@ -404,7 +403,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         LOGGER.error("MapContext lost between popup creation and click");
                         return;
                 }                
-                ZoomToSelectionJob zoomJob = new ZoomToSelectionJob(dataSource, tableEditableElement.getTableReference() ,modelSelection, mapContext);
+                ZoomToSelectionJob zoomJob = new ZoomToSelectionJob(dataManager, tableEditableElement.getTableReference()
+                        ,new IntegerUnion(modelSelection), mapContext);
                 launchJob(zoomJob);                
         }
         
@@ -684,6 +684,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
 
         @Override
         public boolean match(EditableElement editableElement) {
+                //TODO Link table selection with layer selection
                 return false; //This editor cannot take another editable
         }
 
@@ -691,12 +692,11 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         public void addNotify() {
                 super.addNotify();
                 if(!initialised.getAndSet(true)) {
-                        launchJob(new OpenEditableElement());
+                        launchJob(new OpenEditableElement(this, tableEditableElement));
                 }
         }
         
         private void quickAutoResize() {
-                          
                 autoResizeColWidth(Math.min(5, tableModel.getRowCount()));
         }
         
@@ -955,7 +955,15 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 return this;
         }
         
-        private class OpenEditableElement implements BackgroundJob {
+        private static class OpenEditableElement implements BackgroundJob {
+
+                private TableEditor tableEditor;
+                private TableEditableElement tableEditableElement;
+
+                private OpenEditableElement(TableEditor tableEditor, TableEditableElement el) {
+                    this.tableEditor = tableEditor;
+                    this.tableEditableElement = el;
+                }
 
                 @Override
                 public void run(ProgressMonitor pm) {
@@ -964,13 +972,29 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         } catch (UnsupportedOperationException | EditableElementException ex) {
                                 LOGGER.error(I18N.tr("Error while loading the table editor"), ex);
                         }
-                    readDataSource();
+                    if(SwingUtilities.isEventDispatchThread()) {
+                        tableEditor.readDataSource();
+                    } else {
+                        SwingUtilities.invokeLater(new ReadDataSource(tableEditor));
+                    }
                 }
 
                 @Override
                 public String getTaskName() {
                         return I18N.tr("Open the table {0}", tableEditableElement.getTableReference());
                 }
+        }
+        private static class ReadDataSource implements Runnable {
+            private TableEditor tableEditor;
+
+            private ReadDataSource(TableEditor tableEditor) {
+                this.tableEditor = tableEditor;
+            }
+
+            @Override
+            public void run() {
+                tableEditor.readDataSource();
+            }
         }
 
         @Override

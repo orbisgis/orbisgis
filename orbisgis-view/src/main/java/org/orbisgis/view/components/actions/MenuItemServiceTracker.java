@@ -2,6 +2,7 @@ package org.orbisgis.view.components.actions;
 
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
+import org.orbisgis.viewapi.components.actions.ActionFactoryService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;

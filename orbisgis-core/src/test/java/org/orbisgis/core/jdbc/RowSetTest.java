@@ -24,20 +24,27 @@
  */
 package org.orbisgis.core.jdbc;
 
+import com.vividsolutions.jts.geom.Envelope;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.TableLocation;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.core.api.ReadRowSet;
+import org.orbisgis.core.DataManagerImpl;
+import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.coreapi.api.ReadRowSet;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.progress.NullProgressMonitor;
 
 import javax.sql.DataSource;
-import javax.sql.RowSet;
 import javax.sql.RowSetEvent;
 import javax.sql.RowSetListener;
+import javax.sql.rowset.JdbcRowSet;
+import javax.sql.rowset.RowSetFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
+import java.util.SortedSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -55,6 +62,28 @@ public class RowSetTest {
     }
 
     @Test
+    public void testReadTableSelectionEnvelope() throws SQLException {
+        DataManager dataManager = new DataManagerImpl(dataSource);
+        try(Connection connection = dataSource.getConnection();
+            Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS PTS");
+            st.execute("CREATE TABLE PTS(id integer primary key auto_increment, the_geom POINT)");
+            st.execute("INSERT INTO PTS(the_geom) VALUES ('POINT(10 10)'),('POINT(15 15)'),('POINT(20 20)'),('POINT(25 25)')");
+            assertEquals(new Envelope(10,25,10,25), ReadTable.getTableSelectionEnvelope(dataManager, "PTS", getRows(1,2,3,4), new NullProgressMonitor()));
+            assertEquals(new Envelope(10,15,10,15), ReadTable.getTableSelectionEnvelope(dataManager, "PTS", getRows(1, 2), new NullProgressMonitor()));
+            assertEquals(new Envelope(15,20,15,20), ReadTable.getTableSelectionEnvelope(dataManager, "PTS", getRows(2, 3), new NullProgressMonitor()));
+            assertEquals(new Envelope(25,25,25,25), ReadTable.getTableSelectionEnvelope(dataManager, "PTS", getRows(4, 4), new NullProgressMonitor()));
+            st.execute("DROP TABLE IF EXISTS PTS");
+        }
+    }
+
+    private static SortedSet<Integer> getRows(Integer... rowId) {
+        SortedSet<Integer> rows = new IntegerUnion();
+        Collections.addAll(rows, rowId);
+        return rows;
+    }
+
+    @Test
     public void testRowSetListener() throws SQLException {
         UnitTestRowSetListener rowSetListener = new UnitTestRowSetListener();
         try (
@@ -63,7 +92,9 @@ public class RowSetTest {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer, str varchar(30), flt float)");
             st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
-            try (ReadRowSet rs = new ReadRowSetImpl(dataSource, TableLocation.parse("TEST"))) {
+            try (ReadRowSet rs = new ReadRowSetImpl(dataSource)) {
+                rs.setCommand("select * from TEST");
+                rs.execute();
                 rs.addRowSetListener(rowSetListener);
                 assertFalse(rowSetListener.isCursorMoved());
                 assertTrue(rs.next());
@@ -88,7 +119,9 @@ public class RowSetTest {
             st.execute("create table test (id integer, str varchar(30), flt float)");
             st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
             TableLocation table = TableLocation.parse("TEST");
-            try (ReadRowSet rs = new ReadRowSetImpl(dataSource, table)) {
+            try (ReadRowSet rs = new ReadRowSetImpl(dataSource)) {
+                rs.setCommand("select * from TEST");
+                rs.execute();
                 assertTrue(rs.next());
                 assertEquals(42, rs.getInt(1));
                 assertEquals("marvin", rs.getString(2));
@@ -124,7 +157,8 @@ public class RowSetTest {
             st.execute("create table test (id integer primary key, str varchar(30), flt float)");
             st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
             TableLocation table = TableLocation.parse("TEST");
-            try (ReadRowSet rs = new ReadRowSetImpl(dataSource, table, ReadRowSetImpl.getPkName(dataSource, table), new NullProgressMonitor())) {
+            try (ReadRowSetImpl rs = new ReadRowSetImpl(dataSource)) {
+                rs.initialize(table, "id",new NullProgressMonitor());
                 assertTrue(rs.next());
                 assertEquals(42, rs.getInt(1));
                 assertEquals("marvin", rs.getString(2));
@@ -148,6 +182,42 @@ public class RowSetTest {
                 assertEquals(10.1010, rs.getFloat(3), 1e-6);
             }
             st.execute("drop table if exists test");
+        }
+    }
+
+    @Test
+    public void testReversibleRowSet() throws SQLException {
+        RowSetFactory factory = new DataManagerImpl(dataSource);
+        JdbcRowSet rs = factory.createJdbcRowSet();
+        rs.setCommand("SELECT * FROM TEST");
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+                st.execute("drop table if exists test");
+                st.execute("create table test (id integer primary key, str varchar(30), flt float)");
+                st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
+                rs.execute();
+                assertTrue(rs.next());
+                assertEquals(42, rs.getInt(1));
+                assertEquals("marvin", rs.getString(2));
+                assertEquals(10.1010, rs.getFloat(3), 1e-6);
+                assertTrue(rs.next());
+                assertEquals(666, rs.getInt(1));
+                assertEquals("satan", rs.getString(2));
+                assertEquals(1 / 3, rs.getFloat(3), 1e-6);
+                assertFalse(rs.next());
+                assertTrue(rs.previous());
+                assertEquals(666, rs.getInt(1));
+                assertEquals("satan", rs.getString(2));
+                assertEquals(1 / 3, rs.getFloat(3), 1e-6);
+                assertTrue(rs.first());
+                assertEquals(42, rs.getInt(1));
+                assertEquals("marvin", rs.getString(2));
+                assertEquals(10.1010, rs.getFloat(3), 1e-6);
+                assertTrue(rs.absolute(1));
+                assertEquals(42, rs.getInt(1));
+                assertEquals("marvin", rs.getString(2));
+                assertEquals(10.1010, rs.getFloat(3), 1e-6);
         }
     }
 

@@ -30,17 +30,17 @@ package org.orbisgis.view.table;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
+import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.view.docking.DockingPanelLayout;
-import org.orbisgis.view.edition.EditableElement;
-import org.orbisgis.view.edition.EditableElementException;
-import org.orbisgis.view.edition.EditorDockable;
-import org.orbisgis.view.edition.EditorManager;
-import org.orbisgis.view.edition.MultipleEditorFactory;
+import org.orbisgis.viewapi.docking.DockingPanelLayout;
+import org.orbisgis.viewapi.edition.EditableElement;
+import org.orbisgis.viewapi.edition.EditableElementException;
+import org.orbisgis.viewapi.edition.EditorDockable;
+import org.orbisgis.viewapi.edition.EditorManager;
+import org.orbisgis.viewapi.edition.MultipleEditorFactory;
+import org.orbisgis.viewapi.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import javax.sql.DataSource;
 
 /**
  *  This factory receive the {@link TableEditableElementImpl} and open a new editor.
@@ -49,7 +49,7 @@ public class TableEditorFactory implements MultipleEditorFactory {
         public static final String FACTORY_ID = "TableEditorFactory";
         private static final Logger LOGGER = Logger.getLogger("gui."+TableEditorFactory.class);
         protected final static I18n I18N = I18nFactory.getI18n(TableEditorFactory.class);
-        private DataSource dataSource;
+        private DataManager dataManager;
 
         @Override
         public DockingPanelLayout makeEditableLayout(EditableElement editable) {
@@ -71,10 +71,10 @@ public class TableEditorFactory implements MultipleEditorFactory {
         }
 
         /**
-         * @param dataSource JDBC Connection factory
+         * @param dataManager JDBC DataManager factory
          */
-        public void setDataSource(DataSource dataSource) {
-            this.dataSource = dataSource;
+        public void setDataManager(DataManager dataManager) {
+            this.dataManager = dataManager;
         }
         
         private boolean openEditable(TableEditableElement table) {
@@ -101,7 +101,7 @@ public class TableEditorFactory implements MultipleEditorFactory {
 
         @Override
         public DockingPanelLayout makeEmptyLayout() {
-                return new TablePanelLayout();
+                return new TablePanelLayout(dataManager);
         }
 
         @Override
@@ -117,7 +117,7 @@ public class TableEditorFactory implements MultipleEditorFactory {
                         LOGGER.info(I18N.tr("In a consequence of an unreachable table {0},the associated data editor could not be recovered.",editableTable.getTableReference()));
                         return null;
                 } else {
-                        return new TableEditor(editableTable, dataSource);
+                        return new TableEditor(editableTable, dataManager);
                 }
         }
 

@@ -31,6 +31,7 @@ package org.orbisgis.core.layerModel;
 import com.vividsolutions.jts.geom.Envelope;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -44,7 +45,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.sql.DataSource;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -61,7 +61,9 @@ import net.opengis.ows_context.StyleListType;
 import net.opengis.ows_context.StyleType;
 import net.opengis.ows_context.URLType;
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
+import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.Renderer;
@@ -73,6 +75,7 @@ import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.URIUtility;
+import org.orbisgis.utils.FileUtils;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -91,57 +94,74 @@ public final class OwsMapContext extends BeanMapContext {
         private boolean open = false;
         private OWSContextType jaxbMapContext = null; //Persistent form of the MapContext
         private long idTime;
+        private DataManager dataManager;
 
         /**
          * Default constructor
          */
-        public OwsMapContext() {
+        public OwsMapContext(DataManager dataManager) {
                 openerListener = new OpenerListener();
                 setRootLayer(createLayerCollection("root"));
 
                 //Create an empty map context
                 jaxbMapContext = createJaxbMapContext();
                 idTime = System.currentTimeMillis();
+                this.dataManager = dataManager;
+        }
+
+        @Override
+        public DataManager getDataManager() {
+            return dataManager;
         }
 
         @Override
         public ILayer createLayer(String layerName, String tableRef) throws LayerException {
-
-            // Get DataSource
-            DataSource dataSource = Services.getService(DataSource.class);
-            if(dataSource!=null) {
-                try {
-                    Connection connection = dataSource.getConnection();
-                    try {
-                        List<String> geoFields = SFSUtilities.getGeometryFields(connection,SFSUtilities.splitCatalogSchemaTableName(tableRef));
-                        if (!geoFields.isEmpty()) {
-                            return new Layer(layerName, tableRef);
-                        } else {
-                            throw new LayerException(I18N.tr("The source contains no spatial info"));
-                        }
-                    } finally {
-                        connection.close();
+            try {
+                try (Connection connection = dataManager.getDataSource().getConnection()) {
+                    List<String> geoFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableRef));
+                    if (!geoFields.isEmpty()) {
+                        return new Layer(layerName, tableRef, dataManager);
+                    } else {
+                        throw new LayerException(I18N.tr("The source contains no spatial info"));
                     }
-                } catch (SQLException ex) {
-                    throw new LayerException("Cannot retrieve spatial metadata",ex);
                 }
+            } catch (SQLException ex) {
+                throw new LayerException("Cannot retrieve spatial metadata",ex);
             }
-            throw new LayerException("Cannot retrieve table metadata");
         }
 
         @Override
         public ILayer createLayer(String tableRef) throws LayerException {
-                return createLayer(SFSUtilities.splitCatalogSchemaTableName(tableRef).getTable(), tableRef);
+                return createLayer(TableLocation.parse(tableRef).getTable(), tableRef);
         }
 
         @Override
         public ILayer createLayer(String layerName, URI source) throws LayerException {
-            return new Layer(layerName, source);
+            return new Layer(layerName, source, dataManager);
         }
 
         @Override
         public ILayer createLayer(URI source) throws LayerException {
-            return createLayer(org.orbisgis.utils.FileUtils.getNameFromURI(source), source);
+            if(!source.isAbsolute()) {
+                // If URI is not absolute ex URI.create("../folder/myfile.shp"), then create a canonical URI
+                try {
+                    source = new File(location != null ? new File(location) : new File("./"),
+                            source.toString()).getCanonicalFile().toURI();
+                } catch (IOException ex) {
+                    throw new LayerException(ex);
+                }
+            }
+            String layerName;
+            try {
+                layerName = FileUtils.getNameFromURI(source);
+            } catch (UnsupportedOperationException ex) {
+                try {
+                    layerName = dataManager.findUniqueTableName(I18N.tr("Layer"));
+                } catch (SQLException ex2) {
+                    throw new LayerException(ex2);
+                }
+            }
+            return createLayer(layerName, source);
         }
 
     @Override

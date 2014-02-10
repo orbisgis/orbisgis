@@ -28,25 +28,16 @@
  */
 package org.orbisgis.view.geocatalog.filters;
 
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * DataSource is vectorial, raster or wms
  */
 public class GeoFilter implements IFilter {
-
     @Override
-    public boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException {
-        try {
-            return !SFSUtilities.getGeometryFields(connection, TableLocation.parse(sourceName)).isEmpty();
-        } catch (SQLException ex) {
-            // DataBase does not handle geometry type
-            return false;
-        }
+    public boolean accepts(TableLocation table, Map<ATTRIBUTES, String> tableProperties) {
+        return tableProperties.containsKey(ATTRIBUTES.GEOMETRY_TYPE);
     }
 }

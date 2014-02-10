@@ -71,6 +71,9 @@ public class StringAttribute extends ValueReference implements StringParameter{
     @Override
     public String getValue(ResultSet rs, long fid) throws ParameterException{ // TODO implement
         try {
+            if(rs.getRow() != fid) {
+                rs.absolute((int)fid);
+            }
 			Object fieldValue = getFieldValue(rs, fid);
 			return fieldValue.toString();
         } catch (Exception e) {

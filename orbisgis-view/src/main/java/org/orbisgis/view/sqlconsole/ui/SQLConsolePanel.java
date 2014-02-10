@@ -29,7 +29,6 @@
 package org.orbisgis.view.sqlconsole.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -53,22 +52,23 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
-import org.orbisgis.view.components.actions.DefaultAction;
+import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.view.components.findReplace.FindReplaceDialog;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.sqlconsole.actions.ExecuteScriptProcess;
 import org.orbisgis.view.util.CommentUtil;
 import org.orbisgis.view.sqlconsole.blockComment.QuoteSQL;
 import org.orbisgis.view.sqlconsole.codereformat.CodeReformator;
 import org.orbisgis.view.sqlconsole.codereformat.CommentSpec;
-import org.orbisgis.view.sqlconsole.ui.ext.SQLAction;
+import org.orbisgis.viewapi.edition.EditorManager;
+import org.orbisgis.viewapi.sqlconsole.ui.ext.SQLAction;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -110,14 +110,15 @@ public class SQLConsolePanel extends JPanel {
         private DefaultAction blockCommentAction;
         private DefaultAction formatSQLAction;
         private DefaultAction saveAction;
-        
+        private DataSource dataSource;
         
         /**
          * Creates a console for sql.
          */
-        public SQLConsolePanel() {
+        public SQLConsolePanel(DataSource dataSource) {
                 super(new BorderLayout());
-                sqlFunctionsPanel = new SQLFunctionsPanel();
+                this.dataSource = dataSource;
+                sqlFunctionsPanel = new SQLFunctionsPanel(dataSource);
                 initActions();
                 JPanel split = new JPanel();
                 split.setLayout(new BorderLayout());
@@ -282,12 +283,6 @@ public class SQLConsolePanel extends JPanel {
         public void onExecute() {      
                 if (scriptPanel.getDocument().getLength() > 0) {
                     BackgroundManager bm = Services.getService(BackgroundManager.class);
-                    MapContext mapContext = null;
-                    MapElement mapElement = MapElement.fetchFirstMapElement();
-                    if(mapElement!=null) {
-                        mapContext = mapElement.getMapContext();
-                    }
-                    DataSource dataSource = Services.getService(DataSource.class);
                     bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(this, dataSource, splitterFactory));
                 }
         }
@@ -411,7 +406,7 @@ public class SQLConsolePanel extends JPanel {
 
                 if (infoToolBar == null) {
                         infoToolBar = new JToolBar();
-                        infoToolBar.setTransferHandler(new ScriptPanelTransferHandler(scriptPanel));
+                        infoToolBar.setTransferHandler(new ScriptPanelTransferHandler(scriptPanel, dataSource));
                         statusMessage = new JLabel();
                         infoToolBar.add(statusMessage);
                         infoToolBar.setFloatable(false);

@@ -36,12 +36,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
 
 import org.orbisgis.view.components.actions.ActionCommands;
-import org.orbisgis.view.components.actions.DefaultAction;
-import org.orbisgis.view.docking.DockingPanel;
-import org.orbisgis.view.docking.DockingPanelParameters;
+import org.orbisgis.viewapi.components.actions.DefaultAction;
+import org.orbisgis.viewapi.docking.DockingPanel;
+import org.orbisgis.viewapi.docking.DockingPanelParameters;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.output.ext.MainLogFrame;
-import org.orbisgis.view.output.ext.MainLogMenuService;
+import org.orbisgis.viewapi.output.ext.MainLogFrame;
+import org.orbisgis.viewapi.output.ext.MainLogMenuService;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

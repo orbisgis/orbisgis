@@ -51,28 +51,29 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
 import org.orbisgis.core.plugin.PluginHost;
-import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.core.workspace.CoreWorkspaceImpl;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
-import org.orbisgis.view.components.actions.DefaultAction;
+import org.orbisgis.view.docking.internals.EditorFactoryTracker;
+import org.orbisgis.view.edition.EditorManagerImpl;
+import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
-import org.orbisgis.view.docking.DockingManager;
+import org.orbisgis.viewapi.docking.DockingManager;
 import org.orbisgis.view.docking.DockingManagerImpl;
 import org.orbisgis.view.docking.internals.DockingPanelTracker;
-import org.orbisgis.view.edition.EditableElement;
-import org.orbisgis.view.edition.EditorManager;
+import org.orbisgis.viewapi.edition.EditableElement;
 import org.orbisgis.view.edition.dialogs.SaveDocuments;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.main.bundles.BundleFromResources;
 import org.orbisgis.view.main.frames.MainFrame;
-import org.orbisgis.view.main.frames.ext.MainFrameAction;
-import org.orbisgis.view.main.frames.ext.MainWindow;
-import org.orbisgis.view.main.frames.ext.ToolBarAction;
+import org.orbisgis.viewapi.main.frames.ext.MainFrameAction;
+import org.orbisgis.viewapi.main.frames.ext.MainWindow;
+import org.orbisgis.viewapi.main.frames.ext.ToolBarAction;
 import org.orbisgis.view.output.OutputManager;
 import org.orbisgis.view.sqlconsole.SQLConsoleFactory;
 import org.orbisgis.view.table.TableEditorFactory;
@@ -96,7 +97,7 @@ public class Core {
     private static final int BUFFER_LENGTH = 4096;
     /////////////////////
     //view package
-    private EditorManager editors;         /*!< Management of editors */
+    private EditorManagerImpl editors;         /*!< Management of editors */
 
     private MainFrame mainFrame;     /*!< The main window */
 
@@ -118,6 +119,7 @@ public class Core {
     // Plugins
     private PluginHost pluginFramework;
     private DockingPanelTracker singleFrameTracker;
+    private EditorFactoryTracker editorFactoryTracker;
     private MenuItemServiceTracker<MainWindow, ToolBarAction> toolBarTracker;
 
     /**
@@ -126,7 +128,7 @@ public class Core {
      * @param debugMode Show additional information for debugging purposes
      * @note Call startup() to init Swing
      */
-    public Core(CoreWorkspace coreWorkspace, boolean debugMode, ProgressMonitor parentProgress) throws InvocationTargetException, InterruptedException {
+    public Core(CoreWorkspaceImpl coreWorkspace, boolean debugMode, ProgressMonitor parentProgress) throws InvocationTargetException, InterruptedException {
         ProgressMonitor progressInfo = parentProgress.startTask(I18N.tr("Loading Workspace.."),100);
         MainContext.initConsoleLogger(debugMode);
         // Declare empty main frame
@@ -159,7 +161,7 @@ public class Core {
         progressInfo.setTaskName(I18N.tr("Connecting to the database.."));
         // Init database
         try {
-            mainContext.initDataBase("sa","sa");
+            mainContext.initDataBase(coreWorkspace.getDataBaseUser(),coreWorkspace.getDataBasePassword());
         } catch (SQLException ex) {
             throw new RuntimeException(ex.getLocalizedMessage(), ex);
         }
@@ -173,6 +175,7 @@ public class Core {
         try {
             mainContext.startBundleHost(BundleFromResources.SPECIFIC_BEHAVIOUR_BUNDLES);
             pluginFramework = mainContext.getPluginHost();
+            pluginFramework.getHostBundleContext().registerService(org.orbisgis.viewapi.workspace.ViewWorkspace.class, viewWorkspace, null);
         } catch (Exception ex) {
             LOGGER.error(I18N.tr("Loading of plugins is aborted"), ex);
         }
@@ -181,7 +184,7 @@ public class Core {
     /**
      * Find the workspace folder or addDockingPanel a dialog to select one
      */
-    private void initMainContext(boolean debugMode, CoreWorkspace coreWorkspace) throws InterruptedException, InvocationTargetException, RuntimeException {
+    private void initMainContext(boolean debugMode, CoreWorkspaceImpl coreWorkspace) throws InterruptedException, InvocationTargetException, RuntimeException {
         String workspaceFolder = coreWorkspace.getWorkspaceFolder();
         if (workspaceFolder == null) {
             File defaultWorkspace = coreWorkspace.readDefaultWorkspacePath();
@@ -218,13 +221,13 @@ public class Core {
     }
 
     private static class PromptUserForSelectingWorkspace implements Runnable {
-        private CoreWorkspace coreWorkspace;
+        private CoreWorkspaceImpl coreWorkspace;
         /**
          * User do not cancel workspace selection
          */
         private boolean ok = false;
 
-        public PromptUserForSelectingWorkspace(CoreWorkspace coreWorkspace) {
+        public PromptUserForSelectingWorkspace(CoreWorkspaceImpl coreWorkspace) {
             this.coreWorkspace = coreWorkspace;
         }
 
@@ -240,9 +243,7 @@ public class Core {
         @Override
         public void run() {
             // Ask the user to select a workspace folder
-            File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, coreWorkspace);
-            if (newWorkspace != null) {
-                coreWorkspace.setWorkspaceFolder(newWorkspace.getAbsolutePath());
+            if (WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, coreWorkspace)) {
                 ok = true;
             }
         }
@@ -316,7 +317,7 @@ public class Core {
      */
     private void makeGeoCatalogPanel() {
         //The geo-catalog view content is read from the SourceContext
-        geoCatalog = new Catalog();
+        geoCatalog = new Catalog(mainContext.getDataManager());
         // Catalog extensions
         geoCatalog.registeTrackers(pluginFramework.getHostBundleContext());
         //Add the view as a new Docking Panel
@@ -328,10 +329,10 @@ public class Core {
      */
     private void loadEditorFactories() {
             //editors.addEditorFactory(new TocEditorFactory(pluginFramework.getHostBundleContext()));
-            //editors.addEditorFactory(new MapEditorFactory(pluginFramework.getHostBundleContext()));
+            //editors.addEditorFactory(new MapEditorFactory(pluginFramework.getHostBundleContext(), mainContext.getDataManager(), viewWorkspace));
             editors.addEditorFactory(new SQLConsoleFactory(pluginFramework.getHostBundleContext()));
             TableEditorFactory tableEditorFactory = new TableEditorFactory();
-            tableEditorFactory.setDataSource(mainContext.getDataSource());
+            tableEditorFactory.setDataManager(mainContext.getDataManager());
             editors.addEditorFactory(tableEditorFactory);
             //editors.addEditorFactory(new BeanShellFrameFactory());
     }
@@ -362,11 +363,13 @@ public class Core {
      * @param dm Instance of docking manager
      */
     private void makeEditorManager(DockingManager dm) {
-        editors = new EditorManager(dm);
-        Services.registerService(EditorManager.class,
+        editors = new EditorManagerImpl(dm);
+        Services.registerService(org.orbisgis.viewapi.edition.EditorManager.class,
                 I18N.tr("Use this instance to open an editable element (map,data source..)"),
                 editors);
-
+        pluginFramework.getHostBundleContext().registerService(org.orbisgis.viewapi.edition.EditorManager.class, editors, null);
+        editorFactoryTracker = new EditorFactoryTracker(pluginFramework.getHostBundleContext(), editors);
+        editorFactoryTracker.open();
     }
 
     /**
@@ -533,6 +536,9 @@ public class Core {
         mainFrame.dispose();
         if (singleFrameTracker != null) {
             singleFrameTracker.close();
+        }
+        if(editorFactoryTracker != null) {
+            editorFactoryTracker.close();
         }
         if (toolBarTracker != null) {
             toolBarTracker.close();

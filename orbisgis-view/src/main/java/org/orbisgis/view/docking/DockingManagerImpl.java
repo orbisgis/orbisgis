@@ -69,7 +69,7 @@ import javax.swing.JMenu;
 import javax.swing.UIManager;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.common.BeanPropertyChangeSupport;
-import org.orbisgis.view.components.actions.ActionTools;
+import org.orbisgis.viewapi.components.actions.ActionTools;
 import org.orbisgis.view.components.actions.ActionsHolder;
 import org.orbisgis.view.docking.internals.ApplicationRessourceDecorator;
 import org.orbisgis.view.docking.internals.CustomMultipleCDockable;
@@ -85,7 +85,12 @@ import org.orbisgis.view.docking.internals.actions.ToolBarItem;
 import org.orbisgis.view.docking.preferences.OrbisGISPreferenceTreeModel;
 import org.orbisgis.view.docking.preferences.editors.UserInformationEditor;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.util.MenuCommonFunctions;
+import org.orbisgis.viewapi.docking.DockingManager;
+import org.orbisgis.viewapi.docking.DockingPanel;
+import org.orbisgis.viewapi.docking.DockingPanelFactory;
+import org.orbisgis.viewapi.docking.DockingPanelLayout;
+import org.orbisgis.viewapi.docking.DockingPanelParameters;
+import org.orbisgis.viewapi.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 /**
@@ -310,19 +315,17 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
             //Show dialog
             dialog.openDialog( owner, true );
         }
-        /**
-         * The multiple instances panels can be shown at the next start of application
-         * if their factory is registered 
-         * before loading the layout
-         * @param factoryName
-         * @param factory  
-         */
+
         @Override
         public void registerPanelFactory(String factoryName,DockingPanelFactory factory) {
             InternalCommonFactory dockingFramesFactory = new InternalCommonFactory(factory,commonControl);
             commonControl.addMultipleDockableFactory(factoryName, dockingFramesFactory);
         }
-        
+
+        @Override
+        public void unregisterPanelFactory(String factoryName) {
+            commonControl.removeMultipleDockableFactory(factoryName);
+        }
         /**
          * Free docking resources and save the layout
          */

@@ -32,16 +32,18 @@ import org.fife.rsta.ac.LanguageSupport;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
-import org.orbisgis.view.edition.EditorDockable;
-import org.orbisgis.view.edition.SingleEditorFactory;
-import org.orbisgis.view.sqlconsole.ui.ext.SQLAction;
-import org.orbisgis.view.sqlconsole.ui.ext.SQLConsoleEditor;
+import org.orbisgis.viewapi.edition.EditorDockable;
+import org.orbisgis.viewapi.edition.SingleEditorFactory;
+import org.orbisgis.viewapi.sqlconsole.ui.ext.SQLAction;
+import org.orbisgis.viewapi.sqlconsole.ui.ext.SQLConsoleEditor;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.sql.DataSource;
 
 
 /**
@@ -58,6 +60,8 @@ public class SQLConsoleFactory implements SingleEditorFactory {
         private MenuItemServiceTracker<SQLConsoleEditor,SQLAction> actionTracker;
         private ServiceTracker<LanguageSupport,LanguageSupport> st;
         private ServiceTracker<ScriptSplitterFactory, ScriptSplitterFactory> splitterFactoryServiceTracker;
+        private ServiceReference<DataSource> dataSourceServiceRef;
+
         /**
          * Constructor
          * @param hostBundle The SQLConsole buttons can be extended.
@@ -69,7 +73,9 @@ public class SQLConsoleFactory implements SingleEditorFactory {
         @Override
         public EditorDockable[] getSinglePanels() {
                 if(sqlConsole==null) {
-                        sqlConsole = new SQLConsole();
+                        dataSourceServiceRef = hostBundle.getServiceReference(DataSource.class);
+                        DataSource dataSource = hostBundle.getService(dataSourceServiceRef);
+                        sqlConsole = new SQLConsole(dataSource);
                         //Track Action plugin
                         actionTracker = new MenuItemServiceTracker<SQLConsoleEditor, SQLAction>(hostBundle,SQLAction.class,sqlConsole.getActions(),sqlConsole);
                         actionTracker.open(); //begin the track
@@ -105,6 +111,9 @@ public class SQLConsoleFactory implements SingleEditorFactory {
                 }
                 if(st != null) {
                     st.close();
+                }
+                if(dataSourceServiceRef!=null) {
+                    hostBundle.ungetService(dataSourceServiceRef);
                 }
         }
         private static class SQLParserTracker implements ServiceTrackerCustomizer<ScriptSplitterFactory, ScriptSplitterFactory> {

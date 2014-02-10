@@ -10,11 +10,11 @@ Developers, check out our [GitHub Wiki](https://github.com/irstv/orbisgis/wiki).
 ### Quick build instructions
 
 OrbisGIS uses Maven. To launch a full build (including tests), run the following command:
-```
-mvn clean install
+```bash
+$ mvn clean install
 ```
 To run OrbisGIS using Maven:
-```
-cd orbisgis-dist
-mvn exec:exec
+```bash
+$ cd orbisgis-dist
+$ mvn exec:exec
 ```

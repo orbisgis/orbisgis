@@ -28,6 +28,9 @@
  */
 package org.orbisgis.core.layerModel.mapcatalog;
 
+import org.orbisgis.coreapi.api.DataManager;
+
+import java.io.File;
 import java.net.URL;
 
 /**
@@ -35,57 +38,75 @@ import java.net.URL;
  * @author Nicolas Fortin
  */
 public class ConnectionProperties {
-        /**
-         * The connexion fails if it exceed this waiting time in milliseconds.
-         */
-        public static final int DEFAULT_CONNECTION_TIMEOUT = 30000;
-        private int connectionTimeOut = DEFAULT_CONNECTION_TIMEOUT; // In milliseconds
+    /**
+     * The connexion fails if it exceed this waiting time in milliseconds.
+     */
+    public static final int DEFAULT_CONNECTION_TIMEOUT = 30000;
+    private int connectionTimeOut = DEFAULT_CONNECTION_TIMEOUT; // In milliseconds
+    private File mapFolderCache;
+    private URL apiUrl;
+    private DataManager dataManager;
 
-        private URL apiUrl;
+    /**
+     * Constructor with mandatory parameters
+     * @param catalogApiUrl Catalog API URL
+     * @param dataManager Loaded map context will register data into this manager.
+     * @param mapFolderCache Download map context are placed in this folder when saved.
+     */
+    public ConnectionProperties(URL catalogApiUrl, DataManager dataManager,File mapFolderCache) {
+        this.apiUrl = catalogApiUrl;
+        this.dataManager = dataManager;
+        this.mapFolderCache = mapFolderCache;
+    }
 
-        /**
-         * Constructor with mandatory parameters
-         * @param catalogApiUrl Catalog API URL
-         */
-        public ConnectionProperties(URL catalogApiUrl) {
-                this.apiUrl = catalogApiUrl;
-        }
+    /**
+     * @return Download map context are placed in this folder when saved.
+     */
+    public File getMapFolderCache() {
+        return mapFolderCache;
+    }
 
-        
-        /**
-         * Get the value of catalogApiUrl
-         *
-         * @return the value of catalogApiUrl
-         */
-        public URL getApiUrl() {
-                return apiUrl;
-        }
+    /**
+     * @return Loaded map context will register data into this manager.
+     */
+    public DataManager getDataManager() {
+        return dataManager;
+    }
 
-        /**
-         * Set the value of catalogApiUrl
-         *
-         * @param catalogApiUrl new value of catalogApiUrl
-         */
-        public void setApiUrl(URL catalogApiUrl) {
-                this.apiUrl = catalogApiUrl;
-        }
+    /**
+     * Get the value of catalogApiUrl
+     *
+     * @return the value of catalogApiUrl
+     */
+    public URL getApiUrl() {
+        return apiUrl;
+    }
 
-        /**
-         * Get the value of connectionTimeOut
-         *
-         * @return the value of connectionTimeOut in milliseconds
-         */
-        public int getConnectionTimeOut() {
-                return connectionTimeOut;
-        }
+    /**
+     * Set the value of catalogApiUrl
+     *
+     * @param catalogApiUrl new value of catalogApiUrl
+     */
+    public void setApiUrl(URL catalogApiUrl) {
+        this.apiUrl = catalogApiUrl;
+    }
 
-        /**
-         * Set the value of connectionTimeOut
-         *
-         * @param connectionTimeOut new value of connectionTimeOut in milliseconds
-         */
-        public void setConnectionTimeOut(int connectionTimeOut) {
-                this.connectionTimeOut = connectionTimeOut;
-        }
+    /**
+     * Get the value of connectionTimeOut
+     *
+     * @return the value of connectionTimeOut in milliseconds
+     */
+    public int getConnectionTimeOut() {
+        return connectionTimeOut;
+    }
+
+    /**
+     * Set the value of connectionTimeOut
+     *
+     * @param connectionTimeOut new value of connectionTimeOut in milliseconds
+     */
+    public void setConnectionTimeOut(int connectionTimeOut) {
+        this.connectionTimeOut = connectionTimeOut;
+    }
 
 }

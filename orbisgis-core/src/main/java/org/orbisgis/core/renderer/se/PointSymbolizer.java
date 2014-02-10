@@ -48,7 +48,6 @@ import org.apache.log4j.Logger;
 
 
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
@@ -80,7 +79,6 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public final class PointSymbolizer extends VectorSymbolizer implements GraphicNode {
     private static final I18n I18N = I18nFactory.getI18n(PointSymbolizer.class);
-    private static final Logger LOGGER = Logger.getLogger(PointSymbolizer.class);
     private static final String MODE_VERTEX = "vertex";
     private GraphicCollection graphic;
     private boolean onVertex;
@@ -148,7 +146,7 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 
     @Override
     public void draw(Graphics2D g2, ResultSet rs, long fid,
-            boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
+            boolean selected, MapTransform mt, Geometry the_geom)
             throws IOException, SQLException, ParameterException {
 
             if (graphic != null && graphic.getNumGraphics() > 0) {

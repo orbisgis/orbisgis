@@ -40,7 +40,6 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.PointLabelType;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -152,7 +151,7 @@ public final class PointLabel extends Label {
 
     @Override
     public void draw(Graphics2D g2, Map<String, Object> map,
-            Shape shp, boolean selected, MapTransform mt, RenderContext perm)
+            Shape shp, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
         double x;
         double y;
@@ -182,7 +181,7 @@ public final class PointLabel extends Label {
 
         AffineTransform at = AffineTransform.getTranslateInstance(x + deltaX, y + deltaY);
 
-        getLabel().draw(g2, map, selected, mt, at, perm, this.getVerticalAlign());
+        getLabel().draw(g2, map, selected, mt, at, this.getVerticalAlign());
     }
 
     /**

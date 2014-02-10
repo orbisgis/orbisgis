@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.geocatalog.actions;
 
-import org.orbisgis.view.components.actions.DefaultAction;
+import org.orbisgis.viewapi.components.actions.DefaultAction;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;

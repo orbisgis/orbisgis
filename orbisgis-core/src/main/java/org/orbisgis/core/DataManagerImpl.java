@@ -1,24 +1,26 @@
 package org.orbisgis.core;
 
+import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.api.DataManager;
+import org.h2gis.utilities.URIUtility;
+import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.coreapi.api.ReadRowSet;
+import org.orbisgis.coreapi.api.ReversibleRowSet;
+import org.orbisgis.core.jdbc.ReadRowSetImpl;
+import org.orbisgis.core.jdbc.ReversibleRowSetImpl;
 import org.orbisgis.utils.FileUtils;
-
-import javax.sql.rowset.CachedRowSet;
-import javax.sql.rowset.FilteredRowSet;
-import javax.sql.rowset.JoinRowSet;
-import javax.sql.rowset.RowSetFactory;
-import javax.sql.rowset.RowSetProvider;
+import javax.sql.rowset.*;
 import javax.sql.DataSource;
-import javax.sql.rowset.JdbcRowSet;
-import javax.sql.rowset.WebRowSet;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of the DataManager service.
@@ -26,34 +28,43 @@ import java.sql.SQLException;
  */
 public class DataManagerImpl implements DataManager {
     private DataSource dataSource;
+    /** ReversibleRowSet fire row updates to their DataManager  */
+    private Map<String, List<UndoableEditListener>> tableEditionListener = new HashMap<>();
+    private static final Logger LOG = Logger.getLogger(DataManagerImpl.class);
 
     @Override
     public CachedRowSet createCachedRowSet() throws SQLException {
-        RowSetFactory factory = RowSetProvider.newFactory();
-        return factory.createCachedRowSet();
+        throw new SQLFeatureNotSupportedException();
     }
 
     @Override
     public FilteredRowSet createFilteredRowSet() throws SQLException {
-        RowSetFactory factory = RowSetProvider.newFactory();
-        return factory.createFilteredRowSet();
+        throw new SQLFeatureNotSupportedException();
+    }
+
+    @Override
+    public ReversibleRowSet createReversibleRowSet() throws SQLException {
+        return new ReversibleRowSetImpl(dataSource, this);
+    }
+
+    @Override
+    public ReadRowSet createReadRowSet() throws SQLException {
+        return new ReadRowSetImpl(dataSource);
     }
 
     @Override
     public JdbcRowSet createJdbcRowSet() throws SQLException {
-        return getRowSet();
+        return createReversibleRowSet();
     }
 
     @Override
     public JoinRowSet createJoinRowSet() throws SQLException {
-        RowSetFactory factory = RowSetProvider.newFactory();
-        return factory.createJoinRowSet();
+        throw new SQLFeatureNotSupportedException();
     }
 
     @Override
     public WebRowSet createWebRowSet() throws SQLException {
-        RowSetFactory factory = RowSetProvider.newFactory();
-        return factory.createWebRowSet();
+        throw new SQLFeatureNotSupportedException();
     }
 
     /**
@@ -68,14 +79,8 @@ public class DataManagerImpl implements DataManager {
 
     }
 
-    private JdbcRowSet getRowSet() throws SQLException {
-        RowSetFactory factory = RowSetProvider.newFactory();
-        JdbcRowSet rowSet = factory.createJdbcRowSet();
-        rowSet.setDataSourceName(dataSource.toString());
-        return rowSet;
-    }
-
-    private String findUniqueTableName(String originalTableName) throws SQLException{
+    @Override
+    public String findUniqueTableName(String originalTableName) throws SQLException {
         String tableName = originalTableName;
         int offset = 0;
         while(isTableExists(tableName)) {
@@ -90,19 +95,27 @@ public class DataManagerImpl implements DataManager {
             // Uri is incomplete, resolve it by using working directory
             uri = new File("./").toURI().resolve(uri);
         }
-        String tableName = findUniqueTableName(FileUtils.getNameFromURI(uri));
-        if("file".equals(uri.getScheme())) {
+        if("file".equalsIgnoreCase(uri.getScheme())) {
             File path = new File(uri);
             if(!path.exists()) {
                 throw new SQLException("Specified source does not exists");
             }
+            String tableName = findUniqueTableName(FileUtils.getNameFromURI(uri).toUpperCase());
             try (Connection connection = dataSource.getConnection()) {
                 // Find if a linked table use this file path
                 DatabaseMetaData meta = connection.getMetaData();
                 try(ResultSet tablesRs = meta.getTables(null,null,null,null)) {
                     while(tablesRs.next()) {
-                        if(tablesRs.getString("REMARKS").equals(path.getAbsolutePath())) {
-                            return new TableLocation(tablesRs.getString("TABLE_CAT"), tablesRs.getString("TABLE_SCHEM"), tablesRs.getString("TABLE_NAME")).toString();
+                        String remarks = tablesRs.getString("REMARKS");
+                        if(remarks!= null && remarks.toLowerCase().startsWith("file:")) {
+                            try {
+                                URI filePath = URI.create(remarks);
+                                if(filePath.equals(path.toURI())) {
+                                    return new TableLocation(tablesRs.getString("TABLE_CAT"), tablesRs.getString("TABLE_SCHEM"), tablesRs.getString("TABLE_NAME")).toString();
+                                }
+                            } catch (Exception ex) {
+                                //Ignore, not an URI
+                            }
                         }
                     }
                 }
@@ -114,6 +127,21 @@ public class DataManagerImpl implements DataManager {
                 st.execute();
             }
             return tableName;
+        } else if("jdbc".equalsIgnoreCase(uri.getScheme())) {
+            // A link to a remote or local database
+            try(Connection connection = dataSource.getConnection()) {
+                String withoutQuery = uri.toString().replace("?"+URI.create(uri.getSchemeSpecificPart()).getQuery(),"");
+                if(connection.getMetaData().getURL().startsWith(withoutQuery)) {
+                    // Extract catalog, schema and table name
+                    Map<String,String> query = URIUtility.getQueryKeyValuePairs(URI.create(uri.getSchemeSpecificPart()));
+                    return new TableLocation(query.get("catalog"),query.get("schema"),query.get("table")).toString();
+                } else {
+                    // External JDBC connection not supported yet
+                    throw new SQLException("URI not supported by DataManager:\n"+uri);
+                }
+            } catch (Exception ex) {
+                throw new SQLException("URI not supported by DataManager:\n"+uri);
+            }
         } else {
             throw new SQLException("URI not supported by DataManager:\n"+uri);
         }
@@ -126,14 +154,48 @@ public class DataManagerImpl implements DataManager {
 
     @Override
     public boolean isTableExists(String tableName) throws SQLException {
-        boolean exists;
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement st = connection.prepareStatement("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE UPPER(TABLE_NAME) = ?");
-            st.setString(1, tableName.toUpperCase());
-            ResultSet rs = st.executeQuery();
-            exists = rs.next();
-            rs.close();
+        TableLocation tableLocation = TableLocation.parse(tableName);
+        try (Connection connection = dataSource.getConnection();
+            ResultSet rs = connection.getMetaData().getTables(tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable(), null)) {
+            return rs.next();
         }
-        return exists;
+    }
+
+
+    @Override
+    public void addUndoableEditListener(String table, UndoableEditListener listener) {
+        String parsedTable = TableLocation.parse(table).toString();
+        List<UndoableEditListener> listeners = tableEditionListener.get(parsedTable);
+        if(listeners == null) {
+            listeners = new ArrayList<>();
+            tableEditionListener.put(parsedTable, listeners);
+        }
+        listeners.add(listener);
+    }
+
+    @Override
+    public void removeUndoableEditListener(String table, UndoableEditListener listener) {
+        String parsedTable = TableLocation.parse(table).toString();
+        List<UndoableEditListener> listeners = tableEditionListener.get(parsedTable);
+        if(listeners != null) {
+            listeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void fireUndoableEditHappened(UndoableEditEvent e) {
+        if(e.getSource() != null && e.getSource() instanceof ReadRowSet) {
+            String table = TableLocation.parse(((ReadRowSet) e.getSource()).getTable()).toString();
+            List<UndoableEditListener> listeners = tableEditionListener.get(table);
+            if(listeners != null) {
+                for(UndoableEditListener listener : listeners) {
+                    try {
+                        listener.undoableEditHappened(e);
+                    } catch (Exception ex) {
+                        LOG.error(ex.getLocalizedMessage(), ex);
+                    }
+                }
+            }
+        }
     }
 }

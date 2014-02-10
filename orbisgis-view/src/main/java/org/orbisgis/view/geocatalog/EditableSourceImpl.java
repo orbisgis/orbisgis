@@ -29,19 +29,18 @@ package org.orbisgis.view.geocatalog;
 
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.jdbc.ReadRowSetImpl;
 import org.orbisgis.core.jdbc.ReversibleRowSetImpl;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.api.ReversibleRowSet;
+import org.orbisgis.coreapi.api.ReversibleRowSet;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.view.edition.AbstractEditableElement;
-import org.orbisgis.view.edition.EditableElementException;
-import org.orbisgis.view.edition.EditableSource;
+import org.orbisgis.viewapi.edition.AbstractEditableElement;
+import org.orbisgis.viewapi.edition.EditableElementException;
+import org.orbisgis.viewapi.edition.EditableSource;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
@@ -51,13 +50,13 @@ import java.sql.SQLException;
  */
 public class EditableSourceImpl extends AbstractEditableElement implements EditableSource {
 
-    public static final String EDITABLE_RESOURCE_TYPE = "EditableSource";
     public static final String PROP_EDITING = "editing";
     private String tableReference;
     private ReversibleRowSet rowSet; // Instantiated when editable source is open
     private boolean editing = false;
     private final Logger logger = Logger.getLogger(EditableSourceImpl.class);
     private final I18n i18n = I18nFactory.getI18n(EditableSourceImpl.class);
+    private DataManager dataManager;
 
     /**
      * Construct a source from name. A new instance of DataSource will be
@@ -65,13 +64,19 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
      *
      * @param tableReference
      */
-    public EditableSourceImpl(String tableReference) {
+    public EditableSourceImpl(String tableReference, DataManager dataManager) {
         if (tableReference == null) {
             throw new IllegalArgumentException("Source name must "
                     + "not be null");
         }
+        this.dataManager = dataManager;
         this.tableReference = tableReference;
         setId(tableReference);
+    }
+
+    @Override
+    public DataManager getDataManager() {
+        return dataManager;
     }
 
     @Override
@@ -110,16 +115,13 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
     public void open(ProgressMonitor progressMonitor)
             throws UnsupportedOperationException, EditableElementException {
         if(rowSet == null) {
-            DataSource dataSource = Services.getService(DataSource.class);
-            if(dataSource != null) {
-                try {
-                    String pkName = ReadRowSetImpl.getPkName(dataSource, TableLocation.parse(tableReference));
-                    rowSet = new ReversibleRowSetImpl(dataSource, TableLocation.parse(tableReference), pkName, progressMonitor);
-                } catch (SQLException | IllegalArgumentException ex) {
-                    throw new EditableElementException(ex);
-                }
-                setOpen(true);
+            try {
+                String pkName = ReadRowSetImpl.getPkName(dataManager.getDataSource(), TableLocation.parse(tableReference));
+                rowSet = new ReversibleRowSetImpl(dataManager.getDataSource(), dataManager, TableLocation.parse(tableReference), pkName, progressMonitor);
+            } catch (SQLException | IllegalArgumentException ex) {
+                throw new EditableElementException(ex);
             }
+            setOpen(true);
         }
     }
 

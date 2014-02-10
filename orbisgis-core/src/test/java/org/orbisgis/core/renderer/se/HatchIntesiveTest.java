@@ -38,6 +38,8 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import javax.imageio.ImageIO;
+
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.Layer;
@@ -82,7 +84,7 @@ public class HatchIntesiveTest extends AbstractTest {
 
 
             if (extent == null) {
-                extent = SFSUtilities.getTableEnvelope(getConnection(), SFSUtilities.splitCatalogSchemaTableName(tableReference), "");
+                extent = SFSUtilities.getTableEnvelope(getConnection(), TableLocation.parse(tableReference), "");
             }
 
             mt.resizeImage(WIDTH, HEIGHT);
@@ -95,7 +97,7 @@ public class HatchIntesiveTest extends AbstractTest {
 
             g2.setRenderingHints(mt.getCurrentRenderContext().getRenderingHints());
 
-            ILayer layer = new Layer("swiss", tableReference);
+            ILayer layer = new Layer("swiss", tableReference, getDataManager());
 
             Style style = new Style(layer, stylePath);
             layer.setStyle(0,style);

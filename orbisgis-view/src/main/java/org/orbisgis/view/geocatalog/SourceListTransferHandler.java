@@ -40,6 +40,7 @@ import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.TransferHandler;
 import org.apache.log4j.Logger;
+import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
@@ -56,8 +57,10 @@ public class SourceListTransferHandler extends TransferHandler{
         private static final Logger LOGGER = Logger.getLogger("gui."+SourceListTransferHandler.class);
         private static final long serialVersionUID = 1L;
         private UriListFlavor uriListFlavor = new UriListFlavor();
+        private DataManager dataManager;
 
-        public SourceListTransferHandler() {
+        public SourceListTransferHandler(DataManager dataManager) {
+            this.dataManager = dataManager;
         }
 
         public ListenerContainer<DropUriEventObject> getDropListenerHandler() {
@@ -150,7 +153,7 @@ public class SourceListTransferHandler extends TransferHandler{
             CatalogSourceItem sItem = (CatalogSourceItem) list.getModel().getElementAt(idItem);
             selectedSources[transfCpt++]= sItem.getKey(); //The DataSource unique ID
         }        
-        return new TransferableSource(selectedSources);
+        return new TransferableSource(selectedSources, dataManager);
     }
 
 

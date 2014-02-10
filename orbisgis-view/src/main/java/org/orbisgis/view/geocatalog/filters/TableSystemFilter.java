@@ -28,16 +28,24 @@
  */
 package org.orbisgis.view.geocatalog.filters;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import org.h2gis.utilities.TableLocation;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Accept only system tables.
  */
 public class TableSystemFilter implements IFilter {
+    public static final Set<String> SYSTEM_TABLES = new HashSet<>(
+            Arrays.asList("spatial_ref_sys", "geography_columns", "geometry_columns", "raster_columns", "raster_overviews"));
+    private static final Set<String> SYSTEM_SCHEMA = new HashSet<>(Arrays.asList("pg_catalog","information_schema"));
+
     @Override
-    public boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException {
-        return tableProperties.getString("TABLE_TYPE").equalsIgnoreCase("SYSTEM TABLE");
+    public boolean accepts(TableLocation table, Map<ATTRIBUTES, String> tableProperties) {
+        return SYSTEM_SCHEMA.contains(table.getSchema().toLowerCase()) ||
+                SYSTEM_TABLES.contains(table.getTable().toLowerCase());
     }
 }

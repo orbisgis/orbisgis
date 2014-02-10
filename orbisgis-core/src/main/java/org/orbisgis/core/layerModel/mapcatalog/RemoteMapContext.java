@@ -57,7 +57,14 @@ public abstract class RemoteMapContext {
         public RemoteMapContext(ConnectionProperties cParams) {
                 this.cParams = cParams;
         }
-        
+
+        /**
+         * @return Connection properties
+         */
+        public ConnectionProperties getcParams() {
+            return cParams;
+        }
+
         /**
          * Delete this map context on the remote server.
          * This call may take a long time to execute.

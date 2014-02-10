@@ -37,11 +37,11 @@ import org.apache.log4j.spi.Filter;
 import org.apache.log4j.varia.LevelRangeFilter;
 import org.orbisgis.core.DataManagerImpl;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.api.DataManager;
+import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.plugin.BundleReference;
 import org.orbisgis.core.plugin.BundleTools;
 import org.orbisgis.core.plugin.PluginHost;
-import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.core.workspace.CoreWorkspaceImpl;
 import org.h2gis.utilities.JDBCUrlParser;
 import org.h2gis.utilities.SFSUtilities;
 import org.osgi.framework.InvalidSyntaxException;
@@ -49,10 +49,8 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
+import javax.sql.rowset.RowSetFactory;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -74,7 +72,7 @@ import java.util.Properties;
 public class MainContext {
     private static final Logger LOGGER = Logger.getLogger(MainContext.class);
     private static final I18n I18N = I18nFactory.getI18n(MainContext.class);
-    private CoreWorkspace coreWorkspace;
+    private CoreWorkspaceImpl coreWorkspace;
     private boolean debugMode;
     private static String CONSOLE_LOGGER = "ConsoleLogger";
     private DataSource dataSource;
@@ -127,12 +125,12 @@ public class MainContext {
      * @param initLogger if this context handles logging. Set to false to let the calling application
      * configure log4j.
      */
-    public MainContext(boolean debugMode, CoreWorkspace customWorkspace, boolean initLogger) {
+    public MainContext(boolean debugMode, CoreWorkspaceImpl customWorkspace, boolean initLogger) {
         this.debugMode = debugMode;
         if(customWorkspace!=null) {
                 coreWorkspace = customWorkspace;
         } else {
-                coreWorkspace = new CoreWorkspace();
+                coreWorkspace = new CoreWorkspaceImpl();
         }
         //Redirect root logging to console
         if (initLogger) {
@@ -149,6 +147,7 @@ public class MainContext {
         String jdbcConnectionReference = coreWorkspace.getJDBCConnectionReference();
         if(!jdbcConnectionReference.isEmpty()) {
             Properties properties = JDBCUrlParser.parse(jdbcConnectionReference);
+            properties.setProperty(DataSourceFactory.JDBC_URL, jdbcConnectionReference);
             if(!userName.isEmpty()) {
                 properties.setProperty(DataSourceFactory.JDBC_USER,userName);
             }
@@ -188,21 +187,12 @@ public class MainContext {
                     DatabaseMetaData meta = connection.getMetaData();
                     LOGGER.info(I18N.tr("Data source available {0} version {1}", meta.getDriverName(), meta.getDriverVersion()));
                 }
-                // Register the connection factory in service hosts
-                Services.registerService(DataSource.class,"OrbisGIS main DataSource",dataSource);
                 // Register DataSource, will be used to register spatial features
                 pluginHost.getHostBundleContext().registerService(DataSource.class,dataSource,null);
-                // Register DataSource in JNI for RowSet factory
-                try {
-                    InitialContext ic = new InitialContext();
-                    ic.bind(dataSource.toString(), dataSource);
-                } catch (NamingException ex ) {
-                    LOGGER.error("Unable to register DataSource into java initial context");
-                }
                 // Create and register DataManager
                 dataManager = new DataManagerImpl(dataSource);
-                Services.registerService(DataManager.class,"OrbisGIS source registration helper",dataManager);
-                pluginHost.getHostBundleContext().registerService(DataManager.class,dataManager,null);
+                pluginHost.getHostBundleContext().registerService(DataManager.class, dataManager, null);
+                pluginHost.getHostBundleContext().registerService(RowSetFactory.class,dataManager,null);
             } finally {
                 pluginHost.getHostBundleContext().ungetService(dbDriverReference);
             }
@@ -215,7 +205,7 @@ public class MainContext {
      * Register Services
      */
     private void registerServices() {
-        Services.registerService(CoreWorkspace.class, I18N.tr("Contains folders path"),
+        Services.registerService(CoreWorkspaceImpl.class, I18N.tr("Contains folders path"),
                         coreWorkspace);
     }
     
@@ -238,6 +228,15 @@ public class MainContext {
     }
 
     /**
+     * @return The data manager
+     * Null if {@link #initDataBase(String, String)}
+     * has not been called or failed.
+     */
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    /**
      * Free resources
      */
     public void dispose() {
@@ -255,9 +254,9 @@ public class MainContext {
 
     /**
      * Return the core path information.
-     * @return CoreWorkspace instance
+     * @return CoreWorkspaceImpl instance
      */
-    public CoreWorkspace getCoreWorkspace() {
+    public CoreWorkspaceImpl getCoreWorkspace() {
         return coreWorkspace;
     }
 
@@ -305,7 +304,7 @@ public class MainContext {
     /**
      * Initiate the logging system, called by MainContext constructor
      */
-    private void initFileLogger(CoreWorkspace workspace) {
+    private void initFileLogger(CoreWorkspaceImpl workspace) {
         //Init the file logging feature
         PatternLayout l = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
         RollingFileAppender fa;

@@ -35,7 +35,6 @@ import java.beans.EventHandler;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeSet;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -46,7 +45,7 @@ import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.table.TableEditableElement;
+import org.orbisgis.viewapi.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

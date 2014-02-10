@@ -17,12 +17,13 @@
                 <version>1</version>
         </parent>
         <modules>
+                <module>bundles/postgis-jts-osgi</module>
                 <module>wms-client</module>
                 <!-- <module>gdms</module> -->
                 <!-- <module>bundles/plugin-test</module>-->
                 <module>api/orbisgis-core</module>
                 <module>orbisgis-core</module>
-                <!-- <module>legend</module> -->
+                <module>legend</module>
                 <module>orbisgis-sif</module>
                 <module>api/orbisgis-view</module>
                 <module>bundles/sql-parser-api</module>
@@ -30,7 +31,10 @@
                 <module>bundles/orbisgis-oshell</module>
                 <module>bundles/orbisgis-omanager</module>
                 <module>bundles/orbisgis-omanager-plugin</module>
+                <module>bundles/map-editor-api</module>
                 <module>orbisgis-view</module>
+                <module>bundles/map-editor</module>
+                <module>bundles/toc</module>
                 <module>orbisgis-dist</module>
         </modules>
         <profiles>
@@ -50,7 +54,7 @@
                 <commons-io-version>1.3.2</commons-io-version>
                 <jts-version>1.13</jts-version>
                 <org.osgi.compendium-version>4.3.1</org.osgi.compendium-version>
-                <h2-version>1.3.174</h2-version>
+                <h2-version>1.3.175</h2-version>
                 <h2-package>org.orbisgis</h2-package> <!-- com.h2database -->
                 <h2-gis-version>1.0.3-SNAPSHOT</h2-gis-version>
                 <sl4j-version>1.6.0</sl4j-version>

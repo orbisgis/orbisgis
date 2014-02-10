@@ -29,7 +29,6 @@
 package org.orbisgis.view.sqlconsole.ui;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
 import org.h2gis.utilities.TableLocation;
 
 import javax.sql.DataSource;
@@ -52,25 +51,30 @@ public class FunctionElement {
     private final int functionType;
     private String description;
     private String command;
+    private DataSource dataSource;
 
     /**
      * @param functionName Function identifier
      * @param functionType Function type {@see DatabaseMetaData#getProcedures}
+     * @param dataSource DataSource instance used to extract function attributes
      */
-    FunctionElement(String functionName, int functionType) {
+    FunctionElement(String functionName, int functionType, DataSource dataSource) {
         this.functionName = functionName;
         this.functionType = functionType;
+        this.dataSource = dataSource;
     }
 
     /**     *
      * @param functionName Function identifier
      * @param functionType Function type {@see DatabaseMetaData#getProcedures}
      * @param description Function remarks
+     * @param dataSource DataSource instance used to extract function attributes
      */
-    public FunctionElement(String functionName, int functionType, String description) {
+    public FunctionElement(String functionName, int functionType, String description, DataSource dataSource) {
         this.functionName = functionName;
         this.functionType = functionType;
         this.description = description;
+        this.dataSource = dataSource;
     }
 
     @Override
@@ -88,23 +92,17 @@ public class FunctionElement {
 
     String getToolTip() {
         if(description==null) {
-                //Retrieve function ToolTip
-                DataSource dataSource = Services.getService(DataSource.class);
-                try {
-                    Connection connection = dataSource.getConnection();
-                    try {
-                        TableLocation functionLocation = TableLocation.parse(functionName);
-                        ResultSet functionData = connection.getMetaData().getProcedures(functionLocation.getCatalog(),functionLocation.getSchema(), functionLocation.getTable());
-                        if(functionData.next()) {
-                            description = functionData.getString("REMARKS");
-                        }
-                        functionData.close();
-                    } finally {
-                        connection.close();
-                    }
-                } catch (SQLException ex) {
-                    LOGGER.warn("Could not read function remarks");
+            //Retrieve function ToolTip
+            try(Connection connection = dataSource.getConnection()) {
+                TableLocation functionLocation = TableLocation.parse(functionName);
+                ResultSet functionData = connection.getMetaData().getProcedures(functionLocation.getCatalog(),functionLocation.getSchema(), functionLocation.getTable());
+                if(functionData.next()) {
+                    description = functionData.getString("REMARKS");
                 }
+                functionData.close();
+            } catch (SQLException ex) {
+                LOGGER.warn("Could not read function remarks");
+            }
         }
         return description;
     }
@@ -115,31 +113,25 @@ public class FunctionElement {
     String getSQLCommand() {
         if(command==null) {
             //Retrieve function ToolTip
-            DataSource dataSource = Services.getService(DataSource.class);
-            try {
-                Connection connection = dataSource.getConnection();
-                try {
-                    TableLocation functionLocation = TableLocation.parse(functionName);
-                    ResultSet functionData = connection.getMetaData().getProcedureColumns(functionLocation.getCatalog(), functionLocation.getSchema(), functionLocation.getTable(), null);
-                    StringBuilder sb = new StringBuilder(getFunctionName());
-                    sb.append("(");
-                    int argCount = 0;
-                    while(functionData.next()) {
-                        if(functionData.getInt("COLUMN_TYPE") != DatabaseMetaData.procedureColumnReturn) {
-                            if(argCount++>0) {
-                                sb.append(", ");
-                            }
-                            sb.append(functionData.getString("COLUMN_NAME"));
-                            sb.append(" ");
-                            sb.append(functionData.getString("TYPE_NAME"));
+            try(Connection connection = dataSource.getConnection()) {
+                TableLocation functionLocation = TableLocation.parse(functionName);
+                ResultSet functionData = connection.getMetaData().getProcedureColumns(functionLocation.getCatalog(), functionLocation.getSchema(), functionLocation.getTable(), null);
+                StringBuilder sb = new StringBuilder(getFunctionName());
+                sb.append("(");
+                int argCount = 0;
+                while(functionData.next()) {
+                    if(functionData.getInt("COLUMN_TYPE") != DatabaseMetaData.procedureColumnReturn) {
+                        if(argCount++>0) {
+                            sb.append(", ");
                         }
+                        sb.append(functionData.getString("COLUMN_NAME"));
+                        sb.append(" ");
+                        sb.append(functionData.getString("TYPE_NAME"));
                     }
-                    sb.append(")");
-                    functionData.close();
-                    command = sb.toString();
-                } finally {
-                    connection.close();
                 }
+                sb.append(")");
+                functionData.close();
+                command = sb.toString();
             } catch (SQLException ex) {
                 LOGGER.warn("Could not read function command");
             }

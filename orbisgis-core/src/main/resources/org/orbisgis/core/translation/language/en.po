@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGIS\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-03 00:22+0200\n"
-"PO-Revision-Date: 2013-09-22 17:51+0000\n"
+"POT-Creation-Date: 2014-02-09 00:22+0100\n"
+"PO-Revision-Date: 2013-11-20 12:27+0000\n"
 "Last-Translator: gwendall.petit <gwendall.petit@ec-nantes.fr>\n"
 "Language-Team: English (United States) (http://www.transifex.com/projects/p/orbisgis/language/en_US/)\n"
 "MIME-Version: 1.0\n"
@@ -115,26 +115,32 @@ msgid "Could not render graphic"
 msgstr "Could not render graphic"
 
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:102
+#: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:127
 msgid "SQUARE"
 msgstr "SQUARE"
 
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:104
+#: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:129
 msgid "HALFCIRCLE"
 msgstr "HALFCIRCLE"
 
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:106
+#: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:131
 msgid "TRIANGLE"
 msgstr "TRIANGLE"
 
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:108
+#: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:133
 msgid "STAR"
 msgstr "STAR"
 
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:110
+#: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:135
 msgid "CROSS"
 msgstr "CROSS"
 
 #: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:112
+#: org/orbisgis/core/renderer/se/graphic/WellKnownName.java:137
 msgid "X"
 msgstr "X"
 
@@ -150,7 +156,7 @@ msgstr "Could not find position for mark within area"
 msgid "Area Symbolizer"
 msgstr "Area Symbolizer"
 
-#: org/orbisgis/core/renderer/se/PointSymbolizer.java:93
+#: org/orbisgis/core/renderer/se/PointSymbolizer.java:92
 msgid "Point Symbolizer"
 msgstr "Point Symbolizer"
 
@@ -377,7 +383,7 @@ msgstr "Cannot do this operation on a layer collection"
 msgid "No row selection in a layer collection"
 msgstr "No row selection in a layer collection"
 
-#: org/orbisgis/core/plugin/BundleTools.java:200
+#: org/orbisgis/core/plugin/BundleTools.java:202
 msgid "Could not read bundle manifest"
 msgstr "Could not read bundle manifest"
 

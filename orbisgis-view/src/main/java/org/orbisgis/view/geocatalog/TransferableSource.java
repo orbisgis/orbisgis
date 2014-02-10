@@ -32,7 +32,9 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import org.orbisgis.view.edition.EditableElement;
+
+import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.viewapi.edition.EditableElement;
 import org.orbisgis.view.edition.TransferableEditableElement;
 
 /**
@@ -44,9 +46,11 @@ public class TransferableSource implements Transferable {
 			"Source");
 
 	private String[] sources = null;
+    private DataManager dataManager;
 
-	public TransferableSource(String[] sources) {
+	public TransferableSource(String[] sources, DataManager dataManager) {
 		this.sources = sources;
+        this.dataManager = dataManager;
 	}
 
 	public Object getTransferData(DataFlavor flavor)
@@ -58,7 +62,7 @@ public class TransferableSource implements Transferable {
 				.equals(TransferableEditableElement.editableElementFlavor)) {
 			EditableElement[] elems = new EditableElement[sources.length];
 			for (int i = 0; i < sources.length; i++) {
-				elems[i] = new EditableSourceImpl(sources[i]);
+				elems[i] = new EditableSourceImpl(sources[i], dataManager);
 			}
 			ret = elems;
 		} else if (flavor.equals(DataFlavor.stringFlavor)) {

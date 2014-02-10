@@ -80,7 +80,7 @@
                             <includeArtifactIds>h2,h2spatial-ext,h2drivers,h2spatial-ext-osgi,h2spatial,h2spatial-osgi
                                 ,slf4j-api,slf4j-log4j12,org.apache.felix.shell.gui,org.apache.felix.bundlerepository,
                                 org.osgi.service.obr,orbisgis-omanager,orbisgis-omanager-plugin,org.apache.felix.shell,
-                                sqlconsole-parser, orbisgis-oshell, org.apache.felix.scr
+                                sqlconsole-parser, orbisgis-oshell, org.apache.felix.scr, mapeditor, toc,postgis-jts-osgi
                             </includeArtifactIds>
                         </configuration>
                     </execution>
@@ -187,6 +187,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>postgis-jts-osgi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>h2drivers</artifactId>
             <version>${h2-gis-version}</version>
         </dependency>
@@ -229,6 +234,16 @@
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
           <version>${log4j-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>mapeditor</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>toc</artifactId>
+            <version>${parent.version}</version>
         </dependency>
     </dependencies>
 </project>

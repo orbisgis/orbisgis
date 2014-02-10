@@ -40,7 +40,6 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
 import net.opengis.se._2_0.raster.RasterSymbolizerType;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
@@ -268,9 +267,10 @@ public abstract class Symbolizer extends AbstractSymbolizerNode implements Symbo
         if(featuresMap == null){
             featuresMap = new HashMap<String,Object>();
         }
-        sds.absolute((int)fid);
-        for(String s : features){
-            featuresMap.put(s, sds.getObject(s));
+        if(sds != null) {
+            for(String s : features){
+                featuresMap.put(s, sds.getObject(s));
+            }
         }
         return featuresMap;
     }
@@ -300,7 +300,7 @@ public abstract class Symbolizer extends AbstractSymbolizerNode implements Symbo
      * @throws SQLException
      */
     public abstract void draw(Graphics2D g2, ResultSet rs, long fid,
-            boolean selected, MapTransform mt, Geometry theGeom, RenderContext perm)
+            boolean selected, MapTransform mt, Geometry theGeom)
             throws ParameterException, IOException, SQLException;
 
     /**

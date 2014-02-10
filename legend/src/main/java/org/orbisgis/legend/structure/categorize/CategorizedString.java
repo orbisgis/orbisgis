@@ -28,8 +28,6 @@
  */
 package org.orbisgis.legend.structure.categorize;
 
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
@@ -195,8 +193,8 @@ public class CategorizedString extends CategorizedLegend<String>{
             String col = get(d);
             if(col == null){
                 Categorize2String c2s = (Categorize2String) parameter;
-                Map<String,Value> inp = new HashMap<String, Value>();
-                inp.put(getField(), ValueFactory.createValue(d));
+                Map<String,Object> inp = new HashMap<>();
+                inp.put(getField(), d);
                 return c2s.getValue(inp);
             } else {
                 return col;

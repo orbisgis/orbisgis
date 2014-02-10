@@ -42,7 +42,6 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TextSymbolizerType;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -151,7 +150,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
 
         @Override
         public void draw(Graphics2D g2, ResultSet rs, long fid,
-                boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
+                boolean selected, MapTransform mt, Geometry the_geom)
                 throws ParameterException, IOException, SQLException {
                 Shape shape = this.getShape(rs, fid, mt, the_geom, false);
                 Map<String,Object> map = getFeaturesMap(rs, fid);
@@ -165,7 +164,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
                                 shps.add(shape);
                         }
                         for (Shape s : shps) {
-                                label.draw(g2, map, s, selected, mt, perm);
+                                label.draw(g2, map, s, selected, mt);
                         }
                 }
 

@@ -29,7 +29,7 @@
 
 package org.orbisgis.view.table.ext;
 
-import org.orbisgis.view.edition.EditableSource;
+import org.orbisgis.viewapi.edition.EditableSource;
 import javax.swing.*;
 import java.awt.*;
 

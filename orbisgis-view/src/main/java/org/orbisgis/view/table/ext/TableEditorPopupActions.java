@@ -29,7 +29,7 @@
 
 package org.orbisgis.view.table.ext;
 
-import org.orbisgis.view.components.actions.ActionFactoryService;
+import org.orbisgis.viewapi.components.actions.ActionFactoryService;
 
 /**
  * Actions on the Table Editor popup menu

@@ -27,13 +27,8 @@
  * info_at_ orbisgis.org
  */
 package org.orbisgis.view.geocatalog.filters;
-
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * The Alphanumeric Data Source Filter.
@@ -41,7 +36,7 @@ import java.sql.SQLException;
  */
 public class AlphanumericFilter implements IFilter {
     @Override
-    public boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException {
-        return SFSUtilities.getGeometryFields(connection, TableLocation.parse(sourceName)).isEmpty();
+    public boolean accepts(TableLocation table, Map<ATTRIBUTES, String> tableProperties) {
+        return tableProperties.get(ATTRIBUTES.GEOMETRY_TYPE) == null;
     }
 }

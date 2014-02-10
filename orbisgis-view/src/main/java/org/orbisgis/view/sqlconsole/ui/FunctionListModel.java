@@ -53,6 +53,11 @@ public class FunctionListModel extends AbstractListModel<FunctionElement> {
     private List<FunctionFilter> filters = new ArrayList<>();
     private static final Logger LOGGER = Logger.getLogger(FunctionListModel.class);
     private static final int AVERAGE_FUNCTION_COUNT = 300; //Hint for size of array
+    private DataSource dataSource;
+
+    public FunctionListModel(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     @Override
     public int getSize() {
@@ -123,20 +128,14 @@ public class FunctionListModel extends AbstractListModel<FunctionElement> {
     private void readSQLFunctions() {
         functionsList = new ArrayList<FunctionElement>(AVERAGE_FUNCTION_COUNT);
         try {
-            Connection connection = Services.getService(DataSource.class).getConnection();
-            try {
-                ResultSet resultSet = connection.getMetaData().getProcedures(null,null,null);
-                try {
-                    while(resultSet.next()) {
-                        FunctionElement element = new FunctionElement(resultSet.getString("PROCEDURE_NAME"),
-                                resultSet.getShort("PROCEDURE_TYPE"), resultSet.getString("REMARKS"));
-                        functionsList.add(element);
-                    }
-                } finally {
-                    resultSet.close();
+
+            try(Connection connection = dataSource.getConnection();
+                ResultSet resultSet = connection.getMetaData().getProcedures(null,null,null)) {
+                while(resultSet.next()) {
+                    FunctionElement element = new FunctionElement(resultSet.getString("PROCEDURE_NAME"),
+                            resultSet.getShort("PROCEDURE_TYPE"), resultSet.getString("REMARKS"), dataSource);
+                    functionsList.add(element);
                 }
-            } finally {
-                connection.close();
             }
         } catch (SQLException ex) {
             LOGGER.error("Could not read SQL function list");

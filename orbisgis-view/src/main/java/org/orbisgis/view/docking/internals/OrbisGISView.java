@@ -34,7 +34,6 @@ import bibliothek.gui.dock.common.MultipleCDockable;
 import bibliothek.gui.dock.common.SingleCDockable;
 import bibliothek.gui.dock.common.action.CAction;
 import bibliothek.gui.dock.common.action.CSeparator;
-import bibliothek.gui.dock.common.event.CDockableStateListener;
 import bibliothek.gui.dock.common.intern.AbstractCDockable;
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import java.beans.EventHandler;
@@ -42,9 +41,9 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 import javax.swing.*;
 
-import org.orbisgis.view.docking.DockingLocation;
-import org.orbisgis.view.docking.DockingPanel;
-import org.orbisgis.view.docking.DockingPanelParameters;
+import org.orbisgis.viewapi.docking.DockingLocation;
+import org.orbisgis.viewapi.docking.DockingPanel;
+import org.orbisgis.viewapi.docking.DockingPanelParameters;
 import org.orbisgis.view.docking.internals.actions.ToolBarActions;
 
 /**

@@ -45,7 +45,6 @@ import net.opengis.se._2_0.core.ObjectFactory;
 
 
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
@@ -211,7 +210,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
          */
         @Override
         public void draw(Graphics2D g2, ResultSet rs, long fid,
-                boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
+                boolean selected, MapTransform mt, Geometry the_geom)
                 throws ParameterException, IOException, SQLException {
 
                 List<Shape> shapes = new LinkedList<Shape>();

@@ -38,7 +38,6 @@ import net.opengis.se._2_0.core.LineLabelType;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.PointLabelType;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;
@@ -332,12 +331,11 @@ public abstract class Label extends AbstractSymbolizerNode implements UomNode {
      * @param shp
      * @param selected
      * @param mt
-     * @param perm
      * @throws ParameterException
      * @throws IOException
      */
     public abstract void draw(Graphics2D g2, Map<String, Object> feat,
-            Shape shp, boolean selected, MapTransform mt, RenderContext perm)
+            Shape shp, boolean selected, MapTransform mt)
             throws ParameterException, IOException;
 
     /**

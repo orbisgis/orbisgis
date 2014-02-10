@@ -30,7 +30,7 @@
 package org.orbisgis.view.table;
 
 
-import org.orbisgis.view.components.actions.ActionTools;
+import org.orbisgis.viewapi.components.actions.ActionTools;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.table.ext.TableEditorActions;
 import org.xnap.commons.i18n.I18n;

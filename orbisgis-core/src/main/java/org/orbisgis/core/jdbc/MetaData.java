@@ -30,12 +30,11 @@ package org.orbisgis.core.jdbc;
 
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.math.BigDecimal;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +43,7 @@ import java.util.Map;
  * @author Nicolas Fortin
  */
 public class MetaData {
-
+    private static final I18n I18N = I18nFactory.getI18n(MetaData.class);
     /**
      * Returns a new unique name when registering a {@link javax.sql.DataSource}.
      * @param table Table identifier
@@ -74,6 +73,15 @@ public class MetaData {
             }
         }
         return uniqueName.toString();
+    }
+
+    /**
+     * Return escaped field name for sql request.
+     * @param fieldName Field name ex: My field
+     * @return quoted string ex: "My field"
+     */
+    public static String escapeFieldName(String fieldName) {
+        return "\""+fieldName.replace("\"","\"\"")+"\"";
     }
 
     /**
@@ -115,6 +123,101 @@ public class MetaData {
                 }
             }
             return rowMap;
+        }
+    }
+
+    /**
+     *
+     * @param connection Active connection, not closed by this function
+     * @param table Table identifier [[catalog.]schema.]table
+     * @param fieldName Field name ex: My field
+     * @return {@link java.sql.Types} value
+     * @throws SQLException If the column/table is not found.
+     */
+    public static int getFieldType(Connection connection, String table, String fieldName) throws SQLException {
+        TableLocation tableLocation = TableLocation.parse(table);
+        try(ResultSet rs = connection.getMetaData().getColumns(tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable(), fieldName)) {
+            if(rs.next()) {
+                return rs.getInt("DATA_TYPE");
+            }
+        }
+        throw new SQLException("Column or table not found");
+    }
+
+    /**
+     * @param sqlType SQL type from {@link java.sql.Types}
+     * @return True if the type is numeric
+     */
+    public static boolean isNumeric(int sqlType) {
+        switch(sqlType) {
+            case Types.NUMERIC:
+            case Types.DECIMAL:
+            case Types.BIGINT:
+            case Types.SMALLINT:
+            case Types.TINYINT:
+            case Types.INTEGER:
+            case Types.REAL:
+            case Types.DOUBLE:
+            case Types.FLOAT:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * This method is used when user type a sql value in a field.
+     * @param userInput User field input
+     * @param sqlType Database column type {@link java.sql.Types}
+     * @return Casted object
+     * @throws NumberFormatException
+     */
+    public static Object castToSQLType(String userInput, int sqlType) throws NumberFormatException {
+        switch(sqlType) {
+            case Types.CHAR:
+            case Types.NCHAR:
+            case Types.VARCHAR:
+            case Types.LONGVARCHAR:
+            case Types.NVARCHAR:
+            case Types.LONGNVARCHAR:
+            case Types.OTHER:
+            case Types.JAVA_OBJECT:
+                return userInput;
+            case Types.NUMERIC:
+            case Types.DECIMAL:
+            case Types.BIGINT:
+                return Long.parseLong(userInput);
+            case Types.BIT:
+            case Types.BOOLEAN:
+                return userInput.equalsIgnoreCase(I18N.tr("true")) || userInput.equalsIgnoreCase(I18N.tr("yes"))
+                        || !(userInput.equalsIgnoreCase(I18N.tr("false")) || userInput.equalsIgnoreCase(I18N.tr("no")))
+                        || new BigDecimal(userInput).signum() != 0;
+            case Types.SMALLINT:
+            case Types.TINYINT:
+            case Types.INTEGER:
+                return Integer.valueOf(userInput);
+            case Types.REAL:
+            case Types.DOUBLE:
+            case Types.FLOAT:
+                return Double.valueOf(userInput);
+            case Types.BINARY:
+            case Types.VARBINARY:
+            case Types.LONGVARBINARY:
+            case Types.BLOB:
+            case Types.CLOB:
+            case Types.NCLOB:
+            case Types.ARRAY:
+                return userInput.getBytes();
+            case Types.DATE:
+                return Date.valueOf(userInput);
+            case Types.TIME:
+                return Time.valueOf(userInput);
+            case Types.TIMESTAMP:
+                return Timestamp.valueOf(userInput);
+            case Types.NULL:
+                return null;
+            default:
+                throw new IllegalArgumentException(I18N.tr("Column type is not managed"));
         }
     }
 }

@@ -39,9 +39,11 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Set;
 import org.apache.log4j.Logger;
+import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.common.IntegerUnion;
-import org.orbisgis.view.docking.DockingPanelLayout;
-import org.orbisgis.view.util.XElement;
+import org.orbisgis.viewapi.docking.DockingPanelLayout;
+import org.orbisgis.viewapi.table.TableEditableElement;
+import org.orbisgis.viewapi.util.XElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -60,14 +62,18 @@ public class TablePanelLayout implements DockingPanelLayout {
         private static final String PROP_DATA_SOURCE_NAME = "datasource";
         private static final String PROP_SELECTION = "selection";
 
-        public TablePanelLayout() {
+        private DataManager dataManager;
+
+        public TablePanelLayout(DataManager dataManager) {
                 this.tableEditableElement = null;
+                this.dataManager = dataManager;
         }
 
         
         
         public TablePanelLayout(TableEditableElement tableEditableElement) {
                 this.tableEditableElement = tableEditableElement;
+                this.dataManager = tableEditableElement.getDataManager();
         }
 
         public TableEditableElement getTableEditableElement() {
@@ -115,7 +121,7 @@ public class TablePanelLayout implements DockingPanelLayout {
                 //DataSource
                 String dataSourceName = in.readUTF();
                 tableEditableElement = new TableEditableElementImpl(
-                readSelection(in),dataSourceName);
+                readSelection(in),dataSourceName, dataManager);
         }
         
         @Override
@@ -134,7 +140,7 @@ public class TablePanelLayout implements DockingPanelLayout {
         public void readXML(XElement element) {
                 ByteArrayInputStream in = new ByteArrayInputStream(element.getByteArray(PROP_SELECTION));
                 tableEditableElement = new TableEditableElementImpl(readSelection(in),
-                                element.getString(PROP_DATA_SOURCE_NAME));
+                                element.getString(PROP_DATA_SOURCE_NAME), dataManager);
 
         }
 }

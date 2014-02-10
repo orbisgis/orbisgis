@@ -28,29 +28,28 @@
  */
 package org.orbisgis.core.jdbc;
 
+import com.vividsolutions.jts.geom.Envelope;
+import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.coreapi.api.ReadRowSet;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.sql.DataSource;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
+
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 /**
@@ -61,6 +60,7 @@ public class ReadTable {
     /** SQL function to evaluate */
     public enum STATS { COUNT, SUM, AVG, STDDEV_SAMP, MIN, MAX}
     protected final static I18n I18N = I18nFactory.getI18n(ReadTable.class);
+    private static Logger LOGGER = Logger.getLogger(ReadTable.class);
 
     public static Collection<Integer> getSortedColumnRowIndex(Connection connection, String table, String columnName, boolean ascending, ProgressMonitor progressMonitor) throws SQLException {
         TableLocation tableLocation = TableLocation.parse(table);
@@ -141,6 +141,72 @@ public class ReadTable {
         }
     }
 
+    public static long getRowCount(Connection connection, String tableReference) throws SQLException {
+        TableLocation tableLocation = TableLocation.parse(tableReference);
+        if(JDBCUtilities.isH2DataBase(connection.getMetaData())) {
+            try(PreparedStatement st = SFSUtilities.prepareInformationSchemaStatement(connection,tableLocation.getCatalog(),
+                    tableLocation.getSchema(), tableLocation.getTable(), "INFORMATION_SCHEMA.TABLES", "",
+                    "TABLE_CATALOG","TABLE_SCHEMA","TABLE_NAME");
+                ResultSet rs = st.executeQuery()) {
+                if(rs.next()) {
+                    long estimatedRowCount = rs.getLong("ROW_COUNT_ESTIMATE");
+                    // 100 because H2 views est
+                    if(estimatedRowCount > 0 && !"VIEW".equalsIgnoreCase(rs.getString("TABLE_TYPE"))) {
+                        return estimatedRowCount;
+                    }
+                }
+            } catch (Exception ex) {
+                // This method failed, will use standard one
+                LOGGER.debug(ex.getLocalizedMessage(), ex);
+            }
+        }
+        // Use  precise row count
+        try(Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery("SELECT COUNT(*) cpt FROM "+tableReference)) {
+            rs.next();
+            return rs.getLong(1);
+        }
+    }
+
+
+    public static String resultSetToString(String query, Statement st,int maxFieldLength, int maxPrintedRows, boolean addColumns) throws SQLException {
+        // Select generate a ResultSet
+        ResultSet rs = st.executeQuery(query);
+        // Print headers
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        StringBuilder lines = new StringBuilder();
+        StringBuilder formatStringBuilder = new StringBuilder();
+        String[] header = new String[columnCount];
+        for(int idColumn = 1; idColumn <= columnCount; idColumn++) {
+            header[idColumn-1] = metaData.getColumnLabel(idColumn)+"("+metaData.getColumnTypeName(idColumn)+")";
+            formatStringBuilder.append("%-"+maxFieldLength+"s");
+        }
+        if(addColumns) {
+            lines.append(String.format(formatStringBuilder.toString(), header));
+            lines.append("\n");
+        }
+        int shownLines = 0;
+        while(rs.next() && shownLines < maxPrintedRows) {
+            String[] row = new String[columnCount];
+            for(int idColumn = 1; idColumn <= columnCount; idColumn ++) {
+                String value = rs.getString(idColumn);
+                if(value != null) {
+                    if(value.length() > maxFieldLength) {
+                        value = value.substring(0, maxFieldLength-2) + "..";
+                    }
+                } else {
+                    value = "NULL";
+                }
+                row[idColumn-1] = value;
+            }
+            shownLines++;
+            lines.append(String.format(formatStringBuilder.toString(),row));
+            lines.append("\n");
+        }
+        return lines.toString();
+    }
+
     /**
      * Compute numeric stats of the specified table column.
      * @param connection Available connection
@@ -219,5 +285,55 @@ public class ReadTable {
         res[STATS.MAX.ordinal()] = Double.valueOf(stats.getMax()).toString();
         res[STATS.STDDEV_SAMP.ordinal()] = Double.valueOf(stats.getStandardDeviation()).toString();
         return res;
+    }
+
+    /**
+     * Retrieve the envelope of selection of lines
+     * @param manager Data Manager
+     * @param tableName Table identifier [[catalog.]schema.]table
+     * @param rowsId Line number [1-n]
+     * @param pm Progress monitor
+     * @return Envelope of rows
+     * @throws SQLException
+     */
+    public static Envelope getTableSelectionEnvelope(DataManager manager, String tableName, SortedSet<Integer> rowsId, ProgressMonitor pm) throws SQLException {
+        try( Connection connection = manager.getDataSource().getConnection();
+                Statement st = connection.createStatement()) {
+            PropertyChangeListener cancelListener =  EventHandler.create(PropertyChangeListener.class, st, "cancel");
+            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,cancelListener);
+            try {
+                Envelope selectionEnvelope = null;
+                List<String> geomFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName));
+                if(geomFields.isEmpty()) {
+                    throw new SQLException(I18N.tr("Table table {0} does not contain any geometry fields", tableName));
+                }
+                String geomField = geomFields.get(0);
+                String request = "SELECT ST_Envelope(`"+geomField+"`, ST_SRID(`"+geomField+"`)) env_geom FROM "+tableName;
+                ProgressMonitor selectPm = pm.startTask(rowsId.size());
+                try(ReadRowSet rs = manager.createReadRowSet()) {
+                    rs.setCommand(request);
+                    rs.execute(pm);
+                    //Evaluate the selection bounding box
+                    for(int modelId : rowsId) {
+                        if(rs.absolute(modelId)) {
+                            Envelope rowEnvelope = rs.getGeometry("env_geom").getEnvelopeInternal();
+                            if(selectionEnvelope != null) {
+                                selectionEnvelope.expandToInclude(rowEnvelope);
+                            } else {
+                                selectionEnvelope = rowEnvelope;
+                            }
+                            if(pm.isCancelled()) {
+                                throw new SQLException("Operation canceled by user");
+                            } else {
+                                selectPm.endTask();
+                            }
+                        }
+                    }
+                }
+                return selectionEnvelope;
+            } finally {
+                pm.removePropertyChangeListener(cancelListener);
+            }
+        }
     }
 }

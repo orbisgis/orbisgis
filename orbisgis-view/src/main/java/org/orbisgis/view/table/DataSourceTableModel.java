@@ -33,9 +33,9 @@ import java.sql.Types;
 import javax.sql.RowSet;
 import javax.swing.table.AbstractTableModel;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.api.ReversibleRowSet;
-import org.orbisgis.view.edition.EditableElementException;
-import org.orbisgis.view.edition.EditableSource;
+import org.orbisgis.coreapi.api.ReversibleRowSet;
+import org.orbisgis.viewapi.edition.EditableElementException;
+import org.orbisgis.viewapi.edition.EditableSource;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

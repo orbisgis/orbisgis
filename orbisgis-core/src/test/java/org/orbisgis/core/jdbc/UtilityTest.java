@@ -29,6 +29,7 @@
 package org.orbisgis.core.jdbc;
 
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -58,7 +59,7 @@ public class UtilityTest {
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        dataSource = SpatialH2UT.createDataSource("ReversibleRowSetTest", true);
+        dataSource = SFSUtilities.wrapSpatialDataSource(SpatialH2UT.createDataSource("ReversibleRowSetTest", true));
     }
 
     @Test

@@ -110,7 +110,7 @@ public final class TextStroke extends Stroke {
         public void draw(Graphics2D g2, Map<String,Object> map, Shape shp,
                         boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {
                 if (this.lineLabel != null) {
-                        lineLabel.draw(g2, map, shp, selected, mt, null);
+                        lineLabel.draw(g2, map, shp, selected, mt);
                 }
         }
 

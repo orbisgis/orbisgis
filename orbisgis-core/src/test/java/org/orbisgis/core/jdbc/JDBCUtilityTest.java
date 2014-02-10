@@ -28,7 +28,10 @@
  */
 package org.orbisgis.core.jdbc;
 
+import com.vividsolutions.jts.geom.Envelope;
+import org.h2.Driver;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -38,11 +41,7 @@ import org.orbisgis.progress.NullProgressMonitor;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -54,12 +53,15 @@ public class JDBCUtilityTest {
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        connection = SpatialH2UT.createSpatialDataBase(JDBCUtilityTest.class.getName(), false);
+        Driver.load();
+        connection = SFSUtilities.wrapConnection(SpatialH2UT.createSpatialDataBase(JDBCUtilityTest.class.getSimpleName(), true));
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
-        connection.close();
+        if(connection!=null) {
+            connection.close();
+        }
     }
 
     @Test

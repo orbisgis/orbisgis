@@ -53,7 +53,7 @@ public class WorkspaceTest {
         public void testParseXML() throws Exception {
                 // Unused URL
                 URL apiUrl = new URL("http://poulpe.heig-vd.ch/scapc2/serviceapi/index.php");
-                ConnectionProperties cParams = new ConnectionProperties(apiUrl);
+                ConnectionProperties cParams = new ConnectionProperties(apiUrl, null,new File("target/maps"));
 
                 // Read the xml file in test resources
                 FileReader inFile = new FileReader(new File(RemoteMapCatalogTest.class.getResource("context.xml").toURI()));

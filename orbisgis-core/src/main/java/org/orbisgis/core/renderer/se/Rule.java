@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.*;
 import net.opengis.se._2_0.core.ElseFilterType;
 import net.opengis.se._2_0.core.RuleType;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
@@ -119,16 +120,14 @@ public final class Rule extends AbstractSymbolizerNode {
 
             try {
                     Symbolizer symb = null;
-                    DataSource ds = Services.getService(DataSource.class);
-                    Connection connection = ds.getConnection();
-                    try {
+                    try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
                         /*
                             TODO
                             case GeometryTypeCodes.RASTER:
                                 symb = new RasterSymbolizer();
                                 break;
                         */
-                        int typeCode = SFSUtilities.getGeometryType(connection,SFSUtilities.splitCatalogSchemaTableName(layer.getTableReference()),"");
+                        int typeCode = SFSUtilities.getGeometryType(connection,TableLocation.parse(layer.getTableReference()),"");
                         if(typeCode== GeometryTypeCodes.GEOMETRY || typeCode==GeometryTypeCodes.GEOMCOLLECTION) {
                             // No symbol for Geometry type code, parse the ResultSet
                             typeCode = getAccurateType(layer);
@@ -150,8 +149,6 @@ public final class Rule extends AbstractSymbolizerNode {
                                 symb = new PointSymbolizer();
                         }
                         symbolizer.addSymbolizer(symb);
-                    } finally {
-                        connection.close();
                     }
             } catch (SQLException ex) {
                 Logger.getLogger(Rule.class.getName()).log(Level.SEVERE, null, ex);
@@ -166,27 +163,11 @@ public final class Rule extends AbstractSymbolizerNode {
      * @return The type found after analysis.
      */
     private int getAccurateType(ILayer layer) throws SQLException {
-        DataSource ds = Services.getService(DataSource.class);
-        Connection connection = ds.getConnection();
-        try {
+        try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
             String tableRef = layer.getTableReference();
-            SpatialResultSet rs = connection.createStatement().executeQuery("select * from "+tableRef+" LIMIT 1").unwrap(SpatialResultSet.class);
-            if(rs.next()) {
-                Geometry geom = rs.getGeometry();
-                if(geom instanceof Point || geom instanceof MultiPoint){
-                    return GeometryTypeCodes.POINT;
-                } else if(geom instanceof LineString || geom instanceof MultiLineString){
-                    return GeometryTypeCodes.LINESTRING;
-                } else if(geom instanceof Polygon || geom instanceof MultiPolygon){
-                    return GeometryTypeCodes.POLYGON;
-                } else {
-                    return GeometryTypeCodes.GEOMETRY;
-                }
-            }
-        } finally {
-            connection.close();
+            TableLocation location =  TableLocation.parse(tableRef);
+            return SFSUtilities.getGeometryType(connection, location, "");
         }
-        return GeometryTypeCodes.GEOMETRY;
     }
 
     /**

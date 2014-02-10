@@ -28,17 +28,20 @@
  */
 package org.orbisgis.view.geocatalog.filters;
 
+import org.h2gis.utilities.TableLocation;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Accept only file data source.
  */
 public class FilesFilter implements IFilter {
-
     @Override
-    public boolean accepts(Connection connection, String sourceName, ResultSet tableProperties) throws SQLException {
-        return tableProperties.getString("REMARKS").startsWith("file://");
+    public boolean accepts(TableLocation table, Map<ATTRIBUTES, String> tableProperties) {
+        String remarks = tableProperties.get(ATTRIBUTES.REMARKS);
+        return remarks != null && remarks.startsWith("file:/");
     }
 }

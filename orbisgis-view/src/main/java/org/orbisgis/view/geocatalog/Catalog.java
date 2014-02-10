@@ -47,8 +47,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Arrays;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.api.DataManager;
+import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.coreapi.api.DriverFunctionContainer;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
@@ -61,22 +63,23 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.H2GISProgressMonitor;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
-import org.orbisgis.view.components.actions.DefaultAction;
+import org.orbisgis.view.geocatalog.jobs.ImportFiles;
+import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
-import org.orbisgis.view.docking.DockingPanel;
-import org.orbisgis.view.docking.DockingPanelParameters;
-import org.orbisgis.view.edition.EditableElement;
-import org.orbisgis.view.edition.EditableElementException;
-import org.orbisgis.view.edition.EditorManager;
+import org.orbisgis.viewapi.docking.DockingPanel;
+import org.orbisgis.viewapi.docking.DockingPanelParameters;
+import org.orbisgis.viewapi.edition.EditableElement;
+import org.orbisgis.viewapi.edition.EditableElementException;
 import org.orbisgis.view.geocatalog.actions.ActionOnNonEmptySourceList;
 import org.orbisgis.view.geocatalog.actions.ActionOnSelection;
-import org.orbisgis.view.geocatalog.ext.GeoCatalogExt;
-import org.orbisgis.view.geocatalog.ext.GeoCatalogMenu;
-import org.orbisgis.view.geocatalog.ext.PopupMenu;
-import org.orbisgis.view.geocatalog.ext.PopupTarget;
-import org.orbisgis.view.geocatalog.ext.TitleActionBar;
+import org.orbisgis.viewapi.edition.EditorManager;
+import org.orbisgis.viewapi.geocatalog.ext.GeoCatalogExt;
+import org.orbisgis.viewapi.geocatalog.ext.GeoCatalogMenu;
+import org.orbisgis.viewapi.geocatalog.ext.PopupMenu;
+import org.orbisgis.viewapi.geocatalog.ext.PopupTarget;
+import org.orbisgis.viewapi.geocatalog.ext.TitleActionBar;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.factories.NameContains;
 import org.orbisgis.view.geocatalog.filters.factories.NameNotContains;
@@ -84,7 +87,7 @@ import org.orbisgis.view.geocatalog.filters.factories.SourceTypeIs;
 import org.orbisgis.view.geocatalog.io.ExportInFileOperation;
 import org.orbisgis.view.geocatalog.renderer.DataSourceListCellRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.table.TableEditableElement;
+import org.orbisgis.viewapi.table.TableEditableElement;
 import org.orbisgis.view.table.TableEditableElementImpl;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -120,6 +123,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         private MenuItemServiceTracker<TitleActionBar,GeoCatalogMenu> dockingActionTracker;
         private ServiceTracker<DriverFunction, DriverFunction> driverFunctionTracker;
         private List<DriverFunction> fileDrivers = new LinkedList<>();
+        private DataManager dataManager;
 
         /**
          * For the Unit test purpose
@@ -143,8 +147,9 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         /**
          * Default constructor
          */
-        public Catalog() {
+        public Catalog(DataManager dataManager) {
                 super(new BorderLayout());
+                this.dataManager = dataManager;
                 dockingParameters.setName("geocatalog");
                 dockingParameters.setTitle(I18N.tr("GeoCatalog"));
                 dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("geocatalog"));
@@ -153,7 +158,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 //then add the scroll pane in this panel
                 add(new JScrollPane(makeSourceList()), BorderLayout.CENTER);
                 //Init the filter factory manager
-                filterFactoryManager = new FilterFactoryManager<IFilter,DefaultActiveFilter>();
+                filterFactoryManager = new FilterFactoryManager<>();
                 //Set the factory that must be shown when the user click on add filter button
                 filterFactoryManager.setDefaultFilterFactory(DEFAULT_FILTER_FACTORY);
                 //Set listener on filter change event, this event will update the filters
@@ -210,24 +215,14 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         }
 
         /**
-         * Use service to return the data manager
-         *
-         * @return DataManager instance
-         */
-        private DataManager getDataManager() {
-                return Services.getService(DataManager.class);
-        }
-
-        /**
          * DataSource URI drop. Currently used on file drop by the {@link  SourceListTransferHandler}.
          *
          * @param uriDrop Uniform Resource Identifier
          */
         public void onDropURI(List<URI> uriDrop) {
-                DataManager src = getDataManager();
                 for (URI uri : uriDrop) {
                         try {
-                            src.registerDataSource(uri);
+                            dataManager.registerDataSource(uri);
                             refreshSourceList();
                         } catch (SQLException ex) {
                             LOGGER.error("Cannot load dropped data source", ex);
@@ -307,14 +302,15 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 if(manager != null) {
                     String[] res = getSelectedSources();
                     for (String source : res) {
-                            TableEditableElementImpl tableDocument = new TableEditableElementImpl(source);
+                            TableEditableElementImpl tableDocument = new TableEditableElementImpl(source, dataManager);
                             OpenTableEditor job = new OpenTableEditor(tableDocument);
                             manager.nonBlockingBackgroundOperation(job);
                     }
                 }
         }
 
-        private DriverFunction getDriverFromExt(String ext,DriverFunction.IMPORT_DRIVER_TYPE type ) {
+        @Override
+        public DriverFunction getDriverFromExt(String ext,DriverFunction.IMPORT_DRIVER_TYPE type ) {
             for(DriverFunction driverFunction : fileDrivers) {
                 if(driverFunction.getImportDriverType() == type) {
                     for(String fileExt : driverFunction.getImportFormats()) {
@@ -330,29 +326,24 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         private void importFile(DriverFunction.IMPORT_DRIVER_TYPE type) {
             OpenFilePanel linkSourcePanel = new OpenFilePanel("Geocatalog.LinkFile" ,I18N.tr("Select the file to "));
             for(DriverFunction driverFunction : fileDrivers) {
-                if(driverFunction.getImportDriverType() == type) {
-                    for(String fileExt : driverFunction.getImportFormats()) {
-                        linkSourcePanel.addFilter(fileExt, driverFunction.getFormatDescription(fileExt));
+                try {
+                    if(driverFunction.getImportDriverType() == type) {
+                        for(String fileExt : driverFunction.getImportFormats()) {
+                            linkSourcePanel.addFilter(fileExt, driverFunction.getFormatDescription(fileExt));
+                        }
                     }
+                } catch (Exception ex) {
+                    LOGGER.debug(ex.getLocalizedMessage(), ex);
                 }
             }
             linkSourcePanel.loadState();
             //Ask SIF to open the dialog
             if (UIFactory.showDialog(linkSourcePanel, true, true)) {
                 // We can retrieve the files that have been selected by the user
-                File[] files = linkSourcePanel.getSelectedFiles();
-                for (File file : files) {
-                    String ext = FilenameUtils.getExtension(file.getName());
-                    DriverFunction driverFunction = getDriverFromExt(ext, type);
-                    if(driverFunction == null) {
-                        //When opening file in geocatalog, cannot found a driver able to load ex:.JPG extension
-                        LOGGER.error(I18N.tr("No driver found for {0} extension", ext));
-                    } else {
-                        ImportFile importFileJob = new ImportFile(this, driverFunction, file, FileUtils.getNameFromURI(file.toURI()));
-                        BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.nonBlockingBackgroundOperation(importFileJob);
-                    }
-                }
+                List<File> files = Arrays.asList(linkSourcePanel.getSelectedFiles());
+                ImportFiles importFileJob = new ImportFiles(this, this, files, dataManager, type);
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.nonBlockingBackgroundOperation(importFileJob);
             }
         }
 
@@ -415,14 +406,12 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                     I18N.tr("Delete GeoCatalog tables"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (option == JOptionPane.YES_OPTION) {
-                DataSource ds = Services.getService(DataSource.class);
-                try(Connection connection = ds.getConnection()) {
+                try(Connection connection = dataManager.getDataSource().getConnection()) {
                     connection.setAutoCommit(false);
                     for (String resource : res) {
                         TableLocation tableLocation = TableLocation.parse(resource);
                         try(Statement st = connection.createStatement()) {
                             st.execute(String.format("drop table %s", tableLocation));
-
                         } catch (SQLException ex) {
                             LOGGER.error(I18N.tr("Cannot remove the source {0}", resource), ex);
                             connection.rollback();
@@ -434,6 +423,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                     LOGGER.error(I18N.trc("Tables are database tables, drop means delete tables", "Cannot drop the tables"), ex);
                 }
             }
+            refreshSourceList();
         }
 
         /**
@@ -441,7 +431,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          */
         public void onMenuSaveInfile() {
                 String[] res = getSelectedSources();
-                DataSource ds = Services.getService(DataSource.class);
                 for (String source : res) {
                         final SaveFilePanel outfilePanel = new SaveFilePanel(
                                 "Geocatalog.SaveInFile",
@@ -456,7 +445,8 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                                 final File savedFile = outfilePanel.getSelectedFile().getAbsoluteFile();
                                 BackgroundManager bm = Services.getService(BackgroundManager.class);
                                 bm.backgroundOperation(new ExportInFileOperation(source,
-                                savedFile, getDriverFromExt(FilenameUtils.getExtension(savedFile.getName()), DriverFunction.IMPORT_DRIVER_TYPE.COPY)));
+                                savedFile, getDriverFromExt(FilenameUtils.getExtension(savedFile.getName()),
+                                        DriverFunction.IMPORT_DRIVER_TYPE.COPY),dataManager.getDataSource()));
                         }
 
                 }
@@ -513,7 +503,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          */
         public void onMenuAddWMSServer() {
                 /*
-                DataManager dm = Services.getService(DataManager.class);
                 SourceManager sm = dm.getSourceManager();
                 SRSPanel srsPanel = new SRSPanel();
                 LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel(srsPanel);
@@ -685,11 +674,10 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                         "onMouseActionOnSourceList",
                         "")); //This method ask the event data as argument
                 //Create the list content manager
-                DataSource dataSource = Services.getService(DataSource.class);
-                sourceListContent = new SourceListModel(dataSource);
+                sourceListContent = new SourceListModel(dataManager.getDataSource());
                 //Replace the default model by the GeoCatalog model
                 sourceList.setModel(sourceListContent);
-                SourceListTransferHandler transferHandler = new SourceListTransferHandler();
+                SourceListTransferHandler transferHandler = new SourceListTransferHandler(dataManager);
                 //Call the method this.onDropURI when the user drop uri(like files) on the list control
                 transferHandler.getDropListenerHandler().addListener(this,
                         EventHandler.create(SourceListTransferHandler.DropUriListener.class, this, "onDropURI", "uriList"));
@@ -795,35 +783,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             @Override
             public void run() {
                 editorManager.openEditable(element);
-            }
-        }
-        private static class ImportFile implements BackgroundJob {
-            private DriverFunction driverFunction;
-            private File file;
-            private String tableName;
-            private GeoCatalogExt catalog;
-
-            private ImportFile(GeoCatalogExt catalog, DriverFunction driverFunction, File file, String tableName) {
-                this.catalog = catalog;
-                this.driverFunction = driverFunction;
-                this.file = file;
-                this.tableName = tableName;
-            }
-
-            @Override
-            public String getTaskName() {
-                return I18N.tr("Import file");
-            }
-
-            @Override
-            public void run(ProgressMonitor pm) {
-                DataSource ds = Services.getService(DataSource.class);
-                try(Connection connection = ds.getConnection()) {
-                    driverFunction.importFile(connection, tableName ,file, new H2GISProgressMonitor(pm));
-                } catch (SQLException | IOException ex) {
-                    LOGGER.error(I18N.tr("Cannot import the file"), ex);
-                }
-                catalog.refreshSourceList();
             }
         }
 }

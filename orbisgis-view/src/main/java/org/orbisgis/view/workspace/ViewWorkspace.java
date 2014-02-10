@@ -31,12 +31,10 @@ package org.orbisgis.view.workspace;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.core.workspace.CoreWorkspaceImpl;
 
 /**
  * View workspace contains file and folder information
@@ -44,15 +42,12 @@ import org.orbisgis.core.workspace.CoreWorkspace;
  */
 
 
-public class ViewWorkspace {
+public class ViewWorkspace implements org.orbisgis.viewapi.workspace.ViewWorkspace {
     private static final long serialVersionUID = 1L;
-    public static final String PROP_DOCKINGLAYOUTFILE = "dockingLayoutFile";
-    public static final String PROP_SIFPATH = "SIFPath";
-    public static final String PROP_MAPCONTEXTPATH = "mapContextPath";
-    
+
     private PropertyChangeSupport propertySupport;
-    private CoreWorkspace coreWorkspace;
-    public ViewWorkspace(CoreWorkspace coreWorkspace) {
+    private CoreWorkspaceImpl coreWorkspace;
+    public ViewWorkspace(CoreWorkspaceImpl coreWorkspace) {
         propertySupport = new PropertyChangeSupport(this);
         this.coreWorkspace = coreWorkspace;
         SIFPath = coreWorkspace.getWorkspaceFolder() + File.separator + "sif" ;
@@ -62,21 +57,13 @@ public class ViewWorkspace {
         private String SIFPath = "";
         private String mapContextPath;
         
-        /**
-         * Get the value of mapContextPath
-         * This folder contains all serialised Map Context shown in
-         * the Map Context library
-         * @return the value of mapContextPath
-         */
+        @Override
         public String getMapContextPath() {
                 return mapContextPath;
         }
 
-        /**
-         * 
-         * @return The core workspace
-         */
-        public CoreWorkspace getCoreWorkspace() {
+        @Override
+        public CoreWorkspaceImpl getCoreWorkspace() {
                 return coreWorkspace;
         }
 
@@ -92,11 +79,7 @@ public class ViewWorkspace {
                 propertySupport.firePropertyChange(PROP_MAPCONTEXTPATH, oldMapContextPath, mapContextPath);
         }
 
-    /**
-     * Get the value of SIFPath
-     *
-     * @return the value of SIFPath
-     */
+    @Override
     public String getSIFPath() {
         return SIFPath;
     }
@@ -112,18 +95,12 @@ public class ViewWorkspace {
         propertySupport.firePropertyChange(PROP_SIFPATH, oldSIFPath, SIFPath);
     }
 
-    /**
-     * Get the value of dockingLayoutFile
-     *
-     * @return the value of dockingLayoutFile
-     */
+    @Override
     public String getDockingLayoutFile() {
         return dockingLayoutFile;
     }
 
-    /**
-     * @return The full path of the layout file
-     */
+    @Override
     public String getDockingLayoutPath() {
         return coreWorkspace.getWorkspaceFolder()+File.separator+dockingLayoutFile;
     }
@@ -139,41 +116,22 @@ public class ViewWorkspace {
     }
 
     
-    /**
-     * Add a property-change listener for all properties.
-     * The listener is called for all properties.
-     * @param listener The PropertyChangeListener instance
-     * @note Use EventHandler.create to build the PropertyChangeListener instance
-     */
+    @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         propertySupport.addPropertyChangeListener(listener);
     }
-    /**
-     * Add a property-change listener for a specific property.
-     * The listener is called only when there is a change to 
-     * the specified property.
-     * @param prop The static property name PROP_..
-     * @param listener The PropertyChangeListener instance
-     * @note Use EventHandler.create to build the PropertyChangeListener instance
-     */
-    public void addPropertyChangeListener(String prop,PropertyChangeListener listener) {
+    @Override
+    public void addPropertyChangeListener(String prop, PropertyChangeListener listener) {
         propertySupport.addPropertyChangeListener(prop, listener);
     }
     
-    /**
-     * Remove the specified listener from the list
-     * @param listener The listener instance
-     */
+    @Override
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertySupport.removePropertyChangeListener(listener);
     }
     
-    /**
-     * Remove the specified listener for a specified property from the list
-     * @param prop The static property name PROP_..
-     * @param listener The listener instance
-     */
-    public void removePropertyChangeListener(String prop,PropertyChangeListener listener) {
+    @Override
+    public void removePropertyChangeListener(String prop, PropertyChangeListener listener) {
         propertySupport.removePropertyChangeListener(prop,listener);
     }
     /**
@@ -182,7 +140,7 @@ public class ViewWorkspace {
      * @throws IOException Error while writing files or the folder is not empty
      */
     public static void initWorkspaceFolder(File workspaceFolder) throws IOException {
-        CoreWorkspace.initWorkspaceFolder(workspaceFolder);
+        CoreWorkspaceImpl.initWorkspaceFolder(workspaceFolder);
     }
     /**
      * Check if the provided folder can be loaded has the workspace
@@ -201,7 +159,7 @@ public class ViewWorkspace {
         if(workspaceFolder.listFiles().length==0) {
                 return true;
         }
-        File versionFile = new File(workspaceFolder, CoreWorkspace.VERSION_FILE);
+        File versionFile = new File(workspaceFolder, CoreWorkspaceImpl.VERSION_FILE);
         if(!versionFile.exists()) {
                 return false;
         }       
@@ -212,7 +170,7 @@ public class ViewWorkspace {
                                versionFile));
                 String line = fileReader.readLine();
                 if(line!=null) {
-                        return Integer.valueOf(line).equals(CoreWorkspace.MAJOR_VERSION);
+                        return Integer.valueOf(line).equals(CoreWorkspaceImpl.MAJOR_VERSION);
                 }
         } catch (IOException e) {
                 throw new RuntimeException("Cannot read the workspace location", e);

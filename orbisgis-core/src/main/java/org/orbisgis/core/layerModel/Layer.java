@@ -30,19 +30,25 @@ package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.api.DataManager;
+
+import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.URIUtility;
+import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 import org.h2gis.utilities.SFSUtilities;
-
-import javax.sql.DataSource;
 
 public class Layer extends BeanLayer {
     // When dataURI is not specified, this layer use the tableReference instead of external URI
@@ -50,15 +56,19 @@ public class Layer extends BeanLayer {
 
 	private String tableReference;
     private URI dataURI;
+    private DataManager dataManager;
+    private Envelope envelope;
 
-	public Layer(String name, String tableReference) {
+	public Layer(String name, String tableReference,DataManager dataManager) {
 		super(name);
 		this.tableReference = tableReference;
+        this.dataManager = dataManager;
 	}
 
-    public Layer(String name, URI dataURI) {
+    public Layer(String name, URI dataURI,DataManager dataManager) {
         super(name);
         this.dataURI = dataURI;
+        this.dataManager = dataManager;
         if(JDBC_REFERENCE_SCHEME.equalsIgnoreCase(dataURI.getScheme())) {
             String path =  dataURI.getPath(); // ex: /myschema.mytable
             tableReference = path.substring(1);
@@ -68,11 +78,43 @@ public class Layer extends BeanLayer {
     }
 
     @Override
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    @Override
     public URI getDataUri() {
         if(dataURI!=null) {
             return dataURI;
         } else {
-            return URI.create(JDBC_REFERENCE_SCHEME+":/"+tableReference);
+            TableLocation table = TableLocation.parse(tableReference);
+            try(Connection connection = dataManager.getDataSource().getConnection()) {
+                // Look at table remarks if there is a file reference
+                DatabaseMetaData meta = connection.getMetaData();
+                try(ResultSet tablesRs = meta.getTables(table.getCatalog(),table.getSchema(),table.getTable(),null)) {
+                    if(tablesRs.next()) {
+                        String remarks = tablesRs.getString("REMARKS");
+                        if(remarks!= null && remarks.toLowerCase().startsWith("file:")) {
+                            try {
+                                // The table is extracted from a file
+                                URI fileUri =  URI.create(remarks);
+                                if(new File(fileUri).exists()) {
+                                    return fileUri;
+                                }
+                            } catch (Exception ex) {
+                                //Ignore, not an URI
+                            }
+                        }
+                    }
+                }
+                // Extract table location on database
+                URI databaseUri = URI.create(meta.getURL());
+                String query = String.format("catalog=%s&schema=%s&table=%s",table.getCatalog(),table.getSchema(), table.getTable());
+                return URI.create(databaseUri.toString()+"?"+query);
+            } catch (SQLException|IllegalArgumentException ex) {
+                LOGGER.warn(I18N.tr("Unable to create URI from Layer.Please fix the layer named {0}", getName()));
+                return null;
+            }
         }
     }
 
@@ -90,19 +132,15 @@ public class Layer extends BeanLayer {
 
     @Override
 	public Envelope getEnvelope() {
-		Envelope result = new Envelope();
-        DataSource dataSource = Services.getService(DataSource.class);
-        try {
-            Connection connection = dataSource.getConnection();
-            try {
-                return SFSUtilities.getTableEnvelope(connection, SFSUtilities.splitCatalogSchemaTableName(tableReference),"");
-            } finally {
-                connection.close();
+        // TODO reset envelope when the Table is updated
+        if(envelope == null) {
+            try(Connection connection = dataManager.getDataSource().getConnection()) {
+                envelope = SFSUtilities.getTableEnvelope(connection, TableLocation.parse(tableReference),"");
+            } catch (SQLException ex) {
+                LOGGER.error(I18N.tr("Cannot compute layer envelope"),ex);
             }
-        } catch (SQLException ex) {
-            LOGGER.error(I18N.tr("Cannot compute layer envelope"),ex);
         }
-		return result;
+		return envelope;
 	}
 
     @Override
@@ -112,17 +150,16 @@ public class Layer extends BeanLayer {
 
         @Override
 	public void open() throws LayerException {
-        DataManager dm = Services.getService(DataManager.class);
         if(tableReference.isEmpty()) {
             try {
-                tableReference =  dm.registerDataSource(dataURI);
+                tableReference =  dataManager.registerDataSource(dataURI);
             } catch (Exception ex) {
-                throw new LayerException(I18N.tr("Unable to load the data source uri {0}.", dataURI), ex);
+                LOGGER.warn(I18N.tr("Unable to load the data source uri {0}.", dataURI), ex);
             }
         } else if(dataURI == null) {
             // Check if the table exists
             try {
-                if(!dm.isTableExists(tableReference)) {
+                if(!dataManager.isTableExists(tableReference)) {
                     LOGGER.warn(I18N.tr("Specified table '{0}' does not exists, and no source URI is given", tableReference));
                 }
             } catch (SQLException ex) {
@@ -147,14 +184,12 @@ public class Layer extends BeanLayer {
 
     @Override
 	public boolean isVectorial() throws LayerException {
-        DataSource dataSource = Services.getService(DataSource.class);
-        if(dataSource==null || getTableReference()==null) {
+        if(getTableReference()==null) {
             throw new LayerException("This layer is not opened");
         }
-        try {
-            Connection connection = dataSource.getConnection();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
             try {
-                return !SFSUtilities.getGeometryFields(connection,SFSUtilities.splitCatalogSchemaTableName(getTableReference())).isEmpty();
+                return !SFSUtilities.getGeometryFields(connection,TableLocation.parse(getTableReference())).isEmpty();
             } finally {
                 connection.close();
             }
@@ -171,7 +206,7 @@ public class Layer extends BeanLayer {
 	@Override
 	public List<Rule> getRenderingRule() throws LayerException {
                 List<Style> styles = getStyles();
-                ArrayList<Rule> ret = new ArrayList<Rule>();
+                ArrayList<Rule> ret = new ArrayList<>();
                 for(Style s : styles){
                         if(s!=null){
                                 ret.addAll(s.getRules());

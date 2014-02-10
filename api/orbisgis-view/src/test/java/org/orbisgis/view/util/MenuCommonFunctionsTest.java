@@ -29,6 +29,8 @@
 package org.orbisgis.view.util;
 
 import org.junit.Test;
+import org.orbisgis.viewapi.util.MenuCommonFunctions;
+
 import static junit.framework.Assert.assertEquals;
 
 import javax.swing.*;

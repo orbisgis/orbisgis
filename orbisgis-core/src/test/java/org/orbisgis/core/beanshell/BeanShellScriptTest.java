@@ -28,21 +28,16 @@
  */
 package org.orbisgis.core.beanshell;
 
-
-import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Arrays;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.core.Services;
 
 import javax.sql.DataSource;
 
@@ -111,21 +106,15 @@ public class BeanShellScriptTest {
                 System.setOut(psbak);
             }
         }
-
-        @Test
-        public void testMapDisplayScript() throws Exception {
-                assumeTrue(!GraphicsEnvironment.isHeadless());
-                BeanshellScript.execute(mainParams("../src/test/resources/beanshell/mapDisplayDatasource.bsh"));
-                Thread.sleep(3000);
-                assertTrue(true);
-        }
-//
+//  This unit test display a window, and is already covered by testDrawOwsInImage
 //        @Test
-//        public void testMapToPng() throws Exception {
-//                BeanshellScript.execute(mainParams("src/test/resources/beanshell/datatsourceTopng.bsh"));
+//        public void testMapDisplayScript() throws Exception {
+//                assumeTrue(!GraphicsEnvironment.isHeadless());
+//                BeanshellScript.execute(mainParams("../src/test/resources/beanshell/mapDisplayDatasource.bsh"));
+//                Thread.sleep(3000);
 //                assertTrue(true);
 //        }
-        
+
         @Test
         public void testSeveralArguments() throws Exception {
                 BeanshellScript.execute(mainParams("../src/test/resources/beanshell/testSeveralArguments.bsh", "orbis","1"));
@@ -134,7 +123,7 @@ public class BeanShellScriptTest {
 
         @Test
         public void testDrawOwsInImage() throws Exception {
-            DataSource ds = Services.getService(DataSource.class);
+            DataSource ds = BeanshellScript.getMainContext().getDataSource();
             Connection connection = ds.getConnection();
             try {
                 connection.createStatement().execute("DROP TABLE IF EXISTS LANDCOVER2000");

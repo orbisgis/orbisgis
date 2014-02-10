@@ -51,9 +51,11 @@ import java.util.TreeSet;
 public class ScriptPanelTransferHandler extends TransferHandler {
     private static final Logger LOGGER = Logger.getLogger(ScriptPanelTransferHandler.class);
     private JTextArea textArea;
+    private DataSource dataSource;
 
-    public ScriptPanelTransferHandler(JTextArea textArea) {
+    public ScriptPanelTransferHandler(JTextArea textArea, DataSource dataSource) {
         this.textArea = textArea;
+        this.dataSource = dataSource;
     }
 
     @Override
@@ -69,10 +71,6 @@ public class ScriptPanelTransferHandler extends TransferHandler {
     @Override
     public boolean importData(JComponent comp, Transferable t) {
         if(t.isDataFlavorSupported(TransferableSource.sourceFlavor)) {
-            DataSource dataSource = Services.getService(DataSource.class);
-            if(dataSource == null) {
-                return false;
-            }
             try(Connection connection = dataSource.getConnection()) {
                 String[] sources = (String[]) t.getTransferData(TransferableSource.sourceFlavor);
                 for(String source : sources) {

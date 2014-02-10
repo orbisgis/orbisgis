@@ -31,8 +31,10 @@ package org.orbisgis.view.table;
 import java.util.Collections;
 import java.util.Set;
 import org.apache.log4j.Logger;
+import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.geocatalog.EditableSourceImpl;
+import org.orbisgis.viewapi.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -48,16 +50,24 @@ public class TableEditableElementImpl extends EditableSourceImpl implements Tabl
         protected IntegerUnion selectedGeometries;
         private final I18n i18n = I18nFactory.getI18n(TableEditableElementImpl.class);
 
-        public TableEditableElementImpl(Set<Integer> selection, String sourceName) {
-                super(sourceName);
+        /**
+         * Constructor
+         * @param selection
+         * @param sourceName
+         * @param dataManager
+         */
+        public TableEditableElementImpl(Set<Integer> selection, String sourceName, DataManager dataManager) {
+                super(sourceName, dataManager);
                 this.selectedGeometries = new IntegerUnion(selection);
         }
 
         /**
-         * {@link org.orbisgis.view.geocatalog.EditableSourceImpl#EditableSourceImpl(String)}
+         * Constructor
+         * @param sourceName
+         * @param dataManager
          */
-        public TableEditableElementImpl(String sourceName) {
-                super(sourceName);
+        public TableEditableElementImpl(String sourceName, DataManager dataManager) {
+                super(sourceName, dataManager);
                 this.selectedGeometries = new IntegerUnion();
         }
 
