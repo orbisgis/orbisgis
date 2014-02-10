@@ -96,7 +96,7 @@ public class TocRenderer extends TocAbstractRenderer {
                                         if(mapContext!=null && layerNode.equals(mapContext.getActiveLayer())) {
                                             nodeIcon = IconCellRendererUtility.mergeIcons
                                                     (nodeIcon, OrbisGISIcon.getIcon("edition/layer_edit"));
-                                        } else if(!layerNode.getTableReference().isEmpty()) { // && layerNode.getDataSource().isModified()
+                                        } else if(false) { //!layerNode.getTableReference().isEmpty() && layerNode.getDataSource().isModified()
                                             // TODO Use UndoManager to check for layer modifications
                                             nodeIcon = IconCellRendererUtility.mergeIcons
                                                     (nodeIcon, OrbisGISIcon.getIcon("edition/layer_modify"));

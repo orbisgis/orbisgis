@@ -9,6 +9,7 @@ import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.VectorialFilter;
 
 import javax.sql.DataSource;
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -46,6 +47,8 @@ public class SourceListModelTest {
             st.execute("create table `TABLE.USERTABLE3` ( id integer primary key, pt POINT)");
         }
         SourceListModel sourceListModel = new SourceListModel(dataSource);
+        sourceListModel.readDatabase();
+        sourceListModel.doFilter();
         List<IFilter> filters = new ArrayList<>();
         filters.add(new VectorialFilter());
         sourceListModel.setFilters(filters);

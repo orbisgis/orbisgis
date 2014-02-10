@@ -178,7 +178,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
         }
     }
 
-    private void doFilter() {
+    protected void doFilter() {
         boolean checkForDefaultFilter = true;
         for(IFilter filter : filters) {
             if(filter instanceof TableSystemFilter) {
@@ -210,8 +210,8 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
     /**
      * Read the table list in the database
      */
-    private void readDatabase() {
-        allTables.clear();
+    protected void readDatabase() {
+        List<Map<IFilter.ATTRIBUTES, String>> newTables = new ArrayList<>(allTables.size());
         try (Connection connection = dataSource.getConnection()) {
             // Fetch Geometry tables
             Map<String,String> tableGeometry = new HashMap<>();
@@ -252,9 +252,10 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
                     if(type != null) {
                         tableAttr.put(IFilter.ATTRIBUTES.GEOMETRY_TYPE, type);
                     }
-                    allTables.add(tableAttr);
+                    newTables.add(tableAttr);
                 }
             }
+            allTables = newTables;
         } catch (SQLException ex) {
             LOGGER.error(I18N.tr("Cannot read the table list"), ex);
         }
