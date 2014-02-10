@@ -308,7 +308,7 @@ public class ReadTable {
                     throw new SQLException(I18N.tr("Table table {0} does not contain any geometry fields", tableName));
                 }
                 String geomField = geomFields.get(0);
-                String request = "SELECT ST_Envelope(`"+geomField+"`, ST_SRID(`"+geomField+"`)) env_geom FROM "+tableName;
+                String request = "SELECT ST_Envelope("+MetaData.escapeFieldName(geomField)+", ST_SRID("+MetaData.escapeFieldName(geomField)+")) env_geom FROM "+tableName;
                 ProgressMonitor selectPm = pm.startTask(rowsId.size());
                 try(ReadRowSet rs = manager.createReadRowSet()) {
                     rs.setCommand(request);

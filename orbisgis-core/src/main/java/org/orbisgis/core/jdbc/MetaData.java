@@ -81,7 +81,7 @@ public class MetaData {
      * @return quoted string ex: "My field"
      */
     public static String escapeFieldName(String fieldName) {
-        return "\""+fieldName.replace("\"","\"\"")+"\"";
+        return "\""+fieldName+"\"";
     }
 
     /**

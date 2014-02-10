@@ -17,6 +17,8 @@ import javax.sql.DataSource;
 import javax.sql.RowSet;
 import javax.sql.rowset.JdbcRowSet;
 import javax.sql.rowset.RowSetWarning;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -280,6 +282,13 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             }
         } else {
             resultSetHolder.setCommand(getCommand());
+            PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, resultSetHolder, "cancel");
+            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
+            try {
+                resultSetHolder.getResource(); // Long query
+            } finally {
+                pm.removePropertyChangeListener(listener);
+            }
         }
     }
 
@@ -1374,6 +1383,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         private long lastUsage = System.currentTimeMillis();
         private static final Logger LOGGER = Logger.getLogger(ResultSetHolder.class);
         private int openCount = 0;
+        private Statement cancelStatement;
 
         private ResultSetHolder(DataSource dataSource) {
             this.dataSource = dataSource;
@@ -1398,13 +1408,15 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             lastUsage = System.currentTimeMillis();
             status = STATUS.STARTED;
             try(Connection connection = dataSource.getConnection();
-            Statement st = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
-            ResultSet activeResultSet = st.executeQuery(command)) {
-                resultSet = activeResultSet;
-                status = STATUS.READY;
-                while(lastUsage + RESULT_SET_TIMEOUT > System.currentTimeMillis() || openCount != 0) {
-                    Thread.sleep(SLEEP_TIME);
+                Statement st = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY)) {
+                cancelStatement = st;
+                try(ResultSet activeResultSet = st.executeQuery(command)) {
+                    resultSet = activeResultSet;
+                    status = STATUS.READY;
+                    while(lastUsage + RESULT_SET_TIMEOUT > System.currentTimeMillis() || openCount != 0) {
+                        Thread.sleep(SLEEP_TIME);
+                    }
                 }
             } catch (Exception ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
@@ -1420,6 +1432,17 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         @Override
         public void close() throws Exception {
             lastUsage = 0;
+        }
+
+        /**
+         * {@link java.sql.Statement#cancel()}
+         * @throws SQLException
+         */
+        public void cancel() throws SQLException {
+            Statement cancelObj = cancelStatement;
+            if(cancelObj != null && !cancelObj.isClosed()) {
+                cancelObj.cancel();
+            }
         }
 
         /**
