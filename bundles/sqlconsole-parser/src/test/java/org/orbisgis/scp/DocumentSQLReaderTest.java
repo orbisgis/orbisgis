@@ -4,8 +4,11 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.junit.Test;
 
+import java.awt.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * @author Nicolas Fortin
@@ -14,6 +17,7 @@ public class DocumentSQLReaderTest {
 
     @Test
     public void testSplitSQLDocument() {
+        assumeTrue(!GraphicsEnvironment.isHeadless());
         // Create document
         RSyntaxDocument document = new RSyntaxDocument("sql");
         RSyntaxTextArea rSyntaxTextArea = new RSyntaxTextArea(document);
@@ -40,6 +44,7 @@ public class DocumentSQLReaderTest {
     }
     @Test
     public void testSplitSQLWithSpecialChar() {
+        assumeTrue(!GraphicsEnvironment.isHeadless());
         // Create document
         RSyntaxDocument document = new RSyntaxDocument("sql");
         RSyntaxTextArea rSyntaxTextArea = new RSyntaxTextArea(document);
