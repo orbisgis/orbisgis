@@ -147,6 +147,8 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 private final FilterParameters params;
                 private final String searchChars;
                 private final Set<Integer> filteredRows = new IntegerUnion();
+                /** Not null if work is done on Where SQL Filter */
+                private TableSelectionFilter  externalFilter = null;
 
                 public FieldsContainsFilter(FilterParameters params) {
                         this.params = params;
@@ -174,7 +176,11 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
 
                 @Override
                 public boolean isSelected(int rowId, TableEditableElement source) {
-                        return filteredRows.contains(rowId);
+                        if(externalFilter != null) {
+                            return externalFilter.isSelected(rowId, source);
+                        } else {
+                            return filteredRows.contains(rowId);
+                        }
                 }
 
                 private void addFieldWhere(StringBuilder request, String fieldName) {
@@ -214,9 +220,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                                 String tablePk = source.getRowSet().getPkName();
                                 if(!tablePk.isEmpty()) {
                                     final ReadRowSet rowSet = source.getRowSet();
-                                    StringBuilder request = new StringBuilder(String.format("SELECT %s FROM %s WHERE ",
-                                            MetaData.escapeFieldName(tablePk),
-                                            source.getTableReference()));
+                                    StringBuilder request = new StringBuilder();
                                     if (params.getColumnId() != -1) {
                                         // A specific field
                                         String fieldName = rowSet.getMetaData().getColumnName(params.getColumnId() + 1);
@@ -236,12 +240,12 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                                             }
                                         }
                                     }
-                                    LOGGER.info(I18N.tr("Find field value with the following request:\n{0}",request.toString()));
-                                    try(ResultSet rs = st.executeQuery(request.toString())) {
-                                        while(rs.next()) {
-                                            filteredRows.add(rowSet.getRowId(rs.getObject(1)) - 1);
-                                        }
-                                    }
+                                    WhereSQLFilterFactory whereSQLFilterFactory = new WhereSQLFilterFactory();
+                                    DefaultActiveFilter whereFilterValue = whereSQLFilterFactory.getDefaultFilterValue();
+                                    whereFilterValue.setCurrentFilterValue(request.toString());
+                                    externalFilter = whereSQLFilterFactory.getFilter(whereFilterValue);
+                                    LOGGER.info(I18N.tr("Find field value with the following request:\n{0}", request.toString()));
+                                    externalFilter.initialize(pm, source);
                                 } else {
                                     // If the table does not hold any PK, loop through rows
                                     final ReadRowSet rowSet = source.getRowSet();
