@@ -81,7 +81,7 @@ public class MetaData {
      * @return quoted string ex: "My field"
      */
     public static String escapeFieldName(String fieldName) {
-        return "\""+fieldName.replace("\"","\"\"")+"\"";
+        return "\""+fieldName+"\"";
     }
 
     /**
@@ -159,6 +159,31 @@ public class MetaData {
             case Types.REAL:
             case Types.DOUBLE:
             case Types.FLOAT:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * @param sqlType SQL type from {@link java.sql.Types}
+     * @return True if the type is alphanumeric
+     */
+    public static boolean isAlphaNumeric(int sqlType) {
+        switch(sqlType) {
+            case Types.NUMERIC:
+            case Types.DECIMAL:
+            case Types.BIGINT:
+            case Types.SMALLINT:
+            case Types.TINYINT:
+            case Types.INTEGER:
+            case Types.REAL:
+            case Types.DOUBLE:
+            case Types.FLOAT:
+            case Types.CHAR:
+            case Types.VARCHAR:
+            case Types.LONGVARCHAR:
+            case Types.LONGNVARCHAR:
                 return true;
             default:
                 return false;

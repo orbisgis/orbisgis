@@ -31,6 +31,7 @@ package org.orbisgis.view.sqlconsole.ui;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.jdbc.MetaData;
 import org.orbisgis.view.geocatalog.TransferableSource;
 
 import javax.sql.DataSource;
@@ -86,14 +87,7 @@ public class ScriptPanelTransferHandler extends TransferHandler {
                         StringBuilder fields = new StringBuilder();
                         for(int colId : new TreeSet<>(columns.keySet())) {
                             String fieldName = columns.remove(colId);
-                            boolean containSpace = fieldName.contains(" ");
-                            if(containSpace) {
-                                fields.append("`");
-                            }
-                            fields.append(fieldName);
-                            if(containSpace) {
-                                fields.append("`");
-                            }
+                            fields.append(MetaData.escapeFieldName(fieldName));
                             if(!columns.isEmpty()) {
                                 fields.append(", ");
                             }

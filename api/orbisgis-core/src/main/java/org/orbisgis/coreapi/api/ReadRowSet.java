@@ -5,9 +5,12 @@ import org.orbisgis.progress.ProgressMonitor;
 
 import javax.sql.rowset.JdbcRowSet;
 import java.sql.SQLException;
+import java.util.concurrent.locks.Lock;
 
 /**
  * A ReadRowSet can be initialized using {@link JdbcRowSet#setCommand(String)}
+ * The rowset is state-full then it is advised to use {@link #getReadLock()} with
+ * {@link Lock#tryLock(long, java.util.concurrent.TimeUnit)} in order to avoid dead locks.
  * @author Nicolas Fortin
  */
 public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
@@ -45,4 +48,9 @@ public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
      * @return Corresponding {@link #getRow()} value or null if there is no such object in the table.
      */
     public Integer getRowId(Object primaryKeyRowValue);
+
+    /**
+     * @return The read lock on this result set
+     */
+    Lock getReadLock();
 }

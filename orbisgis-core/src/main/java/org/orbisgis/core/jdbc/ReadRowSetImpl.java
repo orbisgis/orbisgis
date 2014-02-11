@@ -17,6 +17,8 @@ import javax.sql.DataSource;
 import javax.sql.RowSet;
 import javax.sql.rowset.JdbcRowSet;
 import javax.sql.rowset.RowSetWarning;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -25,6 +27,8 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,6 +58,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private String select_fields = "*";
     private static final String H2_SYSTEM_PK_COLUMN = "_ROWID_";
     private int firstGeometryIndex = -1;
+    private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+    private final Lock readLock = rwl.writeLock(); // Read here is exclusive
 
     /**
      * Constructor, row set based on primary key, significant faster on large table
@@ -63,6 +69,11 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public ReadRowSetImpl(DataSource dataSource) {
         this.dataSource = dataSource;
         resultSetHolder = new ResultSetHolder(this);
+    }
+
+    @Override
+    public Lock getReadLock() {
+        return readLock;
     }
 
     private void cachePrimaryKey(ProgressMonitor pm) throws SQLException {
@@ -148,43 +159,41 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
      */
     protected void updateRowCache() throws SQLException {
         if(!cache.containsKey(rowId)) {
-            synchronized (resultSetHolder) {
-                try(Resource res = resultSetHolder.getResource()) {
-                    ResultSet rs = res.getResultSet();
-                    final int columnCount = getColumnCount();
-                    if(cachedColumnNames == null) {
-                        cachedColumnNames = new HashMap<>(columnCount);
-                        ResultSetMetaData metaData = rs.getMetaData();
-                        for(int idColumn=1; idColumn <= columnCount; idColumn++) {
-                            cachedColumnNames.put(metaData.getColumnName(idColumn).toUpperCase(), idColumn);
-                        }
+            try(Resource res = resultSetHolder.getResource()) {
+                ResultSet rs = res.getResultSet();
+                final int columnCount = getColumnCount();
+                if(cachedColumnNames == null) {
+                    cachedColumnNames = new HashMap<>(columnCount);
+                    ResultSetMetaData metaData = rs.getMetaData();
+                    for(int idColumn=1; idColumn <= columnCount; idColumn++) {
+                        cachedColumnNames.put(metaData.getColumnName(idColumn).toUpperCase(), idColumn);
                     }
-                    if(rowPk == null) {
-                        if(rs.absolute((int)rowId)) {
+                }
+                if(rowPk == null) {
+                    if(rs.absolute((int)rowId)) {
+                        Object[] row = new Object[columnCount];
+                        for(int idColumn=1; idColumn <= columnCount; idColumn++) {
+                            row[idColumn-1] = rs.getObject(idColumn);
+                        }
+                        cache.put(rowId, row);
+                    }
+                } else {
+                    // Acquire row values by using primary key
+                    try(Connection connection = dataSource.getConnection();
+                        PreparedStatement st = connection.prepareStatement(getCommand()+" WHERE "+pk_name+" = ?")) {
+                        if(!isUsePkRowLine()) {
+                            st.setObject(1, rowPk.get((int)rowId));
+                        } else {
+                            st.setObject(1, rowId);
+                        }
+                        try(ResultSet lineRs = st.executeQuery()) {
                             Object[] row = new Object[columnCount];
-                            for(int idColumn=1; idColumn <= columnCount; idColumn++) {
-                                row[idColumn-1] = rs.getObject(idColumn);
+                            if(lineRs.next()) {
+                                for(int idColumn=1; idColumn <= columnCount; idColumn++) {
+                                    row[idColumn-1] = lineRs.getObject(idColumn);
+                                }
                             }
                             cache.put(rowId, row);
-                        }
-                    } else {
-                        // Acquire row values by using primary key
-                        try(Connection connection = dataSource.getConnection();
-                            PreparedStatement st = connection.prepareStatement(getCommand()+" WHERE "+pk_name+" = ?")) {
-                            if(!isUsePkRowLine()) {
-                                st.setObject(1, rowPk.get((int)rowId));
-                            } else {
-                                st.setObject(1, rowId);
-                            }
-                            try(ResultSet lineRs = st.executeQuery()) {
-                                Object[] row = new Object[columnCount];
-                                if(lineRs.next()) {
-                                    for(int idColumn=1; idColumn <= columnCount; idColumn++) {
-                                        row[idColumn-1] = lineRs.getObject(idColumn);
-                                    }
-                                }
-                                cache.put(rowId, row);
-                            }
                         }
                     }
                 }
@@ -280,6 +289,13 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             }
         } else {
             resultSetHolder.setCommand(getCommand());
+            PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, resultSetHolder, "cancel");
+            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
+            try {
+                resultSetHolder.getResource(); // Long query
+            } finally {
+                pm.removePropertyChangeListener(listener);
+            }
         }
     }
 
@@ -309,12 +325,10 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     @Override
     public void close() throws SQLException {
         clearRowCache();
-        synchronized (resultSetHolder) {
-            try {
-                resultSetHolder.close();
-            } catch (Exception ex) {
-                throw new SQLException(ex);
-            }
+        try {
+            resultSetHolder.close();
+        } catch (Exception ex) {
+            throw new SQLException(ex);
         }
     }
 
@@ -339,28 +353,22 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public SQLWarning getWarnings() throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getWarnings();
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getWarnings();
         }
     }
 
     @Override
     public void clearWarnings() throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                res.getResultSet().clearWarnings();
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            res.getResultSet().clearWarnings();
         }
     }
 
     @Override
     public String getCursorName() throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getCursorName();
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getCursorName();
         }
     }
 
@@ -478,76 +486,60 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public int getType() throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getType();
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getType();
         }
     }
 
     @Override
     public int getConcurrency() throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getConcurrency();
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getConcurrency();
         }
     }
 
     @Override
     public boolean rowUpdated() throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().rowUpdated();
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().rowUpdated();
         }
     }
 
     @Override
     public boolean rowInserted() throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().rowInserted();
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().rowInserted();
         }
     }
 
     @Override
     public boolean rowDeleted() throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().rowDeleted();
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().rowDeleted();
         }
     }
 
     @Override
     public void refreshRow() throws SQLException {
-        synchronized (resultSetHolder) {
-            currentRow = null;
-            try(Resource res = resultSetHolder.getResource()) {
-                res.getResultSet().refreshRow();
-                moveCursorTo(rowId);
-            }
+        currentRow = null;
+        try(Resource res = resultSetHolder.getResource()) {
+            res.getResultSet().refreshRow();
+            moveCursorTo(rowId);
         }
     }
 
     @Override
     public Statement getStatement() throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getStatement();
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getStatement();
         }
     }
 
 
     @Override
     public RowId getRowId(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getRowId(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getRowId(i);
         }
     }
 
@@ -558,10 +550,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public int getHoldability() throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getHoldability();
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getHoldability();
         }
     }
 
@@ -607,21 +597,17 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public String getCatalogName(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().getCatalogName(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().getCatalogName(i);
         }
     }
 
     @Override
     public int getColumnCount() throws SQLException {
         if(cachedColumnCount == -1) {
-            synchronized (resultSetHolder) {
-                try(Resource res = resultSetHolder.getResource()) {
-                    cachedColumnCount = res.getResultSet().getMetaData().getColumnCount();
-                    return cachedColumnCount;
-                }
+            try(Resource res = resultSetHolder.getResource()) {
+                cachedColumnCount = res.getResultSet().getMetaData().getColumnCount();
+                return cachedColumnCount;
             }
         }
         return cachedColumnCount;
@@ -629,172 +615,134 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public boolean isAutoIncrement(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().isAutoIncrement(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().isAutoIncrement(i);
         }
     }
 
     @Override
     public boolean isCaseSensitive(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().isCaseSensitive(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().isCaseSensitive(i);
         }
     }
 
     @Override
     public boolean isSearchable(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().isSearchable(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().isSearchable(i);
         }
     }
 
     @Override
     public boolean isCurrency(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().isCurrency(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().isCurrency(i);
         }
     }
 
     @Override
     public int isNullable(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().isNullable(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().isNullable(i);
         }
     }
 
     @Override
     public boolean isSigned(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().isSigned(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().isSigned(i);
         }
     }
 
     @Override
     public int getColumnDisplaySize(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().getColumnDisplaySize(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().getColumnDisplaySize(i);
         }
     }
 
     @Override
     public String getColumnLabel(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().getColumnLabel(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().getColumnLabel(i);
         }
     }
 
     @Override
     public String getColumnName(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().getColumnName(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().getColumnName(i);
         }
     }
 
     @Override
     public String getSchemaName(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().getSchemaName(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().getSchemaName(i);
         }
     }
 
     @Override
     public int getPrecision(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().getPrecision(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().getPrecision(i);
         }
     }
 
     @Override
     public int getScale(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().getScale(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().getScale(i);
         }
     }
 
     @Override
     public String getTableName(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().getTableName(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().getTableName(i);
         }
     }
 
     @Override
     public int getColumnType(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().getColumnType(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().getColumnType(i);
         }
     }
 
     @Override
     public String getColumnTypeName(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().getColumnTypeName(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().getColumnTypeName(i);
         }
     }
 
     @Override
     public boolean isReadOnly(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().isReadOnly(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().isReadOnly(i);
         }
     }
 
     @Override
     public boolean isWritable(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().isWritable(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().isWritable(i);
         }
     }
 
     @Override
     public boolean isDefinitelyWritable(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().isDefinitelyWritable(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().isDefinitelyWritable(i);
         }
     }
 
     @Override
     public String getColumnClassName(int i) throws SQLException {
-        synchronized (resultSetHolder) {
-            try(Resource res = resultSetHolder.getResource()) {
-                return res.getResultSet().getMetaData().getColumnClassName(i);
-            }
+        try(Resource res = resultSetHolder.getResource()) {
+            return res.getResultSet().getMetaData().getColumnClassName(i);
         }
     }
 
@@ -1374,6 +1322,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         private long lastUsage = System.currentTimeMillis();
         private static final Logger LOGGER = Logger.getLogger(ResultSetHolder.class);
         private int openCount = 0;
+        private Statement cancelStatement;
 
         private ResultSetHolder(DataSource dataSource) {
             this.dataSource = dataSource;
@@ -1398,13 +1347,15 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             lastUsage = System.currentTimeMillis();
             status = STATUS.STARTED;
             try(Connection connection = dataSource.getConnection();
-            Statement st = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
-            ResultSet activeResultSet = st.executeQuery(command)) {
-                resultSet = activeResultSet;
-                status = STATUS.READY;
-                while(lastUsage + RESULT_SET_TIMEOUT > System.currentTimeMillis() || openCount != 0) {
-                    Thread.sleep(SLEEP_TIME);
+                Statement st = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY)) {
+                cancelStatement = st;
+                try(ResultSet activeResultSet = st.executeQuery(command)) {
+                    resultSet = activeResultSet;
+                    status = STATUS.READY;
+                    while(lastUsage + RESULT_SET_TIMEOUT > System.currentTimeMillis() || openCount != 0) {
+                        Thread.sleep(SLEEP_TIME);
+                    }
                 }
             } catch (Exception ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
@@ -1420,6 +1371,17 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         @Override
         public void close() throws Exception {
             lastUsage = 0;
+        }
+
+        /**
+         * {@link java.sql.Statement#cancel()}
+         * @throws SQLException
+         */
+        public void cancel() throws SQLException {
+            Statement cancelObj = cancelStatement;
+            if(cancelObj != null && !cancelObj.isClosed()) {
+                cancelObj.cancel();
+            }
         }
 
         /**

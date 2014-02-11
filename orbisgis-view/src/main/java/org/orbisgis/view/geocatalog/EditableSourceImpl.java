@@ -70,7 +70,7 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
                     + "not be null");
         }
         this.dataManager = dataManager;
-        this.tableReference = tableReference;
+        this.tableReference = TableLocation.parse(tableReference).toString();
         setId(tableReference);
     }
 
