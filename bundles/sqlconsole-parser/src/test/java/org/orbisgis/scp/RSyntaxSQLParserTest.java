@@ -6,11 +6,15 @@ import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
 import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
 import org.h2.util.OsgiDataSourceFactory;
 import org.junit.Test;
+import sun.awt.HeadlessToolkit;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * @author Nicolas Fortin
@@ -20,6 +24,7 @@ public class RSyntaxSQLParserTest {
 
     @Test //(timeout = 500)
     public void testParseException() throws Exception {
+        assumeTrue(!GraphicsEnvironment.isHeadless());
         // Create H2 DataSource
         org.h2.Driver driver = org.h2.Driver.load();
         OsgiDataSourceFactory dataSourceFactory = new OsgiDataSourceFactory(driver);
@@ -64,6 +69,7 @@ public class RSyntaxSQLParserTest {
 
     @Test //(timeout = 500)
     public void testBounds() throws Exception {
+        assumeTrue(!GraphicsEnvironment.isHeadless());
         // Create H2 DataSource
         org.h2.Driver driver = org.h2.Driver.load();
         OsgiDataSourceFactory dataSourceFactory = new OsgiDataSourceFactory(driver);

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * @author Nicolas Fortin
@@ -20,6 +21,7 @@ public class SQLCompletionProviderTest {
 
     @Test //(timeout = 500)
     public void testBounds() throws Exception {
+        assumeTrue(!GraphicsEnvironment.isHeadless());
         // Create H2 DataSource
         org.h2.Driver driver = org.h2.Driver.load();
         OsgiDataSourceFactory dataSourceFactory = new OsgiDataSourceFactory(driver);
