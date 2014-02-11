@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.table.jobs;
 
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -63,7 +64,12 @@ public class SearchJob implements BackgroundJob {
         private void runFilter(ProgressMonitor progress) {
                 final ProgressMonitor pm = progress.startTask(getTaskName(), 3);
                 //Launch filter initialisation
-                activeFilter.initialize(pm, source);
+                try {
+                    activeFilter.initialize(pm, source);
+                } catch (SQLException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                    return;
+                }
                 pm.progressTo(1);  // If filter does not handle progress monitor
                 //Iterate on rows
                 final IntegerUnion nextViewSelection = new IntegerUnion();
