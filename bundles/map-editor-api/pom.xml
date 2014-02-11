@@ -37,9 +37,9 @@
                 </executions>
                 <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
-                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/mapeditorapi/translation/</poDirectory>
+                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/mapeditorapi/</poDirectory>
                     <targetBundle>org.orbisgis.mapeditorapi.Messages</targetBundle>
-                    <keywords>-ktr</keywords>
+                    <keywords>-ktr -kmarktr</keywords>
                     <outputFormat>properties</outputFormat>
                 </configuration>
             </plugin>
