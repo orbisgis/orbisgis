@@ -57,7 +57,7 @@
                 </executions>
                 <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
-                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/toc/translation/</poDirectory>
+                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/toc/</poDirectory>
                     <targetBundle>org.orbisgis.toc.Messages</targetBundle>
                     <keywords>-ktr</keywords>
                     <outputFormat>properties</outputFormat>
