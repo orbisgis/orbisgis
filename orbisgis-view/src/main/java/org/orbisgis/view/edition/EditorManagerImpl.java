@@ -56,8 +56,17 @@ public class EditorManagerImpl implements org.orbisgis.viewapi.edition.EditorMan
         public EditorManagerImpl(DockingManager dockingManager) {
                 this.dockingManager = dockingManager;
         }
-    
-    
+
+        @Override
+        public void addEditor(EditorDockable editor) {
+            dockingManager.addDockingPanel(editor);
+        }
+
+        @Override
+        public void removeEditor(EditorDockable editor) {
+            dockingManager.removeDockingPanel(editor.getDockingParameters().getName());
+        }
+
         @Override
         public void addEditorFactory(EditorFactory editorFactory) {
                 factories.add(editorFactory);
