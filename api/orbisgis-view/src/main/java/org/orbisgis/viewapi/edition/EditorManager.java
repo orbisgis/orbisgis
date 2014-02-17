@@ -20,6 +20,18 @@ public interface EditorManager {
     void removeEditorFactory(EditorFactory editorFactory);
 
     /**
+     * Add single instance editor.Only one frame.The user cannot close it. just hidden by user.
+     * @param editor EditorDockable instance
+     */
+    void addEditor(EditorDockable editor);
+
+    /**
+     * Remove single instance edito
+     * @param editor EditorDockable instance
+     */
+    void removeEditor(EditorDockable editor);
+
+    /**
      * Return all editor's editable
      * @return Collection of EditableElement returned by editor.getEditableElement()
      */

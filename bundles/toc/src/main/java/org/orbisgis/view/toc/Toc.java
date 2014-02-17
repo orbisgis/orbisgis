@@ -142,8 +142,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         public Toc(EditorManager editorManager) {
                 super(new BorderLayout());
                 this.editorManager = editorManager;
-                // Find a map element among other editors
-                setEditableElement(MapElement.fetchFirstMapElement(editorManager));
                 //Set docking parameters
                 dockingPanelParameters = new DockingPanelParameters();
                 dockingPanelParameters.setName("toc");
@@ -154,8 +152,10 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 //Initialise an empty tree
                 add(new JScrollPane(makeTree()));
                 // Fetch Map
-
+                // Find a map element among other editors
+                setEditableElement(MapElement.fetchFirstMapElement(editorManager));
         }
+
         private void initTitleActions() {
                 List<Action> tools = new ArrayList<Action>();
                 saveAction = new DefaultAction("SAVE_MAP",I18N.tr("Save"),

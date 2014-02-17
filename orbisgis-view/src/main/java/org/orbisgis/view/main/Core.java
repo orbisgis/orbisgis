@@ -59,6 +59,7 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
 import org.orbisgis.view.docking.internals.EditorFactoryTracker;
+import org.orbisgis.view.docking.internals.EditorPanelTracker;
 import org.orbisgis.view.edition.EditorManagerImpl;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
@@ -120,6 +121,7 @@ public class Core {
     private PluginHost pluginFramework;
     private DockingPanelTracker singleFrameTracker;
     private EditorFactoryTracker editorFactoryTracker;
+    private EditorPanelTracker editorTracker;
     private MenuItemServiceTracker<MainWindow, ToolBarAction> toolBarTracker;
 
     /**
@@ -370,6 +372,8 @@ public class Core {
         pluginFramework.getHostBundleContext().registerService(org.orbisgis.viewapi.edition.EditorManager.class, editors, null);
         editorFactoryTracker = new EditorFactoryTracker(pluginFramework.getHostBundleContext(), editors);
         editorFactoryTracker.open();
+        editorTracker = new EditorPanelTracker(pluginFramework.getHostBundleContext(), editors);
+        editorTracker.open();
     }
 
     /**
@@ -539,6 +543,9 @@ public class Core {
         }
         if(editorFactoryTracker != null) {
             editorFactoryTracker.close();
+        }
+        if(editorTracker != null) {
+            editorTracker.close();
         }
         if (toolBarTracker != null) {
             toolBarTracker.close();

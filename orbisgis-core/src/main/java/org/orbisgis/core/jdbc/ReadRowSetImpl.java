@@ -1299,7 +1299,11 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     @Override
     public Integer getRowId(Object primaryKeyRowValue) {
         if(isUsePkRowLine()) {
-            return (int)(primaryKeyRowValue);
+            if(primaryKeyRowValue instanceof Number) {
+                return ((Number) primaryKeyRowValue).intValue();
+            } else {
+                throw new IllegalArgumentException("Unexpected column key value, not an int.");
+            }
         } else if(!pk_name.isEmpty()) {
             return rowPk.getKey(primaryKeyRowValue);
         } else {
