@@ -348,6 +348,7 @@ public class Core {
                 BackgroundManager.class,
                 I18N.tr("Execute tasks in background processes, showing progress bars. Gives access to the job queue"),
                 backgroundManager);
+        pluginFramework.getHostBundleContext().registerService(BackgroundManager.class, backgroundManager, null);
     }
 
     /**
