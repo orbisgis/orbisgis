@@ -28,23 +28,6 @@
  */
 package org.orbisgis.view.sqlconsole.ui;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.beans.EventHandler;
-import java.io.IOException;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.Timer;
-import javax.swing.event.CaretListener;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -61,14 +44,26 @@ import org.orbisgis.view.components.findReplace.FindReplaceDialog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.sqlconsole.actions.ExecuteScriptProcess;
-import org.orbisgis.view.util.CommentUtil;
 import org.orbisgis.view.sqlconsole.blockComment.QuoteSQL;
 import org.orbisgis.view.sqlconsole.codereformat.CodeReformator;
 import org.orbisgis.view.sqlconsole.codereformat.CommentSpec;
 import org.orbisgis.view.sqlconsole.language.SQLLanguageSupport;
 import org.orbisgis.view.sqlconsole.ui.ext.SQLAction;
+import org.orbisgis.view.util.CommentUtil;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.swing.*;
+import javax.swing.event.CaretListener;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.beans.EventHandler;
+import java.io.IOException;
 
 /**
  * SQL Panel that contain a RSyntaxTextArea
@@ -251,6 +246,7 @@ public class SQLConsolePanel extends JPanel {
                         scriptPanel.setLineWrap(true);
                         scriptPanel.setClearWhitespaceLinesEnabled(true);
                         scriptPanel.setMarkOccurrences(false);
+                        scriptPanel.setTabsEmulated(true);
                         actions.setAccelerators(scriptPanel);
                         lang = new SQLLanguageSupport();
                         lang.install(scriptPanel);
