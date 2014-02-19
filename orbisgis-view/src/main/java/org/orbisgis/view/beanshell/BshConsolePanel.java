@@ -30,15 +30,6 @@ package org.orbisgis.view.beanshell;
 
 import bsh.EvalError;
 import bsh.Interpreter;
-import java.awt.BorderLayout;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.beans.EventHandler;
-import java.io.*;
-import javax.swing.*;
-import javax.swing.event.CaretListener;
-import javax.swing.event.DocumentListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -67,6 +58,19 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.util.CommentUtil;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.swing.*;
+import javax.swing.event.CaretListener;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.beans.EventHandler;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 
 /**
  * BeanShell console GUI
@@ -374,6 +378,7 @@ public final class BshConsolePanel extends JPanel {
                         scriptPanel.addCaretListener(EventHandler.create(CaretListener.class,this,"onScriptPanelCaretUpdate"));
                         scriptPanel.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this, "onUserSelectionChange"));
                         scriptPanel.clearParsers();
+                        scriptPanel.setTabsEmulated(true);
                         actions.setAccelerators(scriptPanel);
                         // Actions will be set on the scriptPanel PopupMenu
                         scriptPanel.getPopupMenu().addSeparator();
