@@ -28,6 +28,9 @@
 package org.orbisgis.view.toc.actions.cui;
 
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.GeometryTypeCodes;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.legend.thematic.categorize.CategorizedArea;
 import org.orbisgis.legend.thematic.categorize.CategorizedLine;
@@ -54,6 +57,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -109,32 +114,21 @@ public class LegendUIChooser implements UIPanel {
      */
     private void initNamesList(ILayer layer) {
         // Recover the geometry type of this ILayer.
-        DataSource ds = layer.getDataSource();
-        int fieldsCount = 0;
-        Type geomType = null;
-        try {
-            geomType = ds.getMetadata().getFieldType(ds.getSpatialFieldIndex());
-            //Used to filter a layer that contains only geometry columns (one or more)
-            Type[] fieldsTypes = MetadataUtilities.getFieldTypes(ds.getMetadata());            
-            for (Type type : fieldsTypes) {
-                if(type.getTypeCode() == Type.GEOMETRY){
-                    fieldsCount--;
-                }
-                else {
-                    fieldsCount++;
-                }
-            }
-        } catch (DriverException e) {
+        DataSource ds = layer.getDataManager().getDataSource();
+        int geometryColumnsCount = 0;
+        int geomType = GeometryTypeCodes.GEOMETRY;
+        try(Connection connection = ds.getConnection()) {
+            TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
+            geomType = SFSUtilities.getGeometryType(connection, tableLocation, "");
+            geometryColumnsCount = SFSUtilities.getGeometryFields(connection, tableLocation).size();
+        } catch (SQLException e) {
             LOGGER.warn("Could not determine the specific geometry type for " +
                     "this layer.");
         }
-        // If it could not be determined, assume all simple geometries.
-        // Otherwise, convert to a simple geometry.
-        int simpleGeomType = (geomType == null)
-            ? SimpleGeometryType.ALL
-            : SimpleGeometryType.getSimpleType(geomType);
+        // Convert to a simple geometry.
+        int simpleGeomType = SimpleGeometryType.getSimpleType(geomType);
         // Fill the names array.
-        ArrayList<String> typeNames = new ArrayList<String>();
+        ArrayList<String> typeNames = new ArrayList<>();
         final int lineOrPolygon =
                 SimpleGeometryType.LINE| SimpleGeometryType.POLYGON;
         if ((simpleGeomType & SimpleGeometryType.ALL) != 0) {
@@ -147,7 +141,7 @@ public class LegendUIChooser implements UIPanel {
             }
             //Do not display the thematic maps that need an attribute if there is
             //only one geometry
-            if(fieldsCount>-1){
+            if(geometryColumnsCount>-1){
             typeNames.add(RecodedPoint.NAME);
             if ((simpleGeomType & lineOrPolygon) != 0) {
                 typeNames.add(RecodedLine.NAME);
