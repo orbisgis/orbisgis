@@ -49,15 +49,16 @@ import java.util.List;
  */
 public class MapsManagerPersistence implements DockingPanelLayout, Serializable, PropertyHost {
     private static final long serialVersionUID = 2L;
+    private static final String ORBISGIS_MAPCATALOG_SERVER= "http://services.orbisgis.org/map";
     /**
-     * Property of server uri list {@link org.orbisgis.view.map.MapEditorPersistence#getMapCatalogUrlList()}
+     * Property of server uri list {@link org.orbisgis.mapeditor.map.MapEditorPersistence#getMapsManagerPersistence()}
      */
     public static final String PROP_SERVER_URI_LIST = "mapCatalogUrlList";
     public static final String PROP_FOLDER_LIST = "mapCatalogUrlList";
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
-    private List<String> mapCatalogUrlList = new ArrayList<String>();
-    private List<String> mapCatalogFolderList = new ArrayList<String>();
+    private List<String> mapCatalogUrlList = new ArrayList<>();
+    private List<String> mapCatalogFolderList = new ArrayList<>();
 
     // XML consts
     private static final String URL_LIST_NODE = "mapCatalogUrlList";
@@ -70,17 +71,20 @@ public class MapsManagerPersistence implements DockingPanelLayout, Serializable,
 
     /**
      * Set the map context server list
-     * @param mapCatalogUrlList
+     * @param urlList Remote map catalog urls
      */
-    public void setMapCatalogUrlList(List<String> mapCatalogUrlList) {
-        List<String> oldList = this.mapCatalogUrlList;
-        this.mapCatalogUrlList = new ArrayList<String>(mapCatalogUrlList);
-        propertyChangeSupport.firePropertyChange(PROP_SERVER_URI_LIST,oldList,mapCatalogUrlList);
+    public void setMapCatalogUrlList(List<String> urlList) {
+        List<String> oldList = mapCatalogUrlList;
+        mapCatalogUrlList = new ArrayList<>(urlList);
+        if(mapCatalogUrlList.isEmpty()) {
+            mapCatalogUrlList.add(ORBISGIS_MAPCATALOG_SERVER);
+        }
+        propertyChangeSupport.firePropertyChange(PROP_SERVER_URI_LIST,oldList,getMapCatalogUrlList());
     }
 
     /**
      * Retrieve the list of map context
-     * @return
+     * @return Remote map catalog urls
      */
     public List<String> getMapCatalogUrlList() {
         return Collections.unmodifiableList(mapCatalogUrlList);
@@ -120,7 +124,7 @@ public class MapsManagerPersistence implements DockingPanelLayout, Serializable,
         // Check version
         long version = in.readLong();
         if(version>=1) {
-            List<String> urlList = new ArrayList<String>();
+            List<String> urlList = new ArrayList<>();
             if(version==serialVersionUID) {
                 int size = in.readInt();
                 for(int i=0;i<size;i++) {
@@ -130,7 +134,7 @@ public class MapsManagerPersistence implements DockingPanelLayout, Serializable,
             setMapCatalogUrlList(urlList);
             if(version >= 2) {
                 int size = in.readInt();
-                List<String> folderList = new ArrayList<String>();
+                List<String> folderList = new ArrayList<>();
                 for(int i=0;i<size;i++) {
                     folderList.add(in.readUTF());
                 }
@@ -156,7 +160,7 @@ public class MapsManagerPersistence implements DockingPanelLayout, Serializable,
     public void readXML(XElement element) {
         XElement managerNode = element.getElement(URL_LIST_NODE);
         long version = managerNode.getLong("serialVersionUID");
-        List<String> urlList = new ArrayList<String>();
+        List<String> urlList = new ArrayList<>();
         if(version>=1) {
             for(XElement map : managerNode.children()) {
                 if(map.getName().equals(URL_NODE)) {
@@ -164,7 +168,7 @@ public class MapsManagerPersistence implements DockingPanelLayout, Serializable,
                 }
             }
             if(version >= 2) {
-                List<String> folderList = new ArrayList<String>();
+                List<String> folderList = new ArrayList<>();
                 XElement folderNode = element.getElement(FOLDER_LIST_NODE);
                 for(XElement map : folderNode.children()) {
                     if(map.getName().equals(FOLDER_NODE)) {
