@@ -1,0 +1,2518 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# gwendall.petit <gwendall.petit@ec-nantes.fr>, 2013-2014
+msgid ""
+msgstr ""
+"Project-Id-Version: OrbisGIS\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-02-24 16:54+0100\n"
+"PO-Revision-Date: 2014-02-24 16:54+0100\n"
+"Language-Team: French (http://www.transifex.com/projects/p/orbisgis/language/"
+"fr/)\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: tr;marktr\n"
+"X-Poedit-Basepath: ./\n"
+"X-Poedit-SearchPath-0: ../../../../java\n"
+
+#: ../../../../java/org/orbisgis/view/toc/TocTreeNodeLayer.java:169
+msgid "Cannot change the layer name"
+msgstr "Impossible de changer le nom de la couche"
+
+#: ../../../../java/org/orbisgis/view/toc/TocTransferHandler.java:121
+msgid "Can't recognize this flavour"
+msgstr "Incapable de reconnaître cette saveur"
+
+#: ../../../../java/org/orbisgis/view/toc/TocTransferHandler.java:124
+msgid "Problem during the transfer"
+msgstr "Problème lors du transfert"
+
+#: ../../../../java/org/orbisgis/view/toc/TocRenderer.java:109
+#, java-format
+msgid "Layer:{0} DataSource :({1})"
+msgstr "Couche : {0} - Source de données : ({1})"
+
+#: ../../../../java/org/orbisgis/view/toc/TocAbstractRenderer.java:81
+#, java-format
+msgid "Unable to find appropriate icon for typeCode {0}"
+msgstr "Incapable de trouver l’icône approprié pour le code de type {0}"
+
+#: ../../../../java/org/orbisgis/view/toc/TocAbstractRenderer.java:97
+msgid "Error while drawing the Toc tree"
+msgstr "Erreur lors du dessin de l'arbre du TOC"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:163
+msgid "Toc"
+msgstr "Toc"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:176
+msgid "Save"
+msgstr "Sauver"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:177
+msgid "Save the Map"
+msgstr "Sauver la carte"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:186
+msgid "Zoom to"
+msgstr "Zoomer sur la couche"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:187
+msgid "Zoom to the layer bounding box"
+msgstr "Zoomer sur l'emprise de la couche"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:191
+msgid "Zoom to selection"
+msgstr "Zoomer sur la sélection"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:191
+msgid "Zoom to selected geometries"
+msgstr "Zoomer sur les géométries sélectionnées"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:197
+msgid "Clear selection"
+msgstr "Déselectionner"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:197
+msgid "Clear the selected geometries"
+msgstr "Désélectionner les géométries"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:203
+msgid "Import style"
+msgstr "Importer un style"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:203
+msgid "Import a style from a file."
+msgstr "Importer un style à partir d'un fichier."
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:211
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:264
+msgid "Create a thematic map"
+msgstr "Créer une carte thématique"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:211
+msgid "Add a new legend."
+msgstr "Ajouter une nouvelle analyse."
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:219
+msgid "Open the attributes"
+msgstr "Ouvrir les attributs"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:219
+msgid "Open a spreadsheet view of the attributes."
+msgstr "Ouvrir la table attributaire."
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:227
+msgid "Start editing"
+msgstr "Démarrer l'édition"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:227
+msgid "The edit geometry toolbar will update this layer's data source."
+msgstr "La barre d'outil d'édition de géométrie va mettre à jour cette couche."
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:233
+msgid "Stop editing"
+msgstr "Arrêter l'édition"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:233
+msgid "Close the edit geometry toolbar."
+msgstr "Fermer la barre d'outil d'édition de géométrie"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:239
+msgid "Save modifications"
+msgstr "Sauver les modifications"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:239
+msgid "Apply the data source modifications"
+msgstr "Appliquer les modifications de la source de données"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:244
+msgid "Cancel modifications"
+msgstr "Annuler les modifications"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:244
+msgid "Undo all data source modifications"
+msgstr "Annuler toutes les modifications de la source de données"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:251
+msgid "Add layer group"
+msgstr "Ajouter un groupe de couche"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:251
+msgid "Add layer group to the map context"
+msgstr "Ajouter le groupe de couche au contexte cartographique"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:258
+msgid "Remove layer"
+msgstr "Supprimer la couche"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:259
+msgid "Remove the layer from the map context"
+msgstr "Supprimer la couche du contexte cartographique"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:264
+msgid "Add a legend in this style"
+msgstr "Ajouter une analyse dans ce style"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:268
+msgid "Simple style editor"
+msgstr "Éditeur de style simple"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:268
+msgid "Open the simple editor for SE styles"
+msgstr "Ouvrir l'éditeur de style SE simple"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:272
+msgid "Remove style"
+msgstr "Supprimer le style"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:272
+msgid "Remove this style from the associated layer."
+msgstr "Supprimer ce style de la couche associée"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:276
+msgid "Export style"
+msgstr "Exporter le style"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:276
+msgid "Export this style from the associated layer."
+msgstr "Exporter ce style provenant de la couche"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:485
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:507
+#, java-format
+msgid "Cannot drop layer on {0}"
+msgstr "Impossible d''enlever la couche sur {0}"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:510
+#, java-format
+msgid "Drop unknown editable of type : {0}"
+msgstr "Document inconnu de type : {0}"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:749
+#, java-format
+msgid "Can not add a LayerCollection : {0}"
+msgstr "Impossible d''ajouter une collection de couche : {0}"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:763
+msgid "Cannot delete layer"
+msgstr "Impossible de supprimer la couche"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:966
+msgid ""
+"You produced an invalid style while copying a valid one. Things are getting "
+"really wrong here."
+msgstr ""
+"Vous avez produit un style invalide lors de la copie d'un style valide. Les "
+"choses ne s'arrangent pas ici."
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:975
+msgid "Styles can be set only on vector layers."
+msgstr "Les styles ne peuvent être appliqués que sur des couches vectorielles."
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:980
+msgid "The style you're trying to edit is not valid !"
+msgstr "Le style que vous essayez d'éditer n'est pas valide !"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:982
+msgid "An error occurred while processing the DataSource"
+msgstr "Une erreur est apparue lors du traitement de la source de données"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:984
+msgid ""
+"Cannot create the user interface for this style. \n"
+"Please uses the advanced style editor."
+msgstr ""
+"Impossible de créer l'interface graphique pour ce style. \n"
+"Veuillez utiliser l'éditeur de style avancé."
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:1155
+msgid "Cannot add the layer to the destination"
+msgstr "Impossible d'ajouter la couche vers la destination"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:1168
+msgid "Load the data source droped into the toc."
+msgstr "Chargement de la source de donnée."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:186
+msgid "Add or select a legend."
+msgstr "Ajouter ou sélectionner une légende."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:468
+#, java-format
+msgid "Simple Style Editor - {0}"
+msgstr "Éditeur de style simple - {0}"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:474
+msgid "You must create at least one legend"
+msgstr "Vous devez créer au moins une légende"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendTree.java:322
+msgid "Up"
+msgstr "Haut"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendTree.java:330
+msgid "Down"
+msgstr "Bas"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendTree.java:338
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/TablePanel.java:168
+msgid "Add"
+msgstr "Ajouter"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendTree.java:347
+msgid "Delete"
+msgstr "Supprimer"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendTree.java:355
+msgid "Rename"
+msgstr "Renommer"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendTree.java:449
+msgid "Choose a name for your rule"
+msgstr "Choisissez un nom pour votre règle"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendTree.java:450
+msgid "Name of the Rule : "
+msgstr "Nom de la règle :"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendTree.java:457
+msgid "Rule name cannot be null or empty."
+msgstr "Le nom de règle ne peut pas être null ou vide."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:260
+msgid "Couldn't find file"
+msgstr "Incapable de trouver le fichier"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:274
+msgid "Select Legend"
+msgstr "Sélectionner la légende"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:280
+msgid "You must select a legend."
+msgstr "Vous devez sélectionner une légende."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/ColorConfigurationPanel.java:118
+msgid "Gradient "
+msgstr "Gradient "
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/ColorConfigurationPanel.java:121
+msgid " to "
+msgstr "vers"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/DashArrayField.java:77
+msgid "Could not validate your input."
+msgstr "Impossible de valider votre entrée."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/DescriptionComponents.java:35
+msgid "Locale"
+msgstr "Langue"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/DescriptionComponents.java:36
+msgid "Title"
+msgstr "Titre"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/DescriptionComponents.java:37
+msgid "Abstract"
+msgstr "Résumé"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/OnVertexOnInteriorButtonGroup.java:57
+msgid "Vertex"
+msgstr "Sommet"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/OnVertexOnInteriorButtonGroup.java:58
+msgid "Interior"
+msgstr "Intérieur"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/AbsFieldsComboBox.java:103
+msgid "TYPE_NAME"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/AbsFieldsComboBox.java:104
+msgid "COLUMN_NAME"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/PreviewPanel.java:54
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/model/TableModelUniqueValue.java:66
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/model/TableModelInterval.java:99
+msgid "Preview"
+msgstr "Prévisualisation"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalPointPanel.java:125
+msgid "Max. size"
+msgstr "Taille Max."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalPointPanel.java:128
+msgid "Min. size"
+msgstr "Taille Min."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsOptionalPanel.java:76
+msgid "Enable"
+msgstr "Permettre"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:49
+msgid "Opacity"
+msgstr "Opacité"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:50
+msgid "Width"
+msgstr "Largeur"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:51
+msgid "Height"
+msgstr "Hauteur"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:52
+msgid "Symbol"
+msgstr "Symbole"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:53
+msgid "Dash array"
+msgstr "Tiret"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:54
+msgid "<html><b>Numeric field</b></html>"
+msgstr "<html><b>Champ numérique</b></html>"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:55
+msgid "<html><b>Nonspatial field</b></html>"
+msgstr "<html><b>Champ non spatial</b></html>"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:56
+msgid "Line width unit"
+msgstr "Unité de la largeur de ligne"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:57
+msgid "Symbol size unit"
+msgstr "Unité de la taille du symbole"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:59
+msgid "<html><p style=\"text-align:right\">Place symbol<br>on</p></html>"
+msgstr ""
+"<html><p style=\"text-align:right\">Placer le symbole<br>sur</p></html>"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/TablePanel.java:174
+msgid "Remove"
+msgstr "Supprimer"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/SettingsPanel.java:109
+msgid "General settings"
+msgstr "Réglages généraux"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/SettingsPanel.java:130
+msgid "Fallback symbol"
+msgstr "Symbole par défaut"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalLinePanel.java:118
+msgid "Color"
+msgstr "Couleur"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalLinePanel.java:124
+msgid "Max width"
+msgstr "Largeur Max."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalLinePanel.java:127
+msgid "Min width"
+msgstr "Largeur Min."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:151
+msgid "Can't build the analysis with an accurate comparator."
+msgstr "Impossible de construire l'analyse avec un comparateur précis."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:182
+msgid "Use the fallback color"
+msgstr "Utiliser la couleur par défaut"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:186
+msgid "Use a color scheme:"
+msgstr "Utiliser un jeu de couleur :"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:202
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:138
+msgid "Create"
+msgstr "Créer"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:231
+msgid "Unique value classification"
+msgstr "Classification de valeur unique"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:301
+msgid "Retrieving classes"
+msgstr "Récupération des classes"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:320
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:124
+msgid "The application has ended unexpectedly"
+msgstr "L'application a terminé de façon inattendue"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:375
+msgid "Continue ?"
+msgstr "Continuer ?"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:387
+msgid "<html><p>The analysis seems to generate more than "
+msgstr "<html><p>L'analyse semble générer plus de "
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:388
+msgid ""
+" different values...</p><p>Are you sure you want to continue ?</p></html>"
+msgstr ""
+" différentes valeurs...</p><p>Êtes-vous sûr de vouloir continuer ?</p></html>"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlCategorizedLine.java:166
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRecodedLine.java:170
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlCategorizedPoint.java:174
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlCategorizedArea.java:172
+msgid "You must use recognized RecodedLine instances in this panel."
+msgstr ""
+"Vous devez utiliser une instance reconnue de \"RecodedLine\" dans ce "
+"panneau. "
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:94
+msgid "Rule settings"
+msgstr "Réglages de la règle"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:96
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlStyle.java:77
+msgid "Name"
+msgstr "Nom"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:117
+msgid "Min. scale"
+msgstr "Echélle Min."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:123
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:140
+msgid "Current"
+msgstr "Courant"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:136
+msgid "Max. scale"
+msgstr "Echelle Max."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:229
+msgid "Min. scale is not a valid number"
+msgstr "L'échelle minimale n'est pas un chiffre valide"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:238
+msgid "Max. scale is not a valid number"
+msgstr "L'échelle maximale n'est pas un chiffre valide"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlStyle.java:75
+msgid "Style settings"
+msgstr "Réglages du style"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRecodedArea.java:191
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRecodedPoint.java:184
+msgid "You must use recognized RecodedArea instances in this panel."
+msgstr ""
+"Vous devez utiliser une instance reconnue de \"RecodedArea\" dans ce "
+"panneau. "
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlNonClassification.java:48
+msgid "Border settings"
+msgstr "Paramètres du contour"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlNonClassification.java:49
+msgid "Fill settings"
+msgstr "Paramètres du remplissage"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlNonClassification.java:50
+msgid "Mark settings"
+msgstr "Paramètres du symbole"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlProportionalPointSE.java:204
+msgid "Stroke and fill settings"
+msgstr "Réglages de bordure et de remplissage"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractTableAnalysis.java:81
+msgid "Enable border"
+msgstr "Activer la bordure"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractTableAnalysis.java:82
+msgid "Classification settings"
+msgstr "Paramètres de la classification"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:112
+msgid "Interval classification"
+msgstr "Classification d'intervalle"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:147
+msgid "Method"
+msgstr "Méthode"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:149
+msgid "Classes"
+msgstr "Classes"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:161
+msgid "Color scheme:"
+msgstr "Jeu de couleurs :"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlUniqueLineSE.java:50
+msgid "Line settings"
+msgstr "Paramètres de la ligne"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/model/TableModelUniqueValue.java:64
+msgid "Value"
+msgstr "Valeur"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/model/TableModelInterval.java:97
+msgid "Threshold"
+msgstr "Seuil"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/model/TableModelInterval.java:101
+msgid "Label"
+msgstr "Label"
+
+#: ../../../../java/org/orbisgis/view/toc/wrapper/RuleWrapper.java:252
+#, java-format
+msgid "Min scale greater than max scale in rule {0}."
+msgstr ""
+"L'échelle minimale est supérieur à l'échelle maximale dans la règle {0}"
+
+#~ msgid "Fatal error on the job named {0}"
+#~ msgstr "Erreur fatale lors du processus {0}"
+
+#~ msgid "Progressing..."
+#~ msgstr "Progression..."
+
+#~ msgid "Invalid MultiLineString"
+#~ msgstr "Multi-ligne invalide"
+
+#~ msgid "The geometry is not valid"
+#~ msgstr "La géométrie n'est pas valide"
+
+#~ msgid "Cannot remove a vertex from a point geometry"
+#~ msgstr "Impossible de supprimer un sommet à une géométrie de type point"
+
+#~ msgid "Invalid multipolygon"
+#~ msgstr "Multi-polygone invalide"
+
+#~ msgid "Invalid geometry. Too few vertex"
+#~ msgstr "Géométrie invalide. Trop peu de sommet"
+
+#~ msgid "The ToolManager cannot listen to source modifications"
+#~ msgstr "Le manager d'outil ne peut pas écouter les modifications de source"
+
+#~ msgid "Error while drawing the feature, "
+#~ msgstr "Erreur pendant le dessin de l'objet,"
+
+#~ msgid "Error while accessing data, "
+#~ msgstr "Erreur pendant l'accès à la donnée,"
+
+#~ msgid "The current tool is not enabled"
+#~ msgstr "L'outil courant n'est pas activé"
+
+#~ msgid "Error in the tool."
+#~ msgstr "Erreur dans l'outil."
+
+#~ msgid "Cannot recalculate the handlers"
+#~ msgstr "Impossible de calculer les gestionnaires"
+
+#~ msgid "Invalid MultiPoint"
+#~ msgstr "Multi-point invalide"
+
+#~ msgid "The MapEditor cannot listen to source modifications"
+#~ msgstr ""
+#~ "L'éditeur de carte ne peut pas écouter les modifications de la source"
+
+#~ msgid "Drawing"
+#~ msgstr "Dessin"
+
+#~ msgid "Tool error {0}"
+#~ msgstr "Erreur d''outil {0}"
+
+#~ msgid "Unable to compute the zoom extent"
+#~ msgstr "Impossible de réaliser le zoom étendu"
+
+#~ msgid "Compute envelope of {0}"
+#~ msgstr "Calculer l''enveloppe de {0}"
+
+#~ msgid "Zoom to the selected geometries"
+#~ msgstr "Zoomer sur les géométries sélectionnées"
+
+#~ msgid "Open the map context"
+#~ msgstr "Ouvrir le contexte cartographique"
+
+#~ msgid "Create a datasource from the current selection"
+#~ msgstr "Créer une source de donnée à partir de la sélection courante"
+
+#~ msgid "{0}_selection"
+#~ msgstr "{0}_selection"
+
+#~ msgid "{0}_selection_{1}"
+#~ msgstr "{0}_selection_{1}"
+
+#~ msgid "New name for the datasource:"
+#~ msgstr "Nom de la nouvelle donnée :"
+
+#~ msgid "You must enter a non-empty name."
+#~ msgstr "Vous devez un renseigner un nom non vide."
+
+#~ msgid "A datasource with that name already exists."
+#~ msgstr "Une source de donnée avec ce nom existe déjà."
+
+#~ msgid "Change coordinate reference system"
+#~ msgstr "Changer le système de coordonnée de référence"
+
+#~ msgid "Scale :"
+#~ msgstr "Échelle :"
+
+#~ msgid "Projection : {0}"
+#~ msgstr "Projection : {0}"
+
+#~ msgid "X:{0} Y:{1}"
+#~ msgstr "X:{0} Y:{1}"
+
+#~ msgid "1:{0}"
+#~ msgstr "1:{0}"
+
+#~ msgid "The format of a scale is 1:number"
+#~ msgstr "Le format de l'échelle est 1:nombre"
+
+#~ msgid "The only accepted value on nominator is 1"
+#~ msgstr "La seule valeur de nominateur acceptée est 1"
+
+#~ msgid ""
+#~ "The saved map context cannot be read, starting with an empty map context."
+#~ msgstr ""
+#~ "Le contexte cartographique ne peut pas être lu. Démarrage avec une carte "
+#~ "vide."
+
+#~ msgid ""
+#~ "Some layers use temporary data source, are you sure to save this map and "
+#~ "loose layers with temporary data sources ?"
+#~ msgstr ""
+#~ "Certaines couches utilisent des sources de données temporaires. Êtes-vous "
+#~ "sûr  de vouloir sauver cette carte et perdre les couches avec des sources "
+#~ "de données temporaires ?"
+
+#~ msgid "Temporary layers data source"
+#~ msgstr "Couche temporaire"
+
+#~ msgid ""
+#~ "Some layers use modified data source, do you want to save also these "
+#~ "modifications ?"
+#~ msgstr ""
+#~ "Certaines couches utilisent des sources de données modifiées. Voulez-vous "
+#~ "sauver également ces modifications ?"
+
+#~ msgid "Save geometry edits"
+#~ msgstr "Sauver les modifications de géométries"
+
+#~ msgid ""
+#~ "Some layers data source modifications can not be saved, are you sure you "
+#~ "want to continue ?"
+#~ msgstr ""
+#~ "Certaines modifications de sources de données ne peuvent pas être "
+#~ "sauvées. Êtes-vous sûr de vouloir continuer ?"
+
+#~ msgid "Errors on data source save process"
+#~ msgstr "Erreur lors du processus de sauvegarde de la source de données"
+
+#~ msgid "Unable to load the map context"
+#~ msgstr "Incapable de charger le contexte cartographique"
+
+#~ msgid "MapContext - {0}"
+#~ msgstr "Contexte cartographique - {0}"
+
+#~ msgid "Map"
+#~ msgstr "Carte"
+
+#~ msgid "Map Editor \"{0}\" [Modified]"
+#~ msgstr "Map Editor \"{0}\" [Modifié]"
+
+#~ msgid "Map Editor \"{0}\""
+#~ msgstr "Map Editor \"{0}\""
+
+#~ msgid "The value of the scale denominator must be equal or greater than 1"
+#~ msgstr ""
+#~ "La valeur du dénominateur de l'échelle doit être égale ou plus grande que "
+#~ "1"
+
+#~ msgid "Fail to load the map context, starting with an empty map context"
+#~ msgstr ""
+#~ "Échec de chargement du contexte cartographique, démarrage avec un "
+#~ "contexte vide"
+
+#~ msgid "MyMap.ows"
+#~ msgstr "MaCarte.ows"
+
+#~ msgid "Full extent"
+#~ msgstr "Zoom étendu"
+
+#~ msgid "Zoom to show all geometries"
+#~ msgstr "Zoom pour voir toutes les géométries"
+
+#~ msgid "Clear all selected geometries of all layers"
+#~ msgstr "Déselectionner les géométries de toutes les couches"
+
+#~ msgid "Zoom to visible selected geometries"
+#~ msgstr "Zoomer sur les objets sélectionnés"
+
+#~ msgid "Create datasource from selection"
+#~ msgstr "Créer une source de donnée à partir de la sélection"
+
+#~ msgid "Mesure tools"
+#~ msgstr "Outils de mesure"
+
+#~ msgid "Graphic tools"
+#~ msgstr "Outils graphiques"
+
+#~ msgid "Maps tree"
+#~ msgstr "Arbre des cartes"
+
+#~ msgid "Show/Hide maps tree"
+#~ msgstr "Afficher/Cacher le gestionnaire de cartes"
+
+#~ msgid "Export map as image"
+#~ msgstr "Exporter la carte en image"
+
+#~ msgid "Export image as file"
+#~ msgstr "Exporter l'image en tant que fichier"
+
+#~ msgid "Export parameters"
+#~ msgstr "Exporter les paramètres"
+
+#~ msgid ""
+#~ "Transparent\n"
+#~ "background"
+#~ msgstr ""
+#~ "Transparence\n"
+#~ "Arrière-plan"
+
+#~ msgid "DPI"
+#~ msgstr "DPI"
+
+#~ msgid "Width (pixels)"
+#~ msgstr "Largeur (pixels)"
+
+#~ msgid "Height (pixels)"
+#~ msgstr "Hauteur (pixels)"
+
+#~ msgid "Keep ratio"
+#~ msgstr "Conserver le ratio"
+
+#~ msgid "Reset extent"
+#~ msgstr "Réinitialiser l'étendue"
+
+#~ msgid "OK"
+#~ msgstr "OK"
+
+#~ msgid "Cancel"
+#~ msgstr "Annuler"
+
+#~ msgid "Save the map as image : "
+#~ msgstr "Sauver la carte en tant qu'image :"
+
+#~ msgid "Portable Network Graphics"
+#~ msgstr "Portable Network Graphics"
+
+#~ msgid "Tagged Image File Format"
+#~ msgstr "Tagged Image File Format"
+
+#~ msgid "Joint Photographic Experts Group"
+#~ msgstr "Joint Photographic Experts Group"
+
+#~ msgid "Portable Document Format"
+#~ msgstr "Portable Document Format"
+
+#~ msgid "No layers are selected."
+#~ msgstr "Aucune couche sélectionnée."
+
+#~ msgid "Layer {0} has no selected geometries."
+#~ msgstr "La couche {0} n'a pas de géométries sélectionnées."
+
+#~ msgid "Drawing into file"
+#~ msgstr "Dessiner dans un fichier"
+
+#~ msgid "Unable to create and drop the layer"
+#~ msgstr "Impossible de créer et supprimer la couche"
+
+#~ msgid "A problem occurred while opening the DataSource :"
+#~ msgstr "Un problème est apparu lors de l'ouverture de la source de donnée :"
+
+#~ msgid "Load the data source droped into the map editor."
+#~ msgstr "Chargement de la source de donnée déposée dans l'éditeur de carte."
+
+#~ msgid "Stop"
+#~ msgstr "Stop"
+
+#~ msgid "Close the drawing toolbar"
+#~ msgstr "Fermer la barre d'outil de dessin"
+
+#~ msgid ""
+#~ "The edited layer has unsaved changes. Do you want to keep theses "
+#~ "modifications ?"
+#~ msgstr ""
+#~ "La couche éditée a des changements non sauvegardés. Voulez-vous conserver "
+#~ "ces modifications ?"
+
+#~ msgid "Unable to save the modifications"
+#~ msgstr "Incapable de sauvegarder les modifications"
+
+#~ msgid "Undo"
+#~ msgstr "Annuler"
+
+#~ msgid "Undo the last modification"
+#~ msgstr "Annuler la dernière modification"
+
+#~ msgid "Save unsaved modifications of this layer"
+#~ msgstr "Sauver les modifications non sauvées de cette couche"
+
+#~ msgid "Delete selected geometries"
+#~ msgstr "Supprimer les géométries sélectionnées"
+
+#~ msgid "Are you sure to remove the {0} selected geometries ?"
+#~ msgstr ""
+#~ "Etes-vous sûr de vouloir supprimer les {0} géométries sélectionnées ?"
+
+#~ msgid "Cancel all unsaved modifications of this layer"
+#~ msgstr "Annuler toutes les modifications non sauvegardées sur cette couche"
+
+#~ msgid "Are you sure to cancel all your modifications ?"
+#~ msgstr "Etes-vous sûr de vouloir annuler toutes vos modifications ?"
+
+#~ msgid "Return to the original state"
+#~ msgstr "Retourner à l'état originale"
+
+#~ msgid "Redo"
+#~ msgstr "Rétablir"
+
+#~ msgid "Redo the last modification"
+#~ msgstr "Rétablir la dernière modification"
+
+#~ msgid "Error while drop Editable"
+#~ msgstr "Erreur pendant le \"glisser/déposer\" du document"
+
+#~ msgid "The map editor accept only map and geometry data source."
+#~ msgstr ""
+#~ "La carte n'accepte que des source de donnée de type carte ou géométrie."
+
+#~ msgid "Draw a polygon"
+#~ msgstr "Dessiner un polygone"
+
+#~ msgid "Split polygon"
+#~ msgstr "Découper un polygone"
+
+#~ msgid "Split a polygon by drawing a line"
+#~ msgstr "Découper un polygone à l'aide du ligne"
+
+#~ msgid "Cannot split the polygon"
+#~ msgstr "Impossible de découper un polygone"
+
+#~ msgid "Lines must have at least two points"
+#~ msgstr "Les lignes doivent avoir au moins deux points"
+
+#~ msgid "Invalid line"
+#~ msgstr "Ligne invalide"
+
+#~ msgid "orbisgis.org.orbisgis.ui.tools.WandTool.0"
+#~ msgstr "orbisgis.org.orbisgis.ui.tools.WandTool.0"
+
+#~ msgid "Cannot use wand tool {0}"
+#~ msgstr "Impossible d'utiliser l'outil wand {0}"
+
+#~ msgid "Cannot apply the legend {0}"
+#~ msgstr "Impossible d''appliquer la légende {0}"
+
+#~ msgid "Error accessing the GeoRaster {0}"
+#~ msgstr "Erreur d''accès au GéoRaster {0}"
+
+#~ msgid "Error accessing the wand layer datasource {0}"
+#~ msgstr "Impossible de charger la source de donnée de l''outil wand {0}"
+
+#~ msgid "Error committing the wand layer datasource {0}"
+#~ msgstr ""
+#~ "Erreur lors de la création de la source de donnée de l''outil wand {0}"
+
+#~ msgid "Vectorize a set of pixels"
+#~ msgstr "Vectoriser un ensemble de pixels"
+
+#~ msgid "Problem to access the GeoRaster"
+#~ msgstr "Problème pour accéder au GéoRaster"
+
+#~ msgid "Problem adding the new layer"
+#~ msgstr "Problème lors de l'ajout de la nouvelle couche"
+
+#~ msgid "Operation error with the GeoRaster"
+#~ msgstr "Erreur d'opération avec le GéoRaster"
+
+#~ msgid "Cannot create the resulting layer of raster type"
+#~ msgstr "Impossible de déduire la couche correspondant au type raster"
+
+#~ msgid "Compute a watershed"
+#~ msgstr "Calculer un bassin versant"
+
+#~ msgid "Cannot Autocomplete the polygon"
+#~ msgstr "Impossible d'auto-compléter le polygone"
+
+#~ msgid "Autocomplete a polygon"
+#~ msgstr "Auto-compléter un polygone"
+
+#~ msgid "Cannot split line"
+#~ msgstr "Impossible de découper la ligne"
+
+#~ msgid "Split line"
+#~ msgstr "Découper la ligne"
+
+#~ msgid "Split a line by selecting a vertex"
+#~ msgstr "Découper une ligne à l'aide d'un point"
+
+#~ msgid "Click a selected vertex to remove it"
+#~ msgstr "Cliquer sur un sommet pour le supprimer"
+
+#~ msgid "Delete vertex"
+#~ msgstr "Supprimer le sommet"
+
+#~ msgid "Select the center of the zoom"
+#~ msgstr "Sélectionner le centre du zoom"
+
+#~ msgid "Select the point location"
+#~ msgstr "Sélectionner la localisation du point"
+
+#~ msgid "Select a geometry or draw a selection rectangle"
+#~ msgstr ""
+#~ "Sélectionner une géométrie ou bien dessiner un rectangle de sélection"
+
+#~ msgid "Select the second point"
+#~ msgstr "Sélectionner le second point"
+
+#~ msgid "Click a handler to move it or select another geometry"
+#~ msgstr ""
+#~ "Maintenir le clic pour bouger ou bien sélectionner une autre géométrie"
+
+#~ msgid "Place the handler in its new position"
+#~ msgstr "Placer le curseur vers sa nouvelle position"
+
+#~ msgid "Can't find the status of this tool."
+#~ msgstr "Impossible de trouver le statut de cet outil"
+
+#~ msgid "Select a feature"
+#~ msgstr "Sélectionner un objet"
+
+#~ msgid "Click on an edge to insert a vertex"
+#~ msgstr "Cliquer sur un arc pour ajouter un sommet"
+
+#~ msgid "Add a new vertex"
+#~ msgstr "Ajouter un sommet"
+
+#~ msgid "Terminate multipoint"
+#~ msgstr "Terminer le multi-point"
+
+#~ msgid "Select the next point location or terminate multipoint"
+#~ msgstr ""
+#~ "Sélectionner la localisation du prochain point ou terminer le multi-point"
+
+#~ msgid "Draw a multipoint"
+#~ msgstr "Dessiner un multi-point"
+
+#~ msgid "Select the first point of the zooming rectangle"
+#~ msgstr "Sélectionnez le premier point du rectangle de zoom"
+
+#~ msgid "Terminate multipolygon"
+#~ msgstr "Terminer le multi-polygone"
+
+#~ msgid "Terminate polygon"
+#~ msgstr "Terminer le polygone"
+
+#~ msgid "Select the first point/terminate multipolygon"
+#~ msgstr "Sélectionner le premier point / terminer le multi-polygone"
+
+#~ msgid "Select the next point/terminate polygon/terminate multipolygon"
+#~ msgstr ""
+#~ "Sélectionner le point suivant/ terminer le polygone / terminer le multi-"
+#~ "polygone"
+
+#~ msgid "Draw a multipolygon"
+#~ msgstr "Dessiner un multi-polygone"
+
+#~ msgid "Cancel (transition)"
+#~ msgstr "Annuler"
+
+#~ msgid "Terminate line"
+#~ msgstr "Terminer la ligne"
+
+#~ msgid "Select the first point"
+#~ msgstr "Sélectionner le premier point"
+
+#~ msgid "Select the next point or terminate line"
+#~ msgstr "Sélectionner le point suivant, ou terminer la ligne"
+
+#~ msgid "Select the next point or [T]erminate polygon"
+#~ msgstr "Sélection le point suivant ou [T]erminer le polygone"
+
+#~ msgid "Select start point"
+#~ msgstr "Sélectionner le point de départ"
+
+#~ msgid "Drag to destination point"
+#~ msgstr "Déplacer vers le point de destination"
+
+#~ msgid "Terminate multiline"
+#~ msgstr "Terminer la multi-ligne"
+
+#~ msgid "Select the first point terminate multiline"
+#~ msgstr "Sélectionner le premier point / terminer la multi-ligne"
+
+#~ msgid "Select the next point terminate line terminate multiline"
+#~ msgstr ""
+#~ "Sélectionner le point suivant / terminer la ligne / terminer la multi-"
+#~ "ligne"
+
+#~ msgid "Draw a multiline"
+#~ msgstr "Dessiner une multi-ligne"
+
+#~ msgid "Draw multi-polygon"
+#~ msgstr "Dessiner un multi-polygone"
+
+#~ msgid "Select a geometry"
+#~ msgstr "Sélectionner une géométrie"
+
+#~ msgid "Split line by line"
+#~ msgstr "Découper une ligne à l'aide d'une ligne"
+
+#~ msgid "Split a line by drawing a line"
+#~ msgstr "Découper une ligne en dessinant une ligne"
+
+#~ msgid "Cannot split the line"
+#~ msgstr "Incapable de découper la ligne"
+
+#~ msgid "Angle : {0}"
+#~ msgstr "Angle : {0}"
+
+#~ msgid "Mesure angle"
+#~ msgstr "Mesure d'angle"
+
+#~ msgid "This tool mesure the angle"
+#~ msgstr "Cet outil mesure l'angle"
+
+#~ msgid "Zoom out"
+#~ msgstr "Dézoomer"
+
+#~ msgid "This tool zoom out on click"
+#~ msgstr "Cet outil dézoome avec un clic de la souris"
+
+#~ msgid "Cannot delete vertex"
+#~ msgstr "Impossible de supprimer le sommet"
+
+#~ msgid "Cannot modify the theme"
+#~ msgstr "Impossible de modifier le thème"
+
+#~ msgid "Cannot move {0}"
+#~ msgstr "Impossible de bouger {0}"
+
+#~ msgid "Cannot cut the polygon"
+#~ msgstr "Impossible de découper le polygone"
+
+#~ msgid "Cut a polygon"
+#~ msgstr "Découper un polygone"
+
+#~ msgid "Select a polygon then draw another polygon to subtract the first one"
+#~ msgstr ""
+#~ "Sélectionner un polygone, puis dessiner un autre polygone pour soustraire "
+#~ "le premier"
+
+#~ msgid "Coordinate : {0}"
+#~ msgstr "Coordonnée : {0}"
+
+#~ msgid "Pick a point"
+#~ msgstr "Pointer un point"
+
+#~ msgid "Zoom in"
+#~ msgstr "Zoomer"
+
+#~ msgid "Click on the map to zoom in"
+#~ msgstr "Cliquer sur la carte pour zoomer"
+
+#~ msgid "Cannot use fence tool"
+#~ msgstr "Impossible d'utiliser l'outil fence"
+
+#~ msgid "Error while recovering fence vectorial layer"
+#~ msgstr "Erreur lors de la récupération du fence"
+
+#~ msgid "Cannot create fence layer"
+#~ msgstr "Impossible de créer le fence"
+
+#~ msgid "Draw a fence"
+#~ msgstr "Dessiner un fence"
+
+#~ msgid "Get feature attributes"
+#~ msgstr "Obtenir les attributs"
+
+#~ msgid "Area : {0} Perimeter : {1}"
+#~ msgstr "Aire : {0} Périmètre : {1}"
+
+#~ msgid "Mesure area"
+#~ msgstr "Calculer l'aire"
+
+#~ msgid "This tool mesure the area"
+#~ msgstr "Cet outil calcule l'aire"
+
+#~ msgid "Invalid multiline"
+#~ msgstr "Multi-ligne invalide"
+
+#~ msgid "Cannot update the geometry {0}"
+#~ msgstr "Impossible de mettre à jour la géométrie {0}"
+
+#~ msgid "Move vertex"
+#~ msgstr "Déplacer le sommet"
+
+#~ msgid "Pan"
+#~ msgstr "Déplacement"
+
+#~ msgid "The Pan Tool"
+#~ msgstr "Outil de déplacement"
+
+#~ msgid "Polygons must have more than two points"
+#~ msgstr "Les polygones doivent avoir plus de deux points"
+
+#~ msgid "Invalid polygon"
+#~ msgstr "Polygone invalide"
+
+#~ msgid "Cannot insert linestring"
+#~ msgstr "Impossible d'insérer un ligne"
+
+#~ msgid "Draw a line"
+#~ msgstr "Dessiner une ligne"
+
+#~ msgid "Distance : {0}"
+#~ msgstr "Distance : {0}"
+
+#~ msgid "This tool mesure the length on the map"
+#~ msgstr "Cet outil mesure la longueur"
+
+#~ msgid "Mesure length"
+#~ msgstr "Mesurer la longueur"
+
+#~ msgid "Draw a point"
+#~ msgstr "Dessiner un point"
+
+#~ msgid "Open the map"
+#~ msgstr "Ouvrir la carte"
+
+#~ msgid "Remote"
+#~ msgstr "Distant"
+
+#~ msgid "Cannot load map catalog server {0}"
+#~ msgstr "Impossible de charger le serveur de catalogue de carte {0}"
+
+#~ msgid "Enter the server URL"
+#~ msgstr "Entrer l'URL du serveur"
+
+#~ msgid "You type an incorrect URL {0}"
+#~ msgstr "Vous entrez une URL incorrecte {0}"
+
+#~ msgid "Add Map Catalog server"
+#~ msgstr "Ajouter un serveur de catalogue de carte"
+
+#~ msgid "Add a new remote map catalog"
+#~ msgstr "Ajouter un nouveau catalogue de carte distant"
+
+#~ msgid "Unlink"
+#~ msgstr "Détacher"
+
+#~ msgid "Unlink the folder, without deleting it"
+#~ msgstr "Détacher le dossier, sans le supprimer"
+
+#~ msgid "Cannot download the server's workspaces of {0}"
+#~ msgstr "Impossible de télécharger les espaces de travail du serveur {0}"
+
+#~ msgid "Download the workspaces of {0}"
+#~ msgstr "Télécharger l''espace de travail de {0}"
+
+#~ msgid "Cannot download the server's contexts of {0}"
+#~ msgstr "Impossible de télécharger les contextes du serveur {0}"
+
+#~ msgid "Download the context of {0}"
+#~ msgstr "Télécharger le contexte de {0}"
+
+#~ msgid "Uploading the map context.."
+#~ msgstr "Chargement du contexte cartographique ..."
+
+#~ msgid "The map cannot be removed"
+#~ msgstr "La carte ne peut pas être supprimé"
+
+#~ msgid "Delete the remote map context"
+#~ msgstr "Supprimer le contexte cartographique distant"
+
+#~ msgid "Parse maps title and description"
+#~ msgstr "Analyser le titre et la description des cartes"
+
+#~ msgid "Error while downloading the map content"
+#~ msgstr "Erreur lors du téléchargement du contexte cartographique"
+
+#~ msgid "Downloading.."
+#~ msgstr "Téléchargement ..."
+
+#~ msgid "Map creation failed"
+#~ msgstr "Création de la carte échouée"
+
+#~ msgid "Are you sure you want to delete permanently the selected files ?"
+#~ msgstr ""
+#~ "Êtes-vous sûr de vouloir supprimer définitivement les fichiers "
+#~ "sélectionnés ?"
+
+#~ msgid "Remove the files"
+#~ msgstr "Supprimer les fichiers"
+
+#~ msgid "Cannot remove the file"
+#~ msgstr "Impossible de supprimer le fichier"
+
+#~ msgid "Cannot remove the file {0}"
+#~ msgstr "Impossible de supprimer le fichier {0}"
+
+#~ msgid "Remove permanently the map"
+#~ msgstr "Supprimer définitivement la carte"
+
+#~ msgid "Local"
+#~ msgstr "Local"
+
+#~ msgid "Select a folder to link with map manager"
+#~ msgstr "Sélectionner un dossier à lier avec le gestionnaire de carte"
+
+#~ msgid "Add Map Catalog folder"
+#~ msgstr "Ajouter un dossier de catalogue de carte"
+
+#~ msgid "Add link to a local folder"
+#~ msgstr "Ajouter un lien vers le dossier local"
+
+#~ msgid "Edit the URL"
+#~ msgstr "Editer l'URL"
+
+#~ msgid "Remove this server"
+#~ msgstr "Supprimer ce serveur"
+
+#~ msgid "Update"
+#~ msgstr "Mettre à jour"
+
+#~ msgid "Download the server content"
+#~ msgstr "Télécharger le contenu du serveur"
+
+#~ msgid "Are you sure you want to replace the remote map context ?"
+#~ msgstr ""
+#~ "Êtes-vous sûr de vouloir remplacer le contexte cartographique distant ?"
+
+#~ msgid "Overwrite map context confirmation"
+#~ msgstr "Confirmation de réécriture du contexte cartographique"
+
+#~ msgid "Remove this map on the server"
+#~ msgstr "Supprimer cette carte du serveur"
+
+#~ msgid "default"
+#~ msgstr "défaut"
+
+#~ msgid "Maps manager"
+#~ msgstr "Gestionnaire de cartes"
+
+#~ msgid "Enter the Map file name"
+#~ msgstr "Entrer le nom du fichier de carte"
+
+#~ msgid "MyMap"
+#~ msgstr "MaCarte"
+
+#~ msgid "The specified file name already exist"
+#~ msgstr "Le nom de fichier spécifié existe déjà"
+
+#~ msgid "The map creation has failed"
+#~ msgstr "La création de la carte a échoué"
+
+#~ msgid "New empty map"
+#~ msgstr "Nouvelle carte vide"
+
+#~ msgid "Create a new OWS Map in this folder"
+#~ msgstr "Créer une nouvelle carte OWS dans ce dossier"
+
+#~ msgid "Download the workspace content"
+#~ msgstr "Télécharger le contenu de l'espace de travail"
+
+#~ msgid "Cannot initialize beanshell"
+#~ msgstr "Incapable d'initialiser le Beanshell"
+
+#~ msgid "Cannot initialize beanshell script folder"
+#~ msgstr "Incapable d'initialiser le dossier de script Beanshell"
+
+#~ msgid "Do you want to clear the contents of the console?"
+#~ msgstr "Voulez-vous effacer le contenu de la console ?"
+
+#~ msgid "Clear script"
+#~ msgstr "Effacer le script"
+
+#~ msgid "Execute"
+#~ msgstr "Exécuter"
+
+#~ msgid "Execute the java script"
+#~ msgstr "Exécuter le script java"
+
+#~ msgid "Clear"
+#~ msgstr "Effacer"
+
+#~ msgid "Erase the content of the editor"
+#~ msgstr "Effacer le contenu de l''éditeur"
+
+#~ msgid "Open"
+#~ msgstr "Ouvrir"
+
+#~ msgid "Load a file in this editor"
+#~ msgstr "Charger un fichier dans cet éditeur"
+
+#~ msgid "Save the editor content into a file"
+#~ msgstr "Sauver le contenu de l'éditeur dans un fichier"
+
+#~ msgid "Search.."
+#~ msgstr "Chercher..."
+
+#~ msgid "Search text in the document"
+#~ msgstr "Chercher du texte dans l'éditeur"
+
+#~ msgid "(Un)comment"
+#~ msgstr "(Dé)commenter"
+
+#~ msgid "(Un)comment the selected text"
+#~ msgstr "(Dé)commenter le texte sélectionné"
+
+#~ msgid "Block (un)comment"
+#~ msgstr "(Dé)commenter le bloc"
+
+#~ msgid "Block (un)comment the selected text."
+#~ msgstr "(Dé)commenter le bloc de texte sélectionné"
+
+#~ msgid "Save script"
+#~ msgstr "Sauver le script"
+
+#~ msgid "BeanShell Script (*.bsh)"
+#~ msgstr "Script BeanShell (*.bsh)"
+
+#~ msgid "IO error."
+#~ msgstr "Erreur d'entrée/sortie."
+
+#~ msgid "The file has been saved."
+#~ msgstr "Le fichier a été sauvé."
+
+#~ msgid "Open script"
+#~ msgstr "Ouvrir un script"
+
+#~ msgid "Do you want to clear all before loading the file ?"
+#~ msgstr "Voulez-vous tout effacer avant de charger le fichier ?"
+
+#~ msgid "Open file"
+#~ msgstr "Ouvrir un fichier"
+
+#~ msgid "Cannot execute the script"
+#~ msgstr "Incapable d’exécuter le script"
+
+#~ msgid "The script is not valid"
+#~ msgstr "Le script n'est pas valide"
+
+#~ msgid "BeanShell"
+#~ msgstr "BeanShell"
+
+#~ msgid "Not contains"
+#~ msgstr "Ne contient pas"
+
+#~ msgid "Alphanumeric"
+#~ msgstr "Alphanumérique"
+
+#~ msgid "DataBase"
+#~ msgstr "Base de données"
+
+#~ msgid "Files"
+#~ msgstr "Fichier"
+
+#~ msgid "Geometry"
+#~ msgstr "Géométrie"
+
+#~ msgid "Raster"
+#~ msgstr "Raster"
+
+#~ msgid "Vectorial"
+#~ msgstr "Vecteur"
+
+#~ msgid "Web Map Services"
+#~ msgstr "Web Map Services"
+
+#~ msgid "System Table"
+#~ msgstr "Table système"
+
+#~ msgid "Source type is"
+#~ msgstr "Le type de source est"
+
+#~ msgid "Contains"
+#~ msgstr "Contient"
+
+#~ msgid "Data source schema could not be read"
+#~ msgstr "Le schéma de la source de donnée ne peut pas être lu"
+
+#~ msgid "GeoCatalog"
+#~ msgstr "GeoCatalogue"
+
+#~ msgid "Add filter"
+#~ msgstr "Ajouter un filtre"
+
+#~ msgid "Add a new data source filter"
+#~ msgstr "Ajouter un nouveau filtre"
+
+#~ msgid "Select the file to add"
+#~ msgstr "Sélectionner le fichier à ajouter"
+
+#~ msgid "This source was already registered"
+#~ msgstr "Cette source est déjà enregistrée"
+
+#~ msgid "All data source of the GeoCatalog will be removed. Are you sure ?"
+#~ msgstr ""
+#~ "Toutes les sources de données du GeoCatalogue seront supprimées. Voulez-"
+#~ "vous poursuivre ?"
+
+#~ msgid "Clear the GeoCatalog"
+#~ msgstr "Nettoyer le GeoCatalogue"
+
+#~ msgid "Cannot remove the source {0}"
+#~ msgstr "Impossible de supprimer la source {0}"
+
+#~ msgid "Save the source : "
+#~ msgstr "Sauver la source :"
+
+#~ msgid "Add files from a folder"
+#~ msgstr "Ajouter à partir d'un dossier"
+
+#~ msgid "Add from folder"
+#~ msgstr "Ajouter à partir d'un dossier"
+
+#~ msgid "Cannot find a valid image format for this WMS server"
+#~ msgstr "Impossible de trouver un format d'image valide pour ce serveur WMS"
+
+#~ msgid "Can't read the given URI: "
+#~ msgstr "Impossible de lire l'URL :"
+
+#~ msgid "The given URI contains illegal character"
+#~ msgstr "L'URL comporte des caractères interdits"
+
+#~ msgid "The source is already registered : "
+#~ msgstr "La source est déjà enregistrée :"
+
+#~ msgid "File"
+#~ msgstr "Fichier"
+
+#~ msgid "Add a file from hard drive."
+#~ msgstr "Ajouter un ficher à partir d'un disque dur."
+
+#~ msgid "Folder"
+#~ msgstr "Dossier"
+
+#~ msgid "Add a set of file from an hard drive folder."
+#~ msgstr "Ajouter une série de fichier à partir d'un dossier."
+
+#~ msgid "Add one or more tables from a DataBase"
+#~ msgstr "Ajouter une ou plusieurs tables à partir d'une base de données"
+
+#~ msgid "WMS server"
+#~ msgstr "Serveur WMS"
+
+#~ msgid "Add a WebMapService"
+#~ msgstr "Ajouter un WebMapService"
+
+#~ msgid "Save selected sources in files"
+#~ msgstr "Sauver les sources sélectionnées dans des fichiers"
+
+#~ msgid "Database"
+#~ msgstr "Base de données"
+
+#~ msgid "Save selected sources in a data base"
+#~ msgstr "Sauver les sources sélectionnées dans une base de données"
+
+#~ msgid "Open the data source table"
+#~ msgstr "Ouvrir la table de la source de donnée"
+
+#~ msgid "Remove the source"
+#~ msgstr "Supprimer la source"
+
+#~ msgid "Remove from this list the selected sources."
+#~ msgstr "Supprimer de cette liste les sources sélectionnées."
+
+#~ msgid "Remove all sources in this list"
+#~ msgstr "Supprimer toutes les sources de la liste"
+
+#~ msgid "Source {0}"
+#~ msgstr "Source {0}"
+
+#~ msgid "Cannot save the source modifications"
+#~ msgstr "Incapable de sauver les modifications de la source"
+
+#~ msgid "Saving the source in a database."
+#~ msgstr "Sauver la source dans une base de données"
+
+#~ msgid "Save sources in a database"
+#~ msgstr "Sauver les sources dans une base de données"
+
+#~ msgid "Close"
+#~ msgstr "Fermer"
+
+#~ msgid "Please connect to a database"
+#~ msgstr "Veuillez vous connecter à la base de données"
+
+#~ msgid "At least one row must be checked."
+#~ msgstr "Au moins une ligne doit être cochée"
+
+#~ msgid "Cannot connect to the database."
+#~ msgstr "Impossible de se connecter à la base de données"
+
+#~ msgid "Please set a password"
+#~ msgstr "Veuillez spécifier un mot de passe"
+
+#~ msgid "Login"
+#~ msgstr "Connnecter"
+
+#~ msgid "Password"
+#~ msgstr "Mot de passe"
+
+#~ msgid "The login cannot be empty."
+#~ msgstr "L'identifiant de connexion ne peut pas être vide."
+
+#~ msgid "The password cannot be empty."
+#~ msgstr "Le mot de passe ne peut pas être vide."
+
+#~ msgid "Cannot connect the database"
+#~ msgstr "Impossible de connecter à la base de données"
+
+#~ msgid "Connection parameters"
+#~ msgstr "Paramètres de connexion"
+
+#~ msgid "Connexion name"
+#~ msgstr "Nom de la connexion"
+
+#~ msgid "MyConnexion"
+#~ msgstr "MaConnexion"
+
+#~ msgid "Type of database"
+#~ msgstr "Type de base de données"
+
+#~ msgid "Host"
+#~ msgstr "Hôte"
+
+#~ msgid "Default port"
+#~ msgstr "Port par défaut"
+
+#~ msgid "Database name"
+#~ msgstr "Nom de la base de données"
+
+#~ msgid "SSL"
+#~ msgstr "SSL"
+
+#~ msgid "Please specify a connexion name"
+#~ msgstr "Veuillez spécifier un nom de connexion"
+
+#~ msgid "The database name is mandatory"
+#~ msgstr "Le nom de la base de données est obligatoire"
+
+#~ msgid "The host cannot be null"
+#~ msgstr "L'hôte ne peut être null"
+
+#~ msgid "The port field is mandatory"
+#~ msgstr "Le numéro de port est obligatoire"
+
+#~ msgid "The port number must lie between 0 and 32767."
+#~ msgstr "Le numéro de port doit être compris entre 0 et 32767."
+
+#~ msgid "Cannot format the port code into an int"
+#~ msgstr "Impossible de formater le code du port dans un int"
+
+#~ msgid "The port number must be comprise between 0 and 32767"
+#~ msgstr "Le numéro de port doit être compris entre 0 et 32767"
+
+#~ msgid "This table does not exist."
+#~ msgstr "Cette table n'existe pas."
+
+#~ msgid "The required DataSource could not be created."
+#~ msgstr "La source de données requise ne peut pas être crée."
+
+#~ msgid "Open tables or views from a database"
+#~ msgstr "Ouvrir les tables ou vues d'une base de données"
+
+#~ msgid "Please set the user name and a password "
+#~ msgstr "Veuillez spécifier le nom d'utilisateur et le mot de passe"
+
+#~ msgid "The database contains any tables or views."
+#~ msgstr "La base de données ne contient aucunes tables ou vues"
+
+#~ msgid "At least one table or view must be selected."
+#~ msgstr "Au moins une table ou une vue doit être sélectionnée."
+
+#~ msgid "Tables"
+#~ msgstr "Tables"
+
+#~ msgid "Views"
+#~ msgstr "Vues"
+
+#~ msgid "Cannot list the tables and views"
+#~ msgstr "Incapable de lister les tables et vues"
+
+#~ msgid "Cannot open the connection"
+#~ msgstr "Incapable d'ouvrir la connexion"
+
+#~ msgid "Populating the database list..."
+#~ msgstr "Remplissage de la liste de base de données ..."
+
+#~ msgid "Connect to the database"
+#~ msgstr "Connecter à la base de données"
+
+#~ msgid "Disconnect"
+#~ msgstr "Déconnecter"
+
+#~ msgid "Add a new connection"
+#~ msgstr "Ajouter une nouvelle connexion"
+
+#~ msgid "Edit the connection"
+#~ msgstr "Éditer la connexion"
+
+#~ msgid "Remove the connection"
+#~ msgstr "Supprimer la connexion"
+
+#~ msgid "Saved with the OrbisGIS database panel"
+#~ msgstr "Sauver via l'interface de base de données"
+
+#~ msgid "There is already a connection with this name."
+#~ msgstr "Il y a déjà une connexion avec ce nom"
+
+#~ msgid ""
+#~ "-1 is not allowed .\n"
+#~ "The input code will be used."
+#~ msgstr ""
+#~ "-1 n'est pas autorisé .\n"
+#~ "Le code en entrée sera utilisé."
+
+#~ msgid ""
+#~ "Cannot format the EPSG code into an int.\n"
+#~ "The default code will be used."
+#~ msgstr ""
+#~ "Impossible de formater le code EPSG en un int.\n"
+#~ "Le code par défaut sera utilisé."
+
+#~ msgid "Choose a list of layers"
+#~ msgstr "Choissir une liste de couches"
+
+#~ msgid "At least a layer must be selected"
+#~ msgstr "Au moins une couche doit être sélectionnée"
+
+#~ msgid "WMS server URL"
+#~ msgstr "URL du serveur WMS"
+
+#~ msgid "Connect to the server."
+#~ msgstr "Connecter au serveur."
+
+#~ msgid "Delete the server connection."
+#~ msgstr "Supprimer la connexion au serveur."
+
+#~ msgid "Reload the server connection."
+#~ msgstr "Recharger la connexion au serveur."
+
+#~ msgid "Cannot update and save the URL list"
+#~ msgstr "Impossible de mettre à jour et de sauver la liste d'URL"
+
+#~ msgid "Information"
+#~ msgstr "Information"
+
+#~ msgid "Version :"
+#~ msgstr "Version :"
+
+#~ msgid "Name :"
+#~ msgstr "Nom :"
+
+#~ msgid "Cannot load the list of WMS url"
+#~ msgstr "Impossible de charger la liste d'URL WMS"
+
+#~ msgid "Cannot save the list of WMS url"
+#~ msgstr "Impossible de sauver la liste d'URL WMS"
+
+#~ msgid "WMS server connection"
+#~ msgstr "Connection au serveur WMS"
+
+#~ msgid "Please connect to the WMS server"
+#~ msgstr "Veuillez vous connecter au serveur WMS"
+
+#~ msgid "Cannot connect to {0}"
+#~ msgstr "Impossible de se connecter à {0}"
+
+#~ msgid "Cannot get capabilities of {0}"
+#~ msgstr "Impossible d'obtenir les métadonnées de {0}"
+
+#~ msgid "Connecting to the server..."
+#~ msgstr "Connexion au serveur..."
+
+#~ msgid "Select a SRS"
+#~ msgstr "Sélectionner un SRS"
+
+#~ msgid "Search a SRS :"
+#~ msgstr "Chercher un SRS :"
+
+#~ msgid "Please select a SRS."
+#~ msgstr "Veuillez sélectionner un SRS."
+
+#~ msgid "Save the source in a file."
+#~ msgstr "Sauver la source dans un fichier."
+
+#~ msgid ""
+#~ "The datasource has been exported and added to the geocatalog with the "
+#~ "name "
+#~ msgstr ""
+#~ "La source de donnée a été exportée et ajoutée au GeoCatalogue avec le nom"
+
+#~ msgid "Cannot create the file"
+#~ msgstr "Impossible de créer le fichier"
+
+#~ msgid "Cannot read the source"
+#~ msgstr "Impossible de lire la source"
+
+#~ msgid "Advanced Style Editor"
+#~ msgstr "Éditeur de style avancé"
+
+#~ msgid "Area Symbolizer"
+#~ msgstr "Symbole surfacique"
+
+#~ msgid "Line Symbolizer"
+#~ msgstr "Symbole linéaire"
+
+#~ msgid "Point Symbolizer"
+#~ msgstr "Symbole ponctuel"
+
+#~ msgid "Text Symbolizer"
+#~ msgstr "Symbole textuel"
+
+#~ msgid "The name shall not be empty."
+#~ msgstr "Le nom ne doit pas être vide."
+
+#~ msgid "Operation in progress..."
+#~ msgstr "Opération en cours..."
+
+#~ msgid "Advanced style editor"
+#~ msgstr "Éditeur de style avancé"
+
+#~ msgid "Open the advanced editor for SE styles"
+#~ msgstr "Ouvrir l'éditeur avancé pour les styles SE"
+
+#~ msgid ""
+#~ "Some layers use modified data source, do you want to save these "
+#~ "modifications before removing them ?"
+#~ msgstr ""
+#~ "Certaines couches utilisent des sources de données modifiées. Voulez-vous "
+#~ "sauver ces modifications avant de les supprimer ?"
+
+#~ msgid ""
+#~ "The layer data source {0} can not be saved, are you sure you want to "
+#~ "continue ?"
+#~ msgstr ""
+#~ "La source de donnée {0} ne peut pas être sauvée. Êtes-vous sûr de vouloir "
+#~ "continuer ?"
+
+#~ msgid "This functionality is not supported."
+#~ msgstr "Cette fonctionnalité n'est pas supportée."
+
+#~ msgid "Advanced Editor can't be loaded"
+#~ msgstr "L'éditeur avancé ne peut pas être chargé"
+
+#~ msgid "Error while editing the legend"
+#~ msgstr "Erreur lors de l'édition de la légende"
+
+#~ msgid "Link the editable element with the Toc"
+#~ msgstr "Lier l'élément éditable avec la Toc"
+
+#~ msgid "Running jobs"
+#~ msgstr "Processus en cours"
+
+#~ msgid "Running jobs ({0})"
+#~ msgstr "Processus en cours ({0})"
+
+#~ msgid "Executing script"
+#~ msgstr "Exécuter le script"
+
+#~ msgid "Cannot parse script"
+#~ msgstr "Ne peut pas analyser le script"
+
+#~ msgid "Failed to parse the script."
+#~ msgstr "Impossible d'analyser le script."
+
+#~ msgid "Running instruction {0}/{1} :"
+#~ msgstr "Lancer l''instruction {0}/{1} :"
+
+#~ msgid "Impossible to create the layer:{0}"
+#~ msgstr "Impossible de créer la couche :{0}"
+
+#~ msgid "Cannot create the DataSource:{0}"
+#~ msgstr "Impossible de créer la source de données :{0}"
+
+#~ msgid "Data access error:"
+#~ msgstr "Erreur d'accès à la donnée :"
+
+#~ msgid "SQL Semantic Error"
+#~ msgstr "Erreur sémantique SQL"
+
+#~ msgid "Execution time: {0}"
+#~ msgstr "Temps d’exécution: {0}"
+
+#~ msgid ""
+#~ "Handles all Metadata-related caching for the SQLLanguageSupport class"
+#~ msgstr ""
+#~ "Handles all Metadata-related caching for the SQLLanguageSupport class"
+
+#~ msgid "Run SQL statements"
+#~ msgstr "Exécuter le traitement SQL"
+
+#~ msgid "Quote"
+#~ msgstr "Passer en texte"
+
+#~ msgid "Quote selected text"
+#~ msgstr "Passer en texte la sélection"
+
+#~ msgid "Un Quote"
+#~ msgstr "Enlever les guillemets"
+
+#~ msgid "Un Quote selected text"
+#~ msgstr "Enlever les guillemets de la sélection"
+
+#~ msgid "Format"
+#~ msgstr "Formater"
+
+#~ msgid "Format editor content"
+#~ msgstr "Formater le contenu de l'éditeur"
+
+#~ msgid "SQL list"
+#~ msgstr "Liste SQL"
+
+#~ msgid "Show/Hide SQL function list"
+#~ msgstr "Afficher/Cacher la liste des fonctions SQL"
+
+#~ msgid "SQL script (*.sql)"
+#~ msgstr "Script SQL (*.sql)"
+
+#~ msgid "Functions count = {0}"
+#~ msgstr "Nombre de fonctions = {0}"
+
+#~ msgid "SQL Console"
+#~ msgstr "Console SQL"
+
+#~ msgid "Reformat failed, normalised strings differ"
+#~ msgstr "Échec du formatage automatique du code"
+
+#~ msgid "Add a row"
+#~ msgstr "Ajouter une ligne"
+
+#~ msgid "New row"
+#~ msgstr "Nouvelle ligne"
+
+#~ msgid "Table \"{0}\""
+#~ msgstr "Table \"{0}\""
+
+#~ msgid "Find"
+#~ msgstr "Trouver"
+
+#~ msgid "All"
+#~ msgstr "Tout"
+
+#~ msgid "Match case"
+#~ msgstr "Respecter la casse"
+
+#~ msgid "Whole words"
+#~ msgstr "Mots entiers"
+
+#~ msgid "Search"
+#~ msgstr "Rechercher"
+
+#~ msgid "Filter driver error"
+#~ msgstr "Erreur de filtre"
+
+#~ msgid "SQL"
+#~ msgstr "SQL"
+
+#~ msgid "Run SQL request"
+#~ msgstr "Exécuter la requête SQL"
+
+#~ msgid "Selecting rows"
+#~ msgstr "Sélection de lignes"
+
+#~ msgid "Computation of the optimal column width"
+#~ msgstr "Détermination de largeur optimale de colonne"
+
+#~ msgid ""
+#~ "\n"
+#~ "Table {0}, statistics of the column {1}.\n"
+#~ msgstr ""
+#~ "\n"
+#~ "Table : {0} - Statistiques de la colonne : {1}.\n"
+
+#~ msgid "Row count : {0}\n"
+#~ msgstr "Nombre de ligne : {0}\n"
+
+#~ msgid "Minimum : {0}\n"
+#~ msgstr "Minimum : {0}\n"
+
+#~ msgid "Maximum : {0}\n"
+#~ msgstr "Maximum : {0}\n"
+
+#~ msgid "Sum : {0}\n"
+#~ msgstr "Somme : {0}\n"
+
+#~ msgid "Average : {0}\n"
+#~ msgstr "Moyenne : {0}\n"
+
+#~ msgid "Standard deviation : {0}\n"
+#~ msgstr "Écart-type : {0}\n"
+
+#~ msgid "Compute column statistics."
+#~ msgstr "Calculer les statistiques de la colonne"
+
+#~ msgid "Driver error"
+#~ msgstr "Erreur de driver"
+
+#~ msgid "Aborted by user"
+#~ msgstr "Interrompu par l'utilisateur"
+
+#~ msgid "Cache table values"
+#~ msgstr "Mise en cache des valeurs de la table"
+
+#~ msgid "Sorting {0}"
+#~ msgstr "Tri {0}"
+
+#~ msgid "Unable to establish the selection bounding box"
+#~ msgstr "Impossible d'établir l'enveloppe de la sélection"
+
+#~ msgid "Remove a column"
+#~ msgstr "Supprimer une colonne"
+
+#~ msgid "Are you sure you want to remove the column {0} ?"
+#~ msgstr "Etes-vous sûr de vouloir supprimer la colonne {0} ?"
+
+#~ msgid "Deletion of a column"
+#~ msgstr "Suppression de la colonne"
+
+#~ msgid "Add a column"
+#~ msgstr "Ajouter une colonne"
+
+#~ msgid "This data source ({0}) is already shown in an editor."
+#~ msgstr "Cette source de donnée ({0}) est déjà affichée dans un éditeur."
+
+#~ msgid ""
+#~ "In a consequence of an unreachable data source {0},the associated data "
+#~ "editor could not be recovered."
+#~ msgstr ""
+#~ "En conséquence d''une source de données inaccessible {0}, l''éditeur de "
+#~ "données associé n'a pas pu être récupéré."
+
+#~ msgid "Delete selected rows"
+#~ msgstr "Supprimer les lignes sélectionnées"
+
+#~ msgid "Are you sure to remove the {0} selected rows ?"
+#~ msgstr "Etes-vous sûr de vouloir supprimer les {0} lignes sélectionnées ?"
+
+#~ msgid ""
+#~ "This table use modified data source, do you want to save these "
+#~ "modifications before closing it ?"
+#~ msgstr ""
+#~ "Cette table utilise des sources de données modifiées. Voulez-vous sauver "
+#~ "ces modifications avant de la fermer ?"
+
+#~ msgid "Unsaved modifications"
+#~ msgstr "Modifications non sauvées"
+
+#~ msgid ""
+#~ "The data source {0} can not be saved, are you sure you want to continue ?"
+#~ msgstr ""
+#~ "La source de donnée {0} ne peut pas être sauvée. Êtes-vous sûr de vouloir "
+#~ "continuer ?"
+
+#~ msgid "Canceled by user"
+#~ msgstr "Annulé par l'utilisateur"
+
+#~ msgid ""
+#~ "Searching request is already launched. Please wait a moment, or cancel it."
+#~ msgstr ""
+#~ "Le demande de recherche est déjà en cours. Veuillez patienter ou bien "
+#~ "annulez-la."
+
+#~ msgid "Filter selected rows"
+#~ msgstr "Filtrer les lignes sélectionnées"
+
+#~ msgid "Show only the selected rows"
+#~ msgstr "Afficher uniquement les lignes sélectionnées"
+
+#~ msgid "Clear row filter"
+#~ msgstr "Effacer le filtre de ligne"
+
+#~ msgid "Show all rows"
+#~ msgstr "Afficher toutes les lignes"
+
+#~ msgid "Deselect all lines"
+#~ msgstr "Désélectionner toutes les lignes"
+
+#~ msgid "Reverse selection"
+#~ msgstr "Inverser la sélection"
+
+#~ msgid "Reverse the current selection"
+#~ msgstr "Inverser la sélection courante"
+
+#~ msgid "In the map editor, zoom to the selected rows"
+#~ msgstr "Dans la carte, zoomer vers les lignes sélectionnées"
+
+#~ msgid "Select same cell"
+#~ msgstr "Sélectionner les mêmes cellules"
+
+#~ msgid "Select all rows that match this cell value"
+#~ msgstr "Sélectionner les lignes avec la même valeur"
+
+#~ msgid "Optimal width"
+#~ msgstr "Largeur optimale"
+
+#~ msgid "Sort ascending"
+#~ msgstr "Tri croissant"
+
+#~ msgid "Sort descending"
+#~ msgstr "Tri décroissant"
+
+#~ msgid "No sort"
+#~ msgstr "Pas de tri"
+
+#~ msgid "Show column informations"
+#~ msgstr "Afficher les informations"
+
+#~ msgid "Show column statistics"
+#~ msgstr "Afficher les statistiques"
+
+#~ msgid "Show column selection statistics"
+#~ msgstr "Afficher les statistiques de la sélection"
+
+#~ msgid "Show filtered column statistics"
+#~ msgstr "Afficher les statistiques des colonnes filtrées"
+
+#~ msgid ""
+#~ "\n"
+#~ "Field name :\t{0}\n"
+#~ msgstr ""
+#~ "\n"
+#~ "Nom du champ :\t{0}\n"
+
+#~ msgid "Field type :\t{0}\n"
+#~ msgstr "Type de champ :\t{0}\n"
+
+#~ msgid "Constraints :\n"
+#~ msgstr "Contraintes :\n"
+
+#~ msgid "\t{0} :\t{1}\n"
+#~ msgstr "\t{0} :\t{1}\n"
+
+#~ msgid "Table Editor of {0} {1}/{2}"
+#~ msgstr "{0} - {1}/{2}"
+
+#~ msgid "Table Editor of {0} (Filtered) {1}/{2}"
+#~ msgstr "{0} - (Filtré) {1}/{2}"
+
+#~ msgid "Error while loading the table editor"
+#~ msgstr "Erreur lors du chargement de la table"
+
+#~ msgid "Open the data source {0}"
+#~ msgstr "Ouvrir la source de données {0}"
+
+#~ msgid "Selection deserialisation failed"
+#~ msgstr "La désérialisation de la sélection a échoué"
+
+#~ msgid "Selection serialisation failed"
+#~ msgstr "La sérialisation de la sélection a échoué"
+
+#~ msgid "The TableEditor cannot listen to source modifications"
+#~ msgstr "L'éditeur ne peut suivre les modifications de la source"
+
+#~ msgid "Cannot parse number"
+#~ msgstr "Impossible d'analyser le nombre"
+
+#~ msgid "&Copy"
+#~ msgstr "&Copier"
+
+#~ msgid "Clea&r"
+#~ msgstr "Nettoye&r"
+
+#~ msgid "Cannot show the log message"
+#~ msgstr "Impossible d'afficher le message de log"
+
+#~ msgid "Output"
+#~ msgstr "Sortie"
+
+#~ msgid "Clear all"
+#~ msgstr "Effacer tout"
+
+#~ msgid "Clear all log panels"
+#~ msgstr "Effacer tous les logs"
+
+#~ msgid "Errors"
+#~ msgstr "Erreurs"
+
+#~ msgid "Infos"
+#~ msgstr "Infos"
+
+#~ msgid "Warnings"
+#~ msgstr "Avertissements"
+
+#~ msgid "Debug"
+#~ msgstr "Debug"
+
+#~ msgid "Switch to another workspace"
+#~ msgstr "Basculer vers un nouvel espace de travail"
+
+#~ msgid "OrbisGIS version {0} {1} {2}"
+#~ msgstr "OrbisGIS version {0} {1} {2}"
+
+#~ msgid "&File"
+#~ msgstr "&Fichier"
+
+#~ msgid "&Exit"
+#~ msgstr "&Quitter"
+
+#~ msgid "&Tools"
+#~ msgstr "&Outils"
+
+#~ msgid "&Configuration"
+#~ msgstr "&Configuration"
+
+#~ msgid "Loading GDMS.."
+#~ msgstr "Chargement GDMS..."
+
+#~ msgid "Contains view folders path"
+#~ msgstr "Contient les chemins liés à l'interface graphique"
+
+#~ msgid "Register GUI Sql functions.."
+#~ msgstr "Chargement des fonctions SQL liées à l'interface graphique"
+
+#~ msgid "Load the plugin framework.."
+#~ msgstr "Chargement du système de plugin"
+
+#~ msgid "Loading of plugins is aborted"
+#~ msgstr "Le chargement des plugins est avorté"
+
+#~ msgid "&Save"
+#~ msgstr "&Sauver"
+
+#~ msgid "Save the workspace"
+#~ msgstr "Sauver l'espace de travail"
+
+#~ msgid "Error while loading dialogs informations."
+#~ msgstr ""
+#~ "Erreur lors du chargement des informations sur les boîtes de dialogue."
+
+#~ msgid ""
+#~ "Execute tasks in background processes, showing progress bars. Gives "
+#~ "access to the job queue"
+#~ msgstr ""
+#~ "Exécuter la tâche en arrière-plan, afficher la barre de progression. "
+#~ "Donne accès à la file d'attente des processus"
+
+#~ msgid "Use this instance to open an editable element (map,data source..)"
+#~ msgstr ""
+#~ "Utiliser cette instance pour ouvrir un document (carte, source de "
+#~ "donnée, ...)"
+
+#~ msgid "Loading the main window"
+#~ msgstr "Chargement de la fenêtre principale"
+
+#~ msgid "Loading docking system and frames"
+#~ msgstr "Chargement de l'environnement"
+
+#~ msgid "Restore the former layout.."
+#~ msgstr "Restaurer l'ancienne disposition ..."
+
+#~ msgid "Unable to save the docking layout."
+#~ msgstr "Impossible de sauvegarder l'interface"
+
+#~ msgid "Error while saving dialogs informations."
+#~ msgstr ""
+#~ "Erreur lors de l'enregistrement des informations des boîtes de dialogue."
+
+#~ msgid "The workspace has been saved."
+#~ msgstr "L'espace de travail a été sauvé"
+
+#~ msgid "The workspace hasn't been saved."
+#~ msgstr "L'espace de travail n'a pas été sauvé"
+
+#~ msgid "OrbisGIS needs at least a java 1.7+"
+#~ msgstr "OrbisGIS nécessite au minimum java 1.7+"
+
+#~ msgid "Use Proxy"
+#~ msgstr "Utiliser le proxy"
+
+#~ msgid "Proxy url"
+#~ msgstr "URL du proxy"
+
+#~ msgid "Proxy port"
+#~ msgstr "Port du proxy"
+
+#~ msgid "The proxy port is invalid"
+#~ msgstr "Le port du proxy est invalide"
+
+#~ msgid "Windows"
+#~ msgstr "Fenêtre"
+
+#~ msgid "Web configuration"
+#~ msgstr "Configuration internet"
+
+#~ msgid "Proxy"
+#~ msgstr "Proxy"
+
+#~ msgid "&Look And Feel"
+#~ msgstr "&Apparence et comportement"
+
+#~ msgid "&Windows"
+#~ msgstr "F&enêtre"
+
+#~ msgid "Unable to load the docking layout."
+#~ msgstr "Impossible de charger l'interface"
+
+#~ msgid "ToolBar item {0} is not unique, it has been renamed to {1}"
+#~ msgstr ""
+#~ "L''item {0} de la barre d''outil n'est pas unique, il a donc été renommé "
+#~ "en {1}"
+
+#~ msgid "Choose the workspace folder"
+#~ msgstr "Choisissez l'espace de travail"
+
+#~ msgid "Choose a previous OrbisGIS workspace or create a new one"
+#~ msgstr ""
+#~ "Choisissez un espace de travail déjà existant ou bien créez en un nouveau"
+
+#~ msgid "Set as default?"
+#~ msgstr "Définir par défaut ?"
+
+#~ msgid ""
+#~ "Setting this workspace as default will allow you to skip this dialog next "
+#~ "time"
+#~ msgstr ""
+#~ "Définir cet espace de travail par défaut vous permettra d'éviter cette "
+#~ "fenêtre la prochaine fois."
+
+#~ msgid "Workspace Manager"
+#~ msgstr "Gestionnaire d'espace de travail"
+
+#~ msgid "Problem updating the workspace. "
+#~ msgstr "Problème de mise à jour de l'espace de travail."
+
+#~ msgid ""
+#~ "The workspace folder version is invalid (!=OrbisGIS {0}), or the folder "
+#~ "is not empty"
+#~ msgstr ""
+#~ "La version de l'espace de travail est invalide (!=OrbisGIS {0}), ou bien "
+#~ "le dossier n'est pas vide"
+
+#~ msgid "Save documents"
+#~ msgstr "Sauver les documents"
+
+#~ msgid ""
+#~ "Save the selected documents, and close this dialog if there is no more "
+#~ "modifed documents"
+#~ msgstr ""
+#~ "Sauver les documents sélectionnés, et fermer cette fenêtre s'il n'y a "
+#~ "plus de documents modifiés."
+
+#~ msgid "Save &All"
+#~ msgstr "Sauver &tout"
+
+#~ msgid "Save all documents and close this dialog"
+#~ msgstr "Sauver tous les documents et fermer cette fenêtre"
+
+#~ msgid "Save &None"
+#~ msgstr "Ne r&ien sauvegarder"
+
+#~ msgid "Discard all changes and close this dialog"
+#~ msgstr "Annuler toutes les modifications et fermer cette boîte de dialogue"
+
+#~ msgid "&Cancel"
+#~ msgstr "&Annuler"
+
+#~ msgid "Do nothing and lose nothing"
+#~ msgstr "Ne rien faire et ne rien perdre"
+
+#~ msgid "The document {0} cannot be saved due to the following error {1}"
+#~ msgstr ""
+#~ "Le document {0} ne peut être sauvé à cause de l''erreur suivante {1}"
+
+#~ msgid "The URL is not valid."
+#~ msgstr "L'URL n'est pas valide"
+
+#~ msgid ""
+#~ "The workspace doesn't exist. Please contact the administrator of the "
+#~ "service."
+#~ msgstr ""
+#~ "L'espace de travail n'existe pas. Veuillez contacter l'administrateur du "
+#~ "service."
+
+#~ msgid "The URL is not valid or the service not available."
+#~ msgstr "L'URL n'est pas valide ou bien le service n'est pas disponible."
+
+#~ msgid ""
+#~ "A function to share the current mapcontext in the mapcatalog service\n"
+#~ "The second permits to set the workspace name. If the workspace doesn't "
+#~ "exist a message appears."
+#~ msgstr ""
+#~ "Une fonction pour partager l'actuel contexte cartographique dans le "
+#~ "service de catalogage de carte.\n"
+#~ "La seconde permet de spécifier le nom de l'espace de travail. Si ce "
+#~ "dernier existe déjà, un message apparaît."
+
+#~ msgid "Return the current mapcontext bounding box as a geometry"
+#~ msgstr ""
+#~ "Renvoi l'enveloppe du contexte cartographique actuel en tant que géométrie"
+
+#~ msgid "Cannot import the style"
+#~ msgstr "Incapable d'importer le style"
+
+#~ msgid "Cannot add the layer to the mapcontext"
+#~ msgstr "Impossible d'ajouter la couche au contexte cartographique"
+
+#~ msgid ""
+#~ "A function to add a layer based on a table name\n"
+#~ "The second argument is optional. It permits to set a style to the layer."
+#~ msgstr ""
+#~ "Une fonction pour ajouter une couche, à partir du nom de la table\n"
+#~ "Le second argument est optionnel. Il permet d'associer un style à la "
+#~ "couche."
+
+#~ msgid "Cannot compute the full extent"
+#~ msgstr "Impossible de réaliser le zoom étendu"
+
+#~ msgid "Zoom to according a dataset"
+#~ msgstr "Zoomer sur l'emprise d'une donnée"
+
+#~ msgid "Problem when checking for an unbroken range of comments"
+#~ msgstr ""
+#~ "Erreur lors de la vérification de l'état d'un bloc de lignes mis en "
+#~ "commentaire"
+
+#~ msgid "Assuming the selection is not already block commented."
+#~ msgstr "La sélection n'est pas déjà commentée."
+
+#~ msgid "Invalid length or offset when trying to uncomment code."
+#~ msgstr "Erreur lors de la tentative de mise en commentaire"
+
+#~ msgid "Constraints"
+#~ msgstr "Constraintes"
+
+#~ msgid ""
+#~ "Changing the type will remove all constraints. Do you want to continue?"
+#~ msgstr ""
+#~ "Changer le type va supprimer toutes les contraintes. Voulez-vous "
+#~ "poursuivre ?"
+
+#~ msgid "Continue?"
+#~ msgstr "Continuer ?"
+
+#~ msgid "Type"
+#~ msgstr "Type"
+
+#~ msgid "Enter the {0} constraint parameter"
+#~ msgstr "Entrer le paramètre de la contrainte {0}"
+
+#~ msgid "Raster not supported"
+#~ msgstr "Raster non supporté"
+
+#~ msgid "Select the constraint"
+#~ msgstr "Sélectionner la contrainte"
+
+#~ msgid "Edit"
+#~ msgstr "Editer"
+
+#~ msgid "The entered value cannot be parsed"
+#~ msgstr "La valeur saisie ne peut pas être analysé"
+
+#~ msgid "Cannot list the directory content"
+#~ msgstr "Impossible de lister le contenu du dossier"
+
+#~ msgid "Cannot remove the folder {0}"
+#~ msgstr "Impossible de supprimer le dossier {0}"
+
+#~ msgid "The path {0} has been copied to the clipboard"
+#~ msgstr "Le chemin {0} a été copié dans le presse-papier"
+
+#~ msgid "Could not copy the folder path to the clipboard"
+#~ msgstr "Impossible de copier le dossier dans le presse-papier"
+
+#~ msgid "Copy the path"
+#~ msgstr "Copier le chemin"
+
+#~ msgid "Copy the folder path in the clipboard"
+#~ msgstr "Copier le chemin du dossier dans le presse-papier"
+
+#~ msgid "Update the content of this folder from the file system"
+#~ msgstr "Rafraîchir le contenu de ce dossier"
+
+#~ msgid "New folder"
+#~ msgstr "Nouveau dossier"
+
+#~ msgid "Create a sub-folder"
+#~ msgstr "Créer un sous-dossier"
+
+#~ msgid "Remove permanently the folder"
+#~ msgstr "Supprimer définitivement le dossier"
+
+#~ msgid "Enter the folder name"
+#~ msgstr "Entrer le nom du dossier"
+
+#~ msgid "The folder creation has failed"
+#~ msgstr "La création du dossier à échoué"
+
+#~ msgid "Destination file {0} already exists, cannot move {1}"
+#~ msgstr "Le fichier de destination {0} existe déjà, impossible de bouger {1}"
+
+#~ msgid "Drop the content in the folder.."
+#~ msgstr "Déposer le contenu dans le dossier ..."
+
+#~ msgid "Search replace"
+#~ msgstr "Chercher et remplacer"
+
+#~ msgid "Text not found !"
+#~ msgstr "Texte non trouvé !"
+
+#~ msgid "&Find"
+#~ msgstr "&Chercher"
+
+#~ msgid "&Replace"
+#~ msgstr "&Remplacer"
+
+#~ msgid "Replace &All"
+#~ msgstr "Remplacer &tout"
+
+#~ msgid "&Close"
+#~ msgstr "&Fermer"
+
+#~ msgid "&Match Case"
+#~ msgstr "&Même casse"
+
+#~ msgid "&Whole Words"
+#~ msgstr "Mots &entier"
+
+#~ msgid "Regular E&xpressions"
+#~ msgstr "E&xpressions régulière"
+
+#~ msgid "M&ark all"
+#~ msgstr "M&arquer tout"
+
+#~ msgid "Search &up"
+#~ msgstr "Chercher en &haut"
+
+#~ msgid "Search &down"
+#~ msgstr "Chercher en &bas"
+
+#~ msgid "Find what:"
+#~ msgstr "Chercher :"
+
+#~ msgid "Replace with:"
+#~ msgstr "Remplacer par:"
+
+#~ msgid "The provided filter factory name has not been registered"
+#~ msgstr "Le filtre n'a pas été enregistré"
+
+#~ msgid "Delete this filter"
+#~ msgstr "Supprimer ce filtre"
+
+#~ msgid "Add a new filter"
+#~ msgstr "Ajouter un nouveau filtre"

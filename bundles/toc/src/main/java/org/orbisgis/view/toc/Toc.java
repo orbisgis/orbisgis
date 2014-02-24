@@ -69,6 +69,7 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.core.layerModel.BeanLayer;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.Layer;
 import org.orbisgis.core.layerModel.LayerCollection;
@@ -80,10 +81,14 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.MapContextListener;
 import org.orbisgis.core.layerModel.SelectionEvent;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.CompositeSymbolizer;
+import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sif.SIFWizard;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
@@ -848,7 +853,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
          * of a legend that will be added to the selected style in a dedicated Rule.
          */
         public void onAddLegend(){
-            /** TODO restore legend edition
             Style[] styles = mapContext.getSelectedStyles();
             if(styles.length == 1){
                 Style base = styles[0];
@@ -868,7 +872,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     l.onStyleChanged(new PropertyChangeEvent(base, ILayer.PROP_STYLES, base, base));
                 }
             }
-             */
         }     
 
         /**

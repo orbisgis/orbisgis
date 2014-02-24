@@ -34,6 +34,7 @@ import java.awt.BorderLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 
 /**
  * This dialog can host a single SimplePanel. It has a OK
@@ -48,6 +49,7 @@ public class ApplyDialog extends AbstractOutsideFrame {
     private SimplePanel simplePanel;
     protected JPanel pnlButtons;
     private JButton btnApply;
+    private ActionListener applyListener;
 
     /**
      * Builds a new ApplyDialog
@@ -67,26 +69,14 @@ public class ApplyDialog extends AbstractOutsideFrame {
      */
     private void init(ActionListener applyListener) {
         this.setLayout(new BorderLayout());
-
+        this.applyListener = applyListener;
         btnOk = new JButton(I18N.tr("OK"));
         btnOk.setBorderPainted(false);
-        btnOk.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                exit(true);
-            }
-        });
+        btnOk.addActionListener(EventHandler.create(ActionListener.class, this , "onOk", ""));
         getRootPane().setDefaultButton(btnOk);
         btnCancel = new JButton(I18N.tr("Cancel"));
         btnCancel.setBorderPainted(false);
-        btnCancel.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                exit(false);
-            }
-        });
+        btnCancel.addActionListener(EventHandler.create(ActionListener.class, this , "onCancel"));
         btnApply = new JButton(I18N.tr("Apply"));
         btnApply.setBorderPainted(false);
         btnApply.addActionListener(applyListener);
@@ -101,6 +91,14 @@ public class ApplyDialog extends AbstractOutsideFrame {
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
+    public void onOk(ActionEvent e) {
+        applyListener.actionPerformed(e);
+        exit(false);
+    }
+
+    public void onCancel() {
+        exit(false);
+    }
     /**
      * Sets the center component og this dialog.
      * @param simplePanel The main component of the panel.
@@ -115,4 +113,5 @@ public class ApplyDialog extends AbstractOutsideFrame {
     protected SimplePanel getSimplePanel() {
         return simplePanel;
     }
+
 }

@@ -39,6 +39,7 @@
                 <configuration>
                     <instructions>
                         <Private-Package>org.orbisgis.toc.*</Private-Package>
+                        <Public-Package>org.orbisgis.toc</Public-Package>
                         <Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
                     </instructions>
                 </configuration>
