@@ -34,7 +34,7 @@ import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.components.MaxSizeSpinner;
 import org.orbisgis.view.toc.actions.cui.legend.components.MinSizeSpinner;
-import org.orbisgis.view.toc.actions.cui.legend.components.OnVertexOnCentroidButtonGroup;
+import org.orbisgis.view.toc.actions.cui.legend.components.OnVertexOnInteriorButtonGroup;
 import org.orbisgis.view.toc.actions.cui.legend.components.PPointFieldsComboBox;
 import org.orbisgis.view.toc.actions.cui.legend.components.SymbolUOMComboBox;
 import org.orbisgis.view.toc.actions.cui.legend.components.WKNComboBox;

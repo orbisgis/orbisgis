@@ -215,7 +215,7 @@ public final class PnlProportionalPointSE extends PnlProportional {
 
             // Update only a local preview until the changes are applied.
             // About #497
-            CanvasSE localPreview = new CanvasSE(usp.getSymbolizer(), ds);
+            CanvasSE localPreview = new CanvasSE(usp.getSymbolizer());
 
             glob.add(new LinePanel(usp,
                     localPreview,
