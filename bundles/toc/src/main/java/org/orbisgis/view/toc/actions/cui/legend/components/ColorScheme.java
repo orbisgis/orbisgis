@@ -162,7 +162,11 @@ public class ColorScheme {
      */
     public ColorScheme(String name, Collection<Color> colors) {
         this.name = name;
-        this.colors = new ArrayList<Color>(colors);
+        if(colors != null) {
+            this.colors = new ArrayList<>(colors);
+        } else {
+            this.colors = new ArrayList<>();
+        }
     }
 
     /**
