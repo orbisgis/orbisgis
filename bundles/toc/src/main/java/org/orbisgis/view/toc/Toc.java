@@ -879,24 +879,22 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
          * Add a new default style to the selected layer.
          */
         public void onAddStyle() {
-                /** TODO restore legend edition
-                ILayer[] layers = mapContext.getSelectedLayers();
-                if (layers.length == 1) {
-                    LegendWizard lw = new LegendWizard();
-                    ILayer layer = layers[0];
-                    if (isStyleAllowed(layer)) {
-                        MapTransform mt = new MapTransform();
-                        SIFWizard wizard = lw.getSIFWizard(layer, mt);
-                        if(UIFactory.showWizard(wizard)){
-                            Style s = lw.getStyle();
-                            layer.addStyle(s);
-                        }
-                    } else {
-                        LOGGER.info(I18N.tr("This functionality is not supported."));
+            ILayer[] layers = mapContext.getSelectedLayers();
+            if (layers.length == 1) {
+                LegendWizard lw = new LegendWizard();
+                ILayer layer = layers[0];
+                if (isStyleAllowed(layer)) {
+                    MapTransform mt = new MapTransform();
+                    SIFWizard wizard = lw.getSIFWizard(layer, mt);
+                    if(UIFactory.showWizard(wizard)){
+                        Style s = lw.getStyle();
+                        layer.addStyle(s);
                     }
-
+                } else {
+                    LOGGER.info(I18N.tr("This functionality is not supported."));
                 }
-                 */
+
+            }
         }
 
         /**

@@ -58,7 +58,7 @@ public class RowSetTest {
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        dataSource = SpatialH2UT.createDataSource("ReversibleRowSetTest", true);
+        dataSource = SpatialH2UT.createDataSource(RowSetTest.class.getSimpleName(), true);
     }
 
     @Test
