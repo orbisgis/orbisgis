@@ -3,6 +3,7 @@ package org.orbisgis.view.geocatalog.jobs;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.coreapi.api.DriverFunctionContainer;
 import org.orbisgis.progress.ProgressMonitor;
@@ -55,8 +56,8 @@ public class ImportFiles implements BackgroundJob {
                 String ext = FilenameUtils.getExtension(file.getName());
                 DriverFunction driverFunction = driverFunctionContainer.getDriverFromExt(ext, driverType);
                 if(driverFunction != null) {
-                    String tableName = dataManager.findUniqueTableName(FileUtils.getNameFromURI(file.toURI()));
-                    driverFunction.importFile(connection, tableName ,file, new H2GISProgressMonitor(filePm));
+                    TableLocation tableName = new TableLocation("","",dataManager.findUniqueTableName(FileUtils.getNameFromURI(file.toURI())));
+                    driverFunction.importFile(connection, tableName.toString() ,file, new H2GISProgressMonitor(filePm));
                 } else {
                     LOGGER.error(I18N.tr("No driver found for {0} extension", ext));
                 }

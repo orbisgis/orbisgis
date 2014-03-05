@@ -60,7 +60,7 @@ public class InfoTool extends AbstractRectangleTool {
     private static Logger UILOGGER = Logger.getLogger("gui." + InfoTool.class);
     private static Logger POPUPLOGGER = Logger.getLogger("popup." + InfoTool.class);
     private static final int MAX_PRINTED_ROWS = 100;
-    private static final int MAX_FIELD_LENGTH = 10;
+    private static final int MAX_FIELD_LENGTH = 512;
     /** Info is shown on popup if the attributes length is not superior than this constant*/
     private static final int POPUP_MAX_LENGTH = 200;
 

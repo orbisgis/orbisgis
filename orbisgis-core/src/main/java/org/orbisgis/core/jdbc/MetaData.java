@@ -76,15 +76,6 @@ public class MetaData {
     }
 
     /**
-     * Return escaped field name for sql request.
-     * @param fieldName Field name ex: My field
-     * @return quoted string ex: "My field"
-     */
-    public static String escapeFieldName(String fieldName) {
-        return "\""+fieldName+"\"";
-    }
-
-    /**
      *
      * @param tableName Table identifier
      * @param meta DatabaseMetaData instance
@@ -105,7 +96,7 @@ public class MetaData {
      * @param pkColumn Integer primary key column index of the table {@link JDBCUtilities#getIntegerPrimaryKey(java.sql.DatabaseMetaData, String)}
      * @return Map\<primary key, row id\>. Row id is the {@link java.sql.ResultSet#getRow()} of the "select * from table"
      */
-    public static Map<Integer,Integer> primaryKeyToRowId(Connection connection, String table, int pkColumn) throws SQLException {
+    public static Map<Object,Integer> primaryKeyToRowId(Connection connection, String table, int pkColumn) throws SQLException {
         TableLocation tableLocation = TableLocation.parse(table);
         int rowCount=0;
         try(Statement st = connection.createStatement()) {
@@ -116,10 +107,10 @@ public class MetaData {
                 }
             }
             String pkFieldName = JDBCUtilities.getFieldName(meta,table, pkColumn);
-            Map<Integer,Integer> rowMap = new HashMap<>(rowCount);
+            Map<Object,Integer> rowMap = new HashMap<>(rowCount);
             try(ResultSet rs = st.executeQuery("SELECT "+pkFieldName+" from "+tableLocation.toString())) {
                 if(rs.next()) {
-                    rowMap.put(rs.getInt(1), rs.getRow());
+                    rowMap.put(rs.getObject(1), rs.getRow());
                 }
             }
             return rowMap;
@@ -244,5 +235,32 @@ public class MetaData {
             default:
                 throw new IllegalArgumentException(I18N.tr("Column type is not managed"));
         }
+    }
+
+    /**
+     * Find the primary key name of the table.
+     * @param connection Connection
+     * @param table Table location
+     * @return The primary key name or empty
+     * @throws SQLException
+     */
+    public static String getPkName(Connection connection, String table, boolean systemColumn) throws SQLException {
+        TableLocation tableLocation = TableLocation.parse(table);
+        String pkName = "";
+        try(Statement st = connection.createStatement()) {
+            if(systemColumn && JDBCUtilities.isH2DataBase(connection.getMetaData())) {
+                try(ResultSet rs = st.executeQuery("select _ROWID_ from "+tableLocation+" LIMIT 0")) {
+                    return rs.getMetaData().getColumnName(1);
+                } catch (SQLException ex) {
+                    //Ignore, key does not exists
+                }
+            }
+            int pkId = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), tableLocation.toString());
+            if(pkId > 0) {
+                // This table has a Primary key, get the field name
+                pkName = JDBCUtilities.getFieldName(connection.getMetaData(), tableLocation.toString(), pkId);
+            }
+        }
+        return pkName;
     }
 }

@@ -7,7 +7,6 @@ import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coreapi.api.ReadRowSet;
 import org.orbisgis.progress.NullProgressMonitor;
@@ -96,32 +95,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         } catch (SQLException ex) {
             throw new IllegalArgumentException(ex);
         }
-    }
-
-    /**
-     * Find the primary key name of the table.
-     * @param dataSource Connection properties
-     * @param location Table location
-     * @return The primary key name or empty
-     * @throws SQLException
-     */
-    public static String getPkName(DataSource dataSource, TableLocation location) throws SQLException {
-        String pkName = "";
-        try(Connection connection = dataSource.getConnection();
-            Statement st = connection.createStatement()) {
-            int pkId = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), location.toString());
-            if(JDBCUtilities.isH2DataBase(connection.getMetaData())) {
-                try(ResultSet rs = st.executeQuery("select _ROWID_ from "+location+" LIMIT 0")) {
-                    pkName = rs.getMetaData().getColumnName(1);
-                } catch (SQLException ex) {
-                    //Ignore, key does not exists
-                }
-            } else if(pkId > 0) {
-                // This table has a Primary key, get the field name
-                pkName = JDBCUtilities.getFieldName(connection.getMetaData(), location.toString(), pkId);
-            }
-        }
-        return pkName;
     }
 
     private void setWasNull(boolean wasNull) {
@@ -252,7 +225,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             throw new SQLException("Command does not contain a table name, should be like this \"select * from tablename\"");
         }
         this.location = TableLocation.parse(table);
-        this.pk_name = ReadRowSetImpl.getPkName(dataSource, location);
+        try(Connection connection = dataSource.getConnection()) {
+            this.pk_name = MetaData.getPkName(connection, location.toString(), true);
+        }
     }
 
     @Override
@@ -268,7 +243,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     /**
      * Initialize this row set. This method cache primary key.
      * @param location Table location
-     * @param pk_name Primary key name {@link org.orbisgis.core.jdbc.ReadRowSetImpl#getPkName(javax.sql.DataSource, org.h2gis.utilities.TableLocation)}
+     * @param pk_name Primary key name {@link org.orbisgis.core.jdbc.MetaData#getPkName(java.sql.Connection, String, boolean)}
      * @param pm Progress monitor Progression of primary key caching
      */
     public void initialize(TableLocation location,String pk_name, ProgressMonitor pm) throws SQLException {

@@ -35,6 +35,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.jdbc.MetaData;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -64,7 +66,7 @@ public class ClassificationUtils {
             throws SQLException, ParameterException {
         List<Double> values = new ArrayList<>();
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery("SELECT " + MetaData.escapeFieldName(value.toString()) + " fieldName FROM " + table + " ORDER BY fieldName")) {
+             ResultSet rs = st.executeQuery("SELECT " + TableLocation.escapeIdentifier(value.toString()) + " fieldName FROM " + table + " ORDER BY fieldName")) {
             while (rs.next()) {
                 values.add(rs.getDouble(1));
             }
@@ -86,8 +88,8 @@ public class ClassificationUtils {
             throws SQLException, ParameterException {
         double[] minAndMax = new double[]{Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery("SELECT MIN(" + MetaData.escapeFieldName(value.toString()) + ") minValue," +
-                     " MAX(" + MetaData.escapeFieldName(value.toString()) + ") maxValue FROM " + table)) {
+             ResultSet rs = st.executeQuery("SELECT MIN(" + TableLocation.escapeIdentifier(value.toString()) + ") minValue," +
+                     " MAX(" + TableLocation.escapeIdentifier(value.toString()) + ") maxValue FROM " + table)) {
             if (rs.next()) {
                 minAndMax[0] = rs.getDouble(1);
                 minAndMax[1] = rs.getDouble(2);

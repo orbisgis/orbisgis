@@ -29,9 +29,11 @@
 package org.orbisgis.core.jdbc;
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.coreapi.api.ReadRowSet;
@@ -52,6 +54,7 @@ import java.util.*;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
+
 /**
  * JDBC operations that does not affect database.
  * @author Nicolas Fortin
@@ -63,6 +66,7 @@ public class ReadTable {
     private static Logger LOGGER = Logger.getLogger(ReadTable.class);
 
     public static Collection<Integer> getSortedColumnRowIndex(Connection connection, String table, String columnName, boolean ascending, ProgressMonitor progressMonitor) throws SQLException {
+        columnName = TableLocation.escapeIdentifier(columnName);
         TableLocation tableLocation = TableLocation.parse(table);
         Collection<Integer> columnValues;
         try(Statement st = connection.createStatement()) {
@@ -83,7 +87,7 @@ public class ReadTable {
                     // Do not cache values
                     // Use SQL sort
                     DatabaseMetaData meta = connection.getMetaData();
-                    String pkFieldName = JDBCUtilities.getFieldName(meta, table, pkIndex);
+                    String pkFieldName = TableLocation.escapeIdentifier(JDBCUtilities.getFieldName(meta, table, pkIndex));
                     String desc = "";
                     if(!ascending) {
                         desc = " DESC";
@@ -308,7 +312,7 @@ public class ReadTable {
                     throw new SQLException(I18N.tr("Table table {0} does not contain any geometry fields", tableName));
                 }
                 String geomField = geomFields.get(0);
-                String request = "SELECT ST_Envelope("+MetaData.escapeFieldName(geomField)+", ST_SRID("+MetaData.escapeFieldName(geomField)+")) env_geom FROM "+tableName;
+                String request = "SELECT ST_Envelope("+TableLocation.escapeIdentifier(geomField)+", ST_SRID("+TableLocation.escapeIdentifier(geomField)+")) env_geom FROM "+tableName;
                 ProgressMonitor selectPm = pm.startTask(rowsId.size());
                 try(ReadRowSet rs = manager.createReadRowSet()) {
                     rs.setCommand(request);
@@ -335,5 +339,53 @@ public class ReadTable {
                 pm.removePropertyChangeListener(cancelListener);
             }
         }
+    }
+
+    /**
+     *
+     * @param dataManager RowSet factory
+     * @param table Table identifier
+     * @param geometryColumn Name of the geometry column
+     * @param selection Selection polygon
+     * @param contains If true selection is used with contains, else this is intersects.
+     * @param pkToRowId Map from {@link org.orbisgis.core.jdbc.MetaData#primaryKeyToRowId(java.sql.Connection, String, int)}
+     * @return List of row id.
+     * @throws SQLException
+     */
+    public static Set<Integer> getTableRowIdByEnvelope(DataManager dataManager, String table,
+                                                       String geometryColumn, Geometry selection, boolean contains,
+                                                       Map<Object, Integer> pkToRowId) throws SQLException {
+        Set<Integer> newSelection = new HashSet<>(50);
+        TableLocation tableLocation = TableLocation.parse(table);
+        // There is a where condition then system row index can't be used
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
+            String pkName = MetaData.getPkName(connection, tableLocation.toString(), false);
+            if(!pkName.isEmpty() && pkToRowId != null) {
+                String sqlFunction = contains ? "ST_CONTAINS(?, %s)" : "ST_INTERSECTS(?, %s)";
+                try(PreparedStatement st = connection.prepareStatement(String.format("SELECT %s FROM %s WHERE %s && ? AND " + sqlFunction,
+                        TableLocation.escapeIdentifier(pkName), tableLocation,
+                        TableLocation.escapeIdentifier(geometryColumn), TableLocation.escapeIdentifier(geometryColumn)))) {
+                    st.setObject(1, selection);
+                    st.setObject(2, selection);
+                    try(SpatialResultSet rs = st.executeQuery().unwrap(SpatialResultSet.class)) {
+                        while (rs.next()) {
+                            newSelection.add(pkToRowId.get(rs.getObject(1)));
+                        }
+                    }
+                }
+            } else {
+                // Pk is not available, query is much slower
+                try(ReadRowSet r = dataManager.createReadRowSet()) {
+                    r.setCommand(String.format("SELECT %s FROM %s",TableLocation.escapeIdentifier(geometryColumn), tableLocation.toString()));
+                    r.execute();
+                    while(r.next()) {
+                        if((contains && selection.contains(r.getGeometry())) || (!contains && selection.intersects(r.getGeometry()))) {
+                            newSelection.add(r.getRow());
+                        }
+                    }
+                }
+            }
+        }
+        return newSelection;
     }
 }

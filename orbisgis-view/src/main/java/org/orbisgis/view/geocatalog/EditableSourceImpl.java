@@ -29,6 +29,7 @@ package org.orbisgis.view.geocatalog;
 
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.core.jdbc.MetaData;
 import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.jdbc.ReadRowSetImpl;
 import org.orbisgis.core.jdbc.ReversibleRowSetImpl;
@@ -41,6 +42,7 @@ import org.orbisgis.viewapi.edition.EditableSource;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -115,8 +117,8 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
     public void open(ProgressMonitor progressMonitor)
             throws UnsupportedOperationException, EditableElementException {
         if(rowSet == null) {
-            try {
-                String pkName = ReadRowSetImpl.getPkName(dataManager.getDataSource(), TableLocation.parse(tableReference));
+            try(Connection connection = dataManager.getDataSource().getConnection()) {
+                String pkName = MetaData.getPkName(connection, tableReference, true);
                 rowSet = new ReversibleRowSetImpl(dataManager.getDataSource(), dataManager, TableLocation.parse(tableReference), pkName, progressMonitor);
             } catch (SQLException | IllegalArgumentException ex) {
                 throw new EditableElementException(ex);
