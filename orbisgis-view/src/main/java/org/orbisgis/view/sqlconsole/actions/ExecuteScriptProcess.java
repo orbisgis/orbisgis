@@ -103,7 +103,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
                 if(doExecuteQuery) {
                     try {
                         LOGGER.info(query + ": ");
-                        LOGGER.info("\n"+ReadTable.resultSetToString(query, st, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, true));
+                        LOGGER.info("\n"+ReadTable.resultSetToString(query, st, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, true, true));
                     } catch (SQLException ex) {
                         //May not accept executeQuery but simple query
                         if(!lc_query.startsWith("select")) {

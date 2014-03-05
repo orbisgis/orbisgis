@@ -50,6 +50,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.NumberFormat;
 import java.util.*;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
@@ -173,7 +174,7 @@ public class ReadTable {
     }
 
 
-    public static String resultSetToString(String query, Statement st,int maxFieldLength, int maxPrintedRows, boolean addColumns) throws SQLException {
+    public static String resultSetToString(String query, Statement st,int maxFieldLength, int maxPrintedRows, boolean addColumns, boolean alignColumns) throws SQLException {
         // Select generate a ResultSet
         ResultSet rs = st.executeQuery(query);
         // Print headers
@@ -184,17 +185,32 @@ public class ReadTable {
         String[] header = new String[columnCount];
         for(int idColumn = 1; idColumn <= columnCount; idColumn++) {
             header[idColumn-1] = metaData.getColumnLabel(idColumn)+"("+metaData.getColumnTypeName(idColumn)+")";
-            formatStringBuilder.append("%-"+maxFieldLength+"s");
+            if(alignColumns) {
+                formatStringBuilder.append("%-");
+                formatStringBuilder.append(maxFieldLength);
+                formatStringBuilder.append("s ");
+            } else {
+                formatStringBuilder.append("%s ");
+            }
         }
         if(addColumns) {
             lines.append(String.format(formatStringBuilder.toString(), header));
             lines.append("\n");
         }
         int shownLines = 0;
+        NumberFormat decimalFormat = NumberFormat.getInstance(Locale.getDefault());
+        decimalFormat.setGroupingUsed(false);
+        decimalFormat.setMaximumFractionDigits(16);
         while(rs.next() && shownLines < maxPrintedRows) {
             String[] row = new String[columnCount];
             for(int idColumn = 1; idColumn <= columnCount; idColumn ++) {
-                String value = rs.getString(idColumn);
+                Object valObj = rs.getObject(idColumn);
+                String value;
+                if(valObj instanceof Number) {
+                    value = decimalFormat.format(valObj);
+                } else {
+                    value = rs.getString(idColumn);
+                }
                 if(value != null) {
                     if(value.length() > maxFieldLength) {
                         value = value.substring(0, maxFieldLength-2) + "..";
@@ -208,7 +224,11 @@ public class ReadTable {
             lines.append(String.format(formatStringBuilder.toString(),row));
             lines.append("\n");
         }
-        return lines.toString();
+        if(lines.length() != 0) {
+            return lines.toString();
+        } else {
+            return I18N.tr("No attributes to show");
+        }
     }
 
     /**

@@ -30,6 +30,8 @@ package org.orbisgis.mapeditor.map.tools;
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.geom.Rectangle2D;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Observable;
 import javax.sql.DataSource;
@@ -126,8 +128,28 @@ public class InfoTool extends AbstractRectangleTool {
             try(Connection connection = SFSUtilities.wrapConnection(sds.getConnection())) {
                 String geomFieldName = SFSUtilities.getGeometryFields(connection,
                         TableLocation.parse(tableReference)).get(0);
-                String query = String.format("SELECT * FROM %s WHERE %s && ST_GeomFromText('%s')",tableReference,TableLocation.quoteIdentifier(geomFieldName),envelopeWKT);
-                String lines = ReadTable.resultSetToString(query, connection.createStatement(), MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, false);
+                DatabaseMetaData meta = connection.getMetaData();
+                TableLocation tableLocation = TableLocation.parse(tableReference);
+                // Fetch column names, remove geometry column
+                StringBuilder fields = new StringBuilder();
+                try(ResultSet rs = meta.getColumns(tableLocation.getCatalog(), tableLocation.getSchema(),
+                        tableLocation.getTable(), null)) {
+                    while(rs.next()) {
+                        if(!geomFieldName.equals(rs.getString("COLUMN_NAME"))) {
+                            if(fields.length()!=0) {
+                                fields.append(", ");
+                            }
+                            fields.append(TableLocation.quoteIdentifier(rs.getString("COLUMN_NAME")));
+                        }
+                    }
+                }
+                String query = String.format("SELECT %s FROM %s WHERE %s && ST_GeomFromText('%s') AND ST_Intersects(%s, ST_GeomFromText('%s'))",
+                        fields.toString(),
+                        tableReference,
+                        TableLocation.quoteIdentifier(geomFieldName),envelopeWKT,
+                        TableLocation.quoteIdentifier(geomFieldName),envelopeWKT);
+                String lines = ReadTable.resultSetToString(query, connection.createStatement(), MAX_FIELD_LENGTH,
+                        MAX_PRINTED_ROWS, false, false);
                 UILOGGER.info(lines);
                 if(lines.length() <= POPUP_MAX_LENGTH) {
                     POPUPLOGGER.info(lines);

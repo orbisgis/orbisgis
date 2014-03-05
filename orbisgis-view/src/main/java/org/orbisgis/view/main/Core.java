@@ -558,16 +558,6 @@ public class Core {
         mainContext.dispose();
 
         UIFactory.setMainFrame(null);
-
-        // Shutdown the plugin framework
-        try {
-            pluginFramework.waitForBundlesStableState(1000);
-            pluginFramework.stop();
-        } catch (InterruptedException ex) {
-            LOGGER.error(ex.getLocalizedMessage(), ex);
-        } catch (BundleException ex) {
-            LOGGER.error(ex.getLocalizedMessage(), ex);
-        }
     }
 
     /**
