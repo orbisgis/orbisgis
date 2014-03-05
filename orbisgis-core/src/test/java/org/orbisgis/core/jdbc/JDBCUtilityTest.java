@@ -69,10 +69,10 @@ public class JDBCUtilityTest {
             st.execute("DROP TABLE INTTABLE IF EXISTS");
             try {
                 // Test without PK
-                st.execute("CREATE TABLE INTTABLE (\"val-s\" integer)");
+                st.execute("CREATE TABLE INTTABLE (\"vals\" integer)");
                 st.execute("INSERT INTO INTTABLE VALUES (20), (5), (15), (4), (1)");
                 // Test ascending
-                Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "val-s", true, new NullProgressMonitor());
+                Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", true, new NullProgressMonitor());
                 Iterator<Integer> itTest = sortedRowId.iterator();
                 assertEquals(5, itTest.next().intValue());
                 assertEquals(4, itTest.next().intValue());
@@ -80,7 +80,7 @@ public class JDBCUtilityTest {
                 assertEquals(3, itTest.next().intValue());
                 assertEquals(1, itTest.next().intValue());
                 // Test descending
-                sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "inttable", "val-s", false, new NullProgressMonitor());
+                sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", false, new NullProgressMonitor());
                 itTest = sortedRowId.iterator();
                 assertEquals(1, itTest.next().intValue());
                 assertEquals(3, itTest.next().intValue());
@@ -93,10 +93,10 @@ public class JDBCUtilityTest {
             st.execute("DROP TABLE INTTABLE IF EXISTS");
             try {
                 // Test with PK
-                st.execute("CREATE TABLE INTTABLE (id integer primary key, \"val-s\" integer)");
+                st.execute("CREATE TABLE INTTABLE (id integer primary key, \"vals\" integer)");
                 st.execute("INSERT INTO INTTABLE VALUES (1,20), (2,5), (4,15), (8,4), (16,1)");
                 // Test ascending
-                Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "val-s", true, new NullProgressMonitor());
+                Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", true, new NullProgressMonitor());
                 Iterator<Integer> itTest = sortedRowId.iterator();
                 assertEquals(5, itTest.next().intValue());
                 assertEquals(4, itTest.next().intValue());
@@ -104,7 +104,7 @@ public class JDBCUtilityTest {
                 assertEquals(3, itTest.next().intValue());
                 assertEquals(1, itTest.next().intValue());
                 // Test descending
-                sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "val-s", false, new NullProgressMonitor());
+                sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", false, new NullProgressMonitor());
                 itTest = sortedRowId.iterator();
                 assertEquals(1, itTest.next().intValue());
                 assertEquals(3, itTest.next().intValue());

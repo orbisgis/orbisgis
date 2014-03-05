@@ -126,7 +126,7 @@ public class InfoTool extends AbstractRectangleTool {
             try(Connection connection = SFSUtilities.wrapConnection(sds.getConnection())) {
                 String geomFieldName = SFSUtilities.getGeometryFields(connection,
                         TableLocation.parse(tableReference)).get(0);
-                String query = String.format("SELECT * FROM %s WHERE %s && ST_GeomFromText('%s')",tableReference,MetaData.escapeFieldName(geomFieldName),envelopeWKT);
+                String query = String.format("SELECT * FROM %s WHERE %s && ST_GeomFromText('%s')",tableReference,TableLocation.quoteIdentifier(geomFieldName),envelopeWKT);
                 String lines = ReadTable.resultSetToString(query, connection.createStatement(), MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, false);
                 UILOGGER.info(lines);
                 if(lines.length() <= POPUP_MAX_LENGTH) {

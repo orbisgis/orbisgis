@@ -29,6 +29,7 @@
 package org.orbisgis.view.sqlconsole.ui;
 
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.jdbc.MetaData;
@@ -73,11 +74,12 @@ public class ScriptPanelTransferHandler extends TransferHandler {
     public boolean importData(JComponent comp, Transferable t) {
         if(t.isDataFlavorSupported(TransferableSource.sourceFlavor)) {
             try(Connection connection = dataSource.getConnection()) {
+                DatabaseMetaData metaData = connection.getMetaData();
+                boolean isH2 = JDBCUtilities.isH2DataBase(metaData);
                 String[] sources = (String[]) t.getTransferData(TransferableSource.sourceFlavor);
                 for(String source : sources) {
                     TableLocation table = TableLocation.parse(source);
                     // Fetch field names
-                    DatabaseMetaData metaData = connection.getMetaData();
                     try(ResultSet rs = metaData.getColumns(table.getCatalog(), table.getSchema(), table.getTable(), null)) {
                         Map<Integer, String> columns = new HashMap<>();
                         while(rs.next()) {
@@ -87,12 +89,12 @@ public class ScriptPanelTransferHandler extends TransferHandler {
                         StringBuilder fields = new StringBuilder();
                         for(int colId : new TreeSet<>(columns.keySet())) {
                             String fieldName = columns.remove(colId);
-                            fields.append(MetaData.escapeFieldName(fieldName));
+                            fields.append(TableLocation.quoteIdentifier(fieldName, isH2));
                             if(!columns.isEmpty()) {
                                 fields.append(", ");
                             }
                         }
-                        textArea.append(String.format("SELECT %s FROM %s;\n",fields.toString(),table));
+                        textArea.append(String.format("SELECT %s FROM %s;\n",fields.toString(),table.toString(isH2)));
                     }
                 }
                 return true;

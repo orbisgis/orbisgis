@@ -66,7 +66,7 @@ public class ClassificationUtils {
             throws SQLException, ParameterException {
         List<Double> values = new ArrayList<>();
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery("SELECT " + TableLocation.escapeIdentifier(value.toString()) + " fieldName FROM " + table + " ORDER BY fieldName")) {
+             ResultSet rs = st.executeQuery("SELECT " + TableLocation.quoteIdentifier(value.toString()) + " fieldName FROM " + table + " ORDER BY fieldName")) {
             while (rs.next()) {
                 values.add(rs.getDouble(1));
             }
@@ -88,8 +88,8 @@ public class ClassificationUtils {
             throws SQLException, ParameterException {
         double[] minAndMax = new double[]{Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery("SELECT MIN(" + TableLocation.escapeIdentifier(value.toString()) + ") minValue," +
-                     " MAX(" + TableLocation.escapeIdentifier(value.toString()) + ") maxValue FROM " + table)) {
+             ResultSet rs = st.executeQuery("SELECT MIN(" + TableLocation.quoteIdentifier(value.toString()) + ") minValue," +
+                     " MAX(" + TableLocation.quoteIdentifier(value.toString()) + ") maxValue FROM " + table)) {
             if (rs.next()) {
                 minAndMax[0] = rs.getDouble(1);
                 minAndMax[1] = rs.getDouble(2);

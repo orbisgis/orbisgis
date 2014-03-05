@@ -66,7 +66,7 @@ public class ReadTable {
     private static Logger LOGGER = Logger.getLogger(ReadTable.class);
 
     public static Collection<Integer> getSortedColumnRowIndex(Connection connection, String table, String columnName, boolean ascending, ProgressMonitor progressMonitor) throws SQLException {
-        columnName = TableLocation.escapeIdentifier(columnName);
+        columnName = TableLocation.quoteIdentifier(columnName);
         TableLocation tableLocation = TableLocation.parse(table);
         Collection<Integer> columnValues;
         try(Statement st = connection.createStatement()) {
@@ -87,7 +87,7 @@ public class ReadTable {
                     // Do not cache values
                     // Use SQL sort
                     DatabaseMetaData meta = connection.getMetaData();
-                    String pkFieldName = TableLocation.escapeIdentifier(JDBCUtilities.getFieldName(meta, table, pkIndex));
+                    String pkFieldName = TableLocation.quoteIdentifier(JDBCUtilities.getFieldName(meta, table, pkIndex));
                     String desc = "";
                     if(!ascending) {
                         desc = " DESC";
@@ -312,7 +312,7 @@ public class ReadTable {
                     throw new SQLException(I18N.tr("Table table {0} does not contain any geometry fields", tableName));
                 }
                 String geomField = geomFields.get(0);
-                String request = "SELECT ST_Envelope("+TableLocation.escapeIdentifier(geomField)+", ST_SRID("+TableLocation.escapeIdentifier(geomField)+")) env_geom FROM "+tableName;
+                String request = "SELECT ST_Envelope("+TableLocation.quoteIdentifier(geomField)+", ST_SRID("+TableLocation.quoteIdentifier(geomField)+")) env_geom FROM "+tableName;
                 ProgressMonitor selectPm = pm.startTask(rowsId.size());
                 try(ReadRowSet rs = manager.createReadRowSet()) {
                     rs.setCommand(request);
@@ -363,8 +363,8 @@ public class ReadTable {
             if(!pkName.isEmpty() && pkToRowId != null) {
                 String sqlFunction = contains ? "ST_CONTAINS(?, %s)" : "ST_INTERSECTS(?, %s)";
                 try(PreparedStatement st = connection.prepareStatement(String.format("SELECT %s FROM %s WHERE %s && ? AND " + sqlFunction,
-                        TableLocation.escapeIdentifier(pkName), tableLocation,
-                        TableLocation.escapeIdentifier(geometryColumn), TableLocation.escapeIdentifier(geometryColumn)))) {
+                        TableLocation.quoteIdentifier(pkName), tableLocation,
+                        TableLocation.quoteIdentifier(geometryColumn), TableLocation.quoteIdentifier(geometryColumn)))) {
                     st.setObject(1, selection);
                     st.setObject(2, selection);
                     try(SpatialResultSet rs = st.executeQuery().unwrap(SpatialResultSet.class)) {
@@ -376,7 +376,7 @@ public class ReadTable {
             } else {
                 // Pk is not available, query is much slower
                 try(ReadRowSet r = dataManager.createReadRowSet()) {
-                    r.setCommand(String.format("SELECT %s FROM %s",TableLocation.escapeIdentifier(geometryColumn), tableLocation.toString()));
+                    r.setCommand(String.format("SELECT %s FROM %s",TableLocation.quoteIdentifier(geometryColumn), tableLocation.toString()));
                     r.execute();
                     while(r.next()) {
                         if((contains && selection.contains(r.getGeometry())) || (!contains && selection.intersects(r.getGeometry()))) {

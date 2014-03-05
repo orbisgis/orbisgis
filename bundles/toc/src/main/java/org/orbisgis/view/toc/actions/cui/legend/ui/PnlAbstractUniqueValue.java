@@ -30,6 +30,7 @@ package org.orbisgis.view.toc.actions.cui.legend.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.jdbc.MetaData;
 import org.orbisgis.core.jdbc.ReadTable;
@@ -297,7 +298,7 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
                 Statement st = connection.createStatement()) {
                 PropertyChangeListener cancelPm = EventHandler.create(PropertyChangeListener.class, st, "cancel");
                 progress.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelPm);
-                try(ResultSet rs = st.executeQuery("SELECT DISTINCT "+MetaData.escapeFieldName(fieldName)+" FROM "+ getTable())) {
+                try(ResultSet rs = st.executeQuery("SELECT DISTINCT "+ TableLocation.quoteIdentifier(fieldName)+" FROM "+ getTable())) {
                     final ProgressMonitor pm = progress.startTask(I18N.tr("Retrieving classes"),
                             ReadTable.getRowCount(connection, getTable()));
                     final int warn = 100;

@@ -46,6 +46,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.jdbc.MetaData;
 import org.orbisgis.coreapi.api.ReadRowSet;
@@ -137,7 +138,7 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
                     if(!tablePk.isEmpty()) {
                         final ReadRowSet rowSet = source.getRowSet();
                         StringBuilder request = new StringBuilder(String.format("SELECT %s FROM %s WHERE %s",
-                                MetaData.escapeFieldName(tablePk),
+                                TableLocation.quoteIdentifier(tablePk),
                                 source.getTableReference(), whereText));
                         LOGGER.info(I18N.tr("Find field value with the following request:\n{0}",request.toString()));
                         try(ResultSet rs = st.executeQuery(request.toString())) {

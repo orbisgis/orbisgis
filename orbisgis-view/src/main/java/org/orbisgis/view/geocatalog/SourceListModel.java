@@ -216,7 +216,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
             // Fetch Geometry tables
             Map<String,String> tableGeometry = new HashMap<>();
             try(Statement st = connection.createStatement();
-                ResultSet rs = st.executeQuery(String.format("SELECT * FROM %s",TableLocation.parse("geometry_columns")))) {
+                ResultSet rs = st.executeQuery("SELECT * FROM geometry_columns")) {
                     while(rs.next()) {
                         tableGeometry.put(new TableLocation(rs.getString("F_TABLE_CATALOG"),
                                 rs.getString("F_TABLE_SCHEMA"), rs.getString("F_TABLE_NAME")).toString(), rs.getString("TYPE"));

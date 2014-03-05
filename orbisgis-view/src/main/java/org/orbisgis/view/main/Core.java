@@ -561,6 +561,7 @@ public class Core {
 
         // Shutdown the plugin framework
         try {
+            pluginFramework.waitForBundlesStableState(1000);
             pluginFramework.stop();
         } catch (InterruptedException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
