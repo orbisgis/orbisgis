@@ -60,11 +60,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.coreapi.api.ReversibleRowSet;
+import org.orbisgis.core.jdbc.ReadTable;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.jdbc.MetaData;
 import org.orbisgis.core.layerModel.ILayer;
@@ -77,12 +79,17 @@ import org.orbisgis.mapeditor.map.tools.generated.Selection;
  * Tool to select geometries
  * 
  * @author Fernando Gonzalez Cortes
+ * @author Nicolas Fortin
  */
 public abstract class AbstractSelectionTool extends Selection {
         private static final Color FILL_COLOR = new Color(255, 204, 51, 50);
         private static final Color SELECTED_COLOR = new Color(125, 100, 25);
+        private String loadedTable = "";
+        private Map<Object, Integer> keyToRowId;
 
-        private Rectangle2DDouble rect = new Rectangle2DDouble();
+
+
+    private Rectangle2DDouble rect = new Rectangle2DDouble();
         protected ArrayList<Handler> selected = new ArrayList<Handler>();
 
         @Override
@@ -128,9 +135,19 @@ public abstract class AbstractSelectionTool extends Selection {
 
             // Get all primary value where default geometry intersects a bounding box
             try(Connection connection = SFSUtilities.wrapConnection(activeLayer.getDataManager().getDataSource().getConnection())) {
+                if(keyToRowId == null || !loadedTable.equalsIgnoreCase(activeLayer.getTableReference())) {
+                    loadedTable = activeLayer.getTableReference();
+                    String pkName = MetaData.getPkName(connection, loadedTable, false);
+                    if(!pkName.isEmpty()) {
+                        keyToRowId = MetaData.primaryKeyToRowId(connection, loadedTable, pkName);
+                    } else {
+                        keyToRowId = new HashMap<>();
+                    }
+                }
                 String geomFieldName = SFSUtilities.getGeometryFields(connection,
                         TableLocation.parse(activeLayer.getTableReference())).get(0);
-                IntegerUnion newSelection = new IntegerUnion();
+                Set<Integer> newSelection = ReadTable.getTableRowIdByEnvelope(mc.getDataManager(),
+                        activeLayer.getTableReference(), geomFieldName, selectionRect, !intersects, keyToRowId);
                 if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
                     IntegerUnion newSel = new IntegerUnion(activeLayer.getSelection());
                     for(int el : newSelection) {

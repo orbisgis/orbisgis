@@ -93,23 +93,21 @@ public class MetaData {
      * Compute the map of primary key to row id.
      * @param connection Active connection, not closed by this function
      * @param table Table identifier [[catalog.]schema.]table
-     * @param pkColumn Integer primary key column index of the table {@link JDBCUtilities#getIntegerPrimaryKey(java.sql.DatabaseMetaData, String)}
+     * @param pkFieldName Primary key column of the table {@link org.orbisgis.core.jdbc.MetaData#getPkName(java.sql.Connection, String, boolean)}
      * @return Map\<primary key, row id\>. Row id is the {@link java.sql.ResultSet#getRow()} of the "select * from table"
      */
-    public static Map<Object,Integer> primaryKeyToRowId(Connection connection, String table, int pkColumn) throws SQLException {
+    public static Map<Object,Integer> primaryKeyToRowId(Connection connection, String table, String pkFieldName) throws SQLException {
         TableLocation tableLocation = TableLocation.parse(table);
         int rowCount=0;
         try(Statement st = connection.createStatement()) {
-            DatabaseMetaData meta = connection.getMetaData();
             try(ResultSet rs = st.executeQuery("SELECT COUNT(*) cpt from "+tableLocation.toString())) {
                 if(rs.next()) {
                     rowCount = rs.getInt(1);
                 }
             }
-            String pkFieldName = JDBCUtilities.getFieldName(meta,table, pkColumn);
             Map<Object,Integer> rowMap = new HashMap<>(rowCount);
             try(ResultSet rs = st.executeQuery("SELECT "+pkFieldName+" from "+tableLocation.toString())) {
-                if(rs.next()) {
+                while(rs.next()) {
                     rowMap.put(rs.getObject(1), rs.getRow());
                 }
             }

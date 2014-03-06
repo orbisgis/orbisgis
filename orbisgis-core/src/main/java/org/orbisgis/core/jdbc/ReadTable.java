@@ -368,7 +368,7 @@ public class ReadTable {
      * @param geometryColumn Name of the geometry column
      * @param selection Selection polygon
      * @param contains If true selection is used with contains, else this is intersects.
-     * @param pkToRowId Map from {@link org.orbisgis.core.jdbc.MetaData#primaryKeyToRowId(java.sql.Connection, String, int)}
+     * @param pkToRowId Map from {@link org.orbisgis.core.jdbc.MetaData#primaryKeyToRowId(java.sql.Connection, String, String)}
      * @return List of row id.
      * @throws SQLException
      */
