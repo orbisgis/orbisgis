@@ -36,17 +36,25 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.sql.DataSource;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.utilities.JDBCUtilities;
 import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Arrays;
 import org.orbisgis.core.Services;
 import org.orbisgis.coreapi.api.DataManager;
@@ -54,8 +62,12 @@ import org.orbisgis.coreapi.api.DriverFunctionContainer;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
+import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.sif.multiInputPanel.ComboBoxChoice;
+import org.orbisgis.sif.multiInputPanel.DirectoryComboBoxChoice;
+import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.utils.FileUtils;
 import org.orbisgis.view.background.BackgroundJob;
@@ -64,6 +76,7 @@ import org.orbisgis.view.background.H2GISProgressMonitor;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
 import org.orbisgis.view.geocatalog.jobs.ImportFiles;
+import org.orbisgis.view.workspace.ViewWorkspace;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
@@ -324,7 +337,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         }
 
         private void importFile(DriverFunction.IMPORT_DRIVER_TYPE type) {
-            OpenFilePanel linkSourcePanel = new OpenFilePanel("Geocatalog.LinkFile" ,I18N.tr("Select the file to "));
+            OpenFilePanel linkSourcePanel = new OpenFilePanel("Geocatalog.LinkFile" ,I18N.tr("Select the file to import"));
             for(DriverFunction driverFunction : fileDrivers) {
                 try {
                     if(driverFunction.getImportDriverType() == type) {
@@ -470,32 +483,60 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          * The user can load several files from a folder
          */
         public void onMenuAddFilesFromFolder() {
-                /*
-                final OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(I18N.tr("Add files from a folder"));
-                folderPanel.loadState();
-                if (UIFactory.showDialog(folderPanel, true, true)) {
-                        File[] files = folderPanel.getSelectedFiles();
-                        for (final File file : files) {
-                                // for each folder, we apply the method processFolder.
-                                // We use the filter selected by the user in the panel
-                                // to succeed in this operation.
-                                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                                bm.backgroundOperation(new BackgroundJob() {
+            addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+        }
 
-                                        @Override
-                                        public String getTaskName() {
-                                                return I18N.tr("Add from folder");
-                                        }
-
-                                        @Override
-                                        public void run(org.orbisgis.progress.ProgressMonitor pm) {
-                                                processFolder(file, folderPanel.getSelectedFilter(), pm);
-                                        }
-                                });
-
+        /**
+         * The user can load several files from a folder
+         */
+        public void addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE type) {
+            OpenFolderPanel folderSourcePanel = new OpenFolderPanel("Geocatalog.LinkFolder" ,I18N.tr("Select the folder to import"));
+            for(DriverFunction driverFunction : fileDrivers) {
+                try {
+                    if(driverFunction.getImportDriverType() == type) {
+                        for(String fileExt : driverFunction.getImportFormats()) {
+                            folderSourcePanel.addFilter(fileExt, driverFunction.getFormatDescription(fileExt));
                         }
+                    }
+                } catch (Exception ex) {
+                    LOGGER.debug(ex.getLocalizedMessage(), ex);
                 }
-                */
+            }
+            folderSourcePanel.loadState();
+                if (UIFactory.showDialog(folderSourcePanel, true, true)) {
+                    File directory = folderSourcePanel.getSelectedFile();
+                    Collection files = org.apache.commons.io.FileUtils.listFiles(directory,
+                            new ImportFileFilter(folderSourcePanel.getSelectedFilter()), DirectoryFileFilter.DIRECTORY);
+                    List<File> fileToLoad = new ArrayList<>(files.size());
+                    for (Object file : files) {
+                            if(file instanceof File) {
+                                fileToLoad.add((File)file);
+                            }
+                    }
+                    // for each folder, we apply the method processFolder.
+                    // We use the filter selected by the user in the panel
+                    // to succeed in this operation.
+                    BackgroundManager bm = Services.getService(BackgroundManager.class);
+                    bm.backgroundOperation(new ImportFiles(this, this, fileToLoad, dataManager, DriverFunction.IMPORT_DRIVER_TYPE.LINK));
+                }
+        }
+
+        private static class ImportFileFilter implements IOFileFilter {
+            private FileFilter fileFilter;
+
+            private ImportFileFilter(FileFilter fileFilter) {
+                this.fileFilter = fileFilter;
+            }
+
+            @Override
+            public boolean accept(File file) {
+                return fileFilter.accept(file);
+            }
+
+            @Override
+            public boolean accept(File dir, String name) {
+                return accept(new File(dir, name));
+            }
         }
 
         /**
@@ -591,29 +632,38 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 */
         }
         private void createPopupActions() {
+            boolean isEmbeddedDataBase = true;
+            try(Connection connection = dataManager.getDataSource().getConnection()) {
+                DatabaseMetaData meta = connection.getMetaData();
+                isEmbeddedDataBase = JDBCUtilities.isH2DataBase(meta) && !meta.getURL().startsWith("jdbc:h2:tcp:");
+            } catch (SQLException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+            }
             //Popup:Add
-            popupActions.addAction(new DefaultAction(PopupMenu.M_ADD,I18N.tr("Add")).setMenuGroup(true).setLogicalGroup(PopupMenu.GROUP_ADD));
-            //Popup:Add:File
-            popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_FILE,I18N.tr("File"),
-                    I18N.tr("Add a file from hard drive."),
-                    OrbisGISIcon.getIcon("page_white_add"),EventHandler.create(ActionListener.class,
-                    this,"onMenuAddLinkedFile"),null).setParent(PopupMenu.M_ADD));
-            //Popup:Add:Folder
-            popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_FOLDER,I18N.tr("Folder"),
-                    I18N.tr("Add a set of file from an hard drive folder."),
-                    OrbisGISIcon.getIcon("folder_add"),EventHandler.create(ActionListener.class,
-                    this,"onMenuAddFilesFromFolder"),null).setParent(PopupMenu.M_ADD));
+            if(isEmbeddedDataBase) {
+                popupActions.addAction(new DefaultAction(PopupMenu.M_ADD,I18N.tr("Add")).setMenuGroup(true).setLogicalGroup(PopupMenu.GROUP_ADD));
+                //Popup:Add:File
+                popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_FILE,I18N.tr("File"),
+                        I18N.tr("Add a file from hard drive."),
+                        OrbisGISIcon.getIcon("page_white_add"),EventHandler.create(ActionListener.class,
+                        this,"onMenuAddLinkedFile"),null).setParent(PopupMenu.M_ADD));
+                //Popup:Add:Folder
+                popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_FOLDER,I18N.tr("Folder"),
+                        I18N.tr("Add a set of file from an hard drive folder."),
+                        OrbisGISIcon.getIcon("folder_add"),EventHandler.create(ActionListener.class,
+                        this,"onMenuAddFilesFromFolder"),null).setParent(PopupMenu.M_ADD));
 
-            //Popup:Add:DataBase
-            popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_DB,I18N.tr("DataBase"),
-                    I18N.tr("Add one or more tables from a DataBase"),
-                    OrbisGISIcon.getIcon("database_add"),EventHandler.create(ActionListener.class,
-                    this,"onMenuAddFromDataBase"),null).setParent(PopupMenu.M_ADD));
+                //Popup:Add:DataBase
+                //popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_DB,I18N.tr("DataBase"),
+                //        I18N.tr("Add one or more tables from a DataBase"),
+                //        OrbisGISIcon.getIcon("database_add"),EventHandler.create(ActionListener.class,
+                //        this,"onMenuAddFromDataBase"),null).setParent(PopupMenu.M_ADD));
+            }
             //Popup:Add:WMS
-            popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_WMS,I18N.tr("WMS server"),
-                    I18N.tr("Add a WebMapService"),
-                    OrbisGISIcon.getIcon("server_connect"),EventHandler.create(ActionListener.class,
-                    this,"onMenuAddWMSServer"),null).setParent(PopupMenu.M_ADD));
+            //popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_WMS,I18N.tr("WMS server"),
+            //        I18N.tr("Add a WebMapService"),
+            //        OrbisGISIcon.getIcon("server_connect"),EventHandler.create(ActionListener.class,
+            //        this,"onMenuAddWMSServer"),null).setParent(PopupMenu.M_ADD));
             //Popup:Import
             popupActions.addAction(new DefaultAction(PopupMenu.M_IMPORT,I18N.tr("Import")).setMenuGroup(true).setLogicalGroup(PopupMenu.GROUP_IMPORT));
             //Popup:Import:File

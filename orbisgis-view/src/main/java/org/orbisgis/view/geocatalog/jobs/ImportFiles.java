@@ -61,6 +61,7 @@ public class ImportFiles implements BackgroundJob {
                 } else {
                     LOGGER.error(I18N.tr("No driver found for {0} extension", ext));
                 }
+                filePm.endTask();
             }
         } catch (SQLException ex) {
             LOGGER.error(I18N.tr("Cannot import the file"), ex);
