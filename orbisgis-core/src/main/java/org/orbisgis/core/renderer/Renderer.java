@@ -31,11 +31,8 @@ package org.orbisgis.core.renderer;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
@@ -57,6 +54,7 @@ import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.VectorSymbolizer;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.stream.GeoStream;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.h2gis.utilities.SFSUtilities;
@@ -377,11 +375,10 @@ public abstract class Renderer {
         private void drawStreamLayer(Graphics2D g2, ILayer layer, int width, int height, Envelope extent, ProgressMonitor pm) {
                 try {
                         layer.open();
-                        GeoStream geoStream = layer.getTableReference().getStream(i);
-
+                        GeoStream geoStream = layer.getStream();
                         Image img = geoStream.getMap(width, height, extent, pm);
                         g2.drawImage(img, 0, 0, null);
-                } catch (LayerException e) {
+                } catch (LayerException | IOException e) {
                         LOGGER.error(
                                 I18N.tr("Cannot get Stream image"), e);
                 }

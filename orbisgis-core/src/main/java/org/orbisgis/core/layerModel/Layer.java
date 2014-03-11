@@ -46,6 +46,8 @@ import java.util.Set;
 
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtility;
+import org.orbisgis.core.stream.GeoStream;
+import org.orbisgis.core.stream.WMSStreamSource;
 import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
@@ -234,4 +236,13 @@ public class Layer extends BeanLayer {
 	public boolean isStream() throws LayerException {
 		return tableReference.isEmpty() && dataURI != null;
 	}
+
+    @Override
+    public GeoStream getStream() throws LayerException {
+        try {
+            return new WMSStreamSource(dataURI);
+        } catch (Exception ex) {
+            throw new LayerException(ex);
+        }
+    }
 }

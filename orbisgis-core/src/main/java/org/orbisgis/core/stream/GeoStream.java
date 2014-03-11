@@ -29,11 +29,10 @@
 package org.orbisgis.core.stream;
 
 import java.awt.Image;
+import java.io.IOException;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.orbisgis.progress.ProgressMonitor;
-
-import org.gdms.driver.DriverException;
 
 /**
  * A stream object that can be queried in order to get a specific image.
@@ -48,11 +47,11 @@ public interface GeoStream {
          * @param width the width
          * @param height the height
          * @param extent the required extent
-         * @param pm 
+         * @param pm Progress monitor
          * @return the resulting image
-         * @throws DriverException  
+         * @throws IOException Communication exception
          */
-         Image getMap(int width, int height, Envelope extent, ProgressMonitor pm) throws DriverException;
+         Image getMap(int width, int height, Envelope extent, ProgressMonitor pm) throws IOException;
          
          /**
           * @return the full extend of the data behind this stream

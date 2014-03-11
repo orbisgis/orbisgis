@@ -28,6 +28,8 @@
  */
 package org.orbisgis.core.stream;
 
+import org.h2gis.utilities.URIUtility;
+
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;

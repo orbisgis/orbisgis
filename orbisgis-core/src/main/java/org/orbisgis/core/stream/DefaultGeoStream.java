@@ -31,7 +31,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.data.stream;
+package org.orbisgis.core.stream;
 
 import java.awt.Image;
 

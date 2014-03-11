@@ -29,7 +29,7 @@
  *
  * or contact directly: info@orbisgis.org
  */
-package org.gdms.driver.wms;
+package org.orbisgis.core.stream;
 
 import java.awt.Image;
 import java.io.IOException;
@@ -81,31 +81,16 @@ import org.gdms.sql.function.spatial.geometry.crs.ST_Transform;
  * @author Antoine Gourlay
  * @author Vincent Dépériers
  */
-public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriver {
+public final class SimpleWMSDriver {
 
     public static final String DRIVER_NAME = "Simple WMS driver";
     private static final Logger LOG = Logger.getLogger(SimpleWMSDriver.class);
-    private Schema schema;
     private GeoStream geoStream;
     private WMService wmsClient;
     private Capabilities cap;
     private MapLayer mapLayer;
 
-    /**
-     * Creates a new WMS driver.
-     *
-     * @throws DriverException
-     */
-    public SimpleWMSDriver() throws DriverException {
-        DefaultMetadata metadata = new DefaultMetadata();
-        metadata.addField("stream", Type.STREAM);
-
-        schema = new DefaultSchema(DRIVER_NAME + this.hashCode());
-        schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
-    }
-
-    @Override
-    public void open(WMSStreamSource streamSource) throws DriverException {
+    public void open(WMSStreamSource streamSource) throws IOException {
         LOG.trace("Opening WMS Stream");
         try {
             //Initialise the WMSClient and get the capabilities
@@ -136,9 +121,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                     new Envelope(bbox.getWestBound(), bbox.getEastBound(),
                     bbox.getSouthBound(), bbox.getNorthBound()));
         } catch (ConnectException e) {
-            throw new DriverException(e);
-        } catch (IOException e) {
-            throw new DriverException(e);
+            throw new IOException(e);
         }
     }
 
