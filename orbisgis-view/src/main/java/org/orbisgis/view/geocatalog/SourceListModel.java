@@ -289,25 +289,6 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
     }
 
     /**
-     * This method clear all source in the SourceManager except source Table
-     */
-    public void clearAllSourceExceptSystemTables() throws SQLException {
-        try (Connection connection = dataSource.getConnection() ;
-                ResultSet rs = connection.getMetaData().getTables(null, "PUBLIC", null, new String[]{"TABLE", "VIEW"})) {
-            List<TableLocation> tableToDrop = new LinkedList<>();
-            while(rs.next()) {
-                String tableCatalog = rs.getString("TABLE_CAT");
-                String tableSchema = rs.getString("TABLE_SCHEM");
-                String tableName = rs.getString("TABLE_NAME");
-                tableToDrop.add(new TableLocation(tableCatalog, tableSchema, tableName));
-            }
-            for(TableLocation table : tableToDrop) {
-                connection.createStatement().execute("DROP TABLE "+ table);
-            }
-        }
-    }
-
-    /**
      * Set the filter and refresh the Source list
      * according to the new filter
      * @param filters A collection of filters

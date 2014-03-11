@@ -75,6 +75,7 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.H2GISProgressMonitor;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
+import org.orbisgis.view.geocatalog.jobs.DropTable;
 import org.orbisgis.view.geocatalog.jobs.ImportFiles;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
@@ -392,24 +393,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         }
 
         /**
-         * The user click on the menu item called "clear geocatalog"
-         */
-        public void onMenuClearGeoCatalog() {
-                //User must validate this action
-                int option = JOptionPane.showConfirmDialog(this,
-                        I18N.tr("All data source of the GeoCatalog will be removed. Are you sure ?"),
-                        I18N.tr("Clear the GeoCatalog"),
-                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                if (option == JOptionPane.YES_OPTION) {
-                        try {
-                            sourceListContent.clearAllSourceExceptSystemTables();
-                        } catch (SQLException ex) {
-                            LOGGER.error(I18N.tr("Could not remove tables"), ex);
-                        }
-                }
-        }
-
-        /**
          * The user can remove added source from the geocatalog
          */
         public void onMenuRemoveSource() {
@@ -419,24 +402,9 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                     I18N.tr("Delete GeoCatalog tables"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (option == JOptionPane.YES_OPTION) {
-                try(Connection connection = dataManager.getDataSource().getConnection()) {
-                    connection.setAutoCommit(false);
-                    for (String resource : res) {
-                        TableLocation tableLocation = TableLocation.parse(resource);
-                        try(Statement st = connection.createStatement()) {
-                            st.execute(String.format("drop table %s", tableLocation));
-                        } catch (SQLException ex) {
-                            LOGGER.error(I18N.tr("Cannot remove the source {0}", resource), ex);
-                            connection.rollback();
-                            return;
-                        }
-                    }
-                    connection.commit();
-                } catch (SQLException ex) {
-                    LOGGER.error(I18N.trc("Tables are database tables, drop means delete tables", "Cannot drop the tables"), ex);
-                }
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.nonBlockingBackgroundOperation(new DropTable(dataManager.getDataSource(), res));
             }
-            refreshSourceList();
         }
 
         /**
@@ -487,6 +455,13 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         }
 
         /**
+         * The user can copy several files from a folder
+         */
+        public void onMenuImportFilesFromFolder() {
+            addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+        }
+
+        /**
          * The user can load several files from a folder
          */
         public void addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE type) {
@@ -517,7 +492,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                     // We use the filter selected by the user in the panel
                     // to succeed in this operation.
                     BackgroundManager bm = Services.getService(BackgroundManager.class);
-                    bm.backgroundOperation(new ImportFiles(this, this, fileToLoad, dataManager, DriverFunction.IMPORT_DRIVER_TYPE.LINK));
+                    bm.nonBlockingBackgroundOperation(new ImportFiles(this, this, fileToLoad, dataManager, type));
                 }
         }
 
@@ -671,6 +646,10 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                     I18N.tr("Copy the content of a file from hard drive."),
                     OrbisGISIcon.getIcon("page_white_add"),EventHandler.create(ActionListener.class,
                     this,"onMenuImportFile"),null).setParent(PopupMenu.M_IMPORT));
+            popupActions.addAction(new DefaultAction(PopupMenu.M_IMPORT_FOLDER,I18N.tr("Folder"),
+                    I18N.tr("Add a set of file from an hard drive folder."),
+                    OrbisGISIcon.getIcon("folder_add"),EventHandler.create(ActionListener.class,
+                    this,"onMenuImportFilesFromFolder"),null).setParent(PopupMenu.M_IMPORT));
 
             //Popup:Save
             popupActions.addAction(new ActionOnSelection(
@@ -700,11 +679,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                     I18N.tr("Read the content of the database"),
                     OrbisGISIcon.getIcon("arrow_refresh"),EventHandler.create(ActionListener.class,
                     this,"refreshSourceList"),null).setLogicalGroup(PopupMenu.GROUP_OPEN));
-
-            //Clear Geo-catalog
-            popupActions.addAction(new ActionOnNonEmptySourceList(PopupMenu.M_CLEAR_CATALOG,I18N.tr("Clear the GeoCatalog"),
-                    I18N.tr("Remove all sources in this list"),OrbisGISIcon.getIcon("bin_closed"),
-                    EventHandler.create(ActionListener.class,this,"onMenuClearGeoCatalog"), sourceListContent).setLogicalGroup(PopupMenu.GROUP_CLOSE));
         }
 
         public void refreshSourceList() {
