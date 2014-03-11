@@ -403,7 +403,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (option == JOptionPane.YES_OPTION) {
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.nonBlockingBackgroundOperation(new DropTable(dataManager.getDataSource(), res));
+                bm.nonBlockingBackgroundOperation(new DropTable(dataManager.getDataSource(), res, this));
             }
         }
 
