@@ -221,6 +221,8 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
                         tableGeometry.put(new TableLocation(rs.getString("F_TABLE_CATALOG"),
                                 rs.getString("F_TABLE_SCHEMA"), rs.getString("F_TABLE_NAME")).toString(), rs.getString("TYPE"));
                     }
+            } catch (SQLException ex) {
+                LOGGER.warn(I18N.tr("Geometry columns information of tables are not available"), ex);
             }
             // Fetch all tables
             try(ResultSet rs = connection.getMetaData().getTables(null, null, null, SHOWN_TABLE_TYPES)) {
