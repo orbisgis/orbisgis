@@ -41,6 +41,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.h2gis.utilities.TableLocation;
@@ -54,7 +55,7 @@ public class Layer extends BeanLayer {
     // When dataURI is not specified, this layer use the tableReference instead of external URI
     private static final String JDBC_REFERENCE_SCHEME = "WORKSPACE";
 
-	private String tableReference;
+	private String tableReference = "";
     private URI dataURI;
     private DataManager dataManager;
     private Envelope envelope;
@@ -70,10 +71,12 @@ public class Layer extends BeanLayer {
         this.dataURI = dataURI;
         this.dataManager = dataManager;
         if(JDBC_REFERENCE_SCHEME.equalsIgnoreCase(dataURI.getScheme())) {
-            String path =  dataURI.getPath(); // ex: /myschema.mytable
-            tableReference = path.substring(1);
-        } else {
-            tableReference = "";
+            try {
+                Map<String,String> query = URIUtility.getQueryKeyValuePairs(URI.create(dataURI.getSchemeSpecificPart()));
+                tableReference = new TableLocation(query.get("catalog"),query.get("schema"),query.get("table")).toString();
+            } catch (UnsupportedEncodingException ex) {
+                LOGGER.trace(ex.getLocalizedMessage(), ex);
+            }
         }
     }
 
@@ -184,8 +187,8 @@ public class Layer extends BeanLayer {
 
     @Override
 	public boolean isVectorial() throws LayerException {
-        if(getTableReference()==null) {
-            throw new LayerException("This layer is not opened");
+        if(getTableReference().isEmpty()) {
+            return false;
         }
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             try {
@@ -229,6 +232,6 @@ public class Layer extends BeanLayer {
 
 	@Override
 	public boolean isStream() throws LayerException {
-		return false;
+		return tableReference.isEmpty() && dataURI != null;
 	}
 }
