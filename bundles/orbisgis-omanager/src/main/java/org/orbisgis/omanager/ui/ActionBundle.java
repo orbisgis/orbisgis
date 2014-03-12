@@ -62,7 +62,11 @@ public class ActionBundle extends AbstractAction {
 
     public void actionPerformed(ActionEvent actionEvent) {
         // If this is done outside the SwingEventThread then a thread lock can occur
-        action.actionPerformed(actionEvent);
+        try {
+            action.actionPerformed(actionEvent);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
+        }
     }
 
 }
