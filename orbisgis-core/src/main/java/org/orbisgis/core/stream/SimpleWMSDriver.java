@@ -34,6 +34,10 @@ package org.orbisgis.core.stream;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 
@@ -51,46 +55,42 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.cts.crs.CRSException;
 import org.cts.crs.CoordinateReferenceSystem;
-import org.gdms.data.stream.WMSStreamSource;
-import org.gdms.data.values.*;
+import org.h2gis.utilities.SpatialResultSet;
 import org.orbisgis.progress.ProgressMonitor;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.schema.DefaultMetadata;
-import org.gdms.data.schema.DefaultSchema;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.schema.Schema;
-import org.gdms.data.stream.DefaultGeoStream;
-import org.gdms.data.stream.GeoStream;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeDefinition;
-import org.gdms.driver.AbstractDataSet;
-import org.gdms.driver.DataSet;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.StreamDriver;
-import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.source.SourceManager;
-import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.spatial.geometry.crs.ST_Transform;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
+
+import javax.sql.DataSource;
 
 /**
  * A driver that accesses a WMS stream.
  *
  * This can be used to open and access a source described by a
- * {@link org.gdms.data.stream.WMSStreamSource} whose StreamType is "wms".
+ * {@link org.orbisgis.core.stream.WMSStreamSource} whose StreamType is "wms".
  *
  * @author Antoine Gourlay
  * @author Vincent Dépériers
  */
-public final class SimpleWMSDriver {
+public final class SimpleWMSDriver implements GeoStream {
 
-    public static final String DRIVER_NAME = "Simple WMS driver";
+    private static final I18n I18N = I18nFactory.getI18n(SimpleWMSDriver.class);
     private static final Logger LOG = Logger.getLogger(SimpleWMSDriver.class);
-    private GeoStream geoStream;
     private WMService wmsClient;
     private Capabilities cap;
     private MapLayer mapLayer;
+    private Envelope envelope;
+    private WMSStreamSource streamSource;
+    private DataSource dataSource;
+
+    /**
+     * @param dataSource A connection to a spatial database where ST_Transform function is available.
+     */
+    public SimpleWMSDriver(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     public void open(WMSStreamSource streamSource) throws IOException {
+        this.streamSource = streamSource;
         LOG.trace("Opening WMS Stream");
         try {
             //Initialise the WMSClient and get the capabilities
@@ -115,58 +115,34 @@ public final class SimpleWMSDriver {
             MapLayer ml = cap.getTopLayer();
             mapLayer = find(name, ml);
             BoundingBox bbox = getLayerBoundingBox(mapLayer, streamSource.getCRS());
-
-            //Create the GeoStream object
-            geoStream = new DefaultGeoStream(this, streamSource,
-                    new Envelope(bbox.getWestBound(), bbox.getEastBound(),
-                    bbox.getSouthBound(), bbox.getNorthBound()));
+            envelope = new Envelope(bbox.getWestBound(), bbox.getEastBound(),
+                    bbox.getSouthBound(), bbox.getNorthBound());
         } catch (ConnectException e) {
             throw new IOException(e);
         }
     }
 
     @Override
-    public void close() throws DriverException {
-        wmsClient = null;
-    }
-
-    @Override
-    public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
-        if (fieldId == 0) {
-            return ValueFactory.createValue(geoStream);
-        } else {
-            throw new DriverException("Internal error: asked for field " + fieldId
-                    + " on a Stream.");
+    public Image getMap(int width, int height, Envelope extent, ProgressMonitor pm) throws IOException {
+        if (streamSource == null) {
+            throw new IOException(I18N.tr("WMS stream is not initialised"));
         }
-    }
+        MapRequest mr = new MapRequest(wmsClient);
+        mr.setVersion(wmsClient.getVersion());
+        List<String> layers = new ArrayList<String>(1);
+        layers.add(mapLayer.getName());
+        mr.setLayerNames(layers);
+        MapImageFormatChooser mifc = new MapImageFormatChooser(wmsClient.getVersion());
+        mr.setFormat(mifc.chooseFormat(cap.getMapFormats()));
+        BoundingBox bb = new BoundingBox(streamSource.getSRS(), extent.getMinX(),
+                extent.getMinY(), extent.getMaxX(), extent.getMaxY());
+        mr.setBoundingBox(bb);
+        mr.setFormat(streamSource.getImageFormat());
+        mr.setImageWidth(width);
+        mr.setImageHeight(height);
+        mr.setTransparent(true);
 
-    @Override
-    public Image getMap(int width, int height, Envelope extent, ProgressMonitor pm) throws DriverException {
-        if (!isOpen()) {
-            throw new DriverException("Driver is closed!");
-        }
-
-        try {
-            WMSStreamSource streamSource = geoStream.getStreamSource();
-            MapRequest mr = new MapRequest(wmsClient);
-            mr.setVersion(wmsClient.getVersion());
-            List<String> layers = new ArrayList<String>(1);
-            layers.add(mapLayer.getName());
-            mr.setLayerNames(layers);
-            MapImageFormatChooser mifc = new MapImageFormatChooser(wmsClient.getVersion());
-            mr.setFormat(mifc.chooseFormat(cap.getMapFormats()));
-            BoundingBox bb = new BoundingBox(streamSource.getSRS(), extent.getMinX(),
-                    extent.getMinY(), extent.getMaxX(), extent.getMaxY());
-            mr.setBoundingBox(bb);
-            mr.setFormat(streamSource.getImageFormat());
-            mr.setImageWidth(width);
-            mr.setImageHeight(height);
-            mr.setTransparent(true);
-
-            return mr.getImage();
-        } catch (IOException e) {
-            throw new DriverException(e);
-        }
+        return mr.getImage();
     }
 
     private MapLayer find(String name, MapLayer root) {
@@ -193,7 +169,7 @@ public final class SimpleWMSDriver {
      * retrieve an explicitly advertised bounding box defined on the server with its associated SRS and we
      * project it to the SRS we desire.
      */
-    private BoundingBox getLayerBoundingBox(MapLayer layer, String srs) throws DriverException {
+    private BoundingBox getLayerBoundingBox(MapLayer layer, String srs) throws IOException {
         // Obtain the bbox at current level
         BoundingBox bbox = layer.getBoundingBox(srs);
         // Some wrong bbox to not have null pointer exceptions
@@ -205,122 +181,34 @@ public final class SimpleWMSDriver {
             } else {
                 original = layer.getLatLonBoundingBox();
             }
-            Envelope env = new Envelope(bbox.getWestBound(), bbox.getEastBound(),
-                    bbox.getSouthBound(), bbox.getNorthBound());
+            Envelope env = new Envelope(original.getWestBound(), original.getEastBound(),
+                    original.getSouthBound(), original.getNorthBound());
             String originalSrs = original.getSRS();
             GeometryFactory gf = new GeometryFactory();
             Polygon poly = (Polygon) gf.toGeometry(env);
-            ST_Transform transformFunction = new ST_Transform();
-            try {
-                if (BoundingBox.LATLON.equals(originalSrs)) {
-                    originalSrs = "EPSG:4326";
+            try(Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement();
+                SpatialResultSet rs = st.executeQuery(String.format("SELECT ST_TRANSFORM(ST_GeomFromText('%s',%s), %s)",
+                        poly.toText(),originalSrs,srs)).unwrap(SpatialResultSet.class)) {
+                if(rs.next()) {
+                    // Fetch result
+                    Envelope retEnv = rs.getGeometry().getEnvelopeInternal();
+                    return new BoundingBox(srs, retEnv.getMinX(), retEnv.getMinY(), retEnv.getMaxX(), retEnv.getMaxY());
                 }
-                CoordinateReferenceSystem inputCRS = DataSourceFactory.getCRSFactory().getCRS(originalSrs);
-                Value val = transformFunction.evaluate(null,
-                        ValueFactory.createValue(poly, inputCRS),
-                        ValueFactory.createValue(srs));
-                Envelope retEnv = val.getAsGeometry().getEnvelopeInternal();
-                BoundingBox retBB = new BoundingBox(srs, retEnv.getMinX(), retEnv.getMinY(), retEnv.getMaxX(), retEnv.getMaxY());
-                return retBB;
-            } catch (FunctionException fe) {
-                throw new DriverException("Could not find a valid bounding box for the layer " + layer.getName()
-                        + " : " + fe.getCause());
-            } catch (CRSException ex) {
-                throw new DriverException("Could not find a valid coordinate reference system for the layer " + layer.getName()
-                        + " : " + ex.getCause());
+            } catch (SQLException ex) {
+                throw new IOException(ex);
             }
         }
         return bbox;
     }
 
     @Override
-    public long getRowCount() throws DriverException {
-        return 1;
+    public Envelope getEnvelope() {
+        return envelope;
     }
 
     @Override
-    public Number[] getScope(int dimension) throws DriverException {
-        switch (dimension) {
-            case DataSet.X: {
-                return new Number[]{geoStream.getEnvelope().getMaxX(), geoStream.getEnvelope().getMinX()};
-            }
-            case DataSet.Y: {
-                return new Number[]{geoStream.getEnvelope().getMaxY(), geoStream.getEnvelope().getMinY()};
-            }
-            default:
-                throw new DriverException("Unimplemented dimension");
-        }
-    }
-
-    @Override
-    public Metadata getMetadata() throws DriverException {
-        return schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
-    }
-
-    @Override
-    public boolean isOpen() {
-        return wmsClient != null;
-    }
-
-    @Override
-    public String[] getStreamTypes() {
-        return new String[]{"wms"};
-    }
-
-    @Override
-    public Schema getSchema() throws DriverException {
-        return schema;
-    }
-
-    @Override
-    public DataSet getTable(String name) {
-        if (!name.equals(DriverManager.DEFAULT_SINGLE_TABLE_NAME)) {
-            return null;
-        }
-        return this;
-    }
-
-    @Override
-    public void setDataSourceFactory(DataSourceFactory dsf) {
-    }
-
-    @Override
-    public int getSupportedType() {
-        return SourceManager.STREAM;
-    }
-
-    @Override
-    public int getType() {
-        return SourceManager.STREAM;
-    }
-
-    @Override
-    public String getTypeName() {
-        return "Stream WMS";
-    }
-
-    @Override
-    public String getTypeDescription() {
-        return "Simple WMS Stream Driver";
-    }
-
-    @Override
-    public String getDriverId() {
-        return DRIVER_NAME;
-    }
-
-    @Override
-    public boolean isCommitable() {
-        return false;
-    }
-
-    @Override
-    public TypeDefinition[] getTypesDefinitions() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String validateMetadata(Metadata metadata) throws DriverException {
-        return null;
+    public WMSStreamSource getStreamSource() {
+        return streamSource;
     }
 }

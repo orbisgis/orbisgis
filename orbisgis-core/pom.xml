@@ -290,5 +290,16 @@
             <artifactId>orbisgis-core-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>wms-client</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cts</artifactId>
+            <version>${cts-version}</version>
+            <!-- https://github.com/irstv/CTS -->
+        </dependency>
     </dependencies>
 </project>
