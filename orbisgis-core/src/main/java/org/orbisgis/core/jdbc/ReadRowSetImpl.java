@@ -55,7 +55,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private BidiMap<Integer, Object> rowPk;
     private String pk_name = "";
     private String select_fields = "*";
-    private static final String H2_SYSTEM_PK_COLUMN = "_ROWID_";
     private int firstGeometryIndex = -1;
     private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
     private final Lock readLock = rwl.writeLock(); // Read here is exclusive
@@ -154,11 +153,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     // Acquire row values by using primary key
                     try(Connection connection = dataSource.getConnection();
                         PreparedStatement st = connection.prepareStatement(getCommand()+" WHERE "+pk_name+" = ?")) {
-                        if(!isUsePkRowLine()) {
-                            st.setObject(1, rowPk.get((int)rowId));
-                        } else {
-                            st.setObject(1, rowId);
-                        }
+                        st.setObject(1, rowPk.get((int)rowId));
                         try(ResultSet lineRs = st.executeQuery()) {
                             Object[] row = new Object[columnCount];
                             if(lineRs.next()) {
@@ -256,12 +251,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public void execute(ProgressMonitor pm) throws SQLException {
         if(!pk_name.isEmpty()) {
             resultSetHolder.setCommand(getCommand()+" LIMIT 0");
-            // Do not cache _ROWID_
-            if(!isUsePkRowLine()) {
-                cachePrimaryKey(pm);
-            } else {
-                rowPk = new DualHashBidiMap<>();
-            }
+            cachePrimaryKey(pm);
         } else {
             resultSetHolder.setCommand(getCommand());
             PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, resultSetHolder, "cancel");
@@ -272,10 +262,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                 pm.removePropertyChangeListener(listener);
             }
         }
-    }
-
-    protected boolean isUsePkRowLine() {
-        return H2_SYSTEM_PK_COLUMN.equals(pk_name);
     }
 
     @Override
@@ -1273,13 +1259,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public Integer getRowId(Object primaryKeyRowValue) {
-        if(isUsePkRowLine()) {
-            if(primaryKeyRowValue instanceof Number) {
-                return ((Number) primaryKeyRowValue).intValue();
-            } else {
-                throw new IllegalArgumentException("Unexpected column key value, not an int.");
-            }
-        } else if(!pk_name.isEmpty()) {
+        if(!pk_name.isEmpty()) {
             return rowPk.getKey(primaryKeyRowValue);
         } else {
             throw new IllegalStateException("The RowSet has not been initialised");
