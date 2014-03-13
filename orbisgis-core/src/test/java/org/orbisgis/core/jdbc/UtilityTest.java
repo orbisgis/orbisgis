@@ -59,7 +59,7 @@ public class UtilityTest {
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        dataSource = SFSUtilities.wrapSpatialDataSource(SpatialH2UT.createDataSource("ReversibleRowSetTest", true));
+        dataSource = SFSUtilities.wrapSpatialDataSource(SpatialH2UT.createDataSource(UtilityTest.class.getSimpleName(), true));
     }
 
     @Test

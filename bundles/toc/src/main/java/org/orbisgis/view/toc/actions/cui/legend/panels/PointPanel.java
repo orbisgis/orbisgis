@@ -31,7 +31,7 @@ package org.orbisgis.view.toc.actions.cui.legend.panels;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.components.OnVertexOnCentroidButtonGroup;
+import org.orbisgis.view.toc.actions.cui.legend.components.OnVertexOnInteriorButtonGroup;
 import org.orbisgis.view.toc.actions.cui.legend.components.SymbolHeightSpinner;
 import org.orbisgis.view.toc.actions.cui.legend.components.SymbolUOMComboBox;
 import org.orbisgis.view.toc.actions.cui.legend.components.SymbolWidthSpinner;

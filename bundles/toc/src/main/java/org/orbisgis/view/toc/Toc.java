@@ -31,6 +31,7 @@ package org.orbisgis.view.toc;
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -39,6 +40,8 @@ import java.awt.event.MouseEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,9 +61,15 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import javax.xml.bind.JAXBElement;
+
+import net.opengis.se._2_0.core.StyleType;
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.core.layerModel.BeanLayer;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.Layer;
 import org.orbisgis.core.layerModel.LayerCollection;
@@ -71,10 +80,15 @@ import org.orbisgis.core.layerModel.LayerListenerEvent;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.MapContextListener;
 import org.orbisgis.core.layerModel.SelectionEvent;
+import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.CompositeSymbolizer;
+import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sif.SIFWizard;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
@@ -90,6 +104,8 @@ import org.orbisgis.view.table.TableEditableElementImpl;
 import org.orbisgis.view.toc.actions.EditLayerSourceAction;
 import org.orbisgis.view.toc.actions.LayerAction;
 import org.orbisgis.view.toc.actions.StyleAction;
+import org.orbisgis.view.toc.actions.cui.SimpleStyleEditor;
+import org.orbisgis.view.toc.actions.cui.legend.wizard.LegendWizard;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.viewapi.docking.DockingPanelParameters;
 import org.orbisgis.viewapi.edition.EditableElement;
@@ -838,7 +854,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
          * of a legend that will be added to the selected style in a dedicated Rule.
          */
         public void onAddLegend(){
-            /** TODO restore legend edition
             Style[] styles = mapContext.getSelectedStyles();
             if(styles.length == 1){
                 Style base = styles[0];
@@ -858,31 +873,28 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     l.onStyleChanged(new PropertyChangeEvent(base, ILayer.PROP_STYLES, base, base));
                 }
             }
-             */
         }     
 
         /**
          * Add a new default style to the selected layer.
          */
         public void onAddStyle() {
-                /** TODO restore legend edition
-                ILayer[] layers = mapContext.getSelectedLayers();
-                if (layers.length == 1) {
-                    LegendWizard lw = new LegendWizard();
-                    ILayer layer = layers[0];
-                    if (isStyleAllowed(layer)) {
-                        MapTransform mt = new MapTransform();
-                        SIFWizard wizard = lw.getSIFWizard(layer, mt);
-                        if(UIFactory.showWizard(wizard)){
-                            Style s = lw.getStyle();
-                            layer.addStyle(s);
-                        }
-                    } else {
-                        LOGGER.info(I18N.tr("This functionality is not supported."));
+            ILayer[] layers = mapContext.getSelectedLayers();
+            if (layers.length == 1) {
+                LegendWizard lw = new LegendWizard();
+                ILayer layer = layers[0];
+                if (isStyleAllowed(layer)) {
+                    MapTransform mt = new MapTransform();
+                    SIFWizard wizard = lw.getSIFWizard(layer, mt);
+                    if(UIFactory.showWizard(wizard)){
+                        Style s = lw.getStyle();
+                        layer.addStyle(s);
                     }
-
+                } else {
+                    LOGGER.info(I18N.tr("This functionality is not supported."));
                 }
-                 */
+
+            }
         }
 
         /**
@@ -921,59 +933,57 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
          * Opens the simple editor, if we have only known configurations.
          */
         public void onSimpleEditor() {
-            /** TODO restore legend edition
-             TreePath selObjs = tree.getSelectionPath();
-             if (selObjs.getLastPathComponent() instanceof TocTreeNodeStyle) {
-             try {
-             Style style = ((TocTreeNodeStyle) selObjs.getLastPathComponent()).getStyle();
-             final Layer layer = (Layer) style.getLayer();
-             if(isStyleAllowed(layer)){
-             final int index = layer.indexOf(style);
-             //In order to be able to cancel all of our modifications,
-             //we produce a copy of our style.
-             JAXBElement<StyleType> jest = style.getJAXBElement();
+            TreePath selObjs = tree.getSelectionPath();
+            if (selObjs.getLastPathComponent() instanceof TocTreeNodeStyle) {
+                try {
+                    Style style = ((TocTreeNodeStyle) selObjs.getLastPathComponent()).getStyle();
+                    final Layer layer = (Layer) style.getLayer();
+                    if(isStyleAllowed(layer)){
+                        final int index = layer.indexOf(style);
+                        //In order to be able to cancel all of our modifications,
+                        //we produce a copy of our style.
+                        JAXBElement<StyleType> jest = style.getJAXBElement();
 
-             MapTransform mt = new MapTransform();
-             int geometryType;
-             TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
-             try(Connection connection = mapContext.getDataManager().getDataSource().getConnection()) {
-             geometryType = SFSUtilities.getGeometryType(connection, tableLocation,"");
-             }
-             Style copy = new Style(jest, layer);
+                        MapTransform mt = new MapTransform();
+                        int geometryType;
+                        TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
+                        try(Connection connection = mapContext.getDataManager().getDataSource().getConnection()) {
+                            geometryType = SFSUtilities.getGeometryType(connection, tableLocation, "");
+                        }
+                        Style copy = new Style(jest, layer);
 
-             final SimpleStyleEditor pan = new SimpleStyleEditor(mt, geometryType, layer, copy);
-             ActionListener apply = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-            Style s1 = pan.getStyleWrapper().getStyle();
-            JAXBElement<StyleType> jaxbElement = s1.getJAXBElement();
-            try {
-            Style s2 = new Style(jaxbElement, layer);
-            layer.setStyle(index, s2);
-            } catch (SeExceptions.InvalidStyle invalidStyle) {
-            LOGGER.error(I18N.tr("You produced an invalid style while copying " +
-            "a valid one. Things are getting really wrong here."));
+                        final SimpleStyleEditor pan = new SimpleStyleEditor(mt, geometryType, layer, copy);
+                        ActionListener apply = new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent actionEvent) {
+                                Style s1 = pan.getStyleWrapper().getStyle();
+                                JAXBElement<StyleType> jaxbElement = s1.getJAXBElement();
+                                try {
+                                    Style s2 = new Style(jaxbElement, layer);
+                                    layer.setStyle(index, s2);
+                                } catch (SeExceptions.InvalidStyle invalidStyle) {
+                                    LOGGER.error(I18N.tr("You produced an invalid style while copying " +
+                                            "a valid one. Things are getting really wrong here."));
+                                }
+                            }
+                        };
+                        if (UIFactory.showApplyDialog(pan, apply, false)) {
+                            layer.setStyle(index, pan.getStyleWrapper().getStyle());
+                        }
+                    }else{
+                        LOGGER.info(I18N.tr("Styles can be set only on vector layers."));
+                    }
+                } catch (SeExceptions.InvalidStyle sis) {
+                    //I don't know how this could happen : we are creating a style
+                    //from a valid style. Should be valid too, consequently...
+                    LOGGER.error(I18N.tr("The style you're trying to edit is not valid !"));
+                } catch (SQLException de) {
+                    LOGGER.error(I18N.tr("An error occurred while processing the DataSource"));
+                } catch (UnsupportedOperationException uoe){
+                    LOGGER_POPUP.info(I18N.tr("Cannot create the user interface for this style. \n"
+                            + "Please uses the advanced style editor."), uoe);
+                }
             }
-            }
-            };
-             if (UIFactory.showApplyDialog(pan, apply, false)) {
-             layer.setStyle(index, pan.getStyleWrapper().getStyle());
-             }
-             }else{
-             LOGGER.info(I18N.tr("Styles can be set only on vector layers."));
-             }
-             } catch (SeExceptions.InvalidStyle sis) {
-             //I don't know how this could happen : we are creating a style
-             //from a valid style. Should be valid too, consequently...
-             LOGGER.error(I18N.tr("The style you're trying to edit is not valid !"));
-             } catch (SQLException de) {
-             LOGGER.error(I18N.tr("An error occurred while processing the DataSource"));
-             } catch (UnsupportedOperationException uoe){
-             LOGGER_POPUP.info(I18N.tr("Cannot create the user interface for this style. \n"
-             + "Please uses the advanced style editor."), uoe);
-             }
-             }
-             */
         }
 
         @Override

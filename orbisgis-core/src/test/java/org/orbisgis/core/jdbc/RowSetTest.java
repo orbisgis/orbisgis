@@ -58,7 +58,7 @@ public class RowSetTest {
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        dataSource = SpatialH2UT.createDataSource("ReversibleRowSetTest", true);
+        dataSource = SpatialH2UT.createDataSource(RowSetTest.class.getSimpleName(), true);
     }
 
     @Test
@@ -155,7 +155,8 @@ public class RowSetTest {
                 Statement st = connection.createStatement()) {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer primary key, str varchar(30), flt float)");
-            st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
+            st.execute("insert into test values (42, 'marvin', 5), (666, 'satan', 1/3)");
+            st.execute("update test set  flt = 10.1010 where id = 42");
             TableLocation table = TableLocation.parse("TEST");
             try (ReadRowSetImpl rs = new ReadRowSetImpl(dataSource)) {
                 rs.initialize(table, "id",new NullProgressMonitor());

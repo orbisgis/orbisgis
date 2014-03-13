@@ -76,15 +76,17 @@ public class ColorScheme {
         discreteColorSchemeNames = new ArrayList<>();
         nameToColorsMap = new HashMap<>();
         InputStream stream = ColorScheme.class.getResourceAsStream("ColorScheme.txt");
-        InputStreamReader br = new InputStreamReader(stream);
-        LineIterator lineIterator = IOUtils.lineIterator(br);
-        try{
-            while(lineIterator.hasNext()){
-                String line = lineIterator.nextLine();
-                add(line);
+        if(stream != null) {
+            InputStreamReader br = new InputStreamReader(stream);
+            LineIterator lineIterator = IOUtils.lineIterator(br);
+            try{
+                while(lineIterator.hasNext()){
+                    String line = lineIterator.nextLine();
+                    add(line);
+                }
+            }  finally {
+                LineIterator.closeQuietly(lineIterator);
             }
-        }  finally {
-            LineIterator.closeQuietly(lineIterator);
         }
     }
 
@@ -160,7 +162,11 @@ public class ColorScheme {
      */
     public ColorScheme(String name, Collection<Color> colors) {
         this.name = name;
-        this.colors = new ArrayList<Color>(colors);
+        if(colors != null) {
+            this.colors = new ArrayList<>(colors);
+        } else {
+            this.colors = new ArrayList<>();
+        }
     }
 
     /**

@@ -51,7 +51,6 @@ public abstract class PnlProportional extends PnlNonClassification {
      * @param lc LegendContext from which to obtain the DataSource.
      */
     public PnlProportional(LegendContext lc) {
-        super(lc.getLayer().getDataManager().getDataSource());
         this.table = lc.getLayer().getTableReference();
     }
 }

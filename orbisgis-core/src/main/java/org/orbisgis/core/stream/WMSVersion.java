@@ -29,7 +29,7 @@
  *
  * or contact directly: info@orbisgis.org
  */
-package org.gdms.data.stream;
+package org.orbisgis.core.stream;
 
 /**
  * This class is used to list the supported WMS version.
@@ -40,14 +40,15 @@ public enum WMSVersion {
     VERSION_1_3_0,VERSION_1_1_1,VERSION_1_1_0,VERSION_1_0_0;
     
     public static WMSVersion fromString(String inp){
-        if("1.3.0".equals(inp)){
-            return VERSION_1_3_0;
-        } else if("1.0.0".equals(inp)){
-            return VERSION_1_0_0;
-        } else if("1.1.1".equals(inp)){
-            return VERSION_1_1_1;
-        } else if("1.1.0".equals(inp)){
-            return VERSION_1_1_0;
+        switch (inp) {
+            case "1.3.0":
+                return VERSION_1_3_0;
+            case "1.0.0":
+                return VERSION_1_0_0;
+            case "1.1.1":
+                return VERSION_1_1_1;
+            case "1.1.0":
+                return VERSION_1_1_0;
         } 
         return null;
     }

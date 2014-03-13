@@ -53,6 +53,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.jdbc.MetaData;
 import org.orbisgis.coreapi.api.ReadRowSet;
@@ -189,7 +190,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                     } else {
                         request.append(" ");
                     }
-                    request.append(MetaData.escapeFieldName(fieldName));
+                    request.append(TableLocation.quoteIdentifier(fieldName));
                     if(!params.isMatchCase()) {
                         request.append(")");
                     }

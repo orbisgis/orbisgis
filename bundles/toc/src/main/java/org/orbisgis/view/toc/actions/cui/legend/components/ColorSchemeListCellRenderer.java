@@ -59,11 +59,11 @@ public class ColorSchemeListCellRenderer
             int index,
             boolean isSelected,
             boolean cellHasFocus) {
-        String name = (String) value;
         Component cellRenderer = lookAndFeelRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        if (cellRenderer instanceof JLabel) {
+        if (cellRenderer instanceof JLabel && value != null) {
             JLabel lab = (JLabel) cellRenderer;
             ColorSchemeListCell pan;
+            String name = (String) value;
             if(isSelected){
                 pan = new ColorSchemeListCell(name, list.getSelectionBackground());
             } else {

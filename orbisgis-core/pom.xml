@@ -229,7 +229,7 @@
             <version>${log4j-version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
+            <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons-io-version}</version>
         </dependency>
@@ -289,6 +289,17 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>orbisgis-core-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>wms-client</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cts</artifactId>
+            <version>${cts-version}</version>
+            <!-- https://github.com/irstv/CTS -->
         </dependency>
     </dependencies>
 </project>

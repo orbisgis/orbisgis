@@ -36,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import net.opengis.ows_context.LayerType;
+import org.orbisgis.core.stream.GeoStream;
 import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
@@ -85,7 +86,12 @@ public class LayerCollection extends BeanLayer {
 		return layerCollection.indexOf(layer);
 	}
 
-        /**
+    @Override
+    public GeoStream getStream() throws LayerException {
+        return null;
+    }
+
+    /**
          * Get the layer stored at the given index in the collection.
          * @param index
          * @return

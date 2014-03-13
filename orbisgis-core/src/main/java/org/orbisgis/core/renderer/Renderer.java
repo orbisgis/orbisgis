@@ -31,7 +31,7 @@ package org.orbisgis.core.renderer;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.map.MapTransform;
@@ -55,6 +54,7 @@ import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.VectorSymbolizer;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.stream.GeoStream;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.h2gis.utilities.SFSUtilities;
@@ -62,8 +62,6 @@ import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import javax.sql.DataSource;
 
 /**
  * Renderer contains all the logic of the Symbology Encoding process based on java
@@ -327,12 +325,6 @@ public abstract class Renderer {
         public void draw(MapTransform mt, Graphics2D g2, int width, int height,
                 ILayer lay, ProgressMonitor progressMonitor) {
 
-                ProgressMonitor pm;
-                if (progressMonitor == null) {
-                        pm = new NullProgressMonitor();
-                } else {
-                        pm = progressMonitor;
-                }
 
                 g2.setRenderingHints(mt.getRenderingHints());
 
@@ -351,6 +343,12 @@ public abstract class Renderer {
 
                 // long total1 = System.currentTimeMillis();
                 int numLayers = layers.length;
+                ProgressMonitor pm;
+                if (progressMonitor == null) {
+                    pm = new NullProgressMonitor();
+                } else {
+                    pm = progressMonitor.startTask(numLayers);
+                }
                 for (int i = numLayers - 1; i >= 0; i--) {
                         if (pm.isCancelled()) {
                                 break;
@@ -358,16 +356,15 @@ public abstract class Renderer {
                                 ILayer layer = layers[i];
                                 if (layer.isVisible() && extent.intersects(layer.getEnvelope())) {
                                         try {
-                                                // TODO
-                                                //
-                                                // if (layer.isStream()) {
-                                                //   drawStreamLayer(g2, layer, width, height, extent, pm);
-                                                this.drawVector(g2, mt, layer, pm);
+                                                if (layer.isStream()) {
+                                                    drawStreamLayer(g2, layer, width, height, extent, pm);
+                                                } else if(layer.isVectorial()) {
+                                                    drawVector(g2, mt, layer, pm);
+                                                }
                                                 // TODO
                                                 // if (layer.isRaster()) {
                                                 // this.drawRaster(g2, mt, layer,width,height, pm, perm);
-                                                pm.progressTo(ONE_HUNDRED_I - (ONE_HUNDRED_I * i) / layers.length);
-                                        } catch (SQLException e) {
+                                        } catch (SQLException | LayerException e) {
                                                 LOGGER.error(I18N.tr("Layer {0} not drawn",layer.getName()), e);
                                         }
                                 }
@@ -378,16 +375,10 @@ public abstract class Renderer {
         private void drawStreamLayer(Graphics2D g2, ILayer layer, int width, int height, Envelope extent, ProgressMonitor pm) {
                 try {
                         layer.open();
-                        /*
-                        TODO GeoStream with h2
-                        for (int i = 0 ; i < layer.getTableReference().getRowCount() ; i++) {
-                                GeoStream geoStream = layer.getTableReference().getStream(i);
-
-                                Image img = geoStream.getMap(width, height, extent, pm);
-                                g2.drawImage(img, 0, 0, null);
-                        }
-                        */
-                } catch (LayerException e) {
+                        GeoStream geoStream = layer.getStream();
+                        Image img = geoStream.getMap(width, height, extent, pm);
+                        g2.drawImage(img, 0, 0, null);
+                } catch (LayerException | IOException e) {
                         LOGGER.error(
                                 I18N.tr("Cannot get Stream image"), e);
                 }

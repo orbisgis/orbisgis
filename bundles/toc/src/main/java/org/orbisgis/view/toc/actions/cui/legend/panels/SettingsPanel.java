@@ -46,7 +46,7 @@ import org.orbisgis.view.toc.actions.cui.legend.components.EnableStrokeCheckBox;
 import org.orbisgis.view.toc.actions.cui.legend.components.LineUOMComboBox;
 import org.orbisgis.view.toc.actions.cui.legend.components.NonSpatialFieldsComboBox;
 import org.orbisgis.view.toc.actions.cui.legend.components.NumericalFieldsComboBox;
-import org.orbisgis.view.toc.actions.cui.legend.components.OnVertexOnCentroidButtonGroup;
+import org.orbisgis.view.toc.actions.cui.legend.components.OnVertexOnInteriorButtonGroup;
 import org.orbisgis.view.toc.actions.cui.legend.components.SymbolUOMComboBox;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
