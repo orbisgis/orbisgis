@@ -93,8 +93,8 @@ public abstract class TocAbstractRenderer extends TreeLaFRenderer {
                         */
                     }
                 } catch (Exception ex) {
-                    // Error while reading datasource, may be a thread race condition
-                    LOGGER.warn(I18N.tr("Error while drawing the Toc tree"),ex);
+                    // Error while reading datasource, may be a thread race condition or the table does not exists
+                    LOGGER.trace(I18N.tr("Error while drawing the Toc tree"));
                     return OrbisGISIcon.getIcon("remove");
                 }
             }

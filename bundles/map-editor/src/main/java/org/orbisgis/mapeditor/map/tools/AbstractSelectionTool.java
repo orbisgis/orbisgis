@@ -60,11 +60,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.coreapi.api.ReversibleRowSet;
+import org.orbisgis.core.jdbc.ReadTable;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.jdbc.MetaData;
 import org.orbisgis.core.layerModel.ILayer;
@@ -77,12 +79,17 @@ import org.orbisgis.mapeditor.map.tools.generated.Selection;
  * Tool to select geometries
  * 
  * @author Fernando Gonzalez Cortes
+ * @author Nicolas Fortin
  */
 public abstract class AbstractSelectionTool extends Selection {
         private static final Color FILL_COLOR = new Color(255, 204, 51, 50);
-        private static final Color SELECTED_COLOR = new Color(255, 204, 51);
+        private static final Color SELECTED_COLOR = new Color(125, 100, 25);
+        private String loadedTable = "";
+        private Map<Object, Integer> keyToRowId;
 
-        private Rectangle2DDouble rect = new Rectangle2DDouble();
+
+
+    private Rectangle2DDouble rect = new Rectangle2DDouble();
         protected ArrayList<Handler> selected = new ArrayList<Handler>();
 
         @Override
@@ -114,74 +121,58 @@ public abstract class AbstractSelectionTool extends Selection {
                 throws TransitionException {
         }
 
-    @Override
-    public void transitionTo_TwoPoints(MapContext mc, ToolManager tm)
-            throws TransitionException, FinishedAutomatonException {
-        ILayer activeLayer = getLayer(mc);
-        boolean intersects = true;
-        if (rect.getMinX() < tm.getValues()[0]) {
-            intersects = false;
-        }
-        rect.add(tm.getValues()[0], tm.getValues()[1]);
+        @Override
+        public void transitionTo_TwoPoints(MapContext mc, ToolManager tm)
+                throws TransitionException, FinishedAutomatonException {
+            ILayer activeLayer = getLayer(mc);
+            boolean intersects = true;
+            if (rect.getMinX() < tm.getValues()[0]) {
+                intersects = false;
+            }
+            rect.add(tm.getValues()[0], tm.getValues()[1]);
 
-        Geometry selectionRect = rect.getEnvelope(ToolManager.toolsGeometryFactory);
-        ReversibleRowSet rowSet = tm.getActiveLayerRowSet();
-        if(rowSet == null || rowSet.getPkName().isEmpty()) {
-            transition(Code.NO_SELECTION);
-        } else {
+            Geometry selectionRect = rect.getEnvelope(ToolManager.toolsGeometryFactory);
+
             // Get all primary value where default geometry intersects a bounding box
             try(Connection connection = SFSUtilities.wrapConnection(activeLayer.getDataManager().getDataSource().getConnection())) {
-                String geomFieldName = SFSUtilities.getGeometryFields(connection,
-                        TableLocation.parse(activeLayer.getTableReference())).get(0);
-            try(
-                PreparedStatement st = connection.prepareStatement(String.format("SELECT %s,%s FROM %s WHERE %s && ?::geometry",
-                        MetaData.escapeFieldName(rowSet.getPkName()),MetaData.escapeFieldName(geomFieldName),activeLayer.getTableReference(),
-                        MetaData.escapeFieldName(geomFieldName)))) {
-                st.setString(1, selectionRect.toString());
-                try(SpatialResultSet rs = st.executeQuery().unwrap(SpatialResultSet.class)) {
-                    IntegerUnion newSelection = new IntegerUnion();
-                    while (rs.next()) {
-                        int index = rowSet.getRowId(rs.getObject(1));
-                        Geometry g = rs.getGeometry();
-                        if (g != null) {
-                            if (intersects) {
-                                if (g.intersects(selectionRect)) {
-                                    newSelection.add(index);
-                                }
-                            } else {
-                                if (selectionRect.contains(g)) {
-                                    newSelection.add(index);
-                                }
-                            }
-                        }
-                    }
-
-                    if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
-                        IntegerUnion newSel = new IntegerUnion(activeLayer.getSelection());
-                        for(int el : newSelection) {
-                            if(!newSel.remove(el)) {
-                                newSel.add(el);
-                            }
-                        }
-                        activeLayer.setSelection(newSel);
+                if(keyToRowId == null || !loadedTable.equalsIgnoreCase(activeLayer.getTableReference())) {
+                    loadedTable = activeLayer.getTableReference();
+                    String pkName = MetaData.getPkName(connection, loadedTable, false);
+                    if(!pkName.isEmpty()) {
+                        keyToRowId = MetaData.primaryKeyToRowId(connection, loadedTable, pkName);
                     } else {
-                        activeLayer.setSelection(newSelection);
-                    }
-                    if (activeLayer.getSelection().isEmpty()) {
-                        transition(Code.NO_SELECTION);
-                    } else {
-                        transition(Code.SELECTION);
+                        keyToRowId = new HashMap<>();
                     }
                 }
-            }
+                String geomFieldName = SFSUtilities.getGeometryFields(connection,
+                        TableLocation.parse(activeLayer.getTableReference())).get(0);
+                Set<Integer> newSelection = ReadTable.getTableRowIdByEnvelope(mc.getDataManager(),
+                        activeLayer.getTableReference(), geomFieldName, selectionRect, !intersects, keyToRowId);
+                if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
+                    IntegerUnion newSel = new IntegerUnion(activeLayer.getSelection());
+                    for(int el : newSelection) {
+                        if(!newSel.remove(el)) {
+                            newSel.add(el);
+                        }
+                    }
+                    activeLayer.setSelection(newSel);
+                } else {
+                    activeLayer.setSelection(newSelection);
+                }
+                if (activeLayer.getSelection().isEmpty()) {
+                    transition(Code.NO_SELECTION);
+                } else {
+                    transition(Code.SELECTION);
+                }
+
+
             } catch (SQLException e) {
                 transition(Code.NO_SELECTION);
                 throw new TransitionException(e);
             }
         }
-    }
 
-    @Override
+        @Override
         public void transitionTo_Selection(MapContext vc, ToolManager tm)
                 throws TransitionException {
                 rect = new Rectangle2DDouble();

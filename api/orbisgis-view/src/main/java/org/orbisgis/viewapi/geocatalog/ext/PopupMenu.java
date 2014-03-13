@@ -44,6 +44,8 @@ public interface PopupMenu extends ActionFactoryService<PopupTarget> {
     // The import menu group
     public static final String M_IMPORT = "M_IMPORT";
     public static final String M_IMPORT_FILE = "M_IMPORT_FILE";
+    public static final String M_IMPORT_FOLDER = "M_IMPORT_FOLDER";
+
 
     // Save menu group
     public static final String M_SAVE = "M_SAVE";

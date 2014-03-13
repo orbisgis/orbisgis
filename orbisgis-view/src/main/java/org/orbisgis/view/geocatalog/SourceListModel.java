@@ -216,11 +216,13 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
             // Fetch Geometry tables
             Map<String,String> tableGeometry = new HashMap<>();
             try(Statement st = connection.createStatement();
-                ResultSet rs = st.executeQuery(String.format("SELECT * FROM %s",TableLocation.parse("geometry_columns")))) {
+                ResultSet rs = st.executeQuery("SELECT * FROM geometry_columns")) {
                     while(rs.next()) {
                         tableGeometry.put(new TableLocation(rs.getString("F_TABLE_CATALOG"),
                                 rs.getString("F_TABLE_SCHEMA"), rs.getString("F_TABLE_NAME")).toString(), rs.getString("TYPE"));
                     }
+            } catch (SQLException ex) {
+                LOGGER.warn(I18N.tr("Geometry columns information of tables are not available"), ex);
             }
             // Fetch all tables
             try(ResultSet rs = connection.getMetaData().getTables(null, null, null, SHOWN_TABLE_TYPES)) {
@@ -286,25 +288,6 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
     @Override
     public int getSize() {
         return sourceList.length;
-    }
-
-    /**
-     * This method clear all source in the SourceManager except source Table
-     */
-    public void clearAllSourceExceptSystemTables() throws SQLException {
-        try (Connection connection = dataSource.getConnection() ;
-                ResultSet rs = connection.getMetaData().getTables(null, "PUBLIC", null, new String[]{"TABLE", "VIEW"})) {
-            List<TableLocation> tableToDrop = new LinkedList<>();
-            while(rs.next()) {
-                String tableCatalog = rs.getString("TABLE_CAT");
-                String tableSchema = rs.getString("TABLE_SCHEM");
-                String tableName = rs.getString("TABLE_NAME");
-                tableToDrop.add(new TableLocation(tableCatalog, tableSchema, tableName));
-            }
-            for(TableLocation table : tableToDrop) {
-                connection.createStatement().execute("DROP TABLE "+ table);
-            }
-        }
     }
 
     /**

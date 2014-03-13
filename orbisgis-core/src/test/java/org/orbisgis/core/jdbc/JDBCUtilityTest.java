@@ -53,7 +53,6 @@ public class JDBCUtilityTest {
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        Driver.load();
         connection = SFSUtilities.wrapConnection(SpatialH2UT.createSpatialDataBase(JDBCUtilityTest.class.getSimpleName(), true));
     }
 
@@ -70,7 +69,7 @@ public class JDBCUtilityTest {
             st.execute("DROP TABLE INTTABLE IF EXISTS");
             try {
                 // Test without PK
-                st.execute("CREATE TABLE INTTABLE (vals integer)");
+                st.execute("CREATE TABLE INTTABLE (\"vals\" integer)");
                 st.execute("INSERT INTO INTTABLE VALUES (20), (5), (15), (4), (1)");
                 // Test ascending
                 Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", true, new NullProgressMonitor());
@@ -81,7 +80,7 @@ public class JDBCUtilityTest {
                 assertEquals(3, itTest.next().intValue());
                 assertEquals(1, itTest.next().intValue());
                 // Test descending
-                sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "inttable", "vals", false, new NullProgressMonitor());
+                sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", false, new NullProgressMonitor());
                 itTest = sortedRowId.iterator();
                 assertEquals(1, itTest.next().intValue());
                 assertEquals(3, itTest.next().intValue());
@@ -94,7 +93,7 @@ public class JDBCUtilityTest {
             st.execute("DROP TABLE INTTABLE IF EXISTS");
             try {
                 // Test with PK
-                st.execute("CREATE TABLE INTTABLE (id integer primary key, vals integer)");
+                st.execute("CREATE TABLE INTTABLE (id integer primary key, \"vals\" integer)");
                 st.execute("INSERT INTO INTTABLE VALUES (1,20), (2,5), (4,15), (8,4), (16,1)");
                 // Test ascending
                 Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", true, new NullProgressMonitor());
@@ -139,6 +138,18 @@ public class JDBCUtilityTest {
             props = ReadTable.computeStatsLocal(connection, table, "ROWID", new IntegerUnion(1,10), new NullProgressMonitor());
             checkStats(props);
             st.execute("DROP TABLE "+table);
+        }
+    }
+
+    @Test
+    public void testSelection() throws SQLException {
+        try(Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS TEST");
+            st.execute("CREATE TABLE TEST(gid integer primary key auto_increment, geom MULTIPOLYGON)");
+            st.execute("INSERT INTO TEST(geom) VALUES ('MULTIPOLYGON (((-111 -24, -121 17, -69 25, -66 -38, -111 -24)))'), " +
+                    "('MULTIPOLYGON (((-50 -2, -59 50, 48 48, -20 20, -50 -2)))'), " +
+                    "('MULTIPOLYGON (((-75 -67, -38 -16, 44 24, 99 26, 112 4, -35 -79, -75 -67)))');");
+
         }
     }
 }

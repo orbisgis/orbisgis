@@ -34,6 +34,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Set;
 
+import org.orbisgis.core.stream.GeoStream;
 import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
@@ -399,6 +400,12 @@ public interface ILayer {
 	 * @throws UnsupportedOperationException
 	GeoRaster getRaster() throws LayerException, UnsupportedOperationException;
      */
+    /**
+     * Gets the stream at the given <code>rowIndex</code> row index.
+     * @return a stream object or null if {@link #isStream()} is false.
+     * @throws LayerException If the stream cannot be built
+     */
+    GeoStream getStream() throws LayerException;
 
 	/**
 	 * Gets an array of the selected rows

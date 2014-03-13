@@ -31,6 +31,7 @@ package org.orbisgis.view.toc.actions.cui.legend.ui;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.jdbc.MetaData;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.legend.thematic.LineParameters;
@@ -116,7 +117,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         DescriptiveStatistics stats = new DescriptiveStatistics();
         try(Connection connection = getDataSource().getConnection();
             Statement st = connection.createStatement();
-            ResultSet rs = st.executeQuery("select "+ MetaData.escapeFieldName(fieldName)+ " from "+getTable())) {
+            ResultSet rs = st.executeQuery("select "+ TableLocation.quoteIdentifier(fieldName)+ " from "+getTable())) {
             while(rs.next()) {
                 stats.addValue(rs.getDouble(1));
             }

@@ -348,6 +348,7 @@ public class Core {
                 BackgroundManager.class,
                 I18N.tr("Execute tasks in background processes, showing progress bars. Gives access to the job queue"),
                 backgroundManager);
+        pluginFramework.getHostBundleContext().registerService(BackgroundManager.class, backgroundManager, null);
     }
 
     /**
@@ -557,15 +558,6 @@ public class Core {
         mainContext.dispose();
 
         UIFactory.setMainFrame(null);
-
-        // Shutdown the plugin framework
-        try {
-            pluginFramework.stop();
-        } catch (InterruptedException ex) {
-            LOGGER.error(ex.getLocalizedMessage(), ex);
-        } catch (BundleException ex) {
-            LOGGER.error(ex.getLocalizedMessage(), ex);
-        }
     }
 
     /**

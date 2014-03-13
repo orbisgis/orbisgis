@@ -1,44 +1,38 @@
 /**
- * The GDMS library (Generic Datasource Management System)
- * is a middleware dedicated to the management of various kinds of
- * data-sources such as spatial vectorial data or alphanumeric. Based
- * on the JTS library and conform to the OGC simple feature access
- * specifications, it provides a complete and robust API to manipulate
- * in a SQL way remote DBMS (PostgreSQL, H2...) or flat files (.shp,
- * .csv...).
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
  *
- * Gdms is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV FR CNRS 2488
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
- * This file is part of Gdms.
+ * This file is part of OrbisGIS.
  *
- * Gdms is free software: you can redistribute it and/or modify it under the
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * Gdms is distributed in the hope that it will be useful, but WITHOUT ANY
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * Gdms. If not, see <http://www.gnu.org/licenses/>.
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info@orbisgis.org
+ * info_at_ orbisgis.org
  */
-package org.gdms.data.stream;
+package org.orbisgis.core.stream;
 
 import java.awt.Image;
+import java.io.IOException;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.orbisgis.progress.ProgressMonitor;
-
-import org.gdms.driver.DriverException;
 
 /**
  * A stream object that can be queried in order to get a specific image.
@@ -53,11 +47,11 @@ public interface GeoStream {
          * @param width the width
          * @param height the height
          * @param extent the required extent
-         * @param pm 
+         * @param pm Progress monitor
          * @return the resulting image
-         * @throws DriverException  
+         * @throws IOException Communication exception
          */
-         Image getMap(int width, int height, Envelope extent, ProgressMonitor pm) throws DriverException;
+         Image getMap(int width, int height, Envelope extent, ProgressMonitor pm) throws IOException;
          
          /**
           * @return the full extend of the data behind this stream

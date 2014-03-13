@@ -59,20 +59,28 @@ public class SimpleGeometryType {
     public static int getSimpleType(int type){
         switch(type){
             case GeometryTypeCodes.POINT:
+            case GeometryTypeCodes.POINTZ:
+            case GeometryTypeCodes.POINTZM:
             case GeometryTypeCodes.MULTIPOINT:
+            case GeometryTypeCodes.MULTIPOINTZ:
+            case GeometryTypeCodes.MULTIPOINTM:
                 return POINT;
             case GeometryTypeCodes.LINESTRING:
+            case GeometryTypeCodes.LINESTRINGZ:
+            case GeometryTypeCodes.LINESTRINGZM:
             case GeometryTypeCodes.MULTILINESTRING:
+            case GeometryTypeCodes.MULTILINESTRINGZ:
+            case GeometryTypeCodes.MULTILINESTRINGM:
                 return LINE;
             case GeometryTypeCodes.POLYGON:
+            case GeometryTypeCodes.POLYGONM:
+            case GeometryTypeCodes.POLYGONZ:
             case GeometryTypeCodes.MULTIPOLYGON:
+            case GeometryTypeCodes.MULTIPOLYGONZ:
+            case GeometryTypeCodes.MULTIPOLYGONM:
                 return POLYGON;
-            case GeometryTypeCodes.GEOMCOLLECTION:
-            case GeometryTypeCodes.GEOMETRY:
-                return ALL;
             default:
-                throw new IllegalArgumentException("Can't recognize " +
-                        type + " as a geometry type");
+                return ALL;
         }
     }
 }
