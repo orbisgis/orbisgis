@@ -53,6 +53,7 @@ import com.vividsolutions.wms.WMService;
 import java.util.ArrayList;
 import java.util.Map;
 import org.apache.log4j.Logger;
+import org.cts.CRSFactory;
 import org.cts.crs.CRSException;
 import org.cts.crs.CoordinateReferenceSystem;
 import org.h2gis.utilities.SpatialResultSet;
@@ -80,14 +81,6 @@ public final class SimpleWMSDriver implements GeoStream {
     private MapLayer mapLayer;
     private Envelope envelope;
     private WMSStreamSource streamSource;
-    private DataSource dataSource;
-
-    /**
-     * @param dataSource A connection to a spatial database where ST_Transform function is available.
-     */
-    public SimpleWMSDriver(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
 
     public void open(WMSStreamSource streamSource) throws IOException {
         this.streamSource = streamSource;
@@ -177,26 +170,9 @@ public final class SimpleWMSDriver implements GeoStream {
             List<BoundingBox> allBoundingBoxList = layer.getAllBoundingBoxList();
             BoundingBox original;
             if (!allBoundingBoxList.isEmpty()) {
-                original = allBoundingBoxList.get(0);
+                return allBoundingBoxList.get(0);
             } else {
-                original = layer.getLatLonBoundingBox();
-            }
-            Envelope env = new Envelope(original.getWestBound(), original.getEastBound(),
-                    original.getSouthBound(), original.getNorthBound());
-            String originalSrs = original.getSRS();
-            GeometryFactory gf = new GeometryFactory();
-            Polygon poly = (Polygon) gf.toGeometry(env);
-            try(Connection connection = dataSource.getConnection();
-                Statement st = connection.createStatement();
-                SpatialResultSet rs = st.executeQuery(String.format("SELECT ST_TRANSFORM(ST_GeomFromText('%s',%s), %s)",
-                        poly.toText(),originalSrs,srs)).unwrap(SpatialResultSet.class)) {
-                if(rs.next()) {
-                    // Fetch result
-                    Envelope retEnv = rs.getGeometry().getEnvelopeInternal();
-                    return new BoundingBox(srs, retEnv.getMinX(), retEnv.getMinY(), retEnv.getMaxX(), retEnv.getMaxY());
-                }
-            } catch (SQLException ex) {
-                throw new IOException(ex);
+                return layer.getLatLonBoundingBox();
             }
         }
         return bbox;

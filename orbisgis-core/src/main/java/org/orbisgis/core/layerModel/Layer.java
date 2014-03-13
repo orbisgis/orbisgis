@@ -31,6 +31,7 @@ package org.orbisgis.core.layerModel;
 import com.vividsolutions.jts.geom.Envelope;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -47,6 +48,7 @@ import java.util.Set;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtility;
 import org.orbisgis.core.stream.GeoStream;
+import org.orbisgis.core.stream.SimpleWMSDriver;
 import org.orbisgis.core.stream.WMSStreamSource;
 import org.orbisgis.coreapi.api.DataManager;
 import org.orbisgis.core.renderer.se.Rule;
@@ -61,6 +63,7 @@ public class Layer extends BeanLayer {
     private URI dataURI;
     private DataManager dataManager;
     private Envelope envelope;
+    private GeoStream stream;
 
 	public Layer(String name, String tableReference,DataManager dataManager) {
 		super(name);
@@ -139,10 +142,19 @@ public class Layer extends BeanLayer {
 	public Envelope getEnvelope() {
         // TODO reset envelope when the Table is updated
         if(envelope == null) {
-            try(Connection connection = dataManager.getDataSource().getConnection()) {
-                envelope = SFSUtilities.getTableEnvelope(connection, TableLocation.parse(tableReference),"");
-            } catch (SQLException ex) {
-                LOGGER.error(I18N.tr("Cannot compute layer envelope"),ex);
+            try {
+                if(isStream()) {
+                    return stream.getEnvelope();
+                } else {
+                    try(Connection connection = dataManager.getDataSource().getConnection()) {
+                        envelope = SFSUtilities.getTableEnvelope(connection, TableLocation.parse(tableReference),"");
+                    } catch (SQLException ex) {
+                        LOGGER.error(I18N.tr("Cannot compute layer envelope"),ex);
+                    }
+                }
+            } catch (Exception ex) {
+                LOGGER.error(I18N.tr("Cannot compute layer envelope"), ex);
+                return null;
             }
         }
 		return envelope;
@@ -153,13 +165,23 @@ public class Layer extends BeanLayer {
 
 	}
 
-        @Override
+    @Override
 	public void open() throws LayerException {
         if(tableReference.isEmpty()) {
-            try {
-                tableReference =  dataManager.registerDataSource(dataURI);
-            } catch (Exception ex) {
-                LOGGER.warn(I18N.tr("Unable to load the data source uri {0}.", dataURI), ex);
+            if("http".equalsIgnoreCase(dataURI.getScheme())) {
+                SimpleWMSDriver driver = new SimpleWMSDriver();
+                try {
+                    driver.open(new WMSStreamSource(dataURI));
+                } catch (IOException ex) {
+                    throw new LayerException(ex);
+                }
+                stream = driver;
+            } else {
+                try {
+                    tableReference =  dataManager.registerDataSource(dataURI);
+                } catch (Exception ex) {
+                    LOGGER.warn(I18N.tr("Unable to load the data source uri {0}.", dataURI), ex);
+                }
             }
         } else if(dataURI == null) {
             // Check if the table exists
@@ -234,15 +256,11 @@ public class Layer extends BeanLayer {
 
 	@Override
 	public boolean isStream() throws LayerException {
-		return tableReference.isEmpty() && dataURI != null;
+		return stream != null;
 	}
 
     @Override
     public GeoStream getStream() throws LayerException {
-        try {
-            return new WMSStreamSource(dataURI);
-        } catch (Exception ex) {
-            throw new LayerException(ex);
-        }
+            return stream;
     }
 }
