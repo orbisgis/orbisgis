@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.corejdbc.jdbc;
+package org.orbisgis.corejdbc;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.h2.Driver;
@@ -35,7 +35,6 @@ import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.progress.NullProgressMonitor;
 
 import java.sql.Connection;
@@ -135,10 +134,18 @@ public class JDBCUtilityTest {
             String[] props = ReadTable.computeStatsSQL(connection, table, "ROWID", new NullProgressMonitor());
             checkStats(props);
             // Do stats using apache math
-            props = ReadTable.computeStatsLocal(connection, table, "ROWID", new IntegerUnion(1,10), new NullProgressMonitor());
+            props = ReadTable.computeStatsLocal(connection, table, "ROWID",getSortedSet(1,11) , new NullProgressMonitor());
             checkStats(props);
             st.execute("DROP TABLE "+table);
         }
+    }
+
+    private static SortedSet<Integer> getSortedSet(int begin,int end) {
+        SortedSet<Integer> set = new TreeSet<>();
+        for(int i = begin; i < end; i++) {
+            set.add(i);
+        }
+        return set;
     }
 
     @Test

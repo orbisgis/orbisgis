@@ -1,20 +1,17 @@
-package org.orbisgis.core;
+package org.orbisgis.corejdbc.internal;
 
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtility;
-import org.orbisgis.coreapi.api.DataManager;
-import org.orbisgis.coreapi.api.ReadRowSet;
-import org.orbisgis.coreapi.api.ReversibleRowSet;
-import org.orbisgis.core.jdbc.ReadRowSetImpl;
-import org.orbisgis.core.jdbc.ReversibleRowSetImpl;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.ReadRowSet;
+import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.utils.FileUtils;
 import javax.sql.rowset.*;
 import javax.sql.DataSource;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.sql.*;
 import java.util.ArrayList;
