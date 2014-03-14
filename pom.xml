@@ -18,6 +18,7 @@
         </parent>
         <modules>
                 <module>bundles/postgis-jts-osgi</module>
+                <module>bundles/core-jdbc</module>
                 <module>wms-client</module>
                 <!-- <module>gdms</module> -->
                 <!-- <module>bundles/plugin-test</module>-->
