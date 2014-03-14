@@ -40,7 +40,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.jdbc.CreateTable;
+import org.orbisgis.corejdbc.CreateTable;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;

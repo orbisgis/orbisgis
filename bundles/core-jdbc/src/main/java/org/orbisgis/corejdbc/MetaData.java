@@ -36,6 +36,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -43,7 +44,7 @@ import java.util.Map;
  * @author Nicolas Fortin
  */
 public class MetaData {
-    private static final I18n I18N = I18nFactory.getI18n(MetaData.class);
+    private static final I18n I18N = I18nFactory.getI18n(MetaData.class, Locale.getDefault(), I18nFactory.FALLBACK);
     /**
      * Returns a new unique name when registering a {@link javax.sql.DataSource}.
      * @param table Table identifier
