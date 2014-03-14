@@ -28,8 +28,6 @@
  */
 package org.orbisgis.corejdbc;
 
-import com.vividsolutions.jts.geom.Envelope;
-import org.h2.Driver;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;

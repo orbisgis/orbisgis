@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>bundle</packaging>
     <artifactId>core-jdbc</artifactId>
-    <name>OrbisGIS JDBC components</name>
+    <name>core-jdbc</name>
     <url>http://orbisgis.org</url>
     <build>
         <plugins>
@@ -36,7 +36,7 @@
                 <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
                     <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/corejdbc/</poDirectory>
-                    <targetBundle>org.orbisgis.corejdbc.Messages</targetBundle>
+                    <targetBundle>org.orbisgis.corejdbc</targetBundle>
                     <keywords>-ktr -kmarktr</keywords>
                     <outputFormat>properties</outputFormat>
                 </configuration>
@@ -88,6 +88,12 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial</artifactId>
             <version>${h2-gis-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.enterprise</artifactId>
+            <version>5.0.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
