@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.corejdbc.jdbc;
+package org.orbisgis.corejdbc;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -35,8 +35,8 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.coreapi.api.DataManager;
-import org.orbisgis.coreapi.api.ReadRowSet;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -368,7 +368,7 @@ public class ReadTable {
      * @param geometryColumn Name of the geometry column
      * @param selection Selection polygon
      * @param contains If true selection is used with contains, else this is intersects.
-     * @param pkToRowId Map from {@link org.orbisgis.core.jdbc.MetaData#primaryKeyToRowId(java.sql.Connection, String, String)}
+     * @param pkToRowId Map from {@link org.orbisgis.core-jdbc.MetaData#primaryKeyToRowId(java.sql.Connection, String, String)}
      * @return List of row id.
      * @throws SQLException
      */

@@ -26,11 +26,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.corejdbc.jdbc;
+package org.orbisgis.corejdbc.internal;
 
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.coreapi.api.DataManager;
-import org.orbisgis.coreapi.api.ReversibleRowSet;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.progress.ProgressMonitor;
 
 import javax.sql.DataSource;
