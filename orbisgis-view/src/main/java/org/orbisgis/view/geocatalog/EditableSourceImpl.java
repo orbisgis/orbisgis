@@ -29,11 +29,11 @@ package org.orbisgis.view.geocatalog;
 
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.jdbc.MetaData;
-import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.corejdbc.MetaData;
+import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.core.jdbc.ReadRowSetImpl;
 import org.orbisgis.core.jdbc.ReversibleRowSetImpl;
-import org.orbisgis.coreapi.api.ReversibleRowSet;
+import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.viewapi.edition.AbstractEditableElement;

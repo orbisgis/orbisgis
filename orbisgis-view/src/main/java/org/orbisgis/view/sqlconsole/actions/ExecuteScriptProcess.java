@@ -31,7 +31,7 @@ package org.orbisgis.view.sqlconsole.actions;
 import javax.sql.DataSource;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.jdbc.ReadTable;
+import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sqlparserapi.ScriptSplitter;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;

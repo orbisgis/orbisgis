@@ -31,7 +31,7 @@ package org.orbisgis.core;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.core.beanshell.BeanShellScriptTest;
 import org.orbisgis.core.beanshell.BeanshellScript;
 import org.orbisgis.core.context.main.MainContext;

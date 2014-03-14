@@ -32,7 +32,7 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.jdbc.MetaData;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;

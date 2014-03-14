@@ -29,7 +29,7 @@
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.core.jdbc.MetaData;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.legend.LookupFieldName;
 
 import javax.sql.DataSource;

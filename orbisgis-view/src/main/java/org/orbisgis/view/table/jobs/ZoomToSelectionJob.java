@@ -30,8 +30,8 @@ package org.orbisgis.view.table.jobs;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.apache.log4j.Logger;
-import org.orbisgis.coreapi.api.DataManager;
-import org.orbisgis.core.jdbc.ReadTable;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;

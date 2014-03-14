@@ -40,7 +40,7 @@ import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.TransferHandler;
 import org.apache.log4j.Logger;
-import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;

@@ -37,7 +37,7 @@ import java.util.SortedSet;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.core.common.IntegerUnion;
-import org.orbisgis.core.jdbc.ReadTable;
+import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;

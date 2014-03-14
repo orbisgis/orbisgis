@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.jdbc.MetaData;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.sif.multiInputPanel.CheckBoxChoice;
 import org.orbisgis.sif.multiInputPanel.InputType;
 import org.orbisgis.sif.multiInputPanel.MIPValidationDouble;

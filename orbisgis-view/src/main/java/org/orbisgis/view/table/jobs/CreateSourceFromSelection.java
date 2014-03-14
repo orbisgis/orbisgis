@@ -41,7 +41,7 @@ import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.jdbc.CreateTable;
-import org.orbisgis.core.jdbc.MetaData;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;

@@ -35,9 +35,8 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.varia.LevelRangeFilter;
-import org.orbisgis.core.DataManagerImpl;
 import org.orbisgis.core.Services;
-import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.core.plugin.BundleReference;
 import org.orbisgis.core.plugin.BundleTools;
 import org.orbisgis.core.plugin.PluginHost;
@@ -50,7 +49,6 @@ import org.osgi.service.jdbc.DataSourceFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 import javax.sql.DataSource;
-import javax.sql.rowset.RowSetFactory;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -80,6 +78,7 @@ public class MainContext {
     private static final int BUNDLE_STABILITY_TIMEOUT = 3000;
     private static Map<String,String> URI_DRIVER_TO_OSGI_DRIVER = new HashMap<String, String>();
     private DataManager dataManager;
+    private ServiceReference<DataManager> dataManagerService;
 
     static {
         URI_DRIVER_TO_OSGI_DRIVER.put("h2","H2 JDBC Driver");
@@ -190,9 +189,8 @@ public class MainContext {
                 // Register DataSource, will be used to register spatial features
                 pluginHost.getHostBundleContext().registerService(DataSource.class,dataSource,null);
                 // Create and register DataManager
-                dataManager = new DataManagerImpl(dataSource);
-                pluginHost.getHostBundleContext().registerService(DataManager.class, dataManager, null);
-                pluginHost.getHostBundleContext().registerService(RowSetFactory.class,dataManager,null);
+                dataManagerService = pluginHost.getHostBundleContext().getServiceReference(DataManager.class);
+                dataManager = pluginHost.getHostBundleContext().getService(dataManagerService);
             } finally {
                 pluginHost.getHostBundleContext().ungetService(dbDriverReference);
             }
@@ -240,6 +238,10 @@ public class MainContext {
      * Free resources
      */
     public void dispose() {
+        if(dataManagerService != null) {
+            dataManager = null;
+            pluginHost.getHostBundleContext().ungetService(dataManagerService);
+        }
         // Stop plugin framework
         if(pluginHost!=null) {
             try {

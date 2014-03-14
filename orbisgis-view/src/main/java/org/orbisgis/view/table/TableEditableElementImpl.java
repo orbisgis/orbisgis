@@ -31,7 +31,7 @@ package org.orbisgis.view.table;
 import java.util.Collections;
 import java.util.Set;
 import org.apache.log4j.Logger;
-import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.geocatalog.EditableSourceImpl;
 import org.orbisgis.viewapi.table.TableEditableElement;

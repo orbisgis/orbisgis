@@ -31,7 +31,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coreapi.api.DriverFunctionContainer;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;

@@ -47,7 +47,7 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import org.orbisgis.core.Services;
-import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.FileTree;
 import org.orbisgis.view.components.fstree.FileTreeModel;

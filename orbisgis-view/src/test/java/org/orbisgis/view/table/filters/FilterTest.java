@@ -4,7 +4,7 @@ import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.orbisgis.core.DataManagerImpl;
-import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.table.TableEditableElementImpl;

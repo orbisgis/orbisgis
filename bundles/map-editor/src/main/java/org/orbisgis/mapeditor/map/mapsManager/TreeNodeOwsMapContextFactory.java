@@ -36,7 +36,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import org.apache.log4j.Logger;
-import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactory;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;

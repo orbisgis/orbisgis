@@ -29,7 +29,7 @@
 package org.orbisgis.view.components.sif;
 
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.jdbc.MetaData;
+import org.orbisgis.corejdbc.MetaData;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

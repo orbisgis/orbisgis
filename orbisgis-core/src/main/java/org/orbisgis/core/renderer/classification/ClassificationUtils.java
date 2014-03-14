@@ -37,7 +37,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.jdbc.MetaData;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
