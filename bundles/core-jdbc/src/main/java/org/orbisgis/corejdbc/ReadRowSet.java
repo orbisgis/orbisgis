@@ -1,4 +1,4 @@
-package org.orbisgis.coreapi.api;
+package org.orbisgis.corejdbc;
 
 import org.h2gis.utilities.SpatialResultSet;
 import org.orbisgis.progress.ProgressMonitor;

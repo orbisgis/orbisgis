@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.coreapi.api;
+package org.orbisgis.corejdbc;
 
 import javax.swing.event.UndoableEditListener;
 
