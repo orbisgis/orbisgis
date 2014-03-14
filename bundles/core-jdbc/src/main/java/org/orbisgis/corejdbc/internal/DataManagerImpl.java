@@ -7,10 +7,14 @@ import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.utils.FileUtils;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 import javax.sql.rowset.*;
 import javax.sql.DataSource;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.net.URI;
 import java.sql.*;
@@ -23,6 +27,7 @@ import java.util.Map;
  * Implementation of the DataManager service.
  * @author Nicolas Fortin
  */
+@Component(service = {DataManager.class, RowSetFactory.class})
 public class DataManagerImpl implements DataManager {
     private DataSource dataSource;
     /** ReversibleRowSet fire row updates to their DataManager  */
@@ -69,6 +74,12 @@ public class DataManagerImpl implements DataManager {
      */
     public DataManagerImpl(DataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    /**
+     * Default constructor for OSGi declarative services. Use {@link #setDataSource(javax.sql.DataSource)}
+     */
+    public DataManagerImpl() {
     }
 
     @Override
@@ -148,6 +159,17 @@ public class DataManagerImpl implements DataManager {
     public DataSource getDataSource() {
         return dataSource;
     }
+
+    @Reference
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public void unsetDataSource(DataSource dataSource) {
+        this.dataSource = null;
+        dispose();
+    }
+
 
     @Override
     public boolean isTableExists(String tableName) throws SQLException {
