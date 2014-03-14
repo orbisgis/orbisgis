@@ -628,18 +628,25 @@ public final class FileUtils {
                 if ("file".equalsIgnoreCase(u.getScheme())) {
                         return FilenameUtils.removeExtension(new File(u.getPath()).getName());
                 } else {
+                        if("jdbc".equalsIgnoreCase(u.getScheme())) {
+                            try {
+                                u = URI.create(u.getSchemeSpecificPart());
+                            } catch (IllegalArgumentException ex) {
+                                //Ignore
+                            }
+                        }
                         String q = u.getQuery();
                         if (q != null && !q.isEmpty()) {
                                 // With & parameters
                                 String[] pat = q.split("&");
-                                for (int i = 0; i < pat.length; i++) {
-                                        if (pat[i].toLowerCase().startsWith(TABLE_PARAM)) {
-                                                // Extract Table name
-                                                return pat[i].toLowerCase().substring(TABLE_PARAM.length());
-                                        } else if (pat[i].toLowerCase().startsWith(TABLE_PARAM_JDBC)) {
-                                                // Extract Table name
-                                                return pat[i].toLowerCase().substring(TABLE_PARAM_JDBC.length());
-                                        }
+                                for (String aPat : pat) {
+                                    if (aPat.toLowerCase().startsWith(TABLE_PARAM)) {
+                                        // Extract Table name
+                                        return aPat.substring(TABLE_PARAM.length());
+                                    } else if (aPat.toLowerCase().startsWith(TABLE_PARAM_JDBC)) {
+                                        // Extract Table name
+                                        return aPat.substring(TABLE_PARAM_JDBC.length());
+                                    }
                                 }
                         }
                         String path = u.getPath();
