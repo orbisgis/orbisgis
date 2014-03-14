@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.jdbc;
+package org.orbisgis.corejdbc.jdbc;
 
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coreapi.api.DataManager;

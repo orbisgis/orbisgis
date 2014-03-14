@@ -1,4 +1,4 @@
-package org.orbisgis.core.jdbc;
+package org.orbisgis.corejdbc.jdbc;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.apache.commons.collections4.BidiMap;

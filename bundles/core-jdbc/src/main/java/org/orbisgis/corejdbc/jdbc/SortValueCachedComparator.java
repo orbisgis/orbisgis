@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.jdbc;
+package org.orbisgis.corejdbc.jdbc;
 
 import java.util.Comparator;
 
