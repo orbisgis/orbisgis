@@ -71,7 +71,7 @@ import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
+import org.orbisgis.coremap.ui.editors.map.tool.Rectangle2DDouble;
 import org.orbisgis.mapeditor.map.tool.*;
 import org.orbisgis.mapeditor.map.tools.generated.Selection;
 

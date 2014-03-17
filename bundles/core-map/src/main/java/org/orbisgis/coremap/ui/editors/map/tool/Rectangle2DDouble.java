@@ -49,7 +49,7 @@
  *  OrbisCAD development team
  *   elgallego@users.sourceforge.net
  */
-package org.orbisgis.core.ui.editors.map.tool;
+package org.orbisgis.coremap.ui.editors.map.tool;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;

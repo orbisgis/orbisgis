@@ -838,7 +838,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 if(styles.length == 1){
                         Style style = styles[0];
                         final SaveFilePanel outputXMLPanel = new SaveFilePanel(
-                                        "org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
+                                        "org.orbisgis.coremap.ui.editorViews.toc.actions.ImportStyle",
                                         "Choose a location");
                         outputXMLPanel.addFilter("se", "Symbology Encoding FeatureTypeStyle");
                         outputXMLPanel.loadState();
@@ -907,7 +907,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         ILayer layer = layers[0];
                         if (isStyleAllowed(layer)){
                         final OpenFilePanel inputXMLPanel = new OpenFilePanel(
-                                "org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
+                                "org.orbisgis.coremap.ui.editorViews.toc.actions.ImportStyle",
                                 "Choose a location");
 
                         inputXMLPanel.addFilter("se", "Symbology Encoding 2.0 (FeatureTypeStyle");

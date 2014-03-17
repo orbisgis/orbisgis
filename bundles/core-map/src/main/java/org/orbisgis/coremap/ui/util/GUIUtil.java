@@ -29,7 +29,7 @@
  * (250)385-6040
  * www.vividsolutions.com
  */
-package org.orbisgis.core.ui.util;
+package org.orbisgis.coremap.ui.util;
 
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.SwingUtilities;
