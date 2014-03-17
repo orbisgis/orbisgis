@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.label;
 
-import org.orbisgis.core.renderer.se.label.ExclusionZone;
+import org.orbisgis.coremap.renderer.se.label.ExclusionZone;
 
 
 /**

@@ -1,13 +1,13 @@
 package org.orbisgis.legend.structure.categorize;
 
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
-import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
-import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
-import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.SeParameter;
+import org.orbisgis.coremap.renderer.se.parameter.color.Categorize2Color;
+import org.orbisgis.coremap.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.color.ColorParameter;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
 
 import java.awt.*;
 import java.util.HashMap;

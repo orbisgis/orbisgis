@@ -30,10 +30,10 @@ package org.orbisgis.view.toc.actions.cui.fill;
 
 import java.awt.BorderLayout;
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.fill.Fill;
-import org.orbisgis.core.renderer.se.fill.GraphicFill;
-import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.fill.Fill;
+import org.orbisgis.coremap.renderer.se.fill.GraphicFill;
+import org.orbisgis.coremap.renderer.se.graphic.GraphicCollection;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.view.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;

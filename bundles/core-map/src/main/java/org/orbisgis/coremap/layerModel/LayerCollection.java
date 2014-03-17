@@ -36,7 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import net.opengis.ows_context.LayerType;
-import org.orbisgis.core.stream.GeoStream;
+import org.orbisgis.coremap.stream.GeoStream;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.renderer.se.Rule;
 import org.orbisgis.coremap.renderer.se.Style;

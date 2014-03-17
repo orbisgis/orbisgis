@@ -120,7 +120,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
     /**
      * Build a new {@code PieChart} from the give {@code JAXBElement}.
      * @param pieE
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     PieChart(JAXBElement<PieChartType> pieE) throws InvalidStyle {
         this();

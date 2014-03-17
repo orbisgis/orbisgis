@@ -29,7 +29,7 @@
 package org.orbisgis.legend.thematic;
 
 import org.junit.Test;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 
 import java.awt.*;

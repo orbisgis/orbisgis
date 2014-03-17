@@ -73,7 +73,7 @@ public class Description {
      * Builds a new {@code Description} from the given
      * {@code DescriptionType}.
      * @param dt
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle  
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public Description(DescriptionType dt) throws InvalidStyle{
         this();

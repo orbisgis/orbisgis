@@ -66,7 +66,7 @@ public class Recode2Color extends Recode<ColorParameter, ColorLiteral> implement
          * the <code>MapItem</code>s used in the current recode will be retrieved 
          * from this XML representation.
          * @param expr
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public Recode2Color(JAXBElement<RecodeType> expr) throws InvalidStyle {
                 RecodeType t = expr.getValue();

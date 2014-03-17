@@ -30,14 +30,14 @@ package org.orbisgis.legend.analyzer.symbolizers;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import org.orbisgis.core.renderer.se.AreaSymbolizer;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.fill.GraphicFill;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.core.renderer.se.graphic.PieChart;
-import org.orbisgis.core.renderer.se.stroke.GraphicStroke;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.coremap.renderer.se.AreaSymbolizer;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.fill.GraphicFill;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.coremap.renderer.se.graphic.PieChart;
+import org.orbisgis.coremap.renderer.se.stroke.GraphicStroke;
+import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 
 /**

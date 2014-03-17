@@ -26,13 +26,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.stroke;
+package org.orbisgis.coremap.renderer.se.stroke;
 
 import org.junit.Test;
-import org.orbisgis.core.renderer.se.fill.GraphicFill;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.coremap.renderer.se.fill.GraphicFill;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringLiteral;
 
 import java.awt.*;
 

@@ -30,9 +30,9 @@ package org.orbisgis.view.toc.actions.cui.stroke;
 
 import java.awt.BorderLayout;
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.label.LineLabel;
-import org.orbisgis.core.renderer.se.stroke.Stroke;
-import org.orbisgis.core.renderer.se.stroke.TextStroke;
+import org.orbisgis.coremap.renderer.se.label.LineLabel;
+import org.orbisgis.coremap.renderer.se.stroke.Stroke;
+import org.orbisgis.coremap.renderer.se.stroke.TextStroke;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.label.LegendUILineLabelPanel;

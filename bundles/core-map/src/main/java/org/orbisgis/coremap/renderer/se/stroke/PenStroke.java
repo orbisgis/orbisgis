@@ -189,7 +189,7 @@ public final class PenStroke extends Stroke implements FillNode {
     /**
      * Build a {@code PenStroke} from the JAXBElement given in argument.
      * @param s The input JaXB element.
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public PenStroke(JAXBElement<PenStrokeType> s) throws InvalidStyle {
         this(s.getValue());

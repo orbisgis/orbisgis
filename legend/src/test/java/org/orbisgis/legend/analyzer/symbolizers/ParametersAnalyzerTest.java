@@ -31,11 +31,11 @@ package org.orbisgis.legend.analyzer.symbolizers;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import org.orbisgis.core.renderer.se.AreaSymbolizer;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.fill.DensityFill;
+import org.orbisgis.coremap.renderer.se.AreaSymbolizer;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
+import org.orbisgis.coremap.renderer.se.SymbolizerNode;
+import org.orbisgis.coremap.renderer.se.fill.DensityFill;
 import org.orbisgis.legend.AnalyzerTest;
 
 /**

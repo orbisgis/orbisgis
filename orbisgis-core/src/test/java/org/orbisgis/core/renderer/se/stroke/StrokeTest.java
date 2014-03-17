@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.stroke;
+package org.orbisgis.coremap.renderer.se.stroke;
 
 import com.sun.media.jai.widget.DisplayJAI;
 import java.awt.*;
@@ -41,13 +41,13 @@ import javax.swing.JFrame;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.orbisgis.coremap.map.MapTransform;
-import org.orbisgis.core.renderer.se.PointSymbolizer;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.coremap.renderer.se.PointSymbolizer;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.common.Uom;
+import org.orbisgis.coremap.renderer.se.graphic.GraphicCollection;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringLiteral;
 
 /**
  *

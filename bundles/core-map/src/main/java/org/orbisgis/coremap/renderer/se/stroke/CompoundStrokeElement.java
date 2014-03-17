@@ -46,7 +46,7 @@ public abstract class CompoundStrokeElement extends AbstractSymbolizerNode {
         * given in argument.
         * @param o
         * @return
-        * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+        * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
         */
 	public static CompoundStrokeElement createCompoundStrokeElement(Object o) throws InvalidStyle{
 		if (o instanceof StrokeElementType){

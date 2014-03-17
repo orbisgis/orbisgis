@@ -52,9 +52,9 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
 
         /**
          * Build a new {@code Categorize2Real} with the given parameters. Built using 
-         * {@link Categorize#Categorize(org.orbisgis.core.renderer.se.parameter.SeParameter, 
-         * org.orbisgis.core.renderer.se.parameter.SeParameter, 
-         * org.orbisgis.core.renderer.se.parameter.real.RealParameter) Categorize}
+         * {@link Categorize#Categorize(org.orbisgis.coremap.renderer.se.parameter.SeParameter,
+         * org.orbisgis.coremap.renderer.se.parameter.SeParameter,
+         * org.orbisgis.coremap.renderer.se.parameter.real.RealParameter) Categorize}
          * @param initialClass
          * The value of the first class.
          * @param fallback
@@ -70,7 +70,7 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
         /**
          * Build a new {@code Categorize2Real} from a JAXB element.
          * @param expr
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public Categorize2Real(CategorizeType expr) throws InvalidStyle {
                 

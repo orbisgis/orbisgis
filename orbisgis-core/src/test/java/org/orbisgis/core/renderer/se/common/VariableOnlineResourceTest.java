@@ -1,8 +1,8 @@
-package org.orbisgis.core.renderer.se.common;
+package org.orbisgis.coremap.renderer.se.common;
 import org.junit.Test;
-import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
-import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.string.Recode2String;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringLiteral;
 
 import javax.media.jai.PlanarImage;
 import java.net.URL;

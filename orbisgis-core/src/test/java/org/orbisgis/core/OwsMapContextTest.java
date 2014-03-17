@@ -45,11 +45,11 @@ import org.h2gis.drivers.shp.SHPDriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.utilities.TableLocation;
 import org.junit.Test;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.layerModel.OwsMapContext;
-import org.orbisgis.coremap.map.export.MapImageWriter;
-import org.orbisgis.core.renderer.se.common.Description;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.OwsMapContext;
+import org.orbisgis.core_export.MapImageWriter;
+import org.orbisgis.coremap.renderer.se.common.Description;
 import org.orbisgis.progress.NullProgressMonitor;
 
 /**

@@ -38,7 +38,7 @@ import javax.swing.KeyStroke;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.view.toc.TocTreeNodeStyle;
 import org.orbisgis.view.toc.TocTreeSelectionIterable;
 import org.orbisgis.viewapi.components.actions.DefaultAction;

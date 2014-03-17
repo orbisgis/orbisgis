@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se;
+package org.orbisgis.coremap.renderer.se;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.Color;
@@ -41,15 +41,15 @@ import javax.imageio.ImageIO;
 
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.AbstractTest;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.Layer;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.Layer;
 import org.orbisgis.coremap.map.MapTransform;
-import org.orbisgis.core.renderer.ImageRenderer;
-import org.orbisgis.core.renderer.Renderer;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.fill.HatchedFill;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.coremap.renderer.ImageRenderer;
+import org.orbisgis.coremap.renderer.Renderer;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.fill.HatchedFill;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
 import org.junit.Test;
 import org.h2gis.utilities.SFSUtilities;
 

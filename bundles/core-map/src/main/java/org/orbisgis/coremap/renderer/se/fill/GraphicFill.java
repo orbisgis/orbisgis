@@ -83,7 +83,7 @@ public final class GraphicFill extends Fill {
     /**
      * Creates a new GraphicFill directly from the Jaxb representation of the style.
      * @param gft
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public GraphicFill(GraphicFillType gft) throws InvalidStyle {
         if (gft.getGraphic() != null) {
@@ -107,7 +107,7 @@ public final class GraphicFill extends Fill {
     /**
      * Creates a new GraphicFill directly from the Jaxb representation of the style.
      * @param f
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     GraphicFill(JAXBElement<GraphicFillType> f) throws InvalidStyle {
         this(f.getValue());

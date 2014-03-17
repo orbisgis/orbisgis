@@ -29,8 +29,8 @@
 package org.orbisgis.view.toc.actions.cui.parameter.string;
 
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
-import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.components.ComboBoxInput;

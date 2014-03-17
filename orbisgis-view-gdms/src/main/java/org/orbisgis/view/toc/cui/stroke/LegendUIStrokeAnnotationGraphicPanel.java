@@ -30,10 +30,10 @@ package org.orbisgis.view.toc.actions.cui.stroke;
 
 import java.awt.BorderLayout;
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.common.RelativeOrientation;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-//import org.orbisgis.core.renderer.se.stroke.StrokeAnnotationGraphic;
-import org.orbisgis.core.renderer.se.stroke.StrokeElement;
+import org.orbisgis.coremap.renderer.se.common.RelativeOrientation;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
+//import org.orbisgis.coremap.renderer.se.stroke.StrokeAnnotationGraphic;
+import org.orbisgis.coremap.renderer.se.stroke.StrokeElement;
 import org.orbisgis.view.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;

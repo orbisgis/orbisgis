@@ -26,13 +26,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter;
+package org.orbisgis.coremap.renderer.se.parameter;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import org.orbisgis.core.renderer.se.parameter.real.*;
-import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.real.*;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringAttribute;
 
 /**
  *

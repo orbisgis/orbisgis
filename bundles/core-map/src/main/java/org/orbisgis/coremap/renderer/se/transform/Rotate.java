@@ -90,7 +90,7 @@ public final class Rotate extends AbstractSymbolizerNode implements Transformati
          * Build a new {@code Rotate}, retrieving informations in the given
          * {@code RotateType} instance.
          * @param r
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         Rotate(RotateType r) throws InvalidStyle {
                 if (r.getAngle() != null) {

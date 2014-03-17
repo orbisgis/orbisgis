@@ -47,9 +47,9 @@ import java.util.Set;
 
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtility;
-import org.orbisgis.core.stream.GeoStream;
-import org.orbisgis.core.stream.SimpleWMSDriver;
-import org.orbisgis.core.stream.WMSStreamSource;
+import org.orbisgis.coremap.stream.GeoStream;
+import org.orbisgis.coremap.stream.SimpleWMSDriver;
+import org.orbisgis.coremap.stream.WMSStreamSource;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.renderer.se.Rule;
 import org.orbisgis.coremap.renderer.se.Style;

@@ -26,17 +26,17 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter;
+package org.orbisgis.coremap.renderer.se.parameter;
 
 import java.io.File;
 import java.sql.ResultSet;
 
 import org.junit.Test;
 import org.orbisgis.core.AbstractTest;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
-import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringParameter;
 import static org.junit.Assert.*;
 
 /**

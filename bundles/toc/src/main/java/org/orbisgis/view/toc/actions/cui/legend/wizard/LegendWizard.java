@@ -28,11 +28,11 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.wizard;
 
-import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.map.MapTransform;
-import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.coremap.renderer.se.Rule;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.sif.SIFWizard;
 import org.orbisgis.sif.UIFactory;

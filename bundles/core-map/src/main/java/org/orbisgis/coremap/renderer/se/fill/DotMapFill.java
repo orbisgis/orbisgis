@@ -87,7 +87,7 @@ public final class DotMapFill extends Fill implements GraphicNode {
     /**
      * Creates a new DotMapFill using directly the values stored in the Jaxb tree.
      * @param f
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public DotMapFill(JAXBElement<DotMapFillType> f) throws InvalidStyle {
         this();

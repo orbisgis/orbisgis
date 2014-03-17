@@ -176,7 +176,7 @@ public final class Rule extends AbstractSymbolizerNode {
      * the information contained in <code>rt</code>
      * @param rt A JaXB representation of the input style.
      * @param layer
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public Rule(RuleType rt, ILayer layer) throws InvalidStyle {
         //this(layer);

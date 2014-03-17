@@ -28,8 +28,8 @@
  */
 package org.orbisgis.view.toc.actions.cui.components;
 
-import org.orbisgis.core.renderer.se.UomNode;
-import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.coremap.renderer.se.UomNode;
+import org.orbisgis.coremap.renderer.se.common.Uom;
 
 /**
  * ComboBoxInput extension, create a jpanel which allow to choose unit

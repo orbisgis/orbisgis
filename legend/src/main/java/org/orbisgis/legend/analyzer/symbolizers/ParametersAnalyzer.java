@@ -32,11 +32,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
-import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
-import org.orbisgis.core.renderer.se.visitors.UsedAnalysisVisitor;
+import org.orbisgis.coremap.renderer.se.SymbolizerNode;
+import org.orbisgis.coremap.renderer.se.parameter.SeParameter;
+import org.orbisgis.coremap.renderer.se.parameter.UsedAnalysis;
+import org.orbisgis.coremap.renderer.se.visitors.FeaturesVisitor;
+import org.orbisgis.coremap.renderer.se.visitors.UsedAnalysisVisitor;
 import org.orbisgis.legend.AbstractAnalyzer;
 
 /**

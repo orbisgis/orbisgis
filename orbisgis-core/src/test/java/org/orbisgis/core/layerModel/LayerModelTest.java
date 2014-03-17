@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.layerModel;
+package org.orbisgis.coremap.layerModel;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -41,8 +41,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.orbisgis.core.AbstractTest;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.common.Description;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.common.Description;
 
 @Deprecated
 public class LayerModelTest extends AbstractTest {

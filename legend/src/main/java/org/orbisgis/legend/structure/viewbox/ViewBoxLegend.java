@@ -28,7 +28,7 @@
  */
 package org.orbisgis.legend.structure.viewbox;
 
-import org.orbisgis.core.renderer.se.graphic.ViewBox;
+import org.orbisgis.coremap.renderer.se.graphic.ViewBox;
 import org.orbisgis.legend.LegendStructure;
 
 /**

@@ -91,7 +91,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
         /**
          * Build a new <code>AreaSymbolizer</code>, using a JAXB element to fill its properties.
          * @param st
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public AreaSymbolizer(JAXBElement<AreaSymbolizerType> st) throws InvalidStyle {
                 super(st);

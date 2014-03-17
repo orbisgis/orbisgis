@@ -30,8 +30,8 @@ package org.orbisgis.view.toc.actions.cui.graphic;
 
 import java.awt.BorderLayout;
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.transform.Matrix;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.transform.Matrix;
 import org.orbisgis.view.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;

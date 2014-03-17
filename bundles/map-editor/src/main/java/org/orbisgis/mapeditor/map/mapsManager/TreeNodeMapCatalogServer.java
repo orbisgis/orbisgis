@@ -44,7 +44,7 @@ import javax.swing.tree.MutableTreeNode;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.core.layerModel.mapcatalog.Workspace;
+import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
 import org.orbisgis.view.components.fstree.PopupTreeNode;

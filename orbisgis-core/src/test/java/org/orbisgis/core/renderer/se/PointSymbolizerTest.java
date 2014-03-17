@@ -26,16 +26,16 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se;
+package org.orbisgis.coremap.renderer.se;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
-import org.orbisgis.core.renderer.se.visitors.UsedAnalysisVisitor;
+import org.orbisgis.coremap.renderer.se.common.Uom;
+import org.orbisgis.coremap.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.UsedAnalysis;
+import org.orbisgis.coremap.renderer.se.visitors.UsedAnalysisVisitor;
 
 /**
  *

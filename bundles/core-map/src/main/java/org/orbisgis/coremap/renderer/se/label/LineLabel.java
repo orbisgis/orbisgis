@@ -59,7 +59,7 @@ public class LineLabel extends Label {
 
     /**
          * Build a new default {@code LineLabel}, using the defaults in 
-         * {@link org.orbisgis.core.renderer.se.label.StyledText#StyledText()  StyledText}.
+         * {@link org.orbisgis.coremap.renderer.se.label.StyledText#StyledText()  StyledText}.
          * The label will be centered (horizontally), and in the middle (vertically)
          * of the graphic.
          */
@@ -72,7 +72,7 @@ public class LineLabel extends Label {
     /**
      * Build a {@code LineLabel} from a {@code LineLabelType}
      * @param t
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public LineLabel(LineLabelType t) throws InvalidStyle {
         super(t);
@@ -84,7 +84,7 @@ public class LineLabel extends Label {
     /**
      * Build a {@code LineLabel} from a JAXBElement.
      * @param l
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public LineLabel(JAXBElement<LineLabelType> l) throws InvalidStyle {
         this(l.getValue());

@@ -112,7 +112,7 @@ public final class SolidFill extends Fill {
         /**
          * Build a {@code SolidFill} using {@code sf}.
          * @param sf
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public SolidFill(JAXBElement<SolidFillType> sf) throws InvalidStyle {
                 if (sf.getValue().getColor() != null) {

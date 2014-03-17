@@ -57,7 +57,7 @@ public abstract class ExclusionZone extends AbstractSymbolizerNode implements Uo
          * @param ezt
          * @return
          * Whether a {@code ExclusionRadius}, or a {@code ExclusionRectangle}, but as a {@code ExclusionZone}.
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public static ExclusionZone createFromJAXBElement(JAXBElement<? extends ExclusionZoneType> ezt) throws InvalidStyle {
                 if (ezt.getDeclaredType() == ExclusionRadiusType.class) {

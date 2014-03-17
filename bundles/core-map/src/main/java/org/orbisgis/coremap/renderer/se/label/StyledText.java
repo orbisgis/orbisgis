@@ -117,7 +117,7 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
     /**
      * Build a <code>StyledText</code> from the JAXB element given in argument.
      * @param sl
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public StyledText(StyledTextType sl) throws InvalidStyle {
         if (sl.getFill() != null) {

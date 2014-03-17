@@ -32,7 +32,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.ReadTable;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;

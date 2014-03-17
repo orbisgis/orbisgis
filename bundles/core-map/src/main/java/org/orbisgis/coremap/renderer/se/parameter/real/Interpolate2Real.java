@@ -66,7 +66,7 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
          * elements are computed from the <code>JAXBElement&lt;InterpolateType></code>
          * given in argument.
          * @param expr
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public Interpolate2Real(InterpolateType expr) throws InvalidStyle {
                 super();

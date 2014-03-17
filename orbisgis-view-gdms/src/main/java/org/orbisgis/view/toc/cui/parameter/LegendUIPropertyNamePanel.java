@@ -38,15 +38,15 @@ import javax.swing.Icon;
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.renderer.se.parameter.ValueReference;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.parameter.ValueReference;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.view.toc.actions.cui.components.ComboBoxInput;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 import org.gdms.data.types.Type;
-import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
-import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
-import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+import org.orbisgis.coremap.renderer.se.parameter.color.ColorParameter;
+import org.orbisgis.coremap.renderer.se.parameter.geometry.GeometryAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 

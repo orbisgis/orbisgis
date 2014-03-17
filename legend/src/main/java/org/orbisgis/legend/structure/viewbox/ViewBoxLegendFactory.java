@@ -28,10 +28,10 @@
  */
 package org.orbisgis.legend.structure.viewbox;
 
-import org.orbisgis.core.renderer.se.graphic.ViewBox;
-import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.graphic.ViewBox;
+import org.orbisgis.coremap.renderer.se.parameter.real.Interpolate2Real;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 
@@ -45,7 +45,7 @@ public final class ViewBoxLegendFactory {
 
     /**
      * This utility method is used to create {@code ConstantViewBox} instances quickly. It does not test the given
-     * {@link org.orbisgis.core.renderer.se.graphic.ViewBox} much, so it's up to the caller to check it can be used
+     * {@link org.orbisgis.coremap.renderer.se.graphic.ViewBox} much, so it's up to the caller to check it can be used
      * to build a {@code ConstantViewbox}.
      * @param vb
      * @return
@@ -68,7 +68,7 @@ public final class ViewBoxLegendFactory {
 
     /**
      * This utility method is used to create {@code MonovariateProportionalViewBox} instances quickly. It does not test the given
-     * {@link org.orbisgis.core.renderer.se.graphic.ViewBox} much, so it's up to the caller to check it can be used
+     * {@link org.orbisgis.coremap.renderer.se.graphic.ViewBox} much, so it's up to the caller to check it can be used
      * to build a {@code MonovariateProportionalViewBox}.
      * @param vb
      * @return

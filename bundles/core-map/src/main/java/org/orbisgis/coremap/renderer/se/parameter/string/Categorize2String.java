@@ -54,9 +54,9 @@ public final class Categorize2String extends Categorize<StringParameter, StringL
 
         /**
          * Build a new {@code Categorize2String} with the given parameters. Built using 
-         * {@link Categorize#Categorize(org.orbisgis.core.renderer.se.parameter.SeParameter, 
-         * org.orbisgis.core.renderer.se.parameter.SeParameter, 
-         * org.orbisgis.core.renderer.se.parameter.real.RealParameter) Categorize}
+         * {@link Categorize#Categorize(org.orbisgis.coremap.renderer.se.parameter.SeParameter,
+         * org.orbisgis.coremap.renderer.se.parameter.SeParameter,
+         * org.orbisgis.coremap.renderer.se.parameter.real.RealParameter) Categorize}
          * @param initialClass
          * The value of the first class.
          * @param fallback
@@ -71,7 +71,7 @@ public final class Categorize2String extends Categorize<StringParameter, StringL
         /**
          * Build a new {@code Categorize2String} from a JAXB element.
          * @param expr
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
     public Categorize2String(JAXBElement<CategorizeType> expr) throws InvalidStyle {
         CategorizeType t = expr.getValue();

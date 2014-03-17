@@ -57,7 +57,7 @@ public class AlternativeStrokeElements extends CompoundStrokeElement {
          * Buld a new {@code AlternativeStrokeElement}, using the informations 
          * stored in the JAXB {@code AlternativeStrokeElementType}.
          * @param aset
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public AlternativeStrokeElements(AlternativeStrokeElementsType aset) throws InvalidStyle {
                 this();

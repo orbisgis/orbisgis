@@ -32,7 +32,7 @@ package org.orbisgis.view.map.toolbar;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.main.frames.ext.ToolBarAction;

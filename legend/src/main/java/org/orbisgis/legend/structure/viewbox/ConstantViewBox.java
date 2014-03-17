@@ -28,8 +28,8 @@
  */
 package org.orbisgis.legend.structure.viewbox;
 
-import org.orbisgis.core.renderer.se.graphic.ViewBox;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.coremap.renderer.se.graphic.ViewBox;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 
 /**

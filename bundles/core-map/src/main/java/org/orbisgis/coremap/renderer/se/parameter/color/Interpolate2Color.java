@@ -65,7 +65,7 @@ public final class Interpolate2Color extends Interpolate<ColorParameter, ColorLi
          * elements are computed from the <code>JAXBElement&lt;InterpolateType></code>
          * given in argument.
          * @param expr
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public Interpolate2Color(JAXBElement<InterpolateType> expr) throws InvalidStyle {
                 InterpolateType t = expr.getValue();

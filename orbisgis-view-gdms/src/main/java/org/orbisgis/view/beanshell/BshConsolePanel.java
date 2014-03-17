@@ -53,7 +53,7 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;

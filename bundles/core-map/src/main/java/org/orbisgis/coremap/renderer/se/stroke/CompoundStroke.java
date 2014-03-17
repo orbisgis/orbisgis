@@ -80,7 +80,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
     /**
      * Build a {@code CompoundStroke} using the JAXB type given in argument.
      * @param s
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public CompoundStroke(CompoundStrokeType s) throws InvalidStyle {
         super(s);
@@ -119,7 +119,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
     /**
      * Build a {@code CompoundStroke} using the JAXBElement given in argument.
      * @param s
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public CompoundStroke(JAXBElement<CompoundStrokeType> s) throws InvalidStyle {
         this(s.getValue());

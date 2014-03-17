@@ -35,10 +35,10 @@ import java.sql.Connection;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.layerModel.OwsMapContext;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.LayerException;
+import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.OwsMapContext;
 import org.orbisgis.progress.NullProgressMonitor;
 
 import static org.junit.Assert.assertEquals;

@@ -52,11 +52,11 @@ import javax.sql.DataSource;
 import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.orbisgis.coremap.map.MapTransform;
-import org.orbisgis.core.renderer.se.AreaSymbolizer;
-import org.orbisgis.core.renderer.se.LineSymbolizer;
-import org.orbisgis.core.renderer.se.PointSymbolizer;
-import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.AreaSymbolizer;
+import org.orbisgis.coremap.renderer.se.LineSymbolizer;
+import org.orbisgis.coremap.renderer.se.PointSymbolizer;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 
 /**
  * This class is responsible for drawing a preview of what will be rendered on

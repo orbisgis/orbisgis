@@ -88,7 +88,7 @@ public final class ViewBox extends  AbstractSymbolizerNode {
         /**
          * Build a new {@code ViewBox} using the given JAXB type.
          * @param viewBox
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public ViewBox(ViewBoxType viewBox) throws InvalidStyle {
                 if (viewBox.getHeight() != null) {

@@ -49,7 +49,7 @@ public class GeometryAttribute extends ValueReference {
      * Build a new {@code GeometryAttribute} using the JAXB {@code 
      * GeometryType} given in argument.
      * @param geom
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public GeometryAttribute(GeometryType geom) throws InvalidStyle {
         super(geom.getValueReference());

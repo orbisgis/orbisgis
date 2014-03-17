@@ -51,7 +51,7 @@ import org.apache.log4j.Logger;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;

@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import javax.swing.*;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.sif.CRFlowLayout;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;

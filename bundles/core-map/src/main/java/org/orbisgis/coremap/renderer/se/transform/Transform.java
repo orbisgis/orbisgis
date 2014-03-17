@@ -83,7 +83,7 @@ public class Transform extends AbstractSymbolizerNode implements UomNode {
          * Build a new {@code Transform}, that will conatin only the
          * {@code Transformation} represented by {@code t}.
          * @param t
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public Transform(TransformType t) throws InvalidStyle {
                 transformations = new ArrayList<Transformation>();

@@ -58,7 +58,7 @@ public final class CompositeSymbolizer extends AbstractSymbolizerNode implements
          * Build a new <code>CompositeSymbolizer</code>, finding its attributes and inner
          * elements in a JAXBElement.
          * @param st
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public CompositeSymbolizer(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
                 symbolizers = new ArrayList<Symbolizer>();

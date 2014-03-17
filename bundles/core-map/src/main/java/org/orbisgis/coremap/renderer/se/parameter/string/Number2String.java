@@ -83,7 +83,7 @@ public class Number2String extends AbstractSymbolizerNode implements SeParameter
          * Build a new Number2String, accorgind to the {@code FormatnumberType}
          * given in argument.
          * @param fnt
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public Number2String(FormatNumberType fnt) throws InvalidStyle {
                 numericValue = SeParameterFactory.createRealParameter(fnt.getNumericValue());
@@ -116,7 +116,7 @@ public class Number2String extends AbstractSymbolizerNode implements SeParameter
          * Build a new {@code Number2String}, using the given {@code
          * JAXBElement<FormatNumberType>} instance given in argument.
          * @param je
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public Number2String(JAXBElement<FormatNumberType> je) throws InvalidStyle {
                 this(je.getValue());

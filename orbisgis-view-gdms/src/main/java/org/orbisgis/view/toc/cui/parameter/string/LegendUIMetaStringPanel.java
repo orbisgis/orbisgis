@@ -30,13 +30,13 @@ package org.orbisgis.view.toc.actions.cui.parameter.string;
 
 import javax.swing.Icon;
 
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealAttribute;
 
-import org.orbisgis.core.renderer.se.parameter.string.Categorize2String;
-import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
-import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
-import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+import org.orbisgis.coremap.renderer.se.parameter.string.Categorize2String;
+import org.orbisgis.coremap.renderer.se.parameter.string.Recode2String;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringParameter;
 
 import org.orbisgis.view.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;

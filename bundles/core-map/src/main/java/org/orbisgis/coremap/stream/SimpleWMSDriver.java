@@ -67,7 +67,7 @@ import javax.sql.DataSource;
  * A driver that accesses a WMS stream.
  *
  * This can be used to open and access a source described by a
- * {@link org.orbisgis.core.stream.WMSStreamSource} whose StreamType is "wms".
+ * {@link org.orbisgis.coremap.stream.WMSStreamSource} whose StreamType is "wms".
  *
  * @author Antoine Gourlay
  * @author Vincent Dépériers

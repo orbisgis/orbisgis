@@ -96,7 +96,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
      * value in this JAXBElement must be an {@code ExternalGraphicType}.
      * @param extG
      * @throws IOException
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     ExternalGraphic(JAXBElement<ExternalGraphicType> extG) throws IOException, InvalidStyle {
         ExternalGraphicType t = extG.getValue();

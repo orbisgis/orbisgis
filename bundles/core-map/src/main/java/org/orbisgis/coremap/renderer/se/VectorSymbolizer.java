@@ -74,7 +74,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         /**
          * Build a VectorSymbolizer from the inpur JAXB type.
          * @param st
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         protected VectorSymbolizer(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
                 super(st);

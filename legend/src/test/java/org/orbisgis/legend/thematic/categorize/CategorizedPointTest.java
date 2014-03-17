@@ -1,14 +1,14 @@
 package org.orbisgis.legend.thematic.categorize;
 
 import org.junit.Test;
-import org.orbisgis.core.renderer.se.PointSymbolizer;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.core.renderer.se.graphic.ViewBox;
-import org.orbisgis.core.renderer.se.parameter.Categorize;
-import org.orbisgis.core.renderer.se.parameter.Literal;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.coremap.renderer.se.PointSymbolizer;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.coremap.renderer.se.graphic.ViewBox;
+import org.orbisgis.coremap.renderer.se.parameter.Categorize;
+import org.orbisgis.coremap.renderer.se.parameter.Literal;
+import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.categorize.CategorizedPoint;

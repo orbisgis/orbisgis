@@ -31,8 +31,8 @@ package org.orbisgis.view.toc.actions.cui;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
-import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.coremap.renderer.se.Rule;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
 import org.orbisgis.view.toc.actions.cui.components.RealLiteralInput;
 
 /**

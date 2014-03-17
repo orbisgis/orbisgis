@@ -140,7 +140,7 @@ public final class Matrix extends AbstractSymbolizerNode implements Transformati
         /**
          * Creates a hard copy of <code>m</code>
          * @param m
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         Matrix(MatrixType m) throws InvalidStyle {
                 this();

@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter.real;
+package org.orbisgis.coremap.renderer.se.parameter.real;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -41,7 +41,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Style;
 
 /**
  *
@@ -66,10 +66,10 @@ public class Categorize2RealTest {
 
         @Test
         public void testMarshalAndUnmarshal() throws Exception {
-                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+                Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
-                Marshaller m = Services.JAXBCONTEXT.createMarshaller();
+                Marshaller m = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createMarshaller();
                 m.marshal(ftsElem, new FileOutputStream("c2routput.se"));
                 Style st = new Style(ftsElem, null);
                 JAXBElement<StyleType> elem = st.getJAXBElement();
@@ -85,7 +85,7 @@ public class Categorize2RealTest {
         }
 
         private Categorize2Real getCategorize() throws Exception{
-                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+                Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
                 AreaSymbolizerType ast = (AreaSymbolizerType) (ftsElem.getValue().getRule().get(0).getSymbolizer().getValue());

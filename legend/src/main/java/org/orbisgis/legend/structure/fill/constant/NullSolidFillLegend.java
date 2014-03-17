@@ -29,7 +29,7 @@
 package org.orbisgis.legend.structure.fill.constant;
 
 import java.awt.Color;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
 
 /**
  * {@link SolidFill} fields that are set to null can be considered as constant

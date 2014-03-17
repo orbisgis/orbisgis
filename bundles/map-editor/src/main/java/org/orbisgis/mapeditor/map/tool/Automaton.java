@@ -55,7 +55,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Observer;
 import javax.swing.ImageIcon;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 
 public interface Automaton extends Observer {
 

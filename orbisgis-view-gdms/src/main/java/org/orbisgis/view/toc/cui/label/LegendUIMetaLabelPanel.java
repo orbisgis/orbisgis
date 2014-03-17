@@ -29,9 +29,9 @@
 package org.orbisgis.view.toc.actions.cui.label;
 
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.label.Label;
-import org.orbisgis.core.renderer.se.label.LineLabel;
-import org.orbisgis.core.renderer.se.label.PointLabel;
+import org.orbisgis.coremap.renderer.se.label.Label;
+import org.orbisgis.coremap.renderer.se.label.LineLabel;
+import org.orbisgis.coremap.renderer.se.label.PointLabel;
 import org.orbisgis.view.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;

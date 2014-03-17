@@ -28,11 +28,11 @@
  */
 package org.orbisgis.legend.thematic;
 
-import org.orbisgis.core.renderer.se.AreaSymbolizer;
-import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
-import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.coremap.renderer.se.AreaSymbolizer;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
+import org.orbisgis.coremap.renderer.se.common.Uom;
+import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
+import org.orbisgis.coremap.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;

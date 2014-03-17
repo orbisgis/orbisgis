@@ -78,7 +78,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
     /**
      * Build a new {@code GraphicStroke} using the {@code JAXBElement} given in argument.
      * @param elem
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     GraphicStroke(JAXBElement<GraphicStrokeType> elem) throws InvalidStyle {
         this(elem.getValue());
@@ -87,7 +87,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
     /**
      * Build a new {@code GraphicStroke} using the JAXB type given in argument.
      * @param gst
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     GraphicStroke(GraphicStrokeType gst) throws InvalidStyle {
         super(gst);

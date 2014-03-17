@@ -31,11 +31,11 @@ package org.orbisgis.legend.analyzer;
 import net.opengis.se._2_0.core.StyleType;
 import org.junit.Test;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.renderer.se.AreaSymbolizer;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.fill.DensityFill;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
+import org.orbisgis.coremap.renderer.se.AreaSymbolizer;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.fill.DensityFill;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.real.Recode2Real;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.structure.recode.RecodedReal;
 
@@ -164,7 +164,7 @@ public class RealAnalyzerTest extends AnalyzerTest {
         }
 
         private Recode2Real getRecode2Real() throws Exception {
-                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+                Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(REAL_RECODE));
                 Style st = new Style(ftsElem, null);

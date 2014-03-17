@@ -60,7 +60,7 @@ public abstract class Graphic extends AbstractSymbolizerNode {
      * {@code GraphicType}.
      * @param gr
      * @return
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public static Graphic createFromJAXBElement(JAXBElement<? extends GraphicType> gr) throws InvalidStyle {
         try {

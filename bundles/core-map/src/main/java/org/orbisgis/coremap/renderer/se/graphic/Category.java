@@ -79,7 +79,7 @@ public final class Category  extends AbstractSymbolizerNode implements FillNode,
         /**
          * Build a new {@code Category} from the given {@code CategoryType}.
          * @param c
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public Category(CategoryType c) throws InvalidStyle {
                 if (c.getFill() != null) {

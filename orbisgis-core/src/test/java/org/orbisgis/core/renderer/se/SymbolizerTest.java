@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se;
+package org.orbisgis.coremap.renderer.se;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -43,13 +43,13 @@ import net.opengis.se._2_0.core.SymbolizerType;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
-import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
-import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
-import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
-import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
-import org.orbisgis.core.renderer.se.visitors.UsedAnalysisVisitor;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.parameter.UsedAnalysis;
+import org.orbisgis.coremap.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.color.Recode2Color;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringAttribute;
+import org.orbisgis.coremap.renderer.se.visitors.FeaturesVisitor;
+import org.orbisgis.coremap.renderer.se.visitors.UsedAnalysisVisitor;
 
 /**
  *
@@ -80,7 +80,7 @@ public class SymbolizerTest {
             //The following file contains an invalid markup that MUST NOT be recognized.
         String xml = "../src/test/resources/org/orbisgis/core/renderer/se/invalidCategorize.se";
 
-            Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+            Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
 
 
             Schema schema = u.getSchema();

@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.stroke;
+package org.orbisgis.coremap.renderer.se.stroke;
 
 
 import com.sun.media.jai.widget.DisplayJAI;
@@ -50,15 +50,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.orbisgis.core.Services;
 import org.orbisgis.coremap.map.MapTransform;
-import org.orbisgis.core.renderer.se.PointSymbolizer;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
-import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
-import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.coremap.renderer.se.PointSymbolizer;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.common.Uom;
+import org.orbisgis.coremap.renderer.se.common.VariableOnlineResource;
+import org.orbisgis.coremap.renderer.se.graphic.GraphicCollection;
+import org.orbisgis.coremap.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringLiteral;
 
 /**
  *
@@ -103,7 +103,7 @@ public class StrokeRapportTest {
 
         // 1)
         try {
-			Marshaller marshaller = Services.JAXBCONTEXT.createMarshaller();
+			Marshaller marshaller = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             ByteArrayOutputStream oStream = new ByteArrayOutputStream();
 

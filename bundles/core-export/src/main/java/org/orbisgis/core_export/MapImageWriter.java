@@ -25,15 +25,15 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly: info_at_ orbisgis.org
  */
-package org.orbisgis.coremap.map.export;
+package org.orbisgis.core_export;
 
 import com.sun.media.jai.codec.PNGEncodeParam;
 import com.sun.media.jai.codec.TIFFEncodeParam;
 import com.sun.media.jai.codec.TIFFField;
 import com.vividsolutions.jts.geom.Envelope;
-import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.map.MapTransform;
-import org.orbisgis.core.renderer.ImageRenderer;
+import org.orbisgis.coremap.renderer.ImageRenderer;
 import org.orbisgis.progress.ProgressMonitor;
 
 import javax.media.jai.JAI;

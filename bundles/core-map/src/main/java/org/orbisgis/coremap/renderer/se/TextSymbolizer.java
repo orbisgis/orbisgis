@@ -71,7 +71,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
          * Build a new {@code TextSymbolizer} using the informations contained 
          * in the {@code JAXBElement} given in argument.
          * @param st
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public TextSymbolizer(JAXBElement<TextSymbolizerType> st) throws InvalidStyle {
                 super(st);

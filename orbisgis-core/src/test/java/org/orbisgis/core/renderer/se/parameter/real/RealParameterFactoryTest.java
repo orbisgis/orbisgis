@@ -28,7 +28,7 @@
  */
 
 /*
-package org.orbisgis.core.renderer.se.parameter.real;
+package org.orbisgis.coremap.renderer.se.parameter.real;
 
 import java.io.File;
 import java.util.logging.Level;

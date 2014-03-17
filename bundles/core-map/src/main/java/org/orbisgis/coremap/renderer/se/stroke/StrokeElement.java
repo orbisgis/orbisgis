@@ -74,7 +74,7 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
         /**
          * Build a {@code StrokeElement} from the JAXB type given in argument.
          * @param set
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public StrokeElement(StrokeElementType set) throws InvalidStyle {
                 if (set.getPreGap() != null) {

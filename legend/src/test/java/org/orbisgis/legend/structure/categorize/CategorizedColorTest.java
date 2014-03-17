@@ -1,11 +1,11 @@
 package org.orbisgis.legend.structure.categorize;
 
 import org.junit.Test;
-import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
-import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
-import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.color.Categorize2Color;
+import org.orbisgis.coremap.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.color.ColorParameter;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 

@@ -66,7 +66,7 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
          * the <code>MapItem</code>s used in the current recode will be retrieved 
          * from this XML representation.
          * @param expr
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public Recode2Real(RecodeType expr) throws InvalidStyle {
                 ctx = RealParameterContext.REAL_CONTEXT;

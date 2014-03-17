@@ -29,10 +29,10 @@
 package org.orbisgis.legend.structure.categorize;
 
 import org.junit.Test;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.core.renderer.se.parameter.string.Categorize2String;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.string.Categorize2String;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.legend.structure.recode.type.TypeEvent;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 

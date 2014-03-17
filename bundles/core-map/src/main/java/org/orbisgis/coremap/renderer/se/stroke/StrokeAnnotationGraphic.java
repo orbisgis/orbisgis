@@ -79,7 +79,7 @@ import org.orbisgis.coremap.renderer.se.parameter.real.RealParameterContext;
         /**
          * Build a new {@code StrokeAnnotationGraphic} from the given JAXB type.
          * @param sagt
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
   /*      public StrokeAnnotationGraphic(StrokeAnnotationGraphicType sagt) throws InvalidStyle {
                 if (sagt.getGraphic() != null) {

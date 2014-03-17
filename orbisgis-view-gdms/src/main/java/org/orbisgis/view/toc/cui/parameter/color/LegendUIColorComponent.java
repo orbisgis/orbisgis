@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.parameter.color;
 
-import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
+import org.orbisgis.coremap.renderer.se.parameter.color.ColorParameter;
 
 /**
  *

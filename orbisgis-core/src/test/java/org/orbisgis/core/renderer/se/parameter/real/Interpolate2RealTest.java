@@ -26,13 +26,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter.real;
+package org.orbisgis.coremap.renderer.se.parameter.real;
 
 import net.opengis.se._2_0.core.ModeType;
-import org.orbisgis.core.renderer.se.parameter.Interpolate;
-import org.orbisgis.core.renderer.se.parameter.Interpolate.InterpolationMode;
-import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.Interpolate;
+import org.orbisgis.coremap.renderer.se.parameter.Interpolate.InterpolationMode;
+import org.orbisgis.coremap.renderer.se.parameter.InterpolationPoint;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

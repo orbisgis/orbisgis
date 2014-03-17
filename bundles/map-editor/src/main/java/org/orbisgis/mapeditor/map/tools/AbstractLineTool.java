@@ -36,7 +36,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditor.map.tool.DrawingException;
 import org.orbisgis.mapeditor.map.tool.FinishedAutomatonException;
 import org.orbisgis.mapeditor.map.tool.ToolManager;

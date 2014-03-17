@@ -1,6 +1,6 @@
 package org.orbisgis.mapeditorapi;
 
-import org.orbisgis.core.layerModel.OwsMapContext;
+import org.orbisgis.coremap.layerModel.OwsMapContext;
 
 import java.io.File;
 

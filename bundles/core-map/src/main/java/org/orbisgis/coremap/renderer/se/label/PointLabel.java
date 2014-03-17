@@ -65,8 +65,8 @@ public final class PointLabel extends Label {
 
     /**
      * Creates a new {@code PointLabel} with default values as detailed in 
-     * {@link org.orbisgis.core.renderer.se.label.Label#Label() Label} and
-     * {@link org.orbisgis.core.renderer.se.label.StyledText#StyledText() StyledText}.
+     * {@link org.orbisgis.coremap.renderer.se.label.Label#Label() Label} and
+     * {@link org.orbisgis.coremap.renderer.se.label.StyledText#StyledText() StyledText}.
      * This {@code PointLabel} will be top and right aligned.
      */
     public PointLabel() {
@@ -80,7 +80,7 @@ public final class PointLabel extends Label {
     /**
      * Creates a new {@code PointLabel} from a {@code PointLabelType} instance.
      * @param plt The input JaXB type
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public PointLabel(PointLabelType plt) throws InvalidStyle {
         super(plt);
@@ -96,7 +96,7 @@ public final class PointLabel extends Label {
     /**
      * Creates a new {@code PointLabel} from a {@code JAXBElement} instance.
      * @param pl The input JaXB type.
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     PointLabel(JAXBElement<PointLabelType> pl) throws InvalidStyle {
         this(pl.getValue());

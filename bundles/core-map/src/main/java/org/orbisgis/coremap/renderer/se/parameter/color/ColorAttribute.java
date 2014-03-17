@@ -57,7 +57,7 @@ public class ColorAttribute extends ValueReference implements ColorParameter {
     /**
      * Build a <code>colorAttribute</code> from its JAXB representation.
      * @param expr
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public ColorAttribute(JAXBElement<String> expr) throws InvalidStyle {
         super(expr);

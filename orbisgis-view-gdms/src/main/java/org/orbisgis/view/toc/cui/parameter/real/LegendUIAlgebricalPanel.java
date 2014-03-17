@@ -31,8 +31,8 @@
 package org.orbisgis.view.toc.actions.cui.parameter.real;
 
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameterFactory;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameterFactory;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.components.TextInput;

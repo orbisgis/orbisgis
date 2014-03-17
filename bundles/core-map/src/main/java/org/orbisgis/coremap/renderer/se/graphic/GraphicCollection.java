@@ -74,7 +74,7 @@ public final class GraphicCollection extends AbstractSymbolizerNode implements U
      * @param g
      * @param parent
      *          The parent node of this GraphicCollection
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public GraphicCollection(JAXBElement<? extends GraphicType> g, SymbolizerNode parent) throws InvalidStyle {
         this();

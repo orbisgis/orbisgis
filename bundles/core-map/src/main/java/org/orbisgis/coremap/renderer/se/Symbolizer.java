@@ -83,7 +83,7 @@ public abstract class Symbolizer extends AbstractSymbolizerNode implements Symbo
      * the name and description - it's up to the inheriting classes to retrieve the other 
      * needed informations.
      * @param st
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public Symbolizer(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
         SymbolizerType t = st.getValue();
@@ -192,7 +192,7 @@ public abstract class Symbolizer extends AbstractSymbolizerNode implements Symbo
      * spacialization of {@code Symbolizer}.
      * @param st
      * @return
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public static Symbolizer createSymbolizerFromJAXBElement(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
         if (st.getDeclaredType() == AreaSymbolizerType.class) {

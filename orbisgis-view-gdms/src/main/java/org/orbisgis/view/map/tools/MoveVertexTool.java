@@ -35,8 +35,8 @@ import java.util.Observable;
 import javax.swing.ImageIcon;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.*;
 

@@ -60,7 +60,7 @@ public class StringConcatenate extends AbstractSymbolizerNode implements SeParam
          * Build a new {@code StringConcatenate} instance from the given JAXB
          * {@code ConcatenateType} instance.
          * @param concatenate
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public StringConcatenate(ConcatenateType concatenate) throws InvalidStyle {
                 List<ParameterValueType> jaxbList = concatenate.getStringValue();
@@ -75,7 +75,7 @@ public class StringConcatenate extends AbstractSymbolizerNode implements SeParam
          * Build a new {@code StringConcatenate} instance from the given 
          * {@code JAXBElement<ConcatenateType>} instance.
          * @param concatenate
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
 
         public StringConcatenate(JAXBElement<ConcatenateType> concat) throws InvalidStyle {

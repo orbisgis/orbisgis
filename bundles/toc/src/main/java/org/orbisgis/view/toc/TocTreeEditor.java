@@ -35,8 +35,8 @@ import javax.swing.JTree;
 import javax.swing.event.CellEditorListener;
 import javax.swing.tree.TreeCellEditor;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.renderer.se.Style;
 
 public class TocTreeEditor implements TreeCellEditor {
 	private JTree tree;

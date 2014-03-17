@@ -26,14 +26,14 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.common;
+package org.orbisgis.coremap.renderer.se.common;
 
 import java.util.Locale;
 import net.opengis.ows._2.DescriptionType;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Style;
 /**
  *
  * @author Alexis Guéganno

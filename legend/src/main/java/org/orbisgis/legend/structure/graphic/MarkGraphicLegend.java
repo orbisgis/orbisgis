@@ -28,11 +28,11 @@
  */
 package org.orbisgis.legend.structure.graphic;
 
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
-import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringParameter;
+import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.structure.fill.FillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;

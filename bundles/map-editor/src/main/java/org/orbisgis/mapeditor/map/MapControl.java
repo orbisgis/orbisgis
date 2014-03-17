@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.layerModel.*;
+import org.orbisgis.coremap.layerModel.*;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.map.TransformListener;
 import org.orbisgis.progress.ProgressMonitor;

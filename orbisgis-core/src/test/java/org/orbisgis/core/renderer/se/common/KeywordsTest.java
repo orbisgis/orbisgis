@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.common;
+package org.orbisgis.coremap.renderer.se.common;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import net.opengis.ows._2.DescriptionType;
 import net.opengis.ows._2.KeywordsType;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Style;
 
 /**
  *

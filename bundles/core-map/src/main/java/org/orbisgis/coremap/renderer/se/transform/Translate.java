@@ -76,7 +76,7 @@ public class Translate extends AbstractSymbolizerNode implements Transformation 
          * Create a new <code>Translate</code>, using the informations contained in 
          * <code>t</code>
          * @param t
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public Translate(TranslateType t) throws InvalidStyle {
                 if (t.getX() != null) {

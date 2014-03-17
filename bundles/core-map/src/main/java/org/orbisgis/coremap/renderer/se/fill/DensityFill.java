@@ -91,7 +91,7 @@ public final class DensityFill extends Fill implements GraphicNode {
      * Build a new {@code DensityFill}, using the {@code JAXBElement} given in
      * argument.
      * @param f
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     DensityFill(JAXBElement<DensityFillType> f) throws InvalidStyle {
 

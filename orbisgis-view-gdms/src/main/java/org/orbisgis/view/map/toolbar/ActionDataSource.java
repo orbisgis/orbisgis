@@ -32,8 +32,8 @@ package org.orbisgis.view.map.toolbar;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceListener;
 import org.gdms.data.edition.EditionListener;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.view.map.ext.MapEditorExtension;
 
 import javax.swing.*;

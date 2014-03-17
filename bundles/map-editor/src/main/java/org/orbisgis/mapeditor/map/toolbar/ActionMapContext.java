@@ -29,7 +29,7 @@
 
 package org.orbisgis.mapeditor.map.toolbar;
 
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.mapeditor.map.ext.MapEditorExtension;

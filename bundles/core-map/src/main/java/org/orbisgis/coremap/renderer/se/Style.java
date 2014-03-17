@@ -95,7 +95,7 @@ public final class Style extends AbstractSymbolizerNode {
      * given {@code ILayer}.
      * @param layer
      * @param seFile
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      * If the SE file can't be read or is not valid against the XML schemas.
      */
     public Style(ILayer layer, String seFile) throws InvalidStyle {
@@ -104,7 +104,7 @@ public final class Style extends AbstractSymbolizerNode {
 
         try {
 
-            Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+            Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
 
 
             //Schema schema = u.getSchema();
@@ -146,7 +146,7 @@ public final class Style extends AbstractSymbolizerNode {
      * given {@code JAXBElement<StyleType>}.
      * @param ftst
      * @param layer
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public Style(JAXBElement<StyleType> ftst, ILayer layer) throws InvalidStyle {
         rules = new ArrayList<Rule>();
@@ -159,7 +159,7 @@ public final class Style extends AbstractSymbolizerNode {
      * given {@code StyleType}.
      * @param fts
      * @param layer
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public Style(StyleType fts, ILayer layer) throws InvalidStyle {
         rules = new ArrayList<Rule>();
@@ -242,7 +242,7 @@ public final class Style extends AbstractSymbolizerNode {
      */
     public void export(String seFile) {
         try {
-            JAXBContext jaxbContext = Services.JAXBCONTEXT;
+            JAXBContext jaxbContext = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT;
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.marshal(getJAXBElement(), new FileOutputStream(seFile));

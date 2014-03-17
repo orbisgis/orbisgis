@@ -38,7 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.sif.CRFlowLayout;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;

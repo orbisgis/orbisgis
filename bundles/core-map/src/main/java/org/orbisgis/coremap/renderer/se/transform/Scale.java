@@ -82,7 +82,7 @@ public final class Scale extends AbstractSymbolizerNode implements Transformatio
     /**
      * Build a new {@code Scale} with the given JAXB {@code ScaleType}.
      * @param s
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     Scale(ScaleType s) throws InvalidStyle {
         /*if (s.getXY() != null) {

@@ -62,7 +62,6 @@ import net.opengis.ows_context.StyleType;
 import net.opengis.ows_context.URLType;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.ImageRenderer;
@@ -486,7 +485,7 @@ public final class OwsMapContext extends BeanMapContext {
         @Override
         public void read(InputStream in) throws IllegalArgumentException {
                 try {
-                        Unmarshaller unMarsh = Services.JAXBCONTEXT.createUnmarshaller();
+                        Unmarshaller unMarsh = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
                         JAXBElement<OWSContextType> importedOwsContextType = (JAXBElement<OWSContextType>) unMarsh.unmarshal(in);
                         setJAXBObject(importedOwsContextType.getValue());
                 } catch (JAXBException ex) {
@@ -499,7 +498,7 @@ public final class OwsMapContext extends BeanMapContext {
                 ObjectFactory owsFactory = new ObjectFactory();
                 try {
                         JAXBElement<OWSContextType> exportedOwsContextType = owsFactory.createOWSContext(getJAXBObject());
-                        Marshaller marshaller = Services.JAXBCONTEXT.createMarshaller();
+                        Marshaller marshaller = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createMarshaller();
                         marshaller.setProperty("jaxb.formatted.output", Boolean.TRUE);
                         marshaller.marshal(exportedOwsContextType, out);
                 } catch (JAXBException ex) {

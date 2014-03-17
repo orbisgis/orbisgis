@@ -34,7 +34,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.view.edition.TransferableEditableElement;
 import org.orbisgis.viewapi.edition.EditableElement;

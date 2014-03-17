@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.coremap.map.export.material;
+package org.orbisgis.core_export.material;
 
 import java.awt.Graphics2D;
 

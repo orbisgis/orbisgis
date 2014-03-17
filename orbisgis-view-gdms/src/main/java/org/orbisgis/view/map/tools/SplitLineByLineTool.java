@@ -33,7 +33,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.types.*;
 import org.gdms.driver.DriverException;
 import org.gdms.geometryUtils.GeometryEdit;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.Handler;
 import org.orbisgis.view.map.tool.ToolManager;

@@ -90,7 +90,7 @@ public class RealFunction extends AbstractSymbolizerNode implements SeParameter,
      * the operation and the operands, this constructor will naturally try to build them
      * all.
      * @param fcn
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public RealFunction(FunctionType fcn) throws InvalidStyle {
         this(fcn.getName());
@@ -104,7 +104,7 @@ public class RealFunction extends AbstractSymbolizerNode implements SeParameter,
     /**
      * Build a <code>RealFunction</code> from a <code>JAXBElement</code> instance.
      * @param fcn
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public RealFunction(JAXBElement<FunctionType> fcn) throws InvalidStyle {
         this(fcn.getValue());

@@ -135,7 +135,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
          * Build a new {@code AxisChart} from a {@code JAXBElement} instance
          * that embeds an {@link AxisChartType}.
          * @param chartE
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         AxisChart(JAXBElement<AxisChartType> chartE) throws InvalidStyle {
                 this();

@@ -25,7 +25,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly: info_at_ orbisgis.org
  */
-package org.orbisgis.coremap.map.export;
+package org.orbisgis.core_export;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -47,9 +47,9 @@ import java.awt.Graphics2D;
 import java.io.IOException;
 import java.io.OutputStream;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.map.MapTransform;
-import org.orbisgis.core.renderer.PdfRenderer;
+import org.orbisgis.coremap.renderer.PdfRenderer;
 import org.orbisgis.progress.ProgressMonitor;
 
 /**
@@ -138,8 +138,8 @@ public class GeoSpatialPDF {
      * This method is used to georeference the pdf.
      * Note : The CRS is not yet supported.
      *
-     * @param resultGeoPDF
-     * @param resultPDF
+     * @param writer
+     * @param mt
      * @throws IOException
      * @throws DocumentException
      */

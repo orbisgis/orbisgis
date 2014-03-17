@@ -133,7 +133,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
      * Build a new {@code MarkGraphic} from the given {@code JAXBElement}.
      * @param markG The JAXB representation of a MarkGraphic
      * @throws IOException
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     MarkGraphic(JAXBElement<MarkGraphicType> markG) throws IOException, InvalidStyle, URISyntaxException {
         MarkGraphicType t = markG.getValue();

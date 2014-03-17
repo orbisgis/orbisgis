@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui;
  
-import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 

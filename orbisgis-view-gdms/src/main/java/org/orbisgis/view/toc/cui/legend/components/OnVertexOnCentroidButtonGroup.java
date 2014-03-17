@@ -29,8 +29,8 @@
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.core.renderer.se.PointSymbolizer;
-import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.coremap.renderer.se.PointSymbolizer;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.OnVertexOnCentroid;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;

@@ -30,7 +30,7 @@ package org.orbisgis.view.toc.actions.cui.legend.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
 import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.OnVertexOnInterior;

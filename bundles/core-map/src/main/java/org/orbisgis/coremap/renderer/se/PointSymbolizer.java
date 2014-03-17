@@ -101,7 +101,7 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
      * Build a {@code PointSymbolizer} using the elements registered in the 
      * givenJAXBElement.
      * @param st
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public PointSymbolizer(JAXBElement<PointSymbolizerType> st) throws InvalidStyle {
         super(st);

@@ -1,6 +1,6 @@
 package org.orbisgis.legend.thematic.uom;
 
-import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.coremap.renderer.se.common.Uom;
 
 /**
  * This interface must be used on every legend that has an

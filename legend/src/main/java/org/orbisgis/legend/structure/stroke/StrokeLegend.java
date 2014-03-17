@@ -28,7 +28,7 @@
  */
 package org.orbisgis.legend.structure.stroke;
 
-import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.coremap.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
 
 /**

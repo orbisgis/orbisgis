@@ -47,14 +47,14 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
 
-import org.orbisgis.core.renderer.se.stroke.AlternativeStrokeElements;
-import org.orbisgis.core.renderer.se.stroke.Stroke;
-import org.orbisgis.core.renderer.se.stroke.CompoundStroke;
-import org.orbisgis.core.renderer.se.stroke.CompoundStrokeElement;
-//import org.orbisgis.core.renderer.se.stroke.StrokeAnnotationGraphic;
-import org.orbisgis.core.renderer.se.stroke.StrokeElement;
+import org.orbisgis.coremap.renderer.se.stroke.AlternativeStrokeElements;
+import org.orbisgis.coremap.renderer.se.stroke.Stroke;
+import org.orbisgis.coremap.renderer.se.stroke.CompoundStroke;
+import org.orbisgis.coremap.renderer.se.stroke.CompoundStrokeElement;
+//import org.orbisgis.coremap.renderer.se.stroke.StrokeAnnotationGraphic;
+import org.orbisgis.coremap.renderer.se.stroke.StrokeElement;
 
 import org.orbisgis.view.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;

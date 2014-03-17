@@ -160,7 +160,7 @@ public abstract class Label extends AbstractSymbolizerNode implements UomNode {
      * @return
      * The created <code>Label</code> instance, or null if the declared type of <code>l</code>
      * can't be recognized as a <code>PointLabelType</code> or a  <code>LineLabelType</code>
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public static Label createLabelFromJAXBElement(JAXBElement<? extends LabelType> l) throws InvalidStyle {
         if (l.getDeclaredType() == PointLabelType.class) {
@@ -175,7 +175,7 @@ public abstract class Label extends AbstractSymbolizerNode implements UomNode {
     /**
      * Create a new <code>Label</code> with default values as defined in the default
      * {@code StyledText} constructor (cf 
-     * {@link org.orbisgis.core.renderer.se.label.Label#Label() Label()} ).
+     * {@link org.orbisgis.coremap.renderer.se.label.Label#Label() Label()} ).
      */
     protected Label() {
         setLabel(new StyledText());
@@ -184,7 +184,7 @@ public abstract class Label extends AbstractSymbolizerNode implements UomNode {
     /**
      * Create a new {@code Label} built from a JAXB object.
      * @param t
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     protected Label(LabelType t) throws InvalidStyle {
         if (t.getUom() != null) {
@@ -213,7 +213,7 @@ public abstract class Label extends AbstractSymbolizerNode implements UomNode {
     /**
      * Create a new {@code Label} built from a generic JAXB object.
      * @param l
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     protected Label(JAXBElement<? extends LabelType> l) throws InvalidStyle {
         this(l.getValue());

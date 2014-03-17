@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se;
+package org.orbisgis.coremap.renderer.se;
 
 
 import java.awt.Graphics;
@@ -36,9 +36,8 @@ import javax.swing.JPanel;
 import javax.xml.bind.Marshaller;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
-import org.orbisgis.core.renderer.se.visitors.UsedAnalysisVisitor;
+import org.orbisgis.coremap.renderer.se.parameter.UsedAnalysis;
+import org.orbisgis.coremap.renderer.se.visitors.UsedAnalysisVisitor;
 
 /**
  *
@@ -67,7 +66,7 @@ public class AreaSymbolizerTest {
     @Test
     public void testAreaSymbolizer() throws Exception {
             Style style = new Style(null, "../src/test/resources/org/orbisgis/core/renderer/se/Districts/choro.se");
-            Marshaller marshaller = Services.JAXBCONTEXT.createMarshaller();
+            Marshaller marshaller = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.marshal(style.getJAXBElement(), new FileOutputStream("output.se"));
             assertTrue(true);

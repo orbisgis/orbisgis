@@ -54,7 +54,7 @@ import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.coremap.renderer.se.Symbolizer;
 import org.orbisgis.coremap.renderer.se.VectorSymbolizer;
 import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.stream.GeoStream;
+import org.orbisgis.coremap.stream.GeoStream;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.h2gis.utilities.SFSUtilities;

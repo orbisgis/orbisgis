@@ -73,7 +73,7 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
          * Build a new {@code ValueReference} using the given 
          * {@code ValueReferenceType}.
          * @param pName
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
 	public ValueReference(ValueReferenceType pName) throws InvalidStyle {
 		if (pName.getContent().size() == 1) {
@@ -89,7 +89,7 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
          * } that contains a {@code ValueReferenceType}.
          * 
          * @param expr
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
 	public ValueReference(JAXBElement<String> expr) throws InvalidStyle {
 		this(expr.getValue());

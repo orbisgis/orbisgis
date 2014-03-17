@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se;
+package org.orbisgis.coremap.renderer.se;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -36,8 +36,8 @@ import javax.xml.bind.util.ValidationEventCollector;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 
 /**
  *
@@ -48,7 +48,7 @@ public class FeatureTypeStyleTest {
     @Test
     public void testAreaSymbolizer() throws ParameterException, IOException, InvalidStyle {
         try {
-            Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+            Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
             ValidationEventCollector validationCollector = new ValidationEventCollector();
             u.setEventHandler(validationCollector);
             for (ValidationEvent event : validationCollector.getEvents()) {

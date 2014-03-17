@@ -91,7 +91,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
          * Build a new {@code LineSymbolizer} using the {@code JAXBElement} given in
          * argument
          * @param st
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
          */
         public LineSymbolizer(JAXBElement<LineSymbolizerType> st) throws InvalidStyle {
                 super(st);

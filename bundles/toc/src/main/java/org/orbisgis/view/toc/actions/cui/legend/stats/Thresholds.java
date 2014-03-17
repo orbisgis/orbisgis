@@ -1,7 +1,7 @@
 package org.orbisgis.view.toc.actions.cui.legend.stats;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.orbisgis.core.renderer.se.parameter.Categorize;
+import org.orbisgis.coremap.renderer.se.parameter.Categorize;
 
 import java.util.Arrays;
 import java.util.SortedSet;

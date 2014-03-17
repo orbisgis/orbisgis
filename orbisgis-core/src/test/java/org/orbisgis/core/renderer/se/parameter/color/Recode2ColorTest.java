@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter.color;
+package org.orbisgis.coremap.renderer.se.parameter.color;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -40,10 +40,10 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
-import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringParameter;
 
 /**
  *
@@ -158,10 +158,10 @@ public class Recode2ColorTest {
     @Test
     public void testMarshalUnmarshal() throws Exception {
         String xml = "../src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se";
-        Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+        Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                 new FileInputStream(xml));
-        Marshaller m = Services.JAXBCONTEXT.createMarshaller();
+        Marshaller m = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createMarshaller();
         m.marshal(ftsElem, new FileOutputStream("c2routput.se"));
         Style st = new Style(ftsElem, null);
         JAXBElement<StyleType> elem = st.getJAXBElement();

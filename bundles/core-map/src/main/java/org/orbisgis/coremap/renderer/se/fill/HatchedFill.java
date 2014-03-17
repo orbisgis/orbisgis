@@ -101,7 +101,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
     /**
      * Creates a new {@code HatchedFill} using the JAXBElement given in argument.
      * @param sf
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public HatchedFill(JAXBElement<HatchedFillType> sf) throws InvalidStyle {
         if (sf.getValue().getAngle() != null) {

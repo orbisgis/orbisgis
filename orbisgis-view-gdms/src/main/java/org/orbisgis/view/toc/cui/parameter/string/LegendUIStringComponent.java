@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.parameter.string;
 
-import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringParameter;
 
 /**
  *

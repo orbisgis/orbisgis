@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter.real;
+package org.orbisgis.coremap.renderer.se.parameter.real;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

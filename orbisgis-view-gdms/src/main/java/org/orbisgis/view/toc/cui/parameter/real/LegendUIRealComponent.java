@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.parameter.real;
 
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
 
 /**
  *

@@ -45,7 +45,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.coremap.renderer.se.Rule;
 
 /**
  *

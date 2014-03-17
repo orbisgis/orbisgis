@@ -49,11 +49,11 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.core.renderer.se.AreaSymbolizer;
-import org.orbisgis.core.renderer.se.LineSymbolizer;
-import org.orbisgis.core.renderer.se.PointSymbolizer;
-import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.core.renderer.se.TextSymbolizer;
+import org.orbisgis.coremap.renderer.se.AreaSymbolizer;
+import org.orbisgis.coremap.renderer.se.LineSymbolizer;
+import org.orbisgis.coremap.renderer.se.PointSymbolizer;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
+import org.orbisgis.coremap.renderer.se.TextSymbolizer;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

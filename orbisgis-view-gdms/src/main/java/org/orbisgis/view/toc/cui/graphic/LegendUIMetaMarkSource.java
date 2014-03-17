@@ -29,10 +29,10 @@
 package org.orbisgis.view.toc.actions.cui.graphic;
 
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.common.OnlineResource;
-import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.core.renderer.se.graphic.WellKnownName;
-import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+import org.orbisgis.coremap.renderer.se.common.OnlineResource;
+import org.orbisgis.coremap.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.coremap.renderer.se.graphic.WellKnownName;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.view.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;

@@ -96,7 +96,7 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
     /**
      * Build a new {@code Halo} from the given JAXB type element.
      * @param halo
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public Halo(HaloType halo) throws InvalidStyle {
         if (halo.getFill() != null) {

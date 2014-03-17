@@ -30,9 +30,9 @@ package org.orbisgis.view.toc.actions.cui.label;
 
 import java.awt.BorderLayout;
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.label.ExclusionRadius;
-import org.orbisgis.core.renderer.se.label.ExclusionZone;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.label.ExclusionRadius;
+import org.orbisgis.coremap.renderer.se.label.ExclusionZone;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.components.UomInput;

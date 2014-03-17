@@ -29,7 +29,7 @@
 package org.orbisgis.view.map.tools.generated;
 
 import java.awt.Graphics;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.view.map.tool.*;
 
 
