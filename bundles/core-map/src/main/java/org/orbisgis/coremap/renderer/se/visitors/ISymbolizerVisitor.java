@@ -26,9 +26,9 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.visitors;
+package org.orbisgis.coremap.renderer.se.visitors;
 
-import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.coremap.renderer.se.SymbolizerNode;
 
 /**
  * Visitor implementation for the SE structure. It will be useful to process

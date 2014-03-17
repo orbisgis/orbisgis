@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.layerModel;
+package org.orbisgis.coremap.layerModel;
 
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
@@ -39,9 +39,9 @@ import java.util.Locale;
 import java.util.Set;
 import net.opengis.ows_context.LayerType;
 import org.orbisgis.corejdbc.common.IntegerUnion;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.common.Description;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.common.Description;
 
 
 /**
@@ -163,7 +163,7 @@ public abstract class BeanLayer extends AbstractLayer {
         
 	/**
 	 * 
-	 * @see org.orbisgis.core.layerModel.ILayer#getName()
+	 * @see org.orbisgis.coremap.layerModel.ILayer#getName()
 	 */
         @Override
 	public String getName() {
@@ -174,7 +174,7 @@ public abstract class BeanLayer extends AbstractLayer {
 	/**
 	 * 
 	 * @throws LayerException
-	 * @see org.orbisgis.core.layerModel.ILayer#setName(java.lang.String)
+	 * @see org.orbisgis.coremap.layerModel.ILayer#setName(java.lang.String)
 	 */
         @Override
 	public void setName(final String name) throws LayerException {

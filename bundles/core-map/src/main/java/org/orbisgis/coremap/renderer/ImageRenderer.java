@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer;
+package org.orbisgis.coremap.renderer;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
 
 /**
  * ImageRender extends the renderer in order to produce an image

@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.common;
+package org.orbisgis.coremap.renderer.se.common;
 
 import java.util.List;
 import java.util.Locale;
@@ -36,7 +36,7 @@ import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.KeywordsType;
 import net.opengis.ows._2.LanguageStringType;
 import net.opengis.ows._2.ObjectFactory;
-import org.orbisgis.core.renderer.se.label.StyledText;
+import org.orbisgis.coremap.renderer.se.label.StyledText;
 
 /**
  * Keywords are list of {@code LocalizedText}, associated with an optional

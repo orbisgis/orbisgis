@@ -26,13 +26,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.common;
+package org.orbisgis.coremap.renderer.se.common;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import net.opengis.ows._2.*;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 
 /**
  * This class intends to store a description of a {@code Rule}. It is made of

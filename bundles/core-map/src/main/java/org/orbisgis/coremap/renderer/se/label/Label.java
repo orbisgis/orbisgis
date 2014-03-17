@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.label;
+package org.orbisgis.coremap.renderer.se.label;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -38,12 +38,12 @@ import net.opengis.se._2_0.core.LineLabelType;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.PointLabelType;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.UomNode;
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.coremap.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.UomNode;
+import org.orbisgis.coremap.renderer.se.common.Uom;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.SeParameterFactory;
 
 /**
  * Labels are used to provide text-label contents. A textSymbolizer must contain

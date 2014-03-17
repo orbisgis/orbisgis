@@ -26,14 +26,14 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.stroke;
+package org.orbisgis.coremap.renderer.se.stroke;
 
 import java.util.ArrayList;
 import java.util.List;
 import net.opengis.se._2_0.core.AlternativeStrokeElementsType;
 import net.opengis.se._2_0.core.StrokeElementType;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.SymbolizerNode;
 
 /**
  * {@code AlternativeStrokeElements} provides the option for the rendering system to 

@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter;
+package org.orbisgis.coremap.renderer.se.parameter;
 
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ExpressionType;
@@ -34,10 +34,10 @@ import net.opengis.fes._2.FunctionType;
 import net.opengis.fes._2.LiteralType;
 import net.opengis.fes._2.ValueReferenceType;
 import net.opengis.se._2_0.core.*;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.parameter.color.*;
-import org.orbisgis.core.renderer.se.parameter.real.*;
-import org.orbisgis.core.renderer.se.parameter.string.*;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.parameter.color.*;
+import org.orbisgis.coremap.renderer.se.parameter.real.*;
+import org.orbisgis.coremap.renderer.se.parameter.string.*;
 
 /**
  * This class will build <code>SeParameter</code> instances using the given <code>JAXBElement</code> instances.

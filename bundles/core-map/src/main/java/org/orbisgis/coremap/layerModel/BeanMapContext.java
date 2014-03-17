@@ -26,15 +26,15 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.layerModel;
+package org.orbisgis.coremap.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.net.URI;
 
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.common.Description;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.common.Description;
 
 /**
  * Define Map Context properties as Java Beans, add the ability to

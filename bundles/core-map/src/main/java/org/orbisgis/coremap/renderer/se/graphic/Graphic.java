@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.graphic;
+package org.orbisgis.coremap.renderer.se.graphic;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -43,9 +43,9 @@ import net.opengis.se._2_0.thematic.AxisChartType;
 import net.opengis.se._2_0.thematic.PieChartType;
 
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 
 /**
  * Generic class to represent graphic symbols as defined in SE.

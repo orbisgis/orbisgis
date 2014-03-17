@@ -26,15 +26,15 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.layerModel.mapcatalog;
+package org.orbisgis.coremap.layerModel.mapcatalog;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.renderer.se.common.Description;
+import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.coremap.renderer.se.common.Description;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

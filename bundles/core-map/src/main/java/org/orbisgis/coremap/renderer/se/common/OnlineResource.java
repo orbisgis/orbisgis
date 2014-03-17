@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.common;
+package org.orbisgis.coremap.renderer.se.common;
 
 import com.kitfox.svg.app.beans.SVGIcon;
 import java.awt.*;
@@ -55,15 +55,15 @@ import net.opengis.se._2_0.core.MarkGraphicType;
 import net.opengis.se._2_0.core.VariableOnlineResourceType;
 
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.graphic.ExternalGraphicSource;
-import org.orbisgis.core.renderer.se.graphic.MarkGraphicSource;
-import org.orbisgis.core.renderer.se.graphic.ViewBox;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
+import org.orbisgis.coremap.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.coremap.renderer.se.SymbolizerNode;
+import org.orbisgis.coremap.renderer.se.graphic.ExternalGraphicSource;
+import org.orbisgis.coremap.renderer.se.graphic.MarkGraphicSource;
+import org.orbisgis.coremap.renderer.se.graphic.ViewBox;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.visitors.FeaturesVisitor;
 
 /**
  * An {@code OnlineResource} is used to keep a reference to an graphic resource

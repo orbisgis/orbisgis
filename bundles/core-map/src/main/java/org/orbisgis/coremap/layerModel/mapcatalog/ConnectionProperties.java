@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.layerModel.mapcatalog;
+package org.orbisgis.coremap.layerModel.mapcatalog;
 
 import org.orbisgis.corejdbc.DataManager;
 

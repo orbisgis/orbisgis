@@ -26,17 +26,17 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.stroke;
+package org.orbisgis.coremap.renderer.se.stroke;
 
 import java.util.ArrayList;
 import java.util.List;
 import net.opengis.se._2_0.core.StrokeElementType;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.StrokeNode;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.StrokeNode;
+import org.orbisgis.coremap.renderer.se.SymbolizerNode;
+import org.orbisgis.coremap.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameterContext;
 
 /**
  * A {@code StrokeElement} is used to draw a "sub-stroke" of a render pattern. 

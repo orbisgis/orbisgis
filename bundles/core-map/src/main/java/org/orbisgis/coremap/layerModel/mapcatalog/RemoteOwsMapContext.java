@@ -26,11 +26,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.layerModel.mapcatalog;
+package org.orbisgis.coremap.layerModel.mapcatalog;
 
 import java.io.IOException;
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.layerModel.OwsMapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.OwsMapContext;
 
 /**
  * Ows specific map context implementation of a remote map context.

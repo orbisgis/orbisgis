@@ -26,9 +26,9 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se;
+package org.orbisgis.coremap.renderer.se;
 
-import org.orbisgis.core.renderer.se.graphic.ViewBox;
+import org.orbisgis.coremap.renderer.se.graphic.ViewBox;
 
 /**
  * Used for every node that can be used in a viewbox.

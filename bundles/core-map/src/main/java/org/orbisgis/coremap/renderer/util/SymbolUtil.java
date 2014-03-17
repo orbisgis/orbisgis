@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.util;
+package org.orbisgis.coremap.renderer.util;
 
 import com.vividsolutions.jts.geom.Geometry;
 import java.awt.*;

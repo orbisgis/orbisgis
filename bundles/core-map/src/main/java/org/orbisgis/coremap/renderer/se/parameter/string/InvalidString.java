@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter.string;
+package org.orbisgis.coremap.renderer.se.parameter.string;
 
 /**
  * Exception to be thrown when a StringParameter can't be validate against its

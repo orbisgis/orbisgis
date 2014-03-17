@@ -26,12 +26,12 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter.real;
+package org.orbisgis.coremap.renderer.se.parameter.real;
 
 import java.sql.ResultSet;
 import java.util.Map;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.SeParameter;
 
 /**
  * A {@code RealParameter} is a SE node that contains a numeric value, or that 

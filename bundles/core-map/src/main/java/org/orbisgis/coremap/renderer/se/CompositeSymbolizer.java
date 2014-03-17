@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se;
+package org.orbisgis.coremap.renderer.se;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +34,8 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.CompositeSymbolizerType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.SymbolizerType;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.common.Uom;
 
 /**
  * This is the entry point of the <code>Symbolizer</code>'s structure in a <code>Rule</code>

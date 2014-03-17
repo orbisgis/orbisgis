@@ -26,11 +26,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter;
+package org.orbisgis.coremap.renderer.se.parameter;
 
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ParameterValueType;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.coremap.renderer.se.SymbolizerNode;
 
 
 /**

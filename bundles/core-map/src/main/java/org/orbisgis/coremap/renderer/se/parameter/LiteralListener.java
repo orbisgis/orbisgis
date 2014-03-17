@@ -27,7 +27,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.core.renderer.se.parameter;
+package org.orbisgis.coremap.renderer.se.parameter;
 
 /**
  * <code>LiteralListener</code> are listeners dedicated to <code>Literal</code> objects.

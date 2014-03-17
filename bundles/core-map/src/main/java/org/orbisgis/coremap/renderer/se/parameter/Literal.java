@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter;
+package org.orbisgis.coremap.renderer.se.parameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +34,8 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
 import net.opengis.fes._2.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
-import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.coremap.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.coremap.renderer.se.SymbolizerNode;
 
 /**
  * <code>Literal</code>s are the concrete realizations of <code>SeParameter</code>.

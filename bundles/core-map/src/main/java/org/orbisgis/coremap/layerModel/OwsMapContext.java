@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.layerModel;
+package org.orbisgis.coremap.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -65,12 +65,12 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.ImageRenderer;
-import org.orbisgis.core.renderer.Renderer;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.common.Description;
-import org.orbisgis.core.renderer.se.common.LocalizedText;
+import org.orbisgis.coremap.renderer.ImageRenderer;
+import org.orbisgis.coremap.renderer.Renderer;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.common.Description;
+import org.orbisgis.coremap.renderer.se.common.LocalizedText;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.h2gis.utilities.SFSUtilities;

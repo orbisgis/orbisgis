@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter.color;
+package org.orbisgis.coremap.renderer.se.parameter.color;
 
 import java.awt.Color;
 import java.sql.ResultSet;
@@ -36,7 +36,7 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
 
 
-import org.orbisgis.core.renderer.se.parameter.Literal;
+import org.orbisgis.coremap.renderer.se.parameter.Literal;
 
 /**
  * 

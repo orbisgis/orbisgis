@@ -26,10 +26,10 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se;
+package org.orbisgis.coremap.renderer.se;
 
 import java.util.List;
-import org.orbisgis.core.renderer.se.visitors.ISymbolizerVisitor;
+import org.orbisgis.coremap.renderer.se.visitors.ISymbolizerVisitor;
 
 /**
  * SymbolizerNode allow to browse the styling tree

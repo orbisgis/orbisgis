@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se;
+package org.orbisgis.coremap.renderer.se;
 
 import com.vividsolutions.jts.geom.*;
 import java.awt.Shape;
@@ -41,10 +41,10 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.SymbolizerType;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.common.Uom;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.geometry.GeometryAttribute;
 import org.h2gis.utilities.SpatialResultSet;
 
 /**

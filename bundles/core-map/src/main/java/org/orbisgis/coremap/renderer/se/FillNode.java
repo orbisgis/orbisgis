@@ -26,9 +26,9 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se;
+package org.orbisgis.coremap.renderer.se;
 
-import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.coremap.renderer.se.fill.Fill;
 
 /**
  * Interface to be implemented by every node that can contain a <code>Fill</code> element.

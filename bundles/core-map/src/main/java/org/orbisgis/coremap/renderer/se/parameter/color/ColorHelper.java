@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter.color;
+package org.orbisgis.coremap.renderer.se.parameter.color;
 
 import java.awt.Color;
 import java.awt.Graphics;

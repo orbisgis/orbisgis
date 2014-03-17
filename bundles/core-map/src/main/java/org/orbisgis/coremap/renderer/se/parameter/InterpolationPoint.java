@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter;
+package org.orbisgis.coremap.renderer.se.parameter;
 
 /**
  * <code>InterpolationPoint</code> are used to map a <code>Type</code> instance (the <b>value</b> to 

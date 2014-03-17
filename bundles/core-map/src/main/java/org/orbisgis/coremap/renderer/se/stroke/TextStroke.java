@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.stroke;
+package org.orbisgis.coremap.renderer.se.stroke;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -40,10 +40,10 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TextStrokeType;
 
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.label.LineLabel;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.SymbolizerNode;
+import org.orbisgis.coremap.renderer.se.label.LineLabel;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 
 /**
  * {@code TexteStroke} is used to render text labels along a line. It is useful 

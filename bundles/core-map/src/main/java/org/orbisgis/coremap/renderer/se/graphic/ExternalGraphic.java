@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.graphic;
+package org.orbisgis.coremap.renderer.se.graphic;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -40,18 +40,18 @@ import net.opengis.se._2_0.core.ExternalGraphicType;
 import net.opengis.se._2_0.core.ObjectFactory;
 
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.UomNode;
-import org.orbisgis.core.renderer.se.ViewBoxNode;
-import org.orbisgis.core.renderer.se.common.Halo;
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
-import org.orbisgis.core.renderer.se.transform.Transform;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.SymbolizerNode;
+import org.orbisgis.coremap.renderer.se.UomNode;
+import org.orbisgis.coremap.renderer.se.ViewBoxNode;
+import org.orbisgis.coremap.renderer.se.common.Halo;
+import org.orbisgis.coremap.renderer.se.common.Uom;
+import org.orbisgis.coremap.renderer.se.common.VariableOnlineResource;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameterContext;
+import org.orbisgis.coremap.renderer.se.transform.Transform;
 
 /**
  * An external graphic is an image such as JPG, PNG, SVG.

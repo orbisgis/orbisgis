@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.layerModel;
+package org.orbisgis.coremap.layerModel;
 
 public interface ILayerAction {
 	void action(ILayer layer);

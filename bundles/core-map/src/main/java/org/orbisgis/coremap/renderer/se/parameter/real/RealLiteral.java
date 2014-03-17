@@ -26,13 +26,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter.real;
+package org.orbisgis.coremap.renderer.se.parameter.real;
 
 import java.sql.ResultSet;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
-import org.orbisgis.core.renderer.se.parameter.Literal;
+import org.orbisgis.coremap.renderer.se.parameter.Literal;
 
 /**
  * The representation of a real literal, bounded in a real context. Boundaries are set

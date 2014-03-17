@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter.geometry;
+package org.orbisgis.coremap.renderer.se.parameter.geometry;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -34,9 +34,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 import net.opengis.se._2_0.core.GeometryType;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.ValueReference;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.ValueReference;
 
 /**
  * {@code GeometryAttribute} is a {@link ValueReference} to a geometry in an

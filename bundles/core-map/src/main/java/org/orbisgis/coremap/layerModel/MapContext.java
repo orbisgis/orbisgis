@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.layerModel;
+package org.orbisgis.coremap.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.beans.PropertyChangeListener;
@@ -36,8 +36,8 @@ import java.net.URI;
 
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.common.Description;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.common.Description;
 import org.orbisgis.progress.ProgressMonitor;
 
 /**

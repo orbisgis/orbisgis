@@ -26,11 +26,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.layerModel;
+package org.orbisgis.coremap.layerModel;
 
 import java.util.*;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.utils.CollectionUtils;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -54,7 +54,7 @@ public abstract class AbstractLayer implements ILayer {
 	/* getters and setters */
 	/**
 	 * 
-	 * @see org.orbisgis.core.layerModel.ILayer#getParent()
+	 * @see org.orbisgis.coremap.layerModel.ILayer#getParent()
 	 */
 	public ILayer getParent() {
 		return parent;
@@ -62,7 +62,7 @@ public abstract class AbstractLayer implements ILayer {
 
 	/**
 	 * 
-	 * @see org.orbisgis.core.layerModel.ILayer#setParent()
+	 * @see org.orbisgis.coremap.layerModel.ILayer#setParent()
 	 */
 	public void setParent(final ILayer parent) {
 		this.parent = parent;

@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer;
+package org.orbisgis.coremap.renderer;
 
 import com.itextpdf.text.pdf.PdfTemplate;
 import java.awt.Graphics2D;
@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
 
 /**
  * This renderer is used to generate rendered-layers in a way

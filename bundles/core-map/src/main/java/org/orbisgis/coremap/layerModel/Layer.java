@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.layerModel;
+package org.orbisgis.coremap.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -51,8 +51,8 @@ import org.orbisgis.core.stream.GeoStream;
 import org.orbisgis.core.stream.SimpleWMSDriver;
 import org.orbisgis.core.stream.WMSStreamSource;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Rule;
+import org.orbisgis.coremap.renderer.se.Style;
 import org.h2gis.utilities.SFSUtilities;
 
 public class Layer extends BeanLayer {

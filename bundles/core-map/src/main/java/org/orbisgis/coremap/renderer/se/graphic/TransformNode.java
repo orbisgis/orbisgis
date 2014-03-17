@@ -26,9 +26,9 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.graphic;
+package org.orbisgis.coremap.renderer.se.graphic;
 
-import org.orbisgis.core.renderer.se.transform.Transform;
+import org.orbisgis.coremap.renderer.se.transform.Transform;
 
 /**
  * TransformNode are graphics for which we can use {@link Transform}.

@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.layerModel;
+package org.orbisgis.coremap.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -38,8 +38,8 @@ import java.util.Set;
 import net.opengis.ows_context.LayerType;
 import org.orbisgis.core.stream.GeoStream;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Rule;
+import org.orbisgis.coremap.renderer.se.Style;
 
 public class LayerCollection extends BeanLayer {
 	private List<ILayer> layerCollection;
@@ -167,7 +167,7 @@ public class LayerCollection extends BeanLayer {
 	/**
 	 * Check if this layer is visible or not. It is visible if at least one of its children is visible,
          * false otherwise.
-	 * @see org.orbisgis.core.layerModel.ILayer#isVisible()
+	 * @see org.orbisgis.coremap.layerModel.ILayer#isVisible()
 	 */
         @Override
 	public boolean isVisible() {
@@ -185,7 +185,7 @@ public class LayerCollection extends BeanLayer {
          * the visible attribute to isVisible for all the leaves of this collection.
          * @param isVisible 
          * @throws LayerException
-	 * @see org.orbisgis.core.layerModel.ILayer#setVisible(boolean)
+	 * @see org.orbisgis.coremap.layerModel.ILayer#setVisible(boolean)
 	 */
         @Override
 	public void setVisible(boolean isVisible) throws LayerException {

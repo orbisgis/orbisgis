@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.raster;
+package org.orbisgis.coremap.renderer.se.raster;
 
 /**
  * These values are used to determine how to render objects that overlap. It used for instance

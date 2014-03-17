@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.legend.carto;
+package org.orbisgis.coremap.renderer.legend.carto;
 public class Interval {
 
 	private Object start;

@@ -26,14 +26,14 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.visitors;
+package org.orbisgis.coremap.renderer.se.visitors;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.parameter.ValueReference;
+import org.orbisgis.coremap.renderer.se.SymbolizerNode;
+import org.orbisgis.coremap.renderer.se.parameter.ValueReference;
 
 /**
  * Search for the names of the features that are used in the visited tree of

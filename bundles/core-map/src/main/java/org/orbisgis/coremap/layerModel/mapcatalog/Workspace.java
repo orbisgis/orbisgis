@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.layerModel.mapcatalog;
+package org.orbisgis.coremap.layerModel.mapcatalog;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,8 +48,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.renderer.se.common.LocalizedText;
+import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.coremap.renderer.se.common.LocalizedText;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

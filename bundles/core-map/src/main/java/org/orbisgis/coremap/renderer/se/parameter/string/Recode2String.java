@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter.string;
+package org.orbisgis.coremap.renderer.se.parameter.string;
 
 import java.sql.ResultSet;
 import java.util.Map;
@@ -36,10 +36,10 @@ import net.opengis.se._2_0.core.RecodeType;
 import org.apache.log4j.Logger;
 
 
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.Recode;
-import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.Recode;
+import org.orbisgis.coremap.renderer.se.parameter.SeParameterFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

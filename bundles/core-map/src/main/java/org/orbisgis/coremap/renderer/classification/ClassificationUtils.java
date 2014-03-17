@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.classification;
+package org.orbisgis.coremap.renderer.classification;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -38,8 +38,8 @@ import java.util.List;
 
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.MetaData;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
 
 /**
  * Some methods used for classification...

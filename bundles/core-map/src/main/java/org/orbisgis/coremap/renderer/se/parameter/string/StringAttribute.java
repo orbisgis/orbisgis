@@ -26,16 +26,16 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter.string;
+package org.orbisgis.coremap.renderer.se.parameter.string;
 
 import java.sql.ResultSet;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 
 
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.ValueReference;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.ValueReference;
 
 /**
  * The {@code ValueReference} implementation of {@code StringParameter}. That means that 
