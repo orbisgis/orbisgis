@@ -67,6 +67,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -93,7 +94,8 @@ import com.vividsolutions.jts.operation.distance.DistanceOp;
 import com.vividsolutions.jts.operation.distance.GeometryLocation;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
-import org.orbisgis.utils.I18N;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * This utility class contains editing methods for JTS {@link Geometry} objects.
@@ -106,7 +108,7 @@ import org.orbisgis.utils.I18N;
  * @author Erwan bocher
  */
 public final class GeometryEdit {
-
+    private static final I18n I18N = I18nFactory.getI18n(GeometryEdit.class, Locale.getDefault(), I18nFactory.FALLBACK);
     private static final GeometryFactory FACTORY = new GeometryFactory();
     public static final double PRECISION = 10E-6;
 
@@ -568,8 +570,8 @@ public final class GeometryEdit {
     /**
      * Splits the specified lineString with another lineString.
      *
-     * @param lineString
-     * @param lineString
+     * @param input
+     * @param cut
      *
      */
     public static Geometry splitLineStringWithLine(LineString input, LineString cut) {
@@ -579,8 +581,8 @@ public final class GeometryEdit {
     /**
      * Splits the specified MultiLineString with another lineString.
      *
-     * @param MultiLineString
-     * @param lineString
+     * @param input
+     * @param cut
      *
      */
     public static MultiLineString splitMultiLineStringWithLine(MultiLineString input, LineString cut) {
@@ -742,7 +744,7 @@ public final class GeometryEdit {
             Polygon ret = FACTORY.createPolygon(inserted, holes);
 
             if (!ret.isValid()) {
-                throw new TopologyException(I18N.getString("gdms.geometryUtils.geometryException.geometryNotValid"));
+                throw new TopologyException(I18N.tr("gdms.geometryUtils.geometryException.geometryNotValid"));
             }
 
             return ret;
@@ -763,7 +765,7 @@ public final class GeometryEdit {
                 Polygon ret = FACTORY.createPolygon(FACTORY.createLinearRing(polygon.getExteriorRing().getCoordinates()), holes);
 
                 if (!ret.isValid()) {
-                    throw new TopologyException(I18N.getString("gdms.geometryUtils.geometryException.geometryNotValid"));
+                    throw new TopologyException(I18N.tr("gdms.geometryUtils.geometryException.geometryNotValid"));
                 }
 
                 return ret;
@@ -861,7 +863,8 @@ public final class GeometryEdit {
             }
         }
 
-        throw new UnsupportedOperationException(I18N.getString("gdms.geometryUtils.geometryException.unknownType") + " : " + geometry.getGeometryType()); //$NON-NLS-1$  
+        throw new UnsupportedOperationException(I18N.tr("gdms.geometryUtils.geometryException.unknownType:{0}",
+                geometry.getGeometryType()));
     }
 
     /**
@@ -968,7 +971,7 @@ public final class GeometryEdit {
         Coordinate[] coords = g.getCoordinates();
         if (coords.length <= minNumVertex) {
             throw new TopologyException(
-                    I18N.getString("orbisgis.org.orbisgis.ui.tool.AbstractHandler.invalidGeometryToFewVertex")); //$NON-NLS-1$  
+                    I18N.tr("orbisgis.org.orbisgis.ui.tool.AbstractHandler.invalidGeometryToFewVertex")); //$NON-NLS-1$
         }
         Coordinate[] newCoords = new Coordinate[coords.length - 1];
         for (int i = 0; i < vertexIndex; i++) {

@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.coremap.renderer;
+package org.orbisgis.core_export;
 
 import com.itextpdf.text.pdf.PdfArray;
 import com.itextpdf.text.pdf.PdfContentByte;
@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.orbisgis.coremap.map.MapTransform;
+import org.orbisgis.coremap.renderer.Renderer;
 import org.orbisgis.coremap.renderer.se.Symbolizer;
 import org.h2gis.utilities.SpatialResultSetMetaData;
 

@@ -120,10 +120,5 @@
             <artifactId>imagej</artifactId>
             <version>1.46</version>
         </dependency>
-        <dependency>
-            <groupId>com.lowagie</groupId>
-            <artifactId>iText</artifactId>
-            <version>5.0.2</version>
-        </dependency>
     </dependencies>
 </project>
