@@ -29,6 +29,7 @@
 package org.orbisgis.coremap.layerModel;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -37,17 +38,49 @@ import java.util.Locale;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
+import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.core.AbstractTest;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.coremap.renderer.se.common.Description;
 
-@Deprecated
-public class LayerModelTest extends AbstractTest {
+import javax.sql.DataSource;
 
-    private MapContext mc = new OwsMapContext(getDataManager());
+
+public class LayerModelTest {
+    private static Connection connection;
+    private static DataManager dataManager;
+
+    @BeforeClass
+    public static void tearUpClass() throws Exception {
+        DataSource dataSource = SpatialH2UT.createDataSource(LayerModelTest.class.getSimpleName(), false);
+        connection = dataSource.getConnection();
+        CreateSpatialExtension.initSpatialExtension(connection);
+        dataManager = new DataManagerImpl(dataSource);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        connection.close();
+        dataManager.dispose();
+    }
+
+    private DataManager getDataManager() {
+        return dataManager;
+    }
+
+    private Connection getConnection() {
+        return connection;
+    }
+
+    private MapContext mc = new OwsMapContext(dataManager);
+
 	private static final String dummy = "vector1";
 	private static final String dummy2 = "vector2";
 	private static final String dummy3 = "vector3";
@@ -106,14 +139,14 @@ public class LayerModelTest extends AbstractTest {
 		assertTrue(listener.vc == 1);
 		vl.open();
 		int refsc = listener.sc;
-		vl.addStyle(new Style(vl, "../src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se"));
+		vl.addStyle(new Style(vl, "../src/test/resources/org/orbisgis/coremap/renderer/se/colorRecode.se"));
 		assertTrue(listener.sc == refsc + 1);
-		vl.setStyle(0,new Style(vl, "../src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se"));
+		vl.setStyle(0,new Style(vl, "../src/test/resources/org/orbisgis/coremap/renderer/se/colorRecode.se"));
 		assertTrue(listener.sc == refsc + 2);
                 List<Style> styles = new ArrayList<Style>();
 		vl.setStyles(styles);
 		assertTrue(listener.sc == refsc + 3);
-		vl.addStyle(0,new Style(vl, "../src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se"));
+		vl.addStyle(0,new Style(vl, "../src/test/resources/org/orbisgis/coremap/renderer/se/colorRecode.se"));
 		assertTrue(listener.sc == refsc + 4);
 		lc.remove(vl1.getName());
 		assertTrue(listener.lr == 1);
