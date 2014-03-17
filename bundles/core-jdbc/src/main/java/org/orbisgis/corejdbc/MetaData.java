@@ -94,7 +94,7 @@ public class MetaData {
      * Compute the map of primary key to row id.
      * @param connection Active connection, not closed by this function
      * @param table Table identifier [[catalog.]schema.]table
-     * @param pkFieldName Primary key column of the table {@link org.orbisgis.core.jdbc.MetaData#getPkName(java.sql.Connection, String, boolean)}
+     * @param pkFieldName Primary key column of the table {@link org.orbisgis.corejdbc.MetaData#getPkName(java.sql.Connection, String, boolean)}
      * @return Map\<primary key, row id\>. Row id is the {@link java.sql.ResultSet#getRow()} of the "select * from table"
      */
     public static Map<Object,Integer> primaryKeyToRowId(Connection connection, String table, String pkFieldName) throws SQLException {
