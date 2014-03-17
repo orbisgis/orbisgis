@@ -48,7 +48,6 @@ import net.opengis.se._2_0.core.RuleType;
 import net.opengis.se._2_0.core.StyleType;
 import net.opengis.se._2_0.core.VersionType;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;

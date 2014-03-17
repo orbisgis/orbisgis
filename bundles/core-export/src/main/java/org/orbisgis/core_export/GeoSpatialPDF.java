@@ -49,7 +49,6 @@ import java.io.OutputStream;
 import org.apache.log4j.Logger;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.map.MapTransform;
-import org.orbisgis.coremap.renderer.PdfRenderer;
 import org.orbisgis.progress.ProgressMonitor;
 
 /**

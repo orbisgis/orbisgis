@@ -34,16 +34,10 @@ package org.orbisgis.coremap.stream;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.ConnectException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.wms.BoundingBox;
 import com.vividsolutions.wms.Capabilities;
 import com.vividsolutions.wms.MapImageFormatChooser;
@@ -53,15 +47,9 @@ import com.vividsolutions.wms.WMService;
 import java.util.ArrayList;
 import java.util.Map;
 import org.apache.log4j.Logger;
-import org.cts.CRSFactory;
-import org.cts.crs.CRSException;
-import org.cts.crs.CoordinateReferenceSystem;
-import org.h2gis.utilities.SpatialResultSet;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import javax.sql.DataSource;
 
 /**
  * A driver that accesses a WMS stream.

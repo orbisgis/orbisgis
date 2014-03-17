@@ -34,11 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.vividsolutions.jts.geom.*;
 import net.opengis.se._2_0.core.ElseFilterType;
 import net.opengis.se._2_0.core.RuleType;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.Services;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
@@ -50,9 +48,6 @@ import org.orbisgis.coremap.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.coremap.renderer.se.visitors.FeaturesVisitor;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.SpatialResultSet;
-
-import javax.sql.DataSource;
 
 /**
  * Rules are used to group rendering instructions by feature-property conditions and map scales.
