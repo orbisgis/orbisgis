@@ -35,7 +35,7 @@ import java.io.OutputStream;
 import java.net.URI;
 
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.coremap.renderer.se.common.Description;
 import org.orbisgis.progress.ProgressMonitor;

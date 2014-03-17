@@ -46,7 +46,7 @@ import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Symbolizer;

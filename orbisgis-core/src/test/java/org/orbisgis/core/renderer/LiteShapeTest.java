@@ -31,7 +31,7 @@ package org.orbisgis.core.renderer;
 import org.junit.Before;
 import java.awt.Shape;
 import java.awt.geom.PathIterator;
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;

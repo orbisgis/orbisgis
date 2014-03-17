@@ -40,7 +40,7 @@ import net.opengis.se._2_0.core.HatchedFillType;
 import net.opengis.se._2_0.core.SolidFillType;
 import net.opengis.se._2_0.thematic.DensityFillType;
 import net.opengis.se._2_0.thematic.DotMapFillType;
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.UomNode;

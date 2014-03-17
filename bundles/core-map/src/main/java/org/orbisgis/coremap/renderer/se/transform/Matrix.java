@@ -34,7 +34,7 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MatrixType;
 import net.opengis.se._2_0.core.ObjectFactory;
 
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.SymbolizerNode;

@@ -32,7 +32,7 @@ import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.SymbolizerNode;
 import org.orbisgis.coremap.renderer.se.common.Uom;
 import org.orbisgis.coremap.renderer.se.parameter.ParameterException;

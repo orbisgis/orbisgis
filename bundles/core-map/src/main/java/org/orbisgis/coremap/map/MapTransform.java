@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.map;
+package org.orbisgis.coremap.map;
 
 import com.vividsolutions.jts.awt.PointTransformation;
 import com.vividsolutions.jts.awt.ShapeWriter;

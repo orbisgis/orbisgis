@@ -32,7 +32,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import java.awt.image.BufferedImage;
 import org.junit.Before;
 import org.junit.Test;
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 import static org.junit.Assert.*;
 
 public class MapTransformTest {

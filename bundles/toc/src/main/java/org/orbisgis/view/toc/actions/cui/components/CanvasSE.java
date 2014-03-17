@@ -51,7 +51,7 @@ import java.util.Set;
 import javax.sql.DataSource;
 import javax.swing.JPanel;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.PointSymbolizer;

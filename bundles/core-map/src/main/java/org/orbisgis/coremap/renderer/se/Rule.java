@@ -40,7 +40,7 @@ import net.opengis.se._2_0.core.RuleType;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.coremap.layerModel.ILayer;
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.common.Description;
 import org.orbisgis.coremap.renderer.se.graphic.ExternalGraphic;

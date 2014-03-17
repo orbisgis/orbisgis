@@ -39,7 +39,7 @@ import java.util.Set;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
 import net.opengis.se._2_0.raster.RasterSymbolizerType;
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 import org.orbisgis.coremap.renderer.se.visitors.FeaturesVisitor;

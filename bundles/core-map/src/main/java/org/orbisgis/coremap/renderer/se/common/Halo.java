@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 import net.opengis.se._2_0.core.HaloType;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.coremap.renderer.se.FillNode;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;

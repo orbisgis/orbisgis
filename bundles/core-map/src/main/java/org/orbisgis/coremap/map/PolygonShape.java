@@ -30,7 +30,7 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package org.orbisgis.core.map;
+package org.orbisgis.coremap.map;
 
 import java.awt.Rectangle;
 import java.awt.Shape;

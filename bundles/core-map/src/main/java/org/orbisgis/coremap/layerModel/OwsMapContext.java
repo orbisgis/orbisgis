@@ -64,7 +64,7 @@ import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.ImageRenderer;
 import org.orbisgis.coremap.renderer.Renderer;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;

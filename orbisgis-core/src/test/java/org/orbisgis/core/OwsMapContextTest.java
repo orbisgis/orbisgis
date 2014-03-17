@@ -48,7 +48,7 @@ import org.junit.Test;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.OwsMapContext;
-import org.orbisgis.core.map.export.MapImageWriter;
+import org.orbisgis.coremap.map.export.MapImageWriter;
 import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.progress.NullProgressMonitor;
 

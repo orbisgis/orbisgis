@@ -44,7 +44,7 @@ import net.opengis.se._2_0.thematic.PieChartType;
 import net.opengis.se._2_0.thematic.PieSubtypeType;
 import net.opengis.se._2_0.thematic.SliceType;
 
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.StrokeNode;
 import org.orbisgis.coremap.renderer.se.SymbolizerNode;

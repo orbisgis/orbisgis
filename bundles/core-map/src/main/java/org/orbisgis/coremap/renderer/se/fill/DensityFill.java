@@ -31,7 +31,7 @@ package org.orbisgis.coremap.renderer.se.fill;
 import net.opengis.se._2_0.thematic.DensityFillType;
 import net.opengis.se._2_0.thematic.ObjectFactory;
 
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.GraphicNode;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.SymbolizerNode;

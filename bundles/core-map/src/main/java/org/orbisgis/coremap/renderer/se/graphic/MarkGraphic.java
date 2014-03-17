@@ -31,7 +31,7 @@ package org.orbisgis.coremap.renderer.se.graphic;
 import net.opengis.se._2_0.core.MarkGraphicType;
 import net.opengis.se._2_0.core.ObjectFactory;
 
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.*;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.common.Halo;

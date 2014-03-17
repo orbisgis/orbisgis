@@ -40,7 +40,7 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.SymbolizerType;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.common.Uom;
 import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
