@@ -90,5 +90,10 @@
             <artifactId>gettext-commons</artifactId>
             <version>${gettext-commons-version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ogc-custom</artifactId>
+            <version>1.2-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>

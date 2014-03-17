@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.stream;
+package org.orbisgis.coremap.stream;
 
 import java.awt.Image;
 import java.io.IOException;

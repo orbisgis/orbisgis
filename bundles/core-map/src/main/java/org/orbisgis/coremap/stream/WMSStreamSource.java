@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.stream;
+package org.orbisgis.coremap.stream;
 
 import org.h2gis.utilities.URIUtility;
 

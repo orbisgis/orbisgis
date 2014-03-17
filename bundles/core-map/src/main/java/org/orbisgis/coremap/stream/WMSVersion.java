@@ -29,7 +29,7 @@
  *
  * or contact directly: info@orbisgis.org
  */
-package org.orbisgis.core.stream;
+package org.orbisgis.coremap.stream;
 
 /**
  * This class is used to list the supported WMS version.
