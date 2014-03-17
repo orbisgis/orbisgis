@@ -59,7 +59,7 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.mapeditorapi.MapElement;

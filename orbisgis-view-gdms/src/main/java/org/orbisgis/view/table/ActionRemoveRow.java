@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundJob;

@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.view.geocatalog.EditableSourceImpl;
 import org.orbisgis.viewapi.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;

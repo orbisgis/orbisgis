@@ -40,7 +40,7 @@ import java.io.OutputStream;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.viewapi.docking.DockingPanelLayout;
 import org.orbisgis.viewapi.table.TableEditableElement;
 import org.orbisgis.viewapi.util.XElement;

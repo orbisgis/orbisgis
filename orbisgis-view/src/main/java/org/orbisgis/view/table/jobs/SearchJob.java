@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.viewapi.table.TableEditableElement;

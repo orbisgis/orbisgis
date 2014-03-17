@@ -37,7 +37,7 @@ import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.table.jobs.SortJob;

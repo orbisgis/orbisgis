@@ -45,7 +45,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
-import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
