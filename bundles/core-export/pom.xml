@@ -95,5 +95,23 @@
             <artifactId>iText</artifactId>
             <version>5.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${h2-package}</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2spatial-ext</artifactId>
+            <version>${h2-gis-version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
