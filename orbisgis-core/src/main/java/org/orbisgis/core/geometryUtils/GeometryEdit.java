@@ -108,9 +108,10 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Erwan bocher
  */
 public final class GeometryEdit {
-    private static final I18n I18N = I18nFactory.getI18n(GeometryEdit.class, Locale.getDefault(), I18nFactory.FALLBACK);
+
     private static final GeometryFactory FACTORY = new GeometryFactory();
     public static final double PRECISION = 10E-6;
+    private static final I18n I18N = I18nFactory.getI18n(GeometryEdit.class, Locale.getDefault(), I18nFactory.FALLBACK);
 
     /**
      * Interpolate a linestring according start and end coordinates z value. If
@@ -570,8 +571,8 @@ public final class GeometryEdit {
     /**
      * Splits the specified lineString with another lineString.
      *
-     * @param input
-     * @param cut
+     * @param lineString
+     * @param lineString
      *
      */
     public static Geometry splitLineStringWithLine(LineString input, LineString cut) {
@@ -581,8 +582,8 @@ public final class GeometryEdit {
     /**
      * Splits the specified MultiLineString with another lineString.
      *
-     * @param input
-     * @param cut
+     * @param MultiLineString
+     * @param lineString
      *
      */
     public static MultiLineString splitMultiLineStringWithLine(MultiLineString input, LineString cut) {
@@ -744,7 +745,7 @@ public final class GeometryEdit {
             Polygon ret = FACTORY.createPolygon(inserted, holes);
 
             if (!ret.isValid()) {
-                throw new TopologyException(I18N.tr("gdms.geometryUtils.geometryException.geometryNotValid"));
+                throw new TopologyException(I18N.tr("Geometry is not valid"));
             }
 
             return ret;
@@ -765,7 +766,7 @@ public final class GeometryEdit {
                 Polygon ret = FACTORY.createPolygon(FACTORY.createLinearRing(polygon.getExteriorRing().getCoordinates()), holes);
 
                 if (!ret.isValid()) {
-                    throw new TopologyException(I18N.tr("gdms.geometryUtils.geometryException.geometryNotValid"));
+                    throw new TopologyException(I18N.tr("Geometry is not valid"));
                 }
 
                 return ret;
@@ -863,8 +864,7 @@ public final class GeometryEdit {
             }
         }
 
-        throw new UnsupportedOperationException(I18N.tr("gdms.geometryUtils.geometryException.unknownType:{0}",
-                geometry.getGeometryType()));
+        throw new UnsupportedOperationException(I18N.tr("Unknown geometry type: {0}",geometry.getGeometryType()));
     }
 
     /**
@@ -971,7 +971,7 @@ public final class GeometryEdit {
         Coordinate[] coords = g.getCoordinates();
         if (coords.length <= minNumVertex) {
             throw new TopologyException(
-                    I18N.tr("orbisgis.org.orbisgis.ui.tool.AbstractHandler.invalidGeometryToFewVertex")); //$NON-NLS-1$
+                    I18N.tr("Too few vertices"));
         }
         Coordinate[] newCoords = new Coordinate[coords.length - 1];
         for (int i = 0; i < vertexIndex; i++) {
