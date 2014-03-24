@@ -29,21 +29,54 @@
 package org.orbisgis.coremap.renderer.se.parameter;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.ResultSet;
 
+import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.core.AbstractTest;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.coremap.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.coremap.renderer.se.parameter.string.StringAttribute;
 import org.orbisgis.coremap.renderer.se.parameter.string.StringParameter;
+
+import javax.sql.DataSource;
+
 import static org.junit.Assert.*;
 
 /**
  *
  * @author Maxence Laurent
  */
-public class PropertyNameTest extends AbstractTest {
+public class PropertyNameTest {
+    private static Connection connection;
+    private static DataManager dataManager;
+
+    @BeforeClass
+    public static void tearUpClass() throws Exception {
+        DataSource dataSource = SpatialH2UT.createDataSource(PropertyNameTest.class.getSimpleName(), false);
+        connection = dataSource.getConnection();
+        CreateSpatialExtension.initSpatialExtension(connection);
+        dataManager = new DataManagerImpl(dataSource);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        connection.close();
+        dataManager.dispose();
+    }
+
+    private DataManager getDataManager() {
+        return dataManager;
+    }
+
+    private Connection getConnection() {
+        return connection;
+    }
 
     // Data to test
     File src = new File("../src/test/resources/data/landcover2000.shp");
@@ -55,14 +88,12 @@ public class PropertyNameTest extends AbstractTest {
     @Test
     public void testRealAttribute() throws Exception {
         String tableName = getDataManager().registerDataSource(src.toURI());
-        ResultSet rs = getConnection().createStatement().executeQuery("select * from "+tableName);
-        try {
+        try (ResultSet rs = getConnection().createStatement().executeQuery("select * from " + tableName)) {
             RealParameter real = new RealAttribute("runoff_win");
             assertTrue(real.getValue(rs, 1) == 0.05);
             assertTrue(real.getValue(rs, 51) == 0.4);
             assertTrue(real.getValue(rs, 1222) == 0.4);
         } finally {
-            rs.close();
             getConnection().createStatement().execute("DROP TABLE landcover2000");
         }
     }
@@ -74,14 +105,12 @@ public class PropertyNameTest extends AbstractTest {
     @Test
     public void testStringAttribute() throws Exception {
         String tableName = getDataManager().registerDataSource(src.toURI());
-        ResultSet rs = getConnection().createStatement().executeQuery("select * from "+tableName);
-        try {
+        try (ResultSet rs = getConnection().createStatement().executeQuery("select * from " + tableName)) {
             StringParameter string = new StringAttribute("type");
             assertTrue(string.getValue(rs, 41).equals("grassland"));
             assertTrue(string.getValue(rs, 48).equals("corn"));
             assertTrue(string.getValue(rs, 57).equals("vegetables"));
         } finally {
-            rs.close();
             getConnection().createStatement().execute("DROP TABLE landcover2000");
         }
     }

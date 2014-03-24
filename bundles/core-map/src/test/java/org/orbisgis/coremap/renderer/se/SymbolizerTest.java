@@ -42,7 +42,6 @@ import javax.xml.validation.Schema;
 import net.opengis.se._2_0.core.SymbolizerType;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.orbisgis.core.Services;
 import org.orbisgis.coremap.renderer.se.fill.SolidFill;
 import org.orbisgis.coremap.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.coremap.renderer.se.parameter.color.ColorLiteral;
