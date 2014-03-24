@@ -41,7 +41,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
-import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.core.renderer.se.common.Description;

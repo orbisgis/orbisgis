@@ -33,7 +33,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.viewapi.edition.EditableElement;
 import org.orbisgis.view.edition.TransferableEditableElement;
 

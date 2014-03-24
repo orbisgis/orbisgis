@@ -28,8 +28,8 @@
  */
 package org.orbisgis.viewapi.edition;
 
-import org.orbisgis.coreapi.api.DataManager;
-import org.orbisgis.coreapi.api.ReversibleRowSet;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.ReversibleRowSet;
 
 /**
  * @author Nicolas Fortin

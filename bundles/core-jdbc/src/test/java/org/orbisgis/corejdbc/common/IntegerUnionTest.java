@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.common;
+package org.orbisgis.corejdbc.common;
 
 import java.util.HashSet;
 import java.util.Iterator;

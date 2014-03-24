@@ -75,7 +75,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.apache.log4j.Logger;
-import org.orbisgis.coreapi.api.ReversibleRowSet;
+import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.core.layerModel.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;

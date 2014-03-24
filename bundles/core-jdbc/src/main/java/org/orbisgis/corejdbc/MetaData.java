@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.jdbc;
+package org.orbisgis.corejdbc;
 
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -36,6 +36,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -43,7 +44,7 @@ import java.util.Map;
  * @author Nicolas Fortin
  */
 public class MetaData {
-    private static final I18n I18N = I18nFactory.getI18n(MetaData.class);
+    private static final I18n I18N = I18nFactory.getI18n(MetaData.class, Locale.getDefault(), I18nFactory.FALLBACK);
     /**
      * Returns a new unique name when registering a {@link javax.sql.DataSource}.
      * @param table Table identifier
@@ -93,7 +94,7 @@ public class MetaData {
      * Compute the map of primary key to row id.
      * @param connection Active connection, not closed by this function
      * @param table Table identifier [[catalog.]schema.]table
-     * @param pkFieldName Primary key column of the table {@link org.orbisgis.core.jdbc.MetaData#getPkName(java.sql.Connection, String, boolean)}
+     * @param pkFieldName Primary key column of the table {@link org.orbisgis.corejdbc.MetaData#getPkName(java.sql.Connection, String, boolean)}
      * @return Map\<primary key, row id\>. Row id is the {@link java.sql.ResultSet#getRow()} of the "select * from table"
      */
     public static Map<Object,Integer> primaryKeyToRowId(Connection connection, String table, String pkFieldName) throws SQLException {

@@ -35,8 +35,8 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.core.common.IntegerUnion;
-import org.orbisgis.core.jdbc.ReadTable;
+import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;

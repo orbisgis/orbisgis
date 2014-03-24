@@ -45,13 +45,13 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
-import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
-import org.orbisgis.core.jdbc.CreateTable;
-import org.orbisgis.core.jdbc.ReadTable;
-import org.orbisgis.core.jdbc.SortValueCachedComparator;
+import org.orbisgis.corejdbc.CreateTable;
+import org.orbisgis.corejdbc.ReadTable;
+import org.orbisgis.corejdbc.SortValueCachedComparator;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.table.DataSourceTableModel;

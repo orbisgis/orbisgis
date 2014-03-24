@@ -22,17 +22,15 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.jdbc;
+package org.orbisgis.corejdbc;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.TableLocation;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.core.DataManagerImpl;
-import org.orbisgis.coreapi.api.DataManager;
-import org.orbisgis.coreapi.api.ReadRowSet;
-import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.corejdbc.internal.DataManagerImpl;
+import org.orbisgis.corejdbc.internal.ReadRowSetImpl;
 import org.orbisgis.progress.NullProgressMonitor;
 
 import javax.sql.DataSource;
@@ -45,6 +43,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -78,7 +77,7 @@ public class RowSetTest {
     }
 
     private static SortedSet<Integer> getRows(Integer... rowId) {
-        SortedSet<Integer> rows = new IntegerUnion();
+        SortedSet<Integer> rows = new TreeSet<>();
         Collections.addAll(rows, rowId);
         return rows;
     }
@@ -118,7 +117,6 @@ public class RowSetTest {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer, str varchar(30), flt float)");
             st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
-            TableLocation table = TableLocation.parse("TEST");
             try (ReadRowSet rs = new ReadRowSetImpl(dataSource)) {
                 rs.setCommand("select * from TEST");
                 rs.execute();

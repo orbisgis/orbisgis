@@ -68,7 +68,7 @@ import org.apache.log4j.Logger;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.core.layerModel.BeanLayer;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.Layer;

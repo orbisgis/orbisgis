@@ -28,7 +28,7 @@
  */
 package org.orbisgis.mapeditor;
 
-import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.mapeditor.map.MapEditor;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.viewapi.edition.EditorDockable;

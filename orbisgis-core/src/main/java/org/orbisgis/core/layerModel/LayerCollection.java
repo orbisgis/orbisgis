@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Set;
 import net.opengis.ows_context.LayerType;
 import org.orbisgis.core.stream.GeoStream;
-import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 

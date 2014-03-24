@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
-import org.orbisgis.coreapi.api.DataManager;
+import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.core.layerModel.mapcatalog.ConnectionProperties;
 import org.orbisgis.core.layerModel.mapcatalog.RemoteMapCatalog;
 import org.orbisgis.core.layerModel.mapcatalog.Workspace;

@@ -54,9 +54,9 @@ import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.common.IntegerUnion;
-import org.orbisgis.core.jdbc.MetaData;
-import org.orbisgis.coreapi.api.ReadRowSet;
+import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.corejdbc.MetaData;
+import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;

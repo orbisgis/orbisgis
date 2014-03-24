@@ -38,7 +38,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.junit.Assert;
 import org.junit.Test;
-import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.progress.NullProgressMonitor;
 
 /**

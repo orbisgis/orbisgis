@@ -156,6 +156,15 @@ public class BundleTools {
     private static boolean isFragment(Bundle bundle) {
         return bundle.getHeaders().get(Constants.FRAGMENT_HOST) != null;
     }
+
+    /**
+     * @param bundle The bundle instance
+     * @return True if the bundle has no Activator and cannot be started
+     */
+    private static String getFragmentHost(Bundle bundle) {
+        return bundle.getHeaders().get(Constants.FRAGMENT_HOST);
+    }
+
     /**
      * Register in the host bundle the provided list of bundle reference
      * @param hostBundle Host BundleContext
@@ -184,11 +193,16 @@ public class BundleTools {
         }
         if (!jarList.isEmpty()) {
             Map<String,Bundle> installedBundleMap = new HashMap<String,Bundle>();
+            Set<String> fragmentHosts = new HashSet<>();
 
             // Keep a reference to bundles in the framework cache
             for (Bundle bundle : hostBundle.getBundles()) {
                 String key = bundle.getSymbolicName();
                 installedBundleMap.put(key, bundle);
+                String fragmentHost = getFragmentHost(bundle);
+                if(fragmentHost != null) {
+                    fragmentHosts.add(fragmentHost);
+                }
             }
 
             //
@@ -203,6 +217,7 @@ public class BundleTools {
                     key = jarRef.getArtifactId();
                 } catch (IOException ex) {
                     LOGGER.error(ex.getLocalizedMessage(),ex);
+                    // Do not install this jar
                     continue;
                 }
                 // Retrieve from the framework cache the bundle at this location
@@ -226,24 +241,30 @@ public class BundleTools {
                 }
 
                 try {
-                    if(b!=null) {
-                        String installedBundleLocation = b.getLocation();
-                        int verDiff = b.getVersion().compareTo(jarRef.getVersion());
-                        if(verDiff==0) {
-                            // If the same version
-                            if(!installedBundleLocation.equals(jarFile.toURI().toString()) ||
-                                    (b.getVersion()!=null && "SNAPSHOT".equals(b.getVersion().getQualifier()))) {
-                                //if the location is not the same reinstall it
+                    if(b != null) {
+                        if(fragmentHosts.contains(b.getSymbolicName())) {
+                            // Do not install this jar
+                            continue;
+                        } else {
+                            String installedBundleLocation = b.getLocation();
+                            int verDiff = b.getVersion().compareTo(jarRef.getVersion());
+                            if(verDiff==0) {
+                                // If the same version or SNAPSHOT that is not used by fragments
+                                if(!installedBundleLocation.equals(jarFile.toURI().toString()) ||
+                                        (b.getVersion()!=null && "SNAPSHOT".equals(b.getVersion().getQualifier()))) {
+                                    //if the location is not the same reinstall it
+                                    b.uninstall();
+                                    b=null;
+                                }
+                            } else if(verDiff < 0) {
+                                // Installed version is older than the bundle version
                                 b.uninstall();
                                 b=null;
+                            } else {
+                                // Installed version is more recent than the bundle version
+                                // Do not install this jar
+                                continue;
                             }
-                        } else if(verDiff < 0) {
-                            // Installed version is older than the bundle version
-                            b.uninstall();
-                            b=null;
-                        } else {
-                            // Installed version is more recent than the bundle version
-                            continue;
                         }
                     }
                     // If the bundle is not in the framework cache install it
