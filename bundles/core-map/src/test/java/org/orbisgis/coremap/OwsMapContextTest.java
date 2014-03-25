@@ -95,7 +95,7 @@ public class OwsMapContextTest  {
 	public void testRemoveSelectedLayer() throws Exception {
 		MapContext mc = new OwsMapContext(getDataManager());
 		mc.open(null);
-		ILayer layer = mc.createLayer(getDataManager().registerDataSource(new URI("../src/test/resources/data/bv_sap.shp")));
+		ILayer layer = mc.createLayer(getDataManager().registerDataSource(OwsMapContextTest.class.getResource("../../../data/bv_sap.shp").toURI()));
 		mc.getLayerModel().addLayer(layer);
 		mc.setSelectedLayers(new ILayer[] { layer });
 		assertTrue(mc.getSelectedLayers().length == 1);
@@ -136,7 +136,7 @@ public class OwsMapContextTest  {
 
     @Test
     public void makeLayerUriFromTableFile() throws Exception {
-        File dataFile = new File("../src/test/resources/data/landcover2000.shp").getCanonicalFile();
+        File dataFile = new File(OwsMapContextTest.class.getResource("../../../data/landcover2000.shp").getFile()).getCanonicalFile();
         File mapContextLocation = new File("landco_db.ows");
         String tableReference = getDataManager().registerDataSource(dataFile.toURI());
         MapContext mc = new OwsMapContext(getDataManager());
@@ -161,7 +161,7 @@ public class OwsMapContextTest  {
 
     @Test
     public void makeLayerUriFromNativeTable() throws Exception {
-        File dataFile = new File("../src/test/resources/data/landcover2000.shp").getCanonicalFile();
+        File dataFile = new File(OwsMapContextTest.class.getResource("../../../data/landcover2000.shp").getFile());
         File mapContextLocation = new File("landco_db2.ows");
         SHPDriverFunction shpDriver = new SHPDriverFunction();
         try(Connection connection = getConnection();

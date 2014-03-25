@@ -35,7 +35,7 @@ import javax.xml.bind.*;
 import javax.xml.bind.util.ValidationEventCollector;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import org.orbisgis.core.Services;
+
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 

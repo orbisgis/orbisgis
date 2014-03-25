@@ -39,8 +39,6 @@ import net.opengis.se._2_0.core.StyleType;
 import net.opengis.se._2_0.thematic.DensityFillType;
 import static org.junit.Assert.*;
 import org.junit.Test;
-import org.orbisgis.core.AbstractTest;
-import org.orbisgis.core.Services;
 import org.orbisgis.coremap.renderer.se.Style;
 
 /**
@@ -49,7 +47,7 @@ import org.orbisgis.coremap.renderer.se.Style;
  */
 public class Categorize2RealTest {
         
-        private String xml = "../src/test/resources/org/orbisgis/core/renderer/se/Districts/density_hatch_classif.se";
+        private String xml = Categorize2RealTest.class.getResource("../../Districts/density_hatch_classif.se").getFile();
 
         @Test
         public void testFromJAXB() throws Exception {

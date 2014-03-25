@@ -37,7 +37,6 @@ import net.opengis.se._2_0.core.StyleType;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
-import org.orbisgis.core.Services;
 import org.orbisgis.coremap.renderer.se.PointSymbolizer;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.coremap.renderer.se.graphic.PointTextGraphic;
@@ -50,7 +49,7 @@ public class StringParameterTest {
 
         @Test
         public void testMarshallAndUnmarshallCategorize() throws Exception {
-                String xml = "../src/test/resources/org/orbisgis/core/renderer/se/stringCategorize.se";
+                String xml = StringParameterTest.class.getResource("../../stringCategorize.se").getFile();
                 Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
@@ -65,7 +64,7 @@ public class StringParameterTest {
 
         @Test
         public void testMarshallAndUnmarshallRecode() throws Exception {
-                String xml = "../src/test/resources/org/orbisgis/core/renderer/se/stringRecode.se";
+                String xml = StringParameterTest.class.getResource("../../stringRecode.se").getFile();
                 Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
@@ -80,7 +79,7 @@ public class StringParameterTest {
 
         @Test
         public void testNumberFormat() throws Exception {
-                String xml = "../src/test/resources/org/orbisgis/core/renderer/se/numberFormat.se";
+                String xml = StringParameterTest.class.getResource("../../numberFormat.se").getFile();
                 Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
@@ -100,7 +99,7 @@ public class StringParameterTest {
 
         @Test
         public void testFormatNumberDecimalPoint() throws Exception {
-                String xml = "../src/test/resources/org/orbisgis/core/renderer/se/numberFormat.se";
+            String xml = StringParameterTest.class.getResource("../../numberFormat.se").getFile();
                 Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
@@ -126,7 +125,7 @@ public class StringParameterTest {
 
         @Test
         public void testFormatNumberGroupingSeparator() throws Exception {
-                String xml = "../src/test/resources/org/orbisgis/core/renderer/se/numberFormat.se";
+                String xml = StringParameterTest.class.getResource("../../numberFormat.se").getFile();
                 Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
@@ -152,7 +151,7 @@ public class StringParameterTest {
 
         @Test
         public void testFormatNumberPattern() throws Exception {
-                String xml = "../src/test/resources/org/orbisgis/core/renderer/se/numberFormat.se";
+                String xml = StringParameterTest.class.getResource("../../numberFormat.se").getFile();
                 Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
@@ -174,7 +173,7 @@ public class StringParameterTest {
 
         @Test
         public void testStringConcatenateUnmarshallMarshall() throws Exception {
-                String xml = "../src/test/resources/org/orbisgis/core/renderer/se/concatenateString.se";
+                String xml = StringParameterTest.class.getResource("../../concatenateString.se").getFile();
                 Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
@@ -192,7 +191,7 @@ public class StringParameterTest {
 
         @Test
         public void testStringConcatenateSizeAndAdd() throws Exception {
-                String xml = "../src/test/resources/org/orbisgis/core/renderer/se/concatenateString.se";
+                String xml = StringParameterTest.class.getResource("../../concatenateString.se").getFile();
                 Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
@@ -268,7 +267,7 @@ public class StringParameterTest {
         }
 
         private StringConcatenate getConcatenate() throws Exception {
-                String xml = "../src/test/resources/org/orbisgis/core/renderer/se/concatenateString.se";
+                String xml = StringParameterTest.class.getResource("../../concatenateString.se").getFile();
                 Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));

@@ -40,7 +40,7 @@ import org.orbisgis.coremap.renderer.se.Style;
  */
 public class DescriptionTest {
 
-    private String desc = "../src/test/resources/org/orbisgis/core/renderer/se/colorRecodeDescription.se";
+    private String desc = DescriptionTest.class.getResource("../colorRecodeDescription.se").getFile();
 
     public Description getDescription() throws Exception {
         Style fts = new Style(null, desc);

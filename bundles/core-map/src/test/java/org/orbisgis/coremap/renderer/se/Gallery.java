@@ -36,11 +36,18 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import javax.imageio.ImageIO;
+import javax.sql.DataSource;
 
+import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.AbstractTest;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.Layer;
 import org.orbisgis.coremap.map.MapTransform;
@@ -54,7 +61,31 @@ import org.h2gis.utilities.SFSUtilities;
  *
  * @author Maxence Laurent
  */
-public class Gallery extends AbstractTest {
+public class Gallery {
+    private static Connection connection;
+    private static DataManager dataManager;
+
+    @BeforeClass
+    public static void tearUpClass() throws Exception {
+        DataSource dataSource = SpatialH2UT.createDataSource(Gallery.class.getSimpleName(), false);
+        connection = dataSource.getConnection();
+        CreateSpatialExtension.initSpatialExtension(connection);
+        dataManager = new DataManagerImpl(dataSource);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        connection.close();
+        dataManager.dispose();
+    }
+
+    private DataManager getDataManager() {
+        return dataManager;
+    }
+
+    private Connection getConnection() {
+        return connection;
+    }
 
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 1000;

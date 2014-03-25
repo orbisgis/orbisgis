@@ -28,6 +28,7 @@
  */
 package org.orbisgis.coremap.renderer.se.common;
 
+import java.io.File;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Locale;
@@ -44,7 +45,7 @@ import org.orbisgis.coremap.renderer.se.Style;
  */
 public class KeywordsTest {
 
-    private String desc = "../src/test/resources/org/orbisgis/core/renderer/se/colorRecodeDescription.se";
+    private String desc = KeywordsTest.class.getResource("../colorRecodeDescription.se").getFile();
 
     public Description getDescription() throws Exception {
         Style fts = new Style(null, desc);

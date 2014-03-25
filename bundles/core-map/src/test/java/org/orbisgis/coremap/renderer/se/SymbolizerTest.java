@@ -77,7 +77,7 @@ public class SymbolizerTest {
     @Test
     public void testMarshallInvalidSeFile() throws Exception {
             //The following file contains an invalid markup that MUST NOT be recognized.
-        String xml = "../src/test/resources/org/orbisgis/core/renderer/se/invalidCategorize.se";
+            String xml = SymbolizerTest.class.getResource("invalidCategorize.se").getFile();
 
             Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
 
@@ -110,7 +110,7 @@ public class SymbolizerTest {
     @Test 
     public void testDependsOnFeature() throws Exception {
         FeaturesVisitor fv = new FeaturesVisitor();
-        String xml = "../src/test/resources/org/orbisgis/core/renderer/se/symbol_prop_canton_interpol_lin.se";
+        String xml = SymbolizerTest.class.getResource("symbol_prop_canton_interpol_lin.se").getFile();
         Style fts = new Style(null, xml);
         fts.acceptVisitor(fv);
         Set<String> feat = fv.getResult();
@@ -136,7 +136,7 @@ public class SymbolizerTest {
 
     @Test
     public void testRecodeUsedAnalysis() throws Exception {
-        Style style = new Style(null, "../src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se");
+        Style style = new Style(null, SymbolizerTest.class.getResource("colorRecode.se").getFile());
         LineSymbolizer ps =(LineSymbolizer) style.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UsedAnalysisVisitor uv = new UsedAnalysisVisitor();
         uv.visitSymbolizerNode(ps);

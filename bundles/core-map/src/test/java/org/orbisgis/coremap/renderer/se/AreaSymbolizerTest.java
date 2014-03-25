@@ -65,7 +65,7 @@ public class AreaSymbolizerTest {
 
     @Test
     public void testAreaSymbolizer() throws Exception {
-            Style style = new Style(null, "../src/test/resources/org/orbisgis/core/renderer/se/Districts/choro.se");
+            Style style = new Style(null, AreaSymbolizerTest.class.getResource("Districts/choro.se").getFile());
             Marshaller marshaller = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.marshal(style.getJAXBElement(), new FileOutputStream("output.se"));
@@ -74,7 +74,7 @@ public class AreaSymbolizerTest {
 
     @Test
     public void testCategorizeUsedAnalysis() throws Exception {
-        Style style = new Style(null, "../src/test/resources/org/orbisgis/core/renderer/se/colorCategorize.se");
+        Style style = new Style(null, AreaSymbolizerTest.class.getResource("colorCategorize.se").getFile());
         AreaSymbolizer ps =(AreaSymbolizer) style.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UsedAnalysisVisitor uv = new UsedAnalysisVisitor();
         uv.visitSymbolizerNode(ps);

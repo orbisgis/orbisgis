@@ -62,7 +62,7 @@ public class PointSymbolizerTest {
 
         @Test
         public void testInterpolateUsedAnalysis() throws Exception {
-            Style style = new Style(null, "../src/test/resources/org/orbisgis/core/renderer/se/symbol_prop_canton_interpol_lin.se");
+            Style style = new Style(null, PointSymbolizerTest.class.getResource("symbol_prop_canton_interpol_lin.se").getFile());
             PointSymbolizer ps =(PointSymbolizer) style.getRules().get(1).getCompositeSymbolizer().getSymbolizerList().get(0);
             UsedAnalysisVisitor uv = new UsedAnalysisVisitor();
             uv.visitSymbolizerNode(ps);

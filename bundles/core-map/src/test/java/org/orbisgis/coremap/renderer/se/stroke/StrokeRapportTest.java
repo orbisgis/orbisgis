@@ -48,7 +48,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
-import org.orbisgis.core.Services;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.PointSymbolizer;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;

@@ -42,7 +42,6 @@ import net.opengis.se._2_0.core.StyleType;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.orbisgis.core.Services;
 import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 import org.orbisgis.coremap.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
@@ -299,7 +298,7 @@ public class Categorize2ColorTest {
 
     private Categorize2Color getFromJaxb() throws Exception {
         //We want to import it directly from the input file.
-        String xmlRecode = "../src/test/resources/org/orbisgis/core/renderer/se/colorCategorize.se";
+        String xmlRecode = Categorize2Color.class.getResource("../../colorCategorize.se").getFile();
         Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                     new FileInputStream(xmlRecode));

@@ -39,7 +39,6 @@ import net.opengis.se._2_0.core.*;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
-import org.orbisgis.core.Services;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 import org.orbisgis.coremap.renderer.se.parameter.string.StringLiteral;
@@ -157,7 +156,7 @@ public class Recode2ColorTest {
 
     @Test
     public void testMarshalUnmarshal() throws Exception {
-        String xml = "../src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se";
+        String xml = Recode2ColorTest.class.getResource("../../colorRecode.se").getFile();
         Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                 new FileInputStream(xml));

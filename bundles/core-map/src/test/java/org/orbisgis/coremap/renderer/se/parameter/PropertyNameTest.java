@@ -79,7 +79,7 @@ public class PropertyNameTest {
     }
 
     // Data to test
-    File src = new File("../src/test/resources/data/landcover2000.shp");
+    File src = new File(PropertyNameTest.class.getResource("../../../../../../data/landcover2000.shp").getFile());
 
     /**
      * Test of getValue method, of class StringAttribute.

@@ -56,6 +56,7 @@ import javax.sql.DataSource;
 public class LayerModelTest {
     private static Connection connection;
     private static DataManager dataManager;
+    private String colorRecodeFile = LayerModelTest.class.getResource("../renderer/se/colorRecode.se").getFile();
 
     @BeforeClass
     public static void tearUpClass() throws Exception {
@@ -139,14 +140,14 @@ public class LayerModelTest {
 		assertTrue(listener.vc == 1);
 		vl.open();
 		int refsc = listener.sc;
-		vl.addStyle(new Style(vl, "../src/test/resources/org/orbisgis/coremap/renderer/se/colorRecode.se"));
+		vl.addStyle(new Style(vl, colorRecodeFile));
 		assertTrue(listener.sc == refsc + 1);
-		vl.setStyle(0,new Style(vl, "../src/test/resources/org/orbisgis/coremap/renderer/se/colorRecode.se"));
+		vl.setStyle(0,new Style(vl, colorRecodeFile));
 		assertTrue(listener.sc == refsc + 2);
                 List<Style> styles = new ArrayList<Style>();
 		vl.setStyles(styles);
 		assertTrue(listener.sc == refsc + 3);
-		vl.addStyle(0,new Style(vl, "../src/test/resources/org/orbisgis/coremap/renderer/se/colorRecode.se"));
+		vl.addStyle(0,new Style(vl, colorRecodeFile));
 		assertTrue(listener.sc == refsc + 4);
 		lc.remove(vl1.getName());
 		assertTrue(listener.lr == 1);
@@ -197,7 +198,7 @@ public class LayerModelTest {
         @Test
 	public void testAddWithSameName() throws Exception {
 		String tableReference = getDataManager().registerDataSource(new File(
-				"../src/test/resources/data/bv_sap.shp").toURI());
+                LayerModelTest.class.getResource("../../../../data/bv_sap.shp").getFile()).toURI());
 		ILayer lc = mc.createLayerCollection("firstLevel");
 		ILayer vl1 = mc.createLayer(tableReference);
 		ILayer vl2 = mc.createLayer(tableReference);

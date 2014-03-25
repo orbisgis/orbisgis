@@ -142,7 +142,7 @@ public class DataManagerImpl implements DataManager {
                     String withoutQuery = uriStr.substring(0,uriStr.indexOf("?"));
                     if(connection.getMetaData().getURL().startsWith(withoutQuery)) {
                         // Extract catalog, schema and table name
-                        Map<String,String> query = URIUtility.getQueryKeyValuePairs(uri);
+                        Map<String,String> query = URIUtility.getQueryKeyValuePairs(new URI(uri.getSchemeSpecificPart()));
                         return new TableLocation(query.get("catalog"),query.get("schema"),query.get("table")).toString();
                     }
                 }
