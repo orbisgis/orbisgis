@@ -242,39 +242,35 @@ public class BundleTools {
 
                 try {
                     if(b != null) {
-                        if(fragmentHosts.contains(b.getSymbolicName())) {
-                            // Do not install this jar
-                            continue;
-                        } else {
-                            String installedBundleLocation = b.getLocation();
-                            int verDiff = b.getVersion().compareTo(jarRef.getVersion());
-                            if(verDiff==0) {
-                                // If the same version or SNAPSHOT that is not used by fragments
-                                if(!installedBundleLocation.equals(jarFile.toURI().toString()) ||
-                                        (b.getVersion()!=null && "SNAPSHOT".equals(b.getVersion().getQualifier()))) {
-                                    //if the location is not the same reinstall it
-                                    b.uninstall();
-                                    b=null;
-                                }
-                            } else if(verDiff < 0) {
-                                // Installed version is older than the bundle version
+                        String installedBundleLocation = b.getLocation();
+                        int verDiff = b.getVersion().compareTo(jarRef.getVersion());
+                        if(verDiff==0) {
+                            // If the same version or SNAPSHOT that is not used by fragments
+                            if(!fragmentHosts.contains(b.getSymbolicName()) && (!installedBundleLocation.equals(jarFile.toURI().toString()) ||
+                                    (b.getVersion()!=null && "SNAPSHOT".equals(b.getVersion().getQualifier())))) {
+                                //if the location is not the same reinstall it
+                                LOGGER.info("Uninstall bundle "+b.getSymbolicName());
                                 b.uninstall();
                                 b=null;
-                            } else {
-                                // Installed version is more recent than the bundle version
-                                // Do not install this jar
-                                continue;
                             }
+                        } else if(verDiff < 0) {
+                            // Installed version is older than the bundle version
+                            LOGGER.info("Uninstall bundle "+b.getLocation());
+                            b.uninstall();
+                            b=null;
+                        } else {
+                            // Installed version is more recent than the bundle version
+                            // Do not install this jar
+                            continue;
                         }
                     }
                     // If the bundle is not in the framework cache install it
                     if ((b == null) && reference.isAutoInstall()) {
                         b = hostBundle.installBundle(jarFile.toURI().toString());
+                        LOGGER.info("Install bundle "+b.getSymbolicName());
                         if (!isFragment(b) && reference.isAutoStart()) {
                             installedBundleList.add(b);
                         }
-                    } else if ((b != null)) {
-                        b.update();
                     }
                 }
                 catch (BundleException ex) {
