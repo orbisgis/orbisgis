@@ -40,6 +40,7 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
 import javax.sql.DataSource;
@@ -83,14 +84,29 @@ public class BundleTest {
                 mavenBundle("org.orbisgis", "spatial-utilities"),
                 mavenBundle("org.orbisgis", "cts"),
                 mavenBundle("org.orbisgis", "jts"),
-                mavenBundle("com.h2database", "h2"),
+                mavenBundle("org.orbisgis", "jdelaunay"),
+                mavenBundle("com.h2database", "h2").version("1.3.176-SNAPSHOT"),
+                mavenBundle("com.fasterxml.jackson.core", "jackson-core").version("2.3.1"),
                 mavenBundle("org.orbisgis", "h2spatial").noStart(),
                 mavenBundle("org.orbisgis", "h2spatial-ext").noStart(),
                 mavenBundle("org.orbisgis", "h2drivers").noStart(),
                 mavenBundle("org.orbisgis", "h2spatial-osgi"),
                 mavenBundle("org.orbisgis", "h2spatial-ext-osgi"),
+                mavenBundle("org.orbisgis", "java-network-analyzer").version("0.1.5"),
+                mavenBundle("org.jgrapht", "jgrapht-core").version("0.9.0"),
+                mavenBundle("org.orbisgis", "h2network").noStart(),
                 junitBundles());
     }
+
+    @Test
+    public void checkResolveState() throws BundleException {
+        for (Bundle bundle : context.getBundles()) {
+            if(bundle.getState() == Bundle.INSTALLED) {
+                throw new BundleException("Bundle "+bundle.getSymbolicName()+" not resolved");
+            }
+        }
+    }
+
     /**
      * Create data source
      */
@@ -192,6 +208,7 @@ public class BundleTest {
     }
 
     private static void createTestTable(Statement stat)  throws SQLException {
+        stat.execute("drop table if exists area");
         stat.execute("create table area(idarea int primary key, the_geom geometry)");
         stat.execute("create spatial index on area(the_geom)");
         stat.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
