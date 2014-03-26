@@ -63,7 +63,7 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 public class ReadTable {
     /** SQL function to evaluate */
     public enum STATS { COUNT, SUM, AVG, STDDEV_SAMP, MIN, MAX}
-    protected final static I18n I18N = I18nFactory.getI18n(ReadTable.class);
+    protected final static I18n I18N = I18nFactory.getI18n(ReadTable.class, Locale.getDefault(), I18nFactory.FALLBACK);
     private static Logger LOGGER = Logger.getLogger(ReadTable.class);
 
     public static Collection<Integer> getSortedColumnRowIndex(Connection connection, String table, String columnName, boolean ascending, ProgressMonitor progressMonitor) throws SQLException {

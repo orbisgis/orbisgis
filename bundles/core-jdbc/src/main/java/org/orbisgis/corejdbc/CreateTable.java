@@ -40,13 +40,14 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Locale;
 
 /**
  * Methods that need write rights on database
  * @author Nicolas Fortin
  */
 public class CreateTable {
-    protected final static I18n I18N = I18nFactory.getI18n(CreateTable.class);
+    protected final static I18n I18N = I18nFactory.getI18n(CreateTable.class, Locale.getDefault(), I18nFactory.FALLBACK);
 
     /**
      * Create a temporary table that contains the provided collection of integers.
