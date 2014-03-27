@@ -11,6 +11,11 @@
                 <url>http://www.irstv.fr/</url>
         </organization>
         <url>http://www.orbisgis.org</url>
+        <parent>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>orbisgis-nexus</artifactId>
+            <version>1</version>
+        </parent>
         <modules>
                 <module>wms-client</module>
                 <module>gdms</module>
@@ -54,13 +59,6 @@
                         <url>http://repo.orbisgis.org</url>
                 </pluginRepository>
         </pluginRepositories>
-        <distributionManagement>
-                <repository>
-                        <id>IRSTV</id>
-                        <name>IRSTV repository</name>
-                        <url>scp://irstv@repo.orbisgis.org:/var/www/repo.orbisgis.org/</url>
-                </repository>
-        </distributionManagement>
         <build>
                 <plugins>
                         <plugin>
@@ -88,12 +86,5 @@
                                 </configuration>
                         </plugin>
                 </plugins>
-                <extensions>
-                        <extension>
-                                <groupId>org.apache.maven.wagon</groupId>
-                                <artifactId>wagon-ssh</artifactId>
-                                <version>2.2</version>
-                        </extension>
-                </extensions>
         </build>
 </project>
