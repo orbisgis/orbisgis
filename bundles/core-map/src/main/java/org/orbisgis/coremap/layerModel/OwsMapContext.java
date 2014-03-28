@@ -86,7 +86,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public final class OwsMapContext extends BeanMapContext {
 
-        private static final I18n I18N = I18nFactory.getI18n(OwsMapContext.class);
+        private static final I18n I18N = I18nFactory.getI18n(OwsMapContext.class, Locale.getDefault(), I18nFactory.FALLBACK);
         private static final Logger LOGGER = Logger.getLogger(OwsMapContext.class);
         private ArrayList<MapContextListener> listeners = new ArrayList<MapContextListener>();
         private OpenerListener openerListener;

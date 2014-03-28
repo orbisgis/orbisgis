@@ -30,6 +30,7 @@ package org.orbisgis.core_export;
 
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,7 +44,6 @@ import org.orbisgis.progress.NullProgressMonitor;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.net.URI;
 import java.sql.Connection;
 
 public class ExportTest {
@@ -53,7 +53,7 @@ public class ExportTest {
 
     @BeforeClass
     public static void tearUpClass() throws Exception {
-        DataSource dataSource = SpatialH2UT.createDataSource(ExportTest.class.getSimpleName(), false);
+        DataSource dataSource = SFSUtilities.wrapSpatialDataSource(SpatialH2UT.createDataSource(ExportTest.class.getSimpleName(), false));
         connection = dataSource.getConnection();
         CreateSpatialExtension.initSpatialExtension(connection);
         dataManager = new DataManagerImpl(dataSource);
@@ -71,22 +71,22 @@ public class ExportTest {
 
     @Test
     public void exportToPNG() throws Exception {
-        saveAs("mapExportTest.png", MapImageWriter.Format.PNG);
+        saveAs("target/mapExportTest.png", MapImageWriter.Format.PNG);
     }
 
     @Test
     public void exportToJEPG() throws Exception {
-        saveAs("mapExportTest.jpg", MapImageWriter.Format.JPEG);
+        saveAs("target/mapExportTest.jpg", MapImageWriter.Format.JPEG);
     }
 
     @Test
     public void exportToTIFF() throws Exception {
-        saveAs("mapExportTest.tiff", MapImageWriter.Format.TIFF);
+        saveAs("target/mapExportTest.tiff", MapImageWriter.Format.TIFF);
     }
 
     @Test
     public void exportToPDF() throws Exception {
-        saveAs("mapExportTest.pdf", MapImageWriter.Format.PDF);
+        saveAs("target/mapExportTest.pdf", MapImageWriter.Format.PDF);
     }
 
     /**
@@ -98,7 +98,7 @@ public class ExportTest {
     private void saveAs(String imagePath, MapImageWriter.Format format) throws Exception {
         MapContext mc = new OwsMapContext(getDataManager());
         mc.open(null);
-        ILayer layer = mc.createLayer(URI.create("../src/test/resources/data/landcover2000.shp"));
+        ILayer layer = mc.createLayer(ExportTest.class.getResource("landcover2000.shp").toURI());
         mc.getLayerModel().addLayer(layer);
         MapImageWriter mapImageWriter = new MapImageWriter(mc.getLayerModel());
         FileOutputStream out = new FileOutputStream(new File(imagePath));

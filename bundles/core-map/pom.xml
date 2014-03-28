@@ -39,6 +39,7 @@
                 <configuration>
                     <instructions>
                         <Public-Package>org.orbisgis.coremap.*</Public-Package>
+                        <Private-Package>org.orbisgis.coremap.translation</Private-Package>
                         <Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
                     </instructions>
                 </configuration>
@@ -58,7 +59,7 @@
                 <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
                     <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/coremap/</poDirectory>
-                    <targetBundle>org.orbisgis.coremap.Messages</targetBundle>
+                    <targetBundle>org.orbisgis.coremap.translation.Messages</targetBundle>
                     <keywords>-ktr -kmarktr</keywords>
                     <outputFormat>properties</outputFormat>
                 </configuration>
