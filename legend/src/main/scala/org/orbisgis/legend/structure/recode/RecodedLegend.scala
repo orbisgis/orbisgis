@@ -29,8 +29,8 @@
 
 package org.orbisgis.legend.structure.recode
 
-import org.orbisgis.core.renderer.se.parameter.{Literal, Recode, ValueReference}
-import org.orbisgis.core.renderer.se.parameter.string.StringAttribute
+import org.orbisgis.coremap.renderer.se.parameter.{Literal, Recode, ValueReference}
+import org.orbisgis.coremap.renderer.se.parameter.string.StringAttribute
 import org.orbisgis.legend.structure.parameter.ParameterLegend
 import org.orbisgis.legend.structure.recode.`type`.TypeEvent
 import org.orbisgis.legend.structure.recode.`type`.TypeListener

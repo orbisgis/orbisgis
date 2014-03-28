@@ -27,8 +27,8 @@
  * info_at_ orbisgis.org
  */package org.orbisgis.legend.structure.recode
 
-import org.orbisgis.core.renderer.se.parameter.string.{StringParameter, StringAttribute, Recode2String, StringLiteral}
-import org.orbisgis.core.renderer.se.parameter.ParameterUtil
+import org.orbisgis.coremap.renderer.se.parameter.string.{StringParameter, StringAttribute, Recode2String, StringLiteral}
+import org.orbisgis.coremap.renderer.se.parameter.ParameterUtil
 
 /**
  * Specialized RecodedString instance. Validation is made before adding new values in the map
