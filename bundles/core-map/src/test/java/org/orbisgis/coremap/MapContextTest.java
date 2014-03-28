@@ -26,33 +26,63 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core;
+package org.orbisgis.coremap;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.net.URI;
+import java.net.URL;
 import java.sql.Connection;
 
 import org.apache.commons.io.FileUtils;
+import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.LayerException;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.layerModel.OwsMapContext;
 import org.orbisgis.progress.NullProgressMonitor;
 
+import javax.sql.DataSource;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class MapContextTest extends AbstractTest {
+public class MapContextTest {
+    private static Connection connection;
+    private static DataManager dataManager;
+    private static URL BV_SAP = MapContextTest.class.getResource("../../../data/bv_sap.shp");
+    private static URL LINESTRING = MapContextTest.class.getResource("../../../data/linestring.shp");
 
+    @BeforeClass
+    public static void tearUpClass() throws Exception {
+        DataSource dataSource = SpatialH2UT.createDataSource(MapContextTest.class.getSimpleName(), false);
+        connection = dataSource.getConnection();
+        CreateSpatialExtension.initSpatialExtension(connection);
+        dataManager = new DataManagerImpl(dataSource);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        connection.close();
+        dataManager.dispose();
+    }
+
+    private DataManager getDataManager() {
+        return dataManager;
+    }
 
     @Test
 	public void testRemoveSelectedLayer() throws Exception {
 		MapContext mc = new OwsMapContext(getDataManager());
 		mc.open(null);
-		ILayer layer = mc.createLayer(getDataManager().registerDataSource(
-				new File("../src/test/resources/data/bv_sap.shp").toURI()));
+		ILayer layer = mc.createLayer(getDataManager().registerDataSource(BV_SAP.toURI()));
 		mc.getLayerModel().addLayer(layer);
 		mc.setSelectedLayers(new ILayer[] { layer });
 		assertTrue(mc.getSelectedLayers().length == 1);
@@ -66,10 +96,8 @@ public class MapContextTest extends AbstractTest {
 	public void testSetBadLayerSelection() throws Exception {
 		MapContext mc = new OwsMapContext(getDataManager());
 		mc.open(null);
-		ILayer layer = mc.createLayer(getDataManager().registerDataSource(
-				new File("../src/test/resources/data/bv_sap.shp").toURI()));
-		ILayer layer2 = mc.createLayer(getDataManager().registerDataSource(
-				new File("../src/test/resources/data/linestring.shp").toURI()));
+		ILayer layer = mc.createLayer(getDataManager().registerDataSource(BV_SAP.toURI()));
+		ILayer layer2 = mc.createLayer(getDataManager().registerDataSource(LINESTRING.toURI()));
 		mc.getLayerModel().addLayer(layer);
 		mc.setSelectedLayers(new ILayer[] { layer2 });
 		assertTrue(mc.getSelectedLayers().length == 0);
@@ -82,8 +110,7 @@ public class MapContextTest extends AbstractTest {
 	public void testRemoveActiveLayer() throws Exception {
 		MapContext mc = new OwsMapContext(getDataManager());
 		mc.open(null);
-		ILayer layer = mc.createLayer(getDataManager().registerDataSource(
-				new File("../src/test/resources/data/bv_sap.shp").toURI()));
+		ILayer layer = mc.createLayer(getDataManager().registerDataSource(BV_SAP.toURI()));
 		mc.getLayerModel().addLayer(layer);
 		mc.setActiveLayer(layer);
 		mc.getLayerModel().remove(layer);
@@ -99,7 +126,7 @@ public class MapContextTest extends AbstractTest {
         ILayer layer1 = mc.createLayerCollection("a");
         ILayer layer2 = mc.createLayerCollection("a");
         ILayer layer3 = mc.createLayer("linestring",
-                getDataManager().registerDataSource(new File("../src/test/resources/data/linestring.shp").toURI()));
+                getDataManager().registerDataSource(LINESTRING.toURI()));
 		mc.getLayerModel().addLayer(layer1);
 		layer1.addLayer(layer2);
 		layer2.addLayer(layer3);
@@ -310,8 +337,7 @@ public class MapContextTest extends AbstractTest {
 	public void testActiveLayerClearedOnClose() throws Exception {
 		MapContext mc = new OwsMapContext(getDataManager());
 		mc.open(null);
-		ILayer layer = mc.createLayer(getDataManager().registerDataSource(
-				new File("../src/test/resources/data/bv_sap.shp").toURI()));
+		ILayer layer = mc.createLayer(getDataManager().registerDataSource(BV_SAP.toURI()));
 		mc.getLayerModel().addLayer(layer);
 		mc.setActiveLayer(layer);
 		mc.close(null);
@@ -325,10 +351,10 @@ public class MapContextTest extends AbstractTest {
 		File shp = new File("bv_sap.shp");
 		File dbf = new File("bv_sap.dbf");
 		File shx = new File("bv_sap.shx");
-		File originalShp = new File("../src/test/resources/data/bv_sap.shp");
+		File originalShp = new File(BV_SAP.getFile());
 		FileUtils.copyFile(originalShp, shp);
-		FileUtils.copyFile(new File("../src/test/resources/data/bv_sap.dbf"), dbf);
-		FileUtils.copyFile(new File("../src/test/resources/data/bv_sap.shx"), shx);
+		FileUtils.copyFile(new File(MapContextTest.class.getResource("../../../data/bv_sap.dbf").getFile()), dbf);
+		FileUtils.copyFile(new File(MapContextTest.class.getResource("../../../data/bv_sap.shx").getFile()), shx);
 		MapContext mc = new OwsMapContext(getDataManager());
 		mc.open(null);
         ILayer layer = mc.createLayer("youhou",shp.toURI());
@@ -345,7 +371,7 @@ public class MapContextTest extends AbstractTest {
             assertEquals(2, mc.getLayerModel().getLayerCount());
             mc.close(null);
         } finally {
-            try(Connection connection = dataSource.getConnection()) {
+            try(Connection connection = getDataManager().getDataSource().getConnection()) {
                 if(!linkedTable.isEmpty()) {
                     connection.createStatement().execute("DROP TABLE IF EXISTS "+linkedTable);
                 }
