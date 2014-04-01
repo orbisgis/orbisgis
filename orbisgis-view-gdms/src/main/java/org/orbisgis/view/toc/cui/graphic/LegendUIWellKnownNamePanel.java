@@ -29,8 +29,8 @@
 package org.orbisgis.view.toc.actions.cui.graphic;
 
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.core.renderer.se.graphic.WellKnownName;
+import org.orbisgis.coremap.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.coremap.renderer.se.graphic.WellKnownName;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.components.ComboBoxInput;

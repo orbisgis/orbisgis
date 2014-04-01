@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
-import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.coremap.renderer.se.common.Uom;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.uom.SymbolUom;

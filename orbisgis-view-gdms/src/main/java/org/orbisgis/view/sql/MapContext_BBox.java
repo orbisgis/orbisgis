@@ -38,7 +38,7 @@ import org.gdms.sql.function.AbstractScalarFunction;
 import org.gdms.sql.function.BasicFunctionSignature;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.view.map.MapElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;

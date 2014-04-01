@@ -28,7 +28,7 @@
  */
 package org.orbisgis.legend.structure.parameter;
 
-import org.orbisgis.core.renderer.se.parameter.ValueReference;
+import org.orbisgis.coremap.renderer.se.parameter.ValueReference;
 import org.orbisgis.legend.LookupFieldName;
 
 /**

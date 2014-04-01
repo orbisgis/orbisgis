@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.panels;
 
-import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
 import org.orbisgis.legend.thematic.*;
 import org.orbisgis.legend.thematic.categorize.CategorizedArea;
 import org.orbisgis.legend.thematic.categorize.CategorizedLine;

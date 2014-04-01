@@ -124,18 +124,15 @@ public class BeanShellScriptTest {
         @Test
         public void testDrawOwsInImage() throws Exception {
             DataSource ds = BeanshellScript.getMainContext().getDataSource();
-            Connection connection = ds.getConnection();
-            try {
+            try (Connection connection = ds.getConnection()) {
                 connection.createStatement().execute("DROP TABLE IF EXISTS LANDCOVER2000");
                 File rendered = new File("render.png");
-                if(rendered.exists()) {
+                if (rendered.exists()) {
                     assertTrue(rendered.delete());
                 }
                 BeanshellScript.execute(mainParams("../src/test/resources/beanshell/ShapeToImage.bsh"));
                 assertTrue(rendered.exists());
                 connection.createStatement().execute("DROP TABLE IF EXISTS LANDCOVER2000");
-            } finally {
-                connection.close();
             }
         }
 }

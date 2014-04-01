@@ -29,7 +29,7 @@
 package org.orbisgis.legend.structure.fill.constant;
 
 import java.awt.Color;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
 
 /**
  * Common representation for all the kind of constant solid fills.

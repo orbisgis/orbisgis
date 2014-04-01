@@ -31,7 +31,7 @@ package org.orbisgis.view.toc.wrapper;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.view.toc.actions.cui.legend.ui.PnlStyle;
 
 /**

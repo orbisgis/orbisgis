@@ -31,7 +31,7 @@ package org.orbisgis.view.toc;
 import java.util.Enumeration;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
-import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Style;
 
 /**
  * The decorator for a tree node style

@@ -30,7 +30,7 @@ package org.orbisgis.legend.analyzer;
 
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;

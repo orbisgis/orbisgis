@@ -36,7 +36,7 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.view.edition.EditorTransferHandler;
 import org.orbisgis.view.edition.TransferableEditableElement;
 import org.orbisgis.viewapi.edition.EditableElement;

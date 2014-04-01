@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer;
+package org.orbisgis.coremap.renderer;
 
 import java.io.File;
 
@@ -34,10 +34,10 @@ import junit.framework.TestCase;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.orbisgis.core.renderer.classification.ProportionalMethod;
-import org.orbisgis.core.renderer.classification.Range;
-import org.orbisgis.core.renderer.classification.RangeMethod;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.coremap.renderer.classification.ProportionalMethod;
+import org.orbisgis.coremap.renderer.classification.Range;
+import org.orbisgis.coremap.renderer.classification.RangeMethod;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealAttribute;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

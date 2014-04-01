@@ -41,9 +41,9 @@ import javax.swing.JPanel;
 import javax.swing.JTree;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.view.components.renderers.IconCellRendererUtility;
 import org.orbisgis.view.icons.OrbisGISIcon;
 

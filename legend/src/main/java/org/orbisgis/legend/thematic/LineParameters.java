@@ -28,15 +28,15 @@
  */
 package org.orbisgis.legend.thematic;
 
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.parameter.ParameterUtil;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterUtil;
+import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
 
 import java.awt.*;
 
 /**
  * A simple java "tuple" that embeds the fours parameters needed to draw a line defined with a {@link
- * org.orbisgis.core.renderer.se.stroke.PenStroke}.
+ * org.orbisgis.coremap.renderer.se.stroke.PenStroke}.
  * @author alexis
  */
 public class LineParameters implements SymbolParameters {

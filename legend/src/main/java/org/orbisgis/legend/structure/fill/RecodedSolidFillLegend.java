@@ -28,10 +28,10 @@
  */
 package org.orbisgis.legend.structure.fill;
 
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
-import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.parameter.SeParameter;
+import org.orbisgis.coremap.renderer.se.parameter.color.ColorParameter;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.legend.structure.recode.RecodedColor;
 import org.orbisgis.legend.structure.recode.RecodedLegend;
 import org.orbisgis.legend.structure.recode.RecodedLegendStructure;

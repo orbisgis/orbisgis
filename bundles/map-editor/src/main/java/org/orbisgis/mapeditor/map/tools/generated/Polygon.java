@@ -30,7 +30,7 @@ package org.orbisgis.mapeditor.map.tools.generated;
 
 import java.awt.Graphics;
 
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditor.map.tool.*;
 
 public abstract class Polygon extends AbstractAutomaton {

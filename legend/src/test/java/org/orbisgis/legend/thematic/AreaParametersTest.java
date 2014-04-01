@@ -29,7 +29,7 @@
 package org.orbisgis.legend.thematic;
 
 import org.junit.Test;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 

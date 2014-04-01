@@ -14,7 +14,6 @@ import javax.sql.rowset.*;
 import javax.sql.DataSource;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.net.URI;
 import java.sql.*;
@@ -138,15 +137,17 @@ public class DataManagerImpl implements DataManager {
         } else if("jdbc".equalsIgnoreCase(uri.getScheme())) {
             // A link to a remote or local database
             try(Connection connection = dataSource.getConnection()) {
-                String withoutQuery = uri.toString().replace("?"+URI.create(uri.getSchemeSpecificPart()).getQuery(),"");
-                if(connection.getMetaData().getURL().startsWith(withoutQuery)) {
-                    // Extract catalog, schema and table name
-                    Map<String,String> query = URIUtility.getQueryKeyValuePairs(URI.create(uri.getSchemeSpecificPart()));
-                    return new TableLocation(query.get("catalog"),query.get("schema"),query.get("table")).toString();
-                } else {
-                    // External JDBC connection not supported yet
-                    throw new SQLException("URI not supported by DataManager:\n"+uri);
+                String uriStr = uri.toString();
+                if(uriStr.contains("?")) {
+                    String withoutQuery = uriStr.substring(0,uriStr.indexOf("?"));
+                    if(connection.getMetaData().getURL().startsWith(withoutQuery)) {
+                        // Extract catalog, schema and table name
+                        Map<String,String> query = URIUtility.getQueryKeyValuePairs(new URI(uri.getSchemeSpecificPart()));
+                        return new TableLocation(query.get("catalog"),query.get("schema"),query.get("table")).toString();
+                    }
                 }
+                // External JDBC connection not supported yet
+                throw new SQLException("URI not supported by DataManager:\n"+uri);
             } catch (Exception ex) {
                 throw new SQLException("URI not supported by DataManager:\n"+uri);
             }

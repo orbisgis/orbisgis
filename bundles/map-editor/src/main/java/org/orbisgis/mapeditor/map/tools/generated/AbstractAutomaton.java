@@ -30,7 +30,7 @@
 package org.orbisgis.mapeditor.map.tools.generated;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditor.map.tool.Automaton;
 import org.orbisgis.mapeditor.map.tool.FinishedAutomatonException;
 import org.orbisgis.mapeditor.map.tool.ToolManager;

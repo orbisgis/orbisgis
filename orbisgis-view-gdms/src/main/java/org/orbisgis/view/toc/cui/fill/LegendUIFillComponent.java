@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.fill;
 
-import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.coremap.renderer.se.fill.Fill;
 
 /**
  *

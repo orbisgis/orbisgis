@@ -29,7 +29,7 @@
 
 package org.orbisgis.view.toc.actions;
 
-import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.view.toc.Toc;
 import org.orbisgis.viewapi.toc.ext.TocActionFactory;
 
@@ -65,7 +65,7 @@ public class EditLayerSourceAction extends LayerAction {
 
     /**
      * @param enabledOnActiveLayer If true this action will be seen only on map active layer
-     * {@link org.orbisgis.core.layerModel.MapContext#setActiveLayer(org.orbisgis.core.layerModel.ILayer)}
+     * {@link org.orbisgis.coremap.layerModel.MapContext#setActiveLayer(org.orbisgis.coremap.layerModel.ILayer)}
      */
     public EditLayerSourceAction setEnabledOnActiveLayer(boolean enabledOnActiveLayer) {
         this.enabledOnActiveLayer = enabledOnActiveLayer;
@@ -81,7 +81,7 @@ public class EditLayerSourceAction extends LayerAction {
     }
     /**
     * @param enabledOnNotActiveLayer If true this action will be seen only if this layer is not the map active layer.
-    * {@link org.orbisgis.core.layerModel.MapContext#setActiveLayer(org.orbisgis.core.layerModel.ILayer)}
+    * {@link org.orbisgis.coremap.layerModel.MapContext#setActiveLayer(org.orbisgis.coremap.layerModel.ILayer)}
      */
     public EditLayerSourceAction setEnabledOnNotActiveLayer(boolean enabledOnNotActiveLayer) {
         this.enabledOnNotActiveLayer = enabledOnNotActiveLayer;

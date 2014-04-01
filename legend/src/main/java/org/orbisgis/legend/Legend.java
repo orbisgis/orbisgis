@@ -28,7 +28,7 @@
  */
 package org.orbisgis.legend;
 
-import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
 
 /**
  * {@code Legend} realizations represent patterns that can be found in a SE

@@ -1,6 +1,6 @@
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
-import org.orbisgis.core.renderer.se.common.Description;
+import org.orbisgis.coremap.renderer.se.common.Description;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.sif.components.WideComboBox;
 import org.xnap.commons.i18n.I18n;

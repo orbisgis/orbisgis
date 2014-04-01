@@ -30,7 +30,7 @@ package org.orbisgis.mapeditor.map.tools;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import java.awt.Graphics;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditor.map.tool.DrawingException;
 import org.orbisgis.mapeditor.map.tool.FinishedAutomatonException;
 import org.orbisgis.mapeditor.map.tool.ToolManager;

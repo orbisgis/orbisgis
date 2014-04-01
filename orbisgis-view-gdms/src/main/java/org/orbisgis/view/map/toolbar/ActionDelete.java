@@ -30,8 +30,8 @@
 package org.orbisgis.view.map.toolbar;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.DefaultJobId;

@@ -33,7 +33,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.MetaData;
-import org.orbisgis.core.renderer.se.parameter.Categorize;
+import org.orbisgis.coremap.renderer.se.parameter.Categorize;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
 import org.orbisgis.legend.thematic.map.MappedLegend;
@@ -61,7 +61,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.SortedSet;
 
-import static org.orbisgis.core.renderer.se.parameter.Categorize.CategorizeMethod;
+import static org.orbisgis.coremap.renderer.se.parameter.Categorize.CategorizeMethod;
 
 /**
  * Root class for Interval Classifications.

@@ -28,10 +28,10 @@
  */
 package org.orbisgis.legend.thematic;
 
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.core.renderer.se.graphic.WellKnownName;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.coremap.renderer.se.graphic.WellKnownName;
+import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
 
 import java.awt.*;
 

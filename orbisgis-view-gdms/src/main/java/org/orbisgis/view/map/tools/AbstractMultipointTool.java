@@ -32,7 +32,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.view.map.tool.DrawingException;
 import org.orbisgis.view.map.tool.FinishedAutomatonException;
 import org.orbisgis.view.map.tool.ToolManager;

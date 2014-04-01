@@ -30,11 +30,11 @@ package org.orbisgis.view.toc.actions.cui.label;
 
 import java.awt.BorderLayout;
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.label.ExclusionZone;
-import org.orbisgis.core.renderer.se.label.Label;
-import org.orbisgis.core.renderer.se.label.PointLabel;
-import org.orbisgis.core.renderer.se.label.StyledText;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.label.ExclusionZone;
+import org.orbisgis.coremap.renderer.se.label.Label;
+import org.orbisgis.coremap.renderer.se.label.PointLabel;
+import org.orbisgis.coremap.renderer.se.label.StyledText;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.view.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;

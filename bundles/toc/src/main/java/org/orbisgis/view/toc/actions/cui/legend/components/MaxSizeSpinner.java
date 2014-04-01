@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 import org.orbisgis.legend.IInterpolationLegend;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 

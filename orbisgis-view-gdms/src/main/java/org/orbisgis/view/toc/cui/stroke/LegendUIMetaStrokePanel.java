@@ -30,15 +30,15 @@ package org.orbisgis.view.toc.actions.cui.stroke;
 
 import javax.swing.Icon;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
-import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
+import org.orbisgis.coremap.renderer.se.stroke.Stroke;
 import org.orbisgis.view.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
-import org.orbisgis.core.renderer.se.StrokeNode;
-import org.orbisgis.core.renderer.se.stroke.CompoundStroke;
-import org.orbisgis.core.renderer.se.stroke.GraphicStroke;
-import org.orbisgis.core.renderer.se.stroke.TextStroke;
+import org.orbisgis.coremap.renderer.se.StrokeNode;
+import org.orbisgis.coremap.renderer.se.stroke.CompoundStroke;
+import org.orbisgis.coremap.renderer.se.stroke.GraphicStroke;
+import org.orbisgis.coremap.renderer.se.stroke.TextStroke;
 
 /**
  *

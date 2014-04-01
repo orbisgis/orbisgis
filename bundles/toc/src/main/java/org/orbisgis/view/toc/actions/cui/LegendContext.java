@@ -28,8 +28,8 @@
  */
 package org.orbisgis.view.toc.actions.cui;
  
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 
 public interface LegendContext {

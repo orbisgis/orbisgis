@@ -69,23 +69,23 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.common.IntegerUnion;
-import org.orbisgis.core.layerModel.BeanLayer;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.Layer;
-import org.orbisgis.core.layerModel.LayerCollection;
-import org.orbisgis.core.layerModel.LayerCollectionEvent;
-import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.core.layerModel.LayerListener;
-import org.orbisgis.core.layerModel.LayerListenerEvent;
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.layerModel.MapContextListener;
-import org.orbisgis.core.layerModel.SelectionEvent;
-import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.CompositeSymbolizer;
-import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.renderer.se.SeExceptions;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.coremap.layerModel.BeanLayer;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.Layer;
+import org.orbisgis.coremap.layerModel.LayerCollection;
+import org.orbisgis.coremap.layerModel.LayerCollectionEvent;
+import org.orbisgis.coremap.layerModel.LayerException;
+import org.orbisgis.coremap.layerModel.LayerListener;
+import org.orbisgis.coremap.layerModel.LayerListenerEvent;
+import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContextListener;
+import org.orbisgis.coremap.layerModel.SelectionEvent;
+import org.orbisgis.coremap.map.MapTransform;
+import org.orbisgis.coremap.renderer.se.CompositeSymbolizer;
+import org.orbisgis.coremap.renderer.se.Rule;
+import org.orbisgis.coremap.renderer.se.SeExceptions;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.SIFWizard;
@@ -524,7 +524,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         }
 
         /**
-         * @return A list of selected layers, same as {@link org.orbisgis.core.layerModel.MapContext#getSelectedLayers()}
+         * @return A list of selected layers, same as {@link org.orbisgis.coremap.layerModel.MapContext#getSelectedLayers()}
          */
         public List<ILayer> getSelectedLayers() {
                 return Arrays.asList(mapContext.getSelectedLayers());
@@ -838,7 +838,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 if(styles.length == 1){
                         Style style = styles[0];
                         final SaveFilePanel outputXMLPanel = new SaveFilePanel(
-                                        "org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
+                                        "org.orbisgis.coremap.ui.editorViews.toc.actions.ImportStyle",
                                         "Choose a location");
                         outputXMLPanel.addFilter("se", "Symbology Encoding FeatureTypeStyle");
                         outputXMLPanel.loadState();
@@ -907,7 +907,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         ILayer layer = layers[0];
                         if (isStyleAllowed(layer)){
                         final OpenFilePanel inputXMLPanel = new OpenFilePanel(
-                                "org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
+                                "org.orbisgis.coremap.ui.editorViews.toc.actions.ImportStyle",
                                 "Choose a location");
 
                         inputXMLPanel.addFilter("se", "Symbology Encoding 2.0 (FeatureTypeStyle");

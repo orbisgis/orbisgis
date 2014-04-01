@@ -42,11 +42,11 @@ import javax.swing.SwingUtilities;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.renderer.se.Rule;
+import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

@@ -4,10 +4,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.layerModel.OwsMapContext;
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.layerModel.LayerException;
+import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.OwsMapContext;
+import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.progress.NullProgressMonitor;
 
 import javax.imageio.ImageIO;
@@ -32,4 +32,4 @@ public class mapDisplay {
             ImageIO.write(img,"png",new File("render.png"));
     }
 }
-mapDisplay.run(new File("../src/test/resources/data/landcover2000.ows"));
+mapDisplay.run(new File("../../bundles/core-map/src/test/resources/data/landcover2000.ows"));

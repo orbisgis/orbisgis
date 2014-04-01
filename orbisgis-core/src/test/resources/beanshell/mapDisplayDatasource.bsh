@@ -5,12 +5,12 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 import javax.swing.*;
 
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.layerModel.OwsMapContext;
-import org.orbisgis.core.renderer.Renderer;
-import org.orbisgis.core.renderer.ImageRenderer;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.LayerException;
+import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.OwsMapContext;
+import org.orbisgis.coremap.renderer.Renderer;
+import org.orbisgis.coremap.renderer.ImageRenderer;
 
 public class mapDisplay {
     public static void run(DataSource dataSource) throws SQLException, LayerException {

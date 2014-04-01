@@ -36,9 +36,9 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditor.map.tool.FinishedAutomatonException;
-import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
+import org.orbisgis.coremap.ui.editors.map.tool.Rectangle2DDouble;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
 import org.orbisgis.mapeditor.map.tools.generated.ZoomIn;

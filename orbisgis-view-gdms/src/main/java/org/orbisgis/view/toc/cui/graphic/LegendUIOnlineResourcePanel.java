@@ -30,9 +30,9 @@ package org.orbisgis.view.toc.actions.cui.graphic;
 
 import java.net.URISyntaxException;
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.common.OnlineResource;
-import org.orbisgis.core.renderer.se.graphic.ExternalGraphicSource;
-import org.orbisgis.core.renderer.se.graphic.WellKnownName;
+import org.orbisgis.coremap.renderer.se.common.OnlineResource;
+import org.orbisgis.coremap.renderer.se.graphic.ExternalGraphicSource;
+import org.orbisgis.coremap.renderer.se.graphic.WellKnownName;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.components.TextInput;

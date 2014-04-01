@@ -31,7 +31,7 @@ package org.orbisgis.view.map.tools.generated;
 import java.awt.Graphics;
 import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.view.map.tool.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;

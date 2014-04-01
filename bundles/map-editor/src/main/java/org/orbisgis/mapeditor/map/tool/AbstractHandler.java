@@ -56,7 +56,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 
-import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.coremap.map.MapTransform;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;

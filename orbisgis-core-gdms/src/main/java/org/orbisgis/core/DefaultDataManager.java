@@ -49,10 +49,10 @@ import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
 import org.gdms.source.SourceRemovalEvent;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.Layer;
-import org.orbisgis.core.layerModel.LayerCollection;
-import org.orbisgis.core.layerModel.LayerException;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.Layer;
+import org.orbisgis.coremap.layerModel.LayerCollection;
+import org.orbisgis.coremap.layerModel.LayerException;
 import org.orbisgis.utils.FileUtils;
 
 public class DefaultDataManager implements DataManager, SourceListener {

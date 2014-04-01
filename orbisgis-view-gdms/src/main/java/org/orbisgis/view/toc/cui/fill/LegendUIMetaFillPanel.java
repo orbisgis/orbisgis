@@ -29,13 +29,13 @@
 package org.orbisgis.view.toc.actions.cui.fill;
 
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.FillNode;
-import org.orbisgis.core.renderer.se.fill.DensityFill;
-import org.orbisgis.core.renderer.se.fill.DotMapFill;
-import org.orbisgis.core.renderer.se.fill.Fill;
-import org.orbisgis.core.renderer.se.fill.GraphicFill;
-import org.orbisgis.core.renderer.se.fill.HatchedFill;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.FillNode;
+import org.orbisgis.coremap.renderer.se.fill.DensityFill;
+import org.orbisgis.coremap.renderer.se.fill.DotMapFill;
+import org.orbisgis.coremap.renderer.se.fill.Fill;
+import org.orbisgis.coremap.renderer.se.fill.GraphicFill;
+import org.orbisgis.coremap.renderer.se.fill.HatchedFill;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
 import org.orbisgis.view.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;

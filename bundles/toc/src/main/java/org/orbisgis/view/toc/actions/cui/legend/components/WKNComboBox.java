@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
-import org.orbisgis.core.renderer.se.graphic.WellKnownName;
+import org.orbisgis.coremap.renderer.se.graphic.WellKnownName;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;

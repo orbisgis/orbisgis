@@ -56,7 +56,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import javax.swing.ImageIcon;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.mapeditor.map.tool.FinishedAutomatonException;
 import org.orbisgis.mapeditor.map.tool.ToolManager;

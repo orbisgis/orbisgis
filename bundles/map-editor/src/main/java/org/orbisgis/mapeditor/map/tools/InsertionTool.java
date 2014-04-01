@@ -28,7 +28,7 @@
  */
 package org.orbisgis.mapeditor.map.tools;
 
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 
 /**
  * Interface implemented by some tools that create new geometries and add them

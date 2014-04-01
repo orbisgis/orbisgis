@@ -29,8 +29,8 @@
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.core.renderer.classification.ClassificationUtils;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.coremap.renderer.classification.ClassificationUtils;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.legend.IInterpolationLegend;
 import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;

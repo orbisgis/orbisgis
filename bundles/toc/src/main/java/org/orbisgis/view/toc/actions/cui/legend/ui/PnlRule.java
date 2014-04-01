@@ -29,7 +29,7 @@
 package org.orbisgis.view.toc.actions.cui.legend.ui;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.coremap.renderer.se.Rule;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.components.DescriptionComponents;

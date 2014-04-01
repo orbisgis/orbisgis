@@ -33,7 +33,7 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.coremap.renderer.se.Rule;
 import org.orbisgis.view.toc.actions.cui.components.RadioSwitch;
 import org.orbisgis.view.toc.actions.cui.components.RealLiteralInput;
 import org.orbisgis.view.toc.actions.cui.components.TextInput;

@@ -32,14 +32,14 @@ import javax.swing.Icon;
 
 import org.orbisgis.view.icons.OrbisGISIcon;
 
-import org.orbisgis.core.renderer.se.parameter.real.Categorize2Real;
-import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
+import org.orbisgis.coremap.renderer.se.parameter.real.Categorize2Real;
+import org.orbisgis.coremap.renderer.se.parameter.real.Interpolate2Real;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.parameter.real.Recode2Real;
 
-import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringAttribute;
 
 import org.orbisgis.view.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;

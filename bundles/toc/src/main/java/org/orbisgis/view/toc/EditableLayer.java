@@ -30,8 +30,8 @@ package org.orbisgis.view.toc;
 
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.viewapi.edition.AbstractEditableElement;

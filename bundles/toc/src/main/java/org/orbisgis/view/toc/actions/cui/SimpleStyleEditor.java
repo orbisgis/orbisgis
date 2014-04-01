@@ -45,11 +45,11 @@ import javax.swing.SwingConstants;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.corejdbc.MetaData;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.map.MapTransform;
+import org.orbisgis.coremap.renderer.se.Rule;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.factory.LegendFactory;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
@@ -197,7 +197,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      *
      * @return The {@link StyleWrapper} corresponding to the style panel
      *
-     * @see #addRuleAndSymbolPanels(org.orbisgis.core.renderer.se.Style)
+     * @see #addRuleAndSymbolPanels(org.orbisgis.coremap.renderer.se.Style)
      */
     private StyleWrapper addAllPanels(Style style) {
         // Get a style wrapper based on this style and the previous list
@@ -246,7 +246,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      * @return A list of {@link RuleWrapper}s corresponding to the newly added
      *         rule panels.
      *
-     * @see #addSymbolPanels(org.orbisgis.core.renderer.se.Rule)
+     * @see #addSymbolPanels(org.orbisgis.coremap.renderer.se.Rule)
      */
     private List<RuleWrapper> addRuleAndSymbolPanels(Style style) {
         List<Rule> rules = style.getRules();

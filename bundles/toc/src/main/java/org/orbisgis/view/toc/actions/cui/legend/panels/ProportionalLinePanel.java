@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.panels;
 
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;

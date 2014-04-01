@@ -29,9 +29,9 @@
 package org.orbisgis.view.toc.actions.cui.label;
 
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.label.ExclusionRadius;
-import org.orbisgis.core.renderer.se.label.ExclusionRectangle;
-import org.orbisgis.core.renderer.se.label.ExclusionZone;
+import org.orbisgis.coremap.renderer.se.label.ExclusionRadius;
+import org.orbisgis.coremap.renderer.se.label.ExclusionRectangle;
+import org.orbisgis.coremap.renderer.se.label.ExclusionZone;
 import org.orbisgis.view.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;

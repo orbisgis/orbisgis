@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.stroke;
 
-import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.coremap.renderer.se.stroke.Stroke;
 
 /**
  *

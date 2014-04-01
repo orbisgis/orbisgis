@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Observable;
 import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.mapeditor.map.tool.DrawingException;
 import org.orbisgis.mapeditor.map.tool.FinishedAutomatonException;

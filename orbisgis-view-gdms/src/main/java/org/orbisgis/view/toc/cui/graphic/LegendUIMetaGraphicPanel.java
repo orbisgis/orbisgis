@@ -30,8 +30,8 @@ package org.orbisgis.view.toc.actions.cui.graphic;
 
 //import javax.swing.Icon;
 //import org.orbisgis.view.icons.OrbisGISIcon;
-//import org.orbisgis.core.renderer.se.graphic.Graphic;
-//import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+//import org.orbisgis.coremap.renderer.se.graphic.Graphic;
+//import org.orbisgis.coremap.renderer.se.graphic.MarkGraphic;
 //import org.orbisgis.view.toc.actions.cui.LegendUIAbstractMetaPanel;
 //import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 //import org.orbisgis.view.toc.actions.cui.LegendUIController;

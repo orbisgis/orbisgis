@@ -29,7 +29,7 @@
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.coremap.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;

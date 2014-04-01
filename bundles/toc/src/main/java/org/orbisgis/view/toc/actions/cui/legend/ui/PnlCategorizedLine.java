@@ -29,8 +29,8 @@
 package org.orbisgis.view.toc.actions.cui.legend.ui;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.core.renderer.se.CompositeSymbolizer;
-import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.coremap.renderer.se.CompositeSymbolizer;
+import org.orbisgis.coremap.renderer.se.Rule;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.categorize.CategorizedLine;

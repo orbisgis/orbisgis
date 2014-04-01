@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.graphic;
 
-import org.orbisgis.core.renderer.se.graphic.ExternalGraphicSource;
+import org.orbisgis.coremap.renderer.se.graphic.ExternalGraphicSource;
 
 /**
  *
