@@ -28,8 +28,6 @@
  */
 package org.orbisgis.view.sqlconsole.actions;
 
-import javax.sql.DataSource;
-import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.progress.ProgressMonitor;
@@ -40,6 +38,8 @@ import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
+import javax.swing.*;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
@@ -90,7 +90,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
             ScriptSplitter splitter = splitterFactory.create(panel.getScriptPanel().getDocument(), true);
             while(splitter.hasNext()) {
                 String query = splitter.next();
-                // Some query need to be shown to the user
+                // Some queries need to be shown to the user
                 String lc_query = query.trim().toLowerCase();
                 String[] executeQueryCommands = new String[] {"select", "explain", "call", "show", "script"};
                 boolean doExecuteQuery = false;
@@ -102,7 +102,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
                 }
                 if(doExecuteQuery) {
                     try {
-                        LOGGER.info(query + ": ");
+                        LOGGER.info(query.trim() + ": ");
                         LOGGER.info("\n"+ReadTable.resultSetToString(query, st, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, true, true));
                     } catch (SQLException ex) {
                         //May not accept executeQuery but simple query
@@ -113,11 +113,12 @@ public class ExecuteScriptProcess implements BackgroundJob {
                         }
                     }
                 } else {
-                    LOGGER.info(I18N.tr("Execute line {0}/{1}:\n{2}",splitter.getLineIndex() + 1,panel.getScriptPanel().getLineCount(),query));
+                    splitter.getPosition();
+                    LOGGER.info(I18N.tr("Execute line {0}/{1}:\n{2}",
+                            splitter.getLineIndex() + 1, panel.getScriptPanel().getLineCount(), query.trim()));
                     long debQuery = System.currentTimeMillis();
                     st.execute(query);
-                    LOGGER.info(I18N.tr("Done in {0} seconds",(System.currentTimeMillis() - debQuery) / 1000.));
-
+                    LOGGER.info(I18N.tr("\nDone in {0} seconds",(System.currentTimeMillis() - debQuery) / 1000.));
                 }
                 pm.endTask();
             }
@@ -129,13 +130,13 @@ public class ExecuteScriptProcess implements BackgroundJob {
                 ProgressMonitor pm = progress.startTask(I18N.tr("Execute SQL Request"), panel.getScriptPanel().getLineCount());
                 try(Connection connection = ds.getConnection()) {
                     try(Statement st = connection.createStatement()) {
-                        // If user click on cancel, cancel the execution
+                        // If the user clicks on cancel, cancel the execution
                         pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL ,
                                 EventHandler.create(PropertyChangeListener.class, st, "cancel"));
                         if(splitterFactory != null) {
                             parseAndExecuteScript(pm, st);
                         } else {
-                            st.execute(panel.getScriptPanel().getText());
+                            st.execute(panel.getScriptPanel().getText().trim());
                         }
                     }
                 } catch (SQLException ex) {
