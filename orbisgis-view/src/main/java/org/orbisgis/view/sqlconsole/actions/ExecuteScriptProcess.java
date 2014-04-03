@@ -53,7 +53,8 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
         private static final Logger LOGGER = Logger.getLogger("gui."+ExecuteScriptProcess.class);
         protected final static I18n I18N = I18nFactory.getI18n(ExecuteScriptProcess.class);
-                
+        private static final String[] executeQueryCommands = new String[] {"select", "explain", "call", "show", "script"};
+
         private SQLConsolePanel panel;
         private DataSource ds;
         private ScriptSplitterFactory splitterFactory;
@@ -91,40 +92,40 @@ public class ExecuteScriptProcess implements BackgroundJob {
             while(splitter.hasNext()) {
                 String query = splitter.next();
                 // Some queries need to be shown to the user
-                String lc_query = query.trim().toLowerCase();
-                String[] executeQueryCommands = new String[] {"select", "explain", "call", "show", "script"};
-                boolean doExecuteQuery = false;
-                for(String command : executeQueryCommands) {
-                    if(lc_query.startsWith(command)) {
-                        doExecuteQuery = true;
-                        break;
-                    }
-                }
-                if(doExecuteQuery) {
+                LOGGER.info(I18N.tr("Execute line {0}/{1}: {2}",
+                        splitter.getLineIndex() + 1, panel.getScriptPanel().getLineCount(), query.trim()));
+                long debQuery = System.currentTimeMillis();
+                String queryLowerCase = query.trim().toLowerCase();
+                if(isExecuteQuery(queryLowerCase)) {
                     try {
-                        LOGGER.info(query.trim() + ": ");
-                        LOGGER.info("\n"+ReadTable.resultSetToString(query, st, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, true, true));
+                        LOGGER.info("\n" + ReadTable.resultSetToString(query, st, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, true, true));
                     } catch (SQLException ex) {
-                        //May not accept executeQuery but simple query
-                        if(!lc_query.startsWith("select")) {
+                        // May not accept executeQuery but simple query
+                        if(!queryLowerCase.startsWith("select")) {
                             st.execute(query);
                         } else {
                             throw ex;
                         }
                     }
                 } else {
-                    splitter.getPosition();
-                    LOGGER.info(I18N.tr("Execute line {0}/{1}:\n{2}",
-                            splitter.getLineIndex() + 1, panel.getScriptPanel().getLineCount(), query.trim()));
-                    long debQuery = System.currentTimeMillis();
                     st.execute(query);
-                    LOGGER.info(I18N.tr("\nDone in {0} seconds",(System.currentTimeMillis() - debQuery) / 1000.));
                 }
+                LOGGER.info(I18N.tr("Done in {0} seconds\n",(System.currentTimeMillis() - debQuery) / 1000.));
                 pm.endTask();
             }
         }
 
-        @Override
+    private boolean isExecuteQuery(String lc_query) {
+        boolean doExecuteQuery = false;
+        for(String command : executeQueryCommands) {
+            if(lc_query.startsWith(command)) {
+                return true;
+            }
+        }
+        return doExecuteQuery;
+    }
+
+    @Override
         public void run(ProgressMonitor progress) {
                 long t1 = System.currentTimeMillis();
                 ProgressMonitor pm = progress.startTask(I18N.tr("Execute SQL Request"), panel.getScriptPanel().getLineCount());
