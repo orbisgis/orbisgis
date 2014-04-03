@@ -156,7 +156,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
                 }
                 long t2 = System.currentTimeMillis();
                 double lastExecTime = ((t2 - t1) / 1000.0);
-                String message = I18N.tr("Overall execution time: {0} seconds",lastExecTime);
+                String message = I18N.tr("OVERALL EXECUTION TIME: {0} seconds",lastExecTime);
                 LOGGER.info(message);
                 showPanelMessage(message);
         }
