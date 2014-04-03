@@ -89,29 +89,40 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
         private void parseAndExecuteScript(ProgressMonitor pm, Statement st) throws SQLException {
             ScriptSplitter splitter = splitterFactory.create(panel.getScriptPanel().getDocument(), true);
+            int totalRequests = 0;
             while(splitter.hasNext()) {
-                String query = splitter.next();
-                // Some queries need to be shown to the user
-                LOGGER.info(I18N.tr("Execute line {0}/{1}: {2}",
-                        splitter.getLineIndex() + 1, panel.getScriptPanel().getLineCount(), query.trim()));
-                long debQuery = System.currentTimeMillis();
-                String queryLowerCase = query.trim().toLowerCase();
-                if(isExecuteQuery(queryLowerCase)) {
-                    try {
-                        LOGGER.info("\n" + ReadTable.resultSetToString(query, st, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, true, true));
-                    } catch (SQLException ex) {
-                        // May not accept executeQuery but simple query
-                        if(!queryLowerCase.startsWith("select")) {
-                            st.execute(query);
-                        } else {
-                            throw ex;
-                        }
-                    }
-                } else {
-                    st.execute(query);
+                if (!splitter.next().trim().isEmpty()) {
+                    totalRequests++;
                 }
-                LOGGER.info(I18N.tr("Done in {0} seconds\n",(System.currentTimeMillis() - debQuery) / 1000.));
-                pm.endTask();
+            }
+            splitter = splitterFactory.create(panel.getScriptPanel().getDocument(), true);
+            int currentRequest = 0;
+            while(splitter.hasNext()) {
+                currentRequest++;
+                String query = splitter.next().trim();
+                if (!query.isEmpty()) {
+                    // Some queries need to be shown to the user
+                    LOGGER.info(I18N.tr("Execute request {0}/{1}: {2}",
+                            currentRequest, totalRequests, query));
+                    long debQuery = System.currentTimeMillis();
+                    String lowerCaseQuery = query.toLowerCase();
+                    if(isExecuteQuery(lowerCaseQuery)) {
+                        try {
+                            LOGGER.info("\n" + ReadTable.resultSetToString(query, st, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, true, true));
+                        } catch (SQLException ex) {
+                            // May not accept executeQuery but simple query
+                            if(!lowerCaseQuery.startsWith("select")) {
+                                st.execute(query);
+                            } else {
+                                throw ex;
+                            }
+                        }
+                    } else {
+                        st.execute(query);
+                    }
+                    LOGGER.info(I18N.tr("Done in {0} seconds\n",(System.currentTimeMillis() - debQuery) / 1000.));
+                    pm.endTask();
+                }
             }
         }
 
