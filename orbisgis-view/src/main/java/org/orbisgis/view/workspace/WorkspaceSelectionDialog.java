@@ -38,12 +38,15 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import org.orbisgis.sif.components.CustomButton;
+import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 
 /**
  * GUI for Workspace selection.
@@ -66,6 +69,7 @@ public class WorkspaceSelectionDialog extends JPanel {
     private JPasswordField password;
     private JTextField jdbcURI;
     private JTextField user;
+    private DatabaseSettingsPanel dbPanel;
 
     private WorkspaceSelectionDialog() {
         super(new MigLayout("wrap 1"));
@@ -93,13 +97,12 @@ public class WorkspaceSelectionDialog extends JPanel {
                         I18N.tr("Choose a previous OrbisGIS workspace or create a new one")
                         + "</p></body></html>");
         subChooseLabel.setFont(smallFont);
-        comboBox =
-                new DirectoryComboBoxChoice(knownWorkspaces);
+        comboBox = new DirectoryComboBoxChoice(knownWorkspaces);
         if (!knownWorkspaces.isEmpty()) {
             // Select the default workspace on the combo box
             comboBox.setValue(knownWorkspaces.get(0).getAbsolutePath());
         }
-        ActionListener selectionDone = EventHandler.create(ActionListener.class, this,"onWorkspaceFolderChange" );
+        ActionListener selectionDone = EventHandler.create(ActionListener.class, this, "onWorkspaceFolderChange");
         comboBox.getComboBox().addActionListener(selectionDone);
         defaultCheckBox = new JCheckBox(I18N.tr("Set as default?"));
         JLabel subCheckBox = new JLabel("<html><body><p style='width: 200px;'>" +
@@ -119,14 +122,48 @@ public class WorkspaceSelectionDialog extends JPanel {
         add(Box.createGlue());
         add(defaultCheckBox);
         add(subCheckBox);
-        add(uriLabel);
-        add(jdbcURI);
-        add(userLabel, "split 4");
-        add(user);
-        add(passwordLabel);
-        add(password);
+        add(getDataBasePanel());
+        //add(uriLabel);
+        //add(jdbcURI);
+        //add(userLabel, "split 4");
+        //add(user);
+        //add(passwordLabel);
+        //add(password);
         onWorkspaceFolderChange();
+    }   
+    
+    
+    
+    
+    /**
+     * Add a button to select a new database
+     * @param comboBox
+     * @return 
+     */
+    private JPanel getDataBasePanel() {
+        JPanel mainComponent = new JPanel();
+        CustomButton customDataBase = new CustomButton(OrbisGISIcon.getIcon("database"));
+        customDataBase.setText("Customize your database");
+        customDataBase.setToolTipText(I18N.tr("Click to customize your database."));
+        customDataBase.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onOpenDBPanel"));
+        mainComponent.add(customDataBase);
+        return mainComponent;
     }
+    
+    /**
+     * The user click on add open button
+     */
+    public void onOpenDBPanel() {
+        if (dbPanel == null) {
+            dbPanel = new DatabaseSettingsPanel();
+        }
+        dbPanel.setAlwaysOnTop(true);
+        dbPanel.setVisible(true);
+
+    }
+    
+
 
     /**
      * @return The workspace selection combo box
