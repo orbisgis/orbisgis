@@ -173,14 +173,19 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         }
 
         private void initTitleActions() {
-                List<Action> tools = new ArrayList<Action>();
-                saveAction = new DefaultAction("SAVE_MAP",I18N.tr("Save"),
-                        I18N.tr("Save the Map"),OrbisGISIcon.getIcon("save"),
-                        EventHandler.create(ActionListener.class,this,"onSaveMapContext"),
-                        KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
-                saveAction.setEnabled(false);
-                tools.add(saveAction);
-                dockingPanelParameters.setDockActions(tools);
+               List<Action> tools = new ArrayList<Action>();
+            saveAction = new DefaultAction("SAVE_MAP", I18N.tr("Save"),
+                    I18N.tr("Save the Map"), OrbisGISIcon.getIcon("save"),
+                    EventHandler.create(ActionListener.class, this, "onSaveMapContext"),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
+            saveAction.setEnabled(false);
+            tools.add(saveAction);
+            DefaultAction addWMSAction = new DefaultAction("ADD_WMS_LAYER", I18N.tr("Add"),
+                    I18N.tr("Add WMS layer"), OrbisGISIcon.getIcon("add"),
+                    EventHandler.create(ActionListener.class, this, "onAddWMSLayer"),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
+            tools.add(addWMSAction);
+            dockingPanelParameters.setDockActions(tools);
         }
         private void initPopupActions() {
             // Layer actions
