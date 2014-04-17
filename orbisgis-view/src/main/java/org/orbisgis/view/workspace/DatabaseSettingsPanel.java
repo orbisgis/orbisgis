@@ -151,7 +151,7 @@ public class DatabaseSettingsPanel extends JDialog {
             mainPanel.add(okBt, "span 3");
             cancelBt = new JButton(I18N.tr("&Cancel"));
             MenuCommonFunctions.setMnemonic(cancelBt);
-            cancelBt.addActionListener(EventHandler.create(ActionListener.class, this, "onClose"));
+            cancelBt.addActionListener(EventHandler.create(ActionListener.class, this, "onCancel"));
             cancelBt.setDefaultCapable(true);
             mainPanel.add(cancelBt, "span 3");
             getContentPane().add(mainPanel);
@@ -163,9 +163,9 @@ public class DatabaseSettingsPanel extends JDialog {
     }
 
     /**
-     * Click on the close button
+     * Click on the cancel button
      */
-    public void onClose() {
+    public void onCancel() {
         setVisible(false);
     }
 

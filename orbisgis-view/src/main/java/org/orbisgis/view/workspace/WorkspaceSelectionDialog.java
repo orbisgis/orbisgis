@@ -108,7 +108,7 @@ public class WorkspaceSelectionDialog extends JPanel {
         add(defaultCheckBox);
         add(subCheckBox);
         CustomButton customDataBase = new CustomButton(OrbisGISIcon.getIcon("database"));
-        customDataBase.setText("Customize your database");
+        customDataBase.setText(I18N.tr("Customize your database"));
         customDataBase.setToolTipText(I18N.tr("Click to customize your database."));
         customDataBase.addActionListener(
                 EventHandler.create(ActionListener.class, this, "onOpenDBPanel"));
@@ -135,11 +135,6 @@ public class WorkspaceSelectionDialog extends JPanel {
     public DatabaseSettingsPanel getDatabaseSettingsPanel() {
         return databaseSettingsPanel;
     }
-    
-    
-    
-    
-
 
     /**
      * @return The workspace selection combo box
