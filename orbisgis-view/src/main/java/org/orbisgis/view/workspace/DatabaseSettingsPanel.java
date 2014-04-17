@@ -28,6 +28,7 @@
 package org.orbisgis.view.workspace;
 
 import java.awt.Dialog;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.TextField;
 import java.awt.Window;
@@ -133,6 +134,7 @@ public class DatabaseSettingsPanel extends JDialog {
             mainPanel.add(labelURL);
             mainPanel.add(urlValue, "span, grow, wrap");
             JLabel exampleURL = new JLabel(I18N.tr("Example")+ " : jdbc:h2:/tmp/testdb;DB_CLOSE_DELAY=30");
+            exampleURL.setFont(exampleURL.getFont().deriveFont(Font.ITALIC));
             mainPanel.add(exampleURL, "span, wrap");
             JLabel userLabel = new JLabel(I18N.tr("User name"));
             userValue = new JTextField();
@@ -171,9 +173,10 @@ public class DatabaseSettingsPanel extends JDialog {
      * Click on the Ok button
      */
     public void onOk() {
-        checkParameters();
-        saveProperties();
-        setVisible(false);
+        if (checkParameters()) {
+            saveProperties();    
+            setVisible(false);
+        }
     }
 
     /**
@@ -199,7 +202,7 @@ public class DatabaseSettingsPanel extends JDialog {
     }
 
     /**
-     * Click on the Ok button
+     * Click on the Ok button.
      */
     public void onSave() {
         if (checkParameters()) {
@@ -215,7 +218,7 @@ public class DatabaseSettingsPanel extends JDialog {
     }
 
     /**
-     * Click on the Ok button
+     * Click on the Ok button.
      */
     public void onRemove() {
         String valueConnection = connectionName.getText();
@@ -242,7 +245,7 @@ public class DatabaseSettingsPanel extends JDialog {
     }
 
     /**
-     * Save the connection properties file
+     * Save the connection properties file.
      */
     public void saveProperties() {
         try {
@@ -255,7 +258,7 @@ public class DatabaseSettingsPanel extends JDialog {
     }
 
     /**
-     * Change the populate the components
+     * Change the populate the components.
      */
     public void onUserSelectionChange() {
         boolean isCmbEmpty = comboBox.getItemCount() == 0;
@@ -296,6 +299,7 @@ public class DatabaseSettingsPanel extends JDialog {
      */
     public void setURL(String jdbcConnectionReference) {
         urlValue.setText(jdbcConnectionReference);
+        onUserSelectionChange();
     }
 
     /**
