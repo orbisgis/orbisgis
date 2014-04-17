@@ -30,7 +30,6 @@ package org.orbisgis.view.workspace;
 import java.awt.Dialog;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.TextField;
 import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
@@ -59,7 +58,8 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- *
+ * This class is used to manage the database connections used by OrbisGIS.
+ * 
  * @author Erwan Bocher
  */
 public class DatabaseSettingsPanel extends JDialog {
