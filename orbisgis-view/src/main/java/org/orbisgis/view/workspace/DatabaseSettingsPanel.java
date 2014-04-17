@@ -154,6 +154,7 @@ public class DatabaseSettingsPanel extends JDialog {
             mainPanel.add(cancelBt, "span 3");
             getContentPane().add(mainPanel);
             setTitle(I18N.tr("Database parameters"));
+            onUserSelectionChange();
             pack();
             setResizable(false);
         }
@@ -271,21 +272,21 @@ public class DatabaseSettingsPanel extends JDialog {
     /**
      * @return Password field
      */
-    public JPasswordField getPassword() {
-        return pswValue;
+    public String getPassword() {
+        return new String(pswValue.getPassword());
     }
     /**
      * @return URI field
      */
-    public JTextField getJdbcURI() {
-        return urlValue;
+    public String getJdbcURI() {
+        return urlValue.getText();
     }
 
     /**
      * @return User field
      */
-    public JTextField getUser() {
-        return userValue;
+    public String getUser() {
+        return userValue.getText();
     }
 
     /**

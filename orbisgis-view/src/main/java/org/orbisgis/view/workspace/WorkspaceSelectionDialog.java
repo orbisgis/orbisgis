@@ -233,7 +233,7 @@ public class WorkspaceSelectionDialog extends JPanel {
         } else {
             coreWorkspace.setDefaultWorkspace(null);
         }
-        String jdbcUri = wkDialog.getDatabaseSettingsPanel().getJdbcURI().getText();
+        String jdbcUri = wkDialog.getDatabaseSettingsPanel().getJdbcURI();
         // Create a temporary workspace to compute future path
         CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();
         tempWorkspace.setWorkspaceFolder(wkDialog.getComboBox().getValue());
@@ -257,8 +257,8 @@ public class WorkspaceSelectionDialog extends JPanel {
             fileWriter.write(jdbcUri+"\n");
         }
         // Do this at the end because there is trigger on property change
-        coreWorkspace.setDataBaseUser(wkDialog.getDatabaseSettingsPanel().getUser().getText());
-        coreWorkspace.setDataBasePassword(new String(wkDialog.getDatabaseSettingsPanel().getPassword().getPassword()));
+        coreWorkspace.setDataBaseUser(wkDialog.getDatabaseSettingsPanel().getUser());
+        coreWorkspace.setDataBasePassword(wkDialog.getDatabaseSettingsPanel().getPassword());
         coreWorkspace.setWorkspaceFolder(wkDialog.getComboBox().getValue());
     }
 }
