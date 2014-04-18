@@ -239,13 +239,9 @@ public class PolygonHandler implements ShapeHandler {
                 else if (holes.size() == 1 && shells.isEmpty()) {
                         return createMulti((LinearRing) holes.get(0).reverse());
                 } else {
-
                         // build an association between shells and holes
                         final List<List<LinearRing>> holesForShells = assignHolesToShells(shells, holes);
-
-                        Geometry g = buildGeometries(shells, holes, holesForShells);
-
-                        return g;
+                        return buildGeometries(shells, holes, holesForShells);
                 }
         }
 

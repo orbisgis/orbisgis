@@ -82,6 +82,8 @@ public final class ShapeType {
   public static final ShapeType MULTIPOINTZ = new ShapeType(18,"MultiPointZ");
   /** Represents a MultiPointZ shape (id = 28). */  
   public static final ShapeType MULTIPOINTM = new ShapeType(28,"MultiPointM");
+    /** Represents a MultiPatch shape (id = 31). */
+    public static final ShapeType MULTIPATCH = new ShapeType(31,"MultiPatch");
   
   /** Represents an Undefined shape (id = -1). */  
   public static final ShapeType UNDEFINED = new ShapeType(-1,"Undefined");
@@ -182,6 +184,9 @@ public final class ShapeType {
       case 28:
         t = MULTIPOINTM;
         break;
+      case 31:
+        t = MULTIPATCH;
+        break;
       default:
         t = UNDEFINED;
         break;
@@ -209,8 +214,11 @@ public final class ShapeType {
       case 8: case 18: case 28:
         handler = new MultiPointHandler(this);
         break;
+      case 31:
+        handler = new MultiPatchHandler(this);
+        break;
       default:
-        handler = null;
+        throw new ShapefileException("Shape file header geometry type "+id+" unknown");
     }
     return handler;
   }
