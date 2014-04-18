@@ -40,7 +40,7 @@ import java.util.Vector;
 import javax.swing.*;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.core.workspace.CoreWorkspaceImpl;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.CRFlowLayout;
 import org.orbisgis.sif.CarriageReturn;
@@ -187,8 +187,9 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
 * @return
      */
     private ArrayList<String> loadWMSServers() {
-        CoreWorkspace ws = Services.getService(CoreWorkspace.class);
-        File file = new File(ws.getWorkspaceFolder() + File.separator + WMSServerFile);
+        // Create a temporary workspace to compute future path
+        CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();;
+        File file = new File(tempWorkspace.getWorkspaceFolder() + File.separator + WMSServerFile);
         try {
             if (file.exists()) {
                 return readWMSServerFile(new FileInputStream(file));
@@ -235,8 +236,9 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
      */
     public void saveWMSServerFile() {
         try {
-            CoreWorkspace ws = Services.getService(CoreWorkspace.class);
-            File file = new File(ws.getWorkspaceFolder() + File.separator + WMSServerFile);
+            // Create a temporary workspace to compute future path
+            CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();
+            File file = new File(tempWorkspace.getWorkspaceFolder() + File.separator + WMSServerFile);
             PrintWriter pw = new PrintWriter(file);
             for (String server : serverswms) {
                 pw.println(server);
