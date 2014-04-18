@@ -29,6 +29,10 @@
 package org.orbisgis.view.toc;
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.wms.Capabilities;
+import com.vividsolutions.wms.MapImageFormatChooser;
+import com.vividsolutions.wms.MapLayer;
+import com.vividsolutions.wms.WMService;
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -40,6 +44,9 @@ import java.awt.event.MouseEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -48,6 +55,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -90,6 +98,7 @@ import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.SIFWizard;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.view.background.BackgroundJob;
@@ -106,6 +115,9 @@ import org.orbisgis.view.toc.actions.LayerAction;
 import org.orbisgis.view.toc.actions.StyleAction;
 import org.orbisgis.view.toc.actions.cui.SimpleStyleEditor;
 import org.orbisgis.view.toc.actions.cui.legend.wizard.LegendWizard;
+import org.orbisgis.view.toc.wms.LayerConfigurationPanel;
+import org.orbisgis.view.toc.wms.SRSPanel;
+import org.orbisgis.view.toc.wms.WMSConnectionPanel;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.viewapi.docking.DockingPanelParameters;
 import org.orbisgis.viewapi.edition.EditableElement;
@@ -990,6 +1002,54 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 }
             }
         }
+        
+      /**
+     * The user click on the button and open the wms panel.
+     */
+    public void onAddWMSLayer() {
+        SRSPanel srsPanel = new SRSPanel();
+        LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel(srsPanel);
+        WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);
+        if (UIFactory.showDialog(new UIPanel[]{wmsConnection,
+            layerConfiguration, srsPanel})) {
+            WMService service = wmsConnection.getServiceDescription();
+            Capabilities cap = service.getCapabilities();
+            MapImageFormatChooser mfc = new MapImageFormatChooser(service.getVersion());
+            mfc.setTransparencyRequired(true);
+            String validImageFormat = mfc.chooseFormat(cap.getMapFormats());
+            if (validImageFormat == null) {
+                LOGGER.error(I18N.tr("Cannot find a valid image format for this WMS server"));
+            } else {
+                Object[] layers = layerConfiguration.getSelectedLayers();               
+                for (Object layer : layers) {                    
+                    String layerName = ((MapLayer) layer).getName();
+                    URI origin = URI.create(service.getServerUrl());
+                    StringBuilder url = new StringBuilder(origin.getQuery());
+                    url.append("SERVICE=WMS&REQUEST=GetMap");
+                    String version = service.getVersion();
+                    url.append("&VERSION=").append(version);
+                    if (WMService.WMS_1_3_0.equals(version)) {
+                        url.append("&CRS=");
+                    } else {
+                        url.append("&SRS=");
+                    }
+                    url.append(srsPanel.getSRS());
+                    url.append("&LAYERS=").append(layerName);
+                    url.append("&FORMAT=").append(validImageFormat);
+                    try {
+                        URI streamUri = new URI(origin.getScheme(), origin.getUserInfo(), origin.getHost(), origin.getPort(),
+                                origin.getPath(), url.toString(), origin.getFragment());
+                        mapContext.createLayer(layerName, streamUri);
+                    } catch (URISyntaxException use) {
+                        LOGGER.error(I18N.tr("The given URI contains illegal character"), use);
+                    } catch (LayerException ex) {
+                        LOGGER.error(I18N.tr("Cannot add the WMS layer" + " " + layerName));
+                    }
+                }
+            }
+            
+        }
+    }
 
         @Override
         public boolean match(EditableElement editableElement) {
