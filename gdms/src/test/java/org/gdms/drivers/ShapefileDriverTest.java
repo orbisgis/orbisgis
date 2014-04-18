@@ -35,6 +35,7 @@ package org.gdms.drivers;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
+import com.vividsolutions.jts.io.WKTWriter;
 import org.gdms.Geometries;
 import org.gdms.TestBase;
 import org.gdms.TestResourceHandler;
@@ -508,11 +509,11 @@ public class ShapefileDriverTest extends TestBase {
 
 
         @Test
-        public void testMultiPatchShp() throws Exception {
+        public void testMultiPatchShpRing() throws Exception {
             try (FileInputStream shpFis = new FileInputStream(
                     ShapefileDriverTest.class.getResource("First_ring_inside_ring.shp").getFile());
                  FileInputStream shxFis = new FileInputStream(
-                         ShapefileDriverTest.class.getResource("First_ring_inside_ring.shp").getFile())) {
+                         ShapefileDriverTest.class.getResource("First_ring_inside_ring.shx").getFile())) {
                 ShapefileReader shapefileDriver = new ShapefileReader(shpFis.getChannel());
                 IndexFile shxFile = new IndexFile(shxFis.getChannel());
                 ShapefileHeader header = shapefileDriver.getHeader();
@@ -520,7 +521,8 @@ public class ShapefileDriverTest extends TestBase {
                 assertEquals(1, shxFile.getRecordCount());
                 Geometry geom = shapefileDriver.geomAt(shxFile.getOffset(0));
                 assertTrue(geom instanceof MultiPolygon);
+                assertEquals("MULTIPOLYGON (((0 0 0, 3 0 0, 3 0 3, 0 0 3, 0 0 0), (1 0 1, 1 0 2, 2 0 2, 2 0 1, 1 0 1)))",
+                        new WKTWriter(3).write(geom));
             }
         }
-        
 }
