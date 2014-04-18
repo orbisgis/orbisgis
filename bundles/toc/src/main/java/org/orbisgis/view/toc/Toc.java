@@ -44,7 +44,6 @@ import java.awt.event.MouseEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Connection;
@@ -1039,7 +1038,8 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     try {
                         URI streamUri = new URI(origin.getScheme(), origin.getUserInfo(), origin.getHost(), origin.getPort(),
                                 origin.getPath(), url.toString(), origin.getFragment());
-                        mapContext.createLayer(layerName, streamUri);
+                        ILayer wmsLayer = mapContext.createLayer(layerName, streamUri);
+                        mapContext.getLayerModel().addLayer(wmsLayer);
                     } catch (URISyntaxException use) {
                         LOGGER.error(I18N.tr("The given URI contains illegal character"), use);
                     } catch (LayerException ex) {
