@@ -52,7 +52,10 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.MemoryDataSetDriver;
+import org.gdms.driver.shapefile.IndexFile;
 import org.gdms.driver.shapefile.ShapeType;
+import org.gdms.driver.shapefile.ShapefileDriver;
+import org.gdms.driver.shapefile.ShapefileException;
 import org.gdms.driver.shapefile.ShapefileHeader;
 import org.gdms.driver.shapefile.ShapefileReader;
 import org.junit.Before;
@@ -60,6 +63,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.cts.crs.CoordinateReferenceSystem;
@@ -500,6 +504,23 @@ public class ShapefileDriverTest extends TestBase {
                 
                 File prj = FileUtils.getFileWithExtension(shpFile, "prj");                
                 assertNotNull(prj);                
+        }
+
+
+        @Test
+        public void testMultiPatchShp() throws Exception {
+            try (FileInputStream shpFis = new FileInputStream(
+                    ShapefileDriverTest.class.getResource("First_ring_inside_ring.shp").getFile());
+                 FileInputStream shxFis = new FileInputStream(
+                         ShapefileDriverTest.class.getResource("First_ring_inside_ring.shp").getFile())) {
+                ShapefileReader shapefileDriver = new ShapefileReader(shpFis.getChannel());
+                IndexFile shxFile = new IndexFile(shxFis.getChannel());
+                ShapefileHeader header = shapefileDriver.getHeader();
+                assertEquals(ShapeType.MULTIPATCH.id,header.getShapeType().id);
+                assertEquals(1, shxFile.getRecordCount());
+                Geometry geom = shapefileDriver.geomAt(shxFile.getOffset(0));
+                assertTrue(geom instanceof MultiPolygon);
+            }
         }
         
 }
