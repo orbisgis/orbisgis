@@ -123,6 +123,7 @@ public class WorkspaceSelectionDialog extends JPanel {
         if (databaseSettingsPanel == null) {
             databaseSettingsPanel = new DatabaseSettingsPanel((JDialog) getTopLevelAncestor());
         }
+        onWorkspaceFolderChange();
         databaseSettingsPanel.setAlwaysOnTop(true);
         databaseSettingsPanel.setVisible(true);
     }
@@ -205,6 +206,7 @@ public class WorkspaceSelectionDialog extends JPanel {
         CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();
         tempWorkspace.setWorkspaceFolder(getComboBox().getValue());
         if (databaseSettingsPanel != null) {
+            databaseSettingsPanel.setConnectionName(I18N.tr("Default database"));
             databaseSettingsPanel.setURL(tempWorkspace.getJDBCConnectionReference());
             databaseSettingsPanel.setUser(tempWorkspace.getDataBaseUser());
             databaseSettingsPanel.setPassword(tempWorkspace.getDataBasePassword());
@@ -228,7 +230,10 @@ public class WorkspaceSelectionDialog extends JPanel {
         } else {
             coreWorkspace.setDefaultWorkspace(null);
         }
-        String jdbcUri = wkDialog.getDatabaseSettingsPanel().getJdbcURI();
+        String jdbcUri = "";
+        if(wkDialog.getDatabaseSettingsPanel()!=null){
+            jdbcUri = wkDialog.getDatabaseSettingsPanel().getJdbcURI();
+        }        
         // Create a temporary workspace to compute future path
         CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();
         tempWorkspace.setWorkspaceFolder(wkDialog.getComboBox().getValue());

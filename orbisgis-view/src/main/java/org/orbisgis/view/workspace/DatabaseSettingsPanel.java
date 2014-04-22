@@ -193,9 +193,6 @@ public class DatabaseSettingsPanel extends JDialog {
         } else if (userValue.getText().isEmpty()) {
             JOptionPane.showMessageDialog(rootPane, I18N.tr("The user name cannot be null."));
             isParametersOk=false;
-        } else if (pswValue.getPassword().length == 0) {
-            JOptionPane.showMessageDialog(rootPane, I18N.tr("The password cannot be null."));
-            isParametersOk=false;
         }
         return isParametersOk;
 
@@ -263,12 +260,14 @@ public class DatabaseSettingsPanel extends JDialog {
     public void onUserSelectionChange() {
         boolean isCmbEmpty = comboBox.getItemCount() == 0;
         if (!isCmbEmpty) {
+            if(comboBox.getSelectedItem()!=null){
             String value = comboBox.getSelectedItem().toString();
             String data = dbProperties.getProperty(value);
             connectionName.setText(value);
             StringTokenizer st = new StringTokenizer(data, "|");
             urlValue.setText(st.nextToken());
             userValue.setText(st.nextToken());
+            }
         }
     }
     
@@ -318,5 +317,14 @@ public class DatabaseSettingsPanel extends JDialog {
      */
     public void setPassword(String dataBasePassword) {
         pswValue.setText(dataBasePassword);
+    }    
+    
+    /**
+     * Set a new connection name.
+     * 
+     * @param dbName 
+     */
+    public void setConnectionName(String dbName){
+        connectionName.setText(dbName);
     }
 }
