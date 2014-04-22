@@ -452,7 +452,7 @@ public class Core {
      * @param savedDockingLayout
      */
     private void copyDefaultDockingLayout(File savedDockingLayout) {
-        InputStream xmlFileStream = DockingManager.class.getResourceAsStream("default_docking_layout.xml");
+        InputStream xmlFileStream = DockingManagerImpl.class.getResourceAsStream("default_docking_layout.xml");
         if (xmlFileStream != null) {
             try {
                 FileOutputStream writer = new FileOutputStream(savedDockingLayout);

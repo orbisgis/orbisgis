@@ -1,665 +1,744 @@
 <?xml version='1.0'?>
 <root>
-    <resource name="CLookAndFeelMenuPiece">
-        <key>s.default</key>
-    </resource>
-    <resource name="ccontrol.frontend">
-        <frontend>
-            <current>
-                <base>
-                    <roots>
-                        <root name="base toolbar east">
-                            <layout factory="predefined">
-                                <replacement id="rootbase toolbar east"/>
-                                <delegate id="delegate_CommonDockStationFactory">
-                                    <root>true</root>
-                                    <content delegate="ToolbarContainerDockStationFactory">
-                                        <placeholders>
-                                            <version>0</version>
-                                            <format>dock.ToolbarContainerStation</format>
-                                            <entry>
-                                                <key shared="true">
-                                                    <anchor>content</anchor>
-                                                </key>
-                                                <item key="list" type="p">
-                                                    <version>0</version>
-                                                    <format>dock.PlaceholderList</format>
-                                                </item>
-                                            </entry>
-                                        </placeholders>
-                                    </content>
-                                </delegate>
-                            </layout>
-                            <adjacent>
-                                <layout factory="dock.RootStationAdjacentFactory">
-                                    <type>dock.CToolbarArea</type>
-                                </layout>
-                            </adjacent>
-                            <children ignore="false"/>
-                        </root>
-                        <root name="base south">
-                            <layout factory="predefined">
-                                <replacement id="rootbase south"/>
-                                <delegate id="delegate_CommonDockStationFactory">
-                                    <root>true</root>
-                                    <content delegate="flap dock">
-                                        <window auto="false" direction="NORTH"/>
-                                        <placeholders>
-                                            <version>0</version>
-                                            <format>dock.PlaceholderList</format>
-                                            <entry>
-                                                <key shared="false">
-                                                    <placeholder>dock.single.mainLog</placeholder>
-                                                </key>
-                                                <item key="convert" type="b">true</item>
-                                                <item key="convert-keys" type="a">
-                                                    <item type="s">id</item>
-                                                    <item type="s">index</item>
-                                                    <item type="s">placeholder</item>
-                                                    <item type="s">hold</item>
-                                                    <item type="s">size</item>
-                                                </item>
-                                                <item key="dock.id" type="i">0</item>
-                                                <item key="dock.index" type="i">0</item>
-                                                <item key="dock.placeholder" type="s">dock.single.mainLog</item>
-                                                <item key="dock.hold" type="b">false</item>
-                                                <item key="dock.size" type="i">400</item>
-                                            </entry>
-                                        </placeholders>
-                                    </content>
-                                </delegate>
-                            </layout>
-                            <adjacent>
-                                <layout factory="dock.RootStationAdjacentFactory">
-                                    <type>dock.CContentArea.minimize</type>
-                                </layout>
-                            </adjacent>
-                            <children ignore="false">
-                                <child>
-                                    <layout factory="predefined" placeholder="dock.single.mainLog">
-                                        <replacement id="dockablesingle mainLog"/>
-                                        <delegate id="delegate_ccontrol backup factory id">
-                                            <id>mainLog</id>
-                                            <area/>
-                                        </delegate>
-                                    </layout>
-                                    <children ignore="false"/>
-                                </child>
-                            </children>
-                        </root>
-                        <root name="base west">
-                            <layout factory="predefined">
-                                <replacement id="rootbase west"/>
-                                <delegate id="delegate_CommonDockStationFactory">
-                                    <root>true</root>
-                                    <content delegate="flap dock">
-                                        <window auto="false" direction="EAST"/>
-                                        <placeholders>
-                                            <version>0</version>
-                                            <format>dock.PlaceholderList</format>
-                                        </placeholders>
-                                    </content>
-                                </delegate>
-                            </layout>
-                            <adjacent>
-                                <layout factory="dock.RootStationAdjacentFactory">
-                                    <type>dock.CContentArea.minimize</type>
-                                </layout>
-                            </adjacent>
-                            <children ignore="false"/>
-                        </root>
-                        <root name="external">
-                            <layout factory="predefined">
-                                <replacement id="rootexternal"/>
-                                <delegate id="delegate_CommonDockStationFactory">
-                                    <root>true</root>
-                                    <content delegate="screen dock">
-                                        <placeholders>
-                                            <version>0</version>
-                                            <format>dock.PlaceholderList</format>
-                                        </placeholders>
-                                    </content>
-                                </delegate>
-                            </layout>
-                            <adjacent>
-                                <layout factory="dock.RootStationAdjacentFactory">
-                                    <type>dock.CExternalizeArea</type>
-                                </layout>
-                            </adjacent>
-                            <children ignore="false"/>
-                        </root>
-                        <root name="base north">
-                            <layout factory="predefined">
-                                <replacement id="rootbase north"/>
-                                <delegate id="delegate_CommonDockStationFactory">
-                                    <root>true</root>
-                                    <content delegate="flap dock">
-                                        <window auto="false" direction="SOUTH"/>
-                                        <placeholders>
-                                            <version>0</version>
-                                            <format>dock.PlaceholderList</format>
-                                        </placeholders>
-                                    </content>
-                                </delegate>
-                            </layout>
-                            <adjacent>
-                                <layout factory="dock.RootStationAdjacentFactory">
-                                    <type>dock.CContentArea.minimize</type>
-                                </layout>
-                            </adjacent>
-                            <children ignore="false"/>
-                        </root>
-                        <root name="base center">
-                            <layout factory="predefined" placeholder="dock.single.base\ center">
-                                <replacement id="rootbase center"/>
-                                <delegate id="delegate_CommonDockStationFactory">
-                                    <id>base center</id>
-                                    <root>true</root>
-                                    <content delegate="SplitDockStationFactory">
-                                        <fullscreen-action>false</fullscreen-action>
-                                        <node nodeId="1360764912157" orientation="VERTICAL" divider="0.6356589147286822">
-                                            <node nodeId="1360764928434" orientation="HORIZONTAL" divider="0.32741116751269034">
-                                                <node nodeId="1360764935320" orientation="VERTICAL" divider="0.6183673469387755">
-                                                    <leaf id="1" nodeId="1360764859353">
-                                                        <placeholders>
-                                                            <placeholder>dock.single.toc</placeholder>
-                                                        </placeholders>
-                                                    </leaf>
-                                                    <leaf id="2" nodeId="1360764859263">
-                                                        <placeholders>
-                                                            <placeholder>dock.single.geocatalog</placeholder>
-                                                        </placeholders>
-                                                    </leaf>
-                                                </node>
-                                                <leaf id="0" nodeId="1360764859754">
-                                                    <placeholders>
-                                                        <placeholder>dock.single.map_editor</placeholder>
-                                                    </placeholders>
-                                                </leaf>
-                                            </node>
-                                            <leaf id="-1" nodeId="1360764860572">
-                                                <placeholders>
-                                                    <placeholder>dock.single.org\.orbisgis\.view\.sqlconsole\.SQLConsole</placeholder>
-                                                    <placeholder>dock.single.mainLog</placeholder>
-                                                    <placeholder>dock.single.BeanShell</placeholder>
-                                                </placeholders>
-                                                <placeholder-map>
-                                                    <version>0</version>
-                                                    <format>dock.PlaceholderList</format>
-                                                    <entry>
-                                                        <key shared="false">
-                                                            <placeholder>dock.single.BeanShell</placeholder>
-                                                        </key>
-                                                    </entry>
-                                                    <entry>
-                                                        <key shared="false">
-                                                            <placeholder>dock.single.org\.orbisgis\.view\.sqlconsole\.SQLConsole</placeholder>
-                                                        </key>
-                                                    </entry>
-                                                    <entry>
-                                                        <key shared="false">
-                                                            <placeholder>dock.single.mainLog</placeholder>
-                                                        </key>
-                                                    </entry>
-                                                </placeholder-map>
-                                            </leaf>
-                                        </node>
-                                    </content>
-                                </delegate>
-                            </layout>
-                            <adjacent>
-                                <layout factory="dock.RootStationAdjacentFactory">
-                                    <type>dock.CContentArea.center</type>
-                                </layout>
-                            </adjacent>
-                            <children ignore="false">
-                                <child>
-                                    <layout factory="predefined" placeholder="dock.single.map_editor">
-                                        <replacement id="dockablesingle map_editor"/>
-                                        <delegate id="delegate_ccontrol backup factory id">
-                                            <id>map_editor</id>
-                                            <area/>
-                                        </delegate>
-                                    </layout>
-                                    <children ignore="false"/>
-                                </child>
-                                <child>
-                                    <layout factory="predefined" placeholder="dock.single.toc">
-                                        <replacement id="dockablesingle toc"/>
-                                        <delegate id="delegate_ccontrol backup factory id">
-                                            <id>toc</id>
-                                            <area/>
-                                        </delegate>
-                                    </layout>
-                                    <children ignore="false"/>
-                                </child>
-                                <child>
-                                    <layout factory="predefined" placeholder="dock.single.geocatalog">
-                                        <replacement id="dockablesingle geocatalog"/>
-                                        <delegate id="delegate_ccontrol backup factory id">
-                                            <id>geocatalog</id>
-                                            <area/>
-                                        </delegate>
-                                    </layout>
-                                    <children ignore="false"/>
-                                </child>
-                            </children>
-                        </root>
-                        <root name="base toolbar north">
-                            <layout factory="predefined">
-                                <replacement id="rootbase toolbar north"/>
-                                <delegate id="delegate_CommonDockStationFactory">
-                                    <root>true</root>
-                                    <content delegate="ToolbarContainerDockStationFactory">
-                                        <placeholders>
-                                            <version>0</version>
-                                            <format>dock.ToolbarContainerStation</format>
-                                            <entry>
-                                                <key shared="true">
-                                                    <anchor>content</anchor>
-                                                </key>
-                                                <item key="list" type="p">
-                                                    <version>0</version>
-                                                    <format>dock.PlaceholderList</format>
-                                                </item>
-                                            </entry>
-                                        </placeholders>
-                                    </content>
-                                </delegate>
-                            </layout>
-                            <adjacent>
-                                <layout factory="dock.RootStationAdjacentFactory">
-                                    <type>dock.CToolbarArea</type>
-                                </layout>
-                            </adjacent>
-                            <children ignore="false"/>
-                        </root>
-                        <root name="base east">
-                            <layout factory="predefined">
-                                <replacement id="rootbase east"/>
-                                <delegate id="delegate_CommonDockStationFactory">
-                                    <root>true</root>
-                                    <content delegate="flap dock">
-                                        <window auto="false" direction="WEST"/>
-                                        <placeholders>
-                                            <version>0</version>
-                                            <format>dock.PlaceholderList</format>
-                                        </placeholders>
-                                    </content>
-                                </delegate>
-                            </layout>
-                            <adjacent>
-                                <layout factory="dock.RootStationAdjacentFactory">
-                                    <type>dock.CContentArea.minimize</type>
-                                </layout>
-                            </adjacent>
-                            <children ignore="false"/>
-                        </root>
-                        <root name="base toolbar west">
-                            <layout factory="predefined">
-                                <replacement id="rootbase toolbar west"/>
-                                <delegate id="delegate_CommonDockStationFactory">
-                                    <root>true</root>
-                                    <content delegate="ToolbarContainerDockStationFactory">
-                                        <placeholders>
-                                            <version>0</version>
-                                            <format>dock.ToolbarContainerStation</format>
-                                            <entry>
-                                                <key shared="true">
-                                                    <anchor>content</anchor>
-                                                </key>
-                                                <item key="list" type="p">
-                                                    <version>0</version>
-                                                    <format>dock.PlaceholderList</format>
-                                                </item>
-                                            </entry>
-                                        </placeholders>
-                                    </content>
-                                </delegate>
-                            </layout>
-                            <adjacent>
-                                <layout factory="dock.RootStationAdjacentFactory">
-                                    <type>dock.CToolbarArea</type>
-                                </layout>
-                            </adjacent>
-                            <children ignore="false"/>
-                        </root>
-                        <root name="base toolbar south">
-                            <layout factory="predefined">
-                                <replacement id="rootbase toolbar south"/>
-                                <delegate id="delegate_CommonDockStationFactory">
-                                    <root>true</root>
-                                    <content delegate="ToolbarContainerDockStationFactory">
-                                        <placeholders>
-                                            <version>0</version>
-                                            <format>dock.ToolbarContainerStation</format>
-                                            <entry>
-                                                <key shared="true">
-                                                    <anchor>content</anchor>
-                                                </key>
-                                                <item key="list" type="p">
-                                                    <version>0</version>
-                                                    <format>dock.PlaceholderList</format>
-                                                </item>
-                                            </entry>
-                                        </placeholders>
-                                    </content>
-                                </delegate>
-                            </layout>
-                            <adjacent>
-                                <layout factory="dock.RootStationAdjacentFactory">
-                                    <type>dock.CToolbarArea</type>
-                                </layout>
-                            </adjacent>
-                            <children ignore="false"/>
-                        </root>
-                    </roots>
-                    <children>
-                        <child key="single BeanShell" root="base center" location="true">
-                            <location>
-                                <property factory="SplitDockPlaceholderProperty">
-                                    <placeholder>dock.single.BeanShell</placeholder>
-                                    <backup-path>
-                                        <node location="BOTTOM" size="0.3643410852713178" id="1360764912157"/>
-                                        <leaf id="1360764860572"/>
-                                    </backup-path>
-                                </property>
-                            </location>
-                            <layout>
-                                <layout factory="predefined" placeholder="dock.single.BeanShell">
-                                    <replacement id="dockablesingle BeanShell"/>
-                                    <delegate id="delegate_ccontrol backup factory id">
-                                        <id>BeanShell</id>
-                                        <area/>
-                                    </delegate>
-                                </layout>
-                                <children ignore="false"/>
-                            </layout>
-                        </child>
-                        <child key="single org.orbisgis.view.sqlconsole.SQLConsole" root="base center" location="true">
-                            <location>
-                                <property factory="SplitDockPlaceholderProperty">
-                                    <placeholder>dock.single.org\.orbisgis\.view\.sqlconsole\.SQLConsole</placeholder>
-                                    <backup-path>
-                                        <node location="BOTTOM" size="0.3643410852713178" id="1360764912157"/>
-                                        <leaf id="1360764860572"/>
-                                    </backup-path>
-                                </property>
-                                <property factory="StackDockPropertyFactory">
-                                    <index>1</index>
-                                    <placeholder>dock.single.org\.orbisgis\.view\.sqlconsole\.SQLConsole</placeholder>
-                                </property>
-                            </location>
-                            <layout>
-                                <layout factory="predefined" placeholder="dock.single.org\.orbisgis\.view\.sqlconsole\.SQLConsole">
-                                    <replacement id="dockablesingle org.orbisgis.view.sqlconsole.SQLConsole"/>
-                                    <delegate id="delegate_ccontrol backup factory id">
-                                        <id>org.orbisgis.view.sqlconsole.SQLConsole</id>
-                                        <area/>
-                                    </delegate>
-                                </layout>
-                                <children ignore="false"/>
-                            </layout>
-                        </child>
-                    </children>
-                </base>
-                <modes>
-                    <dockables>
-                        <entry id="single map_editor" current="dock.mode.normal">
-                            <history/>
-                            <properties/>
-                        </entry>
-                        <entry id="single mainLog" current="dock.mode.minimized">
-                            <history>
-                                <mode>dock.mode.normal</mode>
-                                <mode>dock.mode.minimized</mode>
-                            </history>
-                            <properties>
-                                <property id="dock.mode.normal">
-                                    <mode>dock.mode.normal</mode>
-                                    <root>base center</root>
-                                    <location>
-                                        <property factory="SplitDockPlaceholderProperty">
-                                            <placeholder>dock.single.mainLog</placeholder>
-                                            <backup-path>
-                                                <node location="BOTTOM" size="0.3643410852713178" id="1360764912157"/>
-                                                <leaf id="1360764860572"/>
-                                            </backup-path>
-                                        </property>
-                                        <property factory="StackDockPropertyFactory">
-                                            <index>2</index>
-                                            <placeholder>dock.single.mainLog</placeholder>
-                                        </property>
-                                    </location>
-                                </property>
-                                <property id="dock.mode.minimized">
-                                    <mode>dock.mode.minimized</mode>
-                                    <root>base south</root>
-                                    <location>
-                                        <property factory="flap dock">
-                                            <index>0</index>
-                                            <holding>false</holding>
-                                            <size>400</size>
-                                            <placeholder>dock.single.mainLog</placeholder>
-                                        </property>
-                                    </location>
-                                </property>
-                            </properties>
-                        </entry>
-                        <entry id="single toc" current="dock.mode.normal">
-                            <history/>
-                            <properties>
-                                <property id="dock.mode.normal">
-                                    <mode>dock.mode.normal</mode>
-                                    <root>base center</root>
-                                    <location>
-                                        <property factory="SplitDockPlaceholderProperty">
-                                            <placeholder>dock.single.toc</placeholder>
-                                            <backup-path>
-                                                <node location="BOTTOM" size="0.5" id="1360764859756"/>
-                                                <node location="TOP" size="0.5" id="1360764859355"/>
-                                                <leaf id="1360764859353"/>
-                                            </backup-path>
-                                        </property>
-                                    </location>
-                                </property>
-                            </properties>
-                        </entry>
-                        <entry id="single BeanShell">
-                            <history>
-                                <mode>dock.mode.normal</mode>
-                            </history>
-                            <properties>
-                                <property id="dock.mode.normal">
-                                    <mode>dock.mode.normal</mode>
-                                    <root>base center</root>
-                                    <location>
-                                        <property factory="SplitDockPlaceholderProperty">
-                                            <placeholder>dock.single.BeanShell</placeholder>
-                                            <backup-path>
-                                                <node location="TOP" size="0.5" id="1360764859756"/>
-                                                <node location="BOTTOM" size="0.5" id="1360764912157"/>
-                                                <leaf id="1360764860572"/>
-                                            </backup-path>
-                                        </property>
-                                        <property factory="StackDockPropertyFactory">
-                                            <index>0</index>
-                                            <placeholder>dock.single.BeanShell</placeholder>
-                                        </property>
-                                    </location>
-                                </property>
-                            </properties>
-                        </entry>
-                        <entry id="single org.orbisgis.view.sqlconsole.SQLConsole">
-                            <history>
-                                <mode>dock.mode.normal</mode>
-                            </history>
-                            <properties>
-                                <property id="dock.mode.normal">
-                                    <mode>dock.mode.normal</mode>
-                                    <root>base center</root>
-                                    <location>
-                                        <property factory="SplitDockPlaceholderProperty">
-                                            <placeholder>dock.single.org\.orbisgis\.view\.sqlconsole\.SQLConsole</placeholder>
-                                            <backup-path>
-                                                <node location="TOP" size="0.5" id="1360764859756"/>
-                                                <node location="BOTTOM" size="0.5" id="1360764912157"/>
-                                                <leaf id="1360764860572"/>
-                                            </backup-path>
-                                        </property>
-                                        <property factory="StackDockPropertyFactory">
-                                            <index>1</index>
-                                            <placeholder>dock.single.org\.orbisgis\.view\.sqlconsole\.SQLConsole</placeholder>
-                                        </property>
-                                    </location>
-                                </property>
-                            </properties>
-                        </entry>
-                        <entry id="single geocatalog" current="dock.mode.normal">
-                            <history/>
-                            <properties>
-                                <property id="dock.mode.normal">
-                                    <mode>dock.mode.normal</mode>
-                                    <root>base center</root>
-                                    <location>
-                                        <property factory="SplitDockPlaceholderProperty">
-                                            <placeholder>dock.single.geocatalog</placeholder>
-                                            <backup-path>
-                                                <node location="BOTTOM" size="0.5" id="1360764859756"/>
-                                                <leaf id="1360764859263"/>
-                                            </backup-path>
-                                        </property>
-                                    </location>
-                                </property>
-                            </properties>
-                        </entry>
-                    </dockables>
-                    <modes>
-                        <entry id="dock.mode.maximized"/>
-                    </modes>
-                </modes>
-            </current>
-        </frontend>
-    </resource>
-    <resource name="ccontrol.preferences">
-        <child name="windows">
-            <child name="shortcuts">
-                <child name="dock">
-                    <child name="DockableSelector">
-                        <child name="INIT_SELECTION">
-                            <value type="javax.swing.KeyStroke">shift ctrl pressed E</value>
-                        </child>
-                    </child>
-                    <child name="DockRelocatorMode">
-                        <child name="NO_COMBINATION_MASK">
-                            <value type="dock.modifier_mask" on="512" off="8640"/>
-                        </child>
-                        <child name="SCREEN_MASK">
-                            <value type="dock.modifier_mask" on="64" off="9088"/>
-                        </child>
-                    </child>
-                    <child name="common">
-                        <child name="control">
-                            <child name="maximize_change">
-                                <value type="javax.swing.KeyStroke">ctrl pressed M</value>
-                            </child>
-                            <child name="maximize"/>
-                            <child name="normalize">
-                                <value type="javax.swing.KeyStroke">ctrl pressed N</value>
-                            </child>
-                            <child name="minimize"/>
-                            <child name="externalize">
-                                <value type="javax.swing.KeyStroke">ctrl pressed E</value>
-                            </child>
-                        </child>
-                    </child>
-                </child>
-            </child>
-            <child name="buttonContent">
-                <child name="dock">
-                    <child name="ButtonContent">
-                        <child name="knob">
-                            <value type="dock.choice">theme</value>
-                        </child>
-                        <child name="icon">
-                            <value type="dock.choice">theme</value>
-                        </child>
-                        <child name="text">
-                            <value type="dock.choice">theme</value>
-                        </child>
-                        <child name="children">
-                            <value type="dock.choice">theme</value>
-                        </child>
-                        <child name="actions">
-                            <value type="dock.choice">theme</value>
-                        </child>
-                        <child name="filter">
-                            <value type="dock.choice">theme</value>
-                        </child>
-                    </child>
-                </child>
-            </child>
-            <child name="layout">
-                <child name="dock">
-                    <child name="layout">
-                        <child name="tabplacement">
-                            <value type="dock.choice">theme</value>
-                        </child>
-                        <child name="tabcontentfilter">
-                            <value type="dock.choice">all</value>
-                        </child>
-                    </child>
-                </child>
-                <child name="BubbleTheme">
-                    <child name="dock">
-                        <child name="theme">
-                            <child name="bubble">
-                                <child name="colorscheme">
-                                    <value type="dock.choice">rgb</value>
-                                </child>
-                            </child>
-                        </child>
-                    </child>
-                </child>
-                <child name="EclipseTheme">
-                    <child name="dock">
-                        <child name="theme">
-                            <child name="eclipse">
-                                <child name="tab">
-                                    <value type="dock.choice">round</value>
-                                </child>
-                                <child name="icons">
-                                    <value type="java.lang.Boolean">false</value>
-                                </child>
-                            </child>
-                        </child>
-                    </child>
-                </child>
-            </child>
-        </child>
-        <child name="web">
-            <child name="proxy">
-                <child name="web">
-                    <child name="proxy">
-                        <child name="proxylabel"/>
-                        <child name="useproxy">
-                            <value type="java.lang.Boolean">false</value>
-                        </child>
-                        <child name="proxyurl"/>
-                        <child name="proxyport">
-                            <value type="java.lang.String">8080</value>
-                        </child>
-                    </child>
-                </child>
-            </child>
-        </child>
-    </resource>
-    <resource name="dock.ui.ThemeMap">
-        <key>smooth</key>
-    </resource>
-    <resource name="map_editor" serialVersionUID="2" defaultMapContext="MaCarte.ows">
-        <mapCatalogUrlList>
-            <mapcatalog url="http://services.orbisgis.org/map"/>
-        </mapCatalogUrlList>
-    </resource>
+	<resource name="CLookAndFeelMenuPiece">
+		<key>s.default</key>
+	</resource>
+	<resource name="ccontrol.frontend">
+		<frontend>
+			<current>
+				<base>
+					<roots>
+						<root name="base toolbar east">
+							<layout factory="predefined">
+								<replacement id="rootbase toolbar east"/>
+								<delegate id="delegate_CommonDockStationFactory">
+									<root>true</root>
+									<content delegate="ToolbarContainerDockStationFactory">
+										<placeholders>
+											<version>0</version>
+											<format>dock.ToolbarContainerStation</format>
+											<entry>
+												<key shared="true">
+													<anchor>content</anchor>
+												</key>
+												<item key="list" type="p">
+													<version>0</version>
+													<format>dock.PlaceholderList</format>
+												</item>
+											</entry>
+										</placeholders>
+									</content>
+								</delegate>
+							</layout>
+							<adjacent>
+								<layout factory="dock.RootStationAdjacentFactory">
+									<type>dock.CToolbarArea</type>
+								</layout>
+							</adjacent>
+							<children ignore="false"/>
+						</root>
+						<root name="base south">
+							<layout factory="predefined">
+								<replacement id="rootbase south"/>
+								<delegate id="delegate_CommonDockStationFactory">
+									<root>true</root>
+									<content delegate="flap dock">
+										<window auto="false" direction="NORTH"/>
+										<placeholders>
+											<version>0</version>
+											<format>dock.PlaceholderList</format>
+											<entry>
+												<key shared="false">
+													<placeholder>dock.single.mainLog</placeholder>
+												</key>
+												<item key="convert" type="b">true</item>
+												<item key="convert-keys" type="a">
+													<item type="s">id</item>
+													<item type="s">index</item>
+													<item type="s">placeholder</item>
+													<item type="s">hold</item>
+													<item type="s">size</item>
+												</item>
+												<item key="dock.id" type="i">0</item>
+												<item key="dock.index" type="i">0</item>
+												<item key="dock.placeholder" type="s">dock.single.mainLog</item>
+												<item key="dock.hold" type="b">false</item>
+												<item key="dock.size" type="i">400</item>
+											</entry>
+										</placeholders>
+									</content>
+								</delegate>
+							</layout>
+							<adjacent>
+								<layout factory="dock.RootStationAdjacentFactory">
+									<type>dock.CContentArea.minimize</type>
+								</layout>
+							</adjacent>
+							<children ignore="false">
+								<child>
+									<layout factory="predefined" placeholder="dock.single.mainLog">
+										<replacement id="dockablesingle mainLog"/>
+										<delegate id="delegate_ccontrol backup factory id">
+											<id>mainLog</id>
+											<area/>
+										</delegate>
+									</layout>
+									<children ignore="false"/>
+								</child>
+							</children>
+						</root>
+						<root name="base west">
+							<layout factory="predefined">
+								<replacement id="rootbase west"/>
+								<delegate id="delegate_CommonDockStationFactory">
+									<root>true</root>
+									<content delegate="flap dock">
+										<window auto="false" direction="EAST"/>
+										<placeholders>
+											<version>0</version>
+											<format>dock.PlaceholderList</format>
+										</placeholders>
+									</content>
+								</delegate>
+							</layout>
+							<adjacent>
+								<layout factory="dock.RootStationAdjacentFactory">
+									<type>dock.CContentArea.minimize</type>
+								</layout>
+							</adjacent>
+							<children ignore="false"/>
+						</root>
+						<root name="external">
+							<layout factory="predefined">
+								<replacement id="rootexternal"/>
+								<delegate id="delegate_CommonDockStationFactory">
+									<root>true</root>
+									<content delegate="screen dock">
+										<placeholders>
+											<version>0</version>
+											<format>dock.PlaceholderList</format>
+										</placeholders>
+									</content>
+								</delegate>
+							</layout>
+							<adjacent>
+								<layout factory="dock.RootStationAdjacentFactory">
+									<type>dock.CExternalizeArea</type>
+								</layout>
+							</adjacent>
+							<children ignore="false"/>
+						</root>
+						<root name="base north">
+							<layout factory="predefined">
+								<replacement id="rootbase north"/>
+								<delegate id="delegate_CommonDockStationFactory">
+									<root>true</root>
+									<content delegate="flap dock">
+										<window auto="false" direction="SOUTH"/>
+										<placeholders>
+											<version>0</version>
+											<format>dock.PlaceholderList</format>
+										</placeholders>
+									</content>
+								</delegate>
+							</layout>
+							<adjacent>
+								<layout factory="dock.RootStationAdjacentFactory">
+									<type>dock.CContentArea.minimize</type>
+								</layout>
+							</adjacent>
+							<children ignore="false"/>
+						</root>
+						<root name="base center">
+							<layout factory="predefined" placeholder="dock.single.base\ center">
+								<replacement id="rootbase center"/>
+								<delegate id="delegate_CommonDockStationFactory">
+									<id>base center</id>
+									<root>true</root>
+									<content delegate="SplitDockStationFactory">
+										<fullscreen-action>false</fullscreen-action>
+										<node nodeId="1398170833504" orientation="VERTICAL" divider="0.3196099674972914">
+											<node nodeId="1398171133267" orientation="HORIZONTAL" divider="0.6779761904761905">
+												<leaf id="-1" nodeId="1398170833502">
+													<placeholders>
+														<placeholder>dock.single.Groovy</placeholder>
+														<placeholder>dock.single.org\.orbisgis\.view\.sqlconsole\.SQLConsole</placeholder>
+													</placeholders>
+													<placeholder-map>
+														<version>0</version>
+														<format>dock.PlaceholderList</format>
+														<entry>
+															<key shared="false">
+																<placeholder>dock.single.org\.orbisgis\.view\.sqlconsole\.SQLConsole</placeholder>
+															</key>
+														</entry>
+														<entry>
+															<key shared="false">
+																<placeholder>dock.single.Groovy</placeholder>
+															</key>
+														</entry>
+													</placeholder-map>
+												</leaf>
+												<leaf id="-1" nodeId="1398170830889">
+													<placeholders>
+														<placeholder>dock.single.mainLog</placeholder>
+													</placeholders>
+												</leaf>
+											</node>
+											<node nodeId="1398170831443" orientation="VERTICAL" divider="0.5">
+												<node nodeId="1398171122333" orientation="HORIZONTAL" divider="0.1761904761904762">
+													<node nodeId="1398171526948" orientation="VERTICAL" divider="0.47157190635451507">
+														<leaf id="0" nodeId="1398170831058">
+															<placeholders>
+																<placeholder>dock.single.toc</placeholder>
+															</placeholders>
+														</leaf>
+														<leaf id="1" nodeId="1398171122331">
+															<placeholders>
+																<placeholder>dock.single.geocatalog</placeholder>
+															</placeholders>
+														</leaf>
+													</node>
+													<leaf id="2" nodeId="1398170831441">
+														<placeholders>
+															<placeholder>dock.single.map_editor</placeholder>
+														</placeholders>
+														<placeholder-map>
+															<version>0</version>
+															<format>dock.PlaceholderList</format>
+															<entry>
+																<key shared="false">
+																	<placeholder>dock.single.map_editor</placeholder>
+																</key>
+															</entry>
+														</placeholder-map>
+													</leaf>
+												</node>
+												<leaf id="-1" nodeId="1398170830763">
+													<placeholders>
+														<placeholder>dock.single.plugin\-shell</placeholder>
+													</placeholders>
+												</leaf>
+											</node>
+										</node>
+									</content>
+								</delegate>
+							</layout>
+							<adjacent>
+								<layout factory="dock.RootStationAdjacentFactory">
+									<type>dock.CContentArea.center</type>
+								</layout>
+							</adjacent>
+							<children ignore="false">
+								<child>
+									<layout factory="predefined" placeholder="dock.single.toc">
+										<replacement id="dockablesingle toc"/>
+										<delegate id="delegate_ccontrol backup factory id">
+											<id>toc</id>
+											<area/>
+										</delegate>
+									</layout>
+									<children ignore="false"/>
+								</child>
+								<child>
+									<layout factory="predefined" placeholder="dock.single.geocatalog">
+										<replacement id="dockablesingle geocatalog"/>
+										<delegate id="delegate_ccontrol backup factory id">
+											<id>geocatalog</id>
+											<area/>
+										</delegate>
+									</layout>
+									<children ignore="false"/>
+								</child>
+								<child>
+									<layout factory="predefined" placeholder="dock.single.map_editor">
+										<replacement id="dockablesingle map_editor"/>
+										<delegate id="delegate_ccontrol backup factory id">
+											<id>map_editor</id>
+											<area/>
+										</delegate>
+									</layout>
+									<children ignore="false"/>
+								</child>
+							</children>
+						</root>
+						<root name="base toolbar north">
+							<layout factory="predefined">
+								<replacement id="rootbase toolbar north"/>
+								<delegate id="delegate_CommonDockStationFactory">
+									<root>true</root>
+									<content delegate="ToolbarContainerDockStationFactory">
+										<placeholders>
+											<version>0</version>
+											<format>dock.ToolbarContainerStation</format>
+											<entry>
+												<key shared="true">
+													<anchor>content</anchor>
+												</key>
+												<item key="list" type="p">
+													<version>0</version>
+													<format>dock.PlaceholderList</format>
+												</item>
+											</entry>
+										</placeholders>
+									</content>
+								</delegate>
+							</layout>
+							<adjacent>
+								<layout factory="dock.RootStationAdjacentFactory">
+									<type>dock.CToolbarArea</type>
+								</layout>
+							</adjacent>
+							<children ignore="false"/>
+						</root>
+						<root name="base east">
+							<layout factory="predefined">
+								<replacement id="rootbase east"/>
+								<delegate id="delegate_CommonDockStationFactory">
+									<root>true</root>
+									<content delegate="flap dock">
+										<window auto="false" direction="WEST"/>
+										<placeholders>
+											<version>0</version>
+											<format>dock.PlaceholderList</format>
+											<entry>
+												<key shared="false">
+													<placeholder>dock.single.mainLog</placeholder>
+												</key>
+											</entry>
+										</placeholders>
+									</content>
+								</delegate>
+							</layout>
+							<adjacent>
+								<layout factory="dock.RootStationAdjacentFactory">
+									<type>dock.CContentArea.minimize</type>
+								</layout>
+							</adjacent>
+							<children ignore="false"/>
+						</root>
+						<root name="base toolbar west">
+							<layout factory="predefined">
+								<replacement id="rootbase toolbar west"/>
+								<delegate id="delegate_CommonDockStationFactory">
+									<root>true</root>
+									<content delegate="ToolbarContainerDockStationFactory">
+										<placeholders>
+											<version>0</version>
+											<format>dock.ToolbarContainerStation</format>
+											<entry>
+												<key shared="true">
+													<anchor>content</anchor>
+												</key>
+												<item key="list" type="p">
+													<version>0</version>
+													<format>dock.PlaceholderList</format>
+												</item>
+											</entry>
+										</placeholders>
+									</content>
+								</delegate>
+							</layout>
+							<adjacent>
+								<layout factory="dock.RootStationAdjacentFactory">
+									<type>dock.CToolbarArea</type>
+								</layout>
+							</adjacent>
+							<children ignore="false"/>
+						</root>
+						<root name="base toolbar south">
+							<layout factory="predefined">
+								<replacement id="rootbase toolbar south"/>
+								<delegate id="delegate_CommonDockStationFactory">
+									<root>true</root>
+									<content delegate="ToolbarContainerDockStationFactory">
+										<placeholders>
+											<version>0</version>
+											<format>dock.ToolbarContainerStation</format>
+											<entry>
+												<key shared="true">
+													<anchor>content</anchor>
+												</key>
+												<item key="list" type="p">
+													<version>0</version>
+													<format>dock.PlaceholderList</format>
+												</item>
+											</entry>
+										</placeholders>
+									</content>
+								</delegate>
+							</layout>
+							<adjacent>
+								<layout factory="dock.RootStationAdjacentFactory">
+									<type>dock.CToolbarArea</type>
+								</layout>
+							</adjacent>
+							<children ignore="false"/>
+						</root>
+					</roots>
+					<children>
+						<child key="single plugin-shell" root="base center" location="true">
+							<location>
+								<property factory="SplitDockPlaceholderProperty">
+									<placeholder>dock.single.plugin\-shell</placeholder>
+									<backup-path>
+										<node location="BOTTOM" size="0.5" id="1398170833504"/>
+										<node location="BOTTOM" size="0.5" id="1398170832043"/>
+										<node location="BOTTOM" size="0.5" id="1398170831908"/>
+										<node location="BOTTOM" size="0.5" id="1398170831443"/>
+										<node location="BOTTOM" size="0.5" id="1398170831060"/>
+										<node location="BOTTOM" size="0.5" id="1398170830891"/>
+										<leaf id="1398170830763"/>
+									</backup-path>
+								</property>
+							</location>
+							<layout>
+								<layout factory="predefined" placeholder="dock.single.plugin\-shell">
+									<replacement id="dockablesingle plugin-shell"/>
+									<delegate id="delegate_ccontrol backup factory id">
+										<id>plugin-shell</id>
+										<area/>
+									</delegate>
+								</layout>
+								<children ignore="false"/>
+							</layout>
+						</child>
+						<child key="single org.orbisgis.view.sqlconsole.SQLConsole" root="base center" location="true">
+							<location>
+								<property factory="SplitDockPlaceholderProperty">
+									<placeholder>dock.single.org\.orbisgis\.view\.sqlconsole\.SQLConsole</placeholder>
+									<backup-path>
+										<node location="TOP" size="0.3196099674972914" id="1398170833504"/>
+										<node location="LEFT" size="0.6779761904761905" id="1398171133267"/>
+										<leaf id="1398170833502"/>
+									</backup-path>
+								</property>
+							</location>
+							<layout>
+								<layout factory="predefined" placeholder="dock.single.org\.orbisgis\.view\.sqlconsole\.SQLConsole">
+									<replacement id="dockablesingle org.orbisgis.view.sqlconsole.SQLConsole"/>
+									<delegate id="delegate_ccontrol backup factory id">
+										<id>org.orbisgis.view.sqlconsole.SQLConsole</id>
+										<area/>
+									</delegate>
+								</layout>
+								<children ignore="false"/>
+							</layout>
+						</child>
+						<child key="single Groovy" root="base center" location="true">
+							<location>
+								<property factory="SplitDockPlaceholderProperty">
+									<placeholder>dock.single.Groovy</placeholder>
+									<backup-path>
+										<node location="TOP" size="0.3196099674972914" id="1398170833504"/>
+										<node location="LEFT" size="0.6779761904761905" id="1398171133267"/>
+										<leaf id="1398170833502"/>
+									</backup-path>
+								</property>
+								<property factory="StackDockPropertyFactory">
+									<index>1</index>
+									<placeholder>dock.single.Groovy</placeholder>
+								</property>
+							</location>
+							<layout>
+								<layout factory="predefined" placeholder="dock.single.Groovy">
+									<replacement id="dockablesingle Groovy"/>
+									<delegate id="delegate_ccontrol backup factory id">
+										<id>Groovy</id>
+										<area/>
+									</delegate>
+								</layout>
+								<children ignore="false"/>
+							</layout>
+						</child>
+					</children>
+				</base>
+				<modes>
+					<dockables>
+						<entry id="single map_editor" current="dock.mode.normal">
+							<history>
+								<mode>dock.mode.normal</mode>
+							</history>
+							<properties>
+								<property id="dock.mode.normal">
+									<mode>dock.mode.normal</mode>
+									<root>base center</root>
+									<location>
+										<property factory="SplitDockPlaceholderProperty">
+											<placeholder>dock.single.map_editor</placeholder>
+											<backup-path>
+												<node location="BOTTOM" size="0.6803900325027086" id="1398170833504"/>
+												<node location="BOTTOM" size="0.5" id="1398170832043"/>
+												<node location="BOTTOM" size="0.5" id="1398170831908"/>
+												<node location="TOP" size="0.5" id="1398170831443"/>
+												<leaf id="1398170831441"/>
+											</backup-path>
+										</property>
+										<property factory="StackDockPropertyFactory">
+											<index>0</index>
+											<placeholder>dock.single.map_editor</placeholder>
+										</property>
+									</location>
+								</property>
+							</properties>
+						</entry>
+						<entry id="single mainLog" current="dock.mode.minimized">
+							<history>
+								<mode>dock.mode.minimized</mode>
+							</history>
+							<properties>
+								<property id="dock.mode.normal">
+									<mode>dock.mode.normal</mode>
+									<root>base center</root>
+									<location>
+										<property factory="SplitDockPlaceholderProperty">
+											<placeholder>dock.single.mainLog</placeholder>
+											<backup-path>
+												<node location="TOP" size="0.3196099674972914" id="1398170833504"/>
+												<node location="RIGHT" size="0.3220238095238095" id="1398171133267"/>
+												<leaf id="1398170830889"/>
+											</backup-path>
+										</property>
+									</location>
+								</property>
+								<property id="dock.mode.minimized">
+									<mode>dock.mode.minimized</mode>
+									<root>base east</root>
+									<location>
+										<property factory="flap dock">
+											<index>0</index>
+											<holding>false</holding>
+											<size>400</size>
+											<placeholder>dock.single.mainLog</placeholder>
+										</property>
+									</location>
+								</property>
+							</properties>
+						</entry>
+						<entry id="single toc" current="dock.mode.normal">
+							<history/>
+							<properties>
+								<property id="dock.mode.normal">
+									<mode>dock.mode.normal</mode>
+									<root>base center</root>
+									<location>
+										<property factory="SplitDockPlaceholderProperty">
+											<placeholder>dock.single.toc</placeholder>
+											<backup-path>
+												<node location="BOTTOM" size="0.6803900325027086" id="1398170833504"/>
+												<node location="TOP" size="0.5" id="1398170831443"/>
+												<node location="LEFT" size="0.1761904761904762" id="1398171122333"/>
+												<node location="BOTTOM" size="0.4712460063897763" id="1398171126730"/>
+												<leaf id="1398170831058"/>
+											</backup-path>
+										</property>
+									</location>
+								</property>
+							</properties>
+						</entry>
+						<entry id="single plugin-shell">
+							<history/>
+							<properties/>
+						</entry>
+						<entry id="single org.orbisgis.view.sqlconsole.SQLConsole">
+							<history>
+								<mode>dock.mode.normal</mode>
+							</history>
+							<properties>
+								<property id="dock.mode.normal">
+									<mode>dock.mode.normal</mode>
+									<root>base center</root>
+									<location>
+										<property factory="SplitDockPlaceholderProperty">
+											<placeholder>dock.single.org\.orbisgis\.view\.sqlconsole\.SQLConsole</placeholder>
+											<backup-path>
+												<node location="TOP" size="0.3196099674972914" id="1398170833504"/>
+												<node location="LEFT" size="0.8589285714285715" id="1398171133267"/>
+												<leaf id="1398170833502"/>
+											</backup-path>
+										</property>
+										<property factory="StackDockPropertyFactory">
+											<index>0</index>
+											<placeholder>dock.single.org\.orbisgis\.view\.sqlconsole\.SQLConsole</placeholder>
+										</property>
+									</location>
+								</property>
+							</properties>
+						</entry>
+						<entry id="single Groovy">
+							<history>
+								<mode>dock.mode.normal</mode>
+							</history>
+							<properties>
+								<property id="dock.mode.normal">
+									<mode>dock.mode.normal</mode>
+									<root>base center</root>
+									<location>
+										<property factory="SplitDockPlaceholderProperty">
+											<placeholder>dock.single.Groovy</placeholder>
+											<backup-path>
+												<node location="TOP" size="0.3196099674972914" id="1398170833504"/>
+												<node location="LEFT" size="0.8589285714285715" id="1398171133267"/>
+												<leaf id="1398170833502"/>
+											</backup-path>
+										</property>
+										<property factory="StackDockPropertyFactory">
+											<index>1</index>
+											<placeholder>dock.single.Groovy</placeholder>
+										</property>
+									</location>
+								</property>
+							</properties>
+						</entry>
+						<entry id="single geocatalog" current="dock.mode.normal">
+							<history>
+								<mode>dock.mode.normal</mode>
+							</history>
+							<properties>
+								<property id="dock.mode.normal">
+									<mode>dock.mode.normal</mode>
+									<root>base center</root>
+									<location>
+										<property factory="SplitDockPlaceholderProperty">
+											<placeholder>dock.single.geocatalog</placeholder>
+											<backup-path>
+												<node location="BOTTOM" size="0.6803900325027086" id="1398170833504"/>
+												<node location="BOTTOM" size="0.8913738019169329" id="1398170832043"/>
+												<node location="BOTTOM" size="0.7588424437299035" id="1398170831908"/>
+												<node location="TOP" size="0.5" id="1398170831443"/>
+												<leaf id="1398170831441"/>
+											</backup-path>
+										</property>
+										<property factory="StackDockPropertyFactory">
+											<index>1</index>
+											<placeholder>dock.single.geocatalog</placeholder>
+										</property>
+									</location>
+								</property>
+							</properties>
+						</entry>
+					</dockables>
+					<modes>
+						<entry id="dock.mode.maximized"/>
+					</modes>
+				</modes>
+			</current>
+		</frontend>
+	</resource>
+	<resource name="ccontrol.preferences">
+		<child name="windows">
+			<child name="shortcuts">
+				<child name="dock">
+					<child name="DockableSelector">
+						<child name="INIT_SELECTION">
+							<value type="javax.swing.KeyStroke">shift ctrl pressed E</value>
+						</child>
+					</child>
+					<child name="DockRelocatorMode">
+						<child name="NO_COMBINATION_MASK">
+							<value type="dock.modifier_mask" on="512" off="8640"/>
+						</child>
+						<child name="SCREEN_MASK">
+							<value type="dock.modifier_mask" on="64" off="9088"/>
+						</child>
+					</child>
+					<child name="common">
+						<child name="control">
+							<child name="maximize_change">
+								<value type="javax.swing.KeyStroke">ctrl pressed M</value>
+							</child>
+							<child name="maximize"/>
+							<child name="normalize">
+								<value type="javax.swing.KeyStroke">ctrl pressed N</value>
+							</child>
+							<child name="minimize"/>
+							<child name="externalize">
+								<value type="javax.swing.KeyStroke">ctrl pressed E</value>
+							</child>
+						</child>
+					</child>
+				</child>
+			</child>
+			<child name="buttonContent">
+				<child name="dock">
+					<child name="ButtonContent">
+						<child name="knob">
+							<value type="dock.choice">theme</value>
+						</child>
+						<child name="icon">
+							<value type="dock.choice">theme</value>
+						</child>
+						<child name="text">
+							<value type="dock.choice">theme</value>
+						</child>
+						<child name="children">
+							<value type="dock.choice">theme</value>
+						</child>
+						<child name="actions">
+							<value type="dock.choice">theme</value>
+						</child>
+						<child name="filter">
+							<value type="dock.choice">theme</value>
+						</child>
+					</child>
+				</child>
+			</child>
+			<child name="layout">
+				<child name="dock">
+					<child name="layout">
+						<child name="tabplacement">
+							<value type="dock.choice">theme</value>
+						</child>
+						<child name="tabcontentfilter">
+							<value type="dock.choice">all</value>
+						</child>
+					</child>
+				</child>
+				<child name="BubbleTheme">
+					<child name="dock">
+						<child name="theme">
+							<child name="bubble">
+								<child name="colorscheme">
+									<value type="dock.choice">rgb</value>
+								</child>
+							</child>
+						</child>
+					</child>
+				</child>
+				<child name="EclipseTheme">
+					<child name="dock">
+						<child name="theme">
+							<child name="eclipse">
+								<child name="tab">
+									<value type="dock.choice">round</value>
+								</child>
+								<child name="icons">
+									<value type="java.lang.Boolean">false</value>
+								</child>
+							</child>
+						</child>
+					</child>
+				</child>
+			</child>
+		</child>
+		<child name="web">
+			<child name="proxy">
+				<child name="web">
+					<child name="proxy">
+						<child name="proxylabel"/>
+						<child name="useproxy">
+							<value type="java.lang.Boolean">false</value>
+						</child>
+						<child name="proxyurl"/>
+						<child name="proxyport">
+							<value type="java.lang.String">8080</value>
+						</child>
+					</child>
+				</child>
+			</child>
+		</child>
+	</resource>
+	<resource name="dock.ui.ThemeMap">
+		<key>smooth</key>
+	</resource>
 </root>
