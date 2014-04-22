@@ -1008,9 +1008,12 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
     public void onAddWMSLayer() {
         SRSPanel srsPanel = new SRSPanel();
         LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel(srsPanel);
-        WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);
-        if (UIFactory.showDialog(new UIPanel[]{wmsConnection,
-            layerConfiguration, srsPanel})) {
+        WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);        
+        SIFWizard wizard = UIFactory.getWizard(new UIPanel[]{wmsConnection,
+            layerConfiguration, srsPanel});
+        wizard.setTitle(wmsConnection.getTitle());
+        wizard.setResizable(false);
+        if (UIFactory.showWizard(wizard)) {
             WMService service = wmsConnection.getServiceDescription();
             Capabilities cap = service.getCapabilities();
             MapImageFormatChooser mfc = new MapImageFormatChooser(service.getVersion());

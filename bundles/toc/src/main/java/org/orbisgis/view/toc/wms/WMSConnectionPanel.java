@@ -38,6 +38,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Vector;
 import javax.swing.*;
+import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.workspace.CoreWorkspaceImpl;
@@ -45,6 +46,8 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.CRFlowLayout;
 import org.orbisgis.sif.CarriageReturn;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.sif.components.CustomButton;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.geocatalog.Catalog;
@@ -61,7 +64,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
     private static final I18n I18N = I18nFactory.getI18n(LayerConfigurationPanel.class);
     private static final Logger LOGGER = Logger.getLogger(Catalog.class);
     private static final String WMSServerFile = "wmsServerList.txt";
-    private JComboBox cmbURLServer;
+    private WideComboBox cmbURLServer;
     private JLabel lblVersion;
     private JLabel lblTitle;
     private JTextArea txtDescription;
@@ -76,32 +79,16 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
      *
      * @param configPanel
      */
-    public WMSConnectionPanel(LayerConfigurationPanel configPanel) {
-        GridBagLayout gl = new GridBagLayout();
-        this.setLayout(gl);
-        GridBagConstraints c = new GridBagConstraints();
+    public WMSConnectionPanel(LayerConfigurationPanel configPanel) {       
         this.configPanel = configPanel;
-
-        // Connection panel
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 0;
-        c.gridy = 0;
-        c.weightx = 1;
-        c.weighty = 0;
-        JPanel pnlURL = new JPanel(new BorderLayout());
-        pnlURL.setBorder(BorderFactory.createTitledBorder(I18N.tr("WMS server URL")));
-
+        JPanel pnlURL = new JPanel(new MigLayout());
+       
         serverswms = loadWMSServers();
-        cmbURLServer = new JComboBox(serverswms.toArray(new String[serverswms.size()]));
+        cmbURLServer = new WideComboBox(serverswms.toArray(new String[serverswms.size()]));
         cmbURLServer.setEditable(true);
-        cmbURLServer.setMaximumSize(new Dimension(100, 20));
-
-        pnlURL.add(cmbURLServer, BorderLayout.NORTH);
-        JToolBar wmsBtnManager = new JToolBar();
-        wmsBtnManager.setFloatable(false);
-        wmsBtnManager.setOpaque(false);
-
-        JButton btnConnect = new JButton(OrbisGISIcon.getIcon("server_connect"));
+        pnlURL.add(cmbURLServer, "span 2");
+        
+        CustomButton btnConnect = new CustomButton(OrbisGISIcon.getIcon("server_connect"));
         btnConnect.setToolTipText(I18N.tr("Connect to the server."));
         btnConnect.addActionListener(new ActionListener() {
             @Override
@@ -109,9 +96,8 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
                 connect();
             }
         });
-        btnConnect.setBorderPainted(false);
-
-        JButton btnDelete = new JButton(OrbisGISIcon.getIcon("remove"));
+        
+        CustomButton btnDelete = new CustomButton(OrbisGISIcon.getIcon("remove"));
         btnDelete.setToolTipText(I18N.tr("Delete the server connection."));
         btnDelete.addActionListener(new ActionListener() {
             @Override
@@ -124,9 +110,8 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
                 cmbURLServer.removeItem(item);
             }
         });
-        btnDelete.setBorderPainted(false);
 
-        JButton btnUpdate = new JButton(OrbisGISIcon.getIcon("arrow_refresh"));
+        CustomButton btnUpdate = new CustomButton(OrbisGISIcon.getIcon("arrow_refresh"));
         btnUpdate.setToolTipText(I18N.tr("Reload the server connection."));
         btnUpdate.addActionListener(new ActionListener() {
             @Override
@@ -148,43 +133,29 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
 
             }
         });
-        btnUpdate.setBorderPainted(false);
 
-        wmsBtnManager.add(btnConnect);
-        wmsBtnManager.add(btnDelete);
-        wmsBtnManager.add(btnUpdate);
-        pnlURL.add(wmsBtnManager, BorderLayout.SOUTH);
-        this.add(pnlURL, c);
-
-        // Info panel
-        c.fill = GridBagConstraints.BOTH;
-        c.gridy = 1;
-        c.weightx = 1;
-        c.weighty = 1;
-        JPanel pnlInfo = new JPanel();
-        pnlInfo.setLayout(new BorderLayout());
-        pnlInfo.setBorder(BorderFactory.createTitledBorder(I18N.tr("Information")));
-        JPanel pnlNorth = new JPanel();
-        pnlNorth.setLayout(new CRFlowLayout());
+        pnlURL.add(btnConnect);
+        pnlURL.add(btnDelete);
+        pnlURL.add(btnUpdate, "wrap");
+        
+        // Info panel        
         lblVersion = new JLabel(I18N.tr("Version :"));
         lblTitle = new JLabel(I18N.tr("Name :"));
-        pnlNorth.add(lblVersion);
-        pnlNorth.add(new CarriageReturn());
-        pnlNorth.add(lblTitle);
-        pnlInfo.add(pnlNorth, BorderLayout.NORTH);
-        txtDescription = new JTextArea("\n\n\n\n\n\n");
+        pnlURL.add(lblVersion, "wrap");
+        pnlURL.add(lblTitle, "wrap");
+        txtDescription = new JTextArea();
         txtDescription.setEditable(false);
         txtDescription.setLineWrap(true);
         JScrollPane comp = new JScrollPane(txtDescription);
-        pnlInfo.add(comp, BorderLayout.CENTER);
-        this.add(pnlInfo, c);
+        pnlURL.add(comp, "span 2, height 150!, grow");
+        this.add(pnlURL);
     }
 
     /**
      * Load a list of servers stored in file in the current workspace if the
      * file doesn't exist a list of default URL is loaded.
-     *     
-* @return
+     *
+     * @return
      */
     private ArrayList<String> loadWMSServers() {
         // Create a temporary workspace to compute future path
@@ -317,8 +288,8 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
 
     /**
      * Return a MapLayer corresponding to a URL.
-     *     
-* @param host
+     *
+     * @param host
      * @return
      * @throws ConnectException
      * @throws IOException
