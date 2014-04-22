@@ -1019,20 +1019,60 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
             if (validImageFormat == null) {
                 LOGGER.error(I18N.tr("Cannot find a valid image format for this WMS server"));
             } else {
-                Object[] layers = layerConfiguration.getSelectedLayers();               
-                for (Object layer : layers) {                    
+                Object[] layers = layerConfiguration.getSelectedLayers();
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.backgroundOperation(new AddWMSLayers(service.getServerUrl(), service.getVersion(), layers, validImageFormat,
+                        srsPanel.getSRS()));
+            }            
+        }
+    }
+    
+    /**
+     * Add the selected WMS layers to the mapcontext.
+     * 
+     */
+    private class AddWMSLayers implements BackgroundJob{
+        
+        private final Object[] layers;
+        private final String validImageFormat;
+        private final String WMSVersion;
+        private final String srsIdentifier;
+        private final String serverURL;
+        
+        /**
+         * Create the background job that needs.
+         * @param serverURL  the URL of the service.
+         * @param WMSVersion  the version of the service.
+         * @param layers the list of layers.
+         * @param validImageFormat a valid image format.
+         * @param srsIdentifier a valid SRS identifier.
+         */
+        public AddWMSLayers(String serverURL, String WMSVersion, Object[] layers, 
+                String validImageFormat, String srsIdentifier ){
+            this.serverURL = serverURL;
+            this.layers=layers;
+            this.validImageFormat=validImageFormat;
+            this.WMSVersion=WMSVersion;
+            this.srsIdentifier=srsIdentifier;
+        }
+        
+        @Override
+        public void run(ProgressMonitor pm) {
+            for (Object layer : layers) {
+                if (pm.isCancelled()) {
+                    break;
+                } else {
                     String layerName = ((MapLayer) layer).getName();
-                    URI origin = URI.create(service.getServerUrl());
+                    URI origin = URI.create(serverURL);
                     StringBuilder url = new StringBuilder(origin.getQuery());
                     url.append("SERVICE=WMS&REQUEST=GetMap");
-                    String version = service.getVersion();
-                    url.append("&VERSION=").append(version);
-                    if (WMService.WMS_1_3_0.equals(version)) {
+                    url.append("&VERSION=").append(WMSVersion);
+                    if (WMService.WMS_1_3_0.equals(WMSVersion)) {
                         url.append("&CRS=");
                     } else {
                         url.append("&SRS=");
                     }
-                    url.append(srsPanel.getSRS());
+                    url.append(srsIdentifier);
                     url.append("&LAYERS=").append(layerName);
                     url.append("&FORMAT=").append(validImageFormat);
                     try {
@@ -1047,8 +1087,13 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     }
                 }
             }
-            
         }
+
+        @Override
+        public String getTaskName() {
+            return I18N.tr("Load the WMS layer(s) into the TOC.");
+        }
+        
     }
 
         @Override
