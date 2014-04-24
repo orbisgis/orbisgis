@@ -92,6 +92,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private int firstGeometryIndex = -1;
     private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
     private final Lock readLock = rwl.writeLock(); // Read here is exclusive
+    private static final int FETCH_SIZE = 100;
 
     /**
      * Constructor, row set based on primary key, significant faster on large table
@@ -116,14 +117,16 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             rowPk.clear();
         }
         try(Connection connection = dataSource.getConnection();
-            Statement st = connection.createStatement();
-            ResultSet rs = st.executeQuery("SELECT "+pk_name+" FROM "+location)) {
-            // Cache the primary key values
-            int pkRowId = 0;
-            while(rs.next()) {
-                pkRowId++;
-                rowPk.put(pkRowId, rs.getObject(1));
-                cachePm.endTask();
+            Statement st = connection.createStatement()) {
+            st.setFetchSize(FETCH_SIZE);
+            try(ResultSet rs = st.executeQuery("SELECT "+pk_name+" FROM "+location)) {
+                // Cache the primary key values
+                int pkRowId = 0;
+                while (rs.next()) {
+                    pkRowId++;
+                    rowPk.put(pkRowId, rs.getObject(1));
+                    cachePm.endTask();
+                }
             }
         } catch (SQLException ex) {
             throw new IllegalArgumentException(ex);
@@ -1344,6 +1347,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                 Statement st = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
                     ResultSet.CONCUR_READ_ONLY)) {
                 cancelStatement = st;
+                st.setFetchSize(FETCH_SIZE);
                 try(ResultSet activeResultSet = st.executeQuery(command)) {
                     resultSet = activeResultSet;
                     status = STATUS.READY;
