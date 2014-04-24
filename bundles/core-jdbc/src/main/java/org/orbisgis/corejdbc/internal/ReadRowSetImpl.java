@@ -40,6 +40,8 @@ import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
 import javax.sql.RowSet;
@@ -54,6 +56,7 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -67,6 +70,8 @@ import java.util.regex.Pattern;
  */
 public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSource, ResultSetMetaData, ReadRowSet {
     private static final int WAITING_FOR_RESULTSET = 5;
+    private static final Logger LOGGER = Logger.getLogger(ReadRowSetImpl.class);
+    private static final I18n I18N = I18nFactory.getI18n(ReadRowSetImpl.class, Locale.getDefault(), I18nFactory.FALLBACK);
     private TableLocation location;
     private final DataSource dataSource;
     private Object[] currentRow;
@@ -267,7 +272,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     /**
      * Initialize this row set. This method cache primary key.
      * @param location Table location
-     * @param pk_name Primary key name {@link org.orbisgis.core.jdbc.MetaData#getPkName(java.sql.Connection, String, boolean)}
+     * @param pk_name Primary key name {@link org.orbisgis.corejdbc.MetaData#getPkName(java.sql.Connection, String, boolean)}
      * @param pm Progress monitor Progression of primary key caching
      */
     public void initialize(TableLocation location,String pk_name, ProgressMonitor pm) throws SQLException {
@@ -282,6 +287,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             resultSetHolder.setCommand(getCommand()+" LIMIT 0");
             cachePrimaryKey(pm);
         } else {
+            LOGGER.warn(I18N.tr("The table %s does not contain a primary key, a vast amount of memory may be required", location));
             resultSetHolder.setCommand(getCommand());
             PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, resultSetHolder, "cancel");
             pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
@@ -1359,6 +1365,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         @Override
         public void close() throws Exception {
             lastUsage = 0;
+            openCount = 0;
         }
 
         /**

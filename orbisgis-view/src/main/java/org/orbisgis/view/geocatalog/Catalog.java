@@ -61,6 +61,7 @@ import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DriverFunctionContainer;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.SaveFilePanel;
@@ -125,7 +126,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          * !< GeoCatalog docked panel properties
          */
 
-        private JList sourceList;
+        private JList<ContainerItemProperties> sourceList;
         private SourceListModel sourceListContent;
         //The factory shown when the user click on new factory button
         private static final String DEFAULT_FILTER_FACTORY = "name_contains";
@@ -144,7 +145,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          *
          * @return The source list instance
          */
-        public JList getSourceList() {
+        public JList<ContainerItemProperties> getSourceList() {
                 return sourceList;
         }
 
@@ -689,7 +690,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          * Create the Source List ui component
          */
         private JList makeSourceList() {
-                sourceList = new JList();
+                sourceList = new JList<>();
                 //Set the list content renderer
                 sourceList.setCellRenderer(new DataSourceListCellRenderer(sourceList));
                 //Add mouse listener for popup menu
@@ -735,10 +736,11 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
 
         @Override
         public String[] getSelectedSources() {
-                Object[] selectedValues = getSourceList().getSelectedValues();
-                String[] sources = new String[selectedValues.length];
-                for (int i = 0; i < sources.length; i++) {
-                        sources[i] = selectedValues[i].toString();
+                List<ContainerItemProperties> selectedValues = getSourceList().getSelectedValuesList();
+                String[] sources = new String[selectedValues.size()];
+                int i=0;
+                for (ContainerItemProperties source : selectedValues) {
+                        sources[i++] = source.getKey();
                 }
                 return sources;
         }

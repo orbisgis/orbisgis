@@ -48,6 +48,7 @@ import javax.swing.AbstractListModel;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -78,7 +79,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
          * is pending to refresh the content of SourceListModel*/
     private DataSource dataSource;
     private CatalogComparator catalogComparator = new CatalogComparator();
-
+    private boolean isH2;
     /**
      * Read filters components and generate filter instances
      * @return A list of filters
@@ -93,6 +94,11 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
      */
     public SourceListModel(DataSource dataSource) {
         this.dataSource = dataSource;
+        try(Connection connection = dataSource.getConnection()) {
+            isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
+        }
         //Install listeners
         //Call readDatabase when a SourceManager fire an event
         onDataManagerChange();
@@ -188,7 +194,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
         List<CatalogSourceItem> newModel = new LinkedList<>();
         for(Map<IFilter.ATTRIBUTES, String> tableAttr : allTables) {
             boolean accepts = true;
-            TableLocation location = TableLocation.parse(tableAttr.get(IFilter.ATTRIBUTES.LOCATION));
+            TableLocation location = TableLocation.parse(tableAttr.get(IFilter.ATTRIBUTES.LOCATION), isH2);
             for(IFilter filter : filters) {
                 if(!filter.accepts(location,tableAttr)) {
                     accepts = false;
