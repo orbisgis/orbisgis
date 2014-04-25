@@ -149,6 +149,11 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
         this.add(pnlURL);
     }
 
+    private File getWMSFileListPath() {
+        CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();
+        return new File(tempWorkspace.getApplicationFolder() + File.separator + WMS_SERVER_FILE);
+    }
+
     /**
      * Load a list of servers stored in file in the current workspace if the
      * file doesn't exist a list of default URL is loaded.
@@ -157,8 +162,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
      */
     private ArrayList<String> loadWMSServers() {
         // Create a temporary workspace to compute future path
-        CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();
-        File file = new File(tempWorkspace.getApplicationFolder() + File.separator + WMS_SERVER_FILE);
+        File file = getWMSFileListPath();
         try {
             if (file.exists()) {
                 return readWMSServerFile(new FileInputStream(file));
@@ -205,9 +209,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
      */
     public void saveWMSServerFile() {
         try {
-            // Create a temporary workspace to compute future path
-            CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();
-            File file = new File(tempWorkspace.getWorkspaceFolder() + File.separator + WMS_SERVER_FILE);
+            File file = getWMSFileListPath();
             PrintWriter pw = new PrintWriter(file);
             for (String server : serverswms) {
                 pw.println(server);
