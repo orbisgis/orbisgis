@@ -191,7 +191,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
             saveAction.setEnabled(false);
             tools.add(saveAction);
-            DefaultAction addWMSAction = new DefaultAction("ADD_WMS_LAYER", I18N.tr("Add"),
+            DefaultAction addWMSAction = new DefaultAction("ADD_WMS_LAYER", I18N.tr("WMS layer"),
                     I18N.tr("Add WMS layer"), OrbisGISIcon.getIcon("add"),
                     EventHandler.create(ActionListener.class, this, "onAddWMSLayer"),
                     KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
