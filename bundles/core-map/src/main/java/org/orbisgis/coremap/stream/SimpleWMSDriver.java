@@ -69,6 +69,8 @@ public final class SimpleWMSDriver implements GeoStream {
     private MapLayer mapLayer;
     private Envelope envelope;
     private WMSStreamSource streamSource;
+    /** Time-out in ms */
+    private static final int CONNECTION_TIMEOUT = 30000;
 
     public void open(WMSStreamSource streamSource) throws IOException {
         this.streamSource = streamSource;
@@ -89,7 +91,7 @@ public final class SimpleWMSDriver implements GeoStream {
                 sb.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
             }
             String streamURL = sb.toString();
-            wmsClient = new WMService(streamURL);
+            wmsClient = new WMService(streamURL, streamSource.getVersion());
             wmsClient.initialize();
             cap = wmsClient.getCapabilities();
             String name = streamSource.getLayerName();
@@ -123,7 +125,7 @@ public final class SimpleWMSDriver implements GeoStream {
         mr.setImageHeight(height);
         mr.setTransparent(true);
 
-        return mr.getImage();
+        return mr.getImage(CONNECTION_TIMEOUT);
     }
 
     private MapLayer find(String name, MapLayer root) {
