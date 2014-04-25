@@ -78,6 +78,7 @@ public abstract class Renderer {
         static final int EXECP_POS = 20;
         private static final Logger LOGGER = Logger.getLogger(Renderer.class);
         private static final I18n I18N = I18nFactory.getI18n(Renderer.class);
+        private static final int FETCH_SIZE = 300;
         /**
          * This method shall returns a graphics2D for each symbolizers in the list.
          * This is useful to make the diff bw pdf purpose and image purpose
@@ -182,55 +183,56 @@ public abstract class Renderer {
                         if(geometryFields.isEmpty()) {
                             throw new SQLException(I18N.tr("Table {0} does not contains geometry fields",tableReference));
                         }
-                        PreparedStatement st = connection.prepareStatement(
-                                String.format("select * from %s where %s && ?",tableReference,geometryFields.get(0)));
-                        GeometryFactory geometryFactory = new GeometryFactory();
-                        st.setObject(1, geometryFactory.toGeometry(extent)); // Filter geometry by envelope
-                        PropertyChangeListener cancelListener = EventHandler.create(PropertyChangeListener.class, st,"cancel");
-                        pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelListener);
-                        try {
-                            SpatialResultSet rs = st.executeQuery().unwrap(SpatialResultSet.class);
-                            int fieldID = rs.getMetaData().unwrap(SpatialResultSetMetaData.class).getFirstGeometryFieldIndex();
-                            int i = 0;
-                            while (rs.next()) {
-                                if (i / 1000 == i / 1000.0) {
-                                    if (pm.isCancelled()) {
-                                        break;
-                                    } else {
-                                        pm.progressTo((int) (100 * i / rowCount));
+                        try(PreparedStatement st = connection.prepareStatement(
+                                String.format("select * from %s where %s && ?",tableReference,geometryFields.get(0)))) {
+                            st.setFetchSize(FETCH_SIZE);
+                            GeometryFactory geometryFactory = new GeometryFactory();
+                            st.setObject(1, geometryFactory.toGeometry(extent)); // Filter geometry by envelope
+                            PropertyChangeListener cancelListener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+                            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelListener);
+                            try(SpatialResultSet rs = st.executeQuery().unwrap(SpatialResultSet.class)) {
+                                int fieldID = rs.getMetaData().unwrap(SpatialResultSetMetaData.class).getFirstGeometryFieldIndex();
+                                int i = 0;
+                                while (rs.next()) {
+                                    if (i / 1000 == i / 1000.0) {
+                                        if (pm.isCancelled()) {
+                                            break;
+                                        } else {
+                                            pm.progressTo((int) (100 * i / rowCount));
+                                        }
+                                    }
+                                    i++;
+                                    if (layerCount % BATCH_SIZE == 0 && pm.isCancelled()) {
+                                        return layerCount;
+                                    }
+                                    Geometry theGeom = null;
+                                    // If there is only one geometry, it is fetched now, otherwise, it up to symbolizers
+                                    // to retrieve the correct geometry (through the Geometry attribute)
+                                    if (fieldID >= 0) {
+                                        theGeom = rs.getGeometry(fieldID);
+                                    }
+                                    // Do not display the geometry when the envelope
+                                    //doesn't intersect the current mapcontext area.
+                                    if (theGeom == null || (theGeom != null &&
+                                            theGeom.getEnvelopeInternal().intersects(extent))) {
+                                        int row = rs.getRow();
+                                        boolean emphasis = selected.contains(row); //TODO find selection identifier
+
+                                        beginFeature(row, rs);
+
+                                        List<Symbolizer> sl = r.getCompositeSymbolizer().getSymbolizerList();
+                                        for (Symbolizer s : sl) {
+                                            boolean res = drawFeature(s, theGeom, rs, row,
+                                                    extent, emphasis, mt);
+                                        }
+                                        endFeature(row, rs);
                                     }
                                 }
-                                i++;
-                                if (layerCount % BATCH_SIZE == 0 && pm.isCancelled()) {
-                                    return layerCount;
-                                }
-                                Geometry theGeom = null;
-                                // If there is only one geometry, it is fetched now, otherwise, it up to symbolizers
-                                // to retrieve the correct geometry (through the Geometry attribute)
-                                if (fieldID >= 0) {
-                                    theGeom = rs.getGeometry(fieldID);
-                                }
-                                // Do not display the geometry when the envelope
-                                //doesn't intersect the current mapcontext area.
-                                if (theGeom == null || (theGeom != null &&
-                                        theGeom.getEnvelopeInternal().intersects(extent))) {
-                                    int row = rs.getRow();
-                                    boolean emphasis = selected.contains(row); //TODO find selection identifier
-
-                                    beginFeature(row, rs);
-
-                                    List<Symbolizer> sl = r.getCompositeSymbolizer().getSymbolizerList();
-                                    for (Symbolizer s : sl) {
-                                        boolean res = drawFeature(s, theGeom, rs, row,
-                                                extent, emphasis, mt);
-                                    }
-                                    endFeature(row, rs);
-                                }
+                                pm.endTask();
+                                endLayer(r.getName());
+                            } finally {
+                                pm.removePropertyChangeListener(cancelListener);
                             }
-                            pm.endTask();
-                            endLayer(r.getName());
-                        } finally {
-                            pm.removePropertyChangeListener(cancelListener);
                         }
                     } catch (SQLException ex) {
                         if(!pm.isCancelled()) {

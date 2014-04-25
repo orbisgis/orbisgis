@@ -28,6 +28,7 @@
 package org.orbisgis.view.geocatalog;
 
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.DataManager;
@@ -70,7 +71,12 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
                     + "not be null");
         }
         this.dataManager = dataManager;
-        this.tableReference = TableLocation.parse(tableReference).toString();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
+            boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            this.tableReference = TableLocation.parse(tableReference,isH2).toString(isH2);
+        } catch (SQLException ex) {
+            throw new IllegalArgumentException("DataManager hold an invalid connection");
+        }
         setId(tableReference);
     }
 
@@ -118,7 +124,8 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
             try(Connection connection = dataManager.getDataSource().getConnection()) {
                 String pkName = MetaData.getPkName(connection, tableReference, true);
                 rowSet = dataManager.createReversibleRowSet();
-                rowSet.initialize(TableLocation.parse(tableReference).toString(), pkName, progressMonitor);
+                boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                rowSet.initialize(TableLocation.parse(tableReference, isH2).toString(isH2), pkName, progressMonitor);
             } catch (SQLException | IllegalArgumentException ex) {
                 throw new EditableElementException(ex);
             }
