@@ -75,6 +75,7 @@ import org.apache.log4j.Logger;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
+import org.orbisgis.coreapi.workspace.CoreWorkspace;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.BeanLayer;
 import org.orbisgis.coremap.layerModel.ILayer;
@@ -1008,7 +1009,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
     public void onAddWMSLayer() {
         SRSPanel srsPanel = new SRSPanel();
         LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel(srsPanel);
-        WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);        
+        WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);
         SIFWizard wizard = UIFactory.getWizard(new UIPanel[]{wmsConnection,
             layerConfiguration, srsPanel});
         wizard.setTitle(wmsConnection.getTitle());

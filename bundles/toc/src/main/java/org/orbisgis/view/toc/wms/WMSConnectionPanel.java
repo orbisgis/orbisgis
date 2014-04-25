@@ -43,8 +43,6 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.workspace.CoreWorkspaceImpl;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.sif.CRFlowLayout;
-import org.orbisgis.sif.CarriageReturn;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.sif.components.WideComboBox;
@@ -63,7 +61,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(LayerConfigurationPanel.class);
     private static final Logger LOGGER = Logger.getLogger(Catalog.class);
-    private static final String WMSServerFile = "wmsServerList.txt";
+    private static final String WMS_SERVER_FILE = "wmsServerList.txt";
     private WideComboBox cmbURLServer;
     private JLabel lblVersion;
     private JLabel lblTitle;
@@ -79,7 +77,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
      *
      * @param configPanel
      */
-    public WMSConnectionPanel(LayerConfigurationPanel configPanel) {       
+    public WMSConnectionPanel(LayerConfigurationPanel configPanel) {
         this.configPanel = configPanel;
         JPanel pnlURL = new JPanel(new MigLayout());
        
@@ -118,7 +116,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
             public void actionPerformed(ActionEvent e) {
 
                 try {
-                    ArrayList<String> updateServersList = readWMSServerFile(WMSConnectionPanel.class.getResourceAsStream(WMSServerFile));
+                    ArrayList<String> updateServersList = readWMSServerFile(WMSConnectionPanel.class.getResourceAsStream(WMS_SERVER_FILE));
 
                     for (String updatewms : updateServersList) {
                         if (!serverswms.contains(updatewms)) {
@@ -151,6 +149,11 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
         this.add(pnlURL);
     }
 
+    private File getWMSFileListPath() {
+        CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();
+        return new File(tempWorkspace.getApplicationFolder() + File.separator + WMS_SERVER_FILE);
+    }
+
     /**
      * Load a list of servers stored in file in the current workspace if the
      * file doesn't exist a list of default URL is loaded.
@@ -159,13 +162,12 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
      */
     private ArrayList<String> loadWMSServers() {
         // Create a temporary workspace to compute future path
-        CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();;
-        File file = new File(tempWorkspace.getWorkspaceFolder() + File.separator + WMSServerFile);
+        File file = getWMSFileListPath();
         try {
             if (file.exists()) {
                 return readWMSServerFile(new FileInputStream(file));
             } else {
-                return readWMSServerFile(WMSConnectionPanel.class.getResourceAsStream(WMSServerFile));
+                return readWMSServerFile(WMSConnectionPanel.class.getResourceAsStream(WMS_SERVER_FILE));
             }
         } catch (IOException e) {
             LOGGER.error(I18N.tr("Cannot load the list of WMS url"), e);
@@ -207,9 +209,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
      */
     public void saveWMSServerFile() {
         try {
-            // Create a temporary workspace to compute future path
-            CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();
-            File file = new File(tempWorkspace.getWorkspaceFolder() + File.separator + WMSServerFile);
+            File file = getWMSFileListPath();
             PrintWriter pw = new PrintWriter(file);
             for (String server : serverswms) {
                 pw.println(server);
