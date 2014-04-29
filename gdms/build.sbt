@@ -2,7 +2,7 @@ import sbtantlr.SbtAntlrPlugin
 
 name := "gdms"
 
-version := "2.0-SNAPSHOT"
+version := "2.0.4-SNAPSHOT"
 
 scalaVersion := "2.9.2"
 
