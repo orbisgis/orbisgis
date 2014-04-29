@@ -63,7 +63,7 @@ public abstract class TocAbstractRenderer extends TreeLaFRenderer {
                 try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
                     // Create a legend for each spatial field
                     int type = SFSUtilities.getGeometryType(connection, TableLocation.parse(layer.getTableReference()), "");
-                    if (type > 0) {
+                    if (type >= 0) {
                         switch(type){
                             case GeometryTypeCodes.GEOMETRY:
                             case GeometryTypeCodes.GEOMCOLLECTION:
