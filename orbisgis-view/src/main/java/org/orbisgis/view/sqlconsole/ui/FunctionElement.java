@@ -36,6 +36,8 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A class to manage function name and type in the JList function
@@ -111,31 +113,87 @@ public class FunctionElement {
      * @return SQL Command ex: UPPER( param1 VARCHAR )
      */
     String getSQLCommand() {
-        if(command==null) {
+        if (command == null) {
             //Retrieve function ToolTip
-            try(Connection connection = dataSource.getConnection()) {
+            try (Connection connection = dataSource.getConnection()) {
                 TableLocation functionLocation = TableLocation.parse(functionName);
-                ResultSet functionData = connection.getMetaData().getProcedureColumns(functionLocation.getCatalog(), functionLocation.getSchema(), functionLocation.getTable(), null);
-                StringBuilder sb = new StringBuilder(getFunctionName());
-                sb.append("(");
-                int argCount = 0;
-                while(functionData.next()) {
-                    if(functionData.getInt("COLUMN_TYPE") != DatabaseMetaData.procedureColumnReturn) {
-                        if(argCount++>0) {
-                            sb.append(", ");
+                ResultSet functionData = connection.getMetaData().getProcedureColumns(
+                        functionLocation.getCatalog(),
+                        functionLocation.getSchema(),
+                        functionLocation.getTable(),
+                        null);
+                try {
+                    StringBuilder sb = new StringBuilder();
+                    final Map<Integer, Map<Integer, String>> signatureMap = getSignatureMap(functionData);
+                    for (Map.Entry<Integer, Map<Integer, String>>  e : signatureMap.entrySet()) {
+                        sb.append(functionName).append("(");
+                        final Map<Integer, String> paramMap = e.getValue();
+                        for (String type : paramMap.values()) {
+                            sb.append(type).append(", ");
                         }
-                        sb.append(functionData.getString("COLUMN_NAME"));
-                        sb.append(" ");
-                        sb.append(functionData.getString("TYPE_NAME"));
+                        sb.delete(sb.length() - 2, sb.length());
+                        sb.append(")\n");
                     }
+                    command = sb.toString();
+                } finally {
+                    functionData.close();
                 }
-                sb.append(")");
-                functionData.close();
-                command = sb.toString();
             } catch (SQLException ex) {
                 LOGGER.warn("Could not read function command");
             }
         }
         return command;
+    }
+
+    private Map<Integer, Map<Integer, String>> getSignatureMap(ResultSet functionData) throws SQLException {
+        final int numberOfSignatures = getNumberOfSignatures();
+        Map<Integer, Map<Integer, String>> sigMap = new HashMap<>();
+        int sigNumber = 0;
+        int oldPosition = 1;
+        int prev = 1;
+        while (functionData.next()) {
+//              LOGGER.info(functionData.getInt("ORDINAL_POSITION")
+//              + " " + functionData.getString("TYPE_NAME"));
+//            System.out.println(functionData.getInt("ORDINAL_POSITION")
+//              + " " + functionData.getString("TYPE_NAME"));
+            final int p = functionData.getInt("ORDINAL_POSITION");
+            final String typeName = functionData.getString("TYPE_NAME");
+            if (p > oldPosition) {
+                sigNumber = (p > numberOfSignatures) ? ++prev : 1;
+            } else {
+                sigNumber++;
+            }
+            oldPosition = p;
+            if (!sigMap.containsKey(sigNumber)) {
+                sigMap.put(sigNumber, new HashMap<Integer, String>());
+            }
+            sigMap.get(sigNumber).put(p, typeName);
+        }
+        return sigMap;
+    }
+
+    private int getNumberOfSignatures() throws SQLException {
+        TableLocation functionLocation = TableLocation.parse(functionName);
+        ResultSet functionData = dataSource.getConnection().getMetaData().getProcedureColumns(
+                functionLocation.getCatalog(),
+                functionLocation.getSchema(),
+                functionLocation.getTable(),
+                null);
+        try {
+            int sigNumber = 0;
+            int oldPosition = 1;
+            while (functionData.next()) {
+                final int p = functionData.getInt("ORDINAL_POSITION");
+                if (p > oldPosition) {
+                    return sigNumber;
+                } else {
+                    sigNumber++;
+                }
+                oldPosition = p;
+            }
+        } finally {
+            functionData.close();
+        }
+        return 0;
     }
 }
