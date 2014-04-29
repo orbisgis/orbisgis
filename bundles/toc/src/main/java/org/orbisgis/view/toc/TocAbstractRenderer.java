@@ -28,11 +28,11 @@
  */
 package org.orbisgis.view.toc;
 
-import ij.ImagePlus;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JTree;
 
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.GeometryTypeCodes;
@@ -45,59 +45,61 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public abstract class TocAbstractRenderer extends TreeLaFRenderer {
-        protected static final I18n I18N = I18nFactory.getI18n(TocAbstractRenderer.class);
-        private static final Logger LOGGER = Logger.getLogger(TocAbstractRenderer.class);
+    protected static final I18n I18N = I18nFactory.getI18n(TocAbstractRenderer.class);
+    private static final Logger LOGGER = Logger.getLogger(TocAbstractRenderer.class);
 
-        public TocAbstractRenderer(JTree tree) {
-                super(tree);
-        }
+    public TocAbstractRenderer(JTree tree) {
+        super(tree);
+    }
 
     public static ImageIcon getLayerIcon(ILayer layer) throws SQLException,
             IOException {
-        if (layer.acceptsChilds()) {
-            return OrbisGISIcon.getIcon("layers");
-        } else {
-            if (layer.getTableReference().isEmpty() && layer.getDataUri() != null) {
-                return OrbisGISIcon.getIcon("server_connect");
+        try {
+            if (layer.acceptsChilds()) {
+                return OrbisGISIcon.getIcon("layers");
             } else {
-                try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
-                    // Create a legend for each spatial field
-                    int type = SFSUtilities.getGeometryType(connection, TableLocation.parse(layer.getTableReference()), "");
-                    if (type >= 0) {
-                        switch(type){
-                            case GeometryTypeCodes.GEOMETRY:
-                            case GeometryTypeCodes.GEOMCOLLECTION:
-                                return OrbisGISIcon.getIcon("layermixe");
-                            case GeometryTypeCodes.POINT:
-                            case GeometryTypeCodes.MULTIPOINT:
-                                return OrbisGISIcon.getIcon("layerpoint");
-                            case GeometryTypeCodes.LINESTRING:
-                            case GeometryTypeCodes.MULTILINESTRING:
-                                return OrbisGISIcon.getIcon("layerline");
-                            case GeometryTypeCodes.POLYGON:
-                            case GeometryTypeCodes.MULTIPOLYGON:
-                                return OrbisGISIcon.getIcon("layerpolygon");
-                            default:
-                                throw new RuntimeException(I18N.tr("Unable to find appropriate icon for typeCode {0}",type));
-                        }
+                if (layer.isStream()) {
+                    return OrbisGISIcon.getIcon("server_connect");
+                } else {
+                    try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {
+                        // Create a legend for each spatial field
+                        int type = SFSUtilities.getGeometryType(connection, TableLocation.parse(layer.getTableReference()), "");
+                        if (type >= 0) {
+                            switch (type) {
+                                case GeometryTypeCodes.GEOMETRY:
+                                case GeometryTypeCodes.GEOMCOLLECTION:
+                                    return OrbisGISIcon.getIcon("layermixe");
+                                case GeometryTypeCodes.POINT:
+                                case GeometryTypeCodes.MULTIPOINT:
+                                    return OrbisGISIcon.getIcon("layerpoint");
+                                case GeometryTypeCodes.LINESTRING:
+                                case GeometryTypeCodes.MULTILINESTRING:
+                                    return OrbisGISIcon.getIcon("layerline");
+                                case GeometryTypeCodes.POLYGON:
+                                case GeometryTypeCodes.MULTIPOLYGON:
+                                    return OrbisGISIcon.getIcon("layerpolygon");
+                                default:
+                                    throw new RuntimeException(I18N.tr("Unable to find appropriate icon for typeCode {0}", type));
+                            }
 
-                    } else {
-                        return OrbisGISIcon.getIcon("remove");
-                        // TODO Raster
-                        /*
-                        if (layer.getRaster().getType() == ImagePlus.COLOR_RGB) {
-                            return OrbisGISIcon.getIcon("layerrgb");
                         } else {
-                            return OrbisGISIcon.getIcon("raster");
+                            return OrbisGISIcon.getIcon("remove");
+                            // TODO Raster
+                            /*
+                            if (layer.getRaster().getType() == ImagePlus.COLOR_RGB) {
+                                return OrbisGISIcon.getIcon("layerrgb");
+                            } else {
+                                return OrbisGISIcon.getIcon("raster");
+                            }
+                            */
                         }
-                        */
                     }
-                } catch (Exception ex) {
-                    // Error while reading datasource, may be a thread race condition or the table does not exists
-                    LOGGER.trace(I18N.tr("Error while drawing the Toc tree"));
-                    return OrbisGISIcon.getIcon("remove");
                 }
             }
+        } catch (Exception ex) {
+            // Error while reading datasource, may be a thread race condition or the table does not exists
+            LOGGER.trace(I18N.tr("Error while drawing the Toc tree"));
+            return OrbisGISIcon.getIcon("remove");
         }
     }
 
