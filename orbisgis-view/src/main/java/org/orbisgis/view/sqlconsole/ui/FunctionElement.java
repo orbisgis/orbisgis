@@ -146,7 +146,9 @@ public class FunctionElement {
     }
 
     private Map<Integer, Map<Integer, String>> getSignatureMap(ResultSet functionData) throws SQLException {
-        final int numberOfSignatures = getNumberOfSignatures();
+        final int[] nAndM = getNumberOfSignatures();
+        final int n = nAndM[0];
+        final int m = nAndM[1];
         Map<Integer, Map<Integer, String>> sigMap = new HashMap<>();
         int sigNumber = 0;
         int oldPosition = 1;
@@ -159,7 +161,7 @@ public class FunctionElement {
             final int p = functionData.getInt("ORDINAL_POSITION");
             final String typeName = functionData.getString("TYPE_NAME");
             if (p > oldPosition) {
-                sigNumber = (p > numberOfSignatures) ? ++prev : 1;
+                sigNumber = (p > (m - n + 1)) ? ++prev : 1;
             } else {
                 sigNumber++;
             }
@@ -172,7 +174,7 @@ public class FunctionElement {
         return sigMap;
     }
 
-    private int getNumberOfSignatures() throws SQLException {
+    private int[] getNumberOfSignatures() throws SQLException {
         TableLocation functionLocation = TableLocation.parse(functionName);
         ResultSet functionData = dataSource.getConnection().getMetaData().getProcedureColumns(
                 functionLocation.getCatalog(),
@@ -182,18 +184,22 @@ public class FunctionElement {
         try {
             int sigNumber = 0;
             int oldPosition = 1;
+            int maxParams = 0;
             while (functionData.next()) {
                 final int p = functionData.getInt("ORDINAL_POSITION");
+                if (p > maxParams) {
+                    maxParams = p;
+                }
                 if (p > oldPosition) {
-                    return sigNumber;
+                    sigNumber = 1;
                 } else {
                     sigNumber++;
                 }
                 oldPosition = p;
             }
+            return new int[]{sigNumber, maxParams};
         } finally {
             functionData.close();
         }
-        return 0;
     }
 }
