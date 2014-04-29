@@ -35,10 +35,7 @@ import javax.swing.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * A custom list model to load and manage SQL functions.
@@ -53,6 +50,8 @@ public class FunctionListModel extends AbstractListModel<FunctionElement> {
     private static final Logger LOGGER = Logger.getLogger(FunctionListModel.class);
     private static final int AVERAGE_FUNCTION_COUNT = 300; //Hint for size of array
     private DataSource dataSource;
+
+    private HashSet<String> uniqueFunctionNames = new HashSet<>();
 
     public FunctionListModel(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -131,9 +130,15 @@ public class FunctionListModel extends AbstractListModel<FunctionElement> {
             try(Connection connection = dataSource.getConnection();
                 ResultSet resultSet = connection.getMetaData().getProcedures(null,null,null)) {
                 while(resultSet.next()) {
-                    FunctionElement element = new FunctionElement(resultSet.getString("PROCEDURE_NAME"),
-                            resultSet.getShort("PROCEDURE_TYPE"), resultSet.getString("REMARKS"), dataSource);
-                    functionsList.add(element);
+                    final String procedureName = resultSet.getString("PROCEDURE_NAME");
+                    if (!uniqueFunctionNames.contains(procedureName)) {
+                        uniqueFunctionNames.add(procedureName);
+                        FunctionElement element = new FunctionElement(procedureName,
+                                resultSet.getShort("PROCEDURE_TYPE"),
+                                resultSet.getString("REMARKS"),
+                                dataSource);
+                        functionsList.add(element);
+                    }
                 }
             }
         } catch (SQLException ex) {
