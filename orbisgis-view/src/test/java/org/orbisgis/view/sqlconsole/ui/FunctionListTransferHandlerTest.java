@@ -27,6 +27,6 @@ public class FunctionListTransferHandlerTest {
                 + SQL_COMMENT_CHARACTER + " or a list of blank-separated key=value pairs (string case) to manage buffer style parameters :\n"
                 + SQL_COMMENT_CHARACTER +  "'quad_segs=8' endcap=round|flat|square' 'join=round|mitre|bevel' 'mitre_limit=5'\n"
                 + SQL_COMMENT_CHARACTER + "Example usage:\n"
-                + SQL_COMMENT_CHARACTER + sqlCommand + "\n", s.toString());
+                + sqlCommand + "\n", s.toString());
     }
 }

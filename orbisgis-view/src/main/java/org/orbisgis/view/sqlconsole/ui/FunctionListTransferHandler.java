@@ -75,6 +75,6 @@ public class FunctionListTransferHandler extends TransferHandler {
         s.append(SQL_COMMENT_CHARACTER);
         s.append(toolTip.replaceAll("\n", "\n" + SQL_COMMENT_CHARACTER)).append("\n");
         s.append(SQL_COMMENT_CHARACTER).append("Example usage:\n");
-        s.append(SQL_COMMENT_CHARACTER).append(sqlCommand).append("\n");
+        s.append(sqlCommand).append("\n");
     }
 }
