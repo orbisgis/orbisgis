@@ -6,7 +6,7 @@
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  * 
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  * 
  * This file is part of OrbisGIS.
  * 
@@ -261,6 +261,7 @@ public class SQLConsolePanel extends JPanel {
                         scriptPanel.setLineWrap(true);
                         scriptPanel.setClearWhitespaceLinesEnabled(true);
                         scriptPanel.setMarkOccurrences(false);
+                        scriptPanel.setTabsEmulated(true);
                         actions.setAccelerators(scriptPanel);
                         //TODO track language support bundles
 

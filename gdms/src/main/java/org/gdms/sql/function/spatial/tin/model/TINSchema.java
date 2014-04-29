@@ -17,7 +17,7 @@
  * TANATO is distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2010-2012 IRSTV FR CNRS 2488
+ * Copyright (C) 2010-2014 IRSTV FR CNRS 2488
  *
  * TANATO is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
