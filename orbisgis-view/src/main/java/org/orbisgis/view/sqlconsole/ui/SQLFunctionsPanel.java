@@ -28,27 +28,22 @@
  */
 package org.orbisgis.view.sqlconsole.ui;
 
-import java.awt.BorderLayout;
-import java.beans.EventHandler;
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.sql.DataSource;
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.border.BevelBorder;
-import javax.swing.event.ListSelectionListener;
-
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.sqlconsole.ui.functionFilters.NameFilterFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.beans.EventHandler;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
- * A simple panel to list all GDMS functions.
+ * A simple panel to list all SQL functions.
  * @author Erwan Bocher
  * TODO filter with FilterFactoryManager
  */
@@ -64,12 +59,14 @@ public class SQLFunctionsPanel extends JPanel {
         private AtomicBoolean initialised = new AtomicBoolean(false);
         
         protected final static I18n I18N = I18nFactory.getI18n(SQLFunctionsPanel.class);
+
+        private static final String FUNCTION_COUNT = "Function count = {0}";
         
         public SQLFunctionsPanel(DataSource dataSource) {
                 this.setLayout(new BorderLayout());
                 expandedPanel = new JPanel(new BorderLayout());
                 functionListModel = new FunctionListModel(dataSource);
-                functionLabelCount = new JLabel(I18N.tr("Functions count = {0}",0));
+                functionLabelCount = new JLabel(I18N.tr(FUNCTION_COUNT, 0));
 
                 list = new FunctionList();
                 list.setBorder(BorderFactory.createLoweredBevelBorder());
@@ -88,7 +85,6 @@ public class SQLFunctionsPanel extends JPanel {
                 add(expandedPanel, BorderLayout.CENTER);
                 expandedPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
                 collapse();
-
         }
         
         private void initialise() {
@@ -117,7 +113,7 @@ public class SQLFunctionsPanel extends JPanel {
         }
 
         public void onListChange() {
-            functionLabelCount.setText(I18N.tr("Functions count = {0}",functionListModel.getSize()));
+            functionLabelCount.setText(I18N.tr(FUNCTION_COUNT, functionListModel.getSize()));
         }
         /**
          * Called by the listener filterEvent

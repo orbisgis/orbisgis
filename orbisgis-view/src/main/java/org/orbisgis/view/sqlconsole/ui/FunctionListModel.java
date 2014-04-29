@@ -28,6 +28,10 @@
  */
 package org.orbisgis.view.sqlconsole.ui;
 
+import org.apache.log4j.Logger;
+
+import javax.sql.DataSource;
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,14 +39,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import javax.sql.DataSource;
-import javax.swing.AbstractListModel;
-
-import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
 
 /**
- * A custom list model to load and manage GDMS functions.
+ * A custom list model to load and manage SQL functions.
  * @author Erwan Bocher
  * @author Nicolas Fortin
  */
