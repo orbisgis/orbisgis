@@ -28,12 +28,11 @@
  */
 package org.orbisgis.view.sqlconsole.ui;
 
+import javax.swing.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.util.List;
-import javax.swing.JComponent;
-import javax.swing.JList;
-import javax.swing.TransferHandler;
+
+import static org.orbisgis.view.util.CommentUtil.SQL_COMMENT_CHARACTER;
 
 /**
  * Drag functions orders as a Transferable String
@@ -49,21 +48,33 @@ public class FunctionListTransferHandler extends TransferHandler {
 
         @Override
         protected Transferable createTransferable(JComponent jc) {
-                if(jc instanceof FunctionList) {
+                if (jc instanceof FunctionList) {
                     FunctionList list = (FunctionList) jc;
                     StringBuilder stringBuilder = new StringBuilder();
-                    List<FunctionElement> selectedItems = list.getSelectedValuesList();
-                    for(FunctionElement functionElement : selectedItems) {
-                            stringBuilder.append("-- ");
-                            stringBuilder.append(functionElement.getToolTip().replaceAll("\n","--\n"));
-                            stringBuilder.append("\n");
-                            stringBuilder.append(functionElement.getSQLCommand());
-                            stringBuilder.append("\n");
+                    for(FunctionElement functionElement : list.getSelectedValuesList()) {
+                        formatFunctionComment(stringBuilder,
+                                functionElement.getToolTip(),
+                                functionElement.getSQLCommand());
                     }
                     return new StringSelection(stringBuilder.toString());
                 } else {
                     return null;
                 }
         }
-        
+
+    /**
+     * Format function comment.
+     *
+     * @param s          StringBuilder
+     * @param toolTip    Tooltip
+     * @param sqlCommand SQL command
+     */
+    protected void formatFunctionComment(StringBuilder s,
+                                         String toolTip,
+                                         String sqlCommand) {
+        s.append(SQL_COMMENT_CHARACTER);
+        s.append(toolTip.replaceAll("\n", "\n" + SQL_COMMENT_CHARACTER)).append("\n");
+        s.append(SQL_COMMENT_CHARACTER).append("Example usage:\n");
+        s.append(SQL_COMMENT_CHARACTER).append(sqlCommand).append("\n");
+    }
 }

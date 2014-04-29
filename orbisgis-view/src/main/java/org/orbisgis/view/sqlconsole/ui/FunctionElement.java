@@ -38,7 +38,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * A class to manage function name an type in the jlist function
+ * A class to manage function name and type in the JList function
  * 
  * @author Erwan Bocher
  */
