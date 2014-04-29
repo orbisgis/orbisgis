@@ -28,6 +28,7 @@
 package org.orbisgis.view.geocatalog.jobs;
 
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
@@ -49,7 +50,7 @@ import java.sql.Statement;
  * @author Nicolas Fortin
  */
 public class DropTable implements BackgroundJob, Runnable {
-    private static final Logger LOGGER = Logger.getLogger(DropTable.class);
+    private static final Logger LOGGER = Logger.getLogger("gui."+DropTable.class);
     private static final I18n I18N = I18nFactory.getI18n(DropTable.class);
     private DataSource dataSource;
     private String[] tableToDelete;
@@ -78,8 +79,10 @@ public class DropTable implements BackgroundJob, Runnable {
             connection.setAutoCommit(false);
             ProgressMonitor dropPm = pm.startTask(tableToDelete.length);
             for (String resource : tableToDelete) {
-                TableLocation tableLocation = TableLocation.parse(resource);
+                TableLocation tableLocation = TableLocation.parse(resource,
+                        JDBCUtilities.isH2DataBase(connection.getMetaData()));
                 try {
+                    LOGGER.info(String.format("drop table %s", tableLocation));
                     st.execute(String.format("drop table %s", tableLocation));
                 } catch (SQLException ex) {
                     LOGGER.error(I18N.tr("Cannot remove the source {0}", resource), ex);

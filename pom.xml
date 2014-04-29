@@ -26,7 +26,6 @@
                 <!-- <module>bundles/plugin-test</module>-->
                 <module>api/orbisgis-core</module>
                 <module>orbisgis-core</module>
-                <module>legend</module>
                 <module>orbisgis-sif</module>
                 <module>api/orbisgis-view</module>
                 <module>bundles/sql-parser-api</module>
@@ -37,6 +36,7 @@
                 <module>bundles/map-editor-api</module>
                 <module>orbisgis-view</module>
                 <module>bundles/map-editor</module>
+                <module>legend</module>
                 <module>bundles/toc</module>
                 <module>orbisgis-dist</module>
         </modules>
