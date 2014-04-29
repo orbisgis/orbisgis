@@ -536,9 +536,15 @@ public class Core {
         }
 
         //Free UI resources
-        editors.dispose();
-        geoCatalog.dispose();
-        mainFrame.dispose();
+        if(editors != null) {
+            editors.dispose();
+        }
+        if(geoCatalog != null) {
+            geoCatalog.dispose();
+        }
+        if(mainFrame != null) {
+            mainFrame.dispose();
+        }
         if (singleFrameTracker != null) {
             singleFrameTracker.close();
         }
