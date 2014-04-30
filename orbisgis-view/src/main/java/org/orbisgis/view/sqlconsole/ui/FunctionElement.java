@@ -155,18 +155,20 @@ public class FunctionElement {
         int oldPosition = 1;
         int prev = 1;
         while (functionData.next()) {
-            final int p = functionData.getInt("ORDINAL_POSITION");
-            final String typeName = functionData.getString("TYPE_NAME");
-            if (p > oldPosition) {
-                sigNumber = (p > (m - n + 1)) ? ++prev : 1;
-            } else {
-                sigNumber++;
+            if (functionData.getInt("COLUMN_TYPE") != DatabaseMetaData.procedureColumnReturn) {
+                final int p = functionData.getInt("ORDINAL_POSITION");
+                final String typeName = functionData.getString("TYPE_NAME");
+                if (p > oldPosition) {
+                    sigNumber = (p > (m - n + 1)) ? ++prev : 1;
+                } else {
+                    sigNumber++;
+                }
+                oldPosition = p;
+                if (!sigMap.containsKey(sigNumber)) {
+                    sigMap.put(sigNumber, new HashMap<Integer, String>());
+                }
+                sigMap.get(sigNumber).put(p, typeName);
             }
-            oldPosition = p;
-            if (!sigMap.containsKey(sigNumber)) {
-                sigMap.put(sigNumber, new HashMap<Integer, String>());
-            }
-            sigMap.get(sigNumber).put(p, typeName);
         }
         return sigMap;
     }
@@ -185,16 +187,18 @@ public class FunctionElement {
             int maxParams = 0;
             int count = 0;
             while (functionData.next()) {
-                final int p = functionData.getInt("ORDINAL_POSITION");
-                if (p > maxParams) {
-                    maxParams = p;
+                if (functionData.getInt("COLUMN_TYPE") != DatabaseMetaData.procedureColumnReturn) {
+                    final int p = functionData.getInt("ORDINAL_POSITION");
+                    if (p > maxParams) {
+                        maxParams = p;
+                    }
+                    if (!foundNumberSignatures && p > oldPosition) {
+                        numberSignatures = count;
+                        foundNumberSignatures = true;
+                    }
+                    count++;
+                    oldPosition = p;
                 }
-                if (!foundNumberSignatures && p > oldPosition ) {
-                    numberSignatures = count;
-                    foundNumberSignatures = true;
-                }
-                count++;
-                oldPosition = p;
             }
             return new int[]{numberSignatures, maxParams};
         } finally {
