@@ -202,7 +202,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
                 }
             }
             if(accepts && (!checkForDefaultFilter || defaultFilter.accepts(location, tableAttr))) {
-                newModel.add(new CatalogSourceItem(location.toString(), tableAttr.get(IFilter.ATTRIBUTES.LABEL), getIconName(location, tableAttr)));
+                newModel.add(new CatalogSourceItem(location.toString(isH2), tableAttr.get(IFilter.ATTRIBUTES.LABEL), getIconName(location, tableAttr)));
             }
         }
         Collections.sort(newModel, catalogComparator);
@@ -251,7 +251,14 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
                         label.insert(0, ".");
                         label.insert(0, addQuotesIfNecessary(location.getCatalog()));
                     }
-                    tableAttr.put(IFilter.ATTRIBUTES.LOCATION, location.toString());
+                    // Shortcut location for H2 database
+                    TableLocation shortLocation = location;
+                    if(isH2) {
+                        shortLocation = new TableLocation("",
+                                location.getSchema().equals("PUBLIC") ? "" : location.getSchema(),
+                                location.getTable());
+                    }
+                    tableAttr.put(IFilter.ATTRIBUTES.LOCATION, shortLocation.toString(isH2));
                     tableAttr.put(IFilter.ATTRIBUTES.LABEL, label.toString());
                     for(IFilter.ATTRIBUTES attribute : IFilter.ATTRIBUTES.values()) {
                         putAttribute(tableAttr, attribute, rs);
