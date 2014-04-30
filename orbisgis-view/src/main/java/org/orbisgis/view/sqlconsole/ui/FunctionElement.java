@@ -38,6 +38,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * A class to manage function name and type in the JList function
@@ -149,15 +150,11 @@ public class FunctionElement {
         final int[] nAndM = getNumberOfSignatures();
         final int n = nAndM[0];
         final int m = nAndM[1];
-        Map<Integer, Map<Integer, String>> sigMap = new HashMap<>();
+        Map<Integer, Map<Integer, String>> sigMap = new TreeMap<>();
         int sigNumber = 0;
         int oldPosition = 1;
         int prev = 1;
         while (functionData.next()) {
-//              LOGGER.info(functionData.getInt("ORDINAL_POSITION")
-//              + " " + functionData.getString("TYPE_NAME"));
-//            System.out.println(functionData.getInt("ORDINAL_POSITION")
-//              + " " + functionData.getString("TYPE_NAME"));
             final int p = functionData.getInt("ORDINAL_POSITION");
             final String typeName = functionData.getString("TYPE_NAME");
             if (p > oldPosition) {
@@ -182,22 +179,24 @@ public class FunctionElement {
                 functionLocation.getTable(),
                 null);
         try {
-            int sigNumber = 0;
             int oldPosition = 1;
+            boolean foundNumberSignatures = false;
+            int numberSignatures = -1;
             int maxParams = 0;
+            int count = 0;
             while (functionData.next()) {
                 final int p = functionData.getInt("ORDINAL_POSITION");
                 if (p > maxParams) {
                     maxParams = p;
                 }
-                if (p > oldPosition) {
-                    sigNumber = 1;
-                } else {
-                    sigNumber++;
+                if (!foundNumberSignatures && p > oldPosition ) {
+                    numberSignatures = count;
+                    foundNumberSignatures = true;
                 }
+                count++;
                 oldPosition = p;
             }
-            return new int[]{sigNumber, maxParams};
+            return new int[]{numberSignatures, maxParams};
         } finally {
             functionData.close();
         }
