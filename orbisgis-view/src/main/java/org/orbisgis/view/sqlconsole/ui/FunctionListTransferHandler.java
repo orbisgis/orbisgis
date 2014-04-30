@@ -40,6 +40,7 @@ import static org.orbisgis.view.util.CommentUtil.SQL_COMMENT_CHARACTER;
  */
 public class FunctionListTransferHandler extends TransferHandler {
         private static final long serialVersionUID = 1L;
+        public static final String SIGNATURES = "Signature(s):";
 
         @Override
         public int getSourceActions(JComponent jc) {
@@ -74,7 +75,7 @@ public class FunctionListTransferHandler extends TransferHandler {
                                          String sqlCommand) {
         s.append(SQL_COMMENT_CHARACTER);
         s.append(toolTip.replaceAll("\n", "\n" + SQL_COMMENT_CHARACTER)).append("\n");
-        s.append(SQL_COMMENT_CHARACTER).append("Example usage:\n");
+        s.append(SQL_COMMENT_CHARACTER).append(SIGNATURES).append("\n");
         s.append(sqlCommand).append("\n");
     }
 }
