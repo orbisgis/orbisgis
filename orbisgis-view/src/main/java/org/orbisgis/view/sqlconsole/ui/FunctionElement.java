@@ -233,12 +233,14 @@ public class FunctionElement {
 
     private void buildString(StringBuilder sb, Map<Integer, Signature> signatureMap) {
         for (Signature s : signatureMap.values()) {
-            sb.append(functionName).append("(");
-            for (String type : s.getInParams().values()) {
-                sb.append(type).append(", ");
+            if (!s.getInParams().isEmpty()) {
+                sb.append(functionName).append("(");
+                for (String type : s.getInParams().values()) {
+                    sb.append(type).append(", ");
+                }
+                sb.delete(sb.length() - 2, sb.length());
+                sb.append(")\n");
             }
-            sb.delete(sb.length() - 2, sb.length());
-            sb.append(")\n");
         }
     }
 
