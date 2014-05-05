@@ -157,11 +157,16 @@ public class FunctionElement {
             // to indicate the return type.
             if (position == 0) {
                 sigNumber++;
-                if (!sigMap.containsKey(sigNumber)) {
+                // Lazy initialize
+                if (sigMap.get(sigNumber) == null) {
                     sigMap.put(sigNumber, new Signature(typeName));
                 }
             } // Any nonzero ordinal position represents an IN parameter.
             else {
+                // Lazy initialize
+                if (sigMap.get(sigNumber) == null) {
+                    sigMap.put(sigNumber, new Signature());
+                }
                 sigMap.get(sigNumber).getInParams().put(position, columnName + ":" + typeName);
             }
         }
@@ -227,9 +232,9 @@ public class FunctionElement {
     }
 
     private void buildString(StringBuilder sb, Map<Integer, Signature> signatureMap) {
-        for (Map.Entry<Integer, Signature>  e : signatureMap.entrySet()) {
+        for (Signature s : signatureMap.values()) {
             sb.append(functionName).append("(");
-            for (String type : e.getValue().getInParams().values()) {
+            for (String type : s.getInParams().values()) {
                 sb.append(type).append(", ");
             }
             sb.delete(sb.length() - 2, sb.length());
@@ -248,11 +253,15 @@ public class FunctionElement {
 
         private Signature(String returnType) {
             inParams = new HashMap<>();
-            this.returnType = returnType;
+            setReturnType(returnType);
         }
 
         public String getReturnType() {
             return returnType;
+        }
+
+        private void setReturnType(String returnType) {
+            this.returnType = returnType;
         }
 
         public Map<Integer, String> getInParams() {
