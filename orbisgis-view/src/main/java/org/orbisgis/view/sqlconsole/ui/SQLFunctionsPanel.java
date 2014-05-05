@@ -60,7 +60,7 @@ public class SQLFunctionsPanel extends JPanel {
         
         protected final static I18n I18N = I18nFactory.getI18n(SQLFunctionsPanel.class);
 
-        private static final String FUNCTION_COUNT = "Function count = {0}";
+        private static final String FUNCTION_COUNT = I18N.marktr("Function count = {0}");
         
         public SQLFunctionsPanel(DataSource dataSource) {
                 this.setLayout(new BorderLayout());

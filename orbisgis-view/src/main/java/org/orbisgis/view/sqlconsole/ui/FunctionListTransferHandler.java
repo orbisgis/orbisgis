@@ -28,6 +28,9 @@
  */
 package org.orbisgis.view.sqlconsole.ui;
 
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
+
 import javax.swing.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -40,7 +43,8 @@ import static org.orbisgis.view.util.CommentUtil.SQL_COMMENT_CHARACTER;
  */
 public class FunctionListTransferHandler extends TransferHandler {
         private static final long serialVersionUID = 1L;
-        public static final String SIGNATURES = "Signature(s):";
+        protected final static I18n I18N = I18nFactory.getI18n(FunctionListTransferHandler.class);
+        public static final String SIGNATURES = I18n.marktr("Signature(s):");
 
         @Override
         public int getSourceActions(JComponent jc) {
