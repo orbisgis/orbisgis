@@ -217,17 +217,18 @@ public class FunctionElement {
             int maxParams = 0;
             int count = 0;
             while (functionData.next()) {
-                if (functionData.getInt("COLUMN_TYPE") != DatabaseMetaData.procedureColumnReturn) {
-                    final int p = functionData.getInt("ORDINAL_POSITION");
-                    if (p > maxParams) {
-                        maxParams = p;
+                final int position = functionData.getInt("ORDINAL_POSITION");
+                final int columnType = functionData.getInt("COLUMN_TYPE");
+                if (columnType != DatabaseMetaData.procedureColumnReturn) {
+                    if (position > maxParams) {
+                        maxParams = position;
                     }
-                    if (!foundNumberSignatures && p > oldPosition) {
+                    if (!foundNumberSignatures && position > oldPosition) {
                         numberSignatures = count;
                         foundNumberSignatures = true;
                     }
                     count++;
-                    oldPosition = p;
+                    oldPosition = position;
                 }
             }
             return new int[]{numberSignatures, maxParams};
