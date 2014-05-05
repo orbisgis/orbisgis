@@ -37,6 +37,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -147,7 +148,7 @@ public class FunctionElement {
 
 
     private Map<Integer, Signature> getPostGRESignatureMap(ResultSet functionData) throws SQLException {
-        Map<Integer, Signature> sigMap = new TreeMap<>();
+        Map<Integer, Signature> sigMap = new HashMap<>();
         int sigNumber = 0;
         while (functionData.next()) {
             final int position = functionData.getInt("ORDINAL_POSITION");
@@ -170,14 +171,16 @@ public class FunctionElement {
                 sigMap.get(sigNumber).getInParams().put(position, columnName + ":" + typeName);
             }
         }
-        return sigMap;
+        final TreeMap<Integer, Signature> sortedMap = new TreeMap<>(new ValueComparator(sigMap));
+        sortedMap.putAll(sigMap);
+        return sortedMap;
     }
 
     private Map<Integer, Signature> getH2SignatureMap(ResultSet functionData) throws SQLException {
         final int[] nAndM = getNumberOfSignatures();
         final int n = nAndM[0];
         final int m = nAndM[1];
-        Map<Integer, Signature> sigMap = new TreeMap<>();
+        Map<Integer, Signature> sigMap = new HashMap<>();
         int sigNumber = 0;
         int oldPosition = 1;
         int prev = 1;
@@ -195,7 +198,9 @@ public class FunctionElement {
             }
             sigMap.get(sigNumber).getInParams().put(position, typeName);
         }
-        return sigMap;
+        final TreeMap<Integer, Signature> sortedMap = new TreeMap<>(new ValueComparator(sigMap));
+        sortedMap.putAll(sigMap);
+        return sortedMap;
     }
 
     private int[] getNumberOfSignatures() throws SQLException {
@@ -268,6 +273,21 @@ public class FunctionElement {
 
         public Map<Integer, String> getInParams() {
             return inParams;
+        }
+    }
+
+    private class ValueComparator implements Comparator<Integer> {
+
+        private Map<Integer, Signature> baseMap;
+
+        private ValueComparator(Map<Integer, Signature> baseMap) {
+            this.baseMap = baseMap;
+        }
+
+        @Override
+        public int compare(Integer o1, Integer o2) {
+            // We never return 0 so as to not merge keys.
+            return baseMap.get(o1).getInParams().size() >= baseMap.get(o2).getInParams().size() ? 1 : -1;
         }
     }
 }
