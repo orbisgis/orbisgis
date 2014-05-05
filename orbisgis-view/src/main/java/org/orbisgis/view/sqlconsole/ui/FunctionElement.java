@@ -46,6 +46,7 @@ import java.util.TreeMap;
  * A class to manage function name and type in the JList function
  * 
  * @author Erwan Bocher
+ * @author Adam Gouge
  */
 public class FunctionElement {
     private static final Logger LOGGER = Logger.getLogger(FunctionElement.class);
