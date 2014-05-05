@@ -18,7 +18,7 @@ public class FunctionListTransferHandlerTest {
                 + " to approximate a quarter circle (integer case, defaults to 8)\n"
                 + " or a list of blank-separated key=value pairs (string case) to manage buffer style parameters :\n"
                 + "'quad_segs=8' endcap=round|flat|square' 'join=round|mitre|bevel' 'mitre_limit=5'";
-        String sqlCommand = "ST_BUFFER(P1 GEOMETRY, P1 GEOMETRY, P2 DOUBLE, P2 DOUBLE, P3 OTHER)";
+        String sqlCommand = "ST_BUFFER(GEOMETRY, DOUBLE)\nST_BUFFER(GEOMETRY, DOUBLE, OTHER)";
         FunctionListTransferHandler t = new FunctionListTransferHandler();
         StringBuilder s = new StringBuilder();
         t.formatFunctionComment(s, tooltip, sqlCommand);
