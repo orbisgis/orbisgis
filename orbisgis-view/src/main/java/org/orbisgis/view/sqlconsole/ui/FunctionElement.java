@@ -121,12 +121,7 @@ public class FunctionElement {
             //Retrieve function ToolTip
             try (Connection connection = dataSource.getConnection()) {
                 final DatabaseMetaData metaData = connection.getMetaData();
-                TableLocation functionLocation = TableLocation.parse(functionName);
-                ResultSet functionData = metaData.getProcedureColumns(
-                        functionLocation.getCatalog(),
-                        functionLocation.getSchema(),
-                        functionLocation.getTable(),
-                        null);
+                ResultSet functionData = getFunctionData(metaData);
                 try {
                     StringBuilder sb = new StringBuilder();
                     Map<Integer, Signature> signatureMap;
@@ -147,6 +142,14 @@ public class FunctionElement {
         return command;
     }
 
+    private ResultSet getFunctionData(DatabaseMetaData metaData) throws SQLException {
+        TableLocation functionLocation = TableLocation.parse(functionName);
+        return metaData.getProcedureColumns(
+                functionLocation.getCatalog(null),
+                functionLocation.getSchema(null),
+                functionLocation.getTable(),
+                null);
+    }
 
     private Map<Integer, Signature> getPostGRESignatureMap(ResultSet functionData) throws SQLException {
         Map<Integer, Signature> sigMap = new HashMap<>();
@@ -208,36 +211,33 @@ public class FunctionElement {
     }
 
     private int[] getNumberOfSignaturesAndMaxParams() throws SQLException {
-        TableLocation functionLocation = TableLocation.parse(functionName);
-        ResultSet functionData = dataSource.getConnection().getMetaData().getProcedureColumns(
-                functionLocation.getCatalog(),
-                functionLocation.getSchema(),
-                functionLocation.getTable(),
-                null);
-        try {
-            int oldPosition = 1;
-            boolean foundNumberSignatures = false;
-            int numberSignatures = -1;
-            int maxParams = 0;
-            int count = 0;
-            while (functionData.next()) {
-                final int position = functionData.getInt("ORDINAL_POSITION");
-                final int columnType = functionData.getInt("COLUMN_TYPE");
-                if (columnType != DatabaseMetaData.procedureColumnReturn) {
-                    if (position > maxParams) {
-                        maxParams = position;
+        try (Connection connection = dataSource.getConnection()) {
+            ResultSet functionData = getFunctionData(connection.getMetaData());
+            try {
+                int oldPosition = 1;
+                boolean foundNumberSignatures = false;
+                int numberSignatures = -1;
+                int maxParams = 0;
+                int count = 0;
+                while (functionData.next()) {
+                    final int position = functionData.getInt("ORDINAL_POSITION");
+                    final int columnType = functionData.getInt("COLUMN_TYPE");
+                    if (columnType != DatabaseMetaData.procedureColumnReturn) {
+                        if (position > maxParams) {
+                            maxParams = position;
+                        }
+                        if (!foundNumberSignatures && position > oldPosition) {
+                            numberSignatures = count;
+                            foundNumberSignatures = true;
+                        }
+                        count++;
+                        oldPosition = position;
                     }
-                    if (!foundNumberSignatures && position > oldPosition) {
-                        numberSignatures = count;
-                        foundNumberSignatures = true;
-                    }
-                    count++;
-                    oldPosition = position;
                 }
+                return new int[]{numberSignatures, maxParams};
+            } finally {
+                functionData.close();
             }
-            return new int[]{numberSignatures, maxParams};
-        } finally {
-            functionData.close();
         }
     }
 
