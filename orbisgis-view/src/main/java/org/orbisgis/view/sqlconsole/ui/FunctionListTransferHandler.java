@@ -74,7 +74,9 @@ public class FunctionListTransferHandler extends TransferHandler {
                                          String toolTip,
                                          String sqlCommand) {
         s.append(SQL_COMMENT_CHARACTER);
-        s.append(toolTip.replaceAll("\n", "\n" + SQL_COMMENT_CHARACTER)).append("\n");
+        if (toolTip != null) {
+            s.append(toolTip.replaceAll("\n", "\n" + SQL_COMMENT_CHARACTER)).append("\n");
+        }
         s.append(SQL_COMMENT_CHARACTER).append(SIGNATURES).append("\n");
         s.append(sqlCommand).append("\n");
     }
