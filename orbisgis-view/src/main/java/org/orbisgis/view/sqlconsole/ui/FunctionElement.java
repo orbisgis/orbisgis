@@ -178,9 +178,9 @@ public class FunctionElement {
     }
 
     private Map<Integer, Signature> getH2SignatureMap(ResultSet functionData) throws SQLException {
-        final int[] nAndM = getNumberOfSignatures();
-        final int n = nAndM[0];
-        final int m = nAndM[1];
+        final int[] nAndM = getNumberOfSignaturesAndMaxParams();
+        final int numberSignatures = nAndM[0];
+        final int maxParams = nAndM[1];
         Map<Integer, Signature> sigMap = new HashMap<>();
         int sigNumber = 0;
         int oldPosition = 1;
@@ -189,7 +189,10 @@ public class FunctionElement {
             final int position = functionData.getInt("ORDINAL_POSITION");
             final String typeName = functionData.getString("TYPE_NAME");
             if (position > oldPosition) {
-                sigNumber = (position > (m - n + 1)) ? ++prev : 1;
+                // Note: This test depends on signatures having parameter count
+                // increasing by one. It will not work, for example, if there are
+                // two signatures, one with length 2 and one with length 4.
+                sigNumber = (position > (maxParams - numberSignatures + 1)) ? ++prev : 1;
             } else {
                 sigNumber++;
             }
@@ -204,7 +207,7 @@ public class FunctionElement {
         return sortedMap;
     }
 
-    private int[] getNumberOfSignatures() throws SQLException {
+    private int[] getNumberOfSignaturesAndMaxParams() throws SQLException {
         TableLocation functionLocation = TableLocation.parse(functionName);
         ResultSet functionData = dataSource.getConnection().getMetaData().getProcedureColumns(
                 functionLocation.getCatalog(),
@@ -262,14 +265,6 @@ public class FunctionElement {
 
         private Signature(String returnType) {
             inParams = new HashMap<>();
-            setReturnType(returnType);
-        }
-
-        public String getReturnType() {
-            return returnType;
-        }
-
-        private void setReturnType(String returnType) {
             this.returnType = returnType;
         }
 
