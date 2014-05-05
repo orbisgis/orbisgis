@@ -29,6 +29,7 @@
 package org.orbisgis.view.sqlconsole.ui;
 
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 
 import javax.sql.DataSource;
@@ -98,7 +99,7 @@ public class FunctionElement {
             //Retrieve function ToolTip
             try(Connection connection = dataSource.getConnection()) {
                 TableLocation functionLocation = TableLocation.parse(functionName);
-                ResultSet functionData = connection.getMetaData().getProcedures(functionLocation.getCatalog(),functionLocation.getSchema(), functionLocation.getTable());
+                ResultSet functionData = connection.getMetaData().getProcedures(functionLocation.getCatalog(), functionLocation.getSchema(), functionLocation.getTable());
                 if(functionData.next()) {
                     description = functionData.getString("REMARKS");
                 }
@@ -117,24 +118,22 @@ public class FunctionElement {
         if (command == null) {
             //Retrieve function ToolTip
             try (Connection connection = dataSource.getConnection()) {
+                final DatabaseMetaData metaData = connection.getMetaData();
                 TableLocation functionLocation = TableLocation.parse(functionName);
-                ResultSet functionData = connection.getMetaData().getProcedureColumns(
+                ResultSet functionData = metaData.getProcedureColumns(
                         functionLocation.getCatalog(),
                         functionLocation.getSchema(),
                         functionLocation.getTable(),
                         null);
                 try {
                     StringBuilder sb = new StringBuilder();
-                    final Map<Integer, Map<Integer, String>> signatureMap = getSignatureMap(functionData);
-                    for (Map.Entry<Integer, Map<Integer, String>>  e : signatureMap.entrySet()) {
-                        sb.append(functionName).append("(");
-                        final Map<Integer, String> paramMap = e.getValue();
-                        for (String type : paramMap.values()) {
-                            sb.append(type).append(", ");
-                        }
-                        sb.delete(sb.length() - 2, sb.length());
-                        sb.append(")\n");
+                    Map<Integer, Signature> signatureMap;
+                    if (JDBCUtilities.isH2DataBase(metaData)) {
+                        signatureMap = getH2SignatureMap(functionData);
+                    } else {
+                        signatureMap = getPostGRESignatureMap(functionData);
                     }
+                    buildString(sb, signatureMap);
                     command = sb.toString();
                 } finally {
                     functionData.close();
@@ -146,29 +145,49 @@ public class FunctionElement {
         return command;
     }
 
-    private Map<Integer, Map<Integer, String>> getSignatureMap(ResultSet functionData) throws SQLException {
+
+    private Map<Integer, Signature> getPostGRESignatureMap(ResultSet functionData) throws SQLException {
+        Map<Integer, Signature> sigMap = new TreeMap<>();
+        int sigNumber = 0;
+        while (functionData.next()) {
+            final int position = functionData.getInt("ORDINAL_POSITION");
+            final String typeName = functionData.getString("TYPE_NAME");
+            // PostGRE separates signatures by an ordinal position of 0
+            // to indicate the return type.
+            if (position == 0) {
+                sigNumber++;
+                if (!sigMap.containsKey(sigNumber)) {
+                    sigMap.put(sigNumber, new Signature(typeName));
+                }
+            } // Any nonzero ordinal position represents an IN parameter.
+            else {
+                sigMap.get(sigNumber).getInParams().put(position, typeName);
+            }
+        }
+        return sigMap;
+    }
+
+    private Map<Integer, Signature> getH2SignatureMap(ResultSet functionData) throws SQLException {
         final int[] nAndM = getNumberOfSignatures();
         final int n = nAndM[0];
         final int m = nAndM[1];
-        Map<Integer, Map<Integer, String>> sigMap = new TreeMap<>();
+        Map<Integer, Signature> sigMap = new TreeMap<>();
         int sigNumber = 0;
         int oldPosition = 1;
         int prev = 1;
         while (functionData.next()) {
-            if (functionData.getInt("COLUMN_TYPE") != DatabaseMetaData.procedureColumnReturn) {
-                final int p = functionData.getInt("ORDINAL_POSITION");
-                final String typeName = functionData.getString("TYPE_NAME");
-                if (p > oldPosition) {
-                    sigNumber = (p > (m - n + 1)) ? ++prev : 1;
-                } else {
-                    sigNumber++;
-                }
-                oldPosition = p;
-                if (!sigMap.containsKey(sigNumber)) {
-                    sigMap.put(sigNumber, new HashMap<Integer, String>());
-                }
-                sigMap.get(sigNumber).put(p, typeName);
+            final int position = functionData.getInt("ORDINAL_POSITION");
+            final String typeName = functionData.getString("TYPE_NAME");
+            if (position > oldPosition) {
+                sigNumber = (position > (m - n + 1)) ? ++prev : 1;
+            } else {
+                sigNumber++;
             }
+            oldPosition = position;
+            if (!sigMap.containsKey(sigNumber)) {
+                sigMap.put(sigNumber, new Signature());
+            }
+            sigMap.get(sigNumber).getInParams().put(position, typeName);
         }
         return sigMap;
     }
@@ -203,6 +222,40 @@ public class FunctionElement {
             return new int[]{numberSignatures, maxParams};
         } finally {
             functionData.close();
+        }
+    }
+
+    private void buildString(StringBuilder sb, Map<Integer, Signature> signatureMap) {
+        for (Map.Entry<Integer, Signature>  e : signatureMap.entrySet()) {
+            sb.append(functionName).append("(");
+            for (String type : e.getValue().getInParams().values()) {
+                sb.append(type).append(", ");
+            }
+            sb.delete(sb.length() - 2, sb.length());
+            sb.append(")\n");
+        }
+    }
+
+    private class Signature {
+
+        private Map<Integer, String> inParams;
+        private String returnType;
+
+        private Signature() {
+            this(null);
+        }
+
+        private Signature(String returnType) {
+            inParams = new HashMap<>();
+            this.returnType = returnType;
+        }
+
+        public String getReturnType() {
+            return returnType;
+        }
+
+        public Map<Integer, String> getInParams() {
+            return inParams;
         }
     }
 }
