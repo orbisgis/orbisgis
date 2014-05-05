@@ -151,6 +151,7 @@ public class FunctionElement {
         int sigNumber = 0;
         while (functionData.next()) {
             final int position = functionData.getInt("ORDINAL_POSITION");
+            final String columnName = functionData.getString("COLUMN_NAME");
             final String typeName = functionData.getString("TYPE_NAME");
             // PostGRE separates signatures by an ordinal position of 0
             // to indicate the return type.
@@ -161,7 +162,7 @@ public class FunctionElement {
                 }
             } // Any nonzero ordinal position represents an IN parameter.
             else {
-                sigMap.get(sigNumber).getInParams().put(position, typeName);
+                sigMap.get(sigNumber).getInParams().put(position, columnName + ":" + typeName);
             }
         }
         return sigMap;
