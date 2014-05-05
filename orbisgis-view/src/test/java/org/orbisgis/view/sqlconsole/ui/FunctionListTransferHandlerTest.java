@@ -7,7 +7,7 @@ import static org.orbisgis.view.sqlconsole.ui.FunctionListTransferHandler.SIGNAT
 import static org.orbisgis.view.util.CommentUtil.SQL_COMMENT_CHARACTER;
 
 /**
- * Created by adam on 4/29/14.
+ * @author Adam Gouge
  */
 public class FunctionListTransferHandlerTest {
 

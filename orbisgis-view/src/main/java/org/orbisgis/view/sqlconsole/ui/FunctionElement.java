@@ -248,10 +248,13 @@ public class FunctionElement {
                 for (String type : s.getInParams().values()) {
                     sb.append(type).append(", ");
                 }
+                // Delete extra ', '
                 sb.delete(sb.length() - 2, sb.length());
                 sb.append(")\n");
             }
         }
+        // Delete last newline character
+        sb.delete(sb.length() - 1, sb.length());
     }
 
     private class Signature {
