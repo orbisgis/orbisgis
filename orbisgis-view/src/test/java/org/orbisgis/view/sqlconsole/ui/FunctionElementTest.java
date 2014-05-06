@@ -34,6 +34,19 @@ public class FunctionElementTest {
     }
 
     @Test
+    public void testTooltipGeneration() throws SQLException {
+        FunctionElement f = new FunctionElement("ST_SHORTESTPATHLENGTH",
+                DatabaseMetaData.procedureReturnsResult,
+//                ST_ShortestPathLength.REMARKS,
+                dataSource);
+        final String toolTip = f.getToolTip();
+//        assertEquals("ST_SHORTESTPATH(VARCHAR, VARCHAR, INTEGER, INTEGER)\n"
+//                        + "ST_SHORTESTPATH(VARCHAR, VARCHAR, VARCHAR, INTEGER, INTEGER)",
+//                f.getSQLCommand()
+//        );
+    }
+
+    @Test
     public void testH2SignatureGeneration() throws SQLException {
         FunctionElement f = new FunctionElement("ST_SHORTESTPATH",
                 DatabaseMetaData.procedureReturnsResult,

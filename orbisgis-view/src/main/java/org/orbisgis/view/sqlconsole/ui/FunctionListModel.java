@@ -29,9 +29,11 @@
 package org.orbisgis.view.sqlconsole.ui;
 
 import org.apache.log4j.Logger;
+import org.markdown4j.Markdown4jProcessor;
 
 import javax.sql.DataSource;
 import javax.swing.*;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -133,9 +135,16 @@ public class FunctionListModel extends AbstractListModel<FunctionElement> {
                     final String procedureName = resultSet.getString("PROCEDURE_NAME");
                     if (!uniqueFunctionNames.contains(procedureName)) {
                         uniqueFunctionNames.add(procedureName);
+                        final String rawRemarks = resultSet.getString("REMARKS");
+                        String remarks;
+                        try {
+                            remarks = new Markdown4jProcessor().process(rawRemarks);
+                        } catch (IOException e) {
+                            remarks = rawRemarks;
+                        }
                         FunctionElement element = new FunctionElement(procedureName,
                                 resultSet.getShort("PROCEDURE_TYPE"),
-                                resultSet.getString("REMARKS"),
+                                remarks,
                                 dataSource);
                         functionsList.add(element);
                     }

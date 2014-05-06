@@ -31,8 +31,10 @@ package org.orbisgis.view.sqlconsole.ui;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.markdown4j.Markdown4jProcessor;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -58,6 +60,7 @@ public class FunctionElement {
     private String description;
     private String command;
     private DataSource dataSource;
+    private Markdown4jProcessor mdProcessor = new Markdown4jProcessor();
 
     /**
      * @param functionName Function identifier
@@ -79,7 +82,7 @@ public class FunctionElement {
     public FunctionElement(String functionName, int functionType, String description, DataSource dataSource) {
         this.functionName = functionName;
         this.functionType = functionType;
-        this.description = description;
+        this.description = processMarkdown(description);
         this.dataSource = dataSource;
     }
 
@@ -97,20 +100,33 @@ public class FunctionElement {
     }
 
     String getToolTip() {
-        if(description==null) {
-            //Retrieve function ToolTip
-            try(Connection connection = dataSource.getConnection()) {
-                TableLocation functionLocation = TableLocation.parse(functionName);
-                ResultSet functionData = connection.getMetaData().getProcedures(functionLocation.getCatalog(), functionLocation.getSchema(), functionLocation.getTable());
-                if(functionData.next()) {
-                    description = functionData.getString("REMARKS");
-                }
-                functionData.close();
-            } catch (SQLException ex) {
-                LOGGER.warn("Could not read function remarks");
-            }
+        if (description == null) {
+            description = getProcessedRemarks();
         }
         return description;
+    }
+
+    private String getProcessedRemarks() {
+        // Retrieve function ToolTip
+        try(Connection connection = dataSource.getConnection()) {
+            TableLocation functionLocation = TableLocation.parse(functionName);
+            ResultSet functionData = connection.getMetaData().getProcedures(functionLocation.getCatalog(), functionLocation.getSchema(), functionLocation.getTable());
+            if (functionData.next()) {
+                return processMarkdown(functionData.getString("REMARKS"));
+            }
+            functionData.close();
+        } catch (SQLException ex) {
+            LOGGER.warn("Could not read function remarks");
+        }
+        return null;
+    }
+
+    private String processMarkdown(String remarks) {
+        try {
+            return mdProcessor.process(remarks);
+        } catch (IOException e) {
+            return remarks;
+        }
     }
 
     /**
