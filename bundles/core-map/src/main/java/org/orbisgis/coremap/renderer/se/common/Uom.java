@@ -32,6 +32,8 @@ import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import java.util.Locale;
+
 /**
  * This enumeration contains all the units of measure that are allowed in 
  * Symbology Encoding.
@@ -46,7 +48,7 @@ public enum Uom {
         private static final double IN_IN_FOOT = 12;
         private static final double ONE_THOUSAND = 1000;
         private static final double ONE_HUNDRED = 100;
-        private static final I18n I18N = I18nFactory.getI18n(Uom.class);
+        private static final I18n I18N = I18nFactory.getI18n(Uom.class, Locale.getDefault(), I18nFactory.FALLBACK);
 
         /**
          * Gets an array containing the string representation of all the units

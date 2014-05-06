@@ -571,42 +571,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 */
         }
 
-        /**
-         * the method that actually process the content of a directory, or a
-         * file. If the file is acceptable by the FileFilter, it is processed
-         *
-         * @param file File or Folder to register
-         * @param pm Progress manager
-         */
-        private void processFolder(File file, FileFilter filter, org.orbisgis.progress.ProgressMonitor pm) {
-                /*
-                if (file.isDirectory()) {
-                        pm.startTask(file.getName(), 100);
-                        File[] files = file.listFiles();
-                        if (files != null) {
-                            for (File content : files) {
-                                    if (pm.isCancelled()) {
-                                            break;
-                                    }
-                                    processFolder(content, filter, pm);
-                            }
-                        }
-                        pm.endTask();
-                } else {
-                        DataManager dm = Services.getService(DataManager.class);
-                        DriverManager dr = dm.getSourceManager().getDriverManager();
-                        if (filter.accept(file) && dr.isDriverFileSupported(file)) {
-                                SourceManager sourceManager = dm.getSourceManager();
-                                try {
-                                        String name = sourceManager.getUniqueName(FilenameUtils.removeExtension(file.getName()));
-                                        sourceManager.register(name, file);
-                                } catch (SourceAlreadyExistsException e) {
-                                        LOGGER.error(I18N.tr("The source is already registered : "), e);
-                                }
-                        }
-                }
-                */
-        }
         private void createPopupActions() {
             boolean isEmbeddedDataBase = true;
             try(Connection connection = dataManager.getDataSource().getConnection()) {

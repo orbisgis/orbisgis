@@ -32,6 +32,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -74,7 +75,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public final class PenStroke extends Stroke implements FillNode {
 
-    private static final I18n I18N = I18nFactory.getI18n(PenStroke.class);
+    private static final I18n I18N = I18nFactory.getI18n(PenStroke.class, Locale.getDefault(), I18nFactory.FALLBACK);
     private static final double DEFAULT_WIDTH_PX = 1.0;
     public static final double DEFAULT_WIDTH = .25;
     /**

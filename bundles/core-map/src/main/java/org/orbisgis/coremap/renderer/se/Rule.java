@@ -29,13 +29,16 @@
 package org.orbisgis.coremap.renderer.se;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.opengis.se._2_0.core.ElseFilterType;
 import net.opengis.se._2_0.core.RuleType;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.map.MapTransform;
@@ -71,6 +74,7 @@ public final class Rule extends AbstractSymbolizerNode {
     private Double minScaleDenom = null;
     private Double maxScaleDenom = null;
     private CompositeSymbolizer symbolizer;
+    private static final int FETCH_DIMENSION_LIMIT = 1000;
 
     /**
      * Create a default, empty Rule, with a default inner (and empty) CompositeSymbolizer.
@@ -122,10 +126,38 @@ public final class Rule extends AbstractSymbolizerNode {
                                 symb = new RasterSymbolizer();
                                 break;
                         */
-                        int typeCode = SFSUtilities.getGeometryType(connection,TableLocation.parse(layer.getTableReference()),"");
+                        TableLocation location = TableLocation.parse(layer.getTableReference());
+                        List<String> geoms = SFSUtilities.getGeometryFields(connection, location);
+                        String geomFieldName = "the_geom";
+                        if(!geoms.isEmpty()) {
+                            geomFieldName = TableLocation.quoteIdentifier(geoms.get(0));
+                        }
+                        int typeCode = SFSUtilities.getGeometryType(connection,location,"");
                         if(typeCode== GeometryTypeCodes.GEOMETRY || typeCode==GeometryTypeCodes.GEOMCOLLECTION) {
-                            // No symbol for Geometry type code, parse the ResultSet
-                            typeCode = getAccurateType(layer);
+                            // No symbol for Geometry type code, fetch existing values
+                            String dimQuery = String.format("SELECT MIN(gdim) minDim from (SELECT ST_DIMENSION(%s) gdim" +
+                                            " from %s WHERE ST_DIMENSION(%s) IS NOT NULL LIMIT %d)",geomFieldName,
+                                    location.toString(),geomFieldName, FETCH_DIMENSION_LIMIT);
+                            try(Statement st = connection.createStatement();
+                                 ResultSet rs = st.executeQuery(dimQuery)) {
+                                 if(rs.next()) {
+                                     switch (rs.getInt("minDim")) {
+                                         case 2:
+                                             typeCode = GeometryTypeCodes.POLYGON;
+                                             break;
+                                         case 1:
+                                             typeCode = GeometryTypeCodes.LINESTRING;
+                                             break;
+                                         case 0:
+                                             if(!rs.wasNull()) {
+                                                 typeCode = GeometryTypeCodes.POINT;
+                                             }
+                                             break;
+                                     }
+                                 }
+                            } catch (SQLException ex) {
+                                // Ignore
+                            }
                         }
                         switch (typeCode) {
                             case GeometryTypeCodes.POINT:
@@ -148,20 +180,6 @@ public final class Rule extends AbstractSymbolizerNode {
             } catch (SQLException ex) {
                 Logger.getLogger(Rule.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-    }
-
-    /**
-     * We want to handle Geometry and GeometryCollection in a special way. We first check we don't have a dimension
-     * constraint on the column. If we don't, we use the value of the first
-     * @param layer The layer we want to analyze
-     * @return The type found after analysis.
-     */
-    private int getAccurateType(ILayer layer) throws SQLException {
-        try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
-            String tableRef = layer.getTableReference();
-            TableLocation location =  TableLocation.parse(tableRef);
-            return SFSUtilities.getGeometryType(connection, location, "");
         }
     }
 

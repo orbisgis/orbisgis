@@ -55,8 +55,6 @@ public class SourceListModelTest {
         assertEquals(3, sourceListModel.getSize());
         assertEquals("\"TABLE.USERTABLE3\"", sourceListModel.getElementAt(0).getLabel());
         assertEquals("USERTABLE1", TableLocation.parse(sourceListModel.getElementAt(1).getKey()).getTable());
-        assertEquals("PUBLIC", TableLocation.parse(sourceListModel.getElementAt(1).getKey()).getSchema());
-        assertEquals("", TableLocation.parse(sourceListModel.getElementAt(1).getLabel()).getSchema());
         assertEquals("MYSCHEMA.USERTABLE2", sourceListModel.getElementAt(2).getLabel());
     }
 }

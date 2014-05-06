@@ -202,7 +202,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
                 }
             }
             if(accepts && (!checkForDefaultFilter || defaultFilter.accepts(location, tableAttr))) {
-                newModel.add(new CatalogSourceItem(location.toString(), tableAttr.get(IFilter.ATTRIBUTES.LABEL), getIconName(location, tableAttr)));
+                newModel.add(new CatalogSourceItem(location.toString(isH2), tableAttr.get(IFilter.ATTRIBUTES.LABEL), getIconName(location, tableAttr)));
             }
         }
         Collections.sort(newModel, catalogComparator);
@@ -219,6 +219,16 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
     protected void readDatabase() {
         List<Map<IFilter.ATTRIBUTES, String>> newTables = new ArrayList<>(allTables.size());
         try (Connection connection = dataSource.getConnection()) {
+            final String defaultCatalog = connection.getCatalog();
+            String defaultSchema = "PUBLIC";
+            try {
+                if (connection.getSchema() != null) {
+                    defaultSchema = connection.getSchema();
+                }
+            } catch (AbstractMethodError | Exception ex) {
+                // Driver has been compiled with JAVA 6, or is not implemented
+            }
+            catalogComparator.setDefaultSchema(defaultSchema);
             // Fetch Geometry tables
             Map<String,String> tableGeometry = new HashMap<>();
             try(Statement st = connection.createStatement();
@@ -232,8 +242,6 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
             }
             // Fetch all tables
             try(ResultSet rs = connection.getMetaData().getTables(null, null, null, SHOWN_TABLE_TYPES)) {
-                final String defaultCatalog = connection.getCatalog();
-                final String defaultSchema = "PUBLIC";
                 while(rs.next()) {
                     Map<IFilter.ATTRIBUTES, String> tableAttr = new HashMap<>(IFilter.ATTRIBUTES.values().length);
                     TableLocation location = new TableLocation(rs);
@@ -251,7 +259,20 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
                         label.insert(0, ".");
                         label.insert(0, addQuotesIfNecessary(location.getCatalog()));
                     }
-                    tableAttr.put(IFilter.ATTRIBUTES.LOCATION, location.toString());
+                    // Shortcut location for H2 database
+                    TableLocation shortLocation;
+                    if(isH2) {
+                        shortLocation = new TableLocation("",
+                                location.getSchema().equals(defaultSchema) ? "" : location.getSchema(),
+                                location.getTable());
+                    } else {
+                        shortLocation = new TableLocation(location.getCatalog().equalsIgnoreCase(defaultCatalog) ?
+                                "" : location.getCatalog(),
+                                location.getCatalog().equalsIgnoreCase(defaultCatalog) &&
+                                        location.getSchema().equalsIgnoreCase(defaultSchema) ? "" : location.getSchema(),
+                                location.getTable());
+                    }
+                    tableAttr.put(IFilter.ATTRIBUTES.LOCATION, shortLocation.toString(isH2));
                     tableAttr.put(IFilter.ATTRIBUTES.LABEL, label.toString());
                     for(IFilter.ATTRIBUTES attribute : IFilter.ATTRIBUTES.values()) {
                         putAttribute(tableAttr, attribute, rs);
@@ -327,6 +348,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
     }
 
     private static class CatalogComparator implements Comparator<CatalogSourceItem> {
+        private String defaultSchema = "PUBLIC";
         @Override
         public int compare(CatalogSourceItem left, CatalogSourceItem right) {
             TableLocation locationLeft = TableLocation.parse(left.getKey());
@@ -340,9 +362,9 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
             // If catalog the same, sort by schema (default first)
             tmpCompare = NATURAL_COMPARATOR.compare(locationLeft.getSchema(), locationRight.getSchema());
             if(tmpCompare != 0) {
-                if(locationLeft.getSchema().equalsIgnoreCase("PUBLIC")) {
+                if(locationLeft.getSchema().equals(defaultSchema)) {
                     return -1;
-                } else if(locationRight.getSchema().equalsIgnoreCase("PUBLIC")) {
+                } else if(locationRight.getSchema().equalsIgnoreCase(defaultSchema)) {
                     return 1;
                 } else {
                     return tmpCompare;
@@ -350,6 +372,10 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
             }
             // if schema the same, sort by table
             return NATURAL_COMPARATOR.compare(locationLeft.getTable(), locationRight.getTable());
+        }
+
+        public void setDefaultSchema(String defaultSchema) {
+            this.defaultSchema = defaultSchema;
         }
     }
 }
