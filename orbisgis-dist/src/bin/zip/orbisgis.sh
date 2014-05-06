@@ -27,4 +27,4 @@
 # info_at_ orbisgis.org
 #
 
-java -Xmx1024M -jar orbisgis-dist-*.jar $*
+java -Xmx1024M -jar orbisgis.jar $*
