@@ -11,6 +11,7 @@
     <name>orbisgis-dist</name>
     <url>http://maven.apache.org</url>
     <build>
+        <finalName>orbisgis</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
