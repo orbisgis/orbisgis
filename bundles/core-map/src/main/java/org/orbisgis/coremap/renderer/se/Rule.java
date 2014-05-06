@@ -74,6 +74,7 @@ public final class Rule extends AbstractSymbolizerNode {
     private Double minScaleDenom = null;
     private Double maxScaleDenom = null;
     private CompositeSymbolizer symbolizer;
+    private static final int FETCH_DIMENSION_LIMIT = 1000;
 
     /**
      * Create a default, empty Rule, with a default inner (and empty) CompositeSymbolizer.
@@ -134,10 +135,11 @@ public final class Rule extends AbstractSymbolizerNode {
                         int typeCode = SFSUtilities.getGeometryType(connection,location,"");
                         if(typeCode== GeometryTypeCodes.GEOMETRY || typeCode==GeometryTypeCodes.GEOMCOLLECTION) {
                             // No symbol for Geometry type code, fetch existing values
+                            String dimQuery = String.format("SELECT MIN(gdim) minDim from (SELECT ST_DIMENSION(%s) gdim" +
+                                            " from %s WHERE ST_DIMENSION(%s) IS NOT NULL LIMIT %d)",geomFieldName,
+                                    location.toString(),geomFieldName, FETCH_DIMENSION_LIMIT);
                             try(Statement st = connection.createStatement();
-                                 ResultSet rs = st.executeQuery("SELECT MIN(ST_DIMENSION("+ geomFieldName +
-                                         ")) minDim FROM "+location.toString()+" WHERE ST_DIMENSION(" + geomFieldName +
-                                         ") IS NOT NULL;")) {
+                                 ResultSet rs = st.executeQuery(dimQuery)) {
                                  if(rs.next()) {
                                      switch (rs.getInt("minDim")) {
                                          case 2:

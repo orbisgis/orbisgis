@@ -37,6 +37,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.AreaSymbolizerType;
@@ -75,7 +76,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
         private RealParameter perpendicularOffset;
         private Stroke stroke;
         private Fill fill;
-        private static final I18n I18N = I18nFactory.getI18n(AreaSymbolizer.class);
+        private static final I18n I18N = I18nFactory.getI18n(AreaSymbolizer.class, Locale.getDefault(), I18nFactory.FALLBACK);
 
         /**
          * Build a new AreaSymbolizer, named "Area Symbolizer". It is defined with a

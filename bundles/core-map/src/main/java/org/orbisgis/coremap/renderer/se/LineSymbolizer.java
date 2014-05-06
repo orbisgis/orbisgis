@@ -36,6 +36,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LineSymbolizerType;
@@ -74,7 +75,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 
         private RealParameter perpendicularOffset;
         private Stroke stroke;
-        private static final I18n I18N = I18nFactory.getI18n(LineSymbolizer.class);
+        private static final I18n I18N = I18nFactory.getI18n(LineSymbolizer.class, Locale.getDefault(), I18nFactory.FALLBACK);
 
         /**
          * Instantiate a new default {@code LineSymbolizer}. It's named {@code
