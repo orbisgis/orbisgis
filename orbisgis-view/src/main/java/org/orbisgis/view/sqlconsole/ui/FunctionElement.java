@@ -29,6 +29,7 @@
 package org.orbisgis.view.sqlconsole.ui;
 
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 
 import javax.sql.DataSource;
@@ -36,11 +37,16 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
- * A class to manage function name an type in the jlist function
+ * A class to manage function name and type in the JList function
  * 
  * @author Erwan Bocher
+ * @author Adam Gouge
  */
 public class FunctionElement {
     private static final Logger LOGGER = Logger.getLogger(FunctionElement.class);
@@ -95,7 +101,7 @@ public class FunctionElement {
             //Retrieve function ToolTip
             try(Connection connection = dataSource.getConnection()) {
                 TableLocation functionLocation = TableLocation.parse(functionName);
-                ResultSet functionData = connection.getMetaData().getProcedures(functionLocation.getCatalog(),functionLocation.getSchema(), functionLocation.getTable());
+                ResultSet functionData = connection.getMetaData().getProcedures(functionLocation.getCatalog(), functionLocation.getSchema(), functionLocation.getTable());
                 if(functionData.next()) {
                     description = functionData.getString("REMARKS");
                 }
@@ -111,31 +117,177 @@ public class FunctionElement {
      * @return SQL Command ex: UPPER( param1 VARCHAR )
      */
     String getSQLCommand() {
-        if(command==null) {
+        if (command == null) {
             //Retrieve function ToolTip
-            try(Connection connection = dataSource.getConnection()) {
-                TableLocation functionLocation = TableLocation.parse(functionName);
-                ResultSet functionData = connection.getMetaData().getProcedureColumns(functionLocation.getCatalog(), functionLocation.getSchema(), functionLocation.getTable(), null);
-                StringBuilder sb = new StringBuilder(getFunctionName());
-                sb.append("(");
-                int argCount = 0;
-                while(functionData.next()) {
-                    if(functionData.getInt("COLUMN_TYPE") != DatabaseMetaData.procedureColumnReturn) {
-                        if(argCount++>0) {
-                            sb.append(", ");
-                        }
-                        sb.append(functionData.getString("COLUMN_NAME"));
-                        sb.append(" ");
-                        sb.append(functionData.getString("TYPE_NAME"));
+            try (Connection connection = dataSource.getConnection()) {
+                final DatabaseMetaData metaData = connection.getMetaData();
+                ResultSet functionData = getFunctionData(metaData);
+                try {
+                    StringBuilder sb = new StringBuilder();
+                    Map<Integer, Signature> signatureMap;
+                    if (JDBCUtilities.isH2DataBase(metaData)) {
+                        signatureMap = getH2SignatureMap(functionData);
+                    } else {
+                        signatureMap = getPostGRESignatureMap(functionData);
                     }
+                    buildString(sb, signatureMap);
+                    command = sb.toString();
+                } finally {
+                    functionData.close();
                 }
-                sb.append(")");
-                functionData.close();
-                command = sb.toString();
             } catch (SQLException ex) {
                 LOGGER.warn("Could not read function command");
             }
         }
         return command;
+    }
+
+    private ResultSet getFunctionData(DatabaseMetaData metaData) throws SQLException {
+        TableLocation functionLocation = TableLocation.parse(functionName);
+        return metaData.getProcedureColumns(
+                functionLocation.getCatalog(null),
+                functionLocation.getSchema(null),
+                functionLocation.getTable(),
+                null);
+    }
+
+    private Map<Integer, Signature> getPostGRESignatureMap(ResultSet functionData) throws SQLException {
+        Map<Integer, Signature> sigMap = new HashMap<>();
+        int sigNumber = 0;
+        while (functionData.next()) {
+            final int position = functionData.getInt("ORDINAL_POSITION");
+            final String columnName = functionData.getString("COLUMN_NAME");
+            final String typeName = functionData.getString("TYPE_NAME");
+            // PostGRE separates signatures by an ordinal position of 0
+            // to indicate the return type.
+            if (position == 0) {
+                sigNumber++;
+                // Lazy initialize
+                if (sigMap.get(sigNumber) == null) {
+                    sigMap.put(sigNumber, new Signature(typeName));
+                }
+            } // Any nonzero ordinal position represents an IN parameter.
+            else {
+                // Lazy initialize
+                if (sigMap.get(sigNumber) == null) {
+                    sigMap.put(sigNumber, new Signature());
+                }
+                sigMap.get(sigNumber).getInParams().put(position, columnName + ":" + typeName);
+            }
+        }
+        final TreeMap<Integer, Signature> sortedMap = new TreeMap<>(new ValueComparator(sigMap));
+        sortedMap.putAll(sigMap);
+        return sortedMap;
+    }
+
+    private Map<Integer, Signature> getH2SignatureMap(ResultSet functionData) throws SQLException {
+        final int[] nAndM = getNumberOfSignaturesAndMaxParams();
+        final int numberSignatures = nAndM[0];
+        final int maxParams = nAndM[1];
+        Map<Integer, Signature> sigMap = new HashMap<>();
+        int sigNumber = 0;
+        int oldPosition = 1;
+        int prev = 1;
+        while (functionData.next()) {
+            final int position = functionData.getInt("ORDINAL_POSITION");
+            final String typeName = functionData.getString("TYPE_NAME");
+            if (position > oldPosition) {
+                // Note: This test depends on signatures having parameter count
+                // increasing by one. It will not work, for example, if there are
+                // two signatures, one with length 2 and one with length 4.
+                sigNumber = (position > (maxParams - numberSignatures + 1)) ? ++prev : 1;
+            } else {
+                sigNumber++;
+            }
+            oldPosition = position;
+            if (!sigMap.containsKey(sigNumber)) {
+                sigMap.put(sigNumber, new Signature());
+            }
+            sigMap.get(sigNumber).getInParams().put(position, typeName);
+        }
+        final TreeMap<Integer, Signature> sortedMap = new TreeMap<>(new ValueComparator(sigMap));
+        sortedMap.putAll(sigMap);
+        return sortedMap;
+    }
+
+    private int[] getNumberOfSignaturesAndMaxParams() throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            ResultSet functionData = getFunctionData(connection.getMetaData());
+            try {
+                int oldPosition = 1;
+                boolean foundNumberSignatures = false;
+                int numberSignatures = -1;
+                int maxParams = 0;
+                int count = 0;
+                while (functionData.next()) {
+                    final int position = functionData.getInt("ORDINAL_POSITION");
+                    final int columnType = functionData.getInt("COLUMN_TYPE");
+                    if (columnType != DatabaseMetaData.procedureColumnReturn) {
+                        if (position > maxParams) {
+                            maxParams = position;
+                        }
+                        if (!foundNumberSignatures && position > oldPosition) {
+                            numberSignatures = count;
+                            foundNumberSignatures = true;
+                        }
+                        count++;
+                        oldPosition = position;
+                    }
+                }
+                return new int[]{numberSignatures, maxParams};
+            } finally {
+                functionData.close();
+            }
+        }
+    }
+
+    private void buildString(StringBuilder sb, Map<Integer, Signature> signatureMap) {
+        for (Signature s : signatureMap.values()) {
+            if (!s.getInParams().isEmpty()) {
+                sb.append(functionName).append("(");
+                for (String type : s.getInParams().values()) {
+                    sb.append(type).append(", ");
+                }
+                // Delete extra ', '
+                sb.delete(sb.length() - 2, sb.length());
+                sb.append(")\n");
+            }
+        }
+        // Delete last newline character
+        sb.delete(sb.length() - 1, sb.length());
+    }
+
+    private class Signature {
+
+        private Map<Integer, String> inParams;
+        private String returnType;
+
+        private Signature() {
+            this(null);
+        }
+
+        private Signature(String returnType) {
+            inParams = new HashMap<>();
+            this.returnType = returnType;
+        }
+
+        public Map<Integer, String> getInParams() {
+            return inParams;
+        }
+    }
+
+    private class ValueComparator implements Comparator<Integer> {
+
+        private Map<Integer, Signature> baseMap;
+
+        private ValueComparator(Map<Integer, Signature> baseMap) {
+            this.baseMap = baseMap;
+        }
+
+        @Override
+        public int compare(Integer o1, Integer o2) {
+            // We never return 0 so as to not merge keys.
+            return baseMap.get(o1).getInParams().size() >= baseMap.get(o2).getInParams().size() ? 1 : -1;
+        }
     }
 }
