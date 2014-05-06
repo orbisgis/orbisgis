@@ -27,4 +27,4 @@
 @REM info_at_ orbisgis.org
 @REM
 
-start "OrbisGIS" "javaw" -Xmx1024M -jar orbisgis-dist-4.0.2-SNAPSHOT.jar %*
+start "OrbisGIS" "javaw" -Xmx1024M -jar orbisgis.jar %*
