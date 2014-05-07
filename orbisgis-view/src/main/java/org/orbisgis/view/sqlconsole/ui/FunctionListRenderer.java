@@ -61,8 +61,8 @@ public class FunctionListRenderer extends ListLaFRenderer<FunctionElement> {
                         JLabel renderingComp = (JLabel) nativeCell;
                         renderingComp.setIcon(getFunctionIcon(sqlFunction));
                         renderingComp.setText(sqlFunction.getFunctionName());
-                        renderingComp.setToolTipText("<html><body><p style='width: "
-                                + TOOLTIP_WIDTH_PX + "px;'>" + sqlFunction.getProcessedToolTip()
+                        renderingComp.setToolTipText("<html><body><p style='width: " + TOOLTIP_WIDTH_PX + "px;'>"
+                                + sqlFunction.getProcessedToolTip()
                                 + "</p></body></html>");
                 }
                 return nativeCell;
