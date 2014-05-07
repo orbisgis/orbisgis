@@ -40,6 +40,7 @@ public class FunctionElementTest {
 //                ST_ShortestPathLength.REMARKS,
                 dataSource);
         final String toolTip = f.getToolTip();
+        final String processedToolTip = f.getProcessedToolTip();
 //        assertEquals("ST_SHORTESTPATH(VARCHAR, VARCHAR, INTEGER, INTEGER)\n"
 //                        + "ST_SHORTESTPATH(VARCHAR, VARCHAR, VARCHAR, INTEGER, INTEGER)",
 //                f.getSQLCommand()

@@ -82,7 +82,7 @@ public class FunctionElement {
     public FunctionElement(String functionName, int functionType, String description, DataSource dataSource) {
         this.functionName = functionName;
         this.functionType = functionType;
-        this.description = processMarkdown(description);
+        this.description = description;
         this.dataSource = dataSource;
     }
 
@@ -101,24 +101,28 @@ public class FunctionElement {
 
     String getToolTip() {
         if (description == null) {
-            description = getProcessedRemarks();
+            description = getRemarks();
         }
         return description;
     }
 
-    private String getProcessedRemarks() {
+    private String getRemarks() {
         // Retrieve function ToolTip
         try(Connection connection = dataSource.getConnection()) {
             TableLocation functionLocation = TableLocation.parse(functionName);
             ResultSet functionData = connection.getMetaData().getProcedures(functionLocation.getCatalog(), functionLocation.getSchema(), functionLocation.getTable());
             if (functionData.next()) {
-                return processMarkdown(functionData.getString("REMARKS"));
+                return functionData.getString("REMARKS");
             }
             functionData.close();
         } catch (SQLException ex) {
             LOGGER.warn("Could not read function remarks");
         }
         return null;
+    }
+
+    String getProcessedToolTip() {
+        return processMarkdown(getToolTip());
     }
 
     private String processMarkdown(String remarks) {
