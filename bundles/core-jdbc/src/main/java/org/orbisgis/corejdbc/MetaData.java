@@ -28,6 +28,7 @@
  */
 package org.orbisgis.corejdbc;
 
+import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.xnap.commons.i18n.I18n;
@@ -45,6 +46,8 @@ import java.util.Map;
  */
 public class MetaData {
     private static final I18n I18N = I18nFactory.getI18n(MetaData.class, Locale.getDefault(), I18nFactory.FALLBACK);
+    private static final Logger LOGGER = Logger.getLogger(MetaData.class);
+
     /**
      * Returns a new unique name when registering a {@link javax.sql.DataSource}.
      * @param table Table identifier
@@ -261,5 +264,83 @@ public class MetaData {
             }
         }
         return pkName;
+    }
+
+    /**
+     * Show known column meta data using JDBC
+     * @param meta DatabaseMetaData instance
+     * @param tableReference Table identifier
+     * @param col Column index [1-n]
+     * @return Localised column information
+     * @throws SQLException
+     */
+    public static String getColumnInformations(DatabaseMetaData meta, String tableReference, int col) throws SQLException {
+        TableLocation table = TableLocation.parse(tableReference);
+        StringBuilder infos = new StringBuilder();
+        try(ResultSet rs = meta.getColumns(table.getCatalog(), table.getSchema(), table.getTable(), null)) {
+            while (rs.next()) {
+                if(rs.getInt("ORDINAL_POSITION") == col) {
+                    infos.append(I18N.tr("\nField name :\t{0}\n",rs.getString("COLUMN_NAME")));
+                    infos.append(I18N.tr("Field type :\t{0}\n",rs.getString("TYPE_NAME")));
+                    String remarks = rs.getString("REMARKS");
+                    if(remarks != null && !remarks.isEmpty()) {
+                        infos.append(I18N.tr("Field remarks :\t{0}\n",remarks));
+                    }
+                    int columnSize = rs.getInt("COLUMN_SIZE");
+                    if(!rs.wasNull() && Integer.MAX_VALUE > columnSize) {
+                        infos.append(I18N.tr("Size :\t{0}\n", columnSize));
+                    }
+                    int decimalDigits = rs.getInt("DECIMAL_DIGITS");
+                    if(!rs.wasNull() && Integer.MAX_VALUE > decimalDigits) {
+                        infos.append(I18N.tr("Decimal digits :\t{0}\n", decimalDigits));
+                    }
+                    int nullable = rs.getInt("NULLABLE");
+                    if(!rs.wasNull()) {
+                        switch (nullable) {
+                            case DatabaseMetaData.columnNoNulls:
+                                // JDBC says might not allow <code>NULL</code> values
+                                infos.append(I18N.tr("Nullable : {0}\n", rs.getString("IS_NULLABLE")));
+                                break;
+                            case DatabaseMetaData.columnNullable:
+                                infos.append(I18N.tr("Nullable : allows NULL values\n"));
+                                break;
+                            default:
+                                infos.append(I18N.tr("Nullable : Unknown\n"));
+                        }
+                    }
+                    infos.append(I18N.tr("Default value :\t{0}\n", rs.getString("COLUMN_DEF")));
+                    infos.append(I18N.tr("Auto increment :\t{0}\n", rs.getString("IS_AUTOINCREMENT")));
+                    break;
+                }
+            }
+        }
+        infos.append(I18N.tr("Constraints :\n"));
+        try(ResultSet rs = meta.getIndexInfo(table.getCatalog(), table.getSchema(), table.getTable(), false, false)) {
+            while (rs.next()) {
+                if(rs.getInt("ORDINAL_POSITION") == col) {
+                    String filter = rs.getString("FILTER_CONDITION");
+                    if(filter != null && !filter.isEmpty()) {
+                        infos.append(I18N.tr("\t{0} :\t{1}\n",
+                                rs.getString("INDEX_NAME"),filter));
+                    }
+                    short type = rs.getShort("TYPE");
+                    switch (type) {
+                        case DatabaseMetaData.tableIndexStatistic:
+                            infos.append(I18N.tr("\tType :\ttable statistics\n"));
+                            break;
+                        case DatabaseMetaData.tableIndexClustered:
+                            infos.append(I18N.tr("\tType :\tclustered index\n"));
+                            break;
+                        case DatabaseMetaData.tableIndexHashed:
+                            infos.append(I18N.tr("\tType :\thashed index\n"));
+                            break;
+                        case DatabaseMetaData.tableIndexOther:
+                            infos.append(I18N.tr("\tType :\tother index\n"));
+                            break;
+                    }
+                }
+            }
+        }
+        return infos.toString();
     }
 }

@@ -59,6 +59,7 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
@@ -611,36 +612,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         public void onMenuShowInformations() {
             int col = popupCellAdress.x + 1;
             try(Connection connection = dataSource.getConnection()) {
-                String colName,typeName;
                 DatabaseMetaData meta = connection.getMetaData();
-                TableLocation table = TableLocation.parse(tableEditableElement.getTableReference());
-                StringBuilder infos = new StringBuilder();
-                try(ResultSet rs = meta.getColumns(table.getCatalog(), table.getSchema(), table.getTable(), null)) {
-                    while (rs.next()) {
-                        if(rs.getInt("ORDINAL_POSITION") == col) {
-                            infos.append(I18N.tr("\nField name :\t{0}\n",rs.getString("COLUMN_NAME")));
-                            infos.append(I18N.tr("Field type :\t{0}\n",rs.getString("TYPE_NAME")));
-                            String remarks = rs.getString("REMARKS");
-                            if(remarks != null && !remarks.isEmpty()) {
-                                infos.append(I18N.tr("Field remarks :\t{0}\n",remarks));
-                            }
-                            break;
-                        }
-                    }
-                }
-                infos.append(I18N.tr("Constraints :\n"));
-                try(ResultSet rs = meta.getIndexInfo(table.getCatalog(), table.getSchema(), table.getTable(), true, false)) {
-                    while (rs.next()) {
-                        if(rs.getInt("ORDINAL_POSITION") == col) {
-                            String filter = rs.getString("FILTER_CONDITION");
-                            if(filter != null && !filter.isEmpty()) {
-                                infos.append(I18N.tr("\t{0} :\t{1}\n",
-                                       rs.getString("INDEX_NAME"),filter));
-                            }
-                        }
-                    }
-                }
-                LOGGER.info(infos.toString());
+                LOGGER.info(MetaData.getColumnInformations(meta, tableEditableElement.getTableReference(), col));
             } catch( SQLException ex) {
                 LOGGER.error(ex.getLocalizedMessage(),ex);
             }

@@ -41,6 +41,7 @@ import java.sql.Statement;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Nicolas Fortin
@@ -156,5 +157,48 @@ public class JDBCUtilityTest {
                     "('MULTIPOLYGON (((-75 -67, -38 -16, 44 24, 99 26, 112 4, -35 -79, -75 -67)))');");
 
         }
+    }
+
+    @Test
+    public void testColumnInfos() throws SQLException {
+        Locale oldLocale = Locale.getDefault();
+        Locale.setDefault(Locale.ENGLISH);
+        try(Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS TESTMETA");
+            st.execute("CREATE TABLE TESTMETA(gid integer primary key auto_increment, geom MULTIPOLYGON, value double)");
+            st.execute("ALTER TABLE TESTMETA ADD CHECK (value > 5)");
+        }
+        String meta = MetaData.getColumnInformations(connection.getMetaData(), "TESTMETA", 1);
+        assertTrue(meta.startsWith("\n" +
+                "Field name :\tGID\n" +
+                "Field type :\tINTEGER\n" +
+                "Size :\t10\n" +
+                "Decimal digits :\t0\n" +
+                "Nullable : NO\n" +
+                "Default value :\t(NEXT VALUE FOR PUBLIC."));
+        assertTrue(meta.endsWith("Auto increment :\tYES\n" +
+                "Constraints :\n" +
+                "\tType :\tother index\n"));
+        meta = MetaData.getColumnInformations(connection.getMetaData(), "TESTMETA", 2);
+        assertEquals("\n" +
+                "Field name :\tGEOM\n" +
+                "Field type :\tGEOMETRY\n" +
+                "Size :\t6\n" +
+                "Decimal digits :\t0\n" +
+                "Nullable : allows NULL values\n" +
+                "Default value :\tnull\n" +
+                "Auto increment :\tNO\n" +
+                "Constraints :\n", meta);
+        meta = MetaData.getColumnInformations(connection.getMetaData(), "TESTMETA", 3);
+        assertEquals("\n" +
+                "Field name :\tVALUE\n" +
+                "Field type :\tDOUBLE\n" +
+                "Size :\t17\n" +
+                "Decimal digits :\t0\n" +
+                "Nullable : allows NULL values\n" +
+                "Default value :\tnull\n" +
+                "Auto increment :\tNO\n" +
+                "Constraints :\n", meta);
+        Locale.setDefault(oldLocale);
     }
 }
