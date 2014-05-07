@@ -58,7 +58,7 @@ public class FunctionListTransferHandler extends TransferHandler {
                     StringBuilder stringBuilder = new StringBuilder();
                     for(FunctionElement functionElement : list.getSelectedValuesList()) {
                         formatFunctionComment(stringBuilder,
-                                functionElement.getToolTip(),
+                                functionElement.getSQLRemarks(),
                                 functionElement.getSQLCommand());
                     }
                     return new StringSelection(stringBuilder.toString());

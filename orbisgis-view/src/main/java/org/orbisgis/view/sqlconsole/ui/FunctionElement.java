@@ -31,8 +31,10 @@ package org.orbisgis.view.sqlconsole.ui;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.markdown4j.Markdown4jProcessor;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -56,8 +58,10 @@ public class FunctionElement {
      **/
     private final int functionType;
     private String description;
+    private String toolTip;
     private String command;
     private DataSource dataSource;
+    private Markdown4jProcessor mdProcessor = new Markdown4jProcessor();
 
     /**
      * @param functionName Function identifier
@@ -96,13 +100,17 @@ public class FunctionElement {
         return functionType;
     }
 
-    String getToolTip() {
-        if(description==null) {
-            //Retrieve function ToolTip
+    /**
+     * Get SQL function remarks (for use in the SQL console).
+     * @return SQL function remarks
+     */
+    String getSQLRemarks() {
+        if (description == null) {
+            // Retrieve function ToolTip
             try(Connection connection = dataSource.getConnection()) {
                 TableLocation functionLocation = TableLocation.parse(functionName);
                 ResultSet functionData = connection.getMetaData().getProcedures(functionLocation.getCatalog(), functionLocation.getSchema(), functionLocation.getTable());
-                if(functionData.next()) {
+                if (functionData.next()) {
                     description = functionData.getString("REMARKS");
                 }
                 functionData.close();
@@ -111,6 +119,22 @@ public class FunctionElement {
             }
         }
         return description;
+    }
+
+    /**
+     * Build HTML tooltip from SQL remarks.
+     * @return HTML tooltip
+     */
+    String getToolTip() {
+        if (toolTip == null) {
+            final String sqlRemarks = getSQLRemarks();
+            try {
+                return mdProcessor.process(sqlRemarks);
+            } catch (IOException e) {
+                return sqlRemarks;
+            }
+        }
+        return toolTip;
     }
 
     /**
