@@ -58,6 +58,7 @@ public class FunctionElement {
      **/
     private final int functionType;
     private String description;
+    private String toolTip;
     private String command;
     private DataSource dataSource;
     private Markdown4jProcessor mdProcessor = new Markdown4jProcessor();
@@ -99,38 +100,41 @@ public class FunctionElement {
         return functionType;
     }
 
-    String getToolTip() {
+    /**
+     * Get SQL function remarks (for use in the SQL console).
+     * @return SQL function remarks
+     */
+    String getSQLRemarks() {
         if (description == null) {
-            description = getRemarks();
+            // Retrieve function ToolTip
+            try(Connection connection = dataSource.getConnection()) {
+                TableLocation functionLocation = TableLocation.parse(functionName);
+                ResultSet functionData = connection.getMetaData().getProcedures(functionLocation.getCatalog(), functionLocation.getSchema(), functionLocation.getTable());
+                if (functionData.next()) {
+                    description = functionData.getString("REMARKS");
+                }
+                functionData.close();
+            } catch (SQLException ex) {
+                LOGGER.warn("Could not read function remarks");
+            }
         }
         return description;
     }
 
-    private String getRemarks() {
-        // Retrieve function ToolTip
-        try(Connection connection = dataSource.getConnection()) {
-            TableLocation functionLocation = TableLocation.parse(functionName);
-            ResultSet functionData = connection.getMetaData().getProcedures(functionLocation.getCatalog(), functionLocation.getSchema(), functionLocation.getTable());
-            if (functionData.next()) {
-                return functionData.getString("REMARKS");
+    /**
+     * Build HTML tooltip from SQL remarks.
+     * @return HTML tooltip
+     */
+    String getToolTip() {
+        if (toolTip == null) {
+            final String sqlRemarks = getSQLRemarks();
+            try {
+                return mdProcessor.process(sqlRemarks);
+            } catch (IOException e) {
+                return sqlRemarks;
             }
-            functionData.close();
-        } catch (SQLException ex) {
-            LOGGER.warn("Could not read function remarks");
         }
-        return null;
-    }
-
-    String getProcessedToolTip() {
-        return processMarkdown(getToolTip());
-    }
-
-    private String processMarkdown(String remarks) {
-        try {
-            return mdProcessor.process(remarks);
-        } catch (IOException e) {
-            return remarks;
-        }
+        return toolTip;
     }
 
     /**
