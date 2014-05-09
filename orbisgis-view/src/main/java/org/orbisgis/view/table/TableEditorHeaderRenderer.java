@@ -38,6 +38,8 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 
 /**
+ * If the column is a primary key, this class wrap the default renderer in order to show a key icon at the column header.
+ * The text of the column is bold if the icon can not be allocated.
  * @author Nicolas Fortin
  */
 public class TableEditorHeaderRenderer implements TableCellRenderer {
