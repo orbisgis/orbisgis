@@ -50,6 +50,7 @@ import javax.swing.event.RowSorterListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
@@ -877,6 +878,11 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         TableColumn col = new TableColumn(i);
                         String columnName = tableModel.getColumnName(i);
                         col.setHeaderValue(columnName);
+                        TableCellRenderer headerRenderer = col.getHeaderRenderer();
+                        if(!(headerRenderer instanceof TableEditorHeaderRenderer)) {
+                            headerRenderer = new TableEditorHeaderRenderer(table);
+                            col.setHeaderRenderer(headerRenderer);
+                        }
                         colModel.addColumn(col);
                 }
                 table.setColumnModel(colModel);
