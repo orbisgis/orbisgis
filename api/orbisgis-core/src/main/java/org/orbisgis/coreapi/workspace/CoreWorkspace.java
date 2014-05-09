@@ -14,7 +14,6 @@ public interface CoreWorkspace extends Serializable {
     int REVISION_VERSION = 0;  // increment on fix
     String PROP_APPLICATIONFOLDER = "applicationFolder";
     String PROP_WORKSPACEFOLDER = "workspaceFolder";
-    String PROP_RESULTSFOLDER = "resultsFolder";
     String PROP_SOURCEFOLDER = "sourceFolder";
     String PROP_PLUGINFOLDER = "pluginFolder";
     String PROP_PLUGINCACHE = "pluginCache";
@@ -54,6 +53,17 @@ public interface CoreWorkspace extends Serializable {
      * @param password New password for database connection
      */
     void setDataBasePassword(String password);
+
+    /**
+     *
+     * @return True if the selected JDBC connection require a password. H2 doesn't require password by default.
+     */
+    boolean isRequirePassword();
+
+    /**
+     * @param requirePassword Is selected JDBC connection require a password
+     */
+    void setRequirePassword(boolean requirePassword);
 
     /**
      * Get the value of pluginCache
@@ -115,13 +125,6 @@ public interface CoreWorkspace extends Serializable {
      * @return the value of sourceFolder
      */
     String getSourceFolder();
-
-    /**
-     * Get the value of resultsFolder
-     *
-     * @return the value of resultsFolder
-     */
-    String getResultsFolder();
 
     /**
      * Get the value of workspaceFolder

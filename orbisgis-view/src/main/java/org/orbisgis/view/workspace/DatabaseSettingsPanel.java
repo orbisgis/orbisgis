@@ -40,14 +40,8 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
+import javax.swing.*;
+
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.workspace.CoreWorkspaceImpl;
@@ -75,8 +69,8 @@ public class DatabaseSettingsPanel extends JDialog {
     private JTextField connectionName;
     private JTextField urlValue;
     private JTextField userValue;
-    private JPasswordField pswValue;
-    private JComboBox comboBox;
+    private JCheckBox requirePassword;
+    private JComboBox<Object> comboBox;
 
     public DatabaseSettingsPanel() {
         super();
@@ -113,7 +107,7 @@ public class DatabaseSettingsPanel extends JDialog {
             Object[] dbKeys = dbProperties.keySet().toArray();
             mainPanel = new JPanel(new MigLayout());
             JLabel cbLabel = new JLabel(I18N.tr("Saved connections"));
-            comboBox = new JComboBox(dbKeys);
+            comboBox = new JComboBox<Object>(dbKeys);
             comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onUserSelectionChange"));
             mainPanel.add(cbLabel);
             mainPanel.add(comboBox, "span, grow");
@@ -141,9 +135,9 @@ public class DatabaseSettingsPanel extends JDialog {
             mainPanel.add(userLabel);
             mainPanel.add(userValue, "span 1, grow, wrap");
             JLabel pswLabel = new JLabel(I18N.tr("Password"));
-            pswValue = new JPasswordField();
+            requirePassword = new JCheckBox();
             mainPanel.add(pswLabel);
-            mainPanel.add(pswValue, "span 1, grow, wrap");
+            mainPanel.add(requirePassword, "span 1, grow, wrap");
             okBt = new JButton(I18N.tr("&Ok"));
             MenuCommonFunctions.setMnemonic(okBt);
             okBt.addActionListener(EventHandler.create(ActionListener.class, this, "onOk"));
@@ -193,9 +187,6 @@ public class DatabaseSettingsPanel extends JDialog {
         } else if (userValue.getText().isEmpty()) {
             JOptionPane.showMessageDialog(rootPane, I18N.tr("The user name cannot be null."));
             isParametersOk=false;
-        } else if (pswValue.getPassword().length == 0) {
-            JOptionPane.showMessageDialog(rootPane, I18N.tr("The password cannot be null."));
-            isParametersOk=false;
         }
         return isParametersOk;
 
@@ -208,11 +199,11 @@ public class DatabaseSettingsPanel extends JDialog {
         if (checkParameters()) {
             String nameValue = connectionName.getText();
             if (!dbProperties.containsKey(nameValue)) {
-            dbProperties.setProperty(nameValue,  urlValue.getText() + "|" + userValue.getText());
-            comboBox.addItem(nameValue);
-            comboBox.setSelectedItem(nameValue);
-            saveProperties();
-            onUserSelectionChange();
+                dbProperties.setProperty(nameValue,  urlValue.getText() + "|" + userValue.getText());
+                comboBox.addItem(nameValue);
+                comboBox.setSelectedItem(nameValue);
+                saveProperties();
+                onUserSelectionChange();
             }
         }
     }
@@ -275,8 +266,8 @@ public class DatabaseSettingsPanel extends JDialog {
     /**
      * @return Password field
      */
-    public String getPassword() {
-        return new String(pswValue.getPassword());
+    public boolean hasPassword() {
+        return requirePassword.isSelected();
     }
     /**
      * @return URI field
@@ -294,8 +285,7 @@ public class DatabaseSettingsPanel extends JDialog {
 
     /**
      * Set a new JDBC URL.
-     * 
-     * @param jdbcConnectionReference 
+     * @param jdbcConnectionReference JDBC url
      */
     public void setURL(String jdbcConnectionReference) {
         urlValue.setText(jdbcConnectionReference);
@@ -304,19 +294,17 @@ public class DatabaseSettingsPanel extends JDialog {
 
     /**
      * Set a new database user name.
-     *
-     * @param dataBaseUser
+     * @param dataBaseUser User identifier
      */
     public void setUser(String dataBaseUser) {
         userValue.setText(dataBaseUser);
     }
 
     /**
-     * Set a new password.
-     * 
-     * @param dataBasePassword
+     * Set this connection require password.
+     * @param hasPassword True if this connection require a password.
      */
-    public void setPassword(String dataBasePassword) {
-        pswValue.setText(dataBasePassword);
+    public void setHasPassword(Boolean hasPassword) {
+        requirePassword.setSelected(hasPassword);
     }
 }
