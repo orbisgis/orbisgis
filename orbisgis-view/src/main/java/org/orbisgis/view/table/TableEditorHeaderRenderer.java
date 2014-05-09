@@ -42,7 +42,7 @@ import java.beans.PropertyChangeListener;
  */
 public class TableEditorHeaderRenderer implements TableCellRenderer {
     protected TableCellRenderer lookAndFeelRenderer;
-    private boolean isKey = true;
+    private boolean isKey = false;
     private static final String DESCR_IMAGE = "MERGED";
 
     /**
@@ -80,6 +80,7 @@ public class TableEditorHeaderRenderer implements TableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         Component rendering = lookAndFeelRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        boolean failedToUseImage = true;
         if(rendering instanceof JLabel && isKey) {
             JLabel renderLabel = (JLabel)rendering;
             Icon defaultIcon = renderLabel.getIcon();
@@ -87,22 +88,20 @@ public class TableEditorHeaderRenderer implements TableCellRenderer {
                 ImageIcon keyIcon = OrbisGISIcon.getIcon("key");
                 keyIcon.setDescription(DESCR_IMAGE);
                 renderLabel.setIcon(keyIcon);
-            } else {
-                if(!(defaultIcon instanceof ImageIcon)) {
-                    // Generate Image from laf Icon drawer
-                    BufferedImage image = new BufferedImage(defaultIcon.getIconWidth(), defaultIcon.getIconHeight(),
-                            BufferedImage.TYPE_INT_ARGB);
-                    Graphics g = image.getGraphics();
-                    defaultIcon.paintIcon(renderLabel, g, 0, 0);
-                    defaultIcon = new ImageIcon(image);
-                }
-                if(!DESCR_IMAGE.equals(((ImageIcon) defaultIcon).getDescription())) {
-                    ImageIcon defaultImageIcon = (ImageIcon) defaultIcon;
-                    ImageIcon resultIcon = concatenateImages(defaultImageIcon, OrbisGISIcon.getIcon("key"));
-                    resultIcon.setDescription(DESCR_IMAGE);
-                    renderLabel.setIcon(resultIcon);
-                }
+                failedToUseImage = false;
+            } else if(defaultIcon instanceof ImageIcon && !DESCR_IMAGE.equals(((ImageIcon) defaultIcon).getDescription())) {
+                ImageIcon defaultImageIcon = (ImageIcon) defaultIcon;
+                ImageIcon resultIcon = concatenateImages(OrbisGISIcon.getIcon("key"), defaultImageIcon);
+                resultIcon.setDescription(DESCR_IMAGE);
+                renderLabel.setIcon(resultIcon);
+                failedToUseImage = false;
+            } else if(defaultIcon instanceof ImageIcon) {
+                failedToUseImage = false;
             }
+        }
+        // Use Bold instead of Key icon if icon is not accepted by the component
+        if(failedToUseImage && isKey && rendering.getFont() != null) {
+            rendering.setFont(rendering.getFont().deriveFont(Font.BOLD));
         }
         return rendering;
     }

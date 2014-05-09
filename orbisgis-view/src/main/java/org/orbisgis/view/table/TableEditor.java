@@ -880,12 +880,34 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         col.setHeaderValue(columnName);
                         TableCellRenderer headerRenderer = col.getHeaderRenderer();
                         if(!(headerRenderer instanceof TableEditorHeaderRenderer)) {
-                            headerRenderer = new TableEditorHeaderRenderer(table);
-                            col.setHeaderRenderer(headerRenderer);
+                            TableEditorHeaderRenderer newRenderer = new TableEditorHeaderRenderer(table);
+                            try {
+                                newRenderer.setKey(isPrimaryKey(columnName));
+                            } catch (SQLException ex) {
+                                LOGGER.error(ex.getLocalizedMessage(), ex);
+                            }
+                            col.setHeaderRenderer(newRenderer);
                         }
                         colModel.addColumn(col);
                 }
                 table.setColumnModel(colModel);
+        }
+
+        private boolean isPrimaryKey(String columnName) throws SQLException {
+            TableLocation tableLocation = TableLocation.parse(tableEditableElement.getTableReference());
+            try(Connection connection = dataSource.getConnection();
+                ResultSet rs = connection.getMetaData().getPrimaryKeys(tableLocation.getCatalog(null),
+                        tableLocation.getSchema(null), tableLocation.getTable())) {
+                while (rs.next()) {
+                    // If the schema is not specified, public must be the schema
+                    if (!tableLocation.getSchema().isEmpty() || "public".equalsIgnoreCase(rs.getString("TABLE_SCHEM"))) {
+                        if (columnName.equals(rs.getString("COLUMN_NAME"))) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         /**
