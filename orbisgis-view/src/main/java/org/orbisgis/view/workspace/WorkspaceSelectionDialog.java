@@ -98,11 +98,14 @@ public class WorkspaceSelectionDialog extends JPanel {
         JLabel subCheckBox = new JLabel("<html><body><p style='width: 200px;'>" +
                 I18N.tr("Setting this workspace as default will allow you to " +
                         "skip this dialog next time") + "</p></body></html>");
+        JButton deleteButton = new CustomButton(OrbisGISIcon.getIcon("remove"));
+        deleteButton.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteWorkspaceEntry"));
         subCheckBox.setFont(smallFont);
         // Add components
         add(chooseLabel);
         add(subChooseLabel);
-        add(comboBox.getComponent());
+        add(comboBox.getComponent(), "split 2");
+        add(deleteButton, "gapleft 0");
         add(Box.createGlue());
         add(defaultCheckBox);
         add(subCheckBox);
@@ -113,7 +116,17 @@ public class WorkspaceSelectionDialog extends JPanel {
                 EventHandler.create(ActionListener.class, this, "onOpenDBPanel"));
         add(customDataBase);
         onWorkspaceFolderChange();
-    }   
+    }
+
+    /**
+     * User click on delete button.
+     */
+    public void onDeleteWorkspaceEntry() {
+        JComboBox combo = comboBox.getComboBox();
+        if(combo.getItemCount() != 0 && combo.getSelectedIndex() != -1) {
+            combo.removeItemAt(combo.getSelectedIndex());
+        }
+    }
    
     /**
      * The user click on add open button
