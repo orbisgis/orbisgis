@@ -262,6 +262,9 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 return table;
         }
         
+        /**
+         * Right click on column header.
+         */ 
         public void onMouseActionOnTableHeader(MouseEvent e) {
                 //Does this action correspond to a popup request
                 if (e.isPopupTrigger()) { 
@@ -271,7 +274,9 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         menu.show(e.getComponent(), e.getX(), e.getY());
                 }
         }
-
+        /**
+         * Right click on a table cell. 
+         */
         public void onMouseActionOnTableCells(MouseEvent e) {
                 //Does this action correspond to a popup request
                 if (e.isPopupTrigger()) { 
