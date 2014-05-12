@@ -120,16 +120,19 @@ public class WorkspaceSelectionDialog extends JPanel {
      */
     public void onOpenDBPanel() {
         DatabaseSettingsPanel databaseSettingsPanel = new DatabaseSettingsPanel((JDialog) getTopLevelAncestor());
+        databaseSettingsPanel.setConnectionName(new File(selectedWorkspace.getWorkspaceFolder()).getName());
         databaseSettingsPanel.setUser(selectedWorkspace.getDataBaseUser());
         databaseSettingsPanel.setURL(selectedWorkspace.getJDBCConnectionReference());
         databaseSettingsPanel.setHasPassword(selectedWorkspace.isRequirePassword());
         databaseSettingsPanel.setAlwaysOnTop(true);
         databaseSettingsPanel.setModal(true);
         databaseSettingsPanel.setVisible(true);
-        // Read selected attributes
-        selectedWorkspace.setDataBaseUser(databaseSettingsPanel.getUser());
-        selectedWorkspace.setRequirePassword(databaseSettingsPanel.hasPassword());
-        selectedWorkspace.setJDBCConnectionReference(databaseSettingsPanel.getJdbcURI());
+        if(!databaseSettingsPanel.isCanceled()) {
+            // Read selected attributes
+            selectedWorkspace.setDataBaseUser(databaseSettingsPanel.getUser());
+            selectedWorkspace.setRequirePassword(databaseSettingsPanel.hasPassword());
+            selectedWorkspace.setJDBCConnectionReference(databaseSettingsPanel.getJdbcURI());
+        }
     }
 
     /**
