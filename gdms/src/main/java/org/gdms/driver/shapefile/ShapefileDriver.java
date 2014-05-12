@@ -146,7 +146,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         } else if (type.id == ShapeType.ARCZ.id) {
                                 gtype = Type.MULTILINESTRING;
                                 dc = new Dimension3DConstraint(3);
-                        } else if (type.id == ShapeType.POLYGONZ.id) {
+                        } else if (type.id == ShapeType.POLYGONZ.id || type.id == ShapeType.MULTIPATCH.id) {
                                 gtype = Type.MULTIPOLYGON;
                                 dc = new Dimension3DConstraint(3);
                         } else if (type.id == ShapeType.MULTIPOINTZ.id) {
