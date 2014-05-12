@@ -164,7 +164,20 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
         }
     }
 
+    /**
+     * JDBC uri.In order to keep settings call {@link #writeUriFile()}
+     * @param jdbcURI "jdbc:.." URI
+     */
+    public void setJDBCConnectionReference(String jdbcURI) {
+        this.jdbcURI = jdbcURI;
+    }
+
     private void readJDBCConnectionReference() {
+        // Set default value, if one is missing
+        jdbcURI = getDefaultJDBCConnectionString(getWorkspaceFolder());
+        databaseUser = DEFAULT_JDBC_USER;
+        requirePassword = DEFAULT_JDBC_REQUIREPASSWORD;
+        // Parse configuration file
         String uriFile = getDataBaseUriFilePath();
         if(uriFile!=null) {
             File dbUriFile = new File(uriFile);
@@ -190,7 +203,6 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
                 }
             }
         }
-        jdbcURI = getDefaultJDBCConnectionString(getWorkspaceFolder());
     }
     @Override
     public String getDataBaseUriFilePath() {

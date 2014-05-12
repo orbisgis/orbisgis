@@ -37,10 +37,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
+import javax.xml.bind.DatatypeConverter;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
@@ -134,7 +137,7 @@ public class DatabaseSettingsPanel extends JDialog {
             userValue = new JTextField();
             mainPanel.add(userLabel);
             mainPanel.add(userValue, "span 1, grow, wrap");
-            JLabel pswLabel = new JLabel(I18N.tr("Password"));
+            JLabel pswLabel = new JLabel(I18N.tr("Require password"));
             requirePassword = new JCheckBox();
             mainPanel.add(pswLabel);
             mainPanel.add(requirePassword, "span 1, grow, wrap");
@@ -192,6 +195,26 @@ public class DatabaseSettingsPanel extends JDialog {
 
     }
 
+    private static List<String> decodeStrings(String encodedStrings) {
+        StringTokenizer tk = new StringTokenizer(encodedStrings, "|");
+        List<String> strings = new ArrayList<>(tk.countTokens());
+        for(String var = tk.nextToken() ; tk.hasMoreTokens(); var = tk.nextToken()) {
+            strings.add(new String(DatatypeConverter.parseBase64Binary(var)));
+        }
+        return strings;
+    }
+
+    private static String encodeStrings(String... vars) {
+        StringBuilder sb = new StringBuilder();
+        for(String var : vars) {
+            if(sb.length() != 0) {
+                sb.append("|");
+            }
+            sb.append(DatatypeConverter.printBase64Binary(var.getBytes()));
+        }
+        return sb.toString();
+    }
+
     /**
      * Click on the Ok button.
      */
@@ -199,7 +222,9 @@ public class DatabaseSettingsPanel extends JDialog {
         if (checkParameters()) {
             String nameValue = connectionName.getText();
             if (!dbProperties.containsKey(nameValue)) {
-                dbProperties.setProperty(nameValue,  urlValue.getText() + "|" + userValue.getText());
+                // Encode attributes in Base64 in order to be able to use separator char without worries
+                dbProperties.setProperty(nameValue,  encodeStrings(urlValue.getText(),userValue.getText(),
+                        Boolean.toString(requirePassword.isSelected())));
                 comboBox.addItem(nameValue);
                 comboBox.setSelectedItem(nameValue);
                 saveProperties();
@@ -257,9 +282,12 @@ public class DatabaseSettingsPanel extends JDialog {
             String value = comboBox.getSelectedItem().toString();
             String data = dbProperties.getProperty(value);
             connectionName.setText(value);
-            StringTokenizer st = new StringTokenizer(data, "|");
-            urlValue.setText(st.nextToken());
-            userValue.setText(st.nextToken());
+            List<String> config = decodeStrings(data);
+            if(config.size() == 3) {
+                urlValue.setText(config.get(0));
+                userValue.setText(config.get(1));
+                requirePassword.setSelected(Boolean.parseBoolean(config.get(2)));
+            }
         }
     }
     

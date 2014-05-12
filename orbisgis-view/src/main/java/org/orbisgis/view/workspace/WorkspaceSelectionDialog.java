@@ -120,10 +120,16 @@ public class WorkspaceSelectionDialog extends JPanel {
      */
     public void onOpenDBPanel() {
         DatabaseSettingsPanel databaseSettingsPanel = new DatabaseSettingsPanel((JDialog) getTopLevelAncestor());
+        databaseSettingsPanel.setUser(selectedWorkspace.getDataBaseUser());
+        databaseSettingsPanel.setURL(selectedWorkspace.getJDBCConnectionReference());
+        databaseSettingsPanel.setHasPassword(selectedWorkspace.isRequirePassword());
         databaseSettingsPanel.setAlwaysOnTop(true);
         databaseSettingsPanel.setModal(true);
         databaseSettingsPanel.setVisible(true);
         // Read selected attributes
+        selectedWorkspace.setDataBaseUser(databaseSettingsPanel.getUser());
+        selectedWorkspace.setRequirePassword(databaseSettingsPanel.hasPassword());
+        selectedWorkspace.setJDBCConnectionReference(databaseSettingsPanel.getJdbcURI());
     }
 
     /**
@@ -179,12 +185,12 @@ public class WorkspaceSelectionDialog extends JPanel {
                     //The user must input the password
                     JPanel passwordPanel = new JPanel(new BorderLayout());
                     JPasswordField pass = new JPasswordField(10);
-                    JLabel message = new JLabel(I18N.tr("{0}\nDataBase password for {1}:",
+                    JLabel message = new JLabel(I18N.tr("<html>{0}<br>DataBase password for {1}:</html>",
                             panel.selectedWorkspace.getJDBCConnectionReference(),
                             panel.selectedWorkspace.getDataBaseUser()));
                     passwordPanel.add(pass, BorderLayout.CENTER);
                     passwordPanel.add(message, BorderLayout.NORTH);
-                    if(JOptionPane.showConfirmDialog(panel, pass,
+                    if(JOptionPane.showConfirmDialog(panel, passwordPanel,
                             I18N.tr("Enter database password"), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
                         coreWorkspace.setDataBasePassword(new String(pass.getPassword()));
                     } else {
@@ -208,7 +214,7 @@ public class WorkspaceSelectionDialog extends JPanel {
      * The user select another workspace folder.Update the JDBC uri
      */
     public void onWorkspaceFolderChange() {
-        //TODO check for workspace validity
+        selectedWorkspace.setWorkspaceFolder(comboBox.getValue());
     }
 
     /**
