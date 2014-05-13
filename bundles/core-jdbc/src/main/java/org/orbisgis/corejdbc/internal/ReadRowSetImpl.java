@@ -290,7 +290,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             resultSetHolder.setCommand(getCommand()+" LIMIT 0");
             cachePrimaryKey(pm);
         } else {
-            LOGGER.warn(I18N.tr("The table %s does not contain a primary key, a vast amount of memory may be required", location));
+            LOGGER.warn(I18N.tr("Table {0} does not contain a primary key. A vast amount of memory may be required.", location));
             resultSetHolder.setCommand(getCommand());
             PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, resultSetHolder, "cancel");
             pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
