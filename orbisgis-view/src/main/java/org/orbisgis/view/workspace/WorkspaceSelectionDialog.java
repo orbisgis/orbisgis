@@ -67,7 +67,6 @@ public class WorkspaceSelectionDialog extends JPanel {
 
     private void init(Component parent,
                       CoreWorkspaceImpl coreWorkspace) {
-
         // Get the list of known workspaces
         List<File> knownWorkspaces = coreWorkspace.readKnownWorkspacesPath();
 

@@ -45,8 +45,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.swing.JButton;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
+
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
@@ -192,7 +192,7 @@ public class Core {
             File defaultWorkspace = coreWorkspace.readDefaultWorkspacePath();
             if (defaultWorkspace == null || !ViewWorkspace.isWorkspaceValid(defaultWorkspace)) {
                 try {
-                    PromptUserForSelectingWorkspace dial = new PromptUserForSelectingWorkspace(coreWorkspace);
+                    PromptUserForSelectingWorkspace dial = new PromptUserForSelectingWorkspace(coreWorkspace, mainFrame);
                     SwingUtilities.invokeAndWait(dial);
                     if (!dial.isOk()) {
                         throw new InterruptedException("Canceled by user.");
@@ -224,13 +224,15 @@ public class Core {
 
     private static class PromptUserForSelectingWorkspace implements Runnable {
         private CoreWorkspaceImpl coreWorkspace;
+        private JFrame mainFrame;
         /**
          * User do not cancel workspace selection
          */
         private boolean ok = false;
 
-        public PromptUserForSelectingWorkspace(CoreWorkspaceImpl coreWorkspace) {
+        public PromptUserForSelectingWorkspace(CoreWorkspaceImpl coreWorkspace,JFrame mainFrame) {
             this.coreWorkspace = coreWorkspace;
+            this.mainFrame = mainFrame;
         }
 
         /**
@@ -245,7 +247,7 @@ public class Core {
         @Override
         public void run() {
             // Ask the user to select a workspace folder
-            if (WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, coreWorkspace)) {
+            if (WorkspaceSelectionDialog.showWorkspaceFolderSelection(mainFrame, coreWorkspace)) {
                 ok = true;
             }
         }
