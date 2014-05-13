@@ -31,6 +31,7 @@ package org.orbisgis.view.workspace;
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.workspace.CoreWorkspaceImpl;
+import org.orbisgis.coreapi.workspace.CoreWorkspace;
 import org.orbisgis.sif.multiInputPanel.DirectoryComboBoxChoice;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
@@ -44,6 +45,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import org.orbisgis.sif.components.CustomButton;
 
 /**
  * GUI for Workspace selection.
@@ -55,17 +57,9 @@ public class WorkspaceSelectionDialog extends JPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(WorkspaceSelectionDialog.class);
     private static final Logger LOGGER = Logger.getLogger(WorkspaceSelectionDialog.class);
-
-    private static final int JDBC_USER_FIELD_COLUMNS = 6;
-    private static final int JDBC_PASSWORD_FIELD_COLUMNS = 6;
-    private static final int JDBC_URL_FIELD_COLUMNS = 30;
-    private static final int JDBC_URL_FIELD_ROWS = 4;
-
     private DirectoryComboBoxChoice comboBox;
     private JCheckBox defaultCheckBox;
-    private JPasswordField password;
-    private JTextField jdbcURI;
-    private JTextField user;
+    private CoreWorkspaceImpl selectedWorkspace = new CoreWorkspaceImpl();
 
     private WorkspaceSelectionDialog() {
         super(new MigLayout("wrap 1"));
@@ -73,7 +67,6 @@ public class WorkspaceSelectionDialog extends JPanel {
 
     private void init(Component parent,
                       CoreWorkspaceImpl coreWorkspace) {
-
         // Get the list of known workspaces
         List<File> knownWorkspaces = coreWorkspace.readKnownWorkspacesPath();
 
@@ -93,39 +86,65 @@ public class WorkspaceSelectionDialog extends JPanel {
                         I18N.tr("Choose a previous OrbisGIS workspace or create a new one")
                         + "</p></body></html>");
         subChooseLabel.setFont(smallFont);
-        comboBox =
-                new DirectoryComboBoxChoice(knownWorkspaces);
+        comboBox = new DirectoryComboBoxChoice(knownWorkspaces);
         if (!knownWorkspaces.isEmpty()) {
             // Select the default workspace on the combo box
             comboBox.setValue(knownWorkspaces.get(0).getAbsolutePath());
         }
-        ActionListener selectionDone = EventHandler.create(ActionListener.class, this,"onWorkspaceFolderChange" );
+        ActionListener selectionDone = EventHandler.create(ActionListener.class, this, "onWorkspaceFolderChange");
         comboBox.getComboBox().addActionListener(selectionDone);
         defaultCheckBox = new JCheckBox(I18N.tr("Set as default?"));
         JLabel subCheckBox = new JLabel("<html><body><p style='width: 200px;'>" +
                 I18N.tr("Setting this workspace as default will allow you to " +
                         "skip this dialog next time") + "</p></body></html>");
+        JButton deleteButton = new CustomButton(OrbisGISIcon.getIcon("remove"));
+        deleteButton.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteWorkspaceEntry"));
         subCheckBox.setFont(smallFont);
-        jdbcURI = new JTextField(JDBC_URL_FIELD_COLUMNS);
-        user = new JTextField(JDBC_USER_FIELD_COLUMNS);
-        password = new JPasswordField(JDBC_PASSWORD_FIELD_COLUMNS);
-        JLabel uriLabel = new JLabel(I18N.tr("JDBC Url"));
-        JLabel userLabel = new JLabel(I18N.tr("User"));
-        JLabel passwordLabel = new JLabel(I18N.tr("Password"));
         // Add components
         add(chooseLabel);
         add(subChooseLabel);
-        add(comboBox.getComponent());
+        add(comboBox.getComponent(), "split 2");
+        add(deleteButton, "gapleft 0");
         add(Box.createGlue());
         add(defaultCheckBox);
         add(subCheckBox);
-        add(uriLabel);
-        add(jdbcURI);
-        add(userLabel, "split 4");
-        add(user);
-        add(passwordLabel);
-        add(password);
+        CustomButton customDataBase = new CustomButton(OrbisGISIcon.getIcon("database"));
+        customDataBase.setText(I18N.tr("Customize your database"));
+        customDataBase.setToolTipText(I18N.tr("Click to customize your database."));
+        customDataBase.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onOpenDBPanel"));
+        add(customDataBase);
         onWorkspaceFolderChange();
+    }
+
+    /**
+     * User click on delete button.
+     */
+    public void onDeleteWorkspaceEntry() {
+        JComboBox combo = comboBox.getComboBox();
+        if(combo.getItemCount() != 0 && combo.getSelectedIndex() != -1) {
+            combo.removeItemAt(combo.getSelectedIndex());
+        }
+    }
+   
+    /**
+     * The user click on add open button
+     */
+    public void onOpenDBPanel() {
+        DatabaseSettingsPanel databaseSettingsPanel = new DatabaseSettingsPanel((JDialog) getTopLevelAncestor());
+        databaseSettingsPanel.setConnectionName(new File(selectedWorkspace.getWorkspaceFolder()).getName());
+        databaseSettingsPanel.setUser(selectedWorkspace.getDataBaseUser());
+        databaseSettingsPanel.setURL(selectedWorkspace.getJDBCConnectionReference());
+        databaseSettingsPanel.setHasPassword(selectedWorkspace.isRequirePassword());
+        databaseSettingsPanel.setAlwaysOnTop(true);
+        databaseSettingsPanel.setModal(true);
+        databaseSettingsPanel.setVisible(true);
+        if(!databaseSettingsPanel.isCanceled()) {
+            // Read selected attributes
+            selectedWorkspace.setDataBaseUser(databaseSettingsPanel.getUser());
+            selectedWorkspace.setRequirePassword(databaseSettingsPanel.hasPassword());
+            selectedWorkspace.setJDBCConnectionReference(databaseSettingsPanel.getJdbcURI());
+        }
     }
 
     /**
@@ -140,27 +159,7 @@ public class WorkspaceSelectionDialog extends JPanel {
      */
     public JCheckBox getDefaultCheckBox() {
         return defaultCheckBox;
-    }
-
-    /**
-     * @return Password field
-     */
-    public JPasswordField getPassword() {
-        return password;
-    }
-    /**
-     * @return URI field
-     */
-    public JTextField getJdbcURI() {
-        return jdbcURI;
-    }
-
-    /**
-     * @return User field
-     */
-    public JTextField getUser() {
-        return user;
-    }
+    }    
 
     /**
      * Shows a dialog to choose the workspace folder
@@ -197,6 +196,22 @@ public class WorkspaceSelectionDialog extends JPanel {
                 return false;
             }
             try {
+                if(panel.selectedWorkspace.isRequirePassword()) {
+                    //The user must input the password
+                    JPanel passwordPanel = new JPanel(new BorderLayout());
+                    JPasswordField pass = new JPasswordField(10);
+                    JLabel message = new JLabel(I18N.tr("<html>{0}<br>DataBase password for {1}:</html>",
+                            panel.selectedWorkspace.getJDBCConnectionReference(),
+                            panel.selectedWorkspace.getDataBaseUser()));
+                    passwordPanel.add(pass, BorderLayout.CENTER);
+                    passwordPanel.add(message, BorderLayout.NORTH);
+                    if(JOptionPane.showConfirmDialog(panel, passwordPanel,
+                            I18N.tr("Enter database password"), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+                        coreWorkspace.setDataBasePassword(new String(pass.getPassword()));
+                    } else {
+                        return false;
+                    }
+                }
                 updateWorkspace(coreWorkspace, panel.getComboBox(), oldWorkspace,
                         panel);
             } catch (IOException ex) {
@@ -214,15 +229,11 @@ public class WorkspaceSelectionDialog extends JPanel {
      * The user select another workspace folder.Update the JDBC uri
      */
     public void onWorkspaceFolderChange() {
-        CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();
-        tempWorkspace.setWorkspaceFolder(getComboBox().getValue());
-        jdbcURI.setText(tempWorkspace.getJDBCConnectionReference());
-        user.setText(tempWorkspace.getDataBaseUser());
-        password.setText(tempWorkspace.getDataBasePassword());
+        selectedWorkspace.setWorkspaceFolder(comboBox.getValue());
     }
 
     /**
-     * Update and/or initialize the user-selected workspace as necessary.
+     * Called when the user change/set the workspace folder of OrbisGIS.
      * @param coreWorkspace       Core workspace
      * @param comboBox            ComboBox with possible workspace directories
      * @param oldWorkspacePath    Path of the previous workspace
@@ -238,13 +249,6 @@ public class WorkspaceSelectionDialog extends JPanel {
         } else {
             coreWorkspace.setDefaultWorkspace(null);
         }
-        String jdbcUri = wkDialog.getJdbcURI().getText();
-        // Create a temporary workspace to compute future path
-        CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();
-        tempWorkspace.setWorkspaceFolder(wkDialog.getComboBox().getValue());
-        if(jdbcUri.isEmpty()) {
-            jdbcUri = tempWorkspace.getJDBCConnectionReference();
-        }
         // Save the workspace list, including the previous one
         List<File> workspaces = comboBox.getValues();
         if (oldWorkspacePath != null && !oldWorkspacePath.isEmpty()) {
@@ -257,13 +261,9 @@ public class WorkspaceSelectionDialog extends JPanel {
         if (!wkFile.exists() || (files != null && files.length == 0)) {
             ViewWorkspace.initWorkspaceFolder(wkFile);
         }
-        // Save the database.uri file
-        try(FileWriter fileWriter = new FileWriter(tempWorkspace.getDataBaseUriFilePath())) {
-            fileWriter.write(jdbcUri+"\n");
-        }
+        // Write chosen jdbc attributes
+        wkDialog.selectedWorkspace.writeUriFile();
         // Do this at the end because there is trigger on property change
-        coreWorkspace.setDataBaseUser(wkDialog.getUser().getText());
-        coreWorkspace.setDataBasePassword(new String(wkDialog.getPassword().getPassword()));
         coreWorkspace.setWorkspaceFolder(wkDialog.getComboBox().getValue());
     }
 }

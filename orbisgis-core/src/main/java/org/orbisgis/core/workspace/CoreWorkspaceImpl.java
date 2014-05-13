@@ -47,25 +47,27 @@ import org.xnap.commons.i18n.I18nFactory;
 
 public class CoreWorkspaceImpl implements CoreWorkspace {
     private static final Logger LOGGER = Logger.getLogger(CoreWorkspaceImpl.class);
-    private static final I18n I18N = I18nFactory.getI18n(CoreWorkspaceImpl.class);
     private static final long serialVersionUID = 6L; /*<! Update this integer while adding properties (1 for each new property)*/
-
-    private PropertyChangeSupport propertySupport;
-    private String applicationFolder = new File(System.getProperty("user.home"))
+    private static final String DEFAULT_APPLICATION_FOLDER = new File(System.getProperty("user.home"))
             .getAbsolutePath() + File.separator + ".OrbisGIS" + File.separator
             + MAJOR_VERSION + "." + MINOR_VERSION;
+    private PropertyChangeSupport propertySupport;
+    private String applicationFolder = DEFAULT_APPLICATION_FOLDER;
+    private static final String DEFAULT_JDBC_USER = "sa";
+    private static final boolean DEFAULT_JDBC_REQUIREPASSWORD = false;
     private String workspaceFolder;
-    private String resultsFolder;
     private String sourceFolder;
     private String pluginFolder = "plugins";
     private String tempFolder;
     private String pluginCache = "cache";
     private String logFile = "orbisgis.log";
-    private String databaseUser = "sa";
+    private String databaseUser = DEFAULT_JDBC_USER;
     private String databasePassword = "";
+    private String jdbcURI = "";
+    private boolean requirePassword = DEFAULT_JDBC_REQUIREPASSWORD;
     private static final String CURRENT_WORKSPACE_FILENAME = "currentWorkspace.txt";
     private static final String ALL_WORKSPACE_FILENAME = "workspaces.txt";
-    private static final String dataBaseUriFile = "database.uri";
+    private static final String DATA_BASE_URI_FILE = "database.uri";
 
 
 
@@ -79,10 +81,27 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
         loadCurrentWorkSpace();
     }
 
-    private static void writeVersionFile(File versionFile) throws IOException {
+    /**
+     *
+     * @return True if the selected JDBC connection require a password. H2 doesn't require password by default.
+     */
+    @Override
+    public boolean isRequirePassword() {
+        return requirePassword;
+    }
+
+    /**
+     * @param requirePassword Is selected JDBC connection require a password
+     */
+    @Override
+    public void setRequirePassword(boolean requirePassword) {
+        this.requirePassword = requirePassword;
+    }
+
+    public void writeVersionFile() throws IOException {
         BufferedWriter writer = null;
         try {
-            writer = new BufferedWriter(new FileWriter(versionFile));
+            writer = new BufferedWriter(new FileWriter(new File(workspaceFolder,VERSION_FILE)));
             writer.write(Integer.toString(MAJOR_VERSION));
             writer.newLine();
             writer.write(Integer.toString(MINOR_VERSION));
@@ -98,6 +117,8 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
         }
     }
 
+
+
     /**
      * Create minimal resource inside an empty workspace folder
      * @param workspaceFolder
@@ -112,53 +133,83 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
             // This method must be called with empty folder only
             throw new IOException("Workspace folder must be empty");
         }
-        File versionFile = new File(workspaceFolder,VERSION_FILE);
-        if(!versionFile.exists()) {
-            writeVersionFile(versionFile);
-        }
-        File uriFile = new File(workspaceFolder,dataBaseUriFile);
-        if(!uriFile.exists()) {
-            writeDefaultdataBaseUriFile(uriFile, getDefaultJDBCConnectionString(workspaceFolder.toString()));
-        }
+        CoreWorkspaceImpl coreWorspace = new CoreWorkspaceImpl();
+        coreWorspace.setWorkspaceFolder(workspaceFolder.getAbsolutePath());
+        coreWorspace.writeVersionFile();
+        coreWorspace.writeUriFile();
     }
 
-    private static void writeDefaultdataBaseUriFile(File dest, String content) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(dest))) {
-            writer.write(content);
+    /**
+     * Write the uri file. {@link #setWorkspaceFolder} must have been called before.
+     * @throws IOException Write error.
+     */
+    public void writeUriFile() throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(workspaceFolder, DATA_BASE_URI_FILE)))) {
+            writer.write(jdbcURI+"\n");
+            writer.write(databaseUser+"\n");
+            writer.write(requirePassword + "\n");
         }
     }
 
     private static String getDefaultJDBCConnectionString(String workspaceFolder) {
         return "jdbc:h2:" + new File(workspaceFolder + File.separator + "database;DB_CLOSE_DELAY=30").toURI().getRawPath();
     }
+
     @Override
     public String getJDBCConnectionReference() {
-        String uriFile = getDataBaseUriFilePath();
-        if(uriFile==null) {
-            LOGGER.debug(I18N.tr("Unable to read the JDBC URI from workspace folder"));
+        if(jdbcURI.isEmpty()) {
             return getDefaultJDBCConnectionString(getWorkspaceFolder());
+        } else {
+            return jdbcURI;
         }
-        File dbUriFile = new File(uriFile);
-        if(dbUriFile.exists()) {
-            try {
-                BufferedReader fileReader = new BufferedReader(new FileReader(dbUriFile));
-                String line;
-                if ((line = fileReader.readLine()) != null) {
-                    return line;
+    }
+
+    /**
+     * JDBC uri.In order to keep settings call {@link #writeUriFile()}
+     * @param jdbcURI "jdbc:.." URI
+     */
+    public void setJDBCConnectionReference(String jdbcURI) {
+        this.jdbcURI = jdbcURI;
+    }
+
+    private void readJDBCConnectionReference() {
+        // Set default value, if one is missing
+        jdbcURI = getDefaultJDBCConnectionString(getWorkspaceFolder());
+        databaseUser = DEFAULT_JDBC_USER;
+        requirePassword = DEFAULT_JDBC_REQUIREPASSWORD;
+        // Parse configuration file
+        String uriFile = getDataBaseUriFilePath();
+        if(uriFile!=null) {
+            File dbUriFile = new File(uriFile);
+            if (dbUriFile.exists()) {
+                try {
+                    BufferedReader fileReader = new BufferedReader(new FileReader(dbUriFile));
+                    String line;
+                    if ((line = fileReader.readLine()) != null) {
+                        jdbcURI = line;
+                    }
+                    if ((line = fileReader.readLine()) != null) {
+                        if(!line.isEmpty()) {
+                            databaseUser = line;
+                        } else {
+                            databaseUser = DEFAULT_JDBC_USER;
+                        }
+                    }
+                    if ((line = fileReader.readLine()) != null) {
+                        requirePassword = Boolean.parseBoolean(line);
+                    }
+                } catch (IOException ex) {
+                    LOGGER.error("Could not read the DataBase URI from workspace", ex);
                 }
-            } catch (IOException ex) {
-                LOGGER.error("Could not read the DataBase URI from workspace",ex);
             }
         }
-        LOGGER.warn(I18N.tr("Unable to read the JDBC URI from workspace folder"));
-        return getDefaultJDBCConnectionString(getWorkspaceFolder());
     }
     @Override
     public String getDataBaseUriFilePath() {
         if(workspaceFolder==null) {
             return null;
         }
-        return workspaceFolder + File.separator + dataBaseUriFile;
+        return workspaceFolder + File.separator + DATA_BASE_URI_FILE;
     }
 
     @Override
@@ -320,7 +371,6 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
      * At startup, load application configuration
      */
     private void loadCurrentWorkSpace() {
-        resultsFolder = "results";
         sourceFolder = "sources";
         tempFolder = "temp";
     }
@@ -387,21 +437,6 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
         propertySupport.firePropertyChange(PROP_SOURCEFOLDER, oldSourceFolder, sourceFolder);
     }
 
-    @Override
-    public String getResultsFolder() {
-        return workspaceFolder + File.separator + resultsFolder;
-    }
-
-    /**
-     * Set the value of resultsFolder
-     *
-     * @param resultsFolder new value of resultsFolder
-     */
-    public void setResultsFolder(String resultsFolder) {
-        String oldResultsFolder = this.resultsFolder;
-        this.resultsFolder = resultsFolder;
-        propertySupport.firePropertyChange(PROP_RESULTSFOLDER, oldResultsFolder, resultsFolder);
-    }
 
     @Override
     public String getWorkspaceFolder() {
@@ -409,13 +444,14 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
     }
 
     /**
-     * Set the value of workspaceFolder
-     *
+     * Set the value of workspaceFolder.
+     * Load configuration files in this folder.
      * @param workspaceFolder new value of workspaceFolder
      */
     public void setWorkspaceFolder(String workspaceFolder) {
         String oldWorkspaceFolder = this.workspaceFolder;
         this.workspaceFolder = workspaceFolder;
+        readJDBCConnectionReference();
         propertySupport.firePropertyChange(PROP_WORKSPACEFOLDER, oldWorkspaceFolder, workspaceFolder);
     }
 
