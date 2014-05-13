@@ -29,11 +29,11 @@
 package org.orbisgis.legend.analyzer;
 
 import org.junit.Test;
-import org.orbisgis.core.renderer.se.PointSymbolizer;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.*;
+import org.orbisgis.coremap.renderer.se.PointSymbolizer;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.parameter.InterpolationPoint;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.real.*;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.analyzer.symbolizers.PointSymbolizerAnalyzer;

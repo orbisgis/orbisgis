@@ -28,7 +28,7 @@
  */
 package org.orbisgis.legend;
 
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 
 /**
  * Interface for interpolation legends.

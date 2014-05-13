@@ -31,12 +31,12 @@ package org.orbisgis.legend.analyzer;
 import net.opengis.se._2_0.core.StyleType;
 import org.junit.Test;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.renderer.se.LineSymbolizer;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
-import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.coremap.renderer.se.LineSymbolizer;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.color.Recode2Color;
+import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.structure.recode.RecodedColor;
 
@@ -159,7 +159,7 @@ public class ColorAnalyzerTest extends AnalyzerTest{
 
         private Recode2Color getRecode2Color() throws Exception {
                 //We retrieve a Recode from an external file...
-                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+                Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(COLOR_RECODE));
                 Style st = new Style(ftsElem, null);

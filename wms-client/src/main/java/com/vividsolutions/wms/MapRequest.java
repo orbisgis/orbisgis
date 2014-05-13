@@ -42,6 +42,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -294,18 +295,26 @@ public class MapRequest {
         LOG.info(urlBuf.toString());
         return new URL( urlBuf.toString() );
     }
-
+    /**
+     * Connect to the service and get an Image of the map.
+     * @return the retrieved map Image
+     */
+    public Image getImage() throws IOException {
+        return getImage(0);
+    }
 
    /**
     * Connect to the service and get an Image of the map.
+    * @param timeOutMs connect timeout value in milliseconds
     * @return the retrieved map Image
     */
-    public Image getImage() throws IOException {
+    public Image getImage(int timeOutMs) throws IOException {
         URL requestUrl = getURL();
         URLConnection con = requestUrl.openConnection();
       if(requestUrl.getUserInfo() != null) {
-          con.setRequestProperty("Authorization", "Basic " +Base64Coder.encode(requestUrl.getUserInfo().getBytes()));
+          con.setRequestProperty("Authorization", "Basic " + Arrays.toString(Base64Coder.encode(requestUrl.getUserInfo().getBytes())));
       }
+        con.setReadTimeout(timeOutMs);
         return ImageIO.read(con.getInputStream());
     }
   

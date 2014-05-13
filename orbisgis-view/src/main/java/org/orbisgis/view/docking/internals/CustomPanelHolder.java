@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.docking.internals;
 
-import org.orbisgis.view.docking.DockingPanel;
+import org.orbisgis.viewapi.docking.DockingPanel;
 
 /**
  * Common functions of the two specialised class

@@ -29,7 +29,7 @@
 package org.orbisgis.view.docking.internals;
 
 import bibliothek.gui.dock.common.CWorkingArea;
-import org.orbisgis.view.docking.DockingAreaParameters;
+import org.orbisgis.viewapi.docking.DockingAreaParameters;
 
 /**
  * Docking Area (DockingFrames feature named WorkingArea).

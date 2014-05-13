@@ -41,7 +41,7 @@ import javax.xml.bind.JAXBException;
  * An OrbisGIS service is just a java instance that is accessible by a name and that implements a specified interface. 
  * From a practical point of view, services will be the entry point to access the different functionalities in OrbisGIS
  * Class to manage the services
- * 
+ * @deprecated Use OSGi services instead
  */
 
 public class Services {

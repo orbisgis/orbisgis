@@ -32,21 +32,32 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
-import java.util.TreeSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.FilterDataSourceDecorator;
-import org.gdms.driver.DriverException;
+import org.h2gis.utilities.TableLocation;
+import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.corejdbc.MetaData;
+import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.viewapi.edition.EditableElement;
+import org.orbisgis.viewapi.edition.EditableElementException;
+import org.orbisgis.viewapi.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -55,79 +66,93 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter,DefaultActiveFilter> {
-        public static final String FACTORY_ID  ="WhereSQLFilterFactory";
-        private final static I18n I18N = I18nFactory.getI18n(WhereSQLFilterFactory.class);
-        private static final Logger LOGGER = Logger.getLogger(WhereSQLFilterFactory.class);
+    public static final String FACTORY_ID  ="WhereSQLFilterFactory";
+    private final static I18n I18N = I18nFactory.getI18n(WhereSQLFilterFactory.class);
+    private static final Logger LOGGER = Logger.getLogger(WhereSQLFilterFactory.class);
+    /** Map Table primary key to the row id of regular select * from mytable */
+    private Map<Integer, Integer> primaryKeyToRowId = new HashMap<>();
 
-        @Override
-        public DefaultActiveFilter getDefaultFilterValue() {
-                return new DefaultActiveFilter(FACTORY_ID, "field > value2 AND field < value1");
-        }
+    @Override
+    public DefaultActiveFilter getDefaultFilterValue() {
+        return new DefaultActiveFilter(FACTORY_ID, "field > value2 AND field < value1");
+    }
 
-        @Override
-        public String getFactoryId() {
-                return FACTORY_ID;
-        }
+    @Override
+    public String getFactoryId() {
+        return FACTORY_ID;
+    }
 
-        @Override
-        public String getFilterLabel() {
-                return I18N.tr("SQL");
-        }
+    @Override
+    public String getFilterLabel() {
+        return I18N.tr("SQL");
+    }
 
-        @Override
-        public TableSelectionFilter getFilter(DefaultActiveFilter filterValue) {
-                return new SQLFilter(filterValue.getCurrentFilterValue());
-        }
+    @Override
+    public TableSelectionFilter getFilter(DefaultActiveFilter filterValue) {
+        return new SQLFilter(filterValue.getCurrentFilterValue());
+    }
 
-        @Override
-        public Component makeFilterField(DefaultActiveFilter filterValue) {
-                JPanel textAndButton = new JPanel();
-                textAndButton.setLayout(new BoxLayout(textAndButton,BoxLayout.X_AXIS));
-                JTextField whereText = new JTextField(filterValue.getCurrentFilterValue());
-                whereText.setPreferredSize(new Dimension(Short.MAX_VALUE,Short.MIN_VALUE));
-                JButton runButton =  new CustomButton(OrbisGISIcon.getIcon("execute"));
-                runButton.setToolTipText(I18N.tr("Search"));
-                textAndButton.add(whereText);
-                textAndButton.add(runButton);
-                ActionListener listener = EventHandler.create(
-                        ActionListener.class,filterValue,
-                        "setCurrentFilterValue","source.text");
-                whereText.addActionListener(listener);
-                //Click on the button will fire an action event on the text field
-                runButton.addActionListener(
-                        EventHandler.create(ActionListener.class,whereText,
+    @Override
+    public Component makeFilterField(DefaultActiveFilter filterValue) {
+        JPanel textAndButton = new JPanel();
+        textAndButton.setLayout(new BoxLayout(textAndButton,BoxLayout.X_AXIS));
+        JTextField whereText = new JTextField(filterValue.getCurrentFilterValue());
+        whereText.setPreferredSize(new Dimension(Short.MAX_VALUE,Short.MIN_VALUE));
+        JButton runButton =  new CustomButton(OrbisGISIcon.getIcon("execute"));
+        runButton.setToolTipText(I18N.tr("Search"));
+        textAndButton.add(whereText);
+        textAndButton.add(runButton);
+        ActionListener listener = EventHandler.create(
+                ActionListener.class,filterValue,
+                "setCurrentFilterValue","source.text");
+        whereText.addActionListener(listener);
+        //Click on the button will fire an action event on the text field
+        runButton.addActionListener(
+                EventHandler.create(ActionListener.class,whereText,
                         "postActionEvent"));
-                return textAndButton;
+        return textAndButton;
+    }
+    private static class SQLFilter implements TableSelectionFilter {
+        private final Set<Integer> filteredRows = new IntegerUnion();
+        String whereText;
+
+        public SQLFilter(String whereText) {
+            this.whereText = whereText;
         }
-        private static class SQLFilter implements TableSelectionFilter {
-                Collection<Integer> modelRowsIdResult;
-                String whereText;
 
-                public SQLFilter(String whereText) {
-                        this.whereText = whereText;
-                }
-                
-                @Override
-                public boolean isSelected(int rowId, DataSource source) {
-                        return modelRowsIdResult.contains(rowId);
-                }
+        @Override
+        public boolean isSelected(int rowId, TableEditableElement source) {
+            return filteredRows.contains(rowId);
+        }
 
-                @Override
-                public void initialize(ProgressMonitor pm, DataSource source) {
-                        pm.startTask(I18N.tr("Run SQL request"), 100);
-                        modelRowsIdResult = new TreeSet<Integer>();
-                        try {
-                                FilterDataSourceDecorator filterDataSourceDecorator = new FilterDataSourceDecorator(
-                                        source);
-                                filterDataSourceDecorator.setFilter(whereText);
-                                filterDataSourceDecorator.open();
-                                modelRowsIdResult.addAll(filterDataSourceDecorator.getIndexMap());
-                                filterDataSourceDecorator.close();
-                        } catch (DriverException e1) {
-                                LOGGER.error(e1.getLocalizedMessage(),e1);
-                        } finally {
-                                pm.endTask();
+        @Override
+        public void initialize(ProgressMonitor progress, TableEditableElement source) throws SQLException{
+            progress.setTaskName(I18N.tr("Run filter by sql request"));
+            // If the table hold a PK then do the find task on the server side
+            try(Connection connection = source.getDataManager().getDataSource().getConnection();
+                Statement st = connection.createStatement()) {
+                PropertyChangeListener cancelListener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+                progress.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelListener);
+                try{
+                    String tablePk = source.getRowSet().getPkName();
+                    if(!tablePk.isEmpty()) {
+                        final ReadRowSet rowSet = source.getRowSet();
+                        StringBuilder request = new StringBuilder(String.format("SELECT %s FROM %s WHERE %s",
+                                TableLocation.quoteIdentifier(tablePk),
+                                source.getTableReference(), whereText));
+                        LOGGER.info(I18N.tr("Find field value with the following request:\n{0}",request.toString()));
+                        try(ResultSet rs = st.executeQuery(request.toString())) {
+                            while(rs.next()) {
+                                filteredRows.add(rowSet.getRowId(rs.getObject(1)) - 1);
+                            }
                         }
+                    }
+                } finally {
+                    progress.removePropertyChangeListener(cancelListener);
                 }
+            } catch (EditableElementException ex) {
+                throw new SQLException(ex);
+            }
         }
+    }
 }

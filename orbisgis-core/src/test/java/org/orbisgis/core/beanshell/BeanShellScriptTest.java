@@ -28,78 +28,111 @@
  */
 package org.orbisgis.core.beanshell;
 
-import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.PrintStream;
+import java.sql.Connection;
+import java.util.Arrays;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import javax.sql.DataSource;
 
 /**
  *
  * @author Erwan Bocher
  */
 public class BeanShellScriptTest {
-
-        @Test
-        public void testNullFileScript() throws Exception {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                PrintStream ps = new PrintStream(baos);
-                PrintStream psbak = System.out;
-                System.setOut(ps);
-                BeanshellScript.main(new String[]{""});
-                String out = baos.toString();
-                assertTrue(out.equals("The second parameter must be not null.\n"));
-                System.setOut(psbak);
+        private static final String[] DEFAULT_ARGS = new String[] {"",
+                BeanshellScript.ARG_APPFOLDER,"orbisgis",
+                BeanshellScript.ARG_WORKSPACE,"workspace", "debug"};
+        private static String[] mainParams(String scriptPath) {
+            return mainParams(scriptPath,new String[0]);
+        }
+        public static String[] mainParams(String scriptPath, String... additionnalArgs) {
+            String[] args = Arrays.copyOf(DEFAULT_ARGS, DEFAULT_ARGS.length + additionnalArgs.length);
+            args[0] = scriptPath;
+            int i=DEFAULT_ARGS.length;
+            for(String param : additionnalArgs) {
+                args[i++] = param;
+            }
+            return args;
+        }
+        @BeforeClass
+        public static void init() throws Exception {
+            BeanshellScript.init(mainParams("../src/test/resources/beanshell/helloWorld.bsh"));
         }
 
-        @Test
-        public void testGetHelp() throws Exception {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                PrintStream ps = new PrintStream(baos);
-                PrintStream psbak = System.out;
-                System.setOut(ps);
-                BeanshellScript.main(new String[]{});
-                String out = baos.toString();
-                assertTrue(out.equals(BeanshellScript.getHelp()));
-                System.setOut(psbak);
+        @AfterClass
+        public static void dispose() throws Exception {
+            BeanshellScript.dispose();
         }
 
-        @Test
-        public void testWrongParameter() throws Exception {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                PrintStream ps = new PrintStream(baos);
-                PrintStream psbak = System.out;
-                System.setOut(ps);
-                BeanshellScript.main(new String[]{ "youhou", "src/test/resources/beanshell/helloWorld.bsh"});
-                String out = baos.toString();
-                assertTrue(out.equals(BeanshellScript.getHelp()));
-                System.setOut(psbak);
-        }
 
         @Test
         public void testSimpleFileScript() throws Exception {
-                BeanshellScript.main(new String[]{"src/test/resources/beanshell/helloWorld.bsh"});
-                assertTrue(true);
+                BeanshellScript.execute(mainParams("../src/test/resources/beanshell/helloWorld.bsh"));
         }
 
         @Test
-        public void testMapDisplayScript() throws Exception {
-                assumeTrue(!GraphicsEnvironment.isHeadless());
-                BeanshellScript.main(new String[]{"src/test/resources/beanshell/mapDisplayDatasource.bsh"});
-                Thread.sleep(3000);
-                assertTrue(true);
+        public void testDataSourceFileScript() throws Exception {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PrintStream ps = new PrintStream(baos);
+            PrintStream psbak = System.out;
+            System.setOut(ps);
+            try {
+                BeanshellScript.execute(mainParams("../src/test/resources/beanshell/basicDbProcessing.bsh"));
+                String out = baos.toString();
+                assertTrue(out, out.endsWith("rincevent\n"));
+            } finally {
+                System.setOut(psbak);
+            }
         }
 
         @Test
-        public void testMapToPng() throws Exception {
-                BeanshellScript.main(new String[]{"src/test/resources/beanshell/datatsourceTopng.bsh"});
-                assertTrue(true);
+        public void testSpatialDataSourceFileScript() throws Exception {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PrintStream ps = new PrintStream(baos);
+            PrintStream psbak = System.out;
+            System.setOut(ps);
+            try {
+                BeanshellScript.execute(mainParams("../src/test/resources/beanshell/spatialDbProcessing.bsh"));
+                String out = baos.toString();
+                assertTrue(out, out.endsWith("POLYGON ((59 18, 67 18, 67 13, 59 13, 59 18))\n"));
+            } finally {
+                System.setOut(psbak);
+            }
         }
-        
+//  This unit test display a window, and is already covered by testDrawOwsInImage
+//        @Test
+//        public void testMapDisplayScript() throws Exception {
+//                assumeTrue(!GraphicsEnvironment.isHeadless());
+//                BeanshellScript.execute(mainParams("../src/test/resources/beanshell/mapDisplayDatasource.bsh"));
+//                Thread.sleep(3000);
+//                assertTrue(true);
+//        }
+
         @Test
         public void testSeveralArguments() throws Exception {
-                BeanshellScript.main(new String[]{"src/test/resources/beanshell/testSeveralArguments.bsh", "orbis","1"});
+                BeanshellScript.execute(mainParams("../src/test/resources/beanshell/testSeveralArguments.bsh", "orbis","1"));
                 assertTrue(true);
+        }
+
+        @Test
+        public void testDrawOwsInImage() throws Exception {
+            DataSource ds = BeanshellScript.getMainContext().getDataSource();
+            try (Connection connection = ds.getConnection()) {
+                connection.createStatement().execute("DROP TABLE IF EXISTS LANDCOVER2000");
+                File rendered = new File("render.png");
+                if (rendered.exists()) {
+                    assertTrue(rendered.delete());
+                }
+                BeanshellScript.execute(mainParams("../src/test/resources/beanshell/ShapeToImage.bsh"));
+                assertTrue(rendered.exists());
+                connection.createStatement().execute("DROP TABLE IF EXISTS LANDCOVER2000");
+            }
         }
 }

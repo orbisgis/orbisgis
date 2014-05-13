@@ -39,7 +39,7 @@ import javax.swing.*;
 import javax.swing.event.ListDataListener;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.core.workspace.CoreWorkspaceImpl;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.statusbar.StatusBar;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -101,7 +101,7 @@ public class MainFrameStatusBar extends StatusBar {
 
         private void makeWorkspaceManager() {
                 workspaceBar = new JPanel(new MigLayout("insets 0 0 0 0"));                
-                CoreWorkspace coreWorkspace = Services.getService(CoreWorkspace.class);
+                CoreWorkspaceImpl coreWorkspace = Services.getService(CoreWorkspaceImpl.class);
                 if(coreWorkspace!=null) {
                         JLabel workspacePath = new JLabel(coreWorkspace.getWorkspaceFolder());
                         workspaceBar.add(workspacePath);
@@ -124,13 +124,9 @@ public class MainFrameStatusBar extends StatusBar {
          * The user click on change workspace button
          */
         public void onChangeWorkspace() {
-                CoreWorkspace coreWK = Services.getService(CoreWorkspace.class);
+                CoreWorkspaceImpl coreWK = Services.getService(CoreWorkspaceImpl.class);
                 if(coreWK!=null) {
-                        File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(this.owner, coreWK);
-                        if(newWorkspace!= null) {
-                                // Switching workspace..
-                                coreWK.setWorkspaceFolder(newWorkspace.getAbsolutePath());
-                        }
+                        WorkspaceSelectionDialog.showWorkspaceFolderSelection(this.owner, coreWK);
                 }
         }
         /**

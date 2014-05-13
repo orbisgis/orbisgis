@@ -31,7 +31,7 @@ package org.orbisgis.view.docking.internals.actions;
 
 import bibliothek.gui.dock.common.action.CAction;
 import bibliothek.gui.dock.toolbar.CToolbarItem;
-import org.orbisgis.view.components.actions.ActionTools;
+import org.orbisgis.viewapi.components.actions.ActionTools;
 
 import javax.swing.Action;
 import java.beans.EventHandler;

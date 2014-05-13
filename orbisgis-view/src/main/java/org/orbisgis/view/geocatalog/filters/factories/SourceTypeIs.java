@@ -86,17 +86,17 @@ public class SourceTypeIs implements FilterFactory<IFilter,DefaultActiveFilter> 
                 I18N.tr("Geometry"),
                 new GeoFilter());
 
-        addFilter("geocatalog.filters.RasterFilter",
-                I18N.tr("Raster"),
-                new RasterFilter());
+        //addFilter("geocatalog.filters.RasterFilter",
+        //        I18N.tr("Raster"),
+        //        new RasterFilter());
 
         addFilter("geocatalog.filters.VectorialFilter",
                 I18N.tr("Vectorial"),
                 new VectorialFilter());
         
-        addFilter("geocatalog.filters.WMSFilter",
-                I18N.tr("Web Map Services"),
-                new WMSFilter());
+        //addFilter("geocatalog.filters.WMSFilter",
+        //        I18N.tr("Web Map Services"),
+        //        new WMSFilter());
         
         addFilter("geocatalog.filters.TableSystemFilter",
                 I18N.tr("System Table"),

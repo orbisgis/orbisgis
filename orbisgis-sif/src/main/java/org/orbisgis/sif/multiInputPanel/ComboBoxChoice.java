@@ -99,4 +99,11 @@ public class ComboBoxChoice implements InputType {
             comp.setSelectedIndex(comp.getItemCount() - 1);
         }
     }
+
+    /**
+     * @return Combo Box
+     */
+    public JComboBox getComboBox() {
+        return comp;
+    }
 }

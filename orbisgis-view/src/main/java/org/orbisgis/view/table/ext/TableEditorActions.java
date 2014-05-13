@@ -29,8 +29,7 @@
 
 package org.orbisgis.view.table.ext;
 
-import org.orbisgis.view.components.actions.ActionFactoryService;
-import org.orbisgis.view.table.TableEditor;
+import org.orbisgis.viewapi.components.actions.ActionFactoryService;
 
 /**
  * @author Nicolas Fortin

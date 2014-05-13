@@ -1,0 +1,17 @@
+Rsyntax SQL Parser and Auto-Completion. This LanguageSupport for SQL relies on H2 parser.
+
+
+# About OSGi
+
+This package use Declarative Services. It requires a bundle that implement this specification like this one.
+
+```xml
+<dependency>
+    <groupId>org.apache.felix</groupId>
+    <artifactId>org.apache.felix.scr</artifactId>
+    <version>1.6.2</version>
+    <scope>provided</scope>
+</dependency>
+```
+
+The scr implementation will parse the LanguageSupport bundle and load then export the LanguageSupport services.

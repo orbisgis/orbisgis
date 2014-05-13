@@ -28,14 +28,13 @@
  */
 package org.orbisgis.view.geocatalog.sourceWizards.db;
 
-import org.gdms.driver.Driver;
-import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.source.DBDriverFilter;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
 import org.orbisgis.sif.multiInputPanel.*;
+import org.osgi.service.jdbc.DataSourceFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import java.sql.Driver;
+import java.util.List;
 
 /**
  *
@@ -43,7 +42,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class DBUIFactory {
 
-        private static final I18n I18N = I18nFactory.getI18n(TableExportPanel.class);
+        private static final I18n I18N = I18nFactory.getI18n(DBUIFactory.class);
         static String DBTYPE = "dbtype";
         static String HOST = "host";
         static String PORT = "port";
@@ -56,7 +55,7 @@ public class DBUIFactory {
          *
          * @return
          */
-        public static MultiInputPanel getConnectionPanel() {
+        public static MultiInputPanel getConnectionPanel(List<Driver> jdbcDrivers) {
                 int LENGTH = 20;
 
                 MultiInputPanel connectionMP = new MultiInputPanel(I18N.tr("Connection parameters"));
@@ -65,7 +64,7 @@ public class DBUIFactory {
                         new TextBoxType(LENGTH));
 
                 connectionMP.addInput(DBTYPE, I18N.tr("Type of database"),
-                        getDriverInput());
+                        getDriverInput(jdbcDrivers));
                 connectionMP.addInput(HOST, I18N.tr("Host"),
                         "127.0.0.1", new TextBoxType(LENGTH));
                 connectionMP.addInput(PORT, I18N.tr("Default port"),
@@ -119,7 +118,7 @@ public class DBUIFactory {
          *
          * @return
          */
-        public static MultiInputPanel getEditConnectionPanel(String connexionName, String property) {
+        public static MultiInputPanel getEditConnectionPanel(String connexionName, String property, List<Driver> jdbcDrivers) {
                 int LENGTH = 20;
                 String[] connectionParams = property.split(",");
                 MultiInputPanel connectionMP = new MultiInputPanel(I18N.tr("Connection parameters"));
@@ -128,7 +127,7 @@ public class DBUIFactory {
                         new TextBoxType(LENGTH));
 
                 connectionMP.addInput(DBTYPE, I18N.tr("Type of database"), connectionParams[0],
-                        getDriverInput());
+                        getDriverInput(jdbcDrivers));
                 connectionMP.addInput(HOST, I18N.tr("Host"),
                         connectionParams[1], new TextBoxType(LENGTH));
                 connectionMP.addInput(PORT, I18N.tr("Default port"),
@@ -181,18 +180,13 @@ public class DBUIFactory {
          * Populate a combobox with all supported drivers
          * @return 
          */
-        public static InputType getDriverInput() {
-                DataManager dm = Services.getService(DataManager.class);
-                DriverManager driverManager = dm.getSourceManager().getDriverManager();
-
-                Driver[] filtered = driverManager.getDrivers(new DBDriverFilter());
-
-                String[] ids = new String[filtered.length];
-                String[] texts = new String[filtered.length];
-                for (int i = 0; i < texts.length; i++) {
-                        Driver rod = filtered[i];
-                        ids[i] = rod.getDriverId();
-                        texts[i] = rod.getTypeDescription();
+        private static InputType getDriverInput(List<Driver> jdbcDrivers) {
+                String[] ids = new String[jdbcDrivers.size()];
+                String[] texts = new String[jdbcDrivers.size()];
+                for(int idDriver = 0; idDriver < jdbcDrivers.size(); idDriver++){
+                    Driver driver = jdbcDrivers.get(idDriver);
+                    ids[idDriver] = driver.getClass().getName();
+                    texts[idDriver] = ids[idDriver];
                 }
                 ComboBoxChoice combo = new ComboBoxChoice(ids, texts);
                 return combo;

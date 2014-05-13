@@ -2,39 +2,71 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
         <modelVersion>4.0.0</modelVersion>
         <groupId>org.orbisgis</groupId>
-        <artifactId>orbisgis-monomap</artifactId>
+        <artifactId>orbisgis-h2</artifactId>
         <packaging>pom</packaging>
-        <version>4.0-SNAPSHOT</version>
-        <name>platform-monomap</name>
+        <version>4.1.0-SNAPSHOT</version>
+        <name>platform</name>
         <organization>
                 <name>IRSTV CNRS-FR-2488</name>
                 <url>http://www.irstv.fr/</url>
         </organization>
         <url>http://www.orbisgis.org</url>
         <parent>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>orbisgis-nexus</artifactId>
-            <version>1</version>
+                <groupId>org.orbisgis</groupId>
+                <artifactId>orbisgis-nexus</artifactId>
+                <version>1</version>
         </parent>
         <modules>
+                <module>bundles/postgis-jts-osgi</module>
+                <module>bundles/core-jdbc</module>
+                <module>bundles/core-map</module>
+                <module>bundles/core-export</module>
                 <module>wms-client</module>
-                <module>gdms</module>
-		<module>bundles/plugin-test</module>
+                <!-- <module>gdms</module> -->
+                <!-- <module>bundles/plugin-test</module>-->
+                <module>api/orbisgis-core</module>
                 <module>orbisgis-core</module>
-                <module>legend</module>
                 <module>orbisgis-sif</module>
                 <module>api/orbisgis-view</module>
+                <module>bundles/sql-parser-api</module>
+                <module>bundles/sqlconsole-parser</module>
                 <module>bundles/orbisgis-oshell</module>
                 <module>bundles/orbisgis-omanager</module>
                 <module>bundles/orbisgis-omanager-plugin</module>
+                <module>bundles/map-editor-api</module>
                 <module>orbisgis-view</module>
+                <module>bundles/map-editor</module>
+                <module>legend</module>
+                <module>bundles/toc</module>
                 <module>orbisgis-dist</module>
         </modules>
+        <profiles>
+            <profile>
+                <id>osgi</id>
+                <modules>
+                    <module>integration-test</module>
+                </modules>
+            </profile>
+        </profiles>
         <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <netbeans.hint.license>OrbisGIS</netbeans.hint.license>
-                <gdms-version>2.0.4-SNAPSHOT</gdms-version>
-                <orbisgis-core-version>4.0.1-SNAPSHOT</orbisgis-core-version>
+                <default-main-class>org.orbisgis.view.main.Main</default-main-class>
+                <!-- Common Dependencies version -->
+                <log4j-version>1.2.16</log4j-version>
+                <commons-io-version>1.3.2</commons-io-version>
+                <jts-version>1.13</jts-version>
+                <org.osgi.compendium-version>4.3.1</org.osgi.compendium-version>
+                <h2-version>1.3.176</h2-version>
+                <h2-package>com.h2database</h2-package> <!-- com.h2database -->
+                <h2-gis-version>1.0.3-SNAPSHOT</h2-gis-version>
+                <sl4j-version>1.6.0</sl4j-version>
+                <rsyntax-version>2.0.7</rsyntax-version>
+                <rsyntax-ls-version>r795</rsyntax-ls-version>
+                <gettext-commons-version>0.9.8</gettext-commons-version>
+                <cts-version>1.3.3</cts-version>
+                <org.osgi.service.obr-version>1.0.2</org.osgi.service.obr-version>
+                <org.orbisgis.commons-version>1.4.2-SNAPSHOT</org.orbisgis.commons-version>
         </properties>
         <scm>
                 <connection>scm:git:https://github.com/irstv/orbisgis.git</connection>
@@ -59,6 +91,13 @@
                         <url>http://repo.orbisgis.org</url>
                 </pluginRepository>
         </pluginRepositories>
+        <distributionManagement>
+                <repository>
+                        <id>IRSTV</id>
+                        <name>IRSTV repository</name>
+                        <url>scp://irstv@repo.orbisgis.org:/var/www/repo.orbisgis.org/</url>
+                </repository>
+        </distributionManagement>
         <build>
                 <plugins>
                         <plugin>
@@ -86,5 +125,12 @@
                                 </configuration>
                         </plugin>
                 </plugins>
+                <extensions>
+                        <extension>
+                                <groupId>org.apache.maven.wagon</groupId>
+                                <artifactId>wagon-ssh</artifactId>
+                                <version>2.2</version>
+                        </extension>
+                </extensions>
         </build>
 </project>

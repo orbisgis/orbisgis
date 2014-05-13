@@ -1,0 +1,2345 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# smadi <ilyes.smadi@gmail.com>, 2013-2014
+msgid ""
+msgstr ""
+"Project-Id-Version: OrbisGIS\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-02-24 16:35+0100\n"
+"PO-Revision-Date: 2014-02-24 16:35+0100\n"
+"Language-Team: Arabic (http://www.transifex.com/projects/p/orbisgis/language/"
+"ar/)\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: tr;marktr\n"
+"X-Poedit-Basepath: ./\n"
+"X-Poedit-SearchPath-0: ../../../../java\n"
+
+#: ../../../../java/org/orbisgis/view/toc/TocTreeNodeLayer.java:169
+msgid "Cannot change the layer name"
+msgstr "لا يمكن تغيير اسم الطبقة"
+
+#: ../../../../java/org/orbisgis/view/toc/TocTransferHandler.java:121
+msgid "Can't recognize this flavour"
+msgstr "لا يمكن التعرف على هذه النكهة"
+
+#: ../../../../java/org/orbisgis/view/toc/TocTransferHandler.java:124
+msgid "Problem during the transfer"
+msgstr "مشكلة أثناء النقل"
+
+#: ../../../../java/org/orbisgis/view/toc/TocRenderer.java:109
+#, java-format
+msgid "Layer:{0} DataSource :({1})"
+msgstr "طبقة: {0} مصدر البيانات: ({1})"
+
+#: ../../../../java/org/orbisgis/view/toc/TocAbstractRenderer.java:81
+#, java-format
+msgid "Unable to find appropriate icon for typeCode {0}"
+msgstr "غير قادر على العثورعلى الأيقونة المناسبة لنوع الرمز {0}"
+
+#: ../../../../java/org/orbisgis/view/toc/TocAbstractRenderer.java:97
+msgid "Error while drawing the Toc tree"
+msgstr "خطأ أثناء رسم شجرة Toc"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:163
+msgid "Toc"
+msgstr "توك"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:176
+msgid "Save"
+msgstr "حفظ"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:177
+msgid "Save the Map"
+msgstr "احفظ الخريطة"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:186
+msgid "Zoom to"
+msgstr "تكبير إلى"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:187
+msgid "Zoom to the layer bounding box"
+msgstr "تكبير على مسقط الطبقة"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:191
+msgid "Zoom to selection"
+msgstr "تكبير الاختيار"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:191
+msgid "Zoom to selected geometries"
+msgstr "تكبير الأشكال الهندسية المختارة"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:197
+msgid "Clear selection"
+msgstr "إلغاء التحديد"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:197
+msgid "Clear the selected geometries"
+msgstr "إلغاء تحديد الأشكال الهندسية المختارة"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:203
+msgid "Import style"
+msgstr "استيراد أسلوب"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:203
+msgid "Import a style from a file."
+msgstr "استيراد أسلوب من ملف."
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:211
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:264
+msgid "Create a thematic map"
+msgstr "إنشاء خريطة موضوعية"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:211
+msgid "Add a new legend."
+msgstr "اضف مفتاح جديد."
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:219
+msgid "Open the attributes"
+msgstr "فتح الصفات"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:219
+msgid "Open a spreadsheet view of the attributes."
+msgstr "إفتح الجدول المشارك"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:227
+msgid "Start editing"
+msgstr "البدء في التحرير"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:227
+msgid "The edit geometry toolbar will update this layer's data source."
+msgstr "قاعدة الأدوات الخاصة بتحرير الشكل الهندسي ستقوم بتحديث هذه الطبقة."
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:233
+msgid "Stop editing"
+msgstr "إيقاف التحرير"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:233
+msgid "Close the edit geometry toolbar."
+msgstr "أغلق قاعدة الأدوات الخاصة بتحرير الشكل الهندسي."
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:239
+msgid "Save modifications"
+msgstr "حفظ التعديلات"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:239
+msgid "Apply the data source modifications"
+msgstr "طبق تعديلات مصدر البيانات"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:244
+msgid "Cancel modifications"
+msgstr "إلغاء التعديلات"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:244
+msgid "Undo all data source modifications"
+msgstr "ألغي كل تعديلات مصدر البيانات"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:251
+msgid "Add layer group"
+msgstr "أضف مجموعة من الطبقات"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:251
+msgid "Add layer group to the map context"
+msgstr "إضافة مجموعة طبقات الى سياق الخريطة"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:258
+msgid "Remove layer"
+msgstr "إزالة الطبقة"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:259
+msgid "Remove the layer from the map context"
+msgstr "إزالة الطبقة من السياق الخريطة"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:264
+msgid "Add a legend in this style"
+msgstr "أضف تحليل لإضاحة هذا الأسلوب"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:268
+msgid "Simple style editor"
+msgstr "محرر نمط بسيط"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:268
+msgid "Open the simple editor for SE styles"
+msgstr "افتح محرر بسيطة للأسلوب SE"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:272
+msgid "Remove style"
+msgstr "إزالة الاسلوب"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:272
+msgid "Remove this style from the associated layer."
+msgstr "حذف هذا النمط من الطبقة المرتبط بها."
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:276
+msgid "Export style"
+msgstr "تصدير الاسلوب"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:276
+msgid "Export this style from the associated layer."
+msgstr "تصدير هذا النمط من الطبقة المرتبطة بها."
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:485
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:507
+#, java-format
+msgid "Cannot drop layer on {0}"
+msgstr "لا يمكن إزالة الطبقة على {0}"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:510
+#, java-format
+msgid "Drop unknown editable of type : {0}"
+msgstr "مستند مجهول من النوع : {0}"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:749
+#, java-format
+msgid "Can not add a LayerCollection : {0}"
+msgstr "لا يمكن إضافة مجموعة من الطبقة : {0}"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:763
+msgid "Cannot delete layer"
+msgstr "لا يمكن حذف الطبقة"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:966
+msgid ""
+"You produced an invalid style while copying a valid one. Things are getting "
+"really wrong here."
+msgstr ""
+"أنتجتم أسلوب غير صالح أثناء نسخ أسلوب آخر صالح. الأمور تزداد خطأ هنا حقا."
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:975
+msgid "Styles can be set only on vector layers."
+msgstr "هذا الأسلوب يطبق على الطبقات الشعاعية فقط."
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:980
+msgid "The style you're trying to edit is not valid !"
+msgstr "الأسلوب الذي كنت تحاول تعديله غير صالح !"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:982
+msgid "An error occurred while processing the DataSource"
+msgstr "حدوث خطأ أثناء عملية معاينة مصدر البيانات"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:984
+msgid ""
+"Cannot create the user interface for this style. \n"
+"Please uses the advanced style editor."
+msgstr ""
+"لا يمكن إنشاء واجهة مرئية لهذا الاسلوب. \n"
+"يرجى إستخدام محرر متقدم."
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:1155
+msgid "Cannot add the layer to the destination"
+msgstr "لا يمكن إضافة طبقة إلى المقصد"
+
+#: ../../../../java/org/orbisgis/view/toc/Toc.java:1168
+msgid "Load the data source droped into the toc."
+msgstr "تحميل مصدر البيانات."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:186
+msgid "Add or select a legend."
+msgstr "أضف أو حدد المفتاح."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:468
+#, java-format
+msgid "Simple Style Editor - {0}"
+msgstr "محرر من نمط بسيط - {0}"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:474
+msgid "You must create at least one legend"
+msgstr "يجب إنشاء مفتاح واحد على الأقل"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendTree.java:322
+msgid "Up"
+msgstr "فوق"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendTree.java:330
+msgid "Down"
+msgstr "تحت"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendTree.java:338
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/TablePanel.java:168
+msgid "Add"
+msgstr "إضافة"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendTree.java:347
+msgid "Delete"
+msgstr "حذف"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendTree.java:355
+msgid "Rename"
+msgstr "إعادة تسمية"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendTree.java:449
+msgid "Choose a name for your rule"
+msgstr "اختيار اسم للقاعدة الخاصة بك"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendTree.java:450
+msgid "Name of the Rule : "
+msgstr "اسم القاعدة:"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendTree.java:457
+msgid "Rule name cannot be null or empty."
+msgstr "اسم القاعدة لا يمكن أن يكون فارغا أو صفر."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:260
+msgid "Couldn't find file"
+msgstr "لا يمكن العثور على الملف"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:274
+msgid "Select Legend"
+msgstr "حدد المفتاح"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:280
+msgid "You must select a legend."
+msgstr "يجب عليك تحديد المفتاح."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/ColorConfigurationPanel.java:118
+msgid "Gradient "
+msgstr "مقياس"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/ColorConfigurationPanel.java:121
+msgid " to "
+msgstr "إلى"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/DashArrayField.java:77
+msgid "Could not validate your input."
+msgstr "لا يمكن التحقق من صحة معطياتك."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/DescriptionComponents.java:35
+msgid "Locale"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/DescriptionComponents.java:36
+msgid "Title"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/DescriptionComponents.java:37
+msgid "Abstract"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/OnVertexOnInteriorButtonGroup.java:57
+msgid "Vertex"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/OnVertexOnInteriorButtonGroup.java:58
+msgid "Interior"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/AbsFieldsComboBox.java:103
+msgid "TYPE_NAME"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/components/AbsFieldsComboBox.java:104
+msgid "COLUMN_NAME"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/PreviewPanel.java:54
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/model/TableModelUniqueValue.java:66
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/model/TableModelInterval.java:99
+msgid "Preview"
+msgstr "عرض مسبق"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalPointPanel.java:125
+msgid "Max. size"
+msgstr "قياس حد أقصى "
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalPointPanel.java:128
+msgid "Min. size"
+msgstr "قياس حد أدنى"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsOptionalPanel.java:76
+msgid "Enable"
+msgstr "يسمح"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:49
+msgid "Opacity"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:50
+msgid "Width"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:51
+msgid "Height"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:52
+msgid "Symbol"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:53
+msgid "Dash array"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:54
+msgid "<html><b>Numeric field</b></html>"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:55
+msgid "<html><b>Nonspatial field</b></html>"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:56
+msgid "Line width unit"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:57
+msgid "Symbol size unit"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/AbsPanel.java:59
+msgid "<html><p style=\"text-align:right\">Place symbol<br>on</p></html>"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/TablePanel.java:174
+msgid "Remove"
+msgstr "حذف"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/SettingsPanel.java:109
+msgid "General settings"
+msgstr "الإعدادات العامة"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/SettingsPanel.java:130
+msgid "Fallback symbol"
+msgstr "رمز معتمد"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalLinePanel.java:118
+msgid "Color"
+msgstr "لون"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalLinePanel.java:124
+msgid "Max width"
+msgstr "عرض أقصى"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalLinePanel.java:127
+msgid "Min width"
+msgstr "عرض أدنى"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:151
+msgid "Can't build the analysis with an accurate comparator."
+msgstr "لا يمكن إنشاء تحليل مع مقارنة دقيقة."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:182
+msgid "Use the fallback color"
+msgstr "استخدام اللون المعتمد"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:186
+msgid "Use a color scheme:"
+msgstr "استخدام نظام الألوان:"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:202
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:138
+msgid "Create"
+msgstr "خلق"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:231
+msgid "Unique value classification"
+msgstr "تصنيف القيمة الفريدة"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:301
+msgid "Retrieving classes"
+msgstr "استرجاع الفئات"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:320
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:124
+msgid "The application has ended unexpectedly"
+msgstr "التطبيق قد انتهى بشكل غير متوقع"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:375
+msgid "Continue ?"
+msgstr "المتابعة؟"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:387
+msgid "<html><p>The analysis seems to generate more than "
+msgstr "<HTML> <p> ويبدو أن التحليل أنتج أكثر من"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:388
+msgid ""
+" different values...</p><p>Are you sure you want to continue ?</p></html>"
+msgstr "قيم مختلفة ... <p/ ><p> هل أنت متأكد أنك تريد المتابعة؟ </ P> </ HTML>"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlCategorizedLine.java:166
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRecodedLine.java:170
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlCategorizedPoint.java:174
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlCategorizedArea.java:172
+msgid "You must use recognized RecodedLine instances in this panel."
+msgstr "يجب أن تستخدم سطر الحالات المشفّرة المعترف بها في هذه اللّوحة."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:94
+msgid "Rule settings"
+msgstr "إعدادات القاعدة"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:96
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlStyle.java:77
+msgid "Name"
+msgstr "اسم"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:117
+msgid "Min. scale"
+msgstr "مقياس الحد الأدنى. "
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:123
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:140
+msgid "Current"
+msgstr "متداول"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:136
+msgid "Max. scale"
+msgstr "مقياس الحد الأقصى. "
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:229
+msgid "Min. scale is not a valid number"
+msgstr "الحد الأدنى للمقياس ليس رقم صالح"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:238
+msgid "Max. scale is not a valid number"
+msgstr "الحد الأقصى للمقياس ليس رقم صالح"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlStyle.java:75
+msgid "Style settings"
+msgstr "إعدادات النمط"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRecodedArea.java:191
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlRecodedPoint.java:184
+msgid "You must use recognized RecodedArea instances in this panel."
+msgstr "يجب أن تستخدم مجال الحالات المشفّرة المعترف بها في هذه اللّوحة."
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlNonClassification.java:48
+msgid "Border settings"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlNonClassification.java:49
+msgid "Fill settings"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlNonClassification.java:50
+msgid "Mark settings"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlProportionalPointSE.java:204
+msgid "Stroke and fill settings"
+msgstr "تنظيم الحاشية و إعادة الملء"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractTableAnalysis.java:81
+msgid "Enable border"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractTableAnalysis.java:82
+msgid "Classification settings"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:112
+msgid "Interval classification"
+msgstr "تصنيف الفاصل"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:147
+msgid "Method"
+msgstr "الطريقة"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:149
+msgid "Classes"
+msgstr "الفئات"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:161
+msgid "Color scheme:"
+msgstr "ألون مركبة"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/ui/PnlUniqueLineSE.java:50
+msgid "Line settings"
+msgstr ""
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/model/TableModelUniqueValue.java:64
+msgid "Value"
+msgstr "قيمة"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/model/TableModelInterval.java:97
+msgid "Threshold"
+msgstr "حد"
+
+#: ../../../../java/org/orbisgis/view/toc/actions/cui/legend/model/TableModelInterval.java:101
+msgid "Label"
+msgstr "علامة"
+
+#: ../../../../java/org/orbisgis/view/toc/wrapper/RuleWrapper.java:252
+#, java-format
+msgid "Min scale greater than max scale in rule {0}."
+msgstr "سلم الحد الأدنى أكبر من سلم الحد الأعلى في القاعدة {0}."
+
+#~ msgid "Fatal error on the job named {0}"
+#~ msgstr "خطأ فادح على الوظيفة المسماة {0}"
+
+#~ msgid "Progressing..."
+#~ msgstr "تقدم ..."
+
+#~ msgid "Invalid MultiLineString"
+#~ msgstr "متعدد الخطوط غير صالحة"
+
+#~ msgid "The geometry is not valid"
+#~ msgstr "الشكل الهندسي غير صالح"
+
+#~ msgid "Cannot remove a vertex from a point geometry"
+#~ msgstr "ا يمكن إزالة ذروة من هندسة نقطية"
+
+#~ msgid "Invalid multipolygon"
+#~ msgstr "المضلعات غير صالحة"
+
+#~ msgid "Invalid geometry. Too few vertex"
+#~ msgstr "الهندسة غير صالحة. الذروة قليلة جدا"
+
+#~ msgid "The ToolManager cannot listen to source modifications"
+#~ msgstr "مدير الأداة لا يستطيع الاستماع إلى تغييرات المصدر"
+
+#~ msgid "Error while drawing the feature, "
+#~ msgstr "خطأ أثناء رسم الميزة,"
+
+#~ msgid "Error while accessing data, "
+#~ msgstr "خطأ أثناء الوصول إلى البيانات,"
+
+#~ msgid "The current tool is not enabled"
+#~ msgstr "لم يتم تفعيل الأداة الحالية"
+
+#~ msgid "Error in the tool."
+#~ msgstr "خطأ في الأداة."
+
+#~ msgid "Cannot recalculate the handlers"
+#~ msgstr "لا يمكن حساب معالجات"
+
+#~ msgid "Invalid MultiPoint"
+#~ msgstr "عدة نقاط غير صالحة"
+
+#~ msgid "The MapEditor cannot listen to source modifications"
+#~ msgstr "محرر الخريطة  لا يستطيع الإستماع إلى تعديلات المصدر"
+
+#~ msgid "Drawing"
+#~ msgstr "رسم "
+
+#~ msgid "Tool error {0}"
+#~ msgstr "خطأ أداة {0}"
+
+#~ msgid "Unable to compute the zoom extent"
+#~ msgstr "لا يمكن تحقيق تكبير موسع "
+
+#~ msgid "Compute envelope of {0}"
+#~ msgstr "أحسب مغلف {0}"
+
+#~ msgid "Zoom to the selected geometries"
+#~ msgstr "تكبير على الأشكال الهندسية المختارة"
+
+#~ msgid "Open the map context"
+#~ msgstr "فتح سياق الخريطة"
+
+#~ msgid "Create a datasource from the current selection"
+#~ msgstr "إنشاء مصدر بيانات من الإختيار الحالي"
+
+#~ msgid "{0}_selection"
+#~ msgstr "{0} اختيار"
+
+#~ msgid "{0}_selection_{1}"
+#~ msgstr "{0} _اختيار_ {1}"
+
+#~ msgid "You must enter a non-empty name."
+#~ msgstr "جب إدخال اسم غير فارغ."
+
+#~ msgid "A datasource with that name already exists."
+#~ msgstr "مصدر بيانات بهذا الاسم موجود مسبقا."
+
+#~ msgid "Scale :"
+#~ msgstr "مقياس :"
+
+#~ msgid "Projection : {0}"
+#~ msgstr "إسقاط: {0}"
+
+#~ msgid "X:{0} Y:{1}"
+#~ msgstr "س:{0} ع:{1}"
+
+#~ msgid "1:{0}"
+#~ msgstr "1:{0}"
+
+#~ msgid ""
+#~ "The saved map context cannot be read, starting with an empty map context."
+#~ msgstr "لا يمكن قراءة سياق الخريطة، إبدأ بخريطة فارغة."
+
+#~ msgid ""
+#~ "Some layers use temporary data source, are you sure to save this map and "
+#~ "loose layers with temporary data sources ?"
+#~ msgstr ""
+#~ "بعض الطبقات تستخدم مصدر بيانات مؤقتة، هل أنت متأكد من حفظ هذه الخريطة "
+#~ "وفقدان الطبقات مع المصادر البيانية المؤقتة؟"
+
+#~ msgid "Temporary layers data source"
+#~ msgstr "طبقات مؤقت"
+
+#~ msgid ""
+#~ "Some layers use modified data source, do you want to save also these "
+#~ "modifications ?"
+#~ msgstr ""
+#~ "بعض الطبقات تستخدم مصادر بيانات معدلة، هل تريد حفظ هذه التعديلات أيضا؟"
+
+#~ msgid "Save geometry edits"
+#~ msgstr "حفظ تعديلات الشكل الهندسي"
+
+#~ msgid ""
+#~ "Some layers data source modifications can not be saved, are you sure you "
+#~ "want to continue ?"
+#~ msgstr ""
+#~ "لا يمكن حفظ تعديلات مصدر البيانات، هل أنت متأكد من أنك تريد المتابعة؟"
+
+#~ msgid "Errors on data source save process"
+#~ msgstr "أخطاء في عملية حفظ مصدر البيانات"
+
+#~ msgid "Unable to load the map context"
+#~ msgstr "غير قادر على تحميل سياق الخريطة"
+
+#~ msgid "MapContext - {0}"
+#~ msgstr "سياق الخريطة  - {0}"
+
+#~ msgid "Map"
+#~ msgstr "الخريطة "
+
+#~ msgid "Map Editor \"{0}\" [Modified]"
+#~ msgstr "خريطة محررة \"{0}\" [التعديل]"
+
+#~ msgid "Map Editor \"{0}\""
+#~ msgstr "خريطة محررة \"{0}\""
+
+#~ msgid "The value of the scale denominator must be equal or greater than 1"
+#~ msgstr "يجب أن تكون قيمة قاسم المقياس مساوية أو أكبر من 1"
+
+#~ msgid "Fail to load the map context, starting with an empty map context"
+#~ msgstr "فشل في تحميل خريطة السياق، بدءا مخطط السياق فارغ"
+
+#~ msgid "MyMap.ows"
+#~ msgstr "خريطتي.ows"
+
+#~ msgid "Full extent"
+#~ msgstr "التكبير الموسع"
+
+#~ msgid "Zoom to show all geometries"
+#~ msgstr "تكبير لإظهار كافة الأشكال الهندسية"
+
+#~ msgid "Clear all selected geometries of all layers"
+#~ msgstr "إلغاء تحديد كافة الأشكال الهندسية المختارة من جميع الطبقات"
+
+#~ msgid "Zoom to visible selected geometries"
+#~ msgstr "تكبير على الأشكال المختارة "
+
+#~ msgid "Create datasource from selection"
+#~ msgstr "إنشاء مصدر بيانات من الإختيار"
+
+#~ msgid "Mesure tools"
+#~ msgstr "أدوات القياس"
+
+#~ msgid "Graphic tools"
+#~ msgstr "أدوات الرسم"
+
+#~ msgid "Maps tree"
+#~ msgstr "شجرة الخرائط"
+
+#~ msgid "Show/Hide maps tree"
+#~ msgstr "إظهار / إخفاء شجرة الخرائط"
+
+#~ msgid "Export map as image"
+#~ msgstr "تسجيل الخريطة على شكل صورة"
+
+#~ msgid "Export image as file"
+#~ msgstr "تسجيل الصورة على شكل ملف"
+
+#~ msgid "Export parameters"
+#~ msgstr "تصدير الإعدادات "
+
+#~ msgid ""
+#~ "Transparent\n"
+#~ "background"
+#~ msgstr ""
+#~ "شفافة\n"
+#~ "خلفية"
+
+#~ msgid "DPI"
+#~ msgstr "DPI"
+
+#~ msgid "Width (pixels)"
+#~ msgstr "الطول (بكسل)"
+
+#~ msgid "Height (pixels)"
+#~ msgstr "الارتفاع (بكسل)"
+
+#~ msgid "Keep ratio"
+#~ msgstr "حافظ على النسبة"
+
+#~ msgid "Reset extent"
+#~ msgstr "إعادة تعيين المدى"
+
+#~ msgid "OK"
+#~ msgstr "موافق"
+
+#~ msgid "Cancel"
+#~ msgstr "إلغاء "
+
+#~ msgid "Save the map as image : "
+#~ msgstr "إحفظ الخريطة على شكل صورة:"
+
+#~ msgid "Portable Network Graphics"
+#~ msgstr "رسومات الشبكة المحمولة"
+
+#~ msgid "Tagged Image File Format"
+#~ msgstr "ملف الصورة الموسومة"
+
+#~ msgid "Joint Photographic Experts Group"
+#~ msgstr "إشراك مجموعة خبراء التصوير "
+
+#~ msgid "Portable Document Format"
+#~ msgstr "صيغة الوثائق المحمولة"
+
+#~ msgid "No layers are selected."
+#~ msgstr "لم يتم إختيار أي طبقة"
+
+#~ msgid "Layer {0} has no selected geometries."
+#~ msgstr "الطبقة {0} ليس لديها شكل هندسي محدد."
+
+#~ msgid "Drawing into file"
+#~ msgstr "أرسم في ملف"
+
+#~ msgid "Unable to create and drop the layer"
+#~ msgstr "غير قادر على إنشاء وحذف الطبقة"
+
+#~ msgid "A problem occurred while opening the DataSource :"
+#~ msgstr "حدوث مشكلة أثناء فتح مصدر البيانات:"
+
+#~ msgid "Load the data source droped into the map editor."
+#~ msgstr "تحميل مصدر البيانات الموجود في محرر الخريطة."
+
+#~ msgid "Stop"
+#~ msgstr "توقف"
+
+#~ msgid "Close the drawing toolbar"
+#~ msgstr "إغلاق عارضة أدوات الرسم"
+
+#~ msgid ""
+#~ "The edited layer has unsaved changes. Do you want to keep theses "
+#~ "modifications ?"
+#~ msgstr "تلقّت الطّبقة تعديلات لم يتم حفظها. هل تريد حفظ هذه التّعديلات؟"
+
+#~ msgid "Unable to save the modifications"
+#~ msgstr "غير قادر على حفظ التعديلات"
+
+#~ msgid "Undo"
+#~ msgstr "إلغاء الأمر"
+
+#~ msgid "Undo the last modification"
+#~ msgstr "قم بالغاء التعديل الأخير"
+
+#~ msgid "Save unsaved modifications of this layer"
+#~ msgstr "إحفظ التعديلات التي لم يتم حفظها لهذه الطبقة"
+
+#~ msgid "Delete selected geometries"
+#~ msgstr "حذف الأشكال الهندسية المختارة"
+
+#~ msgid "Are you sure to remove the {0} selected geometries ?"
+#~ msgstr "هل أنت متأكد من إزالة {0} الأشكال الهندسية المختارة؟"
+
+#~ msgid "Cancel all unsaved modifications of this layer"
+#~ msgstr "إلغاء جميع التعديلات التي لم يتم حفظها من هذه الطبقة"
+
+#~ msgid "Are you sure to cancel all your modifications ?"
+#~ msgstr "هل أنت متأكد من إلغاء كل التعديلات؟"
+
+#~ msgid "Return to the original state"
+#~ msgstr "العودة إلى الحالة الأصلية"
+
+#~ msgid "Redo"
+#~ msgstr "الرجوع إلى الوراء"
+
+#~ msgid "Redo the last modification"
+#~ msgstr "إعادة التعديل الأخير"
+
+#~ msgid "Draw a polygon"
+#~ msgstr "أرسم المضلع"
+
+#~ msgid "Split polygon"
+#~ msgstr "تقسيم المضلع"
+
+#~ msgid "Split a polygon by drawing a line"
+#~ msgstr "تحميل محتوى مساحة العمل"
+
+#~ msgid "Cannot split the polygon"
+#~ msgstr "لا يمكن تقسيم المضلع"
+
+#~ msgid "Lines must have at least two points"
+#~ msgstr "يجب أن تكون نقطتين على الأقل للخطوط"
+
+#~ msgid "Invalid line"
+#~ msgstr "خط غير صالح"
+
+#~ msgid "Cannot use wand tool {0}"
+#~ msgstr "لا يمكن استخدام الأداة {0}wand"
+
+#~ msgid "Cannot apply the legend {0}"
+#~ msgstr "لا يمكن تطبيق المفتاح {0}"
+
+#~ msgid "Error accessing the GeoRaster {0}"
+#~ msgstr "دخول خاطأ للجيورستر {0}"
+
+#~ msgid "Error accessing the wand layer datasource {0}"
+#~ msgstr "يستحيل "
+
+#~ msgid "Error committing the wand layer datasource {0}"
+#~ msgstr "حدوث خطأ أثناء خلق مصدر بيانات الأداة {0}"
+
+#~ msgid "Vectorize a set of pixels"
+#~ msgstr "فكتورزي مجموعة من البكسل "
+
+#~ msgid "Problem to access the GeoRaster"
+#~ msgstr "مشكلة للوصول إلى GeoRaster"
+
+#~ msgid "Problem adding the new layer"
+#~ msgstr "مشكلة أثناء إضافة طبقة جديدة"
+
+#~ msgid "Operation error with the GeoRaster"
+#~ msgstr "خطأ في العملية مع GeoRaster"
+
+#~ msgid "Cannot create the resulting layer of raster type"
+#~ msgstr "لا يمكن خصم الطبقة المتماثلة مع راستر "
+
+#~ msgid "Compute a watershed"
+#~ msgstr "احسب المستجمع المائي"
+
+#~ msgid "Cannot Autocomplete the polygon"
+#~ msgstr "لا يمكن الاستكمال الآلي المضلع"
+
+#~ msgid "Autocomplete a polygon"
+#~ msgstr "لاستكمال الآلي للمضلع"
+
+#~ msgid "Cannot split line"
+#~ msgstr "لا يمكن تقسيم الخط"
+
+#~ msgid "Split line"
+#~ msgstr "أقسم الخط"
+
+#~ msgid "Split a line by selecting a vertex"
+#~ msgstr "تحميل محتوى مساحة العمل"
+
+#~ msgid "Click a selected vertex to remove it"
+#~ msgstr "أنقر على قمة لإزالته"
+
+#~ msgid "Delete vertex"
+#~ msgstr "حذف الذروة"
+
+#~ msgid "Select the center of the zoom"
+#~ msgstr "حدد مركز التكبير"
+
+#~ msgid "Select the point location"
+#~ msgstr "حدد موقع النقطة"
+
+#~ msgid "Select a geometry or draw a selection rectangle"
+#~ msgstr "حدد الهندسة أو أرسم مستطيل من التحديد"
+
+#~ msgid "Select the second point"
+#~ msgstr "حدد النقطة الثانية"
+
+#~ msgid "Click a handler to move it or select another geometry"
+#~ msgstr "حافظ على النقر من أجل  التحريك أو حدد هندسة أخرى"
+
+#~ msgid "Place the handler in its new position"
+#~ msgstr "ضع المؤشرة في موقعها الجديد"
+
+#~ msgid "Can't find the status of this tool."
+#~ msgstr "لا يمكن العثور على وضع هذه الأداة."
+
+#~ msgid "Select a feature"
+#~ msgstr "حدد المجسم "
+
+#~ msgid "Click on an edge to insert a vertex"
+#~ msgstr "انقر القوس لإضافة قمة "
+
+#~ msgid "Add a new vertex"
+#~ msgstr "أضف ذروة "
+
+#~ msgid "Terminate multipoint"
+#~ msgstr "إنهي متعددة النقاط"
+
+#~ msgid "Select the next point location or terminate multipoint"
+#~ msgstr "حدد موقع النقطة التالية أو إنهي متعددة النقاط"
+
+#~ msgid "Draw a multipoint"
+#~ msgstr "أرسم عدة نقاط"
+
+#~ msgid "Select the first point of the zooming rectangle"
+#~ msgstr "حدد النقطة الأولى من مستطيل التكبير"
+
+#~ msgid "Terminate multipolygon"
+#~ msgstr "إنهي متعدد الأضلاع"
+
+#~ msgid "Terminate polygon"
+#~ msgstr "إنهى المضلع"
+
+#~ msgid "Select the first point/terminate multipolygon"
+#~ msgstr "حدد النقطة الأولى / إنهى متعدد الأضلاع"
+
+#~ msgid "Select the next point/terminate polygon/terminate multipolygon"
+#~ msgstr "حدد النقطة التالية / إنهى مضلع / إنهى متعدد الأضلاع"
+
+#~ msgid "Draw a multipolygon"
+#~ msgstr "أرسم متعدد الأضلاع"
+
+#~ msgid "Cancel (transition)"
+#~ msgstr "إلغاء (الأمر)"
+
+#~ msgid "Terminate line"
+#~ msgstr "إنهاء الخط"
+
+#~ msgid "Select the first point"
+#~ msgstr "حدد نقطة البداية"
+
+#~ msgid "Select the next point or terminate line"
+#~ msgstr "حدد النقطة التالية أو إنهى الخط"
+
+#~ msgid "Select the next point or [T]erminate polygon"
+#~ msgstr "حدد النقطة التالية أو [إ]نهى المضلع"
+
+#~ msgid "Select start point"
+#~ msgstr "حدد نقطة البداية"
+
+#~ msgid "Drag to destination point"
+#~ msgstr "اسحب لنقطة الوصول"
+
+#~ msgid "Terminate multiline"
+#~ msgstr "إنهاء متعدد الخطوط "
+
+#~ msgid "Select the first point terminate multiline"
+#~ msgstr "حدد النقطة الأولى إنهاء متعدد الخطوط"
+
+#~ msgid "Select the next point terminate line terminate multiline"
+#~ msgstr "حدد النقطة الموالية إنهاء خط إنهاء متعدد الخطوط"
+
+#~ msgid "Draw a multiline"
+#~ msgstr "أرسم متعدد الخطوط "
+
+#~ msgid "Draw multi-polygon"
+#~ msgstr "رسم متعددة المضلّعات"
+
+#~ msgid "Select a geometry"
+#~ msgstr "إختر الشكل الهندسي "
+
+#~ msgid "Split line by line"
+#~ msgstr "تقسيم خط بخط"
+
+#~ msgid "Split a line by drawing a line"
+#~ msgstr "تقسيم خط عن طريق رسم خط "
+
+#~ msgid "Cannot split the line"
+#~ msgstr "لا يمكن تقسيم خط"
+
+#~ msgid "Angle : {0}"
+#~ msgstr "الزاوية: {0}"
+
+#~ msgid "Mesure angle"
+#~ msgstr "قياس الزاوية"
+
+#~ msgid "This tool mesure the angle"
+#~ msgstr "هذه الأداة لقياس الزاوية"
+
+#~ msgid "Zoom out"
+#~ msgstr "تصغير"
+
+#~ msgid "This tool zoom out on click"
+#~ msgstr "هذه الأداة تصغر بنقرة على الفأرة"
+
+#~ msgid "Cannot delete vertex"
+#~ msgstr "لا يمكن حذف الذروة"
+
+#~ msgid "Cannot modify the theme"
+#~ msgstr "لا يمكن  تغير الموضوع"
+
+#~ msgid "Cannot move {0}"
+#~ msgstr "لا يمكن أن تحرك {0}"
+
+#~ msgid "Cannot cut the polygon"
+#~ msgstr "لا يمكن قطع المضلع"
+
+#~ msgid "Cut a polygon"
+#~ msgstr "قطع المضلع"
+
+#~ msgid "Select a polygon then draw another polygon to subtract the first one"
+#~ msgstr "اختر مضلع ثم ارسم مضلع آخر لحذف أولهما"
+
+#~ msgid "Coordinate : {0}"
+#~ msgstr "إحداثيات : {0}"
+
+#~ msgid "Pick a point"
+#~ msgstr "اختيار نقطة"
+
+#~ msgid "Zoom in"
+#~ msgstr "قم بالتكبير"
+
+#~ msgid "Click on the map to zoom in"
+#~ msgstr "أنقر على الخريطة للتكبير"
+
+#~ msgid "Cannot use fence tool"
+#~ msgstr "لا يمكن استخدام الأداة fence"
+
+#~ msgid "Error while recovering fence vectorial layer"
+#~ msgstr "خطأ أثناء استعادة fence"
+
+#~ msgid "Cannot create fence layer"
+#~ msgstr "لا يمكن إنشاء fence"
+
+#~ msgid "Draw a fence"
+#~ msgstr "أرسم fence"
+
+#~ msgid "Get feature attributes"
+#~ msgstr "الحصول على السمات"
+
+#~ msgid "Area : {0} Perimeter : {1}"
+#~ msgstr "المساحة : {0} المحيط : {1}"
+
+#~ msgid "Mesure area"
+#~ msgstr "أحسب المساحة"
+
+#~ msgid "This tool mesure the area"
+#~ msgstr "هذه الأداة لقياس المساحة "
+
+#~ msgid "Invalid multiline"
+#~ msgstr "متعدد الخطوط غير صالحة"
+
+#~ msgid "Cannot update the geometry {0}"
+#~ msgstr "لا يمكن تحديث الشكل الهندسي {0}"
+
+#~ msgid "Move vertex"
+#~ msgstr "تحريك الذروة"
+
+#~ msgid "Pan"
+#~ msgstr "إزاحة"
+
+#~ msgid "The Pan Tool"
+#~ msgstr "أداة الإزاحة"
+
+#~ msgid "Polygons must have more than two points"
+#~ msgstr "يجب أن يكون للمضلعات أكثر من نقطتين"
+
+#~ msgid "Invalid polygon"
+#~ msgstr "المضلع غير صالح"
+
+#~ msgid "Cannot insert linestring"
+#~ msgstr "يتعذر إضافة خط"
+
+#~ msgid "Draw a line"
+#~ msgstr "أرسم الخط"
+
+#~ msgid "Distance : {0}"
+#~ msgstr "المسافة : {0}"
+
+#~ msgid "This tool mesure the length on the map"
+#~ msgstr "هذه الأداة تقيس الطول على الخريطة"
+
+#~ msgid "Mesure length"
+#~ msgstr "قياس الطول"
+
+#~ msgid "Draw a point"
+#~ msgstr "أرسم نقطة"
+
+#~ msgid "Open the map"
+#~ msgstr "إفتح الخريطة "
+
+#~ msgid "Remote"
+#~ msgstr "بعيد "
+
+#~ msgid "Cannot load map catalog server {0}"
+#~ msgstr "يتعذر تحميل خادم كتالوج الخريطة {0}"
+
+#~ msgid "Enter the server URL"
+#~ msgstr "أدخل URL الخادم "
+
+#~ msgid "You type an incorrect URL {0}"
+#~ msgstr "أدخلتم URL غير صحيح {0}"
+
+#~ msgid "Add Map Catalog server"
+#~ msgstr "أضف خادم كتالوج الخريطة"
+
+#~ msgid "Add a new remote map catalog"
+#~ msgstr "أضف كتالوج جديد لخريطة البعد"
+
+#~ msgid "Unlink"
+#~ msgstr "فك الرّابط"
+
+#~ msgid "Unlink the folder, without deleting it"
+#~ msgstr "فك رابط المجلد، دون حذفه"
+
+#~ msgid "Cannot download the server's workspaces of {0}"
+#~ msgstr "لا يمكن تحميل مساحات العمل الخادم من {0} "
+
+#~ msgid "Download the workspaces of {0}"
+#~ msgstr "تحميل فضاء العمل {0} "
+
+#~ msgid "Cannot download the server's contexts of {0}"
+#~ msgstr "لا يمكن تحميل سياقات الخادم من {0} "
+
+#~ msgid "Download the context of {0}"
+#~ msgstr "تحميل السياق من {0} "
+
+#~ msgid "Uploading the map context.."
+#~ msgstr "تحميل سياق الخريطة .."
+
+#~ msgid "The map cannot be removed"
+#~ msgstr "لا يمكن إزالة الخريطة "
+
+#~ msgid "Delete the remote map context"
+#~ msgstr "حذف سياق الخريطة البعيد"
+
+#~ msgid "Parse maps title and description"
+#~ msgstr "حلل العنوان وأصف الخرائط "
+
+#~ msgid "Error while downloading the map content"
+#~ msgstr "خطأ أثناء تحميل محتوى الخريطة"
+
+#~ msgid "Downloading.."
+#~ msgstr "التحميلات.. "
+
+#~ msgid "Map creation failed"
+#~ msgstr "فشل إنشاء الخريطة "
+
+#~ msgid "Are you sure you want to delete permanently the selected files ?"
+#~ msgstr "هل أنت متأكد أنك تريد حذف الملفات المحددة بشكل دائم؟"
+
+#~ msgid "Remove the files"
+#~ msgstr "إزالة الملفات"
+
+#~ msgid "Cannot remove the file"
+#~ msgstr "لا يمكن حدف الملف"
+
+#~ msgid "Cannot remove the file {0}"
+#~ msgstr "لا يمكن حدف الملف {0}"
+
+#~ msgid "Remove permanently the map"
+#~ msgstr "حذف كلي للخريطة "
+
+#~ msgid "Local"
+#~ msgstr "محلي"
+
+#~ msgid "Select a folder to link with map manager"
+#~ msgstr "تحديد مجلد للربط مع مدير الخريطة"
+
+#~ msgid "Add Map Catalog folder"
+#~ msgstr "   إضافة مجلّد دليل الخرائط  "
+
+#~ msgid "Add link to a local folder"
+#~ msgstr "إضافة رابط إلى مجلد محلي"
+
+#~ msgid "Edit the URL"
+#~ msgstr "تحرير العنوان URL"
+
+#~ msgid "Remove this server"
+#~ msgstr "إزالة هذا الخادم"
+
+#~ msgid "Download the server content"
+#~ msgstr "تنزيل محتوى الخادم"
+
+#~ msgid "Are you sure you want to replace the remote map context ?"
+#~ msgstr "هل أنت متأكد أنك تريد استبدال سياق الخريطة البعيد؟"
+
+#~ msgid "Overwrite map context confirmation"
+#~ msgstr "التأكيد من إعادة كتابة سياق الخريطة  "
+
+#~ msgid "Remove this map on the server"
+#~ msgstr "إحذف هذه الخريطة من الخادم"
+
+#~ msgid "default"
+#~ msgstr "خطا"
+
+#~ msgid "Maps manager"
+#~ msgstr "مدير الخرائط"
+
+#~ msgid "Enter the Map file name"
+#~ msgstr "أدخل اسم ملف الخريطة"
+
+#~ msgid "MyMap"
+#~ msgstr "خريطتى "
+
+#~ msgid "The specified file name already exist"
+#~ msgstr "اسم الملف المحدد موجود من قبل"
+
+#~ msgid "The map creation has failed"
+#~ msgstr "فشل إنشاء الخريطة"
+
+#~ msgid "New empty map"
+#~ msgstr "الخريطة الجديدة فارغة"
+
+#~ msgid "Create a new OWS Map in this folder"
+#~ msgstr "أنشئ خريطة جديدة OWS داخل هذا المجلد "
+
+#~ msgid "Download the workspace content"
+#~ msgstr "تحميل محتوى مساحة العمل"
+
+#~ msgid "Cannot initialize beanshell"
+#~ msgstr "لا يمكن تهيئة beanshell"
+
+#~ msgid "Cannot initialize beanshell script folder"
+#~ msgstr "لا يمكن تهيئة المجلد النصي لل beanshell"
+
+#~ msgid "Do you want to clear the contents of the console?"
+#~ msgstr "هل تريد مسح محتويات وحدة التحكم؟"
+
+#~ msgid "Clear script"
+#~ msgstr "إمسح السيناريو"
+
+#~ msgid "Execute"
+#~ msgstr "تنفيذ"
+
+#~ msgid "Execute the java script"
+#~ msgstr "تنفيذ جافا سكريبت"
+
+#~ msgid "Clear"
+#~ msgstr "أزل"
+
+#~ msgid "Erase the content of the editor"
+#~ msgstr "مسح محتوى المحرر"
+
+#~ msgid "Open"
+#~ msgstr "افتح "
+
+#~ msgid "Load a file in this editor"
+#~ msgstr "قم بتحميل الملف في هذا المحرر"
+
+#~ msgid "Save the editor content into a file"
+#~ msgstr "حفظ محتوى المحرر في ملف"
+
+#~ msgid "Search.."
+#~ msgstr "البحث .."
+
+#~ msgid "Search text in the document"
+#~ msgstr "إبحث عن النص في المحرر "
+
+#~ msgid "(Un)comment"
+#~ msgstr "(بدون)تعليق"
+
+#~ msgid "(Un)comment the selected text"
+#~ msgstr "(بدون)التعليق على النص المحدد"
+
+#~ msgid "Block (un)comment"
+#~ msgstr "الكتلة (بدون)تعليق"
+
+#~ msgid "Block (un)comment the selected text."
+#~ msgstr "الكتلة (بدون)التعليق على النص المحدد."
+
+#~ msgid "Save script"
+#~ msgstr "حفظ السيناريو"
+
+#~ msgid "BeanShell Script (*.bsh)"
+#~ msgstr "BeanShell نصي (*.bsh)"
+
+#~ msgid "IO error."
+#~ msgstr "خطأ دخول/ خروج"
+
+#~ msgid "The file has been saved."
+#~ msgstr "لقد تم حفظ الملف."
+
+#~ msgid "Open script"
+#~ msgstr "فتح السيناريو"
+
+#~ msgid "Do you want to clear all before loading the file ?"
+#~ msgstr "هل تريد مسح كلي قبل تحميل الملفات؟"
+
+#~ msgid "Open file"
+#~ msgstr "فتح الملف"
+
+#~ msgid "Cannot execute the script"
+#~ msgstr "لا يمكن تنفيذ البرنامج النصي"
+
+#~ msgid "The script is not valid"
+#~ msgstr "البرنامج النصي غير صالح"
+
+#~ msgid "BeanShell"
+#~ msgstr "BeanShell"
+
+#~ msgid "Not contains"
+#~ msgstr "لا يحتوي"
+
+#~ msgid "Alphanumeric"
+#~ msgstr "الابجدية الرقمية "
+
+#~ msgid "DataBase"
+#~ msgstr "قاعدة المعلومات"
+
+#~ msgid "Files"
+#~ msgstr "ملفات  "
+
+#~ msgid "Geometry"
+#~ msgstr "الهندسة"
+
+#~ msgid "Raster"
+#~ msgstr "النقطية"
+
+#~ msgid "Vectorial"
+#~ msgstr "اتجاهي"
+
+#~ msgid "Web Map Services"
+#~ msgstr " Web خدمات الخريطة "
+
+#~ msgid "System Table"
+#~ msgstr "جدول النظام"
+
+#~ msgid "Source type is"
+#~ msgstr "نوع المصدر هو"
+
+#~ msgid "Contains"
+#~ msgstr "يحتوي"
+
+#~ msgid "Data source schema could not be read"
+#~ msgstr "لا يمكن قراءة  مخطط مصدر البيانات"
+
+#~ msgid "GeoCatalog"
+#~ msgstr "الجيوكاتالوج"
+
+#~ msgid "Add filter"
+#~ msgstr "إضافة مرشح"
+
+#~ msgid "Add a new data source filter"
+#~ msgstr "إضافة مرشح جديد"
+
+#~ msgid "Select the file to add"
+#~ msgstr "تحديد الملف لإضافة "
+
+#~ msgid "This source was already registered"
+#~ msgstr "هذا المصدر مسجل من قبل "
+
+#~ msgid "All data source of the GeoCatalog will be removed. Are you sure ?"
+#~ msgstr "ستتم إزالة كافة البيانات من المصدر جيوكاتالوج . هل أنت متأكد؟"
+
+#~ msgid "Clear the GeoCatalog"
+#~ msgstr "مسح الجيوكاتالوج "
+
+#~ msgid "Cannot remove the source {0}"
+#~ msgstr "لا يمكن إزالة مصدر {0}"
+
+#~ msgid "Save the source : "
+#~ msgstr "حفظ المصدر:"
+
+#~ msgid "Add files from a folder"
+#~ msgstr "إضافة ملفات من مجلد"
+
+#~ msgid "Add from folder"
+#~ msgstr "إضافة من مجلد"
+
+#~ msgid "Cannot find a valid image format for this WMS server"
+#~ msgstr "لا يمكن العثور على شكل صورة صالحة لهذا الخادم WMS"
+
+#~ msgid "Can't read the given URI: "
+#~ msgstr "لا يمكن قراءة URL"
+
+#~ msgid "The given URI contains illegal character"
+#~ msgstr "URL لا يحتوي على طابع غير قانوني"
+
+#~ msgid "The source is already registered : "
+#~ msgstr "المصدر مسجل مسبقا"
+
+#~ msgid "File"
+#~ msgstr "ملف"
+
+#~ msgid "Add a file from hard drive."
+#~ msgstr "أضيف ملف من القرص الصلب."
+
+#~ msgid "Folder"
+#~ msgstr "مجلد"
+
+#~ msgid "Add a set of file from an hard drive folder."
+#~ msgstr "إضافة مجموعة من الملفات من مجلد القرص الصلب."
+
+#~ msgid "Add one or more tables from a DataBase"
+#~ msgstr "ضافة جدول واحد أو أكثر من قاعدة البيانات"
+
+#~ msgid "WMS server"
+#~ msgstr "خادم WMS"
+
+#~ msgid "Add a WebMapService"
+#~ msgstr "إضافة خدمة ويب الخريطة"
+
+#~ msgid "Save selected sources in files"
+#~ msgstr "إحفظ المصادر المختارة في ملفات"
+
+#~ msgid "Database"
+#~ msgstr "قاعدة المعلومات"
+
+#~ msgid "Save selected sources in a data base"
+#~ msgstr "أحفظ المصادر المحددة في قاعدة البيانات"
+
+#~ msgid "Open the data source table"
+#~ msgstr "إفتح جدول مصدر البيانات"
+
+#~ msgid "Remove the source"
+#~ msgstr "نقل المصدر"
+
+#~ msgid "Remove from this list the selected sources."
+#~ msgstr "إحذف من هذه القائمة المصادر المحددة."
+
+#~ msgid "Remove all sources in this list"
+#~ msgstr "إحذف جميع المصادر من هذه القائمة"
+
+#~ msgid "Source {0}"
+#~ msgstr "المصدر {0}"
+
+#~ msgid "Cannot save the source modifications"
+#~ msgstr "لا يمكن حفظ تعديلات المصدر"
+
+#~ msgid "Saving the source in a database."
+#~ msgstr "حفظ المصدر في قاعدة بيانات."
+
+#~ msgid "Save sources in a database"
+#~ msgstr "حفظ المصادر في قاعدة بيانات"
+
+#~ msgid "Close"
+#~ msgstr "أغلق"
+
+#~ msgid "Please connect to a database"
+#~ msgstr "من فضلك الاتصال بقاعدة بيانات"
+
+#~ msgid "At least one row must be checked."
+#~ msgstr "يجب تحديد صف واحد على الأقل."
+
+#~ msgid "Cannot connect to the database."
+#~ msgstr "لا يمكن الربط بقاعدة البيانات "
+
+#~ msgid "Please set a password"
+#~ msgstr "من فضلك تعيين كلمة مرور"
+
+#~ msgid "Login"
+#~ msgstr "تسجيل الدخول"
+
+#~ msgid "Password"
+#~ msgstr "كلمة السر "
+
+#~ msgid "The login cannot be empty."
+#~ msgstr "تسجيل الدخول لا يمكن أن يكون فارغا."
+
+#~ msgid "The password cannot be empty."
+#~ msgstr "يجب إدخال كلمة السر "
+
+#~ msgid "Cannot connect the database"
+#~ msgstr "لا يمكن الاتصال بقاعدة البيانات"
+
+#~ msgid "Connection parameters"
+#~ msgstr "معلمات الاتصال"
+
+#~ msgid "Connexion name"
+#~ msgstr "إسم الإتصال"
+
+#~ msgid "MyConnexion"
+#~ msgstr "إتصالي"
+
+#~ msgid "Type of database"
+#~ msgstr "نوع قاعدة البيانات"
+
+#~ msgid "Host"
+#~ msgstr "مضيف"
+
+#~ msgid "Default port"
+#~ msgstr "المنفذ الافتراضي"
+
+#~ msgid "Database name"
+#~ msgstr "إسم قاعدة البيانات"
+
+#~ msgid "SSL"
+#~ msgstr "SSL"
+
+#~ msgid "Please specify a connexion name"
+#~ msgstr "من فضاك حدد إسم الإتصال"
+
+#~ msgid "The database name is mandatory"
+#~ msgstr "اسم قاعدة البيانات إجباري"
+
+#~ msgid "The host cannot be null"
+#~ msgstr "المضيف لا يمكن أن يكون فارغ"
+
+#~ msgid "The port field is mandatory"
+#~ msgstr "عدد المنفذ إجباري"
+
+#~ msgid "The port number must lie between 0 and 32767."
+#~ msgstr "رقم المنفذ يجب أن يكون محصور بين 0 و 32767."
+
+#~ msgid "The port number must be comprise between 0 and 32767"
+#~ msgstr "رقم المنفذ يجب أن يكون محصور بين 0 و 32767"
+
+#~ msgid "This table does not exist."
+#~ msgstr "هذا الجدول غير موجود"
+
+#~ msgid "The required DataSource could not be created."
+#~ msgstr "لا يمكن إنشاء مصدر البيانات المطلوبة."
+
+#~ msgid "Open tables or views from a database"
+#~ msgstr "افتح جداول أو مشاهد قاعدة البيانات "
+
+#~ msgid "Please set the user name and a password "
+#~ msgstr "يرجى إدخال اسم المستخدم وكلمة السر"
+
+#~ msgid "The database contains any tables or views."
+#~ msgstr "فاعدة البيانات لا تحتوي على جداول أو مشاهد.  "
+
+#~ msgid "At least one table or view must be selected."
+#~ msgstr "يجب على الأقل إختيار جدول أو مشهد. "
+
+#~ msgid "Tables"
+#~ msgstr "جداول "
+
+#~ msgid "Views"
+#~ msgstr "مشاهد"
+
+#~ msgid "Cannot list the tables and views"
+#~ msgstr "لا يمكن سرد الجداول ولا المشاهد"
+
+#~ msgid "Cannot open the connection"
+#~ msgstr "لا يمكن فتح الإتصال"
+
+#~ msgid "Populating the database list..."
+#~ msgstr "ملء قائمة قاعدة البيانات ..."
+
+#~ msgid "Connect to the database"
+#~ msgstr "إتصل بقاعدة البيانات"
+
+#~ msgid "Disconnect"
+#~ msgstr "إقطع الاتصال"
+
+#~ msgid "Add a new connection"
+#~ msgstr "إضافة اتصال جديد"
+
+#~ msgid "Edit the connection"
+#~ msgstr "قم بتعديل الإتصال"
+
+#~ msgid "Remove the connection"
+#~ msgstr "قم بإزالة الإتصال"
+
+#~ msgid "Saved with the OrbisGIS database panel"
+#~ msgstr "إحفظ مع لوحة قاعدة بيانات OrbisGIS"
+
+#~ msgid "There is already a connection with this name."
+#~ msgstr "هناك اتصال سابق مع هذا الاسم."
+
+#~ msgid ""
+#~ "Cannot format the EPSG code into an int.\n"
+#~ "The default code will be used."
+#~ msgstr ""
+#~ "لا يمكن تهيئة رمز EPSG إلى int.\n"
+#~ "سيتم استخدام الرمز الافتراضي."
+
+#~ msgid "Choose a list of layers"
+#~ msgstr "إختيار لائحة الطبقات"
+
+#~ msgid "At least a layer must be selected"
+#~ msgstr "على الأقل يجب تحديد طبقة"
+
+#~ msgid "WMS server URL"
+#~ msgstr "URL خادم WMS"
+
+#~ msgid "Connect to the server."
+#~ msgstr "الاتصال بالخادم"
+
+#~ msgid "Delete the server connection."
+#~ msgstr "حذف الاتصال بالخادم."
+
+#~ msgid "Reload the server connection."
+#~ msgstr "إعادة تحميل الاتصال بالخادم."
+
+#~ msgid "Cannot update and save the URL list"
+#~ msgstr "لا يمكن تحديث وحفظ قائمة URL"
+
+#~ msgid "Information"
+#~ msgstr "معلومات"
+
+#~ msgid "Version :"
+#~ msgstr "النسخة:"
+
+#~ msgid "Name :"
+#~ msgstr "اسم :"
+
+#~ msgid "Cannot load the list of WMS url"
+#~ msgstr "لا يمكن تحميل قائمة  WMS url"
+
+#~ msgid "Cannot save the list of WMS url"
+#~ msgstr "لا يمكن حفظ قائمة WMS url "
+
+#~ msgid "WMS server connection"
+#~ msgstr "الاتصال بالخادم WMS"
+
+#~ msgid "Please connect to the WMS server"
+#~ msgstr "من فضلك الاتصال بخادم WMS"
+
+#~ msgid "Cannot connect to {0}"
+#~ msgstr "يتعذر الربط بـ {0}"
+
+#~ msgid "Cannot get capabilities of {0}"
+#~ msgstr "لا يمكن الحصول على قدرات {0}"
+
+#~ msgid "Connecting to the server..."
+#~ msgstr "الاتصال بالخادم ..."
+
+#~ msgid "Select a SRS"
+#~ msgstr "اختيار SRS"
+
+#~ msgid "Search a SRS :"
+#~ msgstr "ابحث عن SRS:"
+
+#~ msgid "Please select a SRS."
+#~ msgstr "من فضلك حدد SRS."
+
+#~ msgid "Save the source in a file."
+#~ msgstr "حفظ المصدر في الملف."
+
+#~ msgid ""
+#~ "The datasource has been exported and added to the geocatalog with the "
+#~ "name "
+#~ msgstr "قد تم تحويل مصدرالبيانات وإضافته إلى الجيوكتالوج مع التسمية"
+
+#~ msgid "Cannot create the file"
+#~ msgstr "لا يمكن خلق الملف"
+
+#~ msgid "Cannot read the source"
+#~ msgstr "لا يمكن قراءة المصدر"
+
+#~ msgid "Advanced Style Editor"
+#~ msgstr "محرر من نمط متقدم"
+
+#~ msgid "Area Symbolizer"
+#~ msgstr "رمز سطحي"
+
+#~ msgid "Line Symbolizer"
+#~ msgstr "رمز خطي"
+
+#~ msgid "Point Symbolizer"
+#~ msgstr "رمز نقطي"
+
+#~ msgid "Text Symbolizer"
+#~ msgstr "رمز نصي"
+
+#~ msgid "The name shall not be empty."
+#~ msgstr "الإسم لا يمكن أن يكون فارغا."
+
+#~ msgid "Operation in progress..."
+#~ msgstr "العملية في التقدم ..."
+
+#~ msgid "Advanced style editor"
+#~ msgstr "محرر نمط متقدم"
+
+#~ msgid "Open the advanced editor for SE styles"
+#~ msgstr "إفتح المحرر المتقدم للأنماط SE"
+
+#~ msgid ""
+#~ "Some layers use modified data source, do you want to save these "
+#~ "modifications before removing them ?"
+#~ msgstr ""
+#~ "بعض الطبقات تستخدم مصدر من البيانات المعدلة، هل تريد حفظ هذه التعديلات "
+#~ "قبل حذفها؟"
+
+#~ msgid ""
+#~ "The layer data source {0} can not be saved, are you sure you want to "
+#~ "continue ?"
+#~ msgstr "مصدر البيانات {0} لا يمكن حفظه، هل أنت متأكد من أنك تريد المتابعة؟"
+
+#~ msgid "This functionality is not supported."
+#~ msgstr "هذه الوظيفة غير معتمدة."
+
+#~ msgid "Advanced Editor can't be loaded"
+#~ msgstr "المحرر المتقدم لا يمكن تحميله"
+
+#~ msgid "Error while editing the legend"
+#~ msgstr "خطأ أثناء تحرير المفتاح"
+
+#~ msgid "Link the editable element with the Toc"
+#~ msgstr "أربط العنصر القابل للتحرير مع توك"
+
+#~ msgid "Running jobs"
+#~ msgstr "تشغيل الوظائف"
+
+#~ msgid "Running jobs ({0})"
+#~ msgstr "تشغيل الوظائف ({0})"
+
+#~ msgid "Executing script"
+#~ msgstr "نفذ السيناريو "
+
+#~ msgid "Execution time: {0}"
+#~ msgstr "وقت التنفيذ: {0}"
+
+#~ msgid "Run SQL statements"
+#~ msgstr "تشغيل عبارات SQL"
+
+#~ msgid "Quote"
+#~ msgstr "اقتبس"
+
+#~ msgid "Quote selected text"
+#~ msgstr "اقتبس من النص المختار"
+
+#~ msgid "Un Quote"
+#~ msgstr "إحذف المزدوجتين"
+
+#~ msgid "Un Quote selected text"
+#~ msgstr "إحذف المزدوجتين للتحديد"
+
+#~ msgid "Format"
+#~ msgstr "الشكل"
+
+#~ msgid "Format editor content"
+#~ msgstr "جهز محتوى المحرر"
+
+#~ msgid "SQL list"
+#~ msgstr "قائمة SQL"
+
+#~ msgid "Show/Hide SQL function list"
+#~ msgstr "إظهار / إخفاء قائمة الدالة SQL"
+
+#~ msgid "SQL script (*.sql)"
+#~ msgstr "السيناريو SQL (*. SQL"
+
+#~ msgid "Functions count = {0}"
+#~ msgstr "عدد الدالة = {0}"
+
+#~ msgid "SQL Console"
+#~ msgstr "وحدة تحكم SQL"
+
+#~ msgid "Add a row"
+#~ msgstr "قم بإضافة صف"
+
+#~ msgid "New row"
+#~ msgstr "صف جديد"
+
+#~ msgid "Table \"{0}\""
+#~ msgstr "الجدول \"{0}\""
+
+#~ msgid "Find"
+#~ msgstr "أجد"
+
+#~ msgid "All"
+#~ msgstr "كل"
+
+#~ msgid "Match case"
+#~ msgstr "إحترم الفراغ"
+
+#~ msgid "Whole words"
+#~ msgstr "كلمات كاملة"
+
+#~ msgid "Search"
+#~ msgstr "ابحث"
+
+#~ msgid "Filter driver error"
+#~ msgstr "خطأ في الفلتر"
+
+#~ msgid "SQL"
+#~ msgstr "SQL"
+
+#~ msgid "Run SQL request"
+#~ msgstr "طلب تشغيل SQL"
+
+#~ msgid "Selecting rows"
+#~ msgstr "إختر السطر"
+
+#~ msgid "Computation of the optimal column width"
+#~ msgstr "حساب العرض الأمثل للعمود "
+
+#~ msgid "Compute column statistics."
+#~ msgstr "احسب إحصائيات العمود."
+
+#~ msgid "Driver error"
+#~ msgstr "خطأ السائق"
+
+#~ msgid "Aborted by user"
+#~ msgstr "قطع من قبل المستخدم"
+
+#~ msgid "Cache table values"
+#~ msgstr "قيم الجدول المؤقت"
+
+#~ msgid "Sorting {0}"
+#~ msgstr "فرز {0}"
+
+#~ msgid "Unable to establish the selection bounding box"
+#~ msgstr "يتعذر تأسيس مربع المحيط بالتحديد "
+
+#~ msgid "Remove a column"
+#~ msgstr "قم بحذف العمود"
+
+#~ msgid "Are you sure you want to remove the column {0} ?"
+#~ msgstr "هل أنت متأكد أنك تريد حذف العمود {0}؟"
+
+#~ msgid "Deletion of a column"
+#~ msgstr "حذف العمود"
+
+#~ msgid "Add a column"
+#~ msgstr "قم بإضافة عمود"
+
+#~ msgid "This data source ({0}) is already shown in an editor."
+#~ msgstr "هذا مصدر بيانات ({0}) قد ظهرمن قبل في محرر."
+
+#~ msgid ""
+#~ "In a consequence of an unreachable data source {0},the associated data "
+#~ "editor could not be recovered."
+#~ msgstr ""
+#~ "نتيجة لمصدر بيانات غير قابلة للوصول {0}،محرر البيانات المرتبط بها لم "
+#~ "يتمكن من إسترادها."
+
+#~ msgid "Delete selected rows"
+#~ msgstr "إحذف السطور المختارة"
+
+#~ msgid "Are you sure to remove the {0} selected rows ?"
+#~ msgstr "هل أنت متأكد من إزالة {0} الصفوف المحددة؟"
+
+#~ msgid ""
+#~ "This table use modified data source, do you want to save these "
+#~ "modifications before closing it ?"
+#~ msgstr ""
+#~ "هذا الجدول يستخدم مصدر بيانات معدلة، هل تريد حفظ هذه التعديلات قبل إغلاقه؟"
+
+#~ msgid "Unsaved modifications"
+#~ msgstr "لم يتم حفظ التعديلات  "
+
+#~ msgid ""
+#~ "The data source {0} can not be saved, are you sure you want to continue ?"
+#~ msgstr "مصدر البيانات {0} لا يمكن حفظه، هل أنت متأكد من أنك تريد المتابعة؟"
+
+#~ msgid "Canceled by user"
+#~ msgstr "إلغاء من قبل المستخدم"
+
+#~ msgid ""
+#~ "Searching request is already launched. Please wait a moment, or cancel it."
+#~ msgstr "جاري طلب البحث. من فضلك انتظر لحظة، أو إلغائه."
+
+#~ msgid "Filter selected rows"
+#~ msgstr "تصفية الأسطر المختارة"
+
+#~ msgid "Show only the selected rows"
+#~ msgstr "أظهر الأسطر المختارة فقط"
+
+#~ msgid "Clear row filter"
+#~ msgstr "إمسح فلتر السطر"
+
+#~ msgid "Show all rows"
+#~ msgstr "أظهر كل الصفوف"
+
+#~ msgid "Deselect all lines"
+#~ msgstr "إلغاء كافة الأسطر"
+
+#~ msgid "Reverse selection"
+#~ msgstr "أعكس الإختيار "
+
+#~ msgid "Reverse the current selection"
+#~ msgstr "أعكس الاختيار الحالي"
+
+#~ msgid "In the map editor, zoom to the selected rows"
+#~ msgstr "في الخريطة، كبر في الصفوف المختارة"
+
+#~ msgid "Select same cell"
+#~ msgstr "اختر نفس الخلايا"
+
+#~ msgid "Select all rows that match this cell value"
+#~ msgstr "اختيار كل الصفوف التي لها نفس القيمة"
+
+#~ msgid "Optimal width"
+#~ msgstr "العرض الأمثل"
+
+#~ msgid "Sort ascending"
+#~ msgstr "فرز تصاعدي"
+
+#~ msgid "Sort descending"
+#~ msgstr "فرز تنازلي"
+
+#~ msgid "No sort"
+#~ msgstr "بدون فرز"
+
+#~ msgid "Show column informations"
+#~ msgstr "أظهر المعلومات"
+
+#~ msgid "Show column statistics"
+#~ msgstr " أظهر الإحصاءات"
+
+#~ msgid "Show column selection statistics"
+#~ msgstr "أظهر إحصائيات الإختيار"
+
+#~ msgid "Show filtered column statistics"
+#~ msgstr "أظهر إحصائيات الأعمدة المختارة"
+
+#~ msgid "Table Editor of {0} {1}/{2}"
+#~ msgstr "محرر جدول {0} {1} / {2}"
+
+#~ msgid "Table Editor of {0} (Filtered) {1}/{2}"
+#~ msgstr "محرر جدول {0} (المصفاة) {1} / {2}"
+
+#~ msgid "Error while loading the table editor"
+#~ msgstr "خطأ أثناء تحميل الجدول"
+
+#~ msgid "Open the data source {0}"
+#~ msgstr "فتح مصدر البيانات {0}"
+
+#~ msgid "Selection deserialisation failed"
+#~ msgstr "فشل إلغاء تسلسل التحديد"
+
+#~ msgid "Selection serialisation failed"
+#~ msgstr "فشلت اختيار التسلسل"
+
+#~ msgid "The TableEditor cannot listen to source modifications"
+#~ msgstr "المحرر لا يستطيع تتبع تغيرات المصدر"
+
+#~ msgid "Cannot parse number"
+#~ msgstr "لا يمكن تحليل الرقم"
+
+#~ msgid "&Copy"
+#~ msgstr "&نسخ "
+
+#~ msgid "Clea&r"
+#~ msgstr "إزال&ة"
+
+#~ msgid "Cannot show the log message"
+#~ msgstr "لا يمكن إظهار رسالة التسجيل"
+
+#~ msgid "Output"
+#~ msgstr "الناتج "
+
+#~ msgid "Clear all"
+#~ msgstr "إزالة الكل"
+
+#~ msgid "Clear all log panels"
+#~ msgstr "قم بإزالة جميع لوحات التسجل"
+
+#~ msgid "Errors"
+#~ msgstr "أخطاء"
+
+#~ msgid "Infos"
+#~ msgstr "معلومات"
+
+#~ msgid "Warnings"
+#~ msgstr "تحذيرات"
+
+#~ msgid "Debug"
+#~ msgstr "التصحيح"
+
+#~ msgid "Switch to another workspace"
+#~ msgstr "قم بالتبديل إلى مساحة عمل أخرى"
+
+#~ msgid "OrbisGIS version {0} {1} {2}"
+#~ msgstr "نسخة OrbisGIS {0} {1} {2}"
+
+#~ msgid "&File"
+#~ msgstr "&ملف"
+
+#~ msgid "&Exit"
+#~ msgstr "&خروج"
+
+#~ msgid "&Tools"
+#~ msgstr "&الأدوات"
+
+#~ msgid "&Configuration"
+#~ msgstr "&مواصفات"
+
+#~ msgid "Loading GDMS.."
+#~ msgstr "تحميل GDMS .."
+
+#~ msgid "Contains view folders path"
+#~ msgstr "يحتوي مسار عرض المجلدات"
+
+#~ msgid "Register GUI Sql functions.."
+#~ msgstr "تحميل وظائف SQL المتعلقة بالواجهة المرسومة"
+
+#~ msgid "Load the plugin framework.."
+#~ msgstr "تحميل البرنامج الإضافي .."
+
+#~ msgid "Loading of plugins is aborted"
+#~ msgstr "تم إحباط تحميل الإضافات"
+
+#~ msgid "&Save"
+#~ msgstr "إحفظ"
+
+#~ msgid "Save the workspace"
+#~ msgstr "إحفظ فضاء العمل"
+
+#~ msgid "Error while loading dialogs informations."
+#~ msgstr "خطأ أثناء التحميل المعلومات في علب الحوار."
+
+#~ msgid ""
+#~ "Execute tasks in background processes, showing progress bars. Gives "
+#~ "access to the job queue"
+#~ msgstr ""
+#~ "تنفيذ المهام في العمليات الخلفية، والتي تبين أشرطة التقدم. يتيح الوصول "
+#~ "إلى قائمة انتظار العملية"
+
+#~ msgid "Use this instance to open an editable element (map,data source..)"
+#~ msgstr "استخدم هذا المثال لفتح عنصر قابل للتحرير (خريطة، مصدر البيانات ..)"
+
+#~ msgid "Loading the main window"
+#~ msgstr "تحميل النافذة الرئيسية"
+
+#~ msgid "Loading docking system and frames"
+#~ msgstr "تحميل إطار العمل"
+
+#~ msgid "Restore the former layout.."
+#~ msgstr "إعادة تصميم الشكل"
+
+#~ msgid "Error while saving dialogs informations."
+#~ msgstr "خطأ أثناء حفظ معلومات علبة الحوار."
+
+#~ msgid "The workspace has been saved."
+#~ msgstr "لقد تم حفظ فضاء العمل."
+
+#~ msgid "The workspace hasn't been saved."
+#~ msgstr "لم يتم حفظ فضاء العمل."
+
+#~ msgid "OrbisGIS needs at least a java 1.7+"
+#~ msgstr "OrbisGIS يحتاج على الأقل جافا 1.7+"
+
+#~ msgid "Use Proxy"
+#~ msgstr "إستخدام الوكيل "
+
+#~ msgid "Proxy url"
+#~ msgstr "URL الوكيل"
+
+#~ msgid "Proxy port"
+#~ msgstr "وكيل المنفذ "
+
+#~ msgid "The proxy port is invalid"
+#~ msgstr "وكيل المنفذ غير صالح"
+
+#~ msgid "Windows"
+#~ msgstr "نافذة"
+
+#~ msgid "Web configuration"
+#~ msgstr "ترتيب الشبكة"
+
+#~ msgid "Proxy"
+#~ msgstr "الوكيل "
+
+#~ msgid "&Look And Feel"
+#~ msgstr "&مظهر و سلوك"
+
+#~ msgid "&Windows"
+#~ msgstr "&نافذة"
+
+#~ msgid "ToolBar item {0} is not unique, it has been renamed to {1}"
+#~ msgstr "بند شريط الأدوات {0} ليس فريد من نوعه، وقد تم تسميته {1}"
+
+#~ msgid "Choose the workspace folder"
+#~ msgstr "اختر مساحة العمل"
+
+#~ msgid "Choose a previous OrbisGIS workspace or create a new one"
+#~ msgstr "اختيار مساحة عمل سابقة أو قم بإنشاء واحدة جديدة"
+
+#~ msgid "Set as default?"
+#~ msgstr "تعيين افتراضي؟"
+
+#~ msgid ""
+#~ "Setting this workspace as default will allow you to skip this dialog next "
+#~ "time"
+#~ msgstr ""
+#~ "تحديد هذا الفضاء للعمل افتراضيا يسمح لك بتفادي فتح هذه النافذة في المرة "
+#~ "القادمة"
+
+#~ msgid "Workspace Manager"
+#~ msgstr "مدير مساحة العمل"
+
+#~ msgid "Problem updating the workspace. "
+#~ msgstr "مشكلة في تحديث مساحة العمل."
+
+#~ msgid ""
+#~ "The workspace folder version is invalid (!=OrbisGIS {0}), or the folder "
+#~ "is not empty"
+#~ msgstr ""
+#~ "، أو المجلد غير فارغ (! = OrbisGIS {0}) إصدار مجلد مساحة العمل غير صالح"
+
+#~ msgid "Save documents"
+#~ msgstr "قم بحفظ المستندات"
+
+#~ msgid ""
+#~ "Save the selected documents, and close this dialog if there is no more "
+#~ "modifed documents"
+#~ msgstr ""
+#~ "إحفظ الوثائق المختارة، وأغلق هذا الحوار إذا لم يكن يعد هناك وثائق معدلة"
+
+#~ msgid "Save &All"
+#~ msgstr "إحفظ الكل"
+
+#~ msgid "Save all documents and close this dialog"
+#~ msgstr "إحفظ جميع الوثائق وإغلاق هذا الحوار"
+
+#~ msgid "Save &None"
+#~ msgstr "لا تحفظ  شيء"
+
+#~ msgid "Discard all changes and close this dialog"
+#~ msgstr "قم بإلغاء كل التغييرات و قم بإغلاق نافذة الحوار "
+
+#~ msgid "&Cancel"
+#~ msgstr "&الغاء"
+
+#~ msgid "Do nothing and lose nothing"
+#~ msgstr "لا تفعل شيئ و لا تخسر شيئ"
+
+#~ msgid "The document {0} cannot be saved due to the following error {1}"
+#~ msgstr "المستند {0} لا يمكن حفظه  بسبب الخطأ التالي {1}"
+
+#~ msgid "The URL is not valid."
+#~ msgstr "عنوان الموقع غير صالح."
+
+#~ msgid ""
+#~ "The workspace doesn't exist. Please contact the administrator of the "
+#~ "service."
+#~ msgstr "مساحة العمل غير موجودة. يرجى الاتصال بالمسؤول عن الخدمة."
+
+#~ msgid "The URL is not valid or the service not available."
+#~ msgstr "عنوان الموقع غير صالح أو الخدمة غير متوفرة."
+
+#~ msgid ""
+#~ "A function to share the current mapcontext in the mapcatalog service\n"
+#~ "The second permits to set the workspace name. If the workspace doesn't "
+#~ "exist a message appears."
+#~ msgstr ""
+#~ "وظيفة لتقاسم سياق الخريطة الحالية في خدمة فهرس الخرائط.   \n"
+#~ "الثانية تسمح بتعيين اسم مساحة العمل. في حالة عدم وجود مساحة العمل تظهر "
+#~ "رسالة."
+
+#~ msgid "Return the current mapcontext bounding box as a geometry"
+#~ msgstr "تحويل سياق الخريطة الحالي المحاط بمربّع إلى شكل هندسي"
+
+#~ msgid "Cannot import the style"
+#~ msgstr "لا يمكن استيراد النمط"
+
+#~ msgid "Cannot add the layer to the mapcontext"
+#~ msgstr "لا يمكن إضافة الطبقة إلى السياق الخريطة"
+
+#~ msgid ""
+#~ "A function to add a layer based on a table name\n"
+#~ "The second argument is optional. It permits to set a style to the layer."
+#~ msgstr ""
+#~ "انها تسمح بتعيين نمط للطبقة. الوسيطة الثانية اختيارية. وظيفة لإضافة طبقة "
+#~ "على أساس اسم الجدول."
+
+#~ msgid "Cannot compute the full extent"
+#~ msgstr "لا يمكن حساب النطاق الكامل"
+
+#~ msgid "Zoom to according a dataset"
+#~ msgstr "تكبير وفقا للبيانات"
+
+#~ msgid "Problem when checking for an unbroken range of comments"
+#~ msgstr "خطأ أثناء التحقق من وجود مجموعة متواصلة من التعليقات"
+
+#~ msgid "Assuming the selection is not already block commented."
+#~ msgstr "لم يتم التعليق على التحديد."
+
+#~ msgid "Invalid length or offset when trying to uncomment code."
+#~ msgstr "خطأ أثناء محاولة وضع التعليقات."
+
+#~ msgid "Constraints"
+#~ msgstr "العراقيل "
+
+#~ msgid ""
+#~ "Changing the type will remove all constraints. Do you want to continue?"
+#~ msgstr "غير النوع أزال كافة القيود. هل ترغب في الاستمرار؟"
+
+#~ msgid "Continue?"
+#~ msgstr "المتابعة؟"
+
+#~ msgid "Type"
+#~ msgstr "نوع"
+
+#~ msgid "Enter the {0} constraint parameter"
+#~ msgstr "أدخل إعداد القيد{0}"
+
+#~ msgid "Raster not supported"
+#~ msgstr "نقطية غير معتمد"
+
+#~ msgid "Select the constraint"
+#~ msgstr "حدد العائق"
+
+#~ msgid "Edit"
+#~ msgstr "تحرير"
+
+#~ msgid "The entered value cannot be parsed"
+#~ msgstr "لا يمكن تحليل القيمة التي تم إدخالها"
+
+#~ msgid "Cannot list the directory content"
+#~ msgstr "لا يمكن سرد محتوى الدليل"
+
+#~ msgid "Cannot remove the folder {0}"
+#~ msgstr "لا يمكن إزالة المجلد {0}"
+
+#~ msgid "The path {0} has been copied to the clipboard"
+#~ msgstr "تم نسخ المسار {0}  إلى الحافظة"
+
+#~ msgid "Could not copy the folder path to the clipboard"
+#~ msgstr "لا يمكن نسخ مسار المجلد إلى الحافظة"
+
+#~ msgid "Copy the path"
+#~ msgstr "إنسخ المسار"
+
+#~ msgid "Copy the folder path in the clipboard"
+#~ msgstr "إنسخ مسار المجلد في الحافظة"
+
+#~ msgid "Update the content of this folder from the file system"
+#~ msgstr "تحديث محتوى هذا المجلد من نظام الملفات"
+
+#~ msgid "New folder"
+#~ msgstr "مجلد جديد"
+
+#~ msgid "Create a sub-folder"
+#~ msgstr "إنشاء مجلد فرعي"
+
+#~ msgid "Remove permanently the folder"
+#~ msgstr "أزل المجلد بشكل دائم"
+
+#~ msgid "Enter the folder name"
+#~ msgstr "أدخل اسم المجلد"
+
+#~ msgid "The folder creation has failed"
+#~ msgstr "فشل إنشاء المجلد"
+
+#~ msgid "Destination file {0} already exists, cannot move {1}"
+#~ msgstr "وجهة الملف {0} موجودة بالفعل, لا يمكن تحريك {1}"
+
+#~ msgid "Drop the content in the folder.."
+#~ msgstr "وضع المحتويات في المجلد .."
+
+#~ msgid "Search replace"
+#~ msgstr "إبحث و إستبدل"
+
+#~ msgid "Text not found !"
+#~ msgstr "النص غير موجود!"
+
+#~ msgid "&Find"
+#~ msgstr "إبحث"
+
+#~ msgid "&Replace"
+#~ msgstr "إستبدل"
+
+#~ msgid "Replace &All"
+#~ msgstr "إستبدل الكل"
+
+#~ msgid "&Close"
+#~ msgstr "أغلق"
+
+#~ msgid "&Match Case"
+#~ msgstr "طابق الحالة"
+
+#~ msgid "&Whole Words"
+#~ msgstr "الكلمات كلها"
+
+#~ msgid "Regular E&xpressions"
+#~ msgstr "التعبيرات المنتظمة"
+
+#~ msgid "M&ark all"
+#~ msgstr "إختر الكل"
+
+#~ msgid "Search &up"
+#~ msgstr "إبحث لأعلى"
+
+#~ msgid "Search &down"
+#~ msgstr "إبحث لأسفل"
+
+#~ msgid "Find what:"
+#~ msgstr "إبحث :"
+
+#~ msgid "Replace with:"
+#~ msgstr "استبدال ب:"
+
+#~ msgid "The provided filter factory name has not been registered"
+#~ msgstr "لم يتم تسجيل الفلتر"
+
+#~ msgid "Delete this filter"
+#~ msgstr "قم بإزالة الفلتر"
+
+#~ msgid "Add a new filter"
+#~ msgstr "أضف فلتر"

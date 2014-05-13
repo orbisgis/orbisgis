@@ -31,7 +31,7 @@ package org.orbisgis.view.docking.internals;
 
 import bibliothek.gui.dock.common.DefaultMultipleCDockable;
 import bibliothek.gui.dock.common.MultipleCDockableFactory;
-import org.orbisgis.view.docking.DockingPanel;
+import org.orbisgis.viewapi.docking.DockingPanel;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

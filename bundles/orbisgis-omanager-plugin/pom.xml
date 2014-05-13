@@ -6,7 +6,6 @@
         <artifactId>orbisgis-omanager-plugin</artifactId>
         <name>OrbisGIS OSGi Plugin Manager</name>
         <description>Add a menu shortcut in OrbisGIS in order to show the plugin manager</description>
-        <version>1.0.1</version>
         <url>http://orbisgis.org</url>
         <build>
                 <plugins>
@@ -34,8 +33,8 @@
                                 </configuration>
                         </plugin>
                         <plugin>
-                                <groupId>org.xnap.commons</groupId>
-                                <version>1.2.3</version>
+                                <groupId>com.googlecode.gettext-commons</groupId>
+                                <version>1.2.4</version>
                                 <executions>
                                         <execution>
                                                 <id>convert-po-class</id>
@@ -45,7 +44,7 @@
                                                 </goals>
                                         </execution>
                                 </executions>
-                                <artifactId>maven-gettext-plugin</artifactId>
+                                <artifactId>gettext-maven-plugin</artifactId>
                                 <configuration>
                                         <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/omanager/plugin/translation/</poDirectory>
                                         <targetBundle>org.orbisgis.omanager.plugin.Messages</targetBundle>
@@ -56,9 +55,9 @@
                 </plugins>
         </build>
         <parent>
-                <artifactId>orbisgis-monomap</artifactId>
+                <artifactId>orbisgis-h2</artifactId>
                 <groupId>org.orbisgis</groupId>
-		<version>4.0-SNAPSHOT</version>
+		<version>4.1.0-SNAPSHOT</version>
 		<relativePath>../..</relativePath>
         </parent>
         <properties>
@@ -68,26 +67,22 @@
                 <dependency>
                         <groupId>org.orbisgis</groupId>
                         <artifactId>orbisgis-view-api</artifactId>
-                        <version>4.0-SNAPSHOT</version>
-                        <scope>provided</scope>
+                        <version>${project.version}</version>
                 </dependency>
                 <dependency>
                         <groupId>org.osgi</groupId>
                         <artifactId>org.osgi.core</artifactId>
                         <version>4.3.1</version>
-                        <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.osgi</groupId>
                     <artifactId>org.osgi.compendium</artifactId>
                     <version>4.3.1</version>
-                    <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>org.apache.felix.shell.gui</artifactId>
                     <version>0.9.0-SNAPSHOT</version>
-                    <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>junit</groupId>
@@ -96,20 +91,19 @@
                     <scope>test</scope>
                 </dependency>
                 <dependency>
-                    <groupId>org.xnap.commons</groupId>
+                    <groupId>com.googlecode.gettext-commons</groupId>
                     <artifactId>gettext-commons</artifactId>
-                    <version>0.9.7</version>
+                    <version>${gettext-commons-version}</version>
                 </dependency>
                 <dependency>
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
-                    <version>1.2.16</version>
+                    <version>${log4j-version}</version>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>org.osgi.service.obr</artifactId>
                     <version>1.0.2</version>
-                    <scope>provided</scope>
                 </dependency>
         </dependencies>
 </project>

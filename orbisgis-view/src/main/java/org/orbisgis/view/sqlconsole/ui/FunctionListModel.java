@@ -28,86 +28,122 @@
  */
 package org.orbisgis.view.sqlconsole.ui;
 
-import java.beans.EventHandler;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import javax.swing.AbstractListModel;
-import javax.swing.ListModel;
-import org.gdms.sql.function.FunctionManager;
-import org.gdms.sql.function.FunctionManagerListener;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
+import org.apache.log4j.Logger;
+
+import javax.sql.DataSource;
+import javax.swing.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
- * A custom list model to load and manage GDMS functions.
+ * A custom list model to load and manage SQL functions.
  * @author Erwan Bocher
+ * @author Nicolas Fortin
  */
-public class FunctionListModel extends AbstractListModel implements ListModel {
+public class FunctionListModel extends AbstractListModel<FunctionElement> {
     private static final long serialVersionUID = 1L;
     private List<FunctionElement> functionsList;
-    private FunctionManagerListener functionListener = EventHandler.create(FunctionManagerListener.class,this,"refreshFunctionList");
-    private List<FunctionFilter> filters = new ArrayList<FunctionFilter>();
-    
-    public FunctionListModel() {
-        FunctionManager functionManager = Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager();
-        readSQLFunctions(functionManager);
-        functionManager.addFunctionManagerListener(functionListener);
+    private List<Integer> filteredFunctionList;
+    private List<FunctionFilter> filters = new ArrayList<>();
+    private static final Logger LOGGER = Logger.getLogger(FunctionListModel.class);
+    private static final int AVERAGE_FUNCTION_COUNT = 300; //Hint for size of array
+    private DataSource dataSource;
+
+    private HashSet<String> uniqueFunctionNames = new HashSet<>();
+
+    public FunctionListModel(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override
     public int getSize() {
-        return functionsList.size();
+        if(functionsList == null) {
+            readSQLFunctions();
+        }
+        if(filteredFunctionList!=null) {
+            return filteredFunctionList.size();
+        } else {
+            return functionsList.size();
+        }
     }
 
     @Override
-    public Object getElementAt(int i) {
-        return functionsList.get(i);
+    public FunctionElement getElementAt(int i) {
+        if(filteredFunctionList!=null) {
+            return functionsList.get(filteredFunctionList.get(i));
+        } else {
+            return functionsList.get(i);
+        }
     }
 
-    /**
-     * Release listeners created by this list model
-     */
-    public void dipose() {
-            Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager().removeFunctionManagerListener(functionListener);
-    }
     /**
      * Set the list filters, and refresh the list of functions
      * through {@code refreshFunctionList}.
-     * @param filters 
+     * @param filters Filter list, not null
      */
     public void setFilters(List<FunctionFilter> filters) {
             this.filters = new ArrayList<FunctionFilter>(filters);
-            refreshFunctionList();
-    }
-    
-    /**
-     * Update the list of functions.
-     * Called by the function manager listener 
-     */
-    public void refreshFunctionList() {
-            FunctionManager functionManager = Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager();
-            readSQLFunctions(functionManager);
+            refreshFilter();
     }
 
-    private void readSQLFunctions(FunctionManager functionManager) {
-        functionsList = new ArrayList<FunctionElement>();
-        String[] functions = functionManager.getFunctionNames();
-
-        for (String functionName : functions) {
+    private void refreshFilter() {
+        int oldSize = getSize();
+        if(filters.isEmpty()) {
+            filteredFunctionList = null;
+            if(!functionsList.isEmpty()) {
+                if(oldSize>0) {
+                    fireIntervalRemoved(this,0, oldSize);
+                }
+                fireIntervalAdded(this,0, functionsList.size());
+            }
+        }
+        filteredFunctionList = null;
+        List<Integer> newFilteredFunctionList = new ArrayList<Integer>(functionsList.size());
+        if(oldSize>0) {
+            fireIntervalRemoved(this,0, oldSize);
+        }
+        for(int idElement=0;idElement< functionsList.size(); idElement++) {
+            FunctionElement element = functionsList.get(idElement);
             boolean rejected = false;
-            FunctionElement element = new FunctionElement(functionName.toUpperCase(), FunctionElement.BASIC_FUNCTION);
             for(FunctionFilter filter : filters) {
-                    if(!filter.accepts(element)) {
-                            rejected = true;
-                            break;
-                    }
+                if(!filter.accepts(element)) {
+                    rejected = true;
+                    break;
+                }
             }
             if(!rejected) {
-                functionsList.add(element);
+                newFilteredFunctionList.add(idElement);
             }
-        }        
+        }
+        filteredFunctionList = newFilteredFunctionList;
+        if(getSize()>0) {
+            fireIntervalAdded(this,0,getSize()-1);
+        }
+    }
+
+    private void readSQLFunctions() {
+        functionsList = new ArrayList<FunctionElement>(AVERAGE_FUNCTION_COUNT);
+        try {
+
+            try(Connection connection = dataSource.getConnection();
+                ResultSet resultSet = connection.getMetaData().getProcedures(null,null,null)) {
+                while(resultSet.next()) {
+                    final String procedureName = resultSet.getString("PROCEDURE_NAME");
+                    if (!uniqueFunctionNames.contains(procedureName)) {
+                        uniqueFunctionNames.add(procedureName);
+                        FunctionElement element = new FunctionElement(procedureName,
+                                resultSet.getShort("PROCEDURE_TYPE"),
+                                resultSet.getString("REMARKS"),
+                                dataSource);
+                        functionsList.add(element);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            LOGGER.error("Could not read SQL function list");
+        }
         Collections.sort(functionsList, new NameComparator());
         fireIntervalAdded(this, 0, getSize());
     }

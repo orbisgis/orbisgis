@@ -92,20 +92,16 @@ public class JobListItemPanel extends JPanel {
         public final void readJob() {
                 jobLabel.setText(getText());
                 int progress = -1;
-                if(job.getOverallProgress()>0) {
-                        progress = job.getOverallProgress();
-                }
-                if(job.getCurrentProgress()>0) {
-                        progress = job.getCurrentProgress();
+                if(job.getProgressMonitor().getOverallProgress()>0) {
+                        progress = (int)(job.getProgressMonitor().getOverallProgress()*100);
                 }
                 if(progress>0 && progress<=100) {
                         jobProgressBar.setStringPainted(true);
                         jobProgressBar.setIndeterminate(false);
-                        jobProgressBar.setValue(job.getCurrentProgress());
+                        jobProgressBar.setValue(progress);
                 } else {
                         jobProgressBar.setIndeterminate(true);
                 }
-                
         }
         /**
          * Build the text from job data
@@ -118,15 +114,8 @@ public class JobListItemPanel extends JPanel {
                 }
                 sb.append(job.getTaskName());
                 sb.append(" (");
-                sb.append(job.getOverallProgress());
+                sb.append(Math.round(job.getProgressMonitor().getOverallProgress()*100));
                 sb.append(" %)");
-                if(!statusBarJob && job.getCurrentProgress()>0) {
-                        sb.append("<br>&nbsp;");
-                        sb.append(job.getCurrentTaskName());
-                        sb.append(" (");
-                        sb.append(job.getCurrentProgress());
-                        sb.append(" %)");
-                }
                 if(!statusBarJob) {
                         sb.append("</html>");
                 }

@@ -28,9 +28,9 @@
  */
 package org.orbisgis.legend.thematic.constant;
 
-import org.orbisgis.core.renderer.se.AreaSymbolizer;
-import org.orbisgis.core.renderer.se.fill.Fill;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.AreaSymbolizer;
+import org.orbisgis.coremap.renderer.se.fill.Fill;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;

@@ -28,49 +28,47 @@
  */
 package org.orbisgis.view.sqlconsole.actions;
 
-import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.driver.DriverException;
-import org.gdms.sql.engine.Engine;
-import org.gdms.sql.engine.ParseException;
-import org.gdms.sql.engine.SQLStatement;
-import org.gdms.sql.engine.SemanticException;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sqlparserapi.ScriptSplitter;
+import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.sql.DataSource;
+import javax.swing.*;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Execute SQL script in a background process
  */
 public class ExecuteScriptProcess implements BackgroundJob {
 
-        private String script;
         private static final Logger LOGGER = Logger.getLogger("gui."+ExecuteScriptProcess.class);
         protected final static I18n I18N = I18nFactory.getI18n(ExecuteScriptProcess.class);
-                
+        private static final String[] executeQueryCommands = new String[] {"select", "explain", "call", "show", "script"};
+
         private SQLConsolePanel panel;
-        private MapContext vc;
-
-        public ExecuteScriptProcess(String script,MapContext mapContext) {
-                this(script,null,mapContext);
-        }
-
-        public ExecuteScriptProcess(String script, SQLConsolePanel panel, MapContext mapContext) {
-                this.script = script;
-                this.vc = mapContext;
+        private DataSource ds;
+        private ScriptSplitterFactory splitterFactory;
+        private static final int MAX_PRINTED_ROWS = 100;
+        private static final int MAX_FIELD_LENGTH = 30;
+        /**
+         * @param panel Console panel (Can be null)
+         * @param ds DataSource to acquire DBMS Connection
+         * @param splitterFactory Sql Parser
+         */
+        public ExecuteScriptProcess(SQLConsolePanel panel, DataSource ds, ScriptSplitterFactory splitterFactory) {
+                this.ds = ds;
                 this.panel = panel;
+                this.splitterFactory = splitterFactory;
         }
 
         @Override
@@ -89,121 +87,77 @@ public class ExecuteScriptProcess implements BackgroundJob {
                 }
         }
 
-        @Override
-        public void run(ProgressMonitor pm) {
-
-                DataManager dataManager = Services.getService(DataManager.class);
-                DataSourceFactory dsf = dataManager.getDataSourceFactory();
-                SQLStatement[] statements;
-
-                long t1 = System.currentTimeMillis();
-                try {
-                        try {
-                                statements = Engine.parseScript(script, dsf.getProperties()).getStatements();
-                        } catch (ParseException e) {
-                                LOGGER.error(I18N.tr("Cannot parse script"), e);
-                                showPanelMessage(I18N.tr("Failed to parse the script."));
-                                return;
-                        }
-
-                        for (int i = 0; i < statements.length; i++) {
-
-                                SQLStatement st = statements[i];
-                                boolean spatial;
-                                LOGGER.info(I18N.tr("Running instruction {0}/{1} :",(i + 1),statements.length));
-                                LOGGER.info(st.getSQL());
-                                try {
-                                        st.setDataSourceFactory(dsf);
-                                        st.setProgressMonitor(pm);
-                                        st.prepare();
-                                        Metadata metadata = st.getResultMetadata();
-                                        if (metadata != null) {
-                                                spatial = MetadataUtilities.isSpatial(metadata);
-
-                                                DataSource ds = dsf.getDataSource(st,
-                                                        DataSourceFactory.DEFAULT, pm);
-                                                if (pm.isCancelled()) {
-                                                        break;
-                                                }
-
-                                                if (spatial && vc != null) {
-                                                        //SQL request is a select with geometries
-                                                        //A new layer will be created and shown into the MapEditor
-                                                        try {
-                                                                final ILayer layer = dataManager.createLayer(ds);
-
-                                                                vc.getLayerModel().insertLayer(layer, 0);
-
-                                                        } catch (LayerException e) {
-                                                                LOGGER.error(
-                                                                        I18N.tr("Impossible to create the layer:{0}",ds.getName()), e);
-                                                                break;
-                                                        }
-                                                } else {
-                                                        //The select return only non-geometrical data
-                                                        //the result is shown in the GUI console
-                                                        ds.open();
-                                                        StringBuilder aux = new StringBuilder();
-                                                        int fc = ds.getMetadata().getFieldCount();
-                                                        int rc = (int) ds.getRowCount();
-
-                                                        for (int j = 0; j < fc; j++) {
-                                                                aux.append(ds.getFieldName(j));
-                                                                aux.append("\t");
-                                                        }
-                                                        aux.append("\n");
-                                                        for (int row = 0; row < rc; row++) {
-                                                                for (int j = 0; j < fc; j++) {
-                                                                        aux.append(ds.getFieldValue(row, j).toString());
-                                                                        aux.append("\t");
-                                                                }
-                                                                aux.append("\n");
-                                                                if (row > 100) {
-                                                                        aux.append("and more... total ");
-                                                                        aux.append(rc);
-                                                                        aux.append(" rows\n");
-                                                                        break;
-                                                                }
-                                                        }
-                                                        ds.close();
-                                                        LOGGER.info(aux.toString());
-                                                }
-                                        } else {
-                                                try {
-                                                        st.execute();
-                                                } finally {
-                                                        st.cleanUp();
-                                                }
-                                                if (pm.isCancelled()) {
-                                                        break;
-                                                }
-
-                                        }
-                                } catch (DataSourceCreationException e) {
-                                        LOGGER.error(
-                                                I18N.tr("Cannot create the DataSource:{0}"
-                                                , st.getSQL()), e);
-                                        break;
-                                }
-
-                                // DO NOT REMOVE
-                                // lets the GC remove a statement while the following ones are executed,
-                                // since we have no use for it now.
-                                statements[i] = null;
-
-                                pm.progressTo(100 * i / statements.length);
-                        }
-
-                } catch (DriverException e) {
-                        LOGGER.error(I18N.tr("Data access error:"), e);
-                } catch (SemanticException e) {
-                        LOGGER.error(I18N.tr("SQL Semantic Error"), e);
+        private void parseAndExecuteScript(ProgressMonitor pm, Statement st) throws SQLException {
+            ScriptSplitter splitter = splitterFactory.create(panel.getScriptPanel().getDocument(), true);
+            int totalRequests = 0;
+            while(splitter.hasNext()) {
+                if (!splitter.next().trim().isEmpty()) {
+                    totalRequests++;
                 }
+            }
+            splitter = splitterFactory.create(panel.getScriptPanel().getDocument(), true);
+            int currentRequest = 0;
+            while(splitter.hasNext()) {
+                currentRequest++;
+                String query = splitter.next().trim();
+                if (!query.isEmpty()) {
+                    // Some queries need to be shown to the user
+                    LOGGER.info(I18N.tr("Execute request {0}/{1}: {2}",
+                            currentRequest, totalRequests, query));
+                    long debQuery = System.currentTimeMillis();
+                    String lowerCaseQuery = query.toLowerCase();
+                    if(isExecuteQuery(lowerCaseQuery)) {
+                        try {
+                            LOGGER.info("\n" + ReadTable.resultSetToString(query, st, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, true, true));
+                        } catch (SQLException ex) {
+                            // May not accept executeQuery but simple query
+                            if(!lowerCaseQuery.startsWith("select")) {
+                                st.execute(query);
+                            } else {
+                                throw ex;
+                            }
+                        }
+                    } else {
+                        st.execute(query);
+                    }
+                    LOGGER.info(I18N.tr("Done in {0} seconds\n",(System.currentTimeMillis() - debQuery) / 1000.));
+                    pm.endTask();
+                }
+            }
+        }
 
+    private boolean isExecuteQuery(String lc_query) {
+        boolean doExecuteQuery = false;
+        for(String command : executeQueryCommands) {
+            if(lc_query.startsWith(command)) {
+                return true;
+            }
+        }
+        return doExecuteQuery;
+    }
+
+    @Override
+        public void run(ProgressMonitor progress) {
+                long t1 = System.currentTimeMillis();
+                ProgressMonitor pm = progress.startTask(I18N.tr("Execute SQL Request"), panel.getScriptPanel().getLineCount());
+                try(Connection connection = ds.getConnection()) {
+                    try(Statement st = connection.createStatement()) {
+                        // If the user clicks on cancel, cancel the execution
+                        pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL ,
+                                EventHandler.create(PropertyChangeListener.class, st, "cancel"));
+                        if(splitterFactory != null) {
+                            parseAndExecuteScript(pm, st);
+                        } else {
+                            st.execute(panel.getScriptPanel().getText().trim());
+                        }
+                    }
+                } catch (SQLException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
                 long t2 = System.currentTimeMillis();
                 double lastExecTime = ((t2 - t1) / 1000.0);
-                String message = I18N.tr("Execution time: {0}",lastExecTime);
-                LOGGER.debug(message);
+                String message = I18N.tr("OVERALL EXECUTION TIME: {0} seconds",lastExecTime);
+                LOGGER.info(message);
                 showPanelMessage(message);
         }
 }

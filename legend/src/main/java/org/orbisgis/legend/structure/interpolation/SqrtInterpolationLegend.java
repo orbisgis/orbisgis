@@ -28,9 +28,9 @@
  */
 package org.orbisgis.legend.structure.interpolation;
 
-import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.core.renderer.se.parameter.real.RealFunction;
+import org.orbisgis.coremap.renderer.se.parameter.real.Interpolate2Real;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealFunction;
 import org.orbisgis.legend.LookupFieldName;
 
 /**

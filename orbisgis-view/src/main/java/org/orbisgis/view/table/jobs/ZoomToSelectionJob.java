@@ -29,87 +29,56 @@
 package org.orbisgis.view.table.jobs;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.ReadTable;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+import java.sql.SQLException;
+import java.util.SortedSet;
 
 /**
- *
+ * Fetch selection extent and apply it to the map context.
  * @author Nicolas Fortin
  */
 public class ZoomToSelectionJob implements BackgroundJob {
         private static final Logger LOGGER = Logger.getLogger(ZoomToSelectionJob.class);
         protected final static I18n I18N = I18nFactory.getI18n(ZoomToSelectionJob.class);
-        private DataSource dataSource;
-        private int[] modelSelection;
+        private DataManager dataManager;
+        private String tableName;
+        private SortedSet<Integer> modelSelection;
         private MapContext mapContext;
 
-        public ZoomToSelectionJob(DataSource dataSource, int[] modelSelection, MapContext mapContext) {
-                this.dataSource = dataSource;
-                this.modelSelection = modelSelection;
-                this.mapContext = mapContext;
+
+        /**
+         * Constructor.
+         * @param dataManager data manager
+         * @param tableName Table location
+         * @param modelSelection Selected rows
+         * @param mapContext Loaded map context
+         */
+        public ZoomToSelectionJob(DataManager dataManager, String tableName, SortedSet<Integer> modelSelection, MapContext mapContext) {
+            this.dataManager = dataManager;
+            this.tableName = tableName;
+            this.modelSelection = modelSelection;
+            this.mapContext = mapContext;
         }
-        
-        
-           
-        private Envelope getVectorialRowEnvelope(int rowId) throws DriverException {
-                Geometry geometry = dataSource.getGeometry(rowId);
-                if (geometry != null) {
-                        return geometry.getEnvelopeInternal();
-                }
-                return null;
-        }
-        
-        private Envelope getRasterRowEnvelope(int rowId) throws DriverException {
-                return dataSource.getRaster(rowId).getMetadata().getEnvelope();
-        }
+
+
         
         @Override
         public void run(ProgressMonitor pm) {
-                Envelope selectionEnvelope = null;               
+                Envelope selectionEnvelope = null;
                 try {
-                        boolean isVectorial = dataSource.isVectorial();
-                        boolean isRaster = dataSource.isRaster();
-                        //Evaluate the selection bounding box
-                        int done=0;
-                        if(isVectorial) {
-                                selectionEnvelope = getVectorialRowEnvelope(modelSelection[0]);                                
-                                for(int modelId : modelSelection) {
-                                        Envelope rowEnvelope = getVectorialRowEnvelope(modelId);
-                                        if(rowEnvelope!=null) {
-                                                selectionEnvelope.expandToInclude(rowEnvelope);
-                                        }
-                                        if(pm.isCancelled()) {
-                                                return;
-                                        } else {
-                                                pm.progressTo(done / modelSelection.length * 100);
-                                        }
-                                        done++;
-                                }
-                        } else if(isRaster) {
-                                selectionEnvelope = getVectorialRowEnvelope(modelSelection[0]);
-                                for(int modelId : modelSelection) {
-                                        selectionEnvelope.expandToInclude(getRasterRowEnvelope(modelId));   
-                                        if(pm.isCancelled()) {
-                                                return;
-                                        } else {
-                                                pm.progressTo(done / modelSelection.length * 100);
-                                        }
-                                        done++;                                     
-                                }
-                        }
-                }catch (DriverException ex) {
+                    selectionEnvelope = ReadTable.getTableSelectionEnvelope(dataManager, tableName, modelSelection, pm);
+                    if(selectionEnvelope!=null) {
+                        mapContext.setBoundingBox(selectionEnvelope);
+                    }
+                }catch (SQLException ex) {
                         LOGGER.error(I18N.tr("Unable to establish the selection bounding box"),ex);
-                        return;
-                }
-                if(selectionEnvelope!=null) {
-                        mapContext.setBoundingBox(selectionEnvelope);                                
                 }
         }
 

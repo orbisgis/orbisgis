@@ -1,5 +1,7 @@
 package org.orbisgis.view.components.actions;
 
+import org.orbisgis.viewapi.components.actions.ActionFactoryService;
+
 import javax.swing.Action;
 import java.util.List;
 

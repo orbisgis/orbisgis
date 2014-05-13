@@ -33,6 +33,7 @@ import org.orbisgis.core.common.BeanPropertyChangeSupport;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.actions.intern.RemoveActionControls;
 import org.orbisgis.view.components.button.DropDownButton;
+import org.orbisgis.viewapi.components.actions.ActionTools;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;

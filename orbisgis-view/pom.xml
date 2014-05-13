@@ -3,13 +3,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <modelVersion>4.0.0</modelVersion>
         <parent>
-                <artifactId>orbisgis-monomap</artifactId>
+                <artifactId>orbisgis-h2</artifactId>
                 <groupId>org.orbisgis</groupId>
-                <version>4.0-SNAPSHOT</version>
+                <version>4.1.0-SNAPSHOT</version>
+                <relativePath>../</relativePath>
         </parent>
-        <groupId>org.orbisgis</groupId>
         <artifactId>orbisgis-view</artifactId>
-        <version>4.0-SNAPSHOT</version>
         <name>orbisgis-view</name>
         <url>http://maven.apache.org</url>
         <build>
@@ -56,18 +55,6 @@
                                         </arguments>
                                 </configuration>
                         </plugin>
-                        <plugin>
-                                <groupId>org.gdms.maven</groupId>
-                                <artifactId>gdmsql-maven-plugin</artifactId>
-                                <version>1.1</version>
-                                <executions>
-                                        <execution>
-                                                <goals>
-                                                        <goal>sqlCompile</goal>
-                                                </goals>
-                                        </execution>
-                                </executions>
-                        </plugin>
                 </plugins>
         </build>  
         <properties>
@@ -87,7 +74,12 @@
                 <dependency>
                         <groupId>com.fifesoft</groupId>
                         <artifactId>rsyntaxtextarea</artifactId>
-                        <version>2.0.5.1</version>
+                        <version>${rsyntax-version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                    <version>${commons-io-version}</version>
                 </dependency>
                 <dependency>
                     <groupId>org.dockingframes</groupId>
@@ -101,6 +93,18 @@
                         <scope>test</scope>
                 </dependency>
                 <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>h2spatial-ext</artifactId>
+                    <version>${h2-gis-version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>h2spatial</artifactId>
+                  <version>${h2-gis-version}</version>
+                  <scope>test</scope>
+                </dependency>
+                <dependency>
                         <groupId>commons-collections</groupId>
                         <artifactId>commons-collections</artifactId>
                         <version>3.2.1</version>
@@ -112,9 +116,14 @@
                         <version>${project.version}</version>
                 </dependency>
                 <dependency>
-                        <groupId>${project.groupId}</groupId>
-                        <artifactId>legend-monomap</artifactId>
-                        <version>0.1-SNAPSHOT</version>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>orbisgis-core</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>map-editor-api</artifactId>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                         <groupId>com.fifesoft</groupId>
@@ -122,14 +131,30 @@
                         <version>0.9.1</version>
                 </dependency>
                 <dependency>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-math3</artifactId>
-                    <version>3.2</version>
-                </dependency>
-                <dependency>
                     <groupId>com.miglayout</groupId>
                     <artifactId>miglayout-swing</artifactId>
                     <version>4.2</version>
+                </dependency>
+                <dependency>
+                  <groupId>log4j</groupId>
+                  <artifactId>log4j</artifactId>
+                  <version>${log4j-version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>sql-parser-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>cts</artifactId>
+                    <version>${cts-version}</version>
+                    <!-- https://github.com/irstv/CTS -->
+                </dependency>
+                <dependency>
+                    <groupId>org.commonjava.googlecode.markdown4j</groupId>
+                    <artifactId>markdown4j</artifactId>
+                    <version>2.2-cj-1.0</version>
                 </dependency>
         </dependencies>
 </project>

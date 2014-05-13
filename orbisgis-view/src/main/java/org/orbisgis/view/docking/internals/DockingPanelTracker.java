@@ -30,8 +30,8 @@ package org.orbisgis.view.docking.internals;
 
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
-import org.orbisgis.view.docking.DockingManager;
-import org.orbisgis.view.docking.DockingPanel;
+import org.orbisgis.viewapi.docking.DockingManager;
+import org.orbisgis.viewapi.docking.DockingPanel;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;

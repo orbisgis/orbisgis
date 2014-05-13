@@ -1,5 +1,5 @@
 
-String[] args= new String[]{"src/test/resources/beanshell/testSeveralArguments.bsh", "orbis","1"};
+String[] args= new String[]{"../src/test/resources/beanshell/testSeveralArguments.bsh","-af","orbisgis","-wks","workspace","debug","orbis","1"};
 i=0;
 for (arg : bsh.args){
 arg.equals(args[i]);

@@ -28,83 +28,66 @@
  */
 package org.orbisgis.core;
 
-import org.orbisgis.core.log.FailErrorManager;
-import java.io.File;
-import org.apache.log4j.Appender;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.source.SourceManager;
 import org.junit.After;
-import org.junit.Before;
-import org.orbisgis.core.layerModel.LayerException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.core.beanshell.BeanShellScriptTest;
+import org.orbisgis.core.beanshell.BeanshellScript;
+import org.orbisgis.core.context.main.MainContext;
 
+import javax.sql.DataSource;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+/**
+ * Init OrbisGIS core on test class loading
+ */
 public abstract class AbstractTest {
+    private static Connection connection;
+    protected static DataSource dataSource;
+    protected static MainContext mainContext;
 
-        protected FailErrorManager failErrorManager;
-        private Appender consoleAppender;
-        
-        @Before
-        public void setUp() throws Exception {
-                failErrorManager = new FailErrorManager();
-                consoleAppender = initConsoleLogger();
-                Logger.getRootLogger().addAppender(failErrorManager);
-        }
-        
-        @After
-        public void tearDown() throws Exception {
-            Logger.getRootLogger().removeAppender(failErrorManager);
-            Logger.getRootLogger().removeAppender(consoleAppender);
-        }
-        
-        /**
-        * Console output to info level min
-        */
-        private Appender initConsoleLogger() {
-                Logger root = Logger.getRootLogger();
-                ConsoleAppender appender = new ConsoleAppender(
-                new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN));
-                root.addAppender(appender);
-                return appender;
-        }        
-	
-        
-        public static void registerDataManager(DataSourceFactory dsf) {
-                // Installation of the service
-                Services.registerService(
-                        DataManager.class,
-                        "Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial",
-                        new DefaultDataManager(dsf));
-        }
+    @BeforeClass
+    public static void init() throws Exception {
+        BeanshellScript.init(BeanShellScriptTest.mainParams("../src/test/resources/beanshell/helloWorld.bsh"));
+        mainContext = BeanshellScript.getMainContext();
+        dataSource =  mainContext.getDataSource();
+    }
 
-        public static void registerDataManager() {
-                DataSourceFactory dsf = new DataSourceFactory("target/tempsGdms", "target/tempsGdms");
-                registerDataManager(dsf);
+    @AfterClass
+    public static void dispose() throws Exception {
+        BeanshellScript.dispose();
+        // Remove database file
+        try {
+            File dbFile = new File("workspace/database.h2.db");
+            if(dbFile.exists()) {
+                dbFile.delete();
+            }
+            File dbMvFile = new File("workspace/database.mv.db");
+            if(dbMvFile.exists()) {
+                dbMvFile.delete();
+            }
+        } catch (Exception ex) {
         }
+    }
 
-        protected SourceManager getsSourceManager() {
-                return getDataManager().getSourceManager();
+    protected Connection getConnection() throws SQLException {
+        if(connection==null || connection.isClosed()) {
+            connection = dataSource.getConnection();
         }
+        return connection;
+    }
 
-        protected DataManager getDataManager() {
-                return Services.getService(DataManager.class);
+    @After
+    public void closeConnection() throws SQLException {
+        if(connection!=null && !connection.isClosed()) {
+            connection.close();
         }
-        protected DataSource getDataSourceFromPath(String path) throws LayerException {
-		String name = getDataManager().getDataSourceFactory().getSourceManager().nameAndRegister(new File(path));
-		try {
-			return getDataManager().getDataSourceFactory().getDataSource(name);
-		} catch (DriverLoadException e) {
-			throw new LayerException(e);
-		} catch (NoSuchTableException e) {
-			throw new LayerException(e);
-		} catch (DataSourceCreationException e) {
-			throw new LayerException(e);
-		}
-        }
-        
+    }
+
+    protected DataManager getDataManager() {
+        return mainContext.getDataManager();
+    }
 }

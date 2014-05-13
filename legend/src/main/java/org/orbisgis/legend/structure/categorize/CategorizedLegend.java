@@ -28,9 +28,9 @@
  */
 package org.orbisgis.legend.structure.categorize;
 
-import org.orbisgis.core.renderer.se.parameter.*;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.parameter.*;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.legend.structure.parameter.AbstractAttributeLegend;
 import org.orbisgis.legend.structure.parameter.ParameterLegend;
 import org.orbisgis.legend.structure.recode.type.TypeEvent;

@@ -12,3 +12,4 @@ nbactions.xml
 .settings
 *.ucls
 .directory
+trace.db

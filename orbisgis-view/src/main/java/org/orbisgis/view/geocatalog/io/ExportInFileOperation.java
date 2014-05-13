@@ -29,49 +29,46 @@
 package org.orbisgis.view.geocatalog.io;
 
 import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
+import javax.sql.DataSource;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSourceCreationException;
-
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.source.SourceManager;
+import org.h2gis.h2spatialapi.DriverFunction;
+import org.orbisgis.core.Services;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.background.H2GISProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.geocatalog.Catalog;
 import org.xnap.commons.i18n.I18nFactory;
 
+/**
+ * Export a table into a local file.
+ */
 public class ExportInFileOperation implements BackgroundJob {
 
         private static final I18n I18N = I18nFactory.getI18n(ExportInFileOperation.class);
         private static final Logger LOGGER = Logger.getLogger(ExportInFileOperation.class);
         private File savedFile;
-        private DataSourceFactory dsf;
         private String sourceName;
-        private Catalog catalog;
+        private DriverFunction driverFunction;
+        private DataSource dataSource;
 
         /**
          * This class is used to export a source on disk.
          *
-         * @param dsf
-         * @param sourceName
-         * @param savedFile
-         * @param frame
+         * @param sourceName Table identifier
+         * @param savedFile Destination
          */
-        public ExportInFileOperation(DataSourceFactory dsf, String sourceName,
-                File savedFile, Catalog frame) {
+        public ExportInFileOperation(String sourceName, File savedFile, DriverFunction driverFunction, DataSource dataSource) {
                 this.sourceName = sourceName;
                 this.savedFile = savedFile;
-                this.dsf = dsf;
-                this.catalog = frame;
+                this.driverFunction = driverFunction;
+                this.dataSource = dataSource;
         }
 
         @Override
@@ -80,27 +77,11 @@ public class ExportInFileOperation implements BackgroundJob {
         }
 
         @Override
-        public void run(ProgressMonitor pm) {   
-                String fileName = FilenameUtils.removeExtension(savedFile.getName());
-                
-                final FileSourceDefinition def = new FileSourceDefinition(savedFile, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
-                final SourceManager sourceManager = dsf.getSourceManager();
-                if (sourceManager.exists(fileName)) {
-                        fileName = sourceManager.getUniqueName(fileName);
-                }
-                sourceManager.register(fileName, def);
-                try {  
-                        dsf.saveContents(fileName, dsf.getDataSource(sourceName), pm);
-                        JOptionPane.showMessageDialog(catalog,
-                                I18N.tr("The datasource has been exported and added to the geocatalog with the name " + fileName));
-                } catch (NoSuchTableException e) {
-                        LOGGER.error(I18N.tr("Cannot create the file"), e);
-                } catch (DataSourceCreationException e) {
-                        LOGGER.error(I18N.tr("Cannot create the file"), e);
-                } catch (DriverException e) {
-                        LOGGER.error(I18N.tr("Cannot create the file"), e);
-                } catch (DriverLoadException e) {
-                        LOGGER.error(I18N.tr("Cannot read the source"), e);
+        public void run(ProgressMonitor pm) {
+                try(Connection connection = dataSource.getConnection()) {
+                    driverFunction.exportTable(connection, sourceName , savedFile, new H2GISProgressMonitor(pm));
+                } catch (SQLException | IOException ex) {
+                    LOGGER.error(I18N.tr("Cannot create the file"), ex);
                 }
         }
 }

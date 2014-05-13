@@ -37,7 +37,7 @@ import java.awt.*;
  * He made this workaround after looking at
  * <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4618607">this bug</a>
  */
-public class WideComboBox extends JComboBox {
+public class WideComboBox<E> extends JComboBox<E> {
 
     private boolean layingOut = false;
 
@@ -54,7 +54,7 @@ public class WideComboBox extends JComboBox {
      *
      * @param items Items to put in the combo box.
      */
-    public WideComboBox(final Object items[]) {
+    public WideComboBox(final E items[]) {
         super(items);
         align();
     }
@@ -66,7 +66,7 @@ public class WideComboBox extends JComboBox {
      * @param aModel the <code>ComboBoxModel</code> that provides the
      *               displayed list of items
      */
-    public WideComboBox(ComboBoxModel aModel) {
+    public WideComboBox(ComboBoxModel<E> aModel) {
         super(aModel);
         align();
     }
@@ -92,5 +92,10 @@ public class WideComboBox extends JComboBox {
             dim.width = Math.max(dim.width, getPreferredSize().width);
         }
         return dim;
+    }
+
+    @Override
+    public E getSelectedItem() {
+        return (E) super.getSelectedItem();
     }
 }

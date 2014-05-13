@@ -28,7 +28,7 @@
  */
 package org.orbisgis.omanager.plugin;
 
-import org.orbisgis.view.main.frames.ext.MainFrameAction;
+import org.orbisgis.viewapi.main.frames.ext.MainFrameAction;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.obr.RepositoryAdmin;

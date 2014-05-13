@@ -28,8 +28,8 @@
  */
 package org.orbisgis.legend.structure.literal;
 
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
-import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.SeParameter;
+import org.orbisgis.coremap.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.legend.structure.parameter.ParameterLegend;
 
 import java.awt.*;

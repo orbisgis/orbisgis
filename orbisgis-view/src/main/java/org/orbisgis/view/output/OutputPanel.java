@@ -28,14 +28,14 @@
  */
 package org.orbisgis.view.output;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import javax.swing.*;
 import javax.swing.text.*;
 import org.apache.log4j.Logger;
-import org.orbisgis.view.util.MenuCommonFunctions;
+import org.orbisgis.viewapi.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -71,9 +71,18 @@ public class OutputPanel extends JPanel {
                 textPane.setEditable(false);
                 textPane.setComponentPopupMenu(makePopupMenu());
                 this.add(new JScrollPane(textPane), BorderLayout.CENTER);
+
+                this.addPropertyChangeListener("UI",
+                        EventHandler.create(PropertyChangeListener.class, this, "resetFont"));
         }
 
-        /**
+
+        public void resetFont() {
+            final Font currFont = textPane.getFont();
+            textPane.setFont(new Font(Font.MONOSPACED, currFont.getStyle(), currFont.getSize()));
+        }
+
+    /**
          * Get the internal text pane
          * @return internal text pane
          */

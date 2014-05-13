@@ -28,14 +28,14 @@
  */
 package org.orbisgis.legend.structure.viewbox;
 
-import org.orbisgis.core.renderer.se.graphic.ViewBox;
-import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.core.renderer.se.parameter.real.RealFunction;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.graphic.ViewBox;
+import org.orbisgis.coremap.renderer.se.parameter.InterpolationPoint;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.real.Interpolate2Real;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealFunction;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.legend.IInterpolationLegend;
 import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;

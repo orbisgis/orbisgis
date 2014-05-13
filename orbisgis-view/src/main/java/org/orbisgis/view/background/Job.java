@@ -28,168 +28,101 @@
  */
 package org.orbisgis.view.background;
 
-import java.util.ArrayList;
-import org.orbisgis.progress.DefaultProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.view.map.MapStatusBar;
+import org.orbisgis.progress.RootProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-public class Job implements BackgroundJob, ProgressMonitor {
+/**
+ * Encapsulate a background job in order to attach Thread instance and job identifier.
+ */
+public class Job implements BackgroundJob {
 
-	private JobId processId;
-	private BackgroundJob lp;
-	private ProgressMonitor pm;
-	private BackgroundManager jobQueue;
-	private ArrayList<ProgressListener> listeners = new ArrayList<ProgressListener>();
-	private Thread currentThread = null;
-	private boolean isBlocking;
-        private static final I18n I18N = I18nFactory.getI18n(Job.class);
-       
+    private JobId processId;
+    private BackgroundJob lp;
+    private ProgressMonitor pm;
+    private BackgroundManager jobQueue;
+    private Thread currentThread = null;
+    private boolean isBlocking;
+    private static final I18n I18N = I18nFactory.getI18n(Job.class);
 
-	public Job(JobId processId, BackgroundJob lp, BackgroundManager jobQueue,
-			boolean isBlocking) {
-		this.processId = processId;
-		this.lp = lp;
-		this.pm = new DefaultProgressMonitor(lp.getTaskName(), 100);
-		this.jobQueue = jobQueue;
-		this.isBlocking = isBlocking;
-	}
 
-	public synchronized void addProgressListener(ProgressListener listener) {
-		this.listeners.add(listener);
-	}
+    public Job(JobId processId, BackgroundJob lp, BackgroundManager jobQueue, boolean blocking) {
+        this.processId = processId;
+        this.lp = lp;
+        this.pm = new RootProgressMonitor(lp.getTaskName(), 1);
+        this.isBlocking = blocking;
+        this.jobQueue = jobQueue;
+    }
 
-	public synchronized void removeProgressListener(ProgressListener listener) {
-		this.listeners.remove(listener);
-	}
+    /**
+     * @return True if the job with the same name cannot be run
+     */
+    public boolean isBlocking() {
+        return isBlocking;
+    }
 
-        @Override
-	public String getTaskName() {
-		return lp.getTaskName();
-	}
+    /**
+     * @return The progress monitor of the job.
+     */
+    public ProgressMonitor getProgressMonitor() {
+        return pm;
+    }
 
-        @Override
-	public void run(ProgressMonitor pm) {
-		lp.run(pm);
-	}
+    @Override
+    public String getTaskName() {
+        return lp.getTaskName();
+    }
 
-	public JobId getId() {
-		return processId;
-	}
+    @Override
+    public void run(ProgressMonitor pm) {
+        lp.run(pm);
+    }
 
-	public void setProcess(BackgroundJob lp) {
-		this.lp = lp;
-	}
+    public JobId getId() {
+        return processId;
+    }
 
-	public void cancel() {
-		pm.setCancelled(true);
-	}
+    public void setProcess(BackgroundJob lp) {
+        this.lp = lp;
+    }
 
-        /**
-         * Gets an instance of {@code Runnable} that is ready to be run.
-         * @return
-         */
-        public Thread getReadyRunnable(){
-                currentThread = new Thread(new RunnableBackgroundJob(jobQueue, this, this));
-                return currentThread;
-        }
+    public void cancel() {
+        pm.setCancelled(true);
+    }
 
-	public synchronized void start() {
-		RunnableBackgroundJob runnable = new RunnableBackgroundJob(jobQueue,
-				this, this);
-		currentThread = new Thread(runnable);
-		currentThread.start();
-	}
+    /**
+     * Gets an instance of {@code Runnable} that is ready to be run.
+     * @return
+     */
+    public Thread getReadyRunnable(){
+        currentThread = new Thread(new RunnableBackgroundJob(jobQueue, pm, this));
+        return currentThread;
+    }
 
-        @Override
-	public void endTask() {
-		pm.endTask();
-		fireSubTaskFinished();
-	}
+    public synchronized void start() {
+        RunnableBackgroundJob runnable = new RunnableBackgroundJob(jobQueue,
+                pm, this);
+        currentThread = new Thread(runnable);
+        currentThread.start();
+    }
 
-	private synchronized void fireSubTaskFinished() {
-		for (ProgressListener listener : listeners) {
-			listener.subTaskFinished(this);
-		}
-	}
+    public synchronized boolean isStarted() {
+        return currentThread != null;
+    }
 
-	private synchronized void fireSubTaskStarted() {
-		for (ProgressListener listener : listeners) {
-			listener.subTaskStarted(this);
-		}
-	}
+    public void clear() {
+        lp = new BackgroundJob() {
 
-        @Override
-	public void init(String taskName, long end) {
-		pm.init(taskName, end);
-		fireProgressTo();
-	}
+            @Override
+            public void run(ProgressMonitor pm) {
+            }
 
-        @Override
-	public boolean isCancelled() {
-		return pm.isCancelled();
-	}
+            @Override
+            public String getTaskName() {
+                return I18N.tr("Progressing...");
+            }
 
-        @Override
-	public void progressTo(long progress) {
-		pm.progressTo(progress);
-		fireProgressTo();
-	}
-
-	private synchronized void fireProgressTo() {
-		for (ProgressListener listener : listeners) {
-			listener.progressChanged(this);
-		}
-	}
-
-        @Override
-	public void setCancelled(boolean cancelled) {
-		pm.setCancelled(cancelled);
-	}
-
-        @Override
-	public void startTask(String taskName, long end) {
-		pm.startTask(taskName, end);
-		fireSubTaskStarted();
-	}
-
-	public boolean isBlocking() {
-		return isBlocking;
-	}
-
-        @Override
-	public String getCurrentTaskName() {
-		return pm.getCurrentTaskName();
-	}
-
-        @Override
-	public int getOverallProgress() {
-		return pm.getOverallProgress();
-	}
-
-        @Override
-	public int getCurrentProgress() {
-		return pm.getCurrentProgress();
-	}
-
-	public synchronized boolean isStarted() {
-		return currentThread != null;
-	}
-
-	public void clear() {
-		lp = new BackgroundJob() {
-
-                        @Override
-			public void run(ProgressMonitor pm) {
-			}
-
-                        @Override
-			public String getTaskName() {
-				return I18N.tr("Progressing...");
-			}
-
-		};
-	}
-
+        };
+    }
 }

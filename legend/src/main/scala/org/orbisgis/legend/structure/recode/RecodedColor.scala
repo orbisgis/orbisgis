@@ -30,11 +30,11 @@
 package org.orbisgis.legend.structure.recode
 
 import java.awt.Color
-import org.orbisgis.core.renderer.se.parameter.SeParameter
-import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral
-import org.orbisgis.core.renderer.se.parameter.color.ColorParameter
-import org.orbisgis.core.renderer.se.parameter.color.Recode2Color
-import org.orbisgis.core.renderer.se.parameter.string.StringAttribute
+import org.orbisgis.coremap.renderer.se.parameter.SeParameter
+import org.orbisgis.coremap.renderer.se.parameter.color.ColorLiteral
+import org.orbisgis.coremap.renderer.se.parameter.color.ColorParameter
+import org.orbisgis.coremap.renderer.se.parameter.color.Recode2Color
+import org.orbisgis.coremap.renderer.se.parameter.string.StringAttribute
 import org.orbisgis.legend.structure.parameter.AbstractAttributeLegend
 
 class RecodedColor extends AbstractAttributeLegend with RecodedLegend {
