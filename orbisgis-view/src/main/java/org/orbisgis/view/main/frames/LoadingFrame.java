@@ -63,9 +63,10 @@ public class LoadingFrame extends JFrame {
                 setUndecorated(true);
                 JPanel mainPanel = new JPanel(new BorderLayout());
                 setContentPane(mainPanel);
+                setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis"));
                 mainPanel.add(new JLabel(OrbisGISIcon.getIcon("logo_orbisgis")),
                         BorderLayout.CENTER);
-            JPanel bottomPanel = new JPanel(new BorderLayout());
+                JPanel bottomPanel = new JPanel(new BorderLayout());
                 progressBar.setMaximum(100);
                 progressBar.setIndeterminate(true);
                 bottomPanel.add(progressBar, BorderLayout.WEST);

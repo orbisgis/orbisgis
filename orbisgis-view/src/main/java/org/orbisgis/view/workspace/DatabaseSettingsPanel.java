@@ -37,17 +37,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.xml.bind.DatatypeConverter;
+
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.workspace.CoreWorkspaceImpl;
@@ -67,16 +70,13 @@ public class DatabaseSettingsPanel extends JDialog {
     private static final String DB_PROPERTIES_FILE = "db_connexions.properties";
     private static final Logger LOGGER = Logger.getLogger(DatabaseSettingsPanel.class);
     protected static final I18n I18N = I18nFactory.getI18n(DatabaseSettingsPanel.class);
-    private JPanel mainPanel;
-    private AtomicBoolean initialised = new AtomicBoolean(false);
-    private JButton okBt;
-    private JButton cancelBt;
     private Properties dbProperties = new Properties();
     private JTextField connectionName;
     private JTextField urlValue;
     private JTextField userValue;
-    private JPasswordField pswValue;
-    private JComboBox comboBox;
+    private JCheckBox requirePassword;
+    private JComboBox<Object> comboBox;
+    boolean canceled = false;
 
     public DatabaseSettingsPanel() {
         super();
@@ -98,75 +98,76 @@ public class DatabaseSettingsPanel extends JDialog {
         init();
     }
 
-    @Override
-    public void addNotify() {
-        super.addNotify();
-        init();
-    }
-
     /**
      * Create the panel
      */
     private void init() {
-        if (!initialised.getAndSet(true)) {
-            loadDBProperties();
-            Object[] dbKeys = dbProperties.keySet().toArray();
-            mainPanel = new JPanel(new MigLayout());
-            JLabel cbLabel = new JLabel(I18N.tr("Saved connections"));
-            comboBox = new JComboBox(dbKeys);
-            comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onUserSelectionChange"));
-            mainPanel.add(cbLabel);
-            mainPanel.add(comboBox, "span, grow");
-            JLabel labelName = new JLabel(I18N.tr("Connection name"));
-            connectionName = new JTextField();
-            mainPanel.add(labelName);
-            mainPanel.add(connectionName, "width 200!");
-            CustomButton saveBt = new CustomButton(OrbisGISIcon.getIcon("save"));
-            saveBt.setToolTipText(I18N.tr("Save the connection parameters"));
-            saveBt.addActionListener(EventHandler.create(ActionListener.class, this, "onSave"));
-            CustomButton removeBt = new CustomButton(OrbisGISIcon.getIcon("remove"));
-            removeBt.setToolTipText(I18N.tr("Remove the connection parameters"));
-            removeBt.addActionListener(EventHandler.create(ActionListener.class, this, "onRemove"));
-            mainPanel.add(saveBt);
-            mainPanel.add(removeBt,  "wrap");
-            JLabel labelURL = new JLabel("JDB URL");
-            urlValue = new JTextField();
-            mainPanel.add(labelURL);
-            mainPanel.add(urlValue, "span, grow, wrap");
-            JLabel exampleURL = new JLabel(I18N.tr("Example")+ " : jdbc:h2:/tmp/testdb;DB_CLOSE_DELAY=30");
-            exampleURL.setFont(exampleURL.getFont().deriveFont(Font.ITALIC));
-            mainPanel.add(exampleURL, "span, wrap");
-            JLabel userLabel = new JLabel(I18N.tr("User name"));
-            userValue = new JTextField();
-            mainPanel.add(userLabel);
-            mainPanel.add(userValue, "span 1, grow, wrap");
-            JLabel pswLabel = new JLabel(I18N.tr("Password"));
-            pswValue = new JPasswordField();
-            mainPanel.add(pswLabel);
-            mainPanel.add(pswValue, "span 1, grow, wrap");
-            okBt = new JButton(I18N.tr("&Ok"));
-            MenuCommonFunctions.setMnemonic(okBt);
-            okBt.addActionListener(EventHandler.create(ActionListener.class, this, "onOk"));
-            okBt.setDefaultCapable(true);
-            mainPanel.add(okBt, "span 3");
-            cancelBt = new JButton(I18N.tr("&Cancel"));
-            MenuCommonFunctions.setMnemonic(cancelBt);
-            cancelBt.addActionListener(EventHandler.create(ActionListener.class, this, "onCancel"));
-            cancelBt.setDefaultCapable(true);
-            mainPanel.add(cancelBt, "span 3");
-            getContentPane().add(mainPanel);
-            setTitle(I18N.tr("Database parameters"));
-            onUserSelectionChange();
-            pack();
-            setResizable(false);
-        }
+        loadDBProperties();
+        Object[] dbKeys = dbProperties.keySet().toArray();
+        JPanel mainPanel = new JPanel(new MigLayout());
+        JLabel cbLabel = new JLabel(I18N.tr("Saved connections"));
+        comboBox = new JComboBox<Object>(dbKeys);
+        comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onUserSelectionChange"));
+        comboBox.setSelectedIndex(-1);
+        mainPanel.add(cbLabel);
+        mainPanel.add(comboBox, "span, grow");
+        JLabel labelName = new JLabel(I18N.tr("Connection name"));
+        connectionName = new JTextField();
+        mainPanel.add(labelName);
+        mainPanel.add(connectionName, "width 200!");
+        CustomButton saveBt = new CustomButton(OrbisGISIcon.getIcon("save"));
+        saveBt.setToolTipText(I18N.tr("Save the connection parameters"));
+        saveBt.addActionListener(EventHandler.create(ActionListener.class, this, "onSave"));
+        CustomButton removeBt = new CustomButton(OrbisGISIcon.getIcon("remove"));
+        removeBt.setToolTipText(I18N.tr("Remove the connection parameters"));
+        removeBt.addActionListener(EventHandler.create(ActionListener.class, this, "onRemove"));
+        mainPanel.add(saveBt);
+        mainPanel.add(removeBt, "wrap");
+        JLabel labelURL = new JLabel(I18N.tr("JDBC URL"));
+        urlValue = new JTextField();
+        mainPanel.add(labelURL);
+        mainPanel.add(urlValue, "span, grow, wrap");
+        JLabel exampleURL = new JLabel(I18N.tr("Example")+ " : jdbc:h2:/tmp/testdb;DB_CLOSE_DELAY=30");
+        exampleURL.setFont(exampleURL.getFont().deriveFont(Font.ITALIC));
+        mainPanel.add(exampleURL, "span, wrap");
+        JLabel userLabel = new JLabel(I18N.tr("User name"));
+        userValue = new JTextField();
+        mainPanel.add(userLabel);
+        mainPanel.add(userValue, "span 1, grow, wrap");
+        JLabel pswLabel = new JLabel(I18N.tr("Require password"));
+        requirePassword = new JCheckBox();
+        mainPanel.add(pswLabel);
+        mainPanel.add(requirePassword, "span 1, grow, wrap");
+        JButton okBt = new JButton(I18N.tr("&Ok"));
+        MenuCommonFunctions.setMnemonic(okBt);
+        okBt.addActionListener(EventHandler.create(ActionListener.class, this, "onOk"));
+        okBt.setDefaultCapable(true);
+        mainPanel.add(okBt, "span 3");
+        JButton cancelBt = new JButton(I18N.tr("&Cancel"));
+        MenuCommonFunctions.setMnemonic(cancelBt);
+        cancelBt.addActionListener(EventHandler.create(ActionListener.class, this, "onCancel"));
+        cancelBt.setDefaultCapable(true);
+        mainPanel.add(cancelBt, "span 3");
+        getContentPane().add(mainPanel);
+        setTitle(I18N.tr("Database parameters"));
+        onUserSelectionChange();
+        pack();
+        setResizable(false);
     }
 
     /**
      * Click on the cancel button
      */
     public void onCancel() {
+        canceled = true;
         setVisible(false);
+    }
+
+    /**
+     * @return True if the user cancel
+     */
+    public boolean isCanceled() {
+        return canceled;
     }
 
     /**
@@ -198,6 +199,27 @@ public class DatabaseSettingsPanel extends JDialog {
 
     }
 
+    private static List<String> decodeStrings(String encodedStrings) {
+        StringTokenizer tk = new StringTokenizer(encodedStrings, "|");
+        List<String> strings = new ArrayList<>(tk.countTokens());
+        while(tk.hasMoreTokens()) {
+            String var = tk.nextToken() ;
+            strings.add(new String(DatatypeConverter.parseBase64Binary(var)));
+        }
+        return strings;
+    }
+
+    private static String encodeStrings(String... vars) {
+        StringBuilder sb = new StringBuilder();
+        for(String var : vars) {
+            if(sb.length() != 0) {
+                sb.append("|");
+            }
+            sb.append(DatatypeConverter.printBase64Binary(var.getBytes()));
+        }
+        return sb.toString();
+    }
+
     /**
      * Click on the Ok button.
      */
@@ -205,11 +227,13 @@ public class DatabaseSettingsPanel extends JDialog {
         if (checkParameters()) {
             String nameValue = connectionName.getText();
             if (!dbProperties.containsKey(nameValue)) {
-            dbProperties.setProperty(nameValue,  urlValue.getText() + "|" + userValue.getText());
-            comboBox.addItem(nameValue);
-            comboBox.setSelectedItem(nameValue);
-            saveProperties();
-            onUserSelectionChange();
+                // Encode attributes in Base64 in order to be able to use separator char without worries
+                dbProperties.setProperty(nameValue,  encodeStrings(urlValue.getText(),userValue.getText(),
+                        Boolean.toString(requirePassword.isSelected())));
+                comboBox.addItem(nameValue);
+                comboBox.setSelectedItem(nameValue);
+                saveProperties();
+                onUserSelectionChange();
             }
         }
     }
@@ -259,14 +283,15 @@ public class DatabaseSettingsPanel extends JDialog {
      */
     public void onUserSelectionChange() {
         boolean isCmbEmpty = comboBox.getItemCount() == 0;
-        if (!isCmbEmpty) {
-            if(comboBox.getSelectedItem()!=null){
+        if (!isCmbEmpty && comboBox.getSelectedItem() != null) {
             String value = comboBox.getSelectedItem().toString();
             String data = dbProperties.getProperty(value);
             connectionName.setText(value);
-            StringTokenizer st = new StringTokenizer(data, "|");
-            urlValue.setText(st.nextToken());
-            userValue.setText(st.nextToken());
+            List<String> config = decodeStrings(data);
+            if(config.size() == 3) {
+                urlValue.setText(config.get(0));
+                userValue.setText(config.get(1));
+                requirePassword.setSelected(Boolean.parseBoolean(config.get(2)));
             }
         }
     }
@@ -274,8 +299,8 @@ public class DatabaseSettingsPanel extends JDialog {
     /**
      * @return Password field
      */
-    public String getPassword() {
-        return new String(pswValue.getPassword());
+    public boolean hasPassword() {
+        return requirePassword.isSelected();
     }
     /**
      * @return URI field
@@ -293,38 +318,33 @@ public class DatabaseSettingsPanel extends JDialog {
 
     /**
      * Set a new JDBC URL.
-     * 
-     * @param jdbcConnectionReference 
+     * @param jdbcConnectionReference JDBC url
      */
     public void setURL(String jdbcConnectionReference) {
         urlValue.setText(jdbcConnectionReference);
-        onUserSelectionChange();
     }
 
     /**
      * Set a new database user name.
-     *
-     * @param dataBaseUser
+     * @param dataBaseUser User identifier
      */
     public void setUser(String dataBaseUser) {
         userValue.setText(dataBaseUser);
     }
 
     /**
-     * Set a new password.
-     * 
-     * @param dataBasePassword
+     * Set this connection require password.
+     * @param hasPassword True if this connection require a password.
      */
-    public void setPassword(String dataBasePassword) {
-        pswValue.setText(dataBasePassword);
-    }    
-    
+    public void setHasPassword(Boolean hasPassword) {
+        requirePassword.setSelected(hasPassword);
+    }
+
     /**
-     * Set a new connection name.
-     * 
-     * @param dbName 
+     * Set the connection identifier
+     * @param connectionName Connection identifier
      */
-    public void setConnectionName(String dbName){
-        connectionName.setText(dbName);
+    public void setConnectionName(String connectionName) {
+        this.connectionName.setText(connectionName);
     }
 }
