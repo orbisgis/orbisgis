@@ -189,14 +189,14 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
                         jdbcURI = line;
                     }
                     if ((line = fileReader.readLine()) != null) {
-                        if(!line.isEmpty()) {
-                            databaseUser = line;
-                        } else {
-                            databaseUser = DEFAULT_JDBC_USER;
-                        }
+                        databaseUser = line;
                     }
                     if ((line = fileReader.readLine()) != null) {
-                        requirePassword = Boolean.parseBoolean(line);
+                        if(!line.isEmpty()) {
+                            requirePassword = Boolean.parseBoolean(line);
+                        } else {
+                            requirePassword = DEFAULT_JDBC_REQUIREPASSWORD;
+                        }
                     }
                 } catch (IOException ex) {
                     LOGGER.error("Could not read the DataBase URI from workspace", ex);
