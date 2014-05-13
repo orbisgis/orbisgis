@@ -213,10 +213,13 @@ public abstract class AbstractParser implements IParser {
     }
     
     protected void addSRSNode(Node n, List<String> srsList) throws Exception {
-        String srsString = ((CharacterData)n.getFirstChild()).getData();
-        String[] tokens = srsString.split("\\s+");
-        for (String token : tokens) {
-            srsList.add(token);
+        Node firstChildNode  = n.getFirstChild();
+        if(firstChildNode instanceof CharacterData) {
+            String srsString = ((CharacterData) firstChildNode).getData();
+            if(srsString != null) {
+                String[] tokens = srsString.split("\\s+");
+                Collections.addAll(srsList, tokens);
+            }
         }
     }
     
