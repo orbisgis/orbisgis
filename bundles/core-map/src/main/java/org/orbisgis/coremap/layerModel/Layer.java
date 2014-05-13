@@ -193,14 +193,16 @@ public class Layer extends BeanLayer {
                 LOGGER.warn("Error while fetching table list",ex);
             }
         }
-        if (getStyles().isEmpty()) {
-            // special case: no style were ever set
-            // let's go for a default style
-            // add style in the list directly
-            // do not fire style change event
-            Style defStyle = new Style(this, true);
-            styleList.add(defStyle);
-            addStyleListener(defStyle);
+        if(!tableReference.isEmpty()) {
+            if (getStyles().isEmpty()) {
+                // special case: no style were ever set
+                // let's go for a default style
+                // add style in the list directly
+                // do not fire style change event
+                Style defStyle = new Style(this, true);
+                styleList.add(defStyle);
+                addStyleListener(defStyle);
+            }
         }
 	}
 
