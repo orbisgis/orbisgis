@@ -557,15 +557,16 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         pop.add(noSort);
                 }
                 pop.addSeparator();
-                //Get Field informations
-                JMenuItem showFieldInformations =
-                        new JMenuItem(I18N.tr("Show column informations"),
+                //Get Field information
+                JMenuItem showFieldInformation =
+                        new JMenuItem(I18N.tr("Show column information"),
                         OrbisGISIcon.getIcon("information")
                         );
-                showFieldInformations.addActionListener(
-                EventHandler.create(ActionListener.class,this,
-                "onMenuShowInformations"));
-                pop.add(showFieldInformations);                
+                showFieldInformation.addActionListener(
+                        EventHandler.create(ActionListener.class, this,
+                                "onMenuShowInformation")
+                );
+                pop.add(showFieldInformation);
                 if(isNumeric(col)) {
                         //Get Statistics
                         String text = I18N.tr("Show column statistics");
@@ -613,9 +614,9 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         }
 
         /**
-         * Show the selected field informations
+         * Show the selected field information
          */
-        public void onMenuShowInformations() {
+        public void onMenuShowInformation() {
             int col = popupCellAdress.x + 1;
             try(Connection connection = dataSource.getConnection()) {
                 DatabaseMetaData meta = connection.getMetaData();
