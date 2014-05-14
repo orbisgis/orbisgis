@@ -34,6 +34,9 @@ import java.awt.Point;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.UIManager;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTWriter;
 import org.orbisgis.view.components.renderers.TableLaFCellRenderer;
 
 /**
@@ -45,6 +48,7 @@ public class TableDefaultColumnRenderer extends TableLaFCellRenderer {
         private final static Color NULL_COLOR_FOREGROUND = Color.RED.darker();
         private Color originalForeground;
         private boolean doResetForeground = false;
+        private WKTWriter wktWriter = new WKTWriter(3);
         
         public TableDefaultColumnRenderer(JTable table,Class<?> type, Point popupCellAdress) {
                 super(table, type);
@@ -74,6 +78,9 @@ public class TableDefaultColumnRenderer extends TableLaFCellRenderer {
                                 if(doResetForeground) {
                                         lafTF.setForeground(originalForeground);
                                         doResetForeground = false;
+                                }
+                                if(value instanceof Geometry) {
+                                    lafTF.setText(wktWriter.write((Geometry)value));
                                 }
                         }
                 }
