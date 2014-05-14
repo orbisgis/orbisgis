@@ -157,4 +157,18 @@ public class JDBCUtilityTest {
 
         }
     }
+
+    @Test
+    public void pkTest() throws SQLException {
+        // Issue https://github.com/irstv/orbisgis/issues/662
+        // Cannot use _ROWID_ in conjunction with spatial index
+        // TODO remove unit test when issue is fixed
+        try(Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS TEST");
+            st.execute("CREATE TABLE TEST(gid integer auto_increment, geom MULTIPOLYGON)");
+            assertEquals("_ROWID_", MetaData.getPkName(connection, "TEST", true));
+            st.execute("CREATE SPATIAL INDEX ON TEST(geom)");
+            assertEquals("", MetaData.getPkName(connection, "TEST", true));
+        }
+    }
 }
