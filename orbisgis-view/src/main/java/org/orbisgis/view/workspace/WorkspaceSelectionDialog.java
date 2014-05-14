@@ -60,6 +60,7 @@ public class WorkspaceSelectionDialog extends JPanel {
     private DirectoryComboBoxChoice comboBox;
     private JCheckBox defaultCheckBox;
     private CoreWorkspaceImpl selectedWorkspace = new CoreWorkspaceImpl();
+    private JLabel errorLabel = new JLabel();
 
     private WorkspaceSelectionDialog() {
         super(new MigLayout("wrap 1"));
@@ -101,6 +102,8 @@ public class WorkspaceSelectionDialog extends JPanel {
         deleteButton.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteWorkspaceEntry"));
         subCheckBox.setFont(smallFont);
         // Add components
+        errorLabel.setForeground(Color.RED.darker());
+        add(errorLabel);
         add(chooseLabel);
         add(subChooseLabel);
         add(comboBox.getComponent(), "split 2");
@@ -229,7 +232,13 @@ public class WorkspaceSelectionDialog extends JPanel {
      * The user select another workspace folder.Update the JDBC uri
      */
     public void onWorkspaceFolderChange() {
-        selectedWorkspace.setWorkspaceFolder(comboBox.getValue());
+        // Check if workspace folder is valid
+        if(ViewWorkspace.isWorkspaceValid(new File(comboBox.getValue()))) {
+            selectedWorkspace.setWorkspaceFolder(comboBox.getValue());
+            errorLabel.setText("");
+        } else {
+            errorLabel.setText(I18N.tr("The selected folder is not a valid workspace"));
+        }
     }
 
     /**
