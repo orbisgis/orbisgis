@@ -96,9 +96,11 @@ import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.coremap.renderer.se.Symbolizer;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sif.SIFDialog;
 import org.orbisgis.sif.SIFWizard;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.sif.UIPersistence;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.view.background.BackgroundJob;
@@ -928,7 +930,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                 "Choose a location");
 
                         inputXMLPanel.addFilter("se", "Symbology Encoding 2.0 (FeatureTypeStyle");
-
+                        inputXMLPanel.loadState();
                         if (UIFactory.showDialog(inputXMLPanel)) {
                                 String seFile = inputXMLPanel.getSelectedFile().getAbsolutePath();
                                 try {
