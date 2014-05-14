@@ -50,6 +50,7 @@ import javax.swing.event.RowSorterListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
@@ -59,6 +60,7 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
@@ -260,6 +262,9 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 return table;
         }
         
+        /**
+         * Right click on column header.
+         */ 
         public void onMouseActionOnTableHeader(MouseEvent e) {
                 //Does this action correspond to a popup request
                 if (e.isPopupTrigger()) { 
@@ -269,7 +274,9 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         menu.show(e.getComponent(), e.getX(), e.getY());
                 }
         }
-
+        /**
+         * Right click on a table cell. 
+         */
         public void onMouseActionOnTableCells(MouseEvent e) {
                 //Does this action correspond to a popup request
                 if (e.isPopupTrigger()) { 
@@ -550,15 +557,16 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         pop.add(noSort);
                 }
                 pop.addSeparator();
-                //Get Field informations
-                JMenuItem showFieldInformations =
-                        new JMenuItem(I18N.tr("Show column informations"),
+                //Get Field information
+                JMenuItem showFieldInformation =
+                        new JMenuItem(I18N.tr("Show column information"),
                         OrbisGISIcon.getIcon("information")
                         );
-                showFieldInformations.addActionListener(
-                EventHandler.create(ActionListener.class,this,
-                "onMenuShowInformations"));
-                pop.add(showFieldInformations);                
+                showFieldInformation.addActionListener(
+                        EventHandler.create(ActionListener.class, this,
+                                "onMenuShowInformation")
+                );
+                pop.add(showFieldInformation);
                 if(isNumeric(col)) {
                         //Get Statistics
                         String text = I18N.tr("Show column statistics");
@@ -606,41 +614,13 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         }
 
         /**
-         * Show the selected field informations
+         * Show the selected field information
          */
-        public void onMenuShowInformations() {
+        public void onMenuShowInformation() {
             int col = popupCellAdress.x + 1;
             try(Connection connection = dataSource.getConnection()) {
-                String colName,typeName;
                 DatabaseMetaData meta = connection.getMetaData();
-                TableLocation table = TableLocation.parse(tableEditableElement.getTableReference());
-                StringBuilder infos = new StringBuilder();
-                try(ResultSet rs = meta.getColumns(table.getCatalog(), table.getSchema(), table.getTable(), null)) {
-                    while (rs.next()) {
-                        if(rs.getInt("ORDINAL_POSITION") == col) {
-                            infos.append(I18N.tr("\nField name :\t{0}\n",rs.getString("COLUMN_NAME")));
-                            infos.append(I18N.tr("Field type :\t{0}\n",rs.getString("TYPE_NAME")));
-                            String remarks = rs.getString("REMARKS");
-                            if(remarks != null && !remarks.isEmpty()) {
-                                infos.append(I18N.tr("Field remarks :\t{0}\n",remarks));
-                            }
-                            break;
-                        }
-                    }
-                }
-                infos.append(I18N.tr("Constraints :\n"));
-                try(ResultSet rs = meta.getIndexInfo(table.getCatalog(), table.getSchema(), table.getTable(), true, false)) {
-                    while (rs.next()) {
-                        if(rs.getInt("ORDINAL_POSITION") == col) {
-                            String filter = rs.getString("FILTER_CONDITION");
-                            if(filter != null && !filter.isEmpty()) {
-                                infos.append(I18N.tr("\t{0} :\t{1}\n",
-                                       rs.getString("INDEX_NAME"),filter));
-                            }
-                        }
-                    }
-                }
-                LOGGER.info(infos.toString());
+                LOGGER.info(MetaData.getColumnInformations(meta, tableEditableElement.getTableReference(), col));
             } catch( SQLException ex) {
                 LOGGER.error(ex.getLocalizedMessage(),ex);
             }
@@ -904,9 +884,36 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         TableColumn col = new TableColumn(i);
                         String columnName = tableModel.getColumnName(i);
                         col.setHeaderValue(columnName);
+                        TableCellRenderer headerRenderer = col.getHeaderRenderer();
+                        if(!(headerRenderer instanceof TableEditorHeaderRenderer)) {
+                            TableEditorHeaderRenderer newRenderer = new TableEditorHeaderRenderer(table);
+                            try {
+                                newRenderer.setKey(isPrimaryKey(columnName));
+                            } catch (SQLException ex) {
+                                LOGGER.error(ex.getLocalizedMessage(), ex);
+                            }
+                            col.setHeaderRenderer(newRenderer);
+                        }
                         colModel.addColumn(col);
                 }
                 table.setColumnModel(colModel);
+        }
+
+        private boolean isPrimaryKey(String columnName) throws SQLException {
+            TableLocation tableLocation = TableLocation.parse(tableEditableElement.getTableReference());
+            try(Connection connection = dataSource.getConnection();
+                ResultSet rs = connection.getMetaData().getPrimaryKeys(tableLocation.getCatalog(null),
+                        tableLocation.getSchema(null), tableLocation.getTable())) {
+                while (rs.next()) {
+                    // If the schema is not specified, public must be the schema
+                    if (!tableLocation.getSchema().isEmpty() || "public".equalsIgnoreCase(rs.getString("TABLE_SCHEM"))) {
+                        if (columnName.equals(rs.getString("COLUMN_NAME"))) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         /**

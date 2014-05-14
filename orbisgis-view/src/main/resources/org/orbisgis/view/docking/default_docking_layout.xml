@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <root>
 	<resource name="CLookAndFeelMenuPiece">
-		<key>s.default</key>
+		<key>l.5.Metal.javax.swing.plaf.metal.MetalLookAndFeel</key>
 	</resource>
 	<resource name="ccontrol.frontend">
 		<frontend>
