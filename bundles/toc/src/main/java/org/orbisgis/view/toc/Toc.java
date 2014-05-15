@@ -54,7 +54,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -75,7 +74,6 @@ import org.apache.log4j.Logger;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
-import org.orbisgis.coreapi.workspace.CoreWorkspace;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.BeanLayer;
 import org.orbisgis.coremap.layerModel.ILayer;
@@ -103,7 +101,6 @@ import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.ZoomToSelection;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.edition.EditableTransferEvent;
@@ -928,7 +925,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                 "Choose a location");
 
                         inputXMLPanel.addFilter("se", "Symbology Encoding 2.0 (FeatureTypeStyle");
-
+                        inputXMLPanel.loadState();
                         if (UIFactory.showDialog(inputXMLPanel)) {
                                 String seFile = inputXMLPanel.getSelectedFile().getAbsolutePath();
                                 try {
