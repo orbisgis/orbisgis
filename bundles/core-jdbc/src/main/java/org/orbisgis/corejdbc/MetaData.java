@@ -30,6 +30,7 @@ package org.orbisgis.corejdbc;
 
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -241,24 +242,44 @@ public class MetaData {
 
     /**
      * Find the primary key name of the table.
+     *
      * @param connection Connection
-     * @param table Table location
+     * @param table      Table location
      * @return The primary key name or empty
      * @throws SQLException
      */
     public static String getPkName(Connection connection, String table, boolean systemColumn) throws SQLException {
         TableLocation tableLocation = TableLocation.parse(table);
         String pkName = "";
-        try(Statement st = connection.createStatement()) {
-            if(systemColumn && JDBCUtilities.isH2DataBase(connection.getMetaData())) {
-                try(ResultSet rs = st.executeQuery("select _ROWID_ from "+tableLocation+" LIMIT 0")) {
-                    return rs.getMetaData().getColumnName(1);
-                } catch (SQLException ex) {
-                    //Ignore, key does not exists
+        try (Statement st = connection.createStatement()) {
+            DatabaseMetaData meta = connection.getMetaData();
+            if (systemColumn && JDBCUtilities.isH2DataBase(meta)) {
+                boolean hasSpatialIndex = false;
+                try (PreparedStatement preparedStatement = SFSUtilities.prepareInformationSchemaStatement(connection,
+                        tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable(),
+                        "INFORMATION_SCHEMA.INDEXES", "", "TABLE_CATALOG", "TABLE_SCHEMA", "TABLE_NAME")) {
+                    try (ResultSet rs = preparedStatement.executeQuery()) {
+                        while (rs.next()) {
+                            if ("SPATIAL INDEX".equals(rs.getString("INDEX_TYPE_NAME"))) {
+                                hasSpatialIndex = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!hasSpatialIndex) {
+                    try (ResultSet rs = st.executeQuery("select _ROWID_ from " + tableLocation + " LIMIT 0")) {
+                        // Issue https://github.com/irstv/orbisgis/issues/662
+                        // Cannot use _ROWID_ in conjunction with spatial index
+                        // TODO use always _ROWID_ when issue is fixed
+                        return rs.getMetaData().getColumnName(1);
+                    } catch (SQLException ex) {
+                        //Ignore, key does not exists
+                    }
                 }
             }
             int pkId = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), tableLocation.toString());
-            if(pkId > 0) {
+            if (pkId > 0) {
                 // This table has a Primary key, get the field name
                 pkName = JDBCUtilities.getFieldName(connection.getMetaData(), tableLocation.toString(), pkId);
             }
