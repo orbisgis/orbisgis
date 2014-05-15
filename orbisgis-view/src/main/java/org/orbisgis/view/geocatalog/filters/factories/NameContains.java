@@ -29,8 +29,13 @@
 package org.orbisgis.view.geocatalog.filters.factories;
 
 import java.awt.Component;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Map;
 import javax.swing.JTextField;
-import org.gdms.source.SourceManager;
+
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.components.filter.TextFieldDocumentListener;
@@ -110,15 +115,10 @@ public class NameContains implements FilterFactory<IFilter,DefaultActiveFilter> 
         public TextFilter(String nameFilter) {
             this.nameFilter = nameFilter;
         }
-        /**
-        * Does this filter reject or accept this Source
-        * @param sm Source Manager instance
-        * @param sourceName Source name
-        * @return True if the Source should be shown
-        */
+
         @Override
-        public boolean accepts(SourceManager sm, String sourceName) {
-            return sourceName.toLowerCase().contains(nameFilter.toLowerCase());
-        }     
+        public boolean accepts(TableLocation table, Map<ATTRIBUTES, String> tableProperties) {
+            return table.toString().toLowerCase().contains(nameFilter.toLowerCase());
+        }
     }
 }

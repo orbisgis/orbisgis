@@ -28,21 +28,23 @@
  */
 package org.orbisgis.view.components.sif;
 
+import java.sql.*;
 import java.text.ParseException;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.Type;
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.h2gis.utilities.TableLocation;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.sif.multiInputPanel.CheckBoxChoice;
 import org.orbisgis.sif.multiInputPanel.InputType;
 import org.orbisgis.sif.multiInputPanel.MIPValidationDouble;
 import org.orbisgis.sif.multiInputPanel.MIPValidationFloat;
 import org.orbisgis.sif.multiInputPanel.MIPValidationInteger;
 import org.orbisgis.sif.multiInputPanel.MIPValidationLong;
-import org.orbisgis.sif.multiInputPanel.MIPValidationNumeric;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
+
+import javax.sql.DataSource;
 
 /**
  * An input panel created in order to insert a valid DataSource row.
@@ -51,68 +53,98 @@ public class AskValidRow extends MultiInputPanel {
 
 	private int fieldCount;
 	private DataSource ds;
-	private int[] types;
+    private TableLocation location;
+    private List<Integer> types;
+    private List<String> fieldsNameList;
 
-	public AskValidRow(String title, DataSource ds) throws DriverException {
+    public AskValidRow(String title, DataSource ds,String tableReference) throws SQLException {
 		super(title);
 		this.ds = ds;
-		this.fieldCount = ds.getFieldCount();
-		this.types = new int[fieldCount];
+        location = TableLocation.parse(tableReference);
+        types = new ArrayList<>(10);
+        fieldsNameList = new ArrayList<>(10);
+        try(Connection connection = ds.getConnection();
+            ResultSet rs = connection.getMetaData().getColumns(location.getCatalog(), location.getSchema(), location.getTable(), null)) {
+            while(rs.next()) {
+                types.add(rs.getInt("DATA_TYPE"));
+                fieldsNameList.add(rs.getString("TABLE_NAME"));
+                this.fieldCount++;
+            }
+        }
+		this.fieldCount = types.size();
 		for (int i = 0; i < fieldCount; i++) {
             String fieldName = "f" + i;
-			types[i] = ds.getFieldType(i).getTypeCode();
+            String fieldLabel = fieldsNameList.get(i);
             InputType input;
+            int type = types.get(i);
             //Field
-            switch (types[i]) {
-                case Type.BOOLEAN:
+            switch (type) {
+                case Types.BOOLEAN:
                     input = new CheckBoxChoice(false);
                     break;
                 default:
                     input =  new TextBoxType();
             }
             // Constraint
-            switch (types[i]) {
-                case Type.INT:
-                    addValidation(new MIPValidationInteger(fieldName,ds.getFieldName(i)));
+            switch (type) {
+                case Types.INTEGER:
+                case Types.SMALLINT:
+                case Types.TINYINT:
+                    addValidation(new MIPValidationInteger(fieldName,fieldLabel));
                     break;
-                case Type.LONG:
-                    addValidation(new MIPValidationLong(fieldName,ds.getFieldName(i)));
+                case Types.NUMERIC:
+                case Types.DECIMAL:
+                case Types.BIGINT:
+                    addValidation(new MIPValidationLong(fieldName,fieldLabel));
                     break;
-                case Type.FLOAT:
-                    addValidation(new MIPValidationFloat(fieldName,ds.getFieldName(i)));
+                case Types.FLOAT:
+                    addValidation(new MIPValidationFloat(fieldName,fieldLabel));
                     break;
-                case Type.DOUBLE:
-                    addValidation(new MIPValidationDouble(fieldName, ds.getFieldName(i)));
+                case Types.REAL:
+                case Types.DOUBLE:
+                    addValidation(new MIPValidationDouble(fieldName, fieldLabel));
                     break;
             }
-			addInput(fieldName, ds.getFieldName(i),input);
+			addInput(fieldName, fieldLabel,input);
 		}
 	}
 
 	@Override
 	public String validateInput() {
-        String errMess = super.validateInput();
-		try {
-			for (int i = 0; i < fieldCount; i++) {
-				String input = getInput("f" + i);
-				Value inputValue = ValueFactory.createNullValue();
-				if (!input.isEmpty()) {
-                        inputValue = AskValidValue.inputToValue(input, types[i]);
-				}
-				String error = AskValidValue.validateValue(ds, inputValue, i,
-						types[i]);
-				if(error!=null) {
-					return error;
-                }
-			}
-		} catch (Exception e) {
-            if(errMess!=null && !errMess.isEmpty()) {
-			    return errMess;
-            } else {
-                return e.getMessage();
+        // Try to insert the row in a transaction
+        StringBuilder fieldNames = new StringBuilder();
+        StringBuilder parameters = new StringBuilder();
+        for(String fieldName : fieldsNameList) {
+            if(fieldNames.length() != 0) {
+                fieldNames.append(", ");
+                parameters.append(", ");
             }
-		}
-		return null;
+            fieldNames.append("\"");
+            fieldNames.append(fieldName);
+            fieldNames.append("\"");
+            parameters.append("?");
+        }
+        try(Connection connection = ds.getConnection()) {
+            connection.setAutoCommit(false);
+            try(PreparedStatement st = connection.prepareStatement(String.format("INSERT INTO %s(%s) VALUES (%s)",location,fieldNames.toString(),parameters.toString()))) {
+                // Set parameters value
+                for (int i = 0; i < fieldCount; i++) {
+                    String input = getInput("f" + i);
+                    Object value = null;
+                    if (!input.isEmpty()) {
+                        value = MetaData.castToSQLType(input, types.get(i));
+                    }
+                    st.setObject(i+1, value);
+                }
+                st.execute();
+            } finally {
+                connection.rollback();
+            }
+            // Ok
+            return "";
+        } catch (SQLException ex) {
+            return ex.getLocalizedMessage();
+        }
 	}
 
     /**
@@ -120,15 +152,11 @@ public class AskValidRow extends MultiInputPanel {
      * @return A valid row
      * @throws ParseException If the type conversion failed
      */
-	public Value[] getRow() throws ParseException {
-		Value[] ret = new Value[fieldCount];
+	public Object[] getRow() throws ParseException {
+		Object[] ret = new Object[fieldCount];
 		for (int i = 0; i < ret.length; i++) {
 			String input = getInput("f" + i);
-			if (!input.isEmpty()) {
-				ret[i] = AskValidValue.inputToValue(input, types[i]);
-			} else {
-				ret[i] = ValueFactory.createNullValue();
-			}
+			ret[i] = MetaData.castToSQLType(input, types.get(i));
 		}
 		return ret;
 	}

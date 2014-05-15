@@ -29,25 +29,14 @@
 package org.orbisgis.view.main.bundles;
 
 import org.orbisgis.core.plugin.BundleReference;
-import org.orbisgis.core.plugin.BundleTools;
-import org.osgi.framework.BundleContext;
 
 /**
  * Reference to OrbisGIS View special bundle loading process.
  * @author Nicolas Fortin
  */
 public class BundleFromResources {
-        private static final BundleReference[] SPECIFIC_BEHAVIOUR_BUNDLES = {
+        public static final BundleReference[] SPECIFIC_BEHAVIOUR_BUNDLES = {
                 new BundleReference("orbisgis-oshell").setAutoStart(false),
                 new BundleReference("org.apache.felix.shell.gui").setAutoStart(false),
         };
-        private BundleFromResources() {                
-        }
-        /**
-         * Install and configure built-ins bundles into the current framework.
-         * @param hostBundle Host bundle context
-         */
-        public static void installResourceBundles(BundleContext hostBundle) {
-                BundleTools.installBundles(hostBundle, SPECIFIC_BEHAVIOUR_BUNDLES);
-        }
 }

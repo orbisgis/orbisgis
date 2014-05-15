@@ -28,14 +28,14 @@
  */
 package org.orbisgis.legend.thematic;
 
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
 
 import java.awt.*;
 
 /**
  * A simple java "tuple" that embeds the six parameters needed to draw a polygon as defined with a {@link
- * org.orbisgis.core.renderer.se.fill.SolidFill}.
+ * org.orbisgis.coremap.renderer.se.fill.SolidFill}.
  * @author alexis
  */
 public class AreaParameters extends LineParameters {

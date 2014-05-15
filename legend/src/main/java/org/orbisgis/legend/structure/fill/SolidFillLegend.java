@@ -28,7 +28,7 @@
  */
 package org.orbisgis.legend.structure.fill;
 
-import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 

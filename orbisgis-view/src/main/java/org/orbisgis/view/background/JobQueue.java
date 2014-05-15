@@ -55,7 +55,6 @@ public class JobQueue implements BackgroundManager {
 			current.cancel();
 			queue.add(0, newJob);
 			fireJobAdded(newJob);
-			newJob.progressTo(0);
 			// we don't planify because we will do it when the cancelled process
 			// ends
 		} else {
@@ -68,15 +67,11 @@ public class JobQueue implements BackgroundManager {
 					return;
 				}
 			}
-
 			// Add a new one
 			LOGGER.debug("It's a new job: " + processId + " " + newJob.getTaskName());
 			queue.add(newJob);
 			fireJobAdded(newJob);
-			newJob.progressTo(0);
-
 			planify();
-			
 		}
 	}
 

@@ -31,6 +31,8 @@ package org.orbisgis.view.geocatalog.renderer;
 import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.JList;
+
+import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.view.components.renderers.ListLaFRenderer;
 import org.orbisgis.view.geocatalog.CatalogSourceItem;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -40,7 +42,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * for the DataSource List in the GeoCatalog panel.
  *
  */
-public class DataSourceListCellRenderer extends ListLaFRenderer {
+public class DataSourceListCellRenderer extends ListLaFRenderer<ContainerItemProperties> {
         private static final long serialVersionUID = 1L;
 
         public DataSourceListCellRenderer(JList list) {
@@ -60,7 +62,7 @@ public class DataSourceListCellRenderer extends ListLaFRenderer {
          * @return
          */
         @Override
-        public Component getListCellRendererComponent(JList list, Object value,
+        public Component getListCellRendererComponent(JList list, ContainerItemProperties value,
                 int index,
                 boolean isSelected,
                 boolean cellHasFocus) {

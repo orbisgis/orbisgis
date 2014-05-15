@@ -40,15 +40,14 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.varia.DenyAllFilter;
 import org.apache.log4j.varia.LevelMatchFilter;
 import org.apache.log4j.varia.LevelRangeFilter;
-import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.coreapi.workspace.CoreWorkspace;
 import org.orbisgis.view.components.actions.ActionCommands;
-import org.orbisgis.view.components.actions.DefaultAction;
+import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
-import org.orbisgis.view.docking.DockingManager;
+import org.orbisgis.viewapi.docking.DockingManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.main.frames.ext.MainFrameAction;
-import org.orbisgis.view.main.frames.ext.MainWindow;
-import org.orbisgis.view.workspace.ViewWorkspace;
+import org.orbisgis.viewapi.main.frames.ext.MainFrameAction;
+import org.orbisgis.viewapi.main.frames.ext.MainWindow;
 import org.osgi.framework.BundleContext;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -77,7 +76,7 @@ public class MainFrame extends JFrame implements MainWindow {
          */
         public MainFrame(){
             setTitle(I18N.tr("OrbisGIS version {0} {1} {2}",
-                    getVersion(), ViewWorkspace.CITY_VERSION, Locale.getDefault().getCountry()));
+                    getVersion(), CoreWorkspace.CITY_VERSION, Locale.getDefault().getCountry()));
                     setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
             setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis"));
             add(new JLayer<>(mainPanel, messageOverlay));

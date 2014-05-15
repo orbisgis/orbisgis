@@ -29,8 +29,8 @@
 package org.orbisgis.legend.structure.stroke.constant;
 
 import java.awt.Color;
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.coremap.renderer.se.common.Uom;
+import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.StrokeLegend;
 /**

@@ -29,11 +29,11 @@
 
 package org.orbisgis.legend.structure.recode
 
-import org.orbisgis.core.renderer.se.parameter.SeParameter
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter
-import org.orbisgis.core.renderer.se.parameter.real.Recode2Real
-import org.orbisgis.core.renderer.se.parameter.string.StringAttribute
+import org.orbisgis.coremap.renderer.se.parameter.SeParameter
+import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter
+import org.orbisgis.coremap.renderer.se.parameter.real.Recode2Real
+import org.orbisgis.coremap.renderer.se.parameter.string.StringAttribute
 import org.orbisgis.legend.structure.parameter.AbstractAttributeLegend
 import org.orbisgis.legend.structure.parameter.NumericLegend
 

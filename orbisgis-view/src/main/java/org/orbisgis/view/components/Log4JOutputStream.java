@@ -41,7 +41,8 @@ import org.apache.log4j.Logger;
 public class Log4JOutputStream extends OutputStream {
         private Logger logger;
         private Level level;
-        private ByteArrayOutputStream buffer = new ByteArrayOutputStream();        
+        private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
         public Log4JOutputStream(Logger logger, Level level) {
                 this.logger = logger;
                 this.level = level;
@@ -50,6 +51,18 @@ public class Log4JOutputStream extends OutputStream {
         public void write(int i) throws IOException {
                 buffer.write(i);
         }
+
+        @Override
+        public void write(byte[] b, int off, int len) throws IOException {
+            if(len > 0 && '\n' == b[len-1]) {
+                // Print at each end of line
+                buffer.write(b,off,len - 1);
+                flush();
+            } else {
+                buffer.write(b,off,len);
+            }
+        }
+
         @Override
         public void flush() throws IOException {
                 super.flush();
@@ -59,5 +72,5 @@ public class Log4JOutputStream extends OutputStream {
                         logger.log(level, messages);
                 }
                 buffer.reset();
-        }        
+        }
 }

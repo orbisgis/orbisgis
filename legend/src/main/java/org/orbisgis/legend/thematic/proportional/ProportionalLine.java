@@ -28,9 +28,9 @@
  */
 package org.orbisgis.legend.thematic.proportional;
 
-import org.orbisgis.core.renderer.se.LineSymbolizer;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.coremap.renderer.se.LineSymbolizer;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.IInterpolationLegend;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.LookupFieldName;

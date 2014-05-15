@@ -28,7 +28,7 @@
  */
 package org.orbisgis.legend.structure.stroke;
 
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.structure.parameter.NumericLegend;
 

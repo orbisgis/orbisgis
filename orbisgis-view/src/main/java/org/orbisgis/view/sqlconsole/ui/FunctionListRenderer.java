@@ -28,12 +28,11 @@
  */
 package org.orbisgis.view.sqlconsole.ui;
 
-import java.awt.Component;
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JList;
 import org.orbisgis.view.components.renderers.ListLaFRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Class to improve the function list rendering. Add icons corresponding to
@@ -41,7 +40,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  *
  * @author Erwan Bocher
  */
-public class FunctionListRenderer extends ListLaFRenderer {
+public class FunctionListRenderer extends ListLaFRenderer<FunctionElement> {
         private static final long serialVersionUID = 1L;
 
         public static final int TOOLTIP_WIDTH_PX = 300;
@@ -53,24 +52,17 @@ public class FunctionListRenderer extends ListLaFRenderer {
         
         private static Icon getFunctionIcon(FunctionElement value) {
                 int type = value.getFunctionType();
-                if (type == FunctionElement.BASIC_FUNCTION) {
-                        return OrbisGISIcon.getIcon("builtinfunctionmap");
-                } else if (type == FunctionElement.CUSTOM_FUNCTION) {
-                        return OrbisGISIcon.getIcon("builtincustomquerymap");
-                } else {
-                        return OrbisGISIcon.getIcon("builtincustomquerymaperror");
-                }
+                return OrbisGISIcon.getIcon("builtinfunctionmap");
         }
         @Override
-        public Component getListCellRendererComponent(JList jlist, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                Component nativeCell = lookAndFeelRenderer.getListCellRendererComponent(jlist, value, index, isSelected, cellHasFocus);
+        public Component getListCellRendererComponent(JList<? extends FunctionElement> jlist, FunctionElement sqlFunction, int index, boolean isSelected, boolean cellHasFocus) {
+                Component nativeCell = lookAndFeelRenderer.getListCellRendererComponent(jlist, sqlFunction, index, isSelected, cellHasFocus);
                 if(nativeCell instanceof JLabel) {
                         JLabel renderingComp = (JLabel) nativeCell;
-                        FunctionElement sqlFunction = (FunctionElement)value;
                         renderingComp.setIcon(getFunctionIcon(sqlFunction));
                         renderingComp.setText(sqlFunction.getFunctionName());
-                        renderingComp.setToolTipText("<html><body><p style='width: "
-                                + TOOLTIP_WIDTH_PX + "px;'>" + sqlFunction.getToolTip()
+                        renderingComp.setToolTipText("<html><body><p style='width: " + TOOLTIP_WIDTH_PX + "px;'>"
+                                + sqlFunction.getToolTip()
                                 + "</p></body></html>");
                 }
                 return nativeCell;

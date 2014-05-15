@@ -28,19 +28,15 @@
  */
 package org.orbisgis.view.geocatalog.filters;
 
-import org.gdms.source.SourceManager;
+import org.h2gis.utilities.TableLocation;
+import java.util.Map;
+
 /**
  * DataSource is vectorial.
  */
 public class VectorialFilter implements IFilter {
-       /**
-        * Does this filter reject or accept this Source
-        * @param sm Source Manager instance
-        * @param sourceName Source name
-        * @return True if the Source should be shown
-        */
-	public boolean accepts(SourceManager sm, String sourceName) {
-		int type = sm.getSource(sourceName).getType();
-		return (type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL;
-	}
+    @Override
+    public boolean accepts(TableLocation table, Map<ATTRIBUTES, String> tableProperties) {
+        return tableProperties.containsKey(ATTRIBUTES.GEOMETRY_TYPE);
+    }
 }

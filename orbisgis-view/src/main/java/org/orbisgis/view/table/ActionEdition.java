@@ -30,7 +30,7 @@
 package org.orbisgis.view.table;
 
 
-import org.orbisgis.view.components.actions.ActionTools;
+import org.orbisgis.viewapi.components.actions.ActionTools;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.table.ext.TableEditorActions;
 import org.xnap.commons.i18n.I18n;
@@ -47,19 +47,19 @@ import java.beans.PropertyChangeListener;
  * @author Nicolas Fortin
  */
 public class ActionEdition extends AbstractAction {
-    private final TableEditableElement editable;
+    private final TableEditableElementImpl editable;
     private final I18n i18N = I18nFactory.getI18n(ActionEdition.class);
 
     /**
      * Constructor
      * @param editable Editable instance
      */
-    public ActionEdition(TableEditableElement editable) {
+    public ActionEdition(TableEditableElementImpl editable) {
         putValue(ActionTools.MENU_ID, TableEditorActions.A_EDITION);
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_EDITION);
         this.editable = editable;
         updateLabelAndIcon();
-        editable.addPropertyChangeListener(TableEditableElement.PROP_EDITING,
+        editable.addPropertyChangeListener(TableEditableElementImpl.PROP_EDITING,
                 EventHandler.create(PropertyChangeListener.class,this,"updateLabelAndIcon"));
     }
 

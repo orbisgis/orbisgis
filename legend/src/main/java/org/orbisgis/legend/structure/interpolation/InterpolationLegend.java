@@ -28,10 +28,10 @@
  */
 package org.orbisgis.legend.structure.interpolation;
 
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
-import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.SeParameter;
+import org.orbisgis.coremap.renderer.se.parameter.real.Interpolate2Real;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.legend.IInterpolationLegend;
 import org.orbisgis.legend.structure.parameter.NumericLegend;
 

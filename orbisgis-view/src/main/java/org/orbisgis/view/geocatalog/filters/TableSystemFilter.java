@@ -28,19 +28,24 @@
  */
 package org.orbisgis.view.geocatalog.filters;
 
-import org.gdms.source.SourceManager;
+import org.h2gis.utilities.TableLocation;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Accept only system tables.
  */
 public class TableSystemFilter implements IFilter {
-       /**
-        * Does this filter reject or accept this Source
-        * @param sm Source Manager instance
-        * @param sourceName Source name
-        * @return True if the Source should be shown
-        */
-	public boolean accepts(SourceManager sm, String sourceName) {
-		int type = sm.getSource(sourceName).getType();
-		return (type & SourceManager.SYSTEM_TABLE) == SourceManager.SYSTEM_TABLE;
-	}
+    public static final Set<String> SYSTEM_TABLES = new HashSet<>(
+            Arrays.asList("spatial_ref_sys", "geography_columns", "geometry_columns", "raster_columns", "raster_overviews"));
+    private static final Set<String> SYSTEM_SCHEMA = new HashSet<>(Arrays.asList("pg_catalog","information_schema"));
+
+    @Override
+    public boolean accepts(TableLocation table, Map<ATTRIBUTES, String> tableProperties) {
+        return SYSTEM_SCHEMA.contains(table.getSchema().toLowerCase()) ||
+                SYSTEM_TABLES.contains(table.getTable().toLowerCase());
+    }
 }

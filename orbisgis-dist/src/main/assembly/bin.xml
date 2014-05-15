@@ -5,6 +5,7 @@
         <formats>
                 <format>zip</format>
         </formats>
+        <baseDirectory>${artifactId}-${project.version}-${buildNumber}</baseDirectory>
         <fileSets>
                 <fileSet>
                         <directory>${project.basedir}</directory>
@@ -42,7 +43,7 @@
             <dependencySet>
                 <outputDirectory>/bin/</outputDirectory>
                 <useProjectArtifact>true</useProjectArtifact>
-                <scope>runtime</scope>
+               <!-- <scope>runtime</scope> -->
             </dependencySet>
         </dependencySets>
 </assembly>

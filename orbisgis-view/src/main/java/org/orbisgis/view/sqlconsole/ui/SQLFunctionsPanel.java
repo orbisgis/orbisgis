@@ -28,55 +28,51 @@
  */
 package org.orbisgis.view.sqlconsole.ui;
 
-import java.awt.BorderLayout;
-import java.beans.EventHandler;
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.border.BevelBorder;
-import org.gdms.sql.function.FunctionManager;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.sqlconsole.ui.functionFilters.NameFilterFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.beans.EventHandler;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
- * A simple panel to list all GDMS functions.
+ * A simple panel to list all SQL functions.
  * @author Erwan Bocher
  * TODO filter with FilterFactoryManager
  */
 public class SQLFunctionsPanel extends JPanel {
         private static final long serialVersionUID = 1L;
 
-        private final JList list;
+        private final FunctionList list;
         private final JPanel expandedPanel;
         private final FunctionListModel functionListModel;
         private final FilterFactoryManager<FunctionFilter,DefaultActiveFilter> functionFilters = new FilterFactoryManager<FunctionFilter,DefaultActiveFilter>();
         private final JLabel functionLabelCount;
-
-        private final FunctionManager functionManager;
         private final FilterFactoryManager.FilterChangeListener filterEvent = EventHandler.create(FilterFactoryManager.FilterChangeListener.class,this,"doFilter");
         private AtomicBoolean initialised = new AtomicBoolean(false);
         
         protected final static I18n I18N = I18nFactory.getI18n(SQLFunctionsPanel.class);
+
+        private static final String FUNCTION_COUNT = I18N.marktr("Function count = {0}");
         
-        public SQLFunctionsPanel() {
+        public SQLFunctionsPanel(DataSource dataSource) {
                 this.setLayout(new BorderLayout());
                 expandedPanel = new JPanel(new BorderLayout());
-                functionManager = Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager();
-                functionListModel = new FunctionListModel();
+                functionListModel = new FunctionListModel(dataSource);
+                functionLabelCount = new JLabel(I18N.tr(FUNCTION_COUNT, 0));
 
-                list = new JList();
+                list = new FunctionList();
                 list.setBorder(BorderFactory.createLoweredBevelBorder());
                 list.setModel(functionListModel);
                 list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                list.addListSelectionListener(EventHandler.create(ListSelectionListener.class,this,"onListChange"));
 
                 expandedPanel.add(new JScrollPane(list), BorderLayout.CENTER);
                 functionFilters.setUserCanRemoveFilter(false);
@@ -85,12 +81,10 @@ public class SQLFunctionsPanel extends JPanel {
                 list.setCellRenderer(new FunctionListRenderer(list));
                 list.setTransferHandler(new FunctionListTransferHandler());
                 list.setDragEnabled(true);
-                functionLabelCount = new JLabel(I18N.tr("Functions count = {0}",functionListModel.getSize()));
                 expandedPanel.add(functionLabelCount, BorderLayout.SOUTH);
                 add(expandedPanel, BorderLayout.CENTER);
                 expandedPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
                 collapse();
-
         }
         
         private void initialise() {
@@ -113,11 +107,14 @@ public class SQLFunctionsPanel extends JPanel {
                 String[] sources = new String[selectedValues.length];
                 for (int i = 0; i < sources.length; i++) {
                         FunctionElement functionElement = (FunctionElement) selectedValues[i];
-                        sources[i] = functionManager.getFunction(functionElement.getFunctionName()).getSqlOrder();
+                        sources[i] = functionElement.getSQLCommand();
                 }
                 return sources;
         }
 
+        public void onListChange() {
+            functionLabelCount.setText(I18N.tr(FUNCTION_COUNT, functionListModel.getSize()));
+        }
         /**
          * Called by the listener filterEvent
          */
@@ -127,8 +124,6 @@ public class SQLFunctionsPanel extends JPanel {
         
         /**
          * Switch the visibility state of the panel
-         * @see collapse
-         * @see expand
          */
         public void switchPanelVisibilityState() {
                 if (expandedPanel.isVisible()) {

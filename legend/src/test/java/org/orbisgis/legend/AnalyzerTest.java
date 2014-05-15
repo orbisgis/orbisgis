@@ -37,7 +37,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.log.FailErrorManager;
-import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Style;
 
 public abstract class AnalyzerTest {
         public final static Double EPS = 0.00001;
@@ -70,7 +70,7 @@ public abstract class AnalyzerTest {
         public static final String CATEGORIZED_AREA_NO_STROKE = "src/test/resources/org/orbisgis/legend/categorizedAreaNoStroke.se";
 
         public Style getStyle(String path) throws Exception {
-            Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+            Unmarshaller u = org.orbisgis.coremap.map.JaxbContainer.JAXBCONTEXT.createUnmarshaller();
             JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(new File(path));
             return new Style(ftsElem, null);
         }

@@ -62,7 +62,7 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.util.MenuCommonFunctions;
+import org.orbisgis.viewapi.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -342,7 +342,7 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
         }
         /**
          * Return the appropriate file path to not overwrite existing files
-         * @param basePath Path of the file
+         * @param fullPath Path of the file
          * @return Non existing file path
          */
         private static File getUniqueFileName(final File fullPath) {
@@ -453,7 +453,8 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                                         File dest = new File(getFilePath(), treeFilePath.getName());
                                         if (!dest.exists()) {
                                                 // Move the folder
-                                                FileUtils.moveToDirectory(treeFilePath, getFilePath(), false);
+                                                FileUtils.copyDirectory(treeFilePath, getFilePath(), false);
+                                                FileUtils.deleteDirectory(treeFilePath);
                                         } else {
                                                 LOGGER.warn(I18N.tr("Destination file {0} already exists, cannot move {1}", dest, treeFilePath));
                                         }

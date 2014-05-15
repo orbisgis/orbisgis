@@ -71,16 +71,15 @@ public class MessageOverlay extends LayerUI<Container> implements ImageObserver 
 
     @Override
     public void paint (Graphics g, JComponent c) {
+        // Paint the view.
+        super.paint (g, c);
+        if (!running) {
+            return;
+        }
         int w = c.getWidth();
         int h = c.getHeight();
         int iconHeight = icon.getIconHeight();
         int iconWidth = icon.getIconWidth();
-        // Paint the view.
-        super.paint (g, c);
-
-        if (!running) {
-            return;
-        }
         Graphics2D g2 = (Graphics2D)g.create();
         g2.setFont(messageFont);
         FontMetrics fm = g2.getFontMetrics();

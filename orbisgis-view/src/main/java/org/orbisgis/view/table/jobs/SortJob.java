@@ -28,22 +28,30 @@
  */
 package org.orbisgis.view.table.jobs;
 
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.TreeSet;
+import javax.sql.DataSource;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
+
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.Type;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DriverException;
-import org.orbisgis.core.common.IntegerUnion;
+import org.h2gis.utilities.JDBCUtilities;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
+import org.orbisgis.corejdbc.CreateTable;
+import org.orbisgis.corejdbc.ReadTable;
+import org.orbisgis.corejdbc.SortValueCachedComparator;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.table.DataSourceTableModel;
@@ -67,6 +75,7 @@ public class SortJob implements BackgroundJob {
         private String columnSortName;
         private ListenerContainer<SortJobEventSorted> eventSortedListeners = new ListenerContainer<SortJobEventSorted>();
         private Collection<Integer> modelIndex;
+        private DataSource dataSource;
 
         /**
          * 
@@ -74,102 +83,48 @@ public class SortJob implements BackgroundJob {
          * @param tableModel 
          * @param modelIndex Current state of Index, can be null if the index is the same as the model
          */
-        public SortJob(SortKey sortRequest, DataSourceTableModel tableModel, Collection<Integer> modelIndex) {
+        public SortJob(SortKey sortRequest, DataSourceTableModel tableModel, Collection<Integer> modelIndex, DataSource dataSource) {
                 this.sortRequest = sortRequest;
                 this.columnToSort = sortRequest.getColumn();
                 this.modelIndex = modelIndex;
+                this.dataSource = dataSource;
                 model = tableModel;
-                try {
-                        columnSortName = model.getDataSource().getMetadata().getFieldName(columnToSort);
-                } catch (DriverException ex) {
-                        LOGGER.error(I18N.tr("Driver error"), ex);
-                }
+                columnSortName = model.getColumnName(columnToSort);
         }
 
         public ListenerContainer<SortJobEventSorted> getEventSortedListeners() {
                 return eventSortedListeners;
         }
-        
-        
 
-        public static Collection<Integer> sortArray(Collection<Integer> modelIndex, Comparator<Integer> comparator, ProgressMonitor pm) throws IllegalStateException, DriverException {
-                int rowCount = modelIndex.size();
-                Collection<Integer> columnValues = new TreeSet<Integer>(comparator);
-                int processedRows = 0;
-                for (int i : modelIndex) {
-                        columnValues.add(new Integer(i));
-                        if (i / 100 == i / 100.0) {
-                                if (pm.isCancelled()) {
-                                        throw new IllegalStateException(I18N.tr("Aborted by user"));
-                                } else {
-                                        pm.progressTo(100 * processedRows / rowCount);
-                                }
-                        }
-                        processedRows++;
-                }
-                return columnValues;
-        }
 
         @Override
         public void run(ProgressMonitor pm) {
-                if (model.getRowCount() < 2) {
-                        return;
-                }
-                // Retrieve the index if the model have a restricted set of rows
-                if (modelIndex == null) {
-                        //Create an array [0 1 ..rows]
-                        modelIndex = new IntegerUnion(0, model.getRowCount() - 1);
-                }
-                int rowCount = modelIndex.size();
-                DataSource source = model.getDataSource();
-                //Create a sorted collection, to follow the progression of order
-                //The comparator will read the integer value and
-                //use the data source to compare
-                Comparator<Integer> comparator;
-                try {
-                        Type fieldType = source.getMetadata().getFieldType(columnToSort);
-                        if (fieldType.getTypeCode() == Type.STRING) {
-                                //Do not cache values
-                                comparator = new SortValueComparator(source, columnToSort);
-                        } else {
-                                //Cache values
-                                pm.startTask(I18N.tr("Cache table values"), 100);
-                                Value[] cache = new Value[(int)source.getRowCount()];
-                                for (int i = 0; i < source.getRowCount(); i++) {
-                                        cache[i] = source.getFieldValue(i, columnToSort);
-                                        if (i / 100 == i / 100.0) {
-                                                if (pm.isCancelled()) {
-                                                        return;
-                                                } else {
-                                                        pm.progressTo(100 * i / rowCount);
-                                                }
-                                        }
-                                }
-                                pm.endTask();
-                                comparator = new SortValueCachedComparator(cache);
-                        }
-                        if (sortRequest.getSortOrder().equals(SortOrder.DESCENDING)) {
-                                comparator = Collections.reverseOrder(comparator);
-                        }
-                        final Collection<Integer> columnValues = sortArray(modelIndex, comparator, pm);
-                        SwingUtilities.invokeLater(new Runnable() {
+            if (model.getRowCount() < 2) {
+                return;
+            }
+            // Retrieve the index if the model have a restricted set of rows
+            if (modelIndex == null) {
+                //Create an array [0 1 ..rows]
+                modelIndex = new IntegerUnion(0, model.getRowCount() - 1);
+            }
+            try(Connection connection = dataSource.getConnection()) {
+                final Collection<Integer> sortedRow = ReadTable.getSortedColumnRowIndex(connection, model.getTableName(), columnSortName, sortRequest.getSortOrder() == SortOrder.ASCENDING, pm);
+                SwingUtilities.invokeLater(new Runnable() {
 
-                                @Override
-                                public void run() {
-                                        try {
-                                                //Update the table model on the swing thread
-                                                eventSortedListeners.callListeners(new SortJobEventSorted(sortRequest,columnValues , this));
-                                        } catch (EventException ex) {
-                                                //Ignore
-                                        }
-                                }
-                        });
+                    @Override
+                    public void run() {
+                        try {
+                            //Update the table model on the swing thread
+                            eventSortedListeners.callListeners(new SortJobEventSorted(sortRequest, sortedRow, this));
+                        } catch (EventException ex) {
+                            //Ignore
+                        }
+                    }
+                });
 
-                } catch (IllegalStateException ex) {
-                        LOGGER.error(I18N.tr("Driver error"), ex);
-                } catch (DriverException ex) {
-                        LOGGER.error(I18N.tr("Driver error"), ex);
-                }
+            } catch (IllegalStateException | SQLException ex) {
+                LOGGER.error(I18N.tr("Driver error"), ex);
+            }
         }
 
         @Override

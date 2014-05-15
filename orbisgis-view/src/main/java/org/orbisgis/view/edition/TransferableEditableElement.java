@@ -28,6 +28,8 @@
  */
 package org.orbisgis.view.edition;
 
+import org.orbisgis.viewapi.edition.EditableElement;
+
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;

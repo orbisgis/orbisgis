@@ -28,305 +28,354 @@
  */
 package org.orbisgis.view.geocatalog;
 
-import java.beans.EventHandler;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.sql.DataSource;
 import javax.swing.AbstractListModel;
 import javax.swing.SwingUtilities;
-import org.apache.commons.collections.ComparatorUtils;
+
 import org.apache.log4j.Logger;
-import org.gdms.data.schema.Schema;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.source.Source;
-import org.gdms.source.SourceListener;
-import org.gdms.source.SourceManager;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
+import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.sif.common.ContainerItemProperties;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.TableSystemFilter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import static org.apache.commons.collections.ComparatorUtils.NATURAL_COMPARATOR;
+
 /**
  * Manage entries of GeoCatalog according to a GDMS SourceManager
  * SourceListModel is a swing component that update the content of the geocatalog
  * according to the SourceManager content and the filter loaded.
  */
-public class SourceListModel extends AbstractListModel {
-        private static final I18n I18N = I18nFactory.getI18n(SourceListModel.class);
-	private static final Logger LOGGER = Logger.getLogger(SourceListModel.class);
-        private static final long serialVersionUID = 1L;
-        
-        private SourceListener sourceListener=null; /*!< The listener put in the sourceManager*/
-	private ContainerItemProperties[] sourceList;/*!< Sources */
-	private List<IFilter> filters = new ArrayList<IFilter>(); /*!< Active filters */
-        private AtomicBoolean awaitingRefresh=new AtomicBoolean(false); /*!< If true a swing runnable
+public class SourceListModel extends AbstractListModel<ContainerItemProperties> {
+    private static final I18n I18N = I18nFactory.getI18n(SourceListModel.class);
+    private static final Logger LOGGER = Logger.getLogger(SourceListModel.class);
+    private static final long serialVersionUID = 1L;
+    private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE", "SYSTEM TABLE","LINKED TABLE","VIEW", "EXTERNAL"};
+    /** Non filtered tables */
+    private List<Map<IFilter.ATTRIBUTES, String>> allTables = new ArrayList<>();
+    /** Filtered tables */
+    private ContainerItemProperties[] sourceList = new ContainerItemProperties[0];/*!< Sources */
+    private List<IFilter> filters = new ArrayList<IFilter>(); /*!< Active filters */
+    private DefaultFilter defaultFilter = new DefaultFilter();
+    private AtomicBoolean awaitingRefresh=new AtomicBoolean(false); /*!< If true a swing runnable
          * is pending to refresh the content of SourceListModel*/
-      
-        /**
-         * Read filters components and generate filter instances
-         * @return A list of filters
-         */
-	public List<IFilter> getFilters() {
-		return filters;
-	}
-        
-        /**
-         * Constructor
-         * @note Do not forget to call dispose()
-         */
-	public SourceListModel() {
-                //Install listeners
-                //Call readDataManager when a SourceManager fire an event         
-		readDataManager();
-	}
-        
-        private DataManager getDataManager() {
-                return Services.getService(DataManager.class);
-        }
-        /**
-         * Install listener(s) on SourceManager
-         */
-        public void setListeners() {
-            sourceListener=EventHandler.create(SourceListener.class,
-                                                    this,
-                                                    "onDataManagerChange"
-                                                    );
-            getDataManager().getSourceManager().addSourceListener(sourceListener);
+    private DataSource dataSource;
+    private CatalogComparator catalogComparator = new CatalogComparator();
+    private boolean isH2;
+    /**
+     * Read filters components and generate filter instances
+     * @return A list of filters
+     */
+    public List<IFilter> getFilters() {
+        return filters;
+    }
 
+    /**
+     * Constructor
+     * @note Do not forget to call dispose()
+     */
+    public SourceListModel(DataSource dataSource) {
+        this.dataSource = dataSource;
+        try(Connection connection = dataSource.getConnection()) {
+            isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
+        //Install listeners
+        //Call readDatabase when a SourceManager fire an event
+        onDataManagerChange();
+    }
+
+    /**
+     * Install listener(s) on SourceManager
+     */
+    public void setListeners() {
+        // TODO, set a timer that hash table list
+    }
+    /**
+     * The DataManager fire a DataSourceEvent
+     * Swing will update the list later.
+     * This method is called by the EventSource listener
+     */
+    public void onDataManagerChange() {
+        //This is useless to invoke a refresh thread because
+        //The content will be soonly refreshed by another ReadDataManagerOnSwingThread
+        if(!awaitingRefresh.getAndSet(true)) {
+            SwingUtilities.invokeLater(new ReadDataManagerOnSwingThread(this));
+        }
+    }
+    /**
+     * Refresh the JList on the swing thread
+     */
+    private static class ReadDataManagerOnSwingThread implements Runnable {
+        private SourceListModel model;
+
+        private ReadDataManagerOnSwingThread(SourceListModel model) {
+            this.model = model;
+        }
+
         /**
-         * The DataManager fire a DataSourceEvent
-         * Swing will update the list later.
-         * This method is called by the EventSource listener
+         * Refresh the JList on the swing thread
          */
-        public void onDataManagerChange() {
-            //This is useless to invoke a refresh thread because
-            //The content will be soonly refreshed by another ReadDataManagerOnSwingThread
-            if(!awaitingRefresh.getAndSet(true)) {
-                SwingUtilities.invokeLater(new ReadDataManagerOnSwingThread());
+        @Override
+        public void run(){
+            model.awaitingRefresh.set(false);
+            model.readDatabase();
+            model.doFilter();
+        }
+    }
+
+    /**
+     * TODO stop timers
+     */
+    public void dispose() {
+
+    }
+
+    /**
+     * Find the icon corresponding to a table reference
+     */
+    private String getIconName(TableLocation location, Map<IFilter.ATTRIBUTES, String> attr) {
+        if(attr.containsKey(IFilter.ATTRIBUTES.GEOMETRY_TYPE)) {
+            return "geofile";
+        }
+        String tableType = attr.get(IFilter.ATTRIBUTES.TABLE_TYPE);
+        if(tableType != null) {
+            switch(tableType) {
+                case "SYSTEM_TABLE":
+                    return "drive";
+                case "LINKED TABLE":
+                    return "database";
+                default:
+                    return "flatfile";
+            }
+        } else {
+            return "flatfile";
+        }
+        //"remove";
+        //"image";
+        //"server_connect";
+        // information_geo // Unknown
+    }
+
+    private static String addQuotesIfNecessary(String tableLocationPart) {
+        if(tableLocationPart.contains(".")) {
+            return "\""+tableLocationPart+"\"";
+        } else {
+            return tableLocationPart;
+        }
+    }
+
+    protected void doFilter() {
+        boolean checkForDefaultFilter = true;
+        for(IFilter filter : filters) {
+            if(filter instanceof TableSystemFilter) {
+                checkForDefaultFilter = false;
             }
         }
-       /**
-        * Refresh the JList on the swing thread
-        */
-        private class ReadDataManagerOnSwingThread implements Runnable {
-            /**
-             * Refresh the JList on the swing thread
-             */
-            @Override
-            public void run(){
-                awaitingRefresh.set(false);
-                readDataManager();
-            }
-        }
-        /**
-         * 
-         * @return True if at least one of filter is an instance of TableSystemFilter
-         */
-        private boolean isSystemTableFilterInFilters() {
+        List<CatalogSourceItem> newModel = new LinkedList<>();
+        for(Map<IFilter.ATTRIBUTES, String> tableAttr : allTables) {
+            boolean accepts = true;
+            TableLocation location = TableLocation.parse(tableAttr.get(IFilter.ATTRIBUTES.LOCATION), isH2);
             for(IFilter filter : filters) {
-                if(filter instanceof TableSystemFilter) {
-                    return true;
+                if(!filter.accepts(location,tableAttr)) {
+                    accepts = false;
+                    break;
                 }
             }
-            return false;
-        }
-        /**
-         * Remove listeners created by the instance
-         */
-        public void dispose() {
-            getDataManager().getSourceManager().removeSourceListener(sourceListener);
-        }
-        /**
-         * Find the icon corresponding to a data source
-         * @param src Source of DataSourceManager
-         * @return The source item icon name, in org.orbisgis.view.icons package
-         */
-        private String getIconName(Source src) {
-            if (src == null) {
-                return "information_geo"; //Unknown source type
-            }
-            int sourceType = src.getType();
-            //This is a File Source Type, and the file not exists
-            if (src.isFileSource() && src.getFile() != null && !src.getFile().exists()) {
-                return "remove";
-            } else if ((sourceType & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
-                return "geofile";
-            } else if ((sourceType & SourceManager.RASTER) == SourceManager.RASTER) {
-                return "image";
-            } else if ((sourceType & SourceManager.STREAM) == SourceManager.STREAM) {
-                return "server_connect";
-            } else if ((sourceType & SourceManager.FILE) == SourceManager.FILE) {
-                return "flatfile";
-            } else if ((sourceType & SourceManager.DB) == SourceManager.DB) {
-                return "database";
-            } else if ((sourceType & SourceManager.SYSTEM_TABLE) == SourceManager.SYSTEM_TABLE) {
-                return "drive";
-            } else {
-                return "information_geo"; //Unknown source type
+            if(accepts && (!checkForDefaultFilter || defaultFilter.accepts(location, tableAttr))) {
+                newModel.add(new CatalogSourceItem(location.toString(isH2), tableAttr.get(IFilter.ATTRIBUTES.LABEL), getIconName(location, tableAttr)));
             }
         }
-        /**
-         * Read the Data Source Manager content
-         * TODO manage fatal error on sourceManager.getSource
-         */
-	private void readDataManager() {
-            SourceManager sourceManager = getDataManager().getSourceManager();
-            String[] tempSourceNames = sourceManager.getSourceNames(); //Retrieve all sources names
-            List<String> wkn_SourceNames = new ArrayList<String>();
-            for(String sourceName : tempSourceNames) {
-                    Source source = sourceManager.getSource(sourceName);
-                    if(source.isWellKnownName()) {
-                            wkn_SourceNames.add(sourceName);
-                    }
-            }
-            tempSourceNames = wkn_SourceNames.toArray(new String[wkn_SourceNames.size()]);            
-            if (!filters.isEmpty()) {
-                //Apply filter with the Or
-                tempSourceNames = filter(sourceManager, tempSourceNames, new AndFilter());
-                //Undo system table only if a SystemTable filter is not activated
-                if(!isSystemTableFilterInFilters()) {
-                    tempSourceNames = filter(sourceManager, tempSourceNames, new DefaultFilter());
-                }
-            } else {
-                //System table are not shown, except if the user want to see them (through or filter)
-                tempSourceNames = filter(sourceManager, tempSourceNames, new DefaultFilter());
-            }
-            //Sort source list 
-            Arrays.sort(tempSourceNames,ComparatorUtils.NATURAL_COMPARATOR);
-            this.sourceList = new ContainerItemProperties[tempSourceNames.length];
-            //Set the label of elements from Data Source information
-            for(int rowidSource=0;rowidSource<tempSourceNames.length;rowidSource++) {
-                //Try to read the parent schema and place it in the label
-                String schemaName = "";
-                Source source = null;
-                try {
-                    source = sourceManager.getSource(tempSourceNames[rowidSource]);
-                    Schema dataSourceSchema = source.getDataSourceDefinition().getSchema();
-                    if(dataSourceSchema!=null) {
-                        Schema parentSchema=dataSourceSchema.getParentSchema();
-                        if(parentSchema!=null) {
-                            schemaName = parentSchema.getName()+".";
-                        }
-                    }
-                } catch(DriverException ex) {
-                    //Log warning
-                    LOGGER.warn(I18N.tr("Data source schema could not be read"),ex);
-                } catch(DriverLoadException ex) {
-                    //Log warning
-                    LOGGER.warn(I18N.tr("Data source schema could not be read"),ex);
-                }
-                sourceList[rowidSource] = new CatalogSourceItem(
-                                                tempSourceNames[rowidSource], //Source Name
-                                                schemaName+tempSourceNames[rowidSource],//Source Label
-                                                getIconName(source)); //Source name
-            }
-            fireIntervalRemoved(this, 0, this.sourceList.length);
-            fireIntervalAdded(this, 0, this.sourceList.length);
-	}
-        /**
-         * Apply the filter sourceFilter on the provided data source names
-         * @param sourceManager The source manager instance
-         * @param names The names of data source
-         * @param sourceFilter The IFilter instance
-         * @return 
-         */   
-	private String[] filter(SourceManager sourceManager, String[] names,
-                    IFilter sourceFilter) {
-            ArrayList<String> filteredNames = new ArrayList<String>(names.length);
-            for (String name : names) {
-                if (sourceFilter.accepts(sourceManager, name)) {
-                    filteredNames.add(name);
-                }
-            }
-            String[] newNames = new String[filteredNames.size()];
-            filteredNames.toArray(newNames);
-            return newNames;
-	}
-        /**
-         * 
-         * @param index The item index @see getSize()
-         * @return The item
-         */
-        @Override
-	public Object getElementAt(int index) {
-		return sourceList[index];
-	}
-        /**
-         * 
-         * @return The number of source shown
-         */
-        @Override
-	public int getSize() {
-		return sourceList.length;
-	}
-        /**
-         * This method clear all source in the SourceManager except source Table
-         */
-        public void clearAllSourceExceptSystemTables() {
-            SourceManager sourceManager = getDataManager().getSourceManager();
-            for(String sourceName : sourceManager.getSourceNames()) {
-                if(!sourceManager.getSource(sourceName).isSystemTableSource()) {
-                    sourceManager.remove(sourceName);
-                }
-            }            
-        }
-        
-        /**
-         * Set the filter and refresh the Source list
-         * according to the new filter
-         * @param filters A collection of filters
-         */
-	public void setFilters(List<IFilter> filters) {
-		this.filters = filters;
-		readDataManager();
-	}
-        /**
-         * Remove all filters and refresh the Source list
-         */
-        public void clearFilters() {
-            this.filters.clear();
-	    readDataManager();
-        }
-        /**
-         * Apply all filters with the logical connective And 
-         */
-	private final class AndFilter implements IFilter {
-            /**
-            * Does this filter reject or accept this Source
-            * @param sm Source Manager instance
-            * @param sourceName Source name
-            * @return True if the Source should be shown
-            */
+        Collections.sort(newModel, catalogComparator);
+        int oldLength = sourceList.length;
+        sourceList = new ContainerItemProperties[0];
+        fireIntervalRemoved(this, 0, oldLength);
+        sourceList = newModel.toArray(new ContainerItemProperties[newModel.size()]);
+        fireIntervalAdded(this, 0, this.sourceList.length);
+    }
 
-            @Override
-            public boolean accepts(SourceManager sm, String sourceName) {
-                for (int i = 0; i < filters.size(); i++) {
-                    if (!filters.get(i).accepts(sm, sourceName)) {
-                            return false;
-                    }
+    /**
+     * Read the table list in the database
+     */
+    protected void readDatabase() {
+        List<Map<IFilter.ATTRIBUTES, String>> newTables = new ArrayList<>(allTables.size());
+        try (Connection connection = dataSource.getConnection()) {
+            final String defaultCatalog = connection.getCatalog();
+            String defaultSchema = "PUBLIC";
+            try {
+                if (connection.getSchema() != null) {
+                    defaultSchema = connection.getSchema();
                 }
-                return true;
+            } catch (AbstractMethodError | Exception ex) {
+                // Driver has been compiled with JAVA 6, or is not implemented
             }
-	}
-	/**
-         * This filter is always applied, to hide system table
-         */
-	private final class DefaultFilter implements IFilter {
-            /**
-            * Does this filter reject or accept this Source
-            * @param sm Source Manager instance
-            * @param sourceName Source name
-            * @return True if the Source should be shown
-            */
-                @Override
-                public boolean accepts(SourceManager sm, String sourceName) {
-                        Source source = sm.getSource(sourceName);
-                        return (source != null) && !source.isSystemTableSource();
+            catalogComparator.setDefaultSchema(defaultSchema);
+            // Fetch Geometry tables
+            Map<String,String> tableGeometry = new HashMap<>();
+            try(Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery("SELECT * FROM geometry_columns")) {
+                    while(rs.next()) {
+                        tableGeometry.put(new TableLocation(rs.getString("F_TABLE_CATALOG"),
+                                rs.getString("F_TABLE_SCHEMA"), rs.getString("F_TABLE_NAME")).toString(), rs.getString("TYPE"));
+                    }
+            } catch (SQLException ex) {
+                LOGGER.warn(I18N.tr("Geometry columns information of tables are not available"), ex);
+            }
+            // Fetch all tables
+            try(ResultSet rs = connection.getMetaData().getTables(null, null, null, SHOWN_TABLE_TYPES)) {
+                while(rs.next()) {
+                    Map<IFilter.ATTRIBUTES, String> tableAttr = new HashMap<>(IFilter.ATTRIBUTES.values().length);
+                    TableLocation location = new TableLocation(rs);
+                    if(location.getCatalog().isEmpty()) {
+                        // PostGIS return empty catalog on metadata
+                        location = new TableLocation(defaultCatalog, location.getSchema(), location.getTable());
+                    }
+                    // Make Label
+                    StringBuilder label = new StringBuilder(addQuotesIfNecessary(location.getTable()));
+                    if(!location.getSchema().isEmpty() && !location.getSchema().equalsIgnoreCase(defaultSchema)) {
+                        label.insert(0, ".");
+                        label.insert(0, addQuotesIfNecessary(location.getSchema()));
+                    }
+                    if(!location.getCatalog().isEmpty() && !location.getCatalog().equalsIgnoreCase(defaultCatalog)) {
+                        label.insert(0, ".");
+                        label.insert(0, addQuotesIfNecessary(location.getCatalog()));
+                    }
+                    // Shortcut location for H2 database
+                    TableLocation shortLocation;
+                    if(isH2) {
+                        shortLocation = new TableLocation("",
+                                location.getSchema().equals(defaultSchema) ? "" : location.getSchema(),
+                                location.getTable());
+                    } else {
+                        shortLocation = new TableLocation(location.getCatalog().equalsIgnoreCase(defaultCatalog) ?
+                                "" : location.getCatalog(),
+                                location.getCatalog().equalsIgnoreCase(defaultCatalog) &&
+                                        location.getSchema().equalsIgnoreCase(defaultSchema) ? "" : location.getSchema(),
+                                location.getTable());
+                    }
+                    tableAttr.put(IFilter.ATTRIBUTES.LOCATION, shortLocation.toString(isH2));
+                    tableAttr.put(IFilter.ATTRIBUTES.LABEL, label.toString());
+                    for(IFilter.ATTRIBUTES attribute : IFilter.ATTRIBUTES.values()) {
+                        putAttribute(tableAttr, attribute, rs);
+                    }
+                    String type = tableGeometry.get(location.toString());
+                    if(type != null) {
+                        tableAttr.put(IFilter.ATTRIBUTES.GEOMETRY_TYPE, type);
+                    }
+                    newTables.add(tableAttr);
                 }
+            }
+            allTables = newTables;
+        } catch (SQLException ex) {
+            LOGGER.error(I18N.tr("Cannot read the table list"), ex);
         }
+    }
+
+    private static void putAttribute(Map<IFilter.ATTRIBUTES, String> tableAttr, IFilter.ATTRIBUTES attribute, ResultSet rs) {
+        try {
+            tableAttr.put(attribute, rs.getString(attribute.toString().toLowerCase()));
+        } catch (SQLException ex) {
+            // Ignore
+        }
+    }
+
+    /**
+     *
+     * @param index The item index @see getSize()
+     * @return The item
+     */
+    @Override
+    public ContainerItemProperties getElementAt(int index) {
+        return sourceList[index];
+    }
+
+    /**
+     *
+     * @return The number of source shown
+     */
+    @Override
+    public int getSize() {
+        return sourceList.length;
+    }
+
+    /**
+     * Set the filter and refresh the Source list
+     * according to the new filter
+     * @param filters A collection of filters
+     */
+    public void setFilters(List<IFilter> filters) {
+        this.filters = filters;
+        doFilter();
+    }
+
+    /**
+     * Remove all filters and refresh the Source list
+     */
+    public void clearFilters() {
+        this.filters.clear();
+        doFilter();
+    }
+
+    /**
+     * This filter is always applied, to hide system tables
+     */
+    private static final class DefaultFilter implements IFilter {
+        private TableSystemFilter filter = new TableSystemFilter();
+
+        @Override
+        public boolean accepts(TableLocation table, Map<ATTRIBUTES, String> tableProperties) {
+            return !filter.accepts(table, tableProperties);
+        }
+    }
+
+    private static class CatalogComparator implements Comparator<CatalogSourceItem> {
+        private String defaultSchema = "PUBLIC";
+        @Override
+        public int compare(CatalogSourceItem left, CatalogSourceItem right) {
+            TableLocation locationLeft = TableLocation.parse(left.getKey());
+            TableLocation locationRight = TableLocation.parse(right.getKey());
+            int tmpCompare = 0;
+            // Sort by catalog
+            tmpCompare = NATURAL_COMPARATOR.compare(locationLeft.getCatalog(), locationRight.getCatalog());
+            if(tmpCompare != 0) {
+                return tmpCompare;
+            }
+            // If catalog the same, sort by schema (default first)
+            tmpCompare = NATURAL_COMPARATOR.compare(locationLeft.getSchema(), locationRight.getSchema());
+            if(tmpCompare != 0) {
+                if(locationLeft.getSchema().equals(defaultSchema)) {
+                    return -1;
+                } else if(locationRight.getSchema().equalsIgnoreCase(defaultSchema)) {
+                    return 1;
+                } else {
+                    return tmpCompare;
+                }
+            }
+            // if schema the same, sort by table
+            return NATURAL_COMPARATOR.compare(locationLeft.getTable(), locationRight.getTable());
+        }
+
+        public void setDefaultSchema(String defaultSchema) {
+            this.defaultSchema = defaultSchema;
+        }
+    }
 }

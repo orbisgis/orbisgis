@@ -33,9 +33,17 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -43,14 +51,19 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import org.gdms.data.DataSource;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DriverException;
+
+import org.apache.log4j.Logger;
+import org.h2gis.utilities.TableLocation;
+import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.corejdbc.MetaData;
+import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
+import org.orbisgis.viewapi.edition.EditableElementException;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.viewapi.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -62,6 +75,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
         public static final String FACTORY_ID  ="FieldsContainsFilter";
         protected final static I18n I18N = I18nFactory.getI18n(FieldsContainsFilterFactory.class);
         private JTable table;
+        private static final Logger LOGGER = Logger.getLogger(FieldsContainsFilterFactory.class);
 
         public FieldsContainsFilterFactory(JTable table) {
                 this.table = table;
@@ -99,7 +113,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 searchedTextBox.setPreferredSize(new Dimension(Short.MAX_VALUE,Short.MIN_VALUE));
                 
                 //Field selection
-                JComboBox fieldSelection = new JComboBox();
+                JComboBox<String> fieldSelection = new JComboBox<>();
                 fieldSelection.addItem(I18N.tr("All"));
                 for(int i=0; i< table.getColumnCount(); i++) {
                         fieldSelection.addItem(table.getColumnName(i));
@@ -133,6 +147,9 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
 
                 private final FilterParameters params;
                 private final String searchChars;
+                private final Set<Integer> filteredRows = new IntegerUnion();
+                /** Not null if work is done on Where SQL Filter */
+                private TableSelectionFilter  externalFilter = null;
 
                 public FieldsContainsFilter(FilterParameters params) {
                         this.params = params;
@@ -143,8 +160,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                         }
                 }
 
-                private boolean isFieldContains(Value field) {
-                        String fieldValue = field.toString();
+                private boolean isFieldContains(String fieldValue) {
                         if(!params.isWholeWord()) {
                                 if(!params.isMatchCase()) {
                                         fieldValue=fieldValue.toLowerCase();
@@ -160,31 +176,116 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 }
 
                 @Override
-                public boolean isSelected(int rowId, DataSource source) {
-                        Value val;
-                        try {
-
-                                if (params.getColumnId() != -1) {
-                                        val = source.getFieldValue(rowId, params.getColumnId());
-                                        return isFieldContains(val);
-
-                                } else {
-                                        Value[] values = source.getRow(rowId);
-                                        for (Value value : values) {
-                                                if (isFieldContains(value)) {
-                                                        return true;
-                                                }
-                                        }
-                                        return false;
-                                }
-                        } catch (DriverException ex) {
-                                throw new IllegalStateException(I18N.tr("Filter driver error"), ex);
+                public boolean isSelected(int rowId, TableEditableElement source) {
+                        if(externalFilter != null) {
+                            return externalFilter.isSelected(rowId, source);
+                        } else {
+                            return filteredRows.contains(rowId);
                         }
                 }
 
+                private void addFieldWhere(StringBuilder request, String fieldName) {
+                    if(!params.isMatchCase()) {
+                        request.append(" lower(");
+                    } else {
+                        request.append(" ");
+                    }
+                    request.append(TableLocation.quoteIdentifier(fieldName));
+                    if(!params.isMatchCase()) {
+                        request.append(")");
+                    }
+                    if(params.isWholeWord()) {
+                        request.append(" = ");
+                    } else {
+                        request.append(" LIKE ");
+                    }
+                    request.append("'");
+                    if(!params.isWholeWord()) {
+                        request.append("%");
+                    }
+                    request.append(params.getSearchedChars());
+                    if(!params.isWholeWord()) {
+                        request.append("%");
+                    }
+                    request.append("'");
+                }
+
                 @Override
-                public void initialize(ProgressMonitor pm, DataSource source) {
-                        //Nothing to do
+                public void initialize(ProgressMonitor pm, TableEditableElement source) throws SQLException {
+                        try(Connection connection = source.getDataManager().getDataSource().getConnection();
+                            Statement st = connection.createStatement()) {
+                            PropertyChangeListener cancelListener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+                            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelListener);
+                            try{
+                                // If the table hold a PK then do the find task on the server side
+                                String tablePk = source.getRowSet().getPkName();
+                                if(!tablePk.isEmpty()) {
+                                    final ReadRowSet rowSet = source.getRowSet();
+                                    StringBuilder request = new StringBuilder();
+                                    if (params.getColumnId() != -1) {
+                                        // A specific field
+                                        String fieldName = rowSet.getMetaData().getColumnName(params.getColumnId() + 1);
+                                        addFieldWhere(request, fieldName);
+                                    } else {
+                                        // All field
+                                        int colCount = rowSet.getMetaData().getColumnCount();
+                                        int conditionsCount = 0;
+                                        for(int idcol = 1; idcol <= colCount; idcol++) {
+                                            if(MetaData.isAlphaNumeric(rowSet.getMetaData().getColumnType(idcol))) {
+                                                if(conditionsCount > 0) {
+                                                    request.append(" OR");
+                                                }
+                                                String fieldName = source.getRowSet().getMetaData().getColumnName(idcol);
+                                                addFieldWhere(request, fieldName);
+                                                conditionsCount++;
+                                            }
+                                        }
+                                    }
+                                    WhereSQLFilterFactory whereSQLFilterFactory = new WhereSQLFilterFactory();
+                                    DefaultActiveFilter whereFilterValue = whereSQLFilterFactory.getDefaultFilterValue();
+                                    whereFilterValue.setCurrentFilterValue(request.toString());
+                                    externalFilter = whereSQLFilterFactory.getFilter(whereFilterValue);
+                                    LOGGER.info(I18N.tr("Find field value with the following request:\n{0}", request.toString()));
+                                    externalFilter.initialize(pm, source);
+                                } else {
+                                    // If the table does not hold any PK, loop through rows
+                                    final ReadRowSet rowSet = source.getRowSet();
+                                    rowSet.getReadLock().tryLock(1, TimeUnit.SECONDS);
+                                    try {
+                                        rowSet.beforeFirst();
+                                        int rowId = 0;
+                                        ProgressMonitor progressMonitor = pm.startTask(rowSet.getRowCount());
+                                        if (params.getColumnId() != -1) {
+                                            while(rowSet.next()) {
+                                                if(isFieldContains(rowSet.getString(params.getColumnId() + 1))) {
+                                                    filteredRows.add(rowId);
+                                                }
+                                                progressMonitor.endTask();
+                                                rowId++;
+                                            }
+                                        } else {
+                                            while(rowSet.next()) {
+                                                int columnCount = rowSet.getMetaData().getColumnCount();
+                                                for(int col = 1; col < columnCount; col++) {
+                                                    if(isFieldContains(rowSet.getString(col))) {
+                                                        filteredRows.add(rowId);
+                                                        break;
+                                                    }
+                                                }
+                                                progressMonitor.endTask();
+                                                rowId++;
+                                            }
+                                        }
+                                    } finally {
+                                        rowSet.getReadLock().unlock();
+                                    }
+                                }
+                            } finally {
+                                pm.removePropertyChangeListener(cancelListener);
+                            }
+                        } catch (EditableElementException | InterruptedException ex) {
+                            throw new SQLException(ex);
+                        }
                 }
         }
         /**

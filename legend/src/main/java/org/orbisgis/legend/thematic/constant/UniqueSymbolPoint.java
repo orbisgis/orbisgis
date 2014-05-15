@@ -28,9 +28,9 @@
  */
 package org.orbisgis.legend.thematic.constant;
 
-import org.orbisgis.core.renderer.se.PointSymbolizer;
-import org.orbisgis.core.renderer.se.graphic.Graphic;
-import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.coremap.renderer.se.PointSymbolizer;
+import org.orbisgis.coremap.renderer.se.graphic.Graphic;
+import org.orbisgis.coremap.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
 import org.orbisgis.legend.structure.graphic.ConstantWKNLegend;

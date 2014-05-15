@@ -1,0 +1,35 @@
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import org.orbisgis.coremap.layerModel.LayerException;
+import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.OwsMapContext;
+import org.orbisgis.coremap.map.MapTransform;
+import org.orbisgis.progress.NullProgressMonitor;
+
+import javax.imageio.ImageIO;
+
+public class mapDisplay {
+    public static void run(File owsPath) throws FileNotFoundException, LayerException, IOException {
+            // Read OWS file
+            MapContext mapContext = new OwsMapContext(bsh.dataManager);
+            mapContext.read(new FileInputStream(owsPath));
+            mapContext.setLocation(owsPath.toURI());
+            // Load shape file
+            mapContext.open(new NullProgressMonitor());
+            // Set rendering parameters
+            MapTransform mapTransform = new MapTransform();
+            mapTransform.setExtent(mapContext.getBoundingBox());
+            BufferedImage img = new BufferedImage(640, 480,BufferedImage.TYPE_INT_ARGB);
+            mapTransform.setImage(img);
+            // Draw the Map
+            mapContext.draw(mapTransform,new NullProgressMonitor());
+            mapContext.close(new NullProgressMonitor());
+            // Save into a png file
+            ImageIO.write(img,"png",new File("render.png"));
+    }
+}
+mapDisplay.run(new File("../../bundles/core-map/src/test/resources/data/landcover2000.ows"));

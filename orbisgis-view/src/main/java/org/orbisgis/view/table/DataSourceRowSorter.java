@@ -29,18 +29,15 @@
 package org.orbisgis.view.table;
 
 import java.beans.EventHandler;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.*;
+import javax.sql.DataSource;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import org.apache.log4j.Logger;
-import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.table.jobs.SortJob;
@@ -60,36 +57,58 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         //The model can be filtered, then a model row can not be in the view
         private Map<Integer,Integer> modelToView = null;
         //Sorted columns
-        private List<SortKey> sortedColumns = new ArrayList<SortKey>();
+        private List<SortKey> sortedColumns = new ArrayList<>();
+        private DataSource dataSource;
+        // Sort result given through JDBC
+        private Collection<Integer> viewToModelJDBC;
         
-        public DataSourceRowSorter(DataSourceTableModel model) {
+        public DataSourceRowSorter(DataSourceTableModel model, DataSource dataSource) {
                 this.model = model;
+                this.dataSource = dataSource;
         }
         
         @Override
         public DataSourceTableModel getModel() {
                 return model;
         }
+
+        private void applyJDBCSort(int[] oldViewToModel) {
+            Set<Integer> filter = null;
+            if(viewToModel != null) {
+                filter = new HashSet<>(viewToModel);
+            }
+            // Sorted is done using JDBC Index
+            // And it is not filtered
+            viewToModel = new ArrayList<>(viewToModelJDBC.size());
+            for(int i : viewToModelJDBC) {
+                if(filter == null) {
+                    viewToModel.add(i - 1);
+                } else if(filter.contains(i - 1)) {
+                    viewToModel.add(i - 1);
+                }
+            }
+            initModelToView();
+            fireSortOrderChanged();
+            fireRowSorterChanged(oldViewToModel);
+        }
         
         /**
          * Called by the Sort job listener
          * Update the internal indexes and inform the table.
-         * @param sortData 
+         * @param sortData Sort result
          */
         public void onRowSortDone(SortJobEventSorted sortData) {
                 int[] oldViewToModel = getViewToModelArray();
-                viewToModel = new ArrayList<Integer>(sortData.getViewToModelIndex());
-                initModelToView();
+                viewToModelJDBC = sortData.getViewToModelIndex();
                 sortedColumns.clear();
                 sortedColumns.add(sortData.getSortRequest());
-                fireSortOrderChanged();
-                fireRowSorterChanged(oldViewToModel);
+                applyJDBCSort(oldViewToModel);
         }
         /**
          * Create the model to view from viewToModel
          */
         private void initModelToView() {
-                modelToView = new HashMap<Integer,Integer>();
+                modelToView = new HashMap<>();
                 for(int viewIndex = 0;viewIndex < viewToModel.size();viewIndex++) {
                         Integer modelIndex = viewToModel.get(viewIndex);
                         modelToView.put(modelIndex, viewIndex);
@@ -110,31 +129,43 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         public void toggleSortOrder(int column) {
                 if(isSortable(column)) {
                         SortKey sortRequest=new SortKey(column, SortOrder.ASCENDING);
+                        boolean doReverse = true;
                         //Find if the user already set an order
-                        for(int i=0;i<sortedColumns.size();i++) {
-                                SortKey col = sortedColumns.get(i);
-                                if(col.getColumn()==column) {
-                                        SortOrder order;
-                                        if(col.getSortOrder().equals(SortOrder.ASCENDING)) {
-                                                order = SortOrder.DESCENDING;
-                                        } else {
-                                                order = SortOrder.ASCENDING;
-                                        }
-                                        sortRequest = new SortKey(column, order);
-                                        break;
+                        for (SortKey col : sortedColumns) {
+                            if (col.getColumn() == column) {
+                                SortOrder order;
+                                if (col.getSortOrder().equals(SortOrder.ASCENDING)) {
+                                    order = SortOrder.DESCENDING;
+                                } else {
+                                    order = SortOrder.ASCENDING;
                                 }
+                                sortRequest = new SortKey(column, order);
+                                doReverse = false;
+                                break;
+                            }
                         }
                         //Multiple order is not available
                         //To enable it, a new TableHeaderRenderer need to be defined
                         //UIManager.getIcon("Table.ascendingSortIcon");
                         //UIManager.getIcon("Table.descendingSortIcon");
                         //http://www.jroller.com/nweber/entry/multi_column_sorting_w_mustang
-                        launchSortProcess(sortRequest);
+                        if(doReverse || viewToModelJDBC == null) {
+                            launchSortProcess(sortRequest);
+                        } else {
+                            // The user reverse the already sorted column
+                            int[] oldViewToModel = getViewToModelArray();
+                            ArrayList<Integer> reversed = new ArrayList<>(viewToModelJDBC);
+                            Collections.reverse(reversed);
+                            viewToModelJDBC = reversed;
+                            sortedColumns.clear();
+                            sortedColumns.add(sortRequest);
+                            applyJDBCSort(oldViewToModel);
+                        }
                 }
         }
         
         private void launchSortProcess(SortKey sortInformation) {
-                SortJob sortJob = new SortJob(sortInformation, model, viewToModel);
+                SortJob sortJob = new SortJob(sortInformation, model, viewToModel, dataSource);
                 sortJob.getEventSortedListeners().addListener(this, EventHandler.create(SortJob.SortJobListener.class,this,"onRowSortDone",""));
                 launchJob(sortJob);
         }
@@ -176,20 +207,15 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         /**
          * Sort the column in the provided order
          *
-         * @param sortRequest
+         * @param sortRequest The key to sort
          */
         public void setSortKey(SortKey sortRequest) {
                 if (sortRequest != null) {     
                         //Check if the sort request is not on the geometry column
-                        int geoIndex = -1;
-                        try {
-                                geoIndex = MetadataUtilities.getGeometryFieldIndex(this.model.getDataSource().getMetadata());
-                        } catch (DriverException ex) {
-                                LOGGER.error(ex.getLocalizedMessage(),ex);
-                        }
-                        if(sortRequest.getColumn()==geoIndex) {
-                                //Ignore sort request
-                                return;
+                        int sortIndex = sortRequest.getColumn();
+                        if(!isSortable(sortIndex)) {
+                            //Ignore sort request
+                            return;
                         }
                         launchSortProcess(sortRequest);
                 } else {
@@ -224,16 +250,14 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 int[] oldViewToModel = getViewToModelArray();
                 if(rowsFilter!=null) {
                         //Update the internal list
-                        viewToModel = new ArrayList<Integer>(rowsFilter);
+                        viewToModel = new ArrayList<>(rowsFilter);
                         initModelToView();
                 } else {
                         viewToModel = null;
                         modelToView = null;
-                }                
-                fireSortOrderChanged();
-                fireRowSorterChanged(oldViewToModel);
-                //Do sorting
-                refreshSorter();
+                }
+                // Apply sort on filtered result
+                applyJDBCSort(oldViewToModel);
         }
 
         /**
@@ -246,13 +270,13 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
 
 
         private boolean isSortable(int columnIndex) {
-                int geoIndex = -1;                
-                try {
-                        geoIndex = MetadataUtilities.getGeometryFieldIndex(model.getDataSource().getMetadata());
-                } catch (DriverException ex) {
-                        LOGGER.error(ex.getLocalizedMessage(),ex);
-                }
-                return geoIndex!=columnIndex;
+            try {
+                ResultSetMetaData meta = model.getRowSet().getMetaData();
+                return !meta.getColumnTypeName(columnIndex + 1).equalsIgnoreCase("geometry");
+            } catch (SQLException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+                return false;
+            }
         }
 
         @Override

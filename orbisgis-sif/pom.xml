@@ -3,13 +3,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <modelVersion>4.0.0</modelVersion>
         <parent>
-                <artifactId>orbisgis-monomap</artifactId>
+                <artifactId>orbisgis-h2</artifactId>
                 <groupId>org.orbisgis</groupId>
-                <version>4.0-SNAPSHOT</version>
+                <version>4.1.0-SNAPSHOT</version>
+                <relativePath>../</relativePath>
         </parent>
-        <groupId>org.orbisgis</groupId>
         <artifactId>orbisgis-sif</artifactId>
-        <version>4.0-SNAPSHOT</version>
         <packaging>bundle</packaging>
         <name>orbisgis-sif</name>
         <url>http://maven.apache.org</url>
@@ -32,14 +31,13 @@
                             <extensions>true</extensions>
                             <configuration>
                                 <instructions>
-                                    <Export-Package>org.orbisgis.sif.*, org.orbisgis.sif</Export-Package>
                                     <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
                                     <Bundle-Category>gui</Bundle-Category>
                                 </instructions>
                             </configuration>
                         </plugin>
                         <plugin>
-                                <groupId>org.xnap.commons</groupId>
+                                <groupId>com.googlecode.gettext-commons</groupId>
                                 <executions>
                                         <execution>
                                                 <id>convert-po-class</id>
@@ -49,7 +47,7 @@
                                                 </goals>
                                         </execution>
                                 </executions>
-                                <artifactId>maven-gettext-plugin</artifactId>
+                                <artifactId>gettext-maven-plugin</artifactId>
                                 <configuration>
                                         <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/sif/translation/language/</poDirectory>
                                         <targetBundle>org.orbisgis.sif.Messages</targetBundle>
@@ -70,14 +68,14 @@
                         <scope>test</scope>
                 </dependency>                
                 <dependency>
-                        <groupId>org.xnap.commons</groupId>
+                        <groupId>com.googlecode.gettext-commons</groupId>
                         <artifactId>gettext-commons</artifactId>
-                        <version>0.9.7</version>
+                        <version>${gettext-commons-version}</version>
                 </dependency>
                 <dependency>
                         <groupId>log4j</groupId>
                         <artifactId>log4j</artifactId>
-                        <version>1.2.16</version>
+                        <version>${log4j-version}</version>
                 </dependency>
                 <dependency>
                         <groupId>com.miglayout</groupId>

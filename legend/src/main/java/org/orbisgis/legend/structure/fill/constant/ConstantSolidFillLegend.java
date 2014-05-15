@@ -29,9 +29,9 @@
 package org.orbisgis.legend.structure.fill.constant;
 
 import java.awt.Color;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.legend.structure.fill.SolidFillLegend;
 import org.orbisgis.legend.structure.literal.ColorLiteralLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;

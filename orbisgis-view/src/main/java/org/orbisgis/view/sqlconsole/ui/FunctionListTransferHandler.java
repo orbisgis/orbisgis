@@ -28,14 +28,14 @@
  */
 package org.orbisgis.view.sqlconsole.ui;
 
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
+
+import javax.swing.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import javax.swing.JComponent;
-import javax.swing.JList;
-import javax.swing.TransferHandler;
-import org.gdms.sql.function.FunctionManager;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
+
+import static org.orbisgis.view.util.CommentUtil.SQL_COMMENT_CHARACTER;
 
 /**
  * Drag functions orders as a Transferable String
@@ -43,6 +43,8 @@ import org.orbisgis.core.Services;
  */
 public class FunctionListTransferHandler extends TransferHandler {
         private static final long serialVersionUID = 1L;
+        protected final static I18n I18N = I18nFactory.getI18n(FunctionListTransferHandler.class);
+        public static final String SIGNATURES = I18n.marktr("Signature(s):");
 
         @Override
         public int getSourceActions(JComponent jc) {
@@ -50,15 +52,36 @@ public class FunctionListTransferHandler extends TransferHandler {
         }
 
         @Override
-        protected Transferable createTransferable(JComponent jc) {                
-                JList list = (JList) jc;
-                StringBuilder stringBuilder = new StringBuilder();
-                Object[] selectedItems = list.getSelectedValues();
-                FunctionManager functionManager = Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager();
-                for(Object item : selectedItems) {
-                        stringBuilder.append(functionManager.getFunction(((FunctionElement)item).getFunctionName()).getSqlOrder());
+        protected Transferable createTransferable(JComponent jc) {
+                if (jc instanceof FunctionList) {
+                    FunctionList list = (FunctionList) jc;
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for(FunctionElement functionElement : list.getSelectedValuesList()) {
+                        formatFunctionComment(stringBuilder,
+                                functionElement.getSQLRemarks(),
+                                functionElement.getSQLCommand());
+                    }
+                    return new StringSelection(stringBuilder.toString());
+                } else {
+                    return null;
                 }
-                return new StringSelection(stringBuilder.toString());
         }
-        
+
+    /**
+     * Format function comment.
+     *
+     * @param s          StringBuilder
+     * @param toolTip    Tooltip
+     * @param sqlCommand SQL command
+     */
+    protected void formatFunctionComment(StringBuilder s,
+                                         String toolTip,
+                                         String sqlCommand) {
+        s.append(SQL_COMMENT_CHARACTER);
+        if (toolTip != null) {
+            s.append(toolTip.replaceAll("\n", "\n" + SQL_COMMENT_CHARACTER)).append("\n");
+        }
+        s.append(SQL_COMMENT_CHARACTER).append(SIGNATURES).append("\n");
+        s.append(sqlCommand).append("\n");
+    }
 }

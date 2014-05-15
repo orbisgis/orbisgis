@@ -27,23 +27,16 @@
  * info_at_ orbisgis.org
  */
 package org.orbisgis.view.geocatalog.filters;
+import org.h2gis.utilities.TableLocation;
+import java.util.Map;
 
-import org.gdms.source.SourceManager;
 /**
  * The Alphanumeric Data Source Filter.
  * Data Source is Not vectorial, raster, wms or a system table
  */
 public class AlphanumericFilter implements IFilter {
-    /**
-    * Does this filter reject or accept this Source
-    * @param sm Source Manager instance
-    * @param sourceName Source name
-    * @return True if the Source should be shown
-    */
-    public boolean accepts(SourceManager sm, String sourceName) {
-        int type = sm.getSource(sourceName).getType();
-        int spatial = SourceManager.VECTORIAL | SourceManager.RASTER
-                        | SourceManager.STREAM | SourceManager.SYSTEM_TABLE;
-        return (type & spatial) == 0;
+    @Override
+    public boolean accepts(TableLocation table, Map<ATTRIBUTES, String> tableProperties) {
+        return tableProperties.get(ATTRIBUTES.GEOMETRY_TYPE) == null;
     }
 }

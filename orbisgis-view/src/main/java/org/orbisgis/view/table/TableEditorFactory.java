@@ -29,66 +29,64 @@
 package org.orbisgis.view.table;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.driver.DriverException;
-import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.view.docking.DockingPanelLayout;
-import org.orbisgis.view.edition.EditableElement;
-import org.orbisgis.view.edition.EditorDockable;
-import org.orbisgis.view.edition.EditorManager;
-import org.orbisgis.view.edition.MultipleEditorFactory;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.viewapi.docking.DockingPanelLayout;
+import org.orbisgis.viewapi.edition.EditableElement;
+import org.orbisgis.viewapi.edition.EditableElementException;
+import org.orbisgis.viewapi.edition.EditorDockable;
+import org.orbisgis.viewapi.edition.EditorManager;
+import org.orbisgis.viewapi.edition.MultipleEditorFactory;
+import org.orbisgis.viewapi.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- *  This factory receive the {@link TableEditableElement} and open a new editor.
+ *  This factory receive the {@link TableEditableElementImpl} and open a new editor.
  */
 public class TableEditorFactory implements MultipleEditorFactory {
         public static final String FACTORY_ID = "TableEditorFactory";
         private static final Logger LOGGER = Logger.getLogger("gui."+TableEditorFactory.class);
         protected final static I18n I18N = I18nFactory.getI18n(TableEditorFactory.class);
+        private DataManager dataManager;
 
         @Override
         public DockingPanelLayout makeEditableLayout(EditableElement editable) {
-                if(editable instanceof TableEditableElement) {
-                        TableEditableElement editableTable = (TableEditableElement)editable;
-                        if(isEditableAlreadyOpened(editableTable)) { //Panel already created
-                                LOGGER.info(I18N.tr("This data source ({0}) is already shown in an editor.",editableTable.getSourceName()));
-                                return null;
-                        }
-			if(dataSourceCheck(editableTable.getSourceName())) {
-                                return new TablePanelLayout(editableTable);
-                        }else {
-                                LOGGER.info(I18N.tr("In a consequence of an unreachable data source {0},the associated data editor could not be recovered."));
-                                return null;
-                        }
-                } else {
-                        return null;
+            if(editable instanceof TableEditableElement) {
+                TableEditableElement editableTable = (TableEditableElement)editable;
+                if(isEditableAlreadyOpened(editableTable)) { //Panel already created
+                    LOGGER.info(I18N.tr("This data source ({0}) is already shown in an editor.",editableTable.getTableReference()));
+                    return null;
                 }
+                if(openEditable(editableTable)) {
+                    return new TablePanelLayout(editableTable);
+                }else {
+                    LOGGER.info(I18N.tr("In a consequence of an unreachable table {0},the associated data editor could not be recovered.",editableTable.getTableReference()));
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
+
+        /**
+         * @param dataManager JDBC DataManager factory
+         */
+        public void setDataManager(DataManager dataManager) {
+            this.dataManager = dataManager;
         }
         
-        private boolean dataSourceCheck(String sourceName) {
-                DataManager dataManager = Services.getService(DataManager.class);
-                if(!dataManager.getSourceManager().exists(sourceName)) {
+        private boolean openEditable(TableEditableElement table) {
+                if(!table.isOpen()) {
+                    try {
+                        table.open(new NullProgressMonitor());
+                    } catch (EditableElementException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
                         return false;
+                    }
                 }
-                try {
-                        DataSource source = dataManager.getDataSourceFactory().getDataSource(sourceName);
-                        if(!source.isOpen()) {
-                                source.open();
-                                source.close();
-                        }
-                } catch (NoSuchTableException ex) {
-                        return false;
-                } catch (DataSourceCreationException ex) {
-                        return false;
-                } catch (DriverException ex) {
-                        return false;
-                }
-                return true;
+                return table.isOpen();
         }
         
         private boolean isEditableAlreadyOpened(EditableElement editable) {
@@ -103,7 +101,7 @@ public class TableEditorFactory implements MultipleEditorFactory {
 
         @Override
         public DockingPanelLayout makeEmptyLayout() {
-                return new TablePanelLayout();
+                return new TablePanelLayout(dataManager);
         }
 
         @Override
@@ -115,11 +113,11 @@ public class TableEditorFactory implements MultipleEditorFactory {
         public EditorDockable create(DockingPanelLayout layout) {
                 TableEditableElement editableTable = ((TablePanelLayout)layout).getTableEditableElement();
                 //Check the DataSource state                
-                if(!dataSourceCheck(editableTable.getSourceName())) {
-                        LOGGER.info(I18N.tr("In a consequence of an unreachable data source {0},the associated data editor could not be recovered.",editableTable.getSourceName()));
+                if(!openEditable(editableTable)) {
+                        LOGGER.info(I18N.tr("In a consequence of an unreachable table {0},the associated data editor could not be recovered.",editableTable.getTableReference()));
                         return null;
                 } else {
-                        return new TableEditor(editableTable);
+                        return new TableEditor(editableTable, dataManager);
                 }
         }
 

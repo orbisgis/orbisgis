@@ -28,15 +28,15 @@
  */
 package org.orbisgis.legend.analyzer.symbolizers;
 
-import org.orbisgis.core.renderer.se.LineSymbolizer;
-import org.orbisgis.core.renderer.se.parameter.Categorize;
-import org.orbisgis.core.renderer.se.parameter.Recode;
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
-import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.coremap.renderer.se.LineSymbolizer;
+import org.orbisgis.coremap.renderer.se.parameter.Categorize;
+import org.orbisgis.coremap.renderer.se.parameter.Recode;
+import org.orbisgis.coremap.renderer.se.parameter.SeParameter;
+import org.orbisgis.coremap.renderer.se.parameter.UsedAnalysis;
+import org.orbisgis.coremap.renderer.se.parameter.real.Interpolate2Real;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.thematic.categorize.CategorizedLine;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;

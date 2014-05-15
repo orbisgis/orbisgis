@@ -63,13 +63,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.swing.Action;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.UIManager;
+import javax.swing.*;
+
 import org.apache.log4j.Logger;
 import org.orbisgis.core.common.BeanPropertyChangeSupport;
-import org.orbisgis.view.components.actions.ActionTools;
+import org.orbisgis.viewapi.components.actions.ActionTools;
 import org.orbisgis.view.components.actions.ActionsHolder;
 import org.orbisgis.view.docking.internals.ApplicationRessourceDecorator;
 import org.orbisgis.view.docking.internals.CustomMultipleCDockable;
@@ -85,7 +83,12 @@ import org.orbisgis.view.docking.internals.actions.ToolBarItem;
 import org.orbisgis.view.docking.preferences.OrbisGISPreferenceTreeModel;
 import org.orbisgis.view.docking.preferences.editors.UserInformationEditor;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.util.MenuCommonFunctions;
+import org.orbisgis.viewapi.docking.DockingManager;
+import org.orbisgis.viewapi.docking.DockingPanel;
+import org.orbisgis.viewapi.docking.DockingPanelFactory;
+import org.orbisgis.viewapi.docking.DockingPanelLayout;
+import org.orbisgis.viewapi.docking.DockingPanelParameters;
+import org.orbisgis.viewapi.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 /**
@@ -149,7 +152,16 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
 
         @Override
         public void removeDockingPanel(String dockId) {
+            if(SwingUtilities.isEventDispatchThread()) {
                 commonControl.removeSingleDockable(dockId);
+            } else {
+                RemovePanel removePanel = new RemovePanel(commonControl, dockId);
+                try {
+                    SwingUtilities.invokeAndWait(removePanel);
+                } catch (Exception ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
+            }
         }
         
         /**
@@ -310,19 +322,17 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
             //Show dialog
             dialog.openDialog( owner, true );
         }
-        /**
-         * The multiple instances panels can be shown at the next start of application
-         * if their factory is registered 
-         * before loading the layout
-         * @param factoryName
-         * @param factory  
-         */
+
         @Override
         public void registerPanelFactory(String factoryName,DockingPanelFactory factory) {
             InternalCommonFactory dockingFramesFactory = new InternalCommonFactory(factory,commonControl);
             commonControl.addMultipleDockableFactory(factoryName, dockingFramesFactory);
         }
-        
+
+        @Override
+        public void unregisterPanelFactory(String factoryName) {
+            commonControl.removeMultipleDockableFactory(factoryName);
+        }
         /**
          * Free docking resources and save the layout
          */
@@ -419,7 +429,18 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
         }
         @Override
         public String addDockingPanel( DockingPanel frame) {
-            return show(frame);
+            if(SwingUtilities.isEventDispatchThread()) {
+                return show(frame);
+            } else {
+                AddPanel addPanel = new AddPanel(this, frame);
+                try {
+                    SwingUtilities.invokeAndWait(addPanel);
+                } catch (Exception ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                    return null;
+                }
+                return addPanel.getPanelId();
+            }
         }
         
 	/**
@@ -703,4 +724,39 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
                         g.fillRect(0, 0, w, h);
                 }
         }
+
+    private static class AddPanel implements Runnable  {
+        private final DockingManagerImpl dockingManager;
+        private final DockingPanel dockingPanel;
+        private String panelId;
+
+        private AddPanel(DockingManagerImpl dockingManager, DockingPanel dockingPanel) {
+            this.dockingManager = dockingManager;
+            this.dockingPanel = dockingPanel;
+        }
+
+        @Override
+        public void run() {
+            panelId = dockingManager.show(dockingPanel);
+        }
+
+        public String getPanelId() {
+            return panelId;
+        }
+    }
+
+    private static class RemovePanel implements Runnable {
+        private final CControl control;
+        private final String panelId;
+
+        private RemovePanel(CControl control, String panelId) {
+            this.control = control;
+            this.panelId = panelId;
+        }
+
+        @Override
+        public void run() {
+            control.removeSingleDockable(panelId);
+        }
+    }
 }

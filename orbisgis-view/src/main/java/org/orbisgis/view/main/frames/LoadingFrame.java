@@ -33,23 +33,28 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
 import java.awt.Rectangle;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import org.apache.log4j.Logger;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.progress.RootProgressMonitor;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  * Splash screen shown while loading OrbisGIS on startup
  * @author Nicolas Fortin
  */
-public class LoadingFrame extends JFrame implements ProgressMonitor {
+public class LoadingFrame extends JFrame {
         private JLabel messageLabel = new JLabel();
         private JProgressBar progressBar = new JProgressBar();
-        private JPanel bottomPanel;
         private static final Logger LOGGER = Logger.getLogger(LoadingFrame.class);
+        private ProgressMonitor pm = new RootProgressMonitor(1);
+
         /**
          * Constructor of LoadingFrame
          * @throws HeadlessException 
@@ -58,11 +63,13 @@ public class LoadingFrame extends JFrame implements ProgressMonitor {
                 setUndecorated(true);
                 JPanel mainPanel = new JPanel(new BorderLayout());
                 setContentPane(mainPanel);
+                setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis"));
                 mainPanel.add(new JLabel(OrbisGISIcon.getIcon("logo_orbisgis")),
                         BorderLayout.CENTER);
-                bottomPanel = new JPanel(new BorderLayout());
+                JPanel bottomPanel = new JPanel(new BorderLayout());
+                progressBar.setMaximum(100);
                 progressBar.setIndeterminate(true);
-                bottomPanel.add(progressBar,BorderLayout.WEST);
+                bottomPanel.add(progressBar, BorderLayout.WEST);
                 bottomPanel.add(messageLabel, BorderLayout.CENTER);
                 mainPanel.add(bottomPanel,BorderLayout.SOUTH);
                 pack();
@@ -76,52 +83,41 @@ public class LoadingFrame extends JFrame implements ProgressMonitor {
                 } catch(Throwable ex) {
                         LOGGER.error(ex.getLocalizedMessage(),ex);
                 }
+                pm.addPropertyChangeListener(ProgressMonitor.PROP_PROGRESSION,
+                        EventHandler.create(PropertyChangeListener.class, this, "onProgressChange"));
+                pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
+                    EventHandler.create(PropertyChangeListener.class, this, "onCancel"));
+                pm.addPropertyChangeListener(ProgressMonitor.PROP_TASKNAME,
+                    EventHandler.create(PropertyChangeListener.class, this, "onTaskChange"));
         }
 
-        @Override
-        public void init(String string, long l) {
-                 messageLabel.setText(string);
-                 progressBar.setMaximum((int)l);
+        /**
+         * @return Progress monitor of this panel
+         */
+        public ProgressMonitor getProgressMonitor() {
+            return pm;
         }
 
-        @Override
-        public void startTask(String string, long l) {
-                 messageLabel.setText(string);
-                 progressBar.setMaximum((int)l);
+        /**
+         * Progression of loading change.
+         */
+        public void onProgressChange() {
+            int progress = (int)(pm.getOverallProgress() * 100);
+            progressBar.setIndeterminate(progress == 0);
+            progressBar.setValue(progress);
         }
 
-        @Override
-        public void endTask() {
+        /**
+         * Cancel loading
+         */
+        public void onCancel() {
+            dispose();
         }
 
-        @Override
-        public String getCurrentTaskName() {
-                return messageLabel.getText();
-        }
-
-        @Override
-        public void progressTo(long l) {
-                progressBar.setIndeterminate(l == 0);
-                progressBar.setValue((int)l);
-        }
-
-        @Override
-        public int getOverallProgress() {
-                return progressBar.getValue();
-        }
-
-        @Override
-        public int getCurrentProgress() {
-                return (int)progressBar.getPercentComplete();
-        }
-
-        @Override
-        public boolean isCancelled() {
-                return false;
-        }
-
-        @Override
-        public void setCancelled(boolean bln) {
-                dispose();
+        /**
+         * Task name change.
+         */
+        public void onTaskChange() {
+            messageLabel.setText(pm.getCurrentTaskName());
         }
 }

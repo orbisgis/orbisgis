@@ -247,7 +247,7 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
 
         @Override
         public U setValue(U value) {
-            MappedLegend outer = MappedLegend.this;
+            MappedLegend<T,U> outer = MappedLegend.this;
             if(value == null){
                 throw new NullPointerException("Null values are not allowed in RecodedLines.");
             }

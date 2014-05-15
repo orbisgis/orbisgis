@@ -194,18 +194,18 @@ public class UIFactory {
          * button is configured thanks to the provided ActionListener.
          * @param panel The main panel of the dialog
          * @param applyListener The action associated to the Apply button
-         * @return true if the dialog has been accepted, false if it has been cancelled.
+         * @return true if the dialog has been accepted, false if it has been cancelled or if it is not modal.
          */
-        public static boolean showApplyDialog(UIPanel panel, ActionListener applyListener){
+        public static boolean showApplyDialog(UIPanel panel, ActionListener applyListener,boolean modal){
             ApplyDialog dlg = new ApplyDialog(mainFrame, applyListener);
             SimplePanel sp = new SimplePanel(dlg, panel);
             dlg.setComponent(sp);
-            dlg.setModal(true);
+            dlg.setModal(modal);
             dlg.pack();
             dlg.setLocationRelativeTo(mainFrame);
             dlg.setAlwaysOnTop(true);
-            dlg.setVisible(true);
             dlg.setTitle(panel.getTitle());
+            dlg.setVisible(true);
             return dlg.isAccepted();
         }
 

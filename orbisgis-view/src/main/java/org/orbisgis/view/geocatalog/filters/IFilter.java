@@ -28,16 +28,28 @@
  */
 package org.orbisgis.view.geocatalog.filters;
 
-import org.gdms.source.SourceManager;
+import org.h2gis.utilities.TableLocation;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Map;
+
 /**
  * A filter reject or accept DataSource according to properties.
  */
 public interface IFilter {
-        /**
-            * Does this filter reject or accept this Source
-            * @param sm Source Manager instance
-            * @param sourceName Source name
-            * @return True if the Source should be shown
-            */
-	boolean accepts(SourceManager sm, String sourceName);
+    /** {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])} */
+    enum ATTRIBUTES {
+        TABLE_CAT ,TABLE_SCHEM,TABLE_NAME,TABLE_TYPE ,REMARKS,TYPE_CAT,TYPE_SCHEM,TYPE_NAME,SELF_REFERENCING_COL_NAME,REF_GENERATION,
+        GEOMETRY_TYPE,  /** WKT geometry type */
+        LOCATION,       /** Equivalent to TableLocation.toString()*/
+        LABEL           /** Table label in GeoCatalog */
+        }
+    /**
+    * Does this filter reject or accept this Source
+    * @param tableProperties Table metadata, {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
+    * @return True if the Source should be shown
+    */
+	boolean accepts(TableLocation table, Map<ATTRIBUTES, String> tableProperties);
 }

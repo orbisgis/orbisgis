@@ -28,7 +28,6 @@
  */
 package org.orbisgis.legend.thematic.recode;
 
-import org.gdms.data.types.Type;
 import org.orbisgis.legend.structure.parameter.ParameterVisitor;
 import org.orbisgis.legend.structure.recode.RecodedLegend;
 import org.orbisgis.legend.structure.recode.RecodedLegendStructure;
@@ -36,6 +35,7 @@ import org.orbisgis.legend.structure.recode.RecodedParameterVisitor;
 import org.orbisgis.legend.thematic.SymbolParameters;
 import org.orbisgis.legend.thematic.map.MappedLegend;
 
+import java.sql.Types;
 import java.util.Comparator;
 
 /**
@@ -85,17 +85,19 @@ public abstract class AbstractRecodedLegend<U extends SymbolParameters> extends 
 
     /**
      * Gets a comparator well-suited for the given type
-     * @param t The input type
+     * @param type The input type of {@link java.sql.Types}
      * @return The well-suited separator
      */
-    public static Comparator<String> getComparator(Type t){
-        switch(t.getTypeCode()){
-            case Type.BYTE:
-            case Type.DOUBLE:
-            case Type.FLOAT:
-            case Type.SHORT:
-            case Type.INT:
-            case Type.LONG:
+    public static Comparator<String> getComparator(int type){
+        switch(type){
+            case Types.BINARY:
+            case Types.DOUBLE:
+            case Types.FLOAT:
+            case Types.TINYINT:
+            case Types.NUMERIC:
+            case Types.SMALLINT:
+            case Types.INTEGER:
+            case Types.BIGINT:
                 return new MappedLegend.NumComparator();
             default :
                 return null;

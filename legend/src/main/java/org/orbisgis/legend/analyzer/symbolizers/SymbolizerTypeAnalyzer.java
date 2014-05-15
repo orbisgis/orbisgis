@@ -28,13 +28,13 @@
  */
 package org.orbisgis.legend.analyzer.symbolizers;
 
-import org.orbisgis.core.renderer.se.common.Halo;
-import org.orbisgis.core.renderer.se.fill.Fill;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.graphic.Graphic;
-import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
-import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.coremap.renderer.se.common.Halo;
+import org.orbisgis.coremap.renderer.se.fill.Fill;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.graphic.Graphic;
+import org.orbisgis.coremap.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
+import org.orbisgis.coremap.renderer.se.stroke.Stroke;
 
 /**
  * This class extends {@link ParametersAnalyzer} and provides the ability to

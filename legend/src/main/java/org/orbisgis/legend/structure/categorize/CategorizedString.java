@@ -28,16 +28,14 @@
  */
 package org.orbisgis.legend.structure.categorize;
 
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.string.Categorize2String;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
-import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.parameter.SeParameter;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.parameter.string.Categorize2String;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringParameter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -195,8 +193,8 @@ public class CategorizedString extends CategorizedLegend<String>{
             String col = get(d);
             if(col == null){
                 Categorize2String c2s = (Categorize2String) parameter;
-                Map<String,Value> inp = new HashMap<String, Value>();
-                inp.put(getField(), ValueFactory.createValue(d));
+                Map<String,Object> inp = new HashMap<>();
+                inp.put(getField(), d);
                 return c2s.getValue(inp);
             } else {
                 return col;

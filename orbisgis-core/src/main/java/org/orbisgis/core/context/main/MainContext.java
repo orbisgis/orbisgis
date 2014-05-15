@@ -28,8 +28,6 @@
  */
 package org.orbisgis.core.context.main;
 
-import java.io.File;
-import java.io.IOException;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -37,15 +35,32 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.varia.LevelRangeFilter;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.DataSourceFinalizationException;
-import org.gdms.driver.DriverException;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.DefaultDataManager;
+import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.core.plugin.BundleReference;
+import org.orbisgis.core.plugin.BundleTools;
+import org.orbisgis.core.plugin.PluginHost;
+import org.orbisgis.core.workspace.CoreWorkspaceImpl;
+import org.h2gis.utilities.JDBCUrlParser;
+import org.h2gis.utilities.SFSUtilities;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.jdbc.DataSourceFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+import javax.sql.DataSource;
+import javax.sql.rowset.RowSetFactory;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 /**
  * @class MainContext
  * The larger surrounding part of OrbisGis base 
@@ -57,12 +72,20 @@ import org.xnap.commons.i18n.I18nFactory;
 public class MainContext {
     private static final Logger LOGGER = Logger.getLogger(MainContext.class);
     private static final I18n I18N = I18nFactory.getI18n(MainContext.class);
-    private DataSourceFactory dataSourceFactory;
-    private CoreWorkspace coreWorkspace;
-    private DataManager dataManager;
+    private CoreWorkspaceImpl coreWorkspace;
     private boolean debugMode;
     private static String CONSOLE_LOGGER = "ConsoleLogger";
-    
+    private DataSource dataSource;
+    private PluginHost pluginHost;
+    private static final int BUNDLE_STABILITY_TIMEOUT = 3000;
+    private static Map<String,String> URI_DRIVER_TO_OSGI_DRIVER = new HashMap<String, String>();
+    private DataManager dataManager;
+
+    static {
+        URI_DRIVER_TO_OSGI_DRIVER.put("h2","H2 JDBC Driver");
+        URI_DRIVER_TO_OSGI_DRIVER.put("postgresql","Postgresql");
+    }
+
     /**
      * Single parameter constructor
      * Take use.home as a default application folder
@@ -71,6 +94,29 @@ public class MainContext {
     public MainContext(boolean debugMode) {
             this(debugMode,null, true);
     }
+
+    /**
+     * @return The plugin host instance or Null if
+     */
+    public PluginHost getPluginHost() {
+        return pluginHost;
+    }
+
+    /**
+     * Init and start bundle host
+     * @param bundleReferences Additional bundles and per-bundle launching instructions.
+     */
+    public void startBundleHost(BundleReference[] bundleReferences) {
+        pluginHost = new PluginHost(new File(getCoreWorkspace().getPluginCache()));
+        pluginHost.init();
+        // Install built-in bundles
+        BundleTools.installBundles(pluginHost.getHostBundleContext(), bundleReferences);
+        // Start bundles
+        pluginHost.start();
+        LOGGER.info(I18N.tr("Waiting for bundle stability"));
+        pluginHost.waitForBundlesStableState(BUNDLE_STABILITY_TIMEOUT);
+    }
+
     /**
      * Constructor of the workspace
      * @param debugMode Use the Debug logging on console output
@@ -79,32 +125,87 @@ public class MainContext {
      * @param initLogger if this context handles logging. Set to false to let the calling application
      * configure log4j.
      */
-    public MainContext(boolean debugMode, CoreWorkspace customWorkspace, boolean initLogger) {
+    public MainContext(boolean debugMode, CoreWorkspaceImpl customWorkspace, boolean initLogger) {
         this.debugMode = debugMode;
         if(customWorkspace!=null) {
                 coreWorkspace = customWorkspace;
         } else {
-                coreWorkspace = new CoreWorkspace();
+                coreWorkspace = new CoreWorkspaceImpl();
         }
         //Redirect root logging to console
         if (initLogger) {
                 initFileLogger(coreWorkspace);
         }
-        dataSourceFactory = new DataSourceFactory(coreWorkspace.getSourceFolder(), coreWorkspace.getTempFolder(), coreWorkspace.getPluginFolder());
-        dataSourceFactory.setResultDir(new File(coreWorkspace.getResultsFolder()));
-        dataManager = new DefaultDataManager(dataSourceFactory);
         registerServices();
     }
+
+    /**
+     * @param password Empty or contain the database password if not provided in u=URI
+     *                 @throws SQLException If the connection to a DataBase cannot be done
+     */
+    public void initDataBase(String userName, String password) throws SQLException {
+        String jdbcConnectionReference = coreWorkspace.getJDBCConnectionReference();
+        if(!jdbcConnectionReference.isEmpty()) {
+            Properties properties = JDBCUrlParser.parse(jdbcConnectionReference);
+            properties.setProperty(DataSourceFactory.JDBC_URL, jdbcConnectionReference);
+            if(!userName.isEmpty()) {
+                properties.setProperty(DataSourceFactory.JDBC_USER,userName);
+            }
+            if(!password.isEmpty()) {
+                properties.setProperty(DataSourceFactory.JDBC_PASSWORD, password);
+            }
+            String driverName = jdbcConnectionReference.split(":")[1];
+            // Get OSGi service
+            Collection<ServiceReference<DataSourceFactory>> serviceReferences;
+            try {
+                serviceReferences =
+                        pluginHost.getHostBundleContext().getServiceReferences(DataSourceFactory.class,null);
+            } catch (InvalidSyntaxException ex) {
+                throw new SQLException(String.format("JDBC Driver Service of %s not found",driverName));
+            }
+            if(serviceReferences==null || serviceReferences.isEmpty()) {
+                throw new SQLException("Could not find any database driver");
+            }
+            // Find the specific driver ex: h2 or postgis
+            ServiceReference<DataSourceFactory> dbDriverReference=null;
+            for(ServiceReference<DataSourceFactory> serviceReference : serviceReferences) {
+                Object property = serviceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME);
+                if(property instanceof String && ((String) property).equalsIgnoreCase(URI_DRIVER_TO_OSGI_DRIVER.get(driverName))) {
+                    dbDriverReference = serviceReference;
+                    break;
+                }
+            }
+            if(dbDriverReference==null) {
+                throw new SQLException(String.format("The database driver %s is not available",driverName));
+            }
+            // Referenced driver is found, use it to create a DataSource.
+            try {
+                DataSourceFactory dataSourceFactory = pluginHost.getHostBundleContext().getService(dbDriverReference);
+                dataSource = SFSUtilities.wrapSpatialDataSource(dataSourceFactory.createDataSource(properties));
+                // Check DataSource
+                try(Connection connection = dataSource.getConnection()) {
+                    DatabaseMetaData meta = connection.getMetaData();
+                    LOGGER.info(I18N.tr("Data source available {0} version {1}", meta.getDriverName(), meta.getDriverVersion()));
+                }
+                // Register DataSource, will be used to register spatial features
+                pluginHost.getHostBundleContext().registerService(DataSource.class,dataSource,null);
+                // Create and register DataManager
+                dataManager = new DataManagerImpl(dataSource);
+                pluginHost.getHostBundleContext().registerService(DataManager.class, dataManager, null);
+                pluginHost.getHostBundleContext().registerService(RowSetFactory.class,dataManager,null);
+            } finally {
+                pluginHost.getHostBundleContext().ungetService(dbDriverReference);
+            }
+        } else {
+            throw new SQLException("DataBase path not found");
+        }
+    }
+
     /**
      * Register Services
      */
     private void registerServices() {
-
-        Services.registerService(DataManager.class,
-                        I18N.tr("Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial"),
-                        dataManager);
-        
-        Services.registerService(CoreWorkspace.class, I18N.tr("Contains folders path"),
+        Services.registerService(CoreWorkspaceImpl.class, I18N.tr("Contains folders path"),
                         coreWorkspace);
     }
     
@@ -114,24 +215,38 @@ public class MainContext {
      * the next core initialisation.
      * - Save the list of registered data source
      */
-    public void saveStatus() {            
-        try {
-                dataSourceFactory.getSourceManager().saveStatus(); 
-        } catch (DriverException ex) {
-                LOGGER.error("Unable to save the source list", ex);
-        }
+    public void saveStatus() {
     }
-    
-    
+
+    /**
+     * @return The data source where OrbisGIS data are stored.
+     * Null if {@link #initDataBase(String, String)}
+     * has not been called or failed.
+     */
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    /**
+     * @return The data manager
+     * Null if {@link #initDataBase(String, String)}
+     * has not been called or failed.
+     */
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
     /**
      * Free resources
      */
     public void dispose() {
-        try {
-            dataManager.dispose();
-            dataSourceFactory.freeResources();
-        } catch (DataSourceFinalizationException ex) {
-            LOGGER.error("Unable to free gdms resources, continue..", ex);
+        // Stop plugin framework
+        if(pluginHost!=null) {
+            try {
+                pluginHost.stop();
+            } catch (Exception ex) {
+                LOGGER.error(ex.getLocalizedMessage(),ex);
+            }
         }
         // Unlink loggers
         Logger.getRootLogger().removeAllAppenders();
@@ -139,26 +254,12 @@ public class MainContext {
 
     /**
      * Return the core path information.
-     * @return CoreWorkspace instance
+     * @return CoreWorkspaceImpl instance
      */
-    public CoreWorkspace getCoreWorkspace() {
+    public CoreWorkspaceImpl getCoreWorkspace() {
         return coreWorkspace;
     }
 
-    /**
-     * 
-     * @return The data source factory instance
-     */
-    public DataSourceFactory getDataSourceFactory() {
-        return dataSourceFactory;
-    }
-    /**
-     * 
-     * @return The data manager
-     */
-    public DataManager getDataManager() {
-        return dataManager;
-    }
     /**
      * Application is running in a verbose mode
      * @return 
@@ -203,7 +304,7 @@ public class MainContext {
     /**
      * Initiate the logging system, called by MainContext constructor
      */
-    private void initFileLogger(CoreWorkspace workspace) {
+    private void initFileLogger(CoreWorkspaceImpl workspace) {
         //Init the file logging feature
         PatternLayout l = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
         RollingFileAppender fa;

@@ -31,7 +31,7 @@ package org.orbisgis.view.docking.internals;
 
 import bibliothek.gui.dock.common.MultipleCDockableLayout;
 import bibliothek.util.xml.XElement;
-import org.orbisgis.view.docking.DockingPanelLayout;
+import org.orbisgis.viewapi.docking.DockingPanelLayout;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;

@@ -28,7 +28,7 @@
  */
 package org.orbisgis.legend.structure.parameter;
 
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
+import org.orbisgis.coremap.renderer.se.parameter.SeParameter;
 import org.orbisgis.legend.LegendStructure;
 
 /**

@@ -31,8 +31,8 @@ package org.orbisgis.view.docking.internals;
 
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.MultipleCDockableFactory;
-import org.orbisgis.view.docking.DockingPanel;
-import org.orbisgis.view.docking.DockingPanelFactory;
+import org.orbisgis.viewapi.docking.DockingPanel;
+import org.orbisgis.viewapi.docking.DockingPanelFactory;
 
 /**
  * Decorator between the DockingFrame multiple CDockable and the panel factory

@@ -30,21 +30,21 @@ package org.orbisgis.legend.thematic.recode;
 
 import net.opengis.se._2_0.core.ParameterValueType;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.renderer.se.PointSymbolizer;
-import org.orbisgis.core.renderer.se.SeExceptions;
-import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.fill.Fill;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.core.renderer.se.graphic.ViewBox;
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
-import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
-import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.coremap.renderer.se.PointSymbolizer;
+import org.orbisgis.coremap.renderer.se.SeExceptions;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
+import org.orbisgis.coremap.renderer.se.common.Uom;
+import org.orbisgis.coremap.renderer.se.fill.Fill;
+import org.orbisgis.coremap.renderer.se.fill.SolidFill;
+import org.orbisgis.coremap.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.coremap.renderer.se.graphic.ViewBox;
+import org.orbisgis.coremap.renderer.se.parameter.SeParameter;
+import org.orbisgis.coremap.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.coremap.renderer.se.parameter.string.StringParameter;
+import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
+import org.orbisgis.coremap.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.structure.recode.type.TypeEvent;
@@ -82,7 +82,7 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters>
     private static final Logger LOGGER = Logger.getLogger(RecodedPoint.class);
 
     /**
-     * Default constructor : builds an empty classification based on the default {@link org.orbisgis.core.renderer.se.PointSymbolizer}.
+     * Default constructor : builds an empty classification based on the default {@link org.orbisgis.coremap.renderer.se.PointSymbolizer}.
      */
     public RecodedPoint(){
         this(new PointSymbolizer());

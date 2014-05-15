@@ -33,26 +33,25 @@ import org.apache.log4j.Logger;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
+import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
-import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.components.findReplace.FindReplaceDialog;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.sqlconsole.actions.ExecuteScriptProcess;
 import org.orbisgis.view.sqlconsole.blockComment.QuoteSQL;
 import org.orbisgis.view.sqlconsole.codereformat.CodeReformator;
 import org.orbisgis.view.sqlconsole.codereformat.CommentSpec;
-import org.orbisgis.view.sqlconsole.language.SQLLanguageSupport;
-import org.orbisgis.view.sqlconsole.ui.ext.SQLAction;
 import org.orbisgis.view.util.CommentUtil;
+import org.orbisgis.viewapi.components.actions.DefaultAction;
+import org.orbisgis.viewapi.sqlconsole.ui.ext.SQLAction;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
 import javax.swing.*;
 import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentListener;
@@ -72,7 +71,8 @@ public class SQLConsolePanel extends JPanel {
         private static final long serialVersionUID = 1L;
         protected final static I18n I18N = I18nFactory.getI18n(SQLConsolePanel.class);
         private final static Logger LOGGER = Logger.getLogger("gui." + SQLConsolePanel.class);
-        
+        private static final String DEFAULT_STATUS_MESSAGE = I18n.marktr("Drop source here to get all table columns");
+        private ScriptSplitterFactory splitterFactory;
         
         // Components
         private JToolBar infoToolBar;
@@ -88,7 +88,6 @@ public class SQLConsolePanel extends JPanel {
         private int line = 0;
         private int character = 0;
         private String message = "";
-        private SQLLanguageSupport lang;
         static CommentSpec[] COMMENT_SPECS = new CommentSpec[]{
                 new CommentSpec("/*", "*/"), new CommentSpec("--", "\n")};
         private FindReplaceDialog findReplaceDialog;
@@ -103,14 +102,15 @@ public class SQLConsolePanel extends JPanel {
         private DefaultAction blockCommentAction;
         private DefaultAction formatSQLAction;
         private DefaultAction saveAction;
-        
+        private DataSource dataSource;
         
         /**
          * Creates a console for sql.
          */
-        public SQLConsolePanel() {
+        public SQLConsolePanel(DataSource dataSource) {
                 super(new BorderLayout());
-                sqlFunctionsPanel = new SQLFunctionsPanel();
+                this.dataSource = dataSource;
+                sqlFunctionsPanel = new SQLFunctionsPanel(dataSource);
                 initActions();
                 JPanel split = new JPanel();
                 split.setLayout(new BorderLayout());
@@ -119,7 +119,14 @@ public class SQLConsolePanel extends JPanel {
                 add(split, BorderLayout.CENTER);
                 add(getStatusToolBar(), BorderLayout.SOUTH);
         }
-        
+
+        /**
+         * @param splitterFactory The component used to split sql script into single query
+         */
+        public void setSplitterFactory(ScriptSplitterFactory splitterFactory) {
+            this.splitterFactory = splitterFactory;
+        }
+
         /**
          * Create actions instances
          * 
@@ -247,9 +254,9 @@ public class SQLConsolePanel extends JPanel {
                         scriptPanel.setClearWhitespaceLinesEnabled(true);
                         scriptPanel.setMarkOccurrences(false);
                         scriptPanel.setTabsEmulated(true);
+                        scriptPanel.setTabSize(4);
                         actions.setAccelerators(scriptPanel);
-                        lang = new SQLLanguageSupport();
-                        lang.install(scriptPanel);
+                        //TODO track language support bundles
 
                         codeReformator = new CodeReformator(";",
                                 COMMENT_SPECS);
@@ -269,13 +276,8 @@ public class SQLConsolePanel extends JPanel {
          */
         public void onExecute() {      
                 if (scriptPanel.getDocument().getLength() > 0) {
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                    MapContext mapContext = null;
-                    MapElement mapElement = MapElement.fetchFirstMapElement();
-                    if(mapElement!=null) {
-                        mapContext = mapElement.getMapContext();
-                    }
-                    bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(getText(), this,mapContext));
+                    BackgroundManager bm = Services.getService(BackgroundManager.class);
+                    bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(this, dataSource, splitterFactory));
                 }
         }
                
@@ -290,7 +292,7 @@ public class SQLConsolePanel extends JPanel {
                 outfilePanel.loadState();
                 if (UIFactory.showDialog(outfilePanel)) {
                         try {
-                        FileUtils.write(outfilePanel.getSelectedFile(), scriptPanel.getText());
+                        FileUtils.writeStringToFile(outfilePanel.getSelectedFile(), scriptPanel.getText());
                         } catch (IOException e1) {
                                 LOGGER.error(I18N.tr("IO error."), e1);
                                 return;
@@ -398,6 +400,7 @@ public class SQLConsolePanel extends JPanel {
 
                 if (infoToolBar == null) {
                         infoToolBar = new JToolBar();
+                        infoToolBar.setTransferHandler(new ScriptPanelTransferHandler(scriptPanel, dataSource));
                         statusMessage = new JLabel();
                         infoToolBar.add(statusMessage);
                         infoToolBar.setFloatable(false);
@@ -410,17 +413,21 @@ public class SQLConsolePanel extends JPanel {
                                 }
                         });
                         messageCleanTimer.setRepeats(false);
+                        setStatusMessage("");
                 }
 
                 return infoToolBar;
         }
 
-        public final void setStatusMessage(String message) {
-                this.message = message;
+        public final void setStatusMessage(String messageToShow) {
+                this.message = messageToShow;
                 if (!message.isEmpty()) {
-                        messageCleanTimer.restart();
+                    messageCleanTimer.restart();
+                } else {
+                    // Empty message mean show default message
+                    messageToShow = I18N.tr(DEFAULT_STATUS_MESSAGE);
                 }
-                statusMessage.setText(String.format(MESSAGEBASE, line, character, message));
+                statusMessage.setText(String.format(MESSAGEBASE, line, character, messageToShow));
         }
 
         public void setCharacter(int character) {
@@ -554,9 +561,7 @@ public class SQLConsolePanel extends JPanel {
         }
 
         public void freeResources() {
-                if (lang != null) {
-                        lang.uninstall(scriptPanel);
-                }
+                //TODO untrack and uninstall language support bundles
                 if(messageCleanTimer!=null) {
                         messageCleanTimer.stop();
                 }
