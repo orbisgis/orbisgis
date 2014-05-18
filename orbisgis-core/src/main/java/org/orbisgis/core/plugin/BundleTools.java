@@ -221,7 +221,7 @@ public class BundleTools {
                     continue;
                 }
                 // Retrieve from the framework cache the bundle at this location
-                Bundle b = installedBundleMap.remove(key);
+                Bundle installedBundle = installedBundleMap.remove(key);
 
                 // Read Jar manifest without installing it
                 BundleReference reference = new BundleReference(""); // Default deploy
@@ -241,35 +241,40 @@ public class BundleTools {
                 }
 
                 try {
-                    if(b != null) {
-                        String installedBundleLocation = b.getLocation();
-                        int verDiff = b.getVersion().compareTo(jarRef.getVersion());
-                        if(verDiff==0) {
-                            // If the same version or SNAPSHOT that is not used by fragments
-                            if(!fragmentHosts.contains(b.getSymbolicName()) && (!installedBundleLocation.equals(jarFile.toURI().toString()) ||
-                                    (b.getVersion()!=null && "SNAPSHOT".equals(b.getVersion().getQualifier())))) {
-                                //if the location is not the same reinstall it
-                                LOGGER.info("Uninstall bundle "+b.getSymbolicName());
-                                b.uninstall();
-                                b=null;
-                            }
-                        } else if(verDiff < 0) {
-                            // Installed version is older than the bundle version
-                            LOGGER.info("Uninstall bundle "+b.getLocation());
-                            b.uninstall();
-                            b=null;
-                        } else {
-                            // Installed version is more recent than the bundle version
-                            // Do not install this jar
+                    if(installedBundle != null) {
+                        if(getFragmentHost(installedBundle) != null) {
+                            // Fragment cannot be reinstalled
                             continue;
+                        } else {
+                            String installedBundleLocation = installedBundle.getLocation();
+                            int verDiff = installedBundle.getVersion().compareTo(jarRef.getVersion());
+                            if (verDiff == 0) {
+                                // If the same version or SNAPSHOT that is not used by fragments
+                                if (!fragmentHosts.contains(installedBundle.getSymbolicName()) && (!installedBundleLocation.equals(jarFile.toURI().toString()) ||
+                                        (installedBundle.getVersion() != null && "SNAPSHOT".equals(installedBundle.getVersion().getQualifier())))) {
+                                    //if the location is not the same reinstall it
+                                    LOGGER.info("Uninstall bundle " + installedBundle.getSymbolicName());
+                                    installedBundle.uninstall();
+                                    installedBundle = null;
+                                }
+                            } else if (verDiff < 0) {
+                                // Installed version is older than the bundle version
+                                LOGGER.info("Uninstall bundle " + installedBundle.getLocation());
+                                installedBundle.uninstall();
+                                installedBundle = null;
+                            } else {
+                                // Installed version is more recent than the bundle version
+                                // Do not install this jar
+                                continue;
+                            }
                         }
                     }
                     // If the bundle is not in the framework cache install it
-                    if ((b == null) && reference.isAutoInstall()) {
-                        b = hostBundle.installBundle(jarFile.toURI().toString());
-                        LOGGER.info("Install bundle "+b.getSymbolicName());
-                        if (!isFragment(b) && reference.isAutoStart()) {
-                            installedBundleList.add(b);
+                    if ((installedBundle == null) && reference.isAutoInstall()) {
+                        installedBundle = hostBundle.installBundle(jarFile.toURI().toString());
+                        LOGGER.info("Install bundle "+installedBundle.getSymbolicName());
+                        if (!isFragment(installedBundle) && reference.isAutoStart()) {
+                            installedBundleList.add(installedBundle);
                         }
                     }
                 }
