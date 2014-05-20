@@ -79,6 +79,7 @@
                             <excludeTransitive>false</excludeTransitive>
                             <stripVersion>true</stripVersion>
                             <includeScope>provided</includeScope>
+                            <excludeArtifactIds>easymock</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
