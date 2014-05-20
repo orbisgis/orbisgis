@@ -204,9 +204,9 @@
             <version>${gettext-commons-version}</version>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis.schemas</groupId>
+            <groupId>${groupId}</groupId>
             <artifactId>ogc-custom</artifactId>
-            <version>1.1-SNAPSHOT</version>
+            <version>${ogc-commons-version}</version>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
