@@ -76,14 +76,8 @@
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>true</overWriteSnapshots>
                             <overWriteIfNewer>true</overWriteIfNewer>
-                            <excludeTransitive>true</excludeTransitive>
+                            <excludeTransitive>false</excludeTransitive>
                             <stripVersion>true</stripVersion>
-                            <includeArtifactIds>h2,h2spatial-ext,h2drivers,h2spatial-ext-osgi,h2spatial,h2spatial-osgi
-                                ,slf4j-api,slf4j-log4j12,org.apache.felix.shell.gui,org.apache.felix.bundlerepository,
-                                org.osgi.service.obr,orbisgis-omanager,orbisgis-omanager-plugin,org.apache.felix.shell,
-                                sqlconsole-parser, orbisgis-oshell, org.apache.felix.scr, mapeditor, toc,
-                                postgis-jts-osgi, legend, jackson-core, jgrapht-core, h2network, java-network-analyzer
-                            </includeArtifactIds>
                             <includeScope>provided</includeScope>
                         </configuration>
                     </execution>
@@ -136,46 +130,42 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>orbisgis-oshell</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.shell</artifactId>
-            <version>1.4.3</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>orbisgis-omanager</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>orbisgis-omanager-plugin</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.service.obr</artifactId>
             <version>1.0.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.bundlerepository</artifactId>
             <version>1.6.6</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.shell.gui</artifactId>
             <version>0.9.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <version>${org.osgi.compendium-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${h2-package}</groupId>
-            <artifactId>h2</artifactId>
-            <version>${h2-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -186,83 +176,44 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>h2network</artifactId>
+            <artifactId>h2spatial-osgi</artifactId>
             <version>${h2-gis-version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>java-network-analyzer</artifactId>
-            <version>0.1.6</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jgrapht</groupId>
-            <artifactId>jgrapht-core</artifactId>
-            <version>0.9.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>postgis-jts-osgi</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>h2drivers</artifactId>
-            <version>${h2-gis-version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>2.3.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>h2spatial-ext</artifactId>
-            <version>${h2-gis-version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>h2spatial</artifactId>
-            <version>${h2-gis-version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>h2spatial-osgi</artifactId>
-            <version>${h2-gis-version}</version>
+            <!-- As postgis-jts-osgi jar already include jars, do not copy theses -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.postgis</groupId>
+                    <artifactId>postgis-jdbc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.postgis</groupId>
+                    <artifactId>postgis-jdbc-jtsparser</artifactId>
+                </exclusion>
+            </exclusions>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${sl4j-version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>${sl4j-version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.scr</artifactId>
             <version>1.6.2</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>cts</artifactId>
-          <version>${cts-version}</version>
-        </dependency>
-        <dependency>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-          <version>${log4j-version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
