@@ -3,7 +3,6 @@ package org.orbisgis.corejdbc.internal;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtility;
-import org.orbisgis.corejdbc.DataBaseExecutionProgressEventCatcher;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DatabaseProgressionListener;
 import org.orbisgis.corejdbc.ReadRowSet;
@@ -12,7 +11,6 @@ import org.orbisgis.corejdbc.StateEvent;
 import org.orbisgis.utils.FileUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
 
 import javax.sql.rowset.*;
 import javax.sql.DataSource;
@@ -36,7 +34,6 @@ public class DataManagerImpl implements DataManager {
     /** ReversibleRowSet fire row updates to their DataManager  */
     private Map<String, List<UndoableEditListener>> tableEditionListener = new HashMap<>();
     private static final Logger LOG = Logger.getLogger(DataManagerImpl.class);
-    private DataBaseExecutionProgressEventCatcher dbProgressInfo;
     private Map<StateEvent.DB_STATES, ArrayList<DatabaseProgressionListener>> progressionListenerMap = new HashMap<>();
 
     @Override
@@ -177,16 +174,6 @@ public class DataManagerImpl implements DataManager {
         dispose();
     }
 
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
-    public void setDbProgressInfo(DataBaseExecutionProgressEventCatcher dbProgressInfo) {
-        this.dbProgressInfo = dbProgressInfo;
-    }
-
-    public void unsetDbProgressInfo(DataBaseExecutionProgressEventCatcher dbProgressInfo) {
-        this.dbProgressInfo = null;
-        // TODO deactivate listener thread
-    }
-
     @Override
     public boolean isTableExists(String tableName) throws SQLException {
         TableLocation tableLocation = TableLocation.parse(tableName);
@@ -253,6 +240,16 @@ public class DataManagerImpl implements DataManager {
                 ArrayList<DatabaseProgressionListener> newList = new ArrayList<>(entry.getValue());
                 newList.remove(listener);
                 entry.setValue(newList);
+            }
+        }
+    }
+
+    @Override
+    public void fireDatabaseProgression(StateEvent event) {
+        ArrayList<DatabaseProgressionListener> listenerList = progressionListenerMap.get(event.getStateIdentifier());
+        if(listenerList != null) {
+            for(DatabaseProgressionListener listener : listenerList) {
+                listener.progressionUpdate(event);
             }
         }
     }

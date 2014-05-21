@@ -234,6 +234,12 @@
             <version>${parent.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2trigger-osgi</artifactId>
+            <version>${parent.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- scala-library 2.9.2 is not OSGi ready, import it in old-fashion way -->
         <dependency>
             <groupId>org.scala-lang</groupId>
