@@ -3,12 +3,16 @@ package org.orbisgis.corejdbc.internal;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtility;
+import org.orbisgis.corejdbc.DataBaseExecutionProgressEventCatcher;
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.DatabaseProgressionListener;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.ReversibleRowSet;
+import org.orbisgis.corejdbc.StateEvent;
 import org.orbisgis.utils.FileUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 
 import javax.sql.rowset.*;
 import javax.sql.DataSource;
@@ -32,6 +36,8 @@ public class DataManagerImpl implements DataManager {
     /** ReversibleRowSet fire row updates to their DataManager  */
     private Map<String, List<UndoableEditListener>> tableEditionListener = new HashMap<>();
     private static final Logger LOG = Logger.getLogger(DataManagerImpl.class);
+    private DataBaseExecutionProgressEventCatcher dbProgressInfo;
+    private Map<StateEvent.DB_STATES, ArrayList<DatabaseProgressionListener>> progressionListenerMap = new HashMap<>();
 
     @Override
     public CachedRowSet createCachedRowSet() throws SQLException {
@@ -171,6 +177,15 @@ public class DataManagerImpl implements DataManager {
         dispose();
     }
 
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+    public void setDbProgressInfo(DataBaseExecutionProgressEventCatcher dbProgressInfo) {
+        this.dbProgressInfo = dbProgressInfo;
+    }
+
+    public void unsetDbProgressInfo(DataBaseExecutionProgressEventCatcher dbProgressInfo) {
+        this.dbProgressInfo = null;
+        // TODO deactivate listener thread
+    }
 
     @Override
     public boolean isTableExists(String tableName) throws SQLException {
@@ -215,6 +230,29 @@ public class DataManagerImpl implements DataManager {
                         LOG.error(ex.getLocalizedMessage(), ex);
                     }
                 }
+            }
+        }
+    }
+
+    @Override
+    public void addDatabaseProgressionListener(DatabaseProgressionListener listener, StateEvent.DB_STATES state) {
+        ArrayList<DatabaseProgressionListener> listenerList = progressionListenerMap.get(state);
+        if(listenerList != null) {
+            listenerList = new ArrayList<>(listenerList);
+        } else {
+            listenerList = new ArrayList<>();
+        }
+        listenerList.add(listener);
+        progressionListenerMap.put(state, listenerList);
+    }
+
+    @Override
+    public void removeDatabaseProgressionListener(DatabaseProgressionListener listener) {
+        for(Map.Entry<StateEvent.DB_STATES,ArrayList<DatabaseProgressionListener>> entry : progressionListenerMap.entrySet()) {
+            if(entry.getValue().contains(listener)) {
+                ArrayList<DatabaseProgressionListener> newList = new ArrayList<>(entry.getValue());
+                newList.remove(listener);
+                entry.setValue(newList);
             }
         }
     }

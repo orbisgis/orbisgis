@@ -103,4 +103,17 @@ public interface DataManager extends RowSetFactory {
      * @throws SQLException Exception while querying database
      */
     public String findUniqueTableName(String originalTableName) throws SQLException;
+
+    /**
+     * Add a listener in order to retrieve long process progression
+     * @param listener
+     * @param state
+     */
+    void addDatabaseProgressionListener(DatabaseProgressionListener listener, StateEvent.DB_STATES state);
+
+    /**
+     * Remove the listener.
+     * @param listener Listener instance
+     */
+    void removeDatabaseProgressionListener(DatabaseProgressionListener listener);
 }
