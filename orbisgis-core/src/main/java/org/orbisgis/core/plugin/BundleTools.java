@@ -29,6 +29,7 @@
 package org.orbisgis.core.plugin;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -47,7 +48,10 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.felix.framework.util.manifestparser.ManifestParser;
 import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
@@ -165,6 +169,72 @@ public class BundleTools {
         return bundle.getHeaders().get(Constants.FRAGMENT_HOST);
     }
 
+    /**
+     * Delete OSGi fragment bundles that are both in OSGi cache and in bundle sub-dir
+     * @param bundleCache OSGi bundle cache  ex: ~/.Orbisgis/4.X/cache/
+     */
+    public static void deleteFragmentInCache(File bundleCache) {
+        if(bundleCache.exists()) {
+            // List bundles in the /bundle subdirectory
+            File bundleFolder = new File(BUNDLE_DIRECTORY);
+            if(!bundleFolder.exists()) {
+                return;
+            }
+            File[] files = bundleFolder.listFiles();
+            if (files != null) {
+                List<String> fragmentBundlesArtifacts = new ArrayList<>(files.length);
+                // Search for Fragment in /bundle/ subdir
+                for(File file : files) {
+                    if(FilenameUtils.isExtension(file.getName(),"jar")) {
+                        // Read Manifest
+                        try {
+                            JarFile jar = new JarFile(file);
+                            Manifest manifest = jar.getManifest();
+                            if(manifest!=null && manifest.getMainAttributes()!=null) {
+                                String artifact = manifest.getMainAttributes().getValue(Constants.FRAGMENT_HOST);
+                                if(artifact != null) {
+                                    fragmentBundlesArtifacts.add(parseManifest(manifest, null).getArtifactId());
+                                }
+                            }
+                        } catch (IOException ex) {
+                            LOGGER.error("Error while reading Jar manifest:\n"+file.getPath());
+                        }
+                    }
+                }
+                // Remove folders in bundle cache that contain a fragment cache
+                File[] cacheFolders = bundleCache.listFiles((FileFilter)DirectoryFileFilter.DIRECTORY);
+                if(cacheFolders != null) {
+                    for (File folder : cacheFolders) {
+                        try {
+                            // Get the first folder, may contain only one ex:"version0.0"
+                            File[] cacheBundleFolder = folder.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
+                            if (cacheBundleFolder != null && cacheBundleFolder.length > 0) {
+                                // Read Jar manifest
+                                File jarBundle = new File(cacheBundleFolder[0], "bundle.jar");
+                                if (jarBundle.exists()) {
+                                    // Read artifact
+                                    String artifact = parseJarManifest(jarBundle, null).getArtifactId();
+                                    if (fragmentBundlesArtifacts.contains(artifact)) {
+                                        // Delete the cache folder
+                                        FileUtils.deleteDirectory(folder);
+                                        if(folder.exists()) {
+                                            LOGGER.error("Cannot delete a bundle cache folder, library may not be up to" +
+                                                    " date, please delete the following folder and restart OrbisGIS:" +
+                                                    "\n"+folder.getPath());
+                                        } else {
+                                            LOGGER.info(I18N.tr("Delete fragment bundle {0} in cache directory", artifact));
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (IOException ex) {
+                            LOGGER.error("Error while reading Jar manifest:\n"+folder.getPath());
+                        }
+                    }
+                }
+            }
+        }
+    }
     /**
      * Register in the host bundle the provided list of bundle reference
      * @param hostBundle Host BundleContext
@@ -372,8 +442,8 @@ public class BundleTools {
 
     /**
      * Parse a Manifest in order to extract Exported Package
-     * @param manifest
-     * @param packages
+     * @param manifest Jar Manifest
+     * @param packages package array or null
      * @throws IOException
      */
     public static BundleReference parseManifest(Manifest manifest, List<PackageDeclaration> packages) throws IOException {
@@ -385,25 +455,27 @@ public class BundleTools {
             version = new Version(versionProperty);
         }
         String symbolicName = attributes.getValue(Constants.BUNDLE_SYMBOLICNAME);
-        org.apache.felix.framework.Logger logger = new org.apache.felix.framework.Logger();
-        // Use Apache Felix to parse the Manifest Export header
-        List<BundleCapability> exportsCapability = ManifestParser.parseExportHeader(logger,null,exports,"0",
-                new Version(0,0,0));
-        for(BundleCapability bc : exportsCapability) {
-            Map<String,Object> attr = bc.getAttributes();
-            // If the package contain a package name and a package version
-            if(attr.containsKey(PACKAGE_NAMESPACE)) {
-                Version packageVersion = new Version(0,0,0);
-                if(attr.containsKey(Constants.VERSION_ATTRIBUTE)) {
-                    packageVersion = (Version)attr.get(Constants.VERSION_ATTRIBUTE);
-                }
-                if(packageVersion.getMajor()!=0 || packageVersion.getMinor()!=0 || packageVersion.getMicro()!=0) {
-                    packages.add(new PackageDeclaration((String)attr.get(PACKAGE_NAMESPACE),
-                            packageVersion));
-                } else {
-                    // No version, take the bundle version
-                    packages.add(new PackageDeclaration((String)attr.get(PACKAGE_NAMESPACE),
-                            version));
+        if(packages != null) {
+            org.apache.felix.framework.Logger logger = new org.apache.felix.framework.Logger();
+            // Use Apache Felix to parse the Manifest Export header
+            List<BundleCapability> exportsCapability = ManifestParser.parseExportHeader(logger, null, exports, "0",
+                    new Version(0, 0, 0));
+            for (BundleCapability bc : exportsCapability) {
+                Map<String, Object> attr = bc.getAttributes();
+                // If the package contain a package name and a package version
+                if (attr.containsKey(PACKAGE_NAMESPACE)) {
+                    Version packageVersion = new Version(0, 0, 0);
+                    if (attr.containsKey(Constants.VERSION_ATTRIBUTE)) {
+                        packageVersion = (Version) attr.get(Constants.VERSION_ATTRIBUTE);
+                    }
+                    if (packageVersion.getMajor() != 0 || packageVersion.getMinor() != 0 || packageVersion.getMicro() != 0) {
+                        packages.add(new PackageDeclaration((String) attr.get(PACKAGE_NAMESPACE),
+                                packageVersion));
+                    } else {
+                        // No version, take the bundle version
+                        packages.add(new PackageDeclaration((String) attr.get(PACKAGE_NAMESPACE),
+                                version));
+                    }
                 }
             }
         }
