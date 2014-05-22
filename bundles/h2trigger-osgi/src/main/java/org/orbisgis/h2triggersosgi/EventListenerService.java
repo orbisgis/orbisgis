@@ -23,7 +23,7 @@ import java.sql.Statement;
 @Component(immediate = true)
 public class EventListenerService implements DatabaseEventListener {
     private DataManager dataManager;
-    private Logger logger = Logger.getLogger("gui."+EventListenerService.class);
+    private Logger logger = Logger.getLogger(EventListenerService.class);
 
     @Reference
     public void setDataManager(DataManager dataManager) {
@@ -33,7 +33,8 @@ public class EventListenerService implements DatabaseEventListener {
         try(Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement()) {
             if(JDBCUtilities.isH2DataBase(connection.getMetaData())
-                    && connection.getMetaData().getURL().startsWith("jdbc:h2:/")) {
+                    && connection.getMetaData().getURL().startsWith("jdbc:h2:")
+                    && !connection.getMetaData().getURL().startsWith("jdbc:h2:tcp:/")) {
                 H2DatabaseEventListener.setDelegateDatabaseEventListener(this);
                 // Change DATABASE_EVENT_LISTENER for this Database instance
                 st.execute("SET DATABASE_EVENT_LISTENER '" + H2DatabaseEventListener.class.getName() + "'");
@@ -47,11 +48,11 @@ public class EventListenerService implements DatabaseEventListener {
                         }
                     }
                 } catch (Exception ex) {
-                    // Cannot change connection URL
+                    logger.warn("Cannot change connection URL:\n" + ex.getLocalizedMessage(), ex);
                 }
             }
         } catch (SQLException ex) {
-            // Ignore
+            logger.error(ex.getLocalizedMessage(), ex);
         }
     }
 
@@ -77,7 +78,6 @@ public class EventListenerService implements DatabaseEventListener {
 
     @Override
     public void opened() {
-        logger.info("OPEN DATABASE");
         // Not used
     }
 
@@ -90,7 +90,6 @@ public class EventListenerService implements DatabaseEventListener {
     public void setProgress(int state, String name, int x, int max) {
         if(dataManager != null && state < StateEvent.DB_STATES.values().length) {
             StateEvent.DB_STATES stateEnum = StateEvent.DB_STATES.values()[state];
-            logger.info("H2 Progress "+stateEnum.name()+" "+name+" "+x+"/"+max);
             dataManager.fireDatabaseProgression(new StateEvent(stateEnum, name, x, max));
         }
     }
@@ -98,6 +97,5 @@ public class EventListenerService implements DatabaseEventListener {
     @Override
     public void closingDatabase() {
         // Not used
-        logger.info("CLOSE DATABASE");
     }
 }
