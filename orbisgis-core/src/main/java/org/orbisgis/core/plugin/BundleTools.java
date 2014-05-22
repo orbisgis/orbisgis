@@ -247,7 +247,10 @@ public class BundleTools {
                             continue;
                         } else {
                             String installedBundleLocation = installedBundle.getLocation();
-                            int verDiff = installedBundle.getVersion().compareTo(jarRef.getVersion());
+                            int verDiff = -1;
+                            if(installedBundle.getVersion() != null && jarRef.getVersion()!=null) {
+                                verDiff = installedBundle.getVersion().compareTo(jarRef.getVersion());
+                            }
                             if (verDiff == 0) {
                                 // If the same version or SNAPSHOT that is not used by fragments
                                 if (!fragmentHosts.contains(installedBundle.getSymbolicName()) && (!installedBundleLocation.equals(jarFile.toURI().toString()) ||
