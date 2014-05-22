@@ -38,8 +38,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Private-Package>org.orbisgis.toc.*</Private-Package>
-                        <Public-Package>org.orbisgis.toc</Public-Package>
+                        <Private-Package>org.orbisgis.view.toc.translation.*</Private-Package>
+                        <Public-Package>org.orbisgis.view.toc.*</Public-Package>
                         <Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
                     </instructions>
                 </configuration>
@@ -59,7 +59,7 @@
                 <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
                     <poDirectory>src/main/resources/org/orbisgis/view/toc/</poDirectory>
-                    <targetBundle>org.orbisgis.toc.Messages</targetBundle>
+                    <targetBundle>org.orbisgis.view.toc.translation.Messages</targetBundle>
                     <keywords>-ktr</keywords>
                     <outputFormat>properties</outputFormat>
                 </configuration>
