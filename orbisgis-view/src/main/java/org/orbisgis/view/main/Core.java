@@ -61,6 +61,7 @@ import org.orbisgis.view.background.JobQueue;
 import org.orbisgis.view.docking.internals.EditorFactoryTracker;
 import org.orbisgis.view.docking.internals.EditorPanelTracker;
 import org.orbisgis.view.edition.EditorManagerImpl;
+import org.orbisgis.view.main.frames.LoadingFrame;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.viewapi.docking.DockingManager;
@@ -130,7 +131,8 @@ public class Core {
      * @param debugMode Show additional information for debugging purposes
      * @note Call startup() to init Swing
      */
-    public Core(CoreWorkspaceImpl coreWorkspace, boolean debugMode, ProgressMonitor parentProgress) throws InvocationTargetException, InterruptedException {
+    public Core(CoreWorkspaceImpl coreWorkspace, boolean debugMode, LoadingFrame splashScreen) throws InvocationTargetException, InterruptedException {
+        ProgressMonitor parentProgress = splashScreen.getProgressMonitor();
         ProgressMonitor progressInfo = parentProgress.startTask(I18N.tr("Loading Workspace.."),100);
         MainContext.initConsoleLogger(debugMode);
         // Declare empty main frame
@@ -148,7 +150,7 @@ public class Core {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }
         UIFactory.setMainFrame(mainFrame);
-        initMainContext(debugMode, coreWorkspace);
+        initMainContext(debugMode, coreWorkspace, splashScreen);
         progressInfo.progressTo(10);
         this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());
         Services.registerService(ViewWorkspace.class, I18N.tr("Contains view folders path"),
@@ -186,13 +188,13 @@ public class Core {
     /**
      * Find the workspace folder or addDockingPanel a dialog to select one
      */
-    private void initMainContext(boolean debugMode, CoreWorkspaceImpl coreWorkspace) throws InterruptedException, InvocationTargetException, RuntimeException {
+    private void initMainContext(boolean debugMode, CoreWorkspaceImpl coreWorkspace, LoadingFrame splashScreen) throws InterruptedException, InvocationTargetException, RuntimeException {
         String workspaceFolder = coreWorkspace.getWorkspaceFolder();
         if (workspaceFolder == null) {
             File defaultWorkspace = coreWorkspace.readDefaultWorkspacePath();
             if (defaultWorkspace == null || !ViewWorkspace.isWorkspaceValid(defaultWorkspace)) {
                 try {
-                    PromptUserForSelectingWorkspace dial = new PromptUserForSelectingWorkspace(coreWorkspace, mainFrame);
+                    PromptUserForSelectingWorkspace dial = new PromptUserForSelectingWorkspace(coreWorkspace, splashScreen);
                     SwingUtilities.invokeAndWait(dial);
                     if (!dial.isOk()) {
                         throw new InterruptedException("Canceled by user.");
@@ -391,7 +393,7 @@ public class Core {
             mainFrame.dispose();
             throw ex;
         }
-        SwingUtilities.invokeLater(new ShowSwingApplication(progress));
+        SwingUtilities.invokeLater(new ShowSwingApplication(progress, mainFrame));
     }
 
     /**
@@ -495,10 +497,13 @@ public class Core {
      */
     private class ShowSwingApplication implements Runnable {
 
-        ProgressMonitor progress;
+        private ProgressMonitor progress;
+        private MainFrame mainFrame;
 
-        public ShowSwingApplication(ProgressMonitor progress) {
+
+        public ShowSwingApplication(ProgressMonitor progress, MainFrame mainFrame) {
             this.progress = progress;
+            this.mainFrame = mainFrame;
         }
 
         /**
@@ -508,6 +513,9 @@ public class Core {
         public void run() {
             try {
                 mainFrame.setVisible(true);
+            } catch (Exception ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+                dispose();
             } finally {
                 progress.setCancelled(true);
             }
