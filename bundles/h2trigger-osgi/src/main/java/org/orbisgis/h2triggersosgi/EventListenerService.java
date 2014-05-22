@@ -42,9 +42,14 @@ public class EventListenerService implements DatabaseEventListener {
                 // the JDBC url connection have to be changed
                 try {
                     if (dataSource instanceof JdbcDataSource || dataSource.isWrapperFor(JdbcDataSource.class)) {
-                        JdbcDataSource jdbcDataSource = dataSource.unwrap(JdbcDataSource.class);
-                        if(!jdbcDataSource.getURL().toUpperCase().contains("DATABASE_EVENT_LISTENER")) {
-                            jdbcDataSource.setURL(jdbcDataSource.getURL()+";DATABASE_EVENT_LISTENER='" + H2DatabaseEventListener.class.getName() + "'");
+                        JdbcDataSource jdbcDataSource;
+                        if (dataSource instanceof JdbcDataSource) {
+                            jdbcDataSource = (JdbcDataSource) dataSource;
+                        } else {
+                            jdbcDataSource = dataSource.unwrap(JdbcDataSource.class);
+                        }
+                        if (!jdbcDataSource.getURL().toUpperCase().contains("DATABASE_EVENT_LISTENER")) {
+                            jdbcDataSource.setURL(jdbcDataSource.getURL() + ";DATABASE_EVENT_LISTENER='" + H2DatabaseEventListener.class.getName() + "'");
                         }
                     }
                 } catch (Exception ex) {

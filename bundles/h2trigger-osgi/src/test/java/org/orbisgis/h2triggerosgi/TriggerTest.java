@@ -4,6 +4,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.utilities.SFSUtilities;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.orbisgis.corejdbc.DataManager;
@@ -23,7 +24,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @author Nicolas Fortin
  */
-public class triggerTest {
+public class TriggerTest {
 
     private static DataSource dataSource;
 
@@ -32,17 +33,21 @@ public class triggerTest {
     public static void tearUp() throws Exception {
         Logger.getRootLogger().addAppender(new ConsoleAppender(new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN)));
         // Keep a connection alive to not close the DataBase on each unit test
-        dataSource = SpatialH2UT.createDataSource(triggerTest.class.getSimpleName(), true);
+        dataSource = SpatialH2UT.createDataSource(TriggerTest.class.getSimpleName(), true);
     }
 
     @Test
     public void testListener() throws SQLException {
-        DataManager dataManager = new DataManagerImpl(dataSource);
+        testListenerInternal(dataSource);
+    }
+
+    private void testListenerInternal(DataSource dataSourceParam) throws SQLException {
+        DataManager dataManager = new DataManagerImpl(dataSourceParam);
         LocalListener local = new LocalListener();
         dataManager.addDatabaseProgressionListener(local, StateEvent.DB_STATES.STATE_STATEMENT_END);
         EventListenerService evtServ = new EventListenerService();
         evtServ.setDataManager(dataManager);
-        try(Connection connection = dataSource.getConnection();
+        try(Connection connection = dataSourceParam.getConnection();
             Statement st = connection.createStatement()) {
             String query = "select * from GEOMETRY_COLUMNS";
             st.execute(query);
@@ -52,6 +57,12 @@ public class triggerTest {
         dataManager.removeDatabaseProgressionListener(local);
         evtServ.disable();
         evtServ.unsetDataManager(dataManager);
+
+    }
+
+    @Test
+    public void testListenerWithWrapper() throws SQLException {
+        testListenerInternal(SFSUtilities.wrapSpatialDataSource(dataSource));
     }
 
     private static class LocalListener implements DatabaseProgressionListener {
