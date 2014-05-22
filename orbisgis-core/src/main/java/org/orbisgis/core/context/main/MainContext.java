@@ -107,13 +107,22 @@ public class MainContext {
      * @param bundleReferences Additional bundles and per-bundle launching instructions.
      */
     public void startBundleHost(BundleReference[] bundleReferences) {
-        pluginHost = new PluginHost(new File(getCoreWorkspace().getPluginCache()));
+        long deploymentTime = 0;
+        File felixBundleCache = new File(getCoreWorkspace().getPluginCache());
+        // Delete OSGi fragment bundles that are both in OSGi cache and in bundle sub-dir
+        long beginDeleteFragments = System.currentTimeMillis();
+        BundleTools.deleteFragmentInCache(felixBundleCache);
+        deploymentTime += System.currentTimeMillis() - beginDeleteFragments;
+        // Start OSGi framework
+        pluginHost = new PluginHost(felixBundleCache);
         pluginHost.init();
         // Install built-in bundles
+        long beginInstallBundles = System.currentTimeMillis();
         BundleTools.installBundles(pluginHost.getHostBundleContext(), bundleReferences);
+        deploymentTime += System.currentTimeMillis() - beginInstallBundles;
         // Start bundles
         pluginHost.start();
-        LOGGER.info(I18N.tr("Waiting for bundle stability"));
+        LOGGER.info(I18N.tr("Waiting for bundle stability, deployment of built-in bundles done in {0} s", deploymentTime / 1000.0));
         pluginHost.waitForBundlesStableState(BUNDLE_STABILITY_TIMEOUT);
     }
 
