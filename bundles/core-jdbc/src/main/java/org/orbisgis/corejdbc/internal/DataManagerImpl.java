@@ -1,6 +1,9 @@
 package org.orbisgis.corejdbc.internal;
 
+import org.GNOME.Accessibility.Table;
 import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggerFactory;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtility;
 import org.orbisgis.corejdbc.DataManager;
@@ -30,7 +33,12 @@ import java.util.Map;
  */
 @Component(service = {DataManager.class, RowSetFactory.class})
 public class DataManagerImpl implements DataManager {
+    private static Logger LOGGER = Logger.getLogger(DataManagerImpl.class);
     private DataSource dataSource;
+    private boolean isH2 = true;
+    private boolean isLocalH2Table = true;
+    private static final String H2TRIGGER = "org.orbisgis.h2triggers.H2Trigger";
+
     /** ReversibleRowSet fire row updates to their DataManager  */
     private Map<String, List<UndoableEditListener>> tableEditionListener = new HashMap<>();
     private static final Logger LOG = Logger.getLogger(DataManagerImpl.class);
@@ -75,7 +83,7 @@ public class DataManagerImpl implements DataManager {
      * @param dataSource Active DataSource
      */
     public DataManagerImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
+        setDataSource(dataSource);
     }
 
     /**
@@ -167,6 +175,14 @@ public class DataManagerImpl implements DataManager {
     @Reference
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
+        try (Connection connection = dataSource.getConnection()) {
+            DatabaseMetaData meta = connection.getMetaData();
+            isH2 = JDBCUtilities.isH2DataBase(meta);
+            isLocalH2Table = connection.getMetaData().getURL().startsWith("jdbc:h2:")
+                    && !connection.getMetaData().getURL().startsWith("jdbc:h2:tcp:/");
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
+        }
     }
 
     public void unsetDataSource(DataSource dataSource) {
@@ -186,11 +202,21 @@ public class DataManagerImpl implements DataManager {
 
     @Override
     public void addUndoableEditListener(String table, UndoableEditListener listener) {
-        String parsedTable = TableLocation.parse(table).toString();
+        String parsedTable = TableLocation.parse(table, isH2).toString(isH2);
         List<UndoableEditListener> listeners = tableEditionListener.get(parsedTable);
         if(listeners == null) {
             listeners = new ArrayList<>();
             tableEditionListener.put(parsedTable, listeners);
+            // Add trigger
+            if(isLocalH2Table) {
+                try(Connection connection = dataSource.getConnection();
+                    Statement st = connection.createStatement()) {
+                    String triggerName = getH2TriggerName(table);
+                    st.execute("CREATE FORCE TRIGGER "+triggerName+" AFTER INSERT, UPDATE, DELETE ON "+table+" CALL \""+H2TRIGGER+"\"");
+                } catch (SQLException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
+            }
         }
         listeners.add(listener);
     }
@@ -201,13 +227,33 @@ public class DataManagerImpl implements DataManager {
         List<UndoableEditListener> listeners = tableEditionListener.get(parsedTable);
         if(listeners != null) {
             listeners.remove(listener);
+            if(listeners.isEmpty()) {
+                // Remove trigger
+                String triggerName = getH2TriggerName(table);
+                try(Connection connection = dataSource.getConnection();
+                    Statement st = connection.createStatement()) {
+                    st.execute("DROP TRIGGER IF EXISTS "+triggerName);
+                } catch (SQLException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
+
+            }
         }
     }
-
+    private static String getH2TriggerName(String table) {
+        TableLocation tableIdentifier = TableLocation.parse(table, true);
+        return new TableLocation(tableIdentifier.getCatalog(), tableIdentifier.getSchema(),
+                "DM_"+tableIdentifier.getTable()).toString(true);
+    }
     @Override
     public void fireUndoableEditHappened(UndoableEditEvent e) {
-        if(e.getSource() != null && e.getSource() instanceof ReadRowSet) {
-            String table = TableLocation.parse(((ReadRowSet) e.getSource()).getTable()).toString();
+        if(e.getSource() != null) {
+            String table;
+            if(e.getSource() instanceof ReadRowSet) {
+                table = TableLocation.parse(((ReadRowSet) e.getSource()).getTable()).toString();
+            } else {
+                table = e.getSource().toString();
+            }
             List<UndoableEditListener> listeners = tableEditionListener.get(table);
             if(listeners != null) {
                 for(UndoableEditListener listener : listeners) {

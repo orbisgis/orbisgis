@@ -14,12 +14,17 @@ import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.h2triggersosgi.EventListenerService;
 
 import javax.sql.DataSource;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.undo.UndoManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Nicolas Fortin
@@ -61,6 +66,29 @@ public class TriggerTest {
     }
 
     @Test
+    public void testTableTrigger() throws SQLException {
+        DataManager dataManager = new DataManagerImpl(dataSource);
+        LocalListener local = new LocalListener();
+        dataManager.addDatabaseProgressionListener(local, StateEvent.DB_STATES.STATE_STATEMENT_END);
+        EventListenerService evtServ = new EventListenerService();
+        evtServ.setDataManager(dataManager);
+        try(Connection connection = dataSource.getConnection();
+            Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS TEST");
+            st.execute("CREATE TABLE TEST(ID serial)");
+            // Install listener
+            dataManager.addUndoableEditListener("TEST",undoManager);
+            assertFalse(undoManager.getUndoPresentationName());
+            st.execute("INSERT INTO TEST VALUES (1)");
+            assertTrue(undoManager.);
+            assertFalse(undoManager.isSignificant());
+            undoManager.end();
+        }
+        evtServ.disable();
+        evtServ.unsetDataManager(dataManager);
+    }
+
+    @Test
     public void testListenerWithWrapper() throws SQLException {
         testListenerInternal(SFSUtilities.wrapSpatialDataSource(dataSource));
     }
@@ -76,5 +104,9 @@ public class TriggerTest {
         public StateEvent getLastState() {
             return lastState;
         }
+    }
+
+    private static class EventStack implements UndoableEditListener {
+
     }
 }

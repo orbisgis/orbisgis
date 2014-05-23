@@ -7,12 +7,20 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.StateEvent;
 import org.orbisgis.h2triggers.H2DatabaseEventListener;
+import org.orbisgis.h2triggers.H2Trigger;
+import org.orbisgis.h2triggers.TriggerListener;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 import javax.sql.DataSource;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoableEdit;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -21,10 +29,14 @@ import java.sql.Statement;
  * @author Nicolas Fortin
  */
 @Component(immediate = true)
-public class EventListenerService implements DatabaseEventListener {
+public class EventListenerService implements DatabaseEventListener, TriggerListener {
     private DataManager dataManager;
     private Logger logger = Logger.getLogger(EventListenerService.class);
-
+    private static boolean isLocalH2DataBase(DatabaseMetaData meta) throws SQLException {
+        return JDBCUtilities.isH2DataBase(meta)
+                && meta.getURL().startsWith("jdbc:h2:")
+                && !meta.getURL().startsWith("jdbc:h2:tcp:/");
+    }
     @Reference
     public void setDataManager(DataManager dataManager) {
         this.dataManager = dataManager;
@@ -32,9 +44,7 @@ public class EventListenerService implements DatabaseEventListener {
         // Link
         try(Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement()) {
-            if(JDBCUtilities.isH2DataBase(connection.getMetaData())
-                    && connection.getMetaData().getURL().startsWith("jdbc:h2:")
-                    && !connection.getMetaData().getURL().startsWith("jdbc:h2:tcp:/")) {
+            if(isLocalH2DataBase(connection.getMetaData())) {
                 H2DatabaseEventListener.setDelegateDatabaseEventListener(this);
                 // Change DATABASE_EVENT_LISTENER for this Database instance
                 st.execute("SET DATABASE_EVENT_LISTENER '" + H2DatabaseEventListener.class.getName() + "'");
@@ -55,6 +65,7 @@ public class EventListenerService implements DatabaseEventListener {
                 } catch (Exception ex) {
                     logger.warn("Cannot change connection URL:\n" + ex.getLocalizedMessage(), ex);
                 }
+                H2Trigger.setListener(this);
             }
         } catch (SQLException ex) {
             logger.error(ex.getLocalizedMessage(), ex);
@@ -70,7 +81,10 @@ public class EventListenerService implements DatabaseEventListener {
         // Unlink
         try(Connection connection = dataManager.getDataSource().getConnection();
             Statement st = connection.createStatement()) {
-            st.execute("SET DATABASE_EVENT_LISTENER ''");
+            if(isLocalH2DataBase(connection.getMetaData())) {
+                st.execute("SET DATABASE_EVENT_LISTENER ''");
+                H2Trigger.setListener(null);
+            }
         } catch (SQLException ex) {
             // Ignore
         }
@@ -102,5 +116,22 @@ public class EventListenerService implements DatabaseEventListener {
     @Override
     public void closingDatabase() {
         // Not used
+    }
+
+    @Override
+    public void fire(String schemaName, String triggerName, String tableName) {
+        if(dataManager != null) {
+            dataManager.fireUndoableEditHappened(new UndoableEditEvent(tableName ,new TableUpdate()));
+        }
+    }
+
+    private static class TableUpdate extends AbstractUndoableEdit {
+        private TableUpdate() {
+        }
+
+        @Override
+        public boolean isSignificant() {
+            return false; // This event should not be seen as action in Undo/Redo tasks.
+        }
     }
 }
