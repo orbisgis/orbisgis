@@ -14,9 +14,7 @@ import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.h2triggersosgi.EventListenerService;
 
 import javax.sql.DataSource;
-import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
-import javax.swing.undo.UndoManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
