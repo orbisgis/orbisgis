@@ -10,6 +10,8 @@ import org.junit.Test;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DatabaseProgressionListener;
 import org.orbisgis.corejdbc.StateEvent;
+import org.orbisgis.corejdbc.TableEditEvent;
+import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.h2triggersosgi.EventListenerService;
 
@@ -18,10 +20,13 @@ import javax.swing.event.UndoableEditListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -70,17 +75,21 @@ public class TriggerTest {
         dataManager.addDatabaseProgressionListener(local, StateEvent.DB_STATES.STATE_STATEMENT_END);
         EventListenerService evtServ = new EventListenerService();
         evtServ.setDataManager(dataManager);
+        EventStack tableEvents = new EventStack();
         try(Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement()) {
             st.execute("DROP TABLE IF EXISTS TEST");
             st.execute("CREATE TABLE TEST(ID serial)");
             // Install listener
-            dataManager.addUndoableEditListener("TEST",undoManager);
-            assertFalse(undoManager.getUndoPresentationName());
+            dataManager.addTableEditListener("TEST", tableEvents);
+            assertTrue(tableEvents.getEvents().isEmpty());
             st.execute("INSERT INTO TEST VALUES (1)");
-            assertTrue(undoManager.);
-            assertFalse(undoManager.isSignificant());
-            undoManager.end();
+            List<TableEditEvent> evts = tableEvents.getEvents();
+            assertEquals(1, evts.size());
+            assertNull(evts.get(0).getUndoableEdit());
+            assertEquals("TEST", evts.get(0).getTableName());
+        } finally {
+            dataManager.removeTableEditListener("TEST", tableEvents);
         }
         evtServ.disable();
         evtServ.unsetDataManager(dataManager);
@@ -104,7 +113,18 @@ public class TriggerTest {
         }
     }
 
-    private static class EventStack implements UndoableEditListener {
+    private static class EventStack implements TableEditListener {
+        List<TableEditEvent> events = new LinkedList<>();
+        @Override
+        public void tableChange(TableEditEvent event) {
+            events.add(event);
+        }
 
+        /**
+         * @return List of events
+         */
+        public List<TableEditEvent> getEvents() {
+            return events;
+        }
     }
 }

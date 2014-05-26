@@ -1,13 +1,13 @@
 package org.orbisgis.corejdbc.internal;
 
-import org.GNOME.Accessibility.Table;
 import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggerFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtility;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DatabaseProgressionListener;
+import org.orbisgis.corejdbc.TableEditEvent;
+import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.corejdbc.StateEvent;
@@ -17,8 +17,6 @@ import org.osgi.service.component.annotations.Reference;
 
 import javax.sql.rowset.*;
 import javax.sql.DataSource;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
 import java.io.File;
 import java.net.URI;
 import java.sql.*;
@@ -40,7 +38,7 @@ public class DataManagerImpl implements DataManager {
     private static final String H2TRIGGER = "org.orbisgis.h2triggers.H2Trigger";
 
     /** ReversibleRowSet fire row updates to their DataManager  */
-    private Map<String, List<UndoableEditListener>> tableEditionListener = new HashMap<>();
+    private Map<String, List<TableEditListener>> tableEditionListener = new HashMap<>();
     private static final Logger LOG = Logger.getLogger(DataManagerImpl.class);
     private Map<StateEvent.DB_STATES, ArrayList<DatabaseProgressionListener>> progressionListenerMap = new HashMap<>();
 
@@ -201,9 +199,9 @@ public class DataManagerImpl implements DataManager {
 
 
     @Override
-    public void addUndoableEditListener(String table, UndoableEditListener listener) {
+    public void addTableEditListener(String table, TableEditListener listener) {
         String parsedTable = TableLocation.parse(table, isH2).toString(isH2);
-        List<UndoableEditListener> listeners = tableEditionListener.get(parsedTable);
+        List<TableEditListener> listeners = tableEditionListener.get(parsedTable);
         if(listeners == null) {
             listeners = new ArrayList<>();
             tableEditionListener.put(parsedTable, listeners);
@@ -222,9 +220,9 @@ public class DataManagerImpl implements DataManager {
     }
 
     @Override
-    public void removeUndoableEditListener(String table, UndoableEditListener listener) {
+    public void removeTableEditListener(String table, TableEditListener listener) {
         String parsedTable = TableLocation.parse(table).toString();
-        List<UndoableEditListener> listeners = tableEditionListener.get(parsedTable);
+        List<TableEditListener> listeners = tableEditionListener.get(parsedTable);
         if(listeners != null) {
             listeners.remove(listener);
             if(listeners.isEmpty()) {
@@ -246,7 +244,7 @@ public class DataManagerImpl implements DataManager {
                 "DM_"+tableIdentifier.getTable()).toString(true);
     }
     @Override
-    public void fireUndoableEditHappened(UndoableEditEvent e) {
+    public void fireTableEditHappened(TableEditEvent e) {
         if(e.getSource() != null) {
             String table;
             if(e.getSource() instanceof ReadRowSet) {
@@ -254,11 +252,11 @@ public class DataManagerImpl implements DataManager {
             } else {
                 table = e.getSource().toString();
             }
-            List<UndoableEditListener> listeners = tableEditionListener.get(table);
+            List<TableEditListener> listeners = tableEditionListener.get(table);
             if(listeners != null) {
-                for(UndoableEditListener listener : listeners) {
+                for(TableEditListener listener : listeners) {
                     try {
-                        listener.undoableEditHappened(e);
+                        listener.tableChange(e);
                     } catch (Exception ex) {
                         LOG.error(ex.getLocalizedMessage(), ex);
                     }

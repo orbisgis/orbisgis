@@ -6,7 +6,7 @@ import java.sql.SQLException;
  * A table edit that can be undone.
  * @author Nicolas Fortin
  */
-public interface DataBaseTableUndoableEdit {
+public interface TableUndoableEdit {
     /**
      * Run SQL commands in order to undo changes.
      * @throws java.sql.SQLException If an error occurred while undoing

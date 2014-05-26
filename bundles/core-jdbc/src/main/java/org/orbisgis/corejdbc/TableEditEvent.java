@@ -1,4 +1,4 @@
-/**
+/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
@@ -29,20 +29,39 @@
 package org.orbisgis.corejdbc;
 
 /**
- * This kind of RowSet hold an history of update commands. Undo and redo methods are available.
  * @author Nicolas Fortin
  */
-public interface ReversibleRowSet extends ReadRowSet {
+public class TableEditEvent extends java.util.EventObject {
+    private TableUndoableEdit undoableEdit;
 
     /**
-     * Table update done through ReversibleRowSet will be fire through theses listeners
-     * @param listener Listener instance
+     * @param tableName Table identifier
      */
-    void addTableEditListener(String table, TableEditListener listener);
+    public TableEditEvent(String tableName) {
+        super(tableName);
+    }
 
     /**
-     * Remove registered listener
-     * @param listener Listener instance to remove
+     * Table undoable edit event
+     * @param tableName Table identifier
+     * @param undoableEdit Edit undo-redo action
      */
-    void removeTableEditListener(String table, TableEditListener listener);
+    public TableEditEvent(String tableName, TableUndoableEdit undoableEdit) {
+        super(tableName);
+        this.undoableEdit = undoableEdit;
+    }
+
+    /**
+     * @return Table identifier
+     */
+    public String getTableName() {
+        return source.toString();
+    }
+
+    /**
+     * @return Edit undo-redo action or null if not linked with undo-redo actions.
+     */
+    public TableUndoableEdit getUndoableEdit() {
+        return undoableEdit;
+    }
 }
