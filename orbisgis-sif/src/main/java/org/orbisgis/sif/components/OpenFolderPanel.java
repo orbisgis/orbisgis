@@ -28,10 +28,12 @@
  */
 package org.orbisgis.sif.components;
 
+import org.orbisgis.sif.UIFactory;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.net.URL;
-import javax.swing.filechooser.FileFilter;
-import org.orbisgis.sif.UIFactory;
 
 /**
  * This class handles the panel used to import the content of a folder in the
@@ -71,6 +73,16 @@ public class OpenFolderPanel extends AbstractOpenPanel {
                 } else {
                         return null;
                 }
+        }
+
+        @Override
+        public File getSelectedFile() {
+            final JFileChooser fileChooser = getFileChooser();
+            File selectedFile = fileChooser.getSelectedFile();
+            if (selectedFile == null) {
+                selectedFile = fileChooser.getCurrentDirectory();
+            }
+            return selectedFile;
         }
 
         @Override
