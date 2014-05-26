@@ -54,7 +54,7 @@ public class DockingLocation {
                 return referenceName;
         }
         /**
-         * @return This location in comparaison with the reference
+         * @return This location in comparison with the reference
          */
         public Location getPosition() {
                 return position;

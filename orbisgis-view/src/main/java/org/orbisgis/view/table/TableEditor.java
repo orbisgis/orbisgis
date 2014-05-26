@@ -72,7 +72,9 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
+import org.orbisgis.view.table.ext.TableEditorActions;
 import org.orbisgis.view.table.jobs.CreateSourceFromSelection;
+import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.viewapi.docking.DockingLocation;
 import org.orbisgis.viewapi.docking.DockingPanelParameters;
 import org.orbisgis.viewapi.edition.EditableElement;
@@ -147,6 +149,9 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
 
         private List<Action> getDockActions() {
                 List<Action> actions = new LinkedList<>();
+                actions.add(new DefaultAction(TableEditorActions.A_REFRESH, I18N.tr("Refresh table content"),
+                        OrbisGISIcon.getIcon("refresh"),
+                        EventHandler.create(ActionListener.class, tableModel, "fireTableDataChanged")));
                 /*
                 TODO Edition
                 if(tableEditableElement.getDataSource().isEditable()) {

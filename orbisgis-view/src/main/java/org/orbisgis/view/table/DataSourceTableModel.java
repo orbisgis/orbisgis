@@ -28,12 +28,16 @@
  */
 package org.orbisgis.view.table;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import javax.sql.RowSet;
 import javax.swing.table.AbstractTableModel;
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.ReversibleRowSet;
+import org.orbisgis.corejdbc.TableEditEvent;
+import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.viewapi.edition.EditableElementException;
 import org.orbisgis.viewapi.edition.EditableSource;
 import org.xnap.commons.i18n.I18n;
@@ -43,12 +47,12 @@ import org.xnap.commons.i18n.I18nFactory;
  * Read the data source when the Table need to show cells
  * @author Nicolas Fortin
  */
-public class DataSourceTableModel extends AbstractTableModel {
+public class DataSourceTableModel extends AbstractTableModel implements TableEditListener {
         protected final static I18n I18N = I18nFactory.getI18n(DataSourceTableModel.class);
         private static final Logger LOGGER = Logger.getLogger(DataSourceTableModel.class);
         private static final long serialVersionUID = 1L;
         private EditableSource element;
-        // TODO enable edition listener
+        private long lastFetchRowCount = 0;
         //private ModificationListener dataSourceListener;
 
         /**
@@ -57,31 +61,19 @@ public class DataSourceTableModel extends AbstractTableModel {
          */
         public DataSourceTableModel(EditableSource element) {
                 this.element = element;
-                // TODO edition listener on RowSet
-                // dataSourceListener = new ModificationListener();
-                //                if(dataSource.isEditable()) {
-                //                        try {
-                //                                dataSource.addEditionListener(dataSourceListener);
-                //                                dataSource.addMetadataEditionListener(dataSourceListener);
-                //                        } catch (UnsupportedOperationException ex) {
-                //                                LOGGER.warn(I18N.tr("The TableEditor cannot listen to source modifications"), ex);
-                //                        }
-                //                }
+                element.getDataManager().addTableEditListener(element.getTableReference(), this);
+        }
+
+        @Override
+        public void tableChange(TableEditEvent event) {
+            fireTableDataChanged();
         }
 
         /**
          * Remove data source listeners
          */
         public void dispose() {
-                // TODO edition listener on RowSet
-                //                if (dataSource.isEditable()) {
-                //                        try {
-                //                                dataSource.removeEditionListener(dataSourceListener);
-                //                                dataSource.removeMetadataEditionListener(dataSourceListener);
-                //                        } catch (UnsupportedOperationException ex) {
-                //                                // Ignore
-                //                        }
-                //                }
+                element.getDataManager().removeTableEditListener(element.getTableReference(), this);
         }
 
         public RowSet getRowSet() throws SQLException {
@@ -91,9 +83,7 @@ public class DataSourceTableModel extends AbstractTableModel {
                 throw new SQLException(ex);
             }
         }
-        
-        
-        
+
         @Override
         public String getColumnName(int col) {
                 try {
@@ -162,16 +152,17 @@ public class DataSourceTableModel extends AbstractTableModel {
                 try {
                         RowSet rowSet = getRowSet();
                         if(rowSet instanceof ReversibleRowSet) {
-                            return (int)((ReversibleRowSet) rowSet).getRowCount();
+                            lastFetchRowCount = ((ReversibleRowSet) rowSet).getRowCount();
                         } else {
                             int oldPos = rowSet.getRow();
                             try {
                                 rowSet.afterLast();
-                                return rowSet.getRow();
+                                lastFetchRowCount = rowSet.getRow();
                             } finally {
                                 rowSet.absolute(oldPos);
                             }
                         }
+                    return (int)lastFetchRowCount;
                 } catch (SQLException e) {
                         LOGGER.error(e.getLocalizedMessage(), e);
                         return 0;
@@ -185,8 +176,21 @@ public class DataSourceTableModel extends AbstractTableModel {
                         rowSet.absolute(row + 1);
                         return rowSet.getObject(col + 1);
                 } catch (SQLException e) {
+                        // Check if the table has been deleted
+                        if(!tableExists()) {
+                            fireTableRowsDeleted(0, (int)(lastFetchRowCount - 1));
+                        }
                         return ""; //Cannot log the error, this method is called several times
                 }
+        }
+
+        private boolean tableExists() {
+            try(Connection connection = element.getDataManager().getDataSource().getConnection();
+                Statement st = connection.createStatement()) {
+                return st.execute("SELECT COUNT(*) FROM "+element.getTableReference());
+            } catch (SQLException ex) {
+                return false;
+            }
         }
 
         /**
@@ -244,7 +248,8 @@ public class DataSourceTableModel extends AbstractTableModel {
                 }
                 */
         }
-// TODO enable edition listener
+
+//
 //        /**
 //         * Track data source changes, update the table model
 //         */
