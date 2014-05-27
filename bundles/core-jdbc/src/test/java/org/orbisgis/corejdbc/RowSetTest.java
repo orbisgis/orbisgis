@@ -188,13 +188,13 @@ public class RowSetTest {
     public void testReversibleRowSet() throws SQLException {
         RowSetFactory factory = new DataManagerImpl(dataSource);
         JdbcRowSet rs = factory.createJdbcRowSet();
-        rs.setCommand("SELECT * FROM TEST");
         try (
                 Connection connection = dataSource.getConnection();
                 Statement st = connection.createStatement()) {
                 st.execute("drop table if exists test");
                 st.execute("create table test (id integer primary key, str varchar(30), flt float)");
                 st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
+                rs.setCommand("SELECT * FROM TEST");
                 rs.execute();
                 assertTrue(rs.next());
                 assertEquals(42, rs.getInt(1));
