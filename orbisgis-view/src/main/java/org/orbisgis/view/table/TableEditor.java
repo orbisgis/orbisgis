@@ -206,7 +206,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 filterManager.registerFilterFactory(factory);
                 // SQL Filter is only available if there is a primary key
                 try(Connection connection = dataSource.getConnection()) {
-                    int idPk = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), tableEditableElement.getTableReference());
+                    int idPk = JDBCUtilities.getIntegerPrimaryKey(connection, tableEditableElement.getTableReference());
                     if(idPk > 0) {
                         filterManager.registerFilterFactory(new WhereSQLFilterFactory());
                     }

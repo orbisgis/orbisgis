@@ -147,7 +147,7 @@ public class ToolUtilities {
             String table = activeLayer.getTableReference();
             if(table!=null && !table.isEmpty()) {
                 try(Connection connection = vc.getDataManager().getDataSource().getConnection()) {
-                    int pk = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), activeLayer.getTableReference());
+                    int pk = JDBCUtilities.getIntegerPrimaryKey(connection, activeLayer.getTableReference());
                     return pk>0;
                 }
             } else {

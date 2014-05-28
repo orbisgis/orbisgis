@@ -115,7 +115,7 @@ public class CreateSourceFromSelection implements BackgroundJob {
                             pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
                                     listener);
                             // Copy content using pk
-                            int primaryKeyIndex = JDBCUtilities.getIntegerPrimaryKey(meta, tableName);
+                            int primaryKeyIndex = JDBCUtilities.getIntegerPrimaryKey(connection, tableName);
                             if(primaryKeyIndex == 0) {
                                 // Should never happen because the check is done before the creation of this class
                                 throw new SQLException("Cannot create table from table selection that does not contains a primary key");

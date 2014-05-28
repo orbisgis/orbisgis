@@ -278,7 +278,7 @@ public class MetaData {
                     }
                 }
             }
-            int pkId = JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), tableLocation.toString());
+            int pkId = JDBCUtilities.getIntegerPrimaryKey(connection, tableLocation.toString());
             if (pkId > 0) {
                 // This table has a Primary key, get the field name
                 pkName = JDBCUtilities.getFieldName(connection.getMetaData(), tableLocation.toString(), pkId);
