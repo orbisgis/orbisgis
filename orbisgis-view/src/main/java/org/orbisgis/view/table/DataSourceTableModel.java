@@ -66,6 +66,7 @@ public class DataSourceTableModel extends AbstractTableModel implements TableEdi
 
         @Override
         public void tableChange(TableEditEvent event) {
+            element.getRowSet().refreshRow();
             fireTableDataChanged();
         }
 
@@ -149,6 +150,9 @@ public class DataSourceTableModel extends AbstractTableModel implements TableEdi
                 if(!element.isOpen()) {
                         return 0;
                 }
+                if(!tableExists()) {
+                    return 0;
+                }
                 try {
                         RowSet rowSet = getRowSet();
                         if(rowSet instanceof ReversibleRowSet) {
@@ -178,6 +182,7 @@ public class DataSourceTableModel extends AbstractTableModel implements TableEdi
                 } catch (SQLException e) {
                         // Check if the table has been deleted
                         if(!tableExists()) {
+                            //
                             fireTableRowsDeleted(0, (int)(lastFetchRowCount - 1));
                         }
                         return ""; //Cannot log the error, this method is called several times

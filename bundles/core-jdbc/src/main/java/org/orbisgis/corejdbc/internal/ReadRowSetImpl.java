@@ -521,6 +521,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     @Override
     public void refreshRow() throws SQLException {
         currentRow = null;
+        cache.clear();
         try(Resource res = resultSetHolder.getResource()) {
             res.getResultSet().refreshRow();
             moveCursorTo(rowId);
