@@ -61,6 +61,7 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.MetaData;
+import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
@@ -147,11 +148,15 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 updateTitle();
         }
 
+        public void onMenuRefresh() {
+            tableModel.tableChange(new TableEditEvent(tableEditableElement.getTableReference()));
+        }
+
         private List<Action> getDockActions() {
                 List<Action> actions = new LinkedList<>();
                 actions.add(new DefaultAction(TableEditorActions.A_REFRESH, I18N.tr("Refresh table content"),
                         OrbisGISIcon.getIcon("arrow_refresh"),
-                        EventHandler.create(ActionListener.class, tableModel, "fireTableDataChanged")));
+                        EventHandler.create(ActionListener.class, this, "onMenuRefresh")));
                 /*
                 TODO Edition
                 if(tableEditableElement.getDataSource().isEditable()) {
