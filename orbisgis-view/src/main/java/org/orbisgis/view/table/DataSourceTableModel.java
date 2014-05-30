@@ -66,7 +66,11 @@ public class DataSourceTableModel extends AbstractTableModel implements TableEdi
 
         @Override
         public void tableChange(TableEditEvent event) {
-            element.getRowSet().refreshRow();
+            try {
+                element.getRowSet().refreshRow();
+            } catch (EditableElementException | SQLException ex) {
+                LOGGER.warn(I18N.tr("Cannot refresh TableEditor data"), ex);
+            }
             fireTableDataChanged();
         }
 

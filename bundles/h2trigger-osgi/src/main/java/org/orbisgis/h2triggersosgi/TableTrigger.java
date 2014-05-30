@@ -26,54 +26,71 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.h2triggers;
+package org.orbisgis.h2triggersosgi;
 
 import org.h2.api.Trigger;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.TableEditEvent;
 
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Single trigger class for H2 local connections.
+ * Trigger attached to H2 Database
  * @author Nicolas Fortin
  */
-public class H2Trigger implements Trigger {
-    private static TriggerFactory triggerFactory;
-    private Trigger wrappedTrigger;
+public class TableTrigger implements Trigger {
+    private DataManager dataManager;
+    private String tableIdentifier;
+    private boolean update;
 
-    /**
-     * Add a triggerFactory linked with connection url
-     * @param triggerFactory TriggerListener instance or null to unset
-     */
-    public static void setTriggerFactory(TriggerFactory triggerFactory) {
-        H2Trigger.triggerFactory = triggerFactory;
+    public TableTrigger(DataManager dataManager) {
+        this.dataManager = dataManager;
     }
 
     @Override
     public void init(Connection conn, String schemaName, String triggerName, String tableName, boolean before, int type) throws SQLException {
-        if(triggerFactory != null) {
-            wrappedTrigger = triggerFactory.createTrigger(conn, schemaName, triggerName, tableName, before, type);
-        }
+        this.update = type == UPDATE;
+        this.tableIdentifier = new TableLocation(schemaName, tableName).toString(true);
     }
 
     @Override
     public void fire(Connection conn, Object[] oldRow, Object[] newRow) throws SQLException {
-        if(wrappedTrigger != null) {
-            wrappedTrigger.fire(conn, oldRow, newRow);
-        }
+        // Do not fire the event in the H2 thread in order to not raise
+        // org.h2.jdbc.JdbcSQLException: Timeout trying to lock table XXX
+        SwingUtilities.invokeLater(new TableEditEventProcess(dataManager, new TableEditEvent(tableIdentifier)));
     }
 
     @Override
     public void close() throws SQLException {
-        if(wrappedTrigger != null) {
-            wrappedTrigger.close();
-        }
+
     }
 
     @Override
     public void remove() throws SQLException {
-        if(wrappedTrigger != null) {
-            wrappedTrigger.remove();
+        // Fire if table has been deleted
+        if(!JDBCUtilities.tableExists(dataManager.getDataSource().getConnection(), tableIdentifier)) {
+            // Do not fire the event in the H2 thread in order to not raise
+            // org.h2.jdbc.JdbcSQLException: Timeout trying to lock table XXX
+            SwingUtilities.invokeLater(new TableEditEventProcess(dataManager, new TableEditEvent(tableIdentifier)));
+        }
+    }
+
+    private static class TableEditEventProcess implements Runnable {
+        DataManager dataManager;
+        TableEditEvent evt;
+
+        private TableEditEventProcess(DataManager dataManager, TableEditEvent evt) {
+            this.dataManager = dataManager;
+            this.evt = evt;
+        }
+
+        @Override
+        public void run() {
+            dataManager.fireTableEditHappened(evt);
         }
     }
 }

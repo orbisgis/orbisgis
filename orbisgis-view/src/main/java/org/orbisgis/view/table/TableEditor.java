@@ -150,7 +150,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         private List<Action> getDockActions() {
                 List<Action> actions = new LinkedList<>();
                 actions.add(new DefaultAction(TableEditorActions.A_REFRESH, I18N.tr("Refresh table content"),
-                        OrbisGISIcon.getIcon("refresh"),
+                        OrbisGISIcon.getIcon("arrow_refresh"),
                         EventHandler.create(ActionListener.class, tableModel, "fireTableDataChanged")));
                 /*
                 TODO Edition
