@@ -5,6 +5,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.VectorialFilter;
 
@@ -46,7 +48,8 @@ public class SourceListModelTest {
             st.execute("create table myschema.userTable2 ( id integer primary key, pt POINT)");
             st.execute("create table `TABLE.USERTABLE3` ( id integer primary key, pt POINT)");
         }
-        SourceListModel sourceListModel = new SourceListModel(dataSource);
+        DataManager dataManager = new DataManagerImpl(dataSource);
+        SourceListModel sourceListModel = new SourceListModel(dataManager);
         sourceListModel.readDatabase();
         sourceListModel.doFilter();
         List<IFilter> filters = new ArrayList<>();

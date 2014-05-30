@@ -663,7 +663,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                         "onMouseActionOnSourceList",
                         "")); //This method ask the event data as argument
                 //Create the list content manager
-                sourceListContent = new SourceListModel(dataManager.getDataSource());
+                sourceListContent = new SourceListModel(dataManager);
                 //Replace the default model by the GeoCatalog model
                 sourceList.setModel(sourceListContent);
                 SourceListTransferHandler transferHandler = new SourceListTransferHandler(dataManager);
