@@ -55,6 +55,8 @@ public class DataSourceTableModel extends AbstractTableModel implements TableEdi
         private static final long serialVersionUID = 1L;
         private EditableSource element;
         private long lastFetchRowCount = 0;
+        private long lastFetchRowCountTime = 0;
+        private static long FETCH_ROW_COUNT_DELAY = 2000;
         //private ModificationListener dataSourceListener;
 
         /**
@@ -152,36 +154,43 @@ public class DataSourceTableModel extends AbstractTableModel implements TableEdi
                         return 0;
                 }
         }
-        
-        @Override
-        public int getRowCount() {
-                if(!element.isOpen()) {
-                        return 0;
-                }
-                if(!tableExists()) {
-                    return 0;
-                }
-                try {
-                        RowSet rowSet = getRowSet();
-                        if(rowSet instanceof ReversibleRowSet) {
-                            lastFetchRowCount = ((ReversibleRowSet) rowSet).getRowCount();
-                        } else {
-                            int oldPos = rowSet.getRow();
-                            try {
-                                rowSet.afterLast();
-                                lastFetchRowCount = rowSet.getRow();
-                            } finally {
-                                rowSet.absolute(oldPos);
-                            }
-                        }
-                    return (int)lastFetchRowCount;
-                } catch (SQLException e) {
-                        LOGGER.error(e.getLocalizedMessage(), e);
-                        return 0;
-                }
+
+    @Override
+    public int getRowCount() {
+        long time = System.currentTimeMillis();
+        if(time - lastFetchRowCountTime < FETCH_ROW_COUNT_DELAY) {
+            return (int)lastFetchRowCount;
         }
-                
-        @Override
+        lastFetchRowCountTime = time;
+        if(!element.isOpen()) {
+            lastFetchRowCount = 0;
+            return 0;
+        }
+        if(!tableExists()) {
+            lastFetchRowCount = 0;
+            return 0;
+        }
+        try {
+            RowSet rowSet = getRowSet();
+            if(rowSet instanceof ReversibleRowSet) {
+                lastFetchRowCount = ((ReversibleRowSet) rowSet).getRowCount();
+            } else {
+                int oldPos = rowSet.getRow();
+                try {
+                    rowSet.afterLast();
+                    lastFetchRowCount = rowSet.getRow();
+                } finally {
+                    rowSet.absolute(oldPos);
+                }
+            }
+            return (int)lastFetchRowCount;
+        } catch (SQLException e) {
+            LOGGER.error(e.getLocalizedMessage(), e);
+            return 0;
+        }
+    }
+
+    @Override
         public Object getValueAt(int row, int col) {
                 try {
                         RowSet rowSet = getRowSet();
