@@ -35,9 +35,11 @@ import java.sql.Types;
 import javax.sql.RowSet;
 import javax.swing.table.AbstractTableModel;
 import org.apache.log4j.Logger;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableEditListener;
+import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.viewapi.edition.EditableElementException;
 import org.orbisgis.viewapi.edition.EditableSource;
 import org.xnap.commons.i18n.I18n;
@@ -66,12 +68,14 @@ public class DataSourceTableModel extends AbstractTableModel implements TableEdi
 
         @Override
         public void tableChange(TableEditEvent event) {
+            // TODO more precise refresh to avoid reloading entire table
             try {
-                element.getRowSet().refreshRow();
-            } catch (EditableElementException | SQLException ex) {
+                element.close(new NullProgressMonitor());
+                element.open(new NullProgressMonitor());
+            } catch (EditableElementException ex) {
                 LOGGER.warn(I18N.tr("Cannot refresh TableEditor data"), ex);
             }
-            fireTableDataChanged();
+            fireTableStructureChanged();
         }
 
         /**

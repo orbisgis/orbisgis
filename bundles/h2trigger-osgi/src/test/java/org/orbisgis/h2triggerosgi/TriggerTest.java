@@ -16,6 +16,7 @@ import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.h2triggersosgi.EventListenerService;
 
 import javax.sql.DataSource;
+import javax.swing.*;
 import javax.swing.event.UndoableEditListener;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -45,11 +46,11 @@ public class TriggerTest {
     }
 
     @Test
-    public void testListener() throws SQLException {
+    public void testListener() throws Exception {
         testListenerInternal(dataSource);
     }
 
-    private void testListenerInternal(DataSource dataSourceParam) throws SQLException {
+    private void testListenerInternal(DataSource dataSourceParam) throws Exception {
         DataManager dataManager = new DataManagerImpl(dataSourceParam);
         LocalListener local = new LocalListener();
         dataManager.addDatabaseProgressionListener(local, StateEvent.DB_STATES.STATE_STATEMENT_END);
@@ -59,6 +60,7 @@ public class TriggerTest {
             Statement st = connection.createStatement()) {
             String query = "select * from GEOMETRY_COLUMNS";
             st.execute(query);
+            SwingUtilities.invokeAndWait(new DummyRunnable());
             assertNotNull(local.getLastState());
             assertEquals(query, local.getLastState().getName());
         }
@@ -69,10 +71,8 @@ public class TriggerTest {
     }
 
     @Test
-    public void testTableTrigger() throws SQLException {
+    public void testTableTrigger() throws Exception {
         DataManager dataManager = new DataManagerImpl(dataSource);
-        LocalListener local = new LocalListener();
-        dataManager.addDatabaseProgressionListener(local, StateEvent.DB_STATES.STATE_STATEMENT_END);
         EventListenerService evtServ = new EventListenerService();
         evtServ.setDataManager(dataManager);
         EventStack tableEvents = new EventStack();
@@ -84,10 +84,11 @@ public class TriggerTest {
             dataManager.addTableEditListener("TEST", tableEvents);
             assertTrue(tableEvents.getEvents().isEmpty());
             st.execute("INSERT INTO TEST VALUES (1)");
+            SwingUtilities.invokeAndWait(new DummyRunnable());
             List<TableEditEvent> evts = tableEvents.getEvents();
             assertEquals(1, evts.size());
             assertNull(evts.get(0).getUndoableEdit());
-            assertEquals("TEST", evts.get(0).getTableName());
+            assertEquals("PUBLIC.TEST", evts.get(0).getTableName());
         } finally {
             dataManager.removeTableEditListener("TEST", tableEvents);
         }
@@ -96,7 +97,7 @@ public class TriggerTest {
     }
 
     @Test
-    public void testListenerWithWrapper() throws SQLException {
+    public void testListenerWithWrapper() throws Exception {
         testListenerInternal(SFSUtilities.wrapSpatialDataSource(dataSource));
     }
 
@@ -125,6 +126,11 @@ public class TriggerTest {
          */
         public List<TableEditEvent> getEvents() {
             return events;
+        }
+    }
+    private static class DummyRunnable implements Runnable {
+        @Override
+        public void run() {
         }
     }
 }

@@ -35,7 +35,6 @@ import org.h2.jdbcx.JdbcDataSource;
 import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.StateEvent;
-import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.h2triggers.H2DatabaseEventListener;
 import org.orbisgis.h2triggers.H2Trigger;
 import org.orbisgis.h2triggers.TriggerFactory;
@@ -149,7 +148,14 @@ public class EventListenerService implements DatabaseEventListener, TriggerFacto
     @Override
     public Trigger createTrigger(Connection conn, String schemaName, String triggerName, String tableName, boolean before, int type) {
         if(dataManager != null) {
-            return new TableTrigger(dataManager);
+            TableTrigger trigger = new TableTrigger(dataManager);
+            try {
+                trigger.init(conn, schemaName, triggerName, tableName, before, type);
+                return trigger;
+            } catch (SQLException ex) {
+                logger.error("Cannot init trigger "+triggerName,ex);
+                return null;
+            }
         } else {
             return null;
         }

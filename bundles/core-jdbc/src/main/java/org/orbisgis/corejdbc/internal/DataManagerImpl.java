@@ -210,6 +210,7 @@ public class DataManagerImpl implements DataManager {
                 try(Connection connection = dataSource.getConnection();
                     Statement st = connection.createStatement()) {
                     String triggerName = getH2TriggerName(table);
+                    st.execute("DROP TRIGGER IF EXISTS "+triggerName);
                     st.execute("CREATE FORCE TRIGGER "+triggerName+" AFTER INSERT, UPDATE, DELETE ON "+table+" CALL \""+H2TRIGGER+"\"");
                 } catch (SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
@@ -246,13 +247,17 @@ public class DataManagerImpl implements DataManager {
     @Override
     public void fireTableEditHappened(TableEditEvent e) {
         if(e.getSource() != null) {
-            String table;
+            TableLocation table;
             if(e.getSource() instanceof ReadRowSet) {
-                table = TableLocation.parse(((ReadRowSet) e.getSource()).getTable()).toString();
+                table = TableLocation.parse(((ReadRowSet) e.getSource()).getTable(), true);
             } else {
-                table = e.getSource().toString();
+                table = TableLocation.parse(e.getSource().toString(), true);
             }
-            List<TableEditListener> listeners = tableEditionListener.get(table);
+            if("PUBLIC".equals(table.getSchema()) && !tableEditionListener.containsKey(table.toString(true))) {
+                // Maybe schema is not given in listener table identifier
+                table = new TableLocation("","",table.getTable());
+            }
+            List<TableEditListener> listeners = tableEditionListener.get(table.toString(true));
             if(listeners != null) {
                 for(TableEditListener listener : listeners) {
                     try {
