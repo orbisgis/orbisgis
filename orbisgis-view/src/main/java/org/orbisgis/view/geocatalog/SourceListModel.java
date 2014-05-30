@@ -81,7 +81,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
     private boolean isH2;
     private Map<String, Integer> columnMap = new HashMap<>();
     // Update Geocatalog only if query starts with this command. (lowercase)
-    private static final String[] updateSourceListQuery = new String[] {"drop", "create"};
+    private static final String[] updateSourceListQuery = new String[] {"drop", "create","alter"};
     private static final int MAX_LENGTH_QUERY;
     static {
         int maxLen = 0;
