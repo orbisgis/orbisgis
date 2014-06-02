@@ -48,6 +48,9 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Register and listen to H2 Database event system.
@@ -57,11 +60,15 @@ import java.sql.Statement;
 public class EventListenerService implements DatabaseEventListener, TriggerFactory {
     private DataManager dataManager;
     private Logger logger = Logger.getLogger(EventListenerService.class);
+    private Queue<StateEvent> eventStack = new LinkedBlockingQueue<>();
+    private AtomicBoolean eventProcessRunning = new AtomicBoolean(false);
+
     private static boolean isLocalH2DataBase(DatabaseMetaData meta) throws SQLException {
         return JDBCUtilities.isH2DataBase(meta)
                 && meta.getURL().startsWith("jdbc:h2:")
                 && !meta.getURL().startsWith("jdbc:h2:tcp:/");
     }
+
     @Reference
     public void setDataManager(DataManager dataManager) {
         this.dataManager = dataManager;
@@ -100,6 +107,7 @@ public class EventListenerService implements DatabaseEventListener, TriggerFacto
     @Deactivate
     public void disable() {
         H2DatabaseEventListener.setDelegateDatabaseEventListener(null);
+        H2Trigger.setTriggerFactory(null);
     }
 
     public void unsetDataManager(DataManager dataManager) {
@@ -132,11 +140,14 @@ public class EventListenerService implements DatabaseEventListener, TriggerFacto
 
     @Override
     public void setProgress(int state, String name, int x, int max) {
-        if(dataManager != null && state < StateEvent.DB_STATES.values().length) {
+        if (dataManager != null && state < StateEvent.DB_STATES.values().length) {
             // Do not fire the event in the H2 thread in order to not raise
             // org.h2.jdbc.JdbcSQLException: Timeout trying to lock table XXX
             StateEvent.DB_STATES stateEnum = StateEvent.DB_STATES.values()[state];
-            SwingUtilities.invokeLater(new StateEventProcess(dataManager, new StateEvent(stateEnum, name, x, max)));
+            eventStack.add(new StateEvent(stateEnum, name, x, max));
+            if (!eventProcessRunning.getAndSet(true)) {
+                SwingUtilities.invokeLater(new StateEventProcess(dataManager, eventStack, eventProcessRunning));
+            }
         }
     }
 
@@ -162,17 +173,22 @@ public class EventListenerService implements DatabaseEventListener, TriggerFacto
     }
 
     private static class StateEventProcess implements Runnable {
-        DataManager dataManager;
-        StateEvent evt;
+        private final DataManager dataManager;
+        private final Queue<StateEvent> eventStack;
+        private final AtomicBoolean stateEventProcessing;
 
-        private StateEventProcess(DataManager dataManager, StateEvent evt) {
+        private StateEventProcess(DataManager dataManager, Queue<StateEvent> eventStack, AtomicBoolean stateEventProcessing) {
             this.dataManager = dataManager;
-            this.evt = evt;
+            this.eventStack = eventStack;
+            this.stateEventProcessing = stateEventProcessing;
         }
 
         @Override
         public void run() {
-            dataManager.fireDatabaseProgression(evt);
+            while(!eventStack.isEmpty()) {
+                dataManager.fireDatabaseProgression(eventStack.remove());
+            }
+            stateEventProcessing.set(false);
         }
     }
 }
