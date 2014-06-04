@@ -185,10 +185,13 @@ public class EventListenerService implements DatabaseEventListener, TriggerFacto
 
         @Override
         public void run() {
-            while(!eventStack.isEmpty()) {
-                dataManager.fireDatabaseProgression(eventStack.remove());
+            try {
+                while (!eventStack.isEmpty()) {
+                    dataManager.fireDatabaseProgression(eventStack.remove());
+                }
+            } finally {
+                stateEventProcessing.set(false);
             }
-            stateEventProcessing.set(false);
         }
     }
 }

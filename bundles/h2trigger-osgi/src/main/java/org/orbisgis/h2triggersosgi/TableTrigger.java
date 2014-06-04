@@ -32,11 +32,15 @@ import org.h2.api.Trigger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.StateEvent;
 import org.orbisgis.corejdbc.TableEditEvent;
 
 import javax.swing.*;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Trigger attached to H2 Database
@@ -46,6 +50,8 @@ public class TableTrigger implements Trigger {
     private DataManager dataManager;
     private String tableIdentifier;
     private boolean update;
+    private final Queue<TableEditEvent> editStack = new ConcurrentLinkedQueue<>();
+    private final AtomicBoolean stateEventProcessing = new AtomicBoolean(false);
 
     public TableTrigger(DataManager dataManager) {
         this.dataManager = dataManager;
@@ -61,7 +67,7 @@ public class TableTrigger implements Trigger {
     public void fire(Connection conn, Object[] oldRow, Object[] newRow) throws SQLException {
         // Do not fire the event in the H2 thread in order to not raise
         // org.h2.jdbc.JdbcSQLException: Timeout trying to lock table XXX
-        SwingUtilities.invokeLater(new TableEditEventProcess(dataManager, new TableEditEvent(tableIdentifier)));
+        fireEvent(new TableEditEvent(tableIdentifier));
     }
 
     @Override
@@ -75,22 +81,35 @@ public class TableTrigger implements Trigger {
         if(!JDBCUtilities.tableExists(dataManager.getDataSource().getConnection(), tableIdentifier)) {
             // Do not fire the event in the H2 thread in order to not raise
             // org.h2.jdbc.JdbcSQLException: Timeout trying to lock table XXX
-            SwingUtilities.invokeLater(new TableEditEventProcess(dataManager, new TableEditEvent(tableIdentifier)));
+            fireEvent(new TableEditEvent(tableIdentifier));
         }
     }
 
-    private static class TableEditEventProcess implements Runnable {
-        DataManager dataManager;
-        TableEditEvent evt;
+    private void fireEvent(TableEditEvent evt) {
+        editStack.add(evt);
+        if(!stateEventProcessing.getAndSet(true)) {
+            SwingUtilities.invokeLater(new TableEditEventProcess(dataManager, editStack, stateEventProcessing));
+        }
 
-        private TableEditEventProcess(DataManager dataManager, TableEditEvent evt) {
+    }
+
+    private static class TableEditEventProcess implements Runnable {
+        private final DataManager dataManager;
+        private final Queue<TableEditEvent> editStack;
+        private final AtomicBoolean stateEventProcessing;
+
+        private TableEditEventProcess(DataManager dataManager, Queue<TableEditEvent> editStack, AtomicBoolean stateEventProcessing) {
             this.dataManager = dataManager;
-            this.evt = evt;
+            this.editStack = editStack;
+            this.stateEventProcessing = stateEventProcessing;
         }
 
         @Override
         public void run() {
-            dataManager.fireTableEditHappened(evt);
+            while(!editStack.isEmpty()) {
+                dataManager.fireTableEditHappened(editStack.remove());
+            }
+            stateEventProcessing.set(false);
         }
     }
 }
