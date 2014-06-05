@@ -79,12 +79,14 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
             }
             // Sorted is done using JDBC Index
             // And it is not filtered
-            viewToModel = new ArrayList<>(viewToModelJDBC.size());
-            for(int i : viewToModelJDBC) {
-                if(filter == null) {
-                    viewToModel.add(i - 1);
-                } else if(filter.contains(i - 1)) {
-                    viewToModel.add(i - 1);
+            if(viewToModelJDBC != null) {
+                viewToModel = new ArrayList<>(viewToModelJDBC.size());
+                for (int i : viewToModelJDBC) {
+                    if (filter == null) {
+                        viewToModel.add(i - 1);
+                    } else if (filter.contains(i - 1)) {
+                        viewToModel.add(i - 1);
+                    }
                 }
             }
             initModelToView();

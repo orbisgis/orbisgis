@@ -124,6 +124,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         private ActionCommands popupActions = new ActionCommands();
         private DataSource dataSource;
         private DataManager dataManager;
+        private MCLayerListener layerListener;
+        private MapContext mapContext;
 
         /**
          * Constructor
@@ -131,6 +133,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          */
         public TableEditor(TableEditableElement element, DataManager dataManager) {
                 super(new BorderLayout());
+                layerListener = new MCLayerListener(element);
                 this.dataManager = dataManager;
                 this.dataSource = dataManager.getDataSource();
                 //Add a listener to the source manager to close the table when
@@ -143,6 +146,15 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 tableScrollPane = new JScrollPane(makeTable());
                 add(tableScrollPane,BorderLayout.CENTER);
                 updateTitle();
+                // Fetch MapContext
+                EditorManager editorManager = Services.getService(EditorManager.class);
+                if (editorManager != null) {
+                    MapElement mapEditable = MapElement.fetchFirstMapElement(editorManager);
+                    if(mapEditable != null) {
+                        MapContext mapContext = mapEditable.getMapContext();
+                        registerMapContext(mapContext);
+                    }
+                }
         }
 
         private List<Action> getDockActions() {
@@ -369,21 +381,24 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * This menu is shown only if the current data is loaded and shown in the toc
          */
         private boolean isDataOnShownMapContext() {
-                EditorManager editorManager = Services.getService(EditorManager.class);
-                for(EditableElement editable : editorManager.getEditableElements()) {
-                        if(editable instanceof MapElement) {
-                                MapElement mapEditable = (MapElement)editable;
-                                MapContext mapContext = mapEditable.getMapContext();
-                                for(ILayer layer : mapContext.getLayers()) {
-                                        if(layer.isVisible()) {
-                                                if(layer.getTableReference().equals(tableEditableElement.getTableReference())) {
-                                                        return true;
-                                                }
-                                        }
-                                }
+            TableLocation editorTable = TableLocation.parse(tableEditableElement.getTableReference());
+            EditorManager editorManager = Services.getService(EditorManager.class);
+            if (editorManager != null) {
+                MapElement mapEditable = MapElement.fetchFirstMapElement(editorManager);
+                if(mapEditable != null) {
+                    MapContext mapContext = mapEditable.getMapContext();
+                    for (ILayer layer : mapContext.getLayers()) {
+                        TableLocation layerTable = TableLocation.parse(layer.getTableReference());
+                        if (layer.isVisible()) {
+                            if (editorTable.getSchema().equals(layerTable.getSchema()) &&
+                                    editorTable.getTable().equals(layerTable.getTable())) {
+                                return true;
+                            }
                         }
+                    }
                 }
-                return false;
+            }
+            return false;
         }
 
         public void onMenuZoomToSelection() {
@@ -604,13 +619,13 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * Ascending sort
          */
         public void onMenuSortAscending() {
-                tableSorter.setSortKey(new SortKey(popupCellAdress.x,SortOrder.ASCENDING));
+                tableSorter.setSortKey(new SortKey(popupCellAdress.x, SortOrder.ASCENDING));
         }
         /**
          * Descending sort
          */
         public void onMenuSortDescending() {
-                tableSorter.setSortKey(new SortKey(popupCellAdress.x,SortOrder.DESCENDING));                
+                tableSorter.setSortKey(new SortKey(popupCellAdress.x, SortOrder.DESCENDING));
         }
 
         /**
@@ -664,8 +679,20 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
 
         @Override
         public boolean match(EditableElement editableElement) {
-                //TODO Link table selection with layer selection
-                return false; //This editor cannot take another editable
+                return true;
+        }
+
+        /**
+         * Link row selection with toc layer's selection
+         * Link toc layer selection with table selection
+         * @param mc MapContext instance
+         */
+        private void registerMapContext(MapContext mc) {
+            if(mapContext != null) {
+                mapContext.getLayerModel().removeLayerListenerRecursively(layerListener);
+            }
+            mapContext = mc;
+            mc.getLayerModel().addLayerListenerRecursively(layerListener);
         }
 
         @Override
@@ -726,7 +753,10 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * @param visible 
          */
         public void onChangeVisibility(boolean visible) {
-                if(!visible) {                        
+                if(!visible) {
+                        if(mapContext != null) {
+                            mapContext.getLayerModel().removeLayerListenerRecursively(layerListener);
+                        }
                         tableModel.dispose();
                         for(Action action : dockingPanelParameters.getDockActions()) {
                             if(action instanceof ActionDispose){
@@ -828,6 +858,21 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         private void updateEditableSelection() {
                 try {
                         tableEditableElement.setSelection(getTableModelSelection());
+                        // Update layer selection
+                        if(mapContext != null) {
+                            TableLocation editorTable = TableLocation.parse(tableEditableElement.getTableReference());
+                            // Search layers with same table identifier
+                            ILayer[] layers = mapContext.getLayers();
+                            for(ILayer layer : layers) {
+                                if(!layer.getTableReference().isEmpty()) {
+                                    TableLocation layerTable = TableLocation.parse(layer.getTableReference());
+                                    if (editorTable.getSchema().equals(layerTable.getSchema()) &&
+                                            editorTable.getTable().equals(layerTable.getTable())) {
+                                        layer.setSelection(getTableModelSelection());
+                                    }
+                                }
+                            }
+                        }
                 } finally {
                         onUpdateEditableSelection.set(false);
                 }
@@ -949,7 +994,10 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
 
         @Override
         public void setEditableElement(EditableElement editableElement) {
-                
+            if(editableElement instanceof MapElement) {
+                mapContext = ((MapElement) editableElement).getMapContext();
+                registerMapContext(mapContext);
+            }
         }
 
         @Override
