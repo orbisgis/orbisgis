@@ -176,7 +176,7 @@ public class CreateSourceFromSelection implements BackgroundJob {
                             message.setText(I18N.tr("You must enter a non-empty name.")
                                     + "\n" + I18N.tr(newNameMessage));
                         } // Check for a source that already exists with that name.
-                        else if (MetaData.tableExists(newName, meta)) {
+                        else if (JDBCUtilities.tableExists(connection, newName)) {
                             message.setText(I18N.tr("A datasource with that name already exists.")
                                     + "\n" + I18N.tr(newNameMessage));
                         } // The user entered a non-empty, unique name.

@@ -71,9 +71,13 @@ import javax.xml.bind.JAXBElement;
 
 import net.opengis.se._2_0.core.StyleType;
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
+import org.orbisgis.corejdbc.MetaData;
+import org.orbisgis.corejdbc.TableEditEvent;
+import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.BeanLayer;
 import org.orbisgis.coremap.layerModel.ILayer;
@@ -131,7 +135,7 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * The Toc Panel component
  */
-public class Toc extends JPanel implements EditorDockable, TocExt {
+public class Toc extends JPanel implements EditorDockable, TocExt, TableEditListener {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
 
         private static final long serialVersionUID = 1L;
@@ -608,6 +612,13 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         ILayer layer =((TocTreeNodeLayer) node).getLayer();
                         if(!layer.acceptsChilds()) {
                                 layer.addPropertyChangeListener(Layer.PROP_STYLES,tocStyleListListener);
+                                try(Connection connection = mapContext.getDataManager().getDataSource().getConnection()) {
+                                    if (!layer.getTableReference().isEmpty() && JDBCUtilities.tableExists(connection,layer.getTableReference())) {
+                                        mapContext.getDataManager().addTableEditListener(layer.getTableReference(), this);
+                                    }
+                                } catch (SQLException ex) {
+                                    // Ignore
+                                }
                                 for(Style st : layer.getStyles()) {
                                         addPropertyListeners(new TocTreeNodeStyle(st));
                                 }
@@ -621,7 +632,24 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         st.addPropertyChangeListener(tocStyleListener);
                 }
         }
+
         /**
+         * One of layer change
+         * @param event Event object, source is table identifier.
+         */
+        @Override
+        public void tableChange(TableEditEvent event) {
+            // Found which layer(s) change
+            for(ILayer layer : mapContext.getLayers()) {
+                if(!layer.getTableReference().isEmpty()) {
+                    if(MetaData.isTableIdentifierEquals(event.getTableName(), layer.getTableReference())) {
+                        treeModel.nodeChanged(new TocTreeNodeLayer(layer));
+                    }
+                }
+            }
+        }
+
+    /**
          * Recursively remove the property listeners of the provided node
          * @param node 
          */
@@ -630,6 +658,9 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         ILayer layer =((TocTreeNodeLayer) node).getLayer();
                         if(!layer.acceptsChilds()) {
                                 layer.removePropertyChangeListener(tocStyleListListener);
+                                if(!layer.getTableReference().isEmpty()) {
+                                    mapContext.getDataManager().removeTableEditListener(layer.getTableReference(), this);
+                                }
                                 for(Style st : layer.getStyles()) {
                                         removePropertyListeners(new TocTreeNodeStyle(st));
                                 }

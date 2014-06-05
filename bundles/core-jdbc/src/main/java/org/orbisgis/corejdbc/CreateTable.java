@@ -28,6 +28,7 @@
  */
 package org.orbisgis.corejdbc;
 
+import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -64,7 +65,7 @@ public class CreateTable {
         try(Statement st = connection.createStatement()) {
             // Create row id table
             String tempTableName = "CREATE_SOURCE";
-            if(MetaData.tableExists(tempTableName, meta)) {
+            if(JDBCUtilities.tableExists(connection, tempTableName)) {
                 tempTableName = MetaData.getNewUniqueName(tempTableName, meta, "");
             }
             MetaData.getNewUniqueName(tempTableName, connection.getMetaData(), "");
