@@ -59,7 +59,7 @@ public class MCLayerListener implements LayerListener {
         for (final ILayer layer : layerCollectionEvent.getAffected()) {
             layer.removeLayerListener(this);
         }
-        return false;
+        return true;
     }
 
     @Override

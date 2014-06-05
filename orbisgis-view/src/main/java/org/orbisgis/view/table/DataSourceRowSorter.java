@@ -111,9 +111,11 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
          */
         private void initModelToView() {
                 modelToView = new HashMap<>();
-                for(int viewIndex = 0;viewIndex < viewToModel.size();viewIndex++) {
+                if(viewToModel != null) {
+                    for (int viewIndex = 0; viewIndex < viewToModel.size(); viewIndex++) {
                         Integer modelIndex = viewToModel.get(viewIndex);
                         modelToView.put(modelIndex, viewIndex);
+                    }
                 }
         }
         private int[] getViewToModelArray() {
