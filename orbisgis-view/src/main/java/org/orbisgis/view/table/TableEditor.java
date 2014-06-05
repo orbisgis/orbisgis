@@ -62,6 +62,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.TableEditEvent;
+import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
@@ -100,7 +101,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Edit a data source through a grid GUI.
  * @author Nicolas Fortin
  */
-public class TableEditor extends JPanel implements EditorDockable,SourceTable {
+public class TableEditor extends JPanel implements EditorDockable,SourceTable,TableEditListener {
         protected final static I18n I18N = I18nFactory.getI18n(TableEditor.class);
         private static final Logger LOGGER = Logger.getLogger("gui."+TableEditor.class);
         
@@ -149,7 +150,23 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         }
 
         public void onMenuRefresh() {
-            tableModel.tableChange(new TableEditEvent(tableEditableElement.getTableReference()));
+            tableChange(new TableEditEvent(tableEditableElement.getTableReference()));
+        }
+
+        @Override
+        public void tableChange(TableEditEvent event) {
+            // TODO more precise refresh to avoid reloading entire table, structure and indexes.
+            if(initialised.getAndSet(false)) {
+                if (!tableModel.tableExists()) {
+                    if (SwingUtilities.isEventDispatchThread()) {
+                        dockingPanelParameters.setVisible(false);
+                    } else {
+                        SwingUtilities.invokeLater(new CloseTableEditor(this));
+                    }
+                } else {
+                    launchJob(new OpenEditableElement(this, tableEditableElement));
+                }
+            }
         }
 
         private List<Action> getDockActions() {
@@ -614,7 +631,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * Ascending sort
          */
         public void onMenuSortAscending() {
-                tableSorter.setSortKey(new SortKey(popupCellAdress.x,SortOrder.ASCENDING));
+                tableSorter.setSortKey(new SortKey(popupCellAdress.x, SortOrder.ASCENDING));
         }
         /**
          * Descending sort
@@ -697,7 +714,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          */
         private void readDataSource() {
                 tableModel = new DataSourceTableModel(tableEditableElement);
-                tableModel.addTableModelListener(new FieldResetListener());
+                tableEditableElement.getDataManager().addTableEditListener(tableEditableElement.getTableReference(), this);
+                tableModel.addTableModelListener(new FieldResetListener(this));
                 table.setModel(tableModel);
                 updateTableColumnModel();
                 quickAutoResize();
@@ -726,6 +744,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         editableSelectionListener);
                 dockingPanelParameters.setDockActions(getDockActions());
                 initPopupActions();
+                tableModel.fireTableStructureChanged();
         }
         private void initPopupActions() {
                 // TODO Edition
@@ -736,8 +755,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * @param visible 
          */
         public void onChangeVisibility(boolean visible) {
-                if(!visible) {                        
-                        tableModel.dispose();
+                if(!visible) {
+                        dataManager.removeTableEditListener(tableEditableElement.getTableReference() ,this);
                         for(Action action : dockingPanelParameters.getDockActions()) {
                             if(action instanceof ActionDispose){
                                 try {
@@ -984,15 +1003,22 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
 
                 @Override
                 public void run(ProgressMonitor pm) {
+                    try {
                         try {
-                                tableEditableElement.open(pm);
+                            if (tableEditableElement.isOpen()) {
+                                tableEditableElement.close(pm);
+                            }
+                            tableEditableElement.open(pm);
                         } catch (UnsupportedOperationException | EditableElementException ex) {
-                                LOGGER.error(I18N.tr("Error while loading the table editor"), ex);
+                            LOGGER.error(I18N.tr("Error while loading the table editor"), ex);
                         }
-                    if(SwingUtilities.isEventDispatchThread()) {
-                        tableEditor.readDataSource();
-                    } else {
-                        SwingUtilities.invokeLater(new ReadDataSource(tableEditor));
+                        if (SwingUtilities.isEventDispatchThread()) {
+                            tableEditor.readDataSource();
+                        } else {
+                            SwingUtilities.invokeLater(new ReadDataSource(tableEditor));
+                        }
+                    } finally {
+                        tableEditor.initialised.set(true);
                     }
                 }
 
@@ -1024,14 +1050,36 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 return new Point(popupCellAdress);
         }
 
-        private class FieldResetListener implements TableModelListener {
-                @Override
-                public void tableChanged(TableModelEvent tableModelEvent) {
-                        if(tableModelEvent.getFirstRow() == TableModelEvent.HEADER_ROW) {
-                                updateTableColumnModel();
-                                reloadFilters();
-                                resetRenderers();
-                        }
+        private static class FieldResetListener implements TableModelListener {
+            private final TableEditor tableEditor;
+
+            private FieldResetListener(TableEditor tableEditor) {
+                this.tableEditor = tableEditor;
+            }
+
+            @Override
+            public void tableChanged(TableModelEvent tableModelEvent) {
+                if (tableModelEvent.getFirstRow() == TableModelEvent.HEADER_ROW) {
+                    tableEditor.updateTableColumnModel();
+                    tableEditor.reloadFilters();
+                    tableEditor.resetRenderers();
                 }
+            }
+        }
+
+        /**
+         * Close TableEditor in Swing Thread
+         */
+        private static class CloseTableEditor implements Runnable {
+            private final TableEditor tableEditor;
+
+            private CloseTableEditor(TableEditor tableEditor) {
+                this.tableEditor = tableEditor;
+            }
+
+            @Override
+            public void run() {
+                tableEditor.dockingPanelParameters.setVisible(false);
+            }
         }
 }

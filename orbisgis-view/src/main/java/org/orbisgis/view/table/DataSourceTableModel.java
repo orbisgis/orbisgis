@@ -49,7 +49,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Read the data source when the Table need to show cells
  * @author Nicolas Fortin
  */
-public class DataSourceTableModel extends AbstractTableModel implements TableEditListener {
+public class DataSourceTableModel extends AbstractTableModel {
         protected final static I18n I18N = I18nFactory.getI18n(DataSourceTableModel.class);
         private static final Logger LOGGER = Logger.getLogger(DataSourceTableModel.class);
         private static final long serialVersionUID = 1L;
@@ -65,26 +65,6 @@ public class DataSourceTableModel extends AbstractTableModel implements TableEdi
          */
         public DataSourceTableModel(EditableSource element) {
                 this.element = element;
-                element.getDataManager().addTableEditListener(element.getTableReference(), this);
-        }
-
-        @Override
-        public void tableChange(TableEditEvent event) {
-            // TODO more precise refresh to avoid reloading entire table
-            try {
-                element.close(new NullProgressMonitor());
-                element.open(new NullProgressMonitor());
-            } catch (EditableElementException ex) {
-                LOGGER.warn(I18N.tr("Cannot refresh TableEditor data"), ex);
-            }
-            fireTableStructureChanged();
-        }
-
-        /**
-         * Remove data source listeners
-         */
-        public void dispose() {
-                element.getDataManager().removeTableEditListener(element.getTableReference(), this);
         }
 
         public RowSet getRowSet() throws SQLException {
@@ -206,7 +186,11 @@ public class DataSourceTableModel extends AbstractTableModel implements TableEdi
                 }
         }
 
-        private boolean tableExists() {
+        /**
+         * Check if table exists
+         * @return
+         */
+        public boolean tableExists() {
             try(Connection connection = element.getDataManager().getDataSource().getConnection();
                 Statement st = connection.createStatement()) {
                 return st.execute("SELECT COUNT(*) FROM "+element.getTableReference());

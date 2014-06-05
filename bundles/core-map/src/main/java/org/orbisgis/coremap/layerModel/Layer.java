@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtility;
 import org.orbisgis.coremap.stream.GeoStream;
@@ -62,7 +63,7 @@ public class Layer extends BeanLayer {
 	private String tableReference = "";
     private URI dataURI;
     private DataManager dataManager;
-    private Envelope envelope;
+    private Envelope envelope = new Envelope();
     private GeoStream stream;
 
 	public Layer(String name, String tableReference,DataManager dataManager) {
@@ -141,20 +142,24 @@ public class Layer extends BeanLayer {
     @Override
 	public Envelope getEnvelope() {
         // TODO reset envelope when the Table is updated
-        if(envelope == null) {
+        if(envelope.isNull()) {
             try {
                 if(isStream()) {
                     return stream.getEnvelope();
                 } else {
                     try(Connection connection = dataManager.getDataSource().getConnection()) {
+                        // Check if the table exists
+                        if(!JDBCUtilities.tableExists(connection, tableReference)) {
+                            LOGGER.info(I18N.tr("Cannot draw {0} the table does not exists", tableReference));
+                        }
                         envelope = SFSUtilities.getTableEnvelope(connection, TableLocation.parse(tableReference),"");
                     } catch (SQLException ex) {
-                        LOGGER.error(I18N.tr("Cannot compute layer envelope"),ex);
+                        LOGGER.error(I18N.tr("Cannot compute layer envelope:\n")+ex.getLocalizedMessage());
                     }
                 }
             } catch (Exception ex) {
-                LOGGER.error(I18N.tr("Cannot compute layer envelope"), ex);
-                return null;
+                LOGGER.error(I18N.tr("Cannot compute layer envelope:\n")+ex.getLocalizedMessage());
+                return new Envelope();
             }
         }
 		return envelope;
