@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sql.DataSource;
 import javax.swing.*;
@@ -114,7 +115,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         private AtomicBoolean onUpdateEditableSelection = new AtomicBoolean(false);
         private AtomicBoolean filterRunning = new AtomicBoolean(false);
         private FilterFactoryManager<TableSelectionFilter,DefaultActiveFilter> filterManager = 
-                new FilterFactoryManager<TableSelectionFilter,DefaultActiveFilter>();
+                new FilterFactoryManager<>();
         private TableRowHeader tableRowHeader;
         private Point popupCellAdress = new Point();    // Col(x) and row(y) that trigger a popup
         private Point cellHighlight = new Point(-1,-1); // cell under cursor on right click
@@ -184,14 +185,24 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * propagate in the table if necessary
          * @param newValue 
          */
-        public void onEditableSelectionChange(Set<Integer> newValue) {
+        public void onEditableSelectionChange(SortedSet<Integer> newValue) {
                 if (!onUpdateEditableSelection.getAndSet(true)) {
                         try {
-                                setRowSelection(newValue);
+                                setRowSelection(newValue, -1);
+                                // Scroll to first selection
+                                scrollToRow(newValue.first() - 1);
                         } finally {
                                 onUpdateEditableSelection.set(false);
                         }
                 }
+        }
+
+        /**
+         * @param modelRowId Scroll to this model row id
+         */
+        public void scrollToRow(int modelRowId) {
+            Rectangle firstSelectedRow = table.getCellRect(modelRowId, 0, true);
+            table.scrollRectToVisible(firstSelectedRow);
         }
 
         /**
@@ -426,7 +437,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                         return;
                 }                
                 ZoomToSelectionJob zoomJob = new ZoomToSelectionJob(dataManager, tableEditableElement.getTableReference()
-                        ,new IntegerUnion(modelSelection), mapContext);
+                        ,getTableModelSelection(1), mapContext);
                 launchJob(zoomJob);                
         }
         
@@ -453,7 +464,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * The user can export the selected rows into a new datasource
          */
         public void onCreateDataSourceFromSelection() {
-            Set<Integer> selection = getTableModelSelection();
+            Set<Integer> selection = getTableModelSelection(1);
             // If there is a nonempty selection, then ask the user to name it.
             if (!selection.isEmpty()) {
                 try {
@@ -507,7 +518,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * Show only selected rows
          */
         public void onMenuFilterRows() {
-                IntegerUnion selectedModelIndex = getTableModelSelection();
+                IntegerUnion selectedModelIndex = getTableModelSelection(0);
                 tableSorter.setRowsFilter(selectedModelIndex);
         }
         
@@ -641,12 +652,16 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
             }
         }
 
-    private IntegerUnion getTableModelSelection() {
-                IntegerUnion selectionModelRowId = new IntegerUnion();
-                for (int viewRowId : table.getSelectedRows()) {
-                        selectionModelRowId.add(tableSorter.convertRowIndexToModel(viewRowId));
-                }
-                return selectionModelRowId;
+        /**
+         * @param zeroBaseDiff JTable selection is 0 based. Set 1 in order to get a 1 based row identifier selection.
+         * @return Select row id
+         */
+        private IntegerUnion getTableModelSelection(int zeroBaseDiff) {
+            IntegerUnion selectionModelRowId = new IntegerUnion();
+            for (int viewRowId : table.getSelectedRows()) {
+                selectionModelRowId.add(tableSorter.convertRowIndexToModel(viewRowId) + zeroBaseDiff);
+            }
+            return selectionModelRowId;
         }
 
         /**
@@ -654,7 +669,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          */
         public void onMenuShowStatistics() {
                 //Compute row id selection
-                Set<Integer> selectionModelRowId = getTableModelSelection();
+                Set<Integer> selectionModelRowId = getTableModelSelection(1);
                 if (selectionModelRowId.isEmpty() && tableSorter.isFiltered()) {
                         selectionModelRowId.addAll(tableSorter.getViewToModelIndex());
                 }
@@ -727,7 +742,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 tableRowHeader = new TableRowHeader(table);
                 tableScrollPane.setRowHeaderView(tableRowHeader);
                 //Apply the selection
-                setRowSelection(new IntegerUnion(tableEditableElement.getSelection()));
+                setRowSelection(new IntegerUnion(tableEditableElement.getSelection()), -1);
+                scrollToRow(tableEditableElement.getSelection().first() - 1);
                 table.getSelectionModel().addListSelectionListener(
                         EventHandler.create(ListSelectionListener.class,this,
                         "onTableSelectionChange",""));
@@ -779,19 +795,24 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
         /**
          * Convert index from model to view then update the table selection
          * @param modelSelection ModelIndex selection
+         * @param  zeroBasedDiff JTable selection is 0 based, you can offset the selection row identifier by defining -1 if your selection is 1 based
          */
-        private void setRowSelection(Set<Integer> modelSelection) {
+        private void setRowSelection(Set<Integer> modelSelection, int zeroBasedDiff) {
                 Set<Integer> newSelection;
                 if(tableSorter.isFiltered() || !tableSorter.getSortKeys().isEmpty()) {
                         newSelection = new IntegerUnion();
-                        for(Integer modelId : modelSelection) {
+                        for(int modelId : modelSelection) {
+                                modelId += zeroBasedDiff;
                                 int viewRowId = table.convertRowIndexToView(modelId);
                                 if(viewRowId!=-1) {
                                         newSelection.add(viewRowId);
                                 }
                         }
                 } else {
-                        newSelection = modelSelection;
+                        newSelection = new IntegerUnion();
+                        for(int modelId : modelSelection) {
+                            newSelection.add(modelId + zeroBasedDiff);
+                        }
                 }
                 setViewRowSelection(newSelection);
         }
@@ -857,7 +878,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
 
         private void updateEditableSelection() {
                 try {
-                        tableEditableElement.setSelection(getTableModelSelection());
+                        tableEditableElement.setSelection(getTableModelSelection(1));
                         // Update layer selection
                         if(mapContext != null) {
                             TableLocation editorTable = TableLocation.parse(tableEditableElement.getTableReference());
@@ -868,7 +889,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                                     TableLocation layerTable = TableLocation.parse(layer.getTableReference());
                                     if (editorTable.getSchema().equals(layerTable.getSchema()) &&
                                             editorTable.getTable().equals(layerTable.getTable())) {
-                                        layer.setSelection(getTableModelSelection());
+                                        layer.setSelection(getTableModelSelection(1));
                                     }
                                 }
                             }
@@ -914,7 +935,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 for (int i = 0; i < colModel.getColumnCount(); i++) {
                         TableColumn col = colModel.getColumn(i);
                         int colWidth = OptimalWidthJob.getColumnOptimalWidth(table, rowsToCheck, maxWidth, i,
-                                        new NullProgressMonitor());
+                                new NullProgressMonitor());
                         col.setPreferredWidth(colWidth);
                 }
                 resetRenderers();

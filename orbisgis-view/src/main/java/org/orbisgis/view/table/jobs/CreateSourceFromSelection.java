@@ -131,7 +131,8 @@ public class CreateSourceFromSelection implements BackgroundJob {
                         if(newName!=null && !newName.isEmpty()) {
                             try(Connection connection = dataSource.getConnection();
                                 Statement st = connection.createStatement()) {
-                                st.execute("DROP TABLE IF EXISTS "+TableLocation.parse(newName));
+                                boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                                st.execute("DROP TABLE IF EXISTS "+TableLocation.parse(newName, isH2).toString(isH2));
                             } catch (SQLException ex) {
                                 GUILOGGER.error("Could not revert changes", e);
                             }
