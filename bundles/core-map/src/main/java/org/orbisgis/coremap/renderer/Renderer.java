@@ -155,6 +155,15 @@ public abstract class Renderer {
                 }
                 return layerCount;
         }
+        private PreparedStatement createStatement(Connection connection,String geometryField,String tableReference, boolean hasSelection) throws SQLException {
+            if(!hasSelection) {
+                return connection.prepareStatement(
+                        String.format("select * from %s where %s && ?", tableReference, geometryField));
+            } else {
+                return  connection.prepareStatement(
+                        String.format("select * from %s",tableReference));
+            }
+        }
 
         private int drawStyle(Style style, Graphics2D g2,MapTransform mt, ILayer layer,
                               ProgressMonitor pm, long rowCount, Envelope extent) throws SQLException {
@@ -183,11 +192,12 @@ public abstract class Renderer {
                         if(geometryFields.isEmpty()) {
                             throw new SQLException(I18N.tr("Table {0} does not contains geometry fields",tableReference));
                         }
-                        try(PreparedStatement st = connection.prepareStatement(
-                                String.format("select * from %s where %s && ?",tableReference,geometryFields.get(0)))) {
+                        try(PreparedStatement st = createStatement(connection, geometryFields.get(0), tableReference, !selected.isEmpty())) {
                             st.setFetchSize(FETCH_SIZE);
                             GeometryFactory geometryFactory = new GeometryFactory();
-                            st.setObject(1, geometryFactory.toGeometry(extent)); // Filter geometry by envelope
+                            if(st.getParameterMetaData().getParameterCount() > 0) {
+                                st.setObject(1, geometryFactory.toGeometry(extent)); // Filter geometry by envelope
+                            }
                             PropertyChangeListener cancelListener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
                             pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelListener);
                             try(SpatialResultSet rs = st.executeQuery().unwrap(SpatialResultSet.class)) {
@@ -216,7 +226,7 @@ public abstract class Renderer {
                                     if (theGeom == null || (theGeom != null &&
                                             theGeom.getEnvelopeInternal().intersects(extent))) {
                                         int row = rs.getRow();
-                                        boolean emphasis = selected.contains(row); //TODO find selection identifier
+                                        boolean emphasis = selected.contains(row);
 
                                         beginFeature(row, rs);
 
