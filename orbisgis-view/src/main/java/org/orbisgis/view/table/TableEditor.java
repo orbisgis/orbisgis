@@ -201,8 +201,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
          * @param modelRowId Scroll to this model row id
          */
         public void scrollToRow(int modelRowId) {
-            Rectangle firstSelectedRow = table.getCellRect(modelRowId, 0, true);
-            table.scrollRectToVisible(firstSelectedRow);
+            SearchJob.scrollToRow(modelRowId, table);
         }
 
         /**
@@ -743,7 +742,9 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable {
                 tableScrollPane.setRowHeaderView(tableRowHeader);
                 //Apply the selection
                 setRowSelection(new IntegerUnion(tableEditableElement.getSelection()), -1);
-                scrollToRow(tableEditableElement.getSelection().first() - 1);
+                if(!tableEditableElement.getSelection().isEmpty()) {
+                    scrollToRow(tableEditableElement.getSelection().first() - 1);
+                }
                 table.getSelectionModel().addListSelectionListener(
                         EventHandler.create(ListSelectionListener.class,this,
                         "onTableSelectionChange",""));

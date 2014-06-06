@@ -107,8 +107,9 @@ public class SearchJob implements BackgroundJob {
                                         }                                        
                                 } finally {
                                         table.getSelectionModel().setValueIsAdjusting(false);
-                                        Rectangle firstSelectedRow = table.getCellRect(nextViewSelection.first(), 0, true);
-                                        table.scrollRectToVisible(firstSelectedRow);
+                                }
+                                if(!nextViewSelection.isEmpty()) {
+                                    scrollToRow(nextViewSelection.first(), table);
                                 }
                         }
                 });         
@@ -120,6 +121,10 @@ public class SearchJob implements BackgroundJob {
                 } finally {
                         filterRunning.set(false);
                 }
+        }
+        public static void scrollToRow(int modelRowId, JTable table) {
+            Rectangle firstSelectedRow = table.getCellRect(modelRowId, 0, true);
+            table.scrollRectToVisible(firstSelectedRow);
         }
 
         @Override
