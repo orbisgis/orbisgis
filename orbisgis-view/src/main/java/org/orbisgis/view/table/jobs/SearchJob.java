@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.table.jobs;
 
+import java.awt.*;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
@@ -107,6 +108,9 @@ public class SearchJob implements BackgroundJob {
                                 } finally {
                                         table.getSelectionModel().setValueIsAdjusting(false);
                                 }
+                                if(!nextViewSelection.isEmpty()) {
+                                    scrollToRow(nextViewSelection.first(), table);
+                                }
                         }
                 });         
         }
@@ -117,6 +121,10 @@ public class SearchJob implements BackgroundJob {
                 } finally {
                         filterRunning.set(false);
                 }
+        }
+        public static void scrollToRow(int modelRowId, JTable table) {
+            Rectangle firstSelectedRow = table.getCellRect(modelRowId, 0, true);
+            table.scrollRectToVisible(firstSelectedRow);
         }
 
         @Override

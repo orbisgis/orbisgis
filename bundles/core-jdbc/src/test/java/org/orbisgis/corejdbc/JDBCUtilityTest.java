@@ -28,30 +28,40 @@
  */
 package org.orbisgis.corejdbc;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import org.apache.commons.collections4.OrderedIterator;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.progress.NullProgressMonitor;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
  * @author Nicolas Fortin
  */
 public class JDBCUtilityTest {
+    private static DataSource dataSource;
     private static Connection connection;
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        connection = SFSUtilities.wrapConnection(SpatialH2UT.createSpatialDataBase(JDBCUtilityTest.class.getSimpleName(), true));
+        dataSource = SFSUtilities.wrapSpatialDataSource(SpatialH2UT.createDataSource(JDBCUtilityTest.class.getSimpleName(), true));
+        connection = dataSource.getConnection();
     }
 
     @AfterClass
@@ -149,13 +159,22 @@ public class JDBCUtilityTest {
 
     @Test
     public void testSelection() throws SQLException {
+        DataManager dataManager = new DataManagerImpl(dataSource);
         try(Statement st = connection.createStatement()) {
             st.execute("DROP TABLE IF EXISTS TEST");
             st.execute("CREATE TABLE TEST(gid integer primary key auto_increment, geom MULTIPOLYGON)");
             st.execute("INSERT INTO TEST(geom) VALUES ('MULTIPOLYGON (((-111 -24, -121 17, -69 25, -66 -38, -111 -24)))'), " +
                     "('MULTIPOLYGON (((-50 -2, -59 50, 48 48, -20 20, -50 -2)))'), " +
                     "('MULTIPOLYGON (((-75 -67, -38 -16, 44 24, 99 26, 112 4, -35 -79, -75 -67)))');");
-
+            // Check selection algorithm
+            Envelope envelope = new Envelope(-116, -55, -69, -19);
+            Set<Integer> intersected = ReadTable.getTableRowIdByEnvelope(dataManager, "TEST", "GEOM", new GeometryFactory().toGeometry(envelope),
+                    false, null);
+            IntegerUnion rowIds = new IntegerUnion(intersected);
+            Iterator<Integer> it = rowIds.iterator();
+            assertEquals(1 ,it.next().intValue());
+            assertEquals(3 ,it.next().intValue());
+            assertFalse(it.hasNext());
         }
     }
 

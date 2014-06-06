@@ -30,6 +30,8 @@ package org.orbisgis.view.table;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.SortedSet;
+
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.common.IntegerUnion;
@@ -77,8 +79,8 @@ public class TableEditableElementImpl extends EditableSourceImpl implements Tabl
         }
 
         @Override
-        public Set<Integer> getSelection() {
-            return Collections.unmodifiableSet(selectedGeometries);
+        public SortedSet<Integer> getSelection() {
+            return Collections.unmodifiableSortedSet(selectedGeometries);
         }
 
         @Override

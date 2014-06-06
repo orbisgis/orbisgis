@@ -3,6 +3,7 @@ package org.orbisgis.viewapi.table;
 import org.orbisgis.viewapi.edition.EditableSource;
 
 import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * @author Nicolas Fortin
@@ -15,7 +16,7 @@ public interface TableEditableElement extends EditableSource {
     /**
      * @return the selected rows in the table
      */
-    public Set<Integer> getSelection();
+    public SortedSet<Integer> getSelection();
 
     /**
      * Set the selected geometries in the table
