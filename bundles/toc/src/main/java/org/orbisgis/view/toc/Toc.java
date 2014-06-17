@@ -537,7 +537,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
 
                 if (!sourceToDrop.isEmpty()) {
                     BackgroundManager bm = Services.getService(BackgroundManager.class);//Cancel the drawing process
-                    bm.backgroundOperation(new DropDataSourceListProcess(dropNode, index, sourceToDrop));
+                    bm.nonBlockingBackgroundOperation(new DropDataSourceListProcess(dropNode, index, sourceToDrop));
                 }
         }
 
@@ -643,6 +643,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
             for(ILayer layer : mapContext.getLayers()) {
                 if(!layer.getTableReference().isEmpty()) {
                     if(MetaData.isTableIdentifierEquals(event.getTableName(), layer.getTableReference())) {
+                        treeRenderer.clearIconCache(layer);
                         treeModel.nodeChanged(new TocTreeNodeLayer(layer));
                     }
                 }

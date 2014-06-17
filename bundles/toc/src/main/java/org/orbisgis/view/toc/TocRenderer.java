@@ -32,29 +32,42 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTree;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.sql.DataSource;
+import javax.swing.*;
+import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.GeometryTypeCodes;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.view.components.renderers.IconCellRendererUtility;
+import org.orbisgis.view.components.renderers.TreeLaFRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Toc renderer, try to stick to the Look&Feel but with custom controls.
  */
-public class TocRenderer extends TocAbstractRenderer {
+public class TocRenderer extends TreeLaFRenderer {
         private static Logger UILOGGER = Logger.getLogger("gui."+ TocRenderer.class);
+        protected static final I18n I18N = I18nFactory.getI18n(TocRenderer.class);
         private static final int ROW_EMPTY_BORDER_SIZE = 2;
         private Rectangle checkBoxRect;
         private MapContext mapContext;
+        private Map<String, Integer> tableGeomType = new HashMap<>();
+        private AtomicBoolean fetchingTableIcons = new AtomicBoolean(false);
+        private JTree tree;
 
         /**
          * Builds a TocRenderer using the given JTree.
@@ -62,6 +75,7 @@ public class TocRenderer extends TocAbstractRenderer {
          */
         public TocRenderer(JTree tree) {
                 super(tree);
+                this.tree = tree;
         }
 
         /**
@@ -72,8 +86,8 @@ public class TocRenderer extends TocAbstractRenderer {
             this.mapContext = mapContext;
         }
         
-	@Override
-	public Component getTreeCellRendererComponent(JTree tree, Object value,
+        @Override
+        public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean selected, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
                 Component nativeRendererComp = lookAndFeelRenderer.getTreeCellRendererComponent(
@@ -92,14 +106,10 @@ public class TocRenderer extends TocAbstractRenderer {
                                 IconCellRendererUtility.copyComponentStyle(rendererComponent,checkBox);
                                 if (value instanceof TocTreeNodeLayer) {
                                         ILayer layerNode = ((TocTreeNodeLayer) value).getLayer();
-                                        ImageIcon nodeIcon = TocAbstractRenderer.getLayerIcon(layerNode);
+                                        ImageIcon nodeIcon = getLayerIcon(layerNode);
                                         if(mapContext!=null && layerNode.equals(mapContext.getActiveLayer())) {
                                             nodeIcon = IconCellRendererUtility.mergeIcons
                                                     (nodeIcon, OrbisGISIcon.getIcon("edition/layer_edit"));
-                                        } else if(false) { //!layerNode.getTableReference().isEmpty() && layerNode.getDataSource().isModified()
-                                            // TODO Use UndoManager to check for layer modifications
-                                            nodeIcon = IconCellRendererUtility.mergeIcons
-                                                    (nodeIcon, OrbisGISIcon.getIcon("edition/layer_modify"));
                                         }
                                         rendererComponent.setIcon(nodeIcon);
                                         String nodeLabel = layerNode.getName();
@@ -139,4 +149,129 @@ public class TocRenderer extends TocAbstractRenderer {
                         return new Rectangle(0,0);
                 }
 	}
+
+    protected void updateLayerNodes(Set<String> tableReferences) {
+        if(tree.getModel() instanceof DefaultTreeModel) {
+            DefaultTreeModel treeModel = (DefaultTreeModel)tree.getModel();
+            ILayer[] layers = mapContext.getLayers();
+            for (ILayer layer : layers) {
+                if (tableReferences.contains(layer.getTableReference())) {
+                    TocTreeNodeLayer node = new TocTreeNodeLayer(layer);
+                    treeModel.nodeChanged(node);
+                }
+            }
+        }
+    }
+
+    /**
+     * Remove node icon cache for the provided layer.
+     * @param layer Layer instance or null to clear all layer's icon.
+     */
+    public void clearIconCache(ILayer layer) {
+        if(layer == null || layer.getTableReference().isEmpty()) {
+            tableGeomType = new HashMap<>(tableGeomType.size());
+        } else {
+            tableGeomType.remove(layer.getTableReference());
+        }
+    }
+
+    public ImageIcon getLayerIcon(ILayer layer) throws SQLException,
+            IOException {
+        try {
+            if (layer.acceptsChilds()) {
+                return OrbisGISIcon.getIcon("layers");
+            } else {
+                if (layer.isStream()) {
+                    return OrbisGISIcon.getIcon("server_connect");
+                } else {
+                    if(!tableGeomType.containsKey(layer.getTableReference())) {
+                        tableGeomType.put(layer.getTableReference(), -2);
+                        if(!fetchingTableIcons.getAndSet(true)) {
+                            TableTypeFetcher tableTypeFetcher = new TableTypeFetcher(tableGeomType,
+                                    mapContext.getDataManager().getDataSource(), this, fetchingTableIcons);
+                            tableTypeFetcher.execute();
+                        }
+                    }
+                    // Create a legend for each spatial field
+                    int type = tableGeomType.get(layer.getTableReference());
+                    if (type >= 0) {
+                        switch (type) {
+                            case GeometryTypeCodes.GEOMETRY:
+                            case GeometryTypeCodes.GEOMCOLLECTION:
+                                return OrbisGISIcon.getIcon("layermixe");
+                            case GeometryTypeCodes.POINT:
+                            case GeometryTypeCodes.MULTIPOINT:
+                                return OrbisGISIcon.getIcon("layerpoint");
+                            case GeometryTypeCodes.LINESTRING:
+                            case GeometryTypeCodes.MULTILINESTRING:
+                                return OrbisGISIcon.getIcon("layerline");
+                            case GeometryTypeCodes.POLYGON:
+                            case GeometryTypeCodes.MULTIPOLYGON:
+                                return OrbisGISIcon.getIcon("layerpolygon");
+                            default:
+                                throw new RuntimeException(I18N.tr("Unable to find appropriate icon for typeCode {0}", type));
+                        }
+                    } else if(type == -2) {
+                        return OrbisGISIcon.getIcon("information_geo");
+                    } else {
+                        return OrbisGISIcon.getIcon("remove");
+                        // TODO Raster
+                            /*
+                            if (layer.getRaster().getType() == ImagePlus.COLOR_RGB) {
+                                return OrbisGISIcon.getIcon("layerrgb");
+                            } else {
+                                return OrbisGISIcon.getIcon("raster");
+                            }
+                            */
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            // Error while reading datasource, may be a thread race condition or the table does not exists
+            UILOGGER.trace(I18N.tr("Error while drawing the Toc tree"));
+            return OrbisGISIcon.getIcon("remove");
+        }
+    }
+    /**
+     * Connect to JDBC in background in order to fetch table type icons
+     */
+    private class TableTypeFetcher extends SwingWorker {
+
+        private Map<String, Integer> tableGeomType;
+        private DataSource dataSource;
+        private Set<String> fetchedTableIcons = new HashSet<>();
+        private TocRenderer tocRenderer;
+        AtomicBoolean fetchingTableIcons;
+
+        private TableTypeFetcher(Map<String, Integer> tableGeomType, DataSource dataSource, TocRenderer tocRenderer, AtomicBoolean fetchingTableIcons) {
+            this.tableGeomType = tableGeomType;
+            this.dataSource = dataSource;
+            this.tocRenderer = tocRenderer;
+            this.fetchingTableIcons = fetchingTableIcons;
+        }
+
+        @Override
+        protected void done() {
+            tocRenderer.updateLayerNodes(fetchedTableIcons);
+        }
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            try (Connection connection = dataSource.getConnection()) {
+                fetchingTableIcons.set(false);
+                for (String tableName : tableGeomType.keySet()) {
+                    // Fetch icons where type is -1
+                    int currentType = tableGeomType.get(tableName);
+                    if(currentType < 0) {
+                        int newType =  SFSUtilities.getGeometryType(connection, TableLocation.parse(tableName), "");
+                        if(newType != currentType) {
+                            tableGeomType.put(tableName, newType);
+                            fetchedTableIcons.add(tableName);
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+    }
 }

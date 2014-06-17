@@ -77,12 +77,9 @@ public class TableTrigger implements Trigger {
 
     @Override
     public void remove() throws SQLException {
-        // Fire if table has been deleted
-        if(!JDBCUtilities.tableExists(dataManager.getDataSource().getConnection(), tableIdentifier)) {
-            // Do not fire the event in the H2 thread in order to not raise
-            // org.h2.jdbc.JdbcSQLException: Timeout trying to lock table XXX
-            fireEvent(new TableEditEvent(tableIdentifier));
-        }
+        // Do not fire the event in the H2 thread in order to not raise
+        // org.h2.jdbc.JdbcSQLException: Timeout trying to lock table XXX
+        fireEvent(new TableEditEvent(tableIdentifier));
     }
 
     private void fireEvent(TableEditEvent evt) {
