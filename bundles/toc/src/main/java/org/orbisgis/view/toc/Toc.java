@@ -516,6 +516,8 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                         if (editableElement instanceof EditableSource) {
                                 //From the GeoCatalog
                                 sourceToDrop.add((EditableSource) editableElement);
+                                // Clear cached icon
+                                treeRenderer.clearTableIconCache(((EditableSource) editableElement).getTableReference());
                         } else if (editableElement instanceof EditableLayer) {
                                 //From the TOC (move)
                                 ILayer layer = ((EditableLayer) editableElement).getLayer();
@@ -643,7 +645,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
             for(ILayer layer : mapContext.getLayers()) {
                 if(!layer.getTableReference().isEmpty()) {
                     if(MetaData.isTableIdentifierEquals(event.getTableName(), layer.getTableReference())) {
-                        treeRenderer.clearIconCache(layer);
+                        treeRenderer.clearTableIconCache(layer.getTableReference());
                         treeModel.nodeChanged(new TocTreeNodeLayer(layer));
                     }
                 }

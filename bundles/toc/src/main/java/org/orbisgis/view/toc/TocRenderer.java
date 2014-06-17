@@ -165,13 +165,13 @@ public class TocRenderer extends TreeLaFRenderer {
 
     /**
      * Remove node icon cache for the provided layer.
-     * @param layer Layer instance or null to clear all layer's icon.
+     * @param tableReference Table identifier or null to clear all table's icon.
      */
-    public void clearIconCache(ILayer layer) {
-        if(layer == null || layer.getTableReference().isEmpty()) {
+    public void clearTableIconCache(String tableReference) {
+        if(tableReference == null) {
             tableGeomType = new HashMap<>(tableGeomType.size());
         } else {
-            tableGeomType.remove(layer.getTableReference());
+            tableGeomType.remove(tableReference);
         }
     }
 
