@@ -627,9 +627,10 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                     I18N.tr("Save selected sources in files"),OrbisGISIcon.getIcon("page_white_save"),
                     EventHandler.create(ActionListener.class,this,"onMenuSaveInfile"),getListSelectionModel()).setParent(PopupMenu.M_SAVE));
             //Popup:Save:Db
-            popupActions.addAction(new ActionOnSelection(PopupMenu.M_SAVE_DB,I18N.tr("Database"),
-                    I18N.tr("Save selected sources in a data base"),OrbisGISIcon.getIcon("database_save"),
-                    EventHandler.create(ActionListener.class,this,"onMenuSaveInDB"),getListSelectionModel()).setParent(PopupMenu.M_SAVE));
+            //TODO Add linked table then transfer data
+            //popupActions.addAction(new ActionOnSelection(PopupMenu.M_SAVE_DB,I18N.tr("Database"),
+            //        I18N.tr("Save selected sources in a data base"),OrbisGISIcon.getIcon("database_save"),
+            //        EventHandler.create(ActionListener.class,this,"onMenuSaveInDB"),getListSelectionModel()).setParent(PopupMenu.M_SAVE));
             //Popup:Open attributes
             popupActions.addAction(new ActionOnSelection(PopupMenu.M_OPEN_ATTRIBUTES,I18N.tr("Open the attributes"),
                     I18N.tr("Open the data source table"),OrbisGISIcon.getIcon("openattributes"),
