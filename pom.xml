@@ -39,6 +39,17 @@
         </developer>
     </developers>
     <url>http://www.orbisgis.org</url>
+    <licenses>
+        <license>
+            <name>GNU General Public License (GPLV3+)</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:https://github.com/irstv/orbisgis-commons.git</connection>
+        <developerConnection>scm:git:https://github.com/irstv/orbisgis-commons.git</developerConnection>
+        <url>git@github.com:irstv/orbisgis-commons.git</url>
+    </scm>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
