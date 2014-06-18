@@ -4,7 +4,7 @@
     <artifactId>commons</artifactId>
     <name>commons</name>
     <description>Some common utility classes used in several OrbisGIS library and applications.</description>
-    <version>1.4.2</version>
+    <version>1.4.3-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <parent>
         <groupId>org.orbisgis</groupId>
