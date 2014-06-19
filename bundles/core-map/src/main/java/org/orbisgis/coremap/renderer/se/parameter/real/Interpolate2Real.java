@@ -152,7 +152,12 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
         @Override
         public Double getValue(Map<String,Object> map) throws ParameterException {
 
-                double value = this.getLookupValue().getValue(map);
+                Double value = this.getLookupValue().getValue(map);
+
+                if(value == null) {
+                    // Do not draw the value
+                    return 0.0;
+                }
 
                 if (getInterpolationPoint(0).getData() >= value) {
                         return getInterpolationPoint(0).getValue().getValue(map);

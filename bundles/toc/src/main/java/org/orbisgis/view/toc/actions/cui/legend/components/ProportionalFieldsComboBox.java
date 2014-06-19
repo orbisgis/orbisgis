@@ -83,7 +83,7 @@ public abstract class ProportionalFieldsComboBox extends NumericalFieldsComboBox
         try(Connection connection = dataSource.getConnection()) {
             // Set the first and second data
             double[] minAndMax = ClassificationUtils
-                    .getMinAndMax( connection, tableIdentifier, new RealAttribute(name));
+                    .getMinAndMax( connection, tableIdentifier, name);
             setFirstAndSecondValues(minAndMax);
             // Set the sample data source for the preview.
             Map<String, Object> sample = new HashMap<>();
