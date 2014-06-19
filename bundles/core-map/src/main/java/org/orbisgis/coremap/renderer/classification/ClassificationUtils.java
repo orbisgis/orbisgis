@@ -84,12 +84,12 @@ public class ClassificationUtils {
      * @throws java.sql.SQLException
      * @throws ParameterException
      */
-    public static double[] getMinAndMax(Connection connection, String table, RealParameter value)
+    public static double[] getMinAndMax(Connection connection, String table, String field)
             throws SQLException, ParameterException {
         double[] minAndMax = new double[]{Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery("SELECT MIN(" + TableLocation.quoteIdentifier(value.toString()) + ") minValue," +
-                     " MAX(" + TableLocation.quoteIdentifier(value.toString()) + ") maxValue FROM " + table)) {
+             ResultSet rs = st.executeQuery("SELECT MIN(" + TableLocation.quoteIdentifier(field) + ") minValue," +
+                     " MAX(" + TableLocation.quoteIdentifier(field) + ") maxValue FROM " + table)) {
             if (rs.next()) {
                 minAndMax[0] = rs.getDouble(1);
                 minAndMax[1] = rs.getDouble(2);

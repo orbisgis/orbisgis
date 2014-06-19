@@ -111,7 +111,11 @@ public class OneLineResultSet extends AbstractRowSet {
 
     @Override
     public int findColumn(String columnLabel) throws SQLException {
-        return columns.get(columnLabel.toUpperCase());
+        Integer columnId = columns.get(columnLabel.toUpperCase());
+        if(columnId == null) {
+            throw new SQLException("This result set does not contain the column "+columnLabel);
+        }
+        return columnId;
     }
 
     @Override
