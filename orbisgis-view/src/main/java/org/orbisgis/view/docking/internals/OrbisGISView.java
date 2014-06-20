@@ -169,6 +169,19 @@ public class OrbisGISView {
             for(CAction customAction : customActions.getCustomActions()) {
                 internalDock.removeAction(customAction);
             }
+            // Clear separator
+            boolean separatorRemoved;
+            do{
+                separatorRemoved = false;
+                for(int ind = 0; ind < internalDock.getActionCount(); ind++) {
+                    CAction action = internalDock.getAction(ind);
+                    if(CSeparator.SEPARATOR.equals(action)) {
+                        internalDock.removeAction(ind);
+                        separatorRemoved = true;
+                        break;
+                    }
+                }
+            } while (separatorRemoved);
     }
     /**
      * Copy CAction list into this View Action

@@ -30,8 +30,6 @@ package org.orbisgis.corejdbc;
 
 import javax.sql.DataSource;
 import javax.sql.rowset.RowSetFactory;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
 import java.net.URI;
 import java.sql.SQLException;
 
@@ -67,7 +65,7 @@ public interface DataManager extends RowSetFactory {
 
     /**
      * Same as {@link javax.sql.rowset.RowSetFactory#createJdbcRowSet()}
-     * @return A RowSet that manage {@link UndoableEditListener}
+     * @return A RowSet that manage {@link TableEditListener}
      * @throws SQLException
      */
     public ReversibleRowSet createReversibleRowSet() throws SQLException;
@@ -79,23 +77,29 @@ public interface DataManager extends RowSetFactory {
     public ReadRowSet createReadRowSet() throws SQLException;
 
     /**
+     * @param table Table identifier [[catalog.]schema.]table
+     * @return True if a table is currently monitored by this DataManager
+     */
+    boolean hasTableEditListener(String table);
+
+    /**
      * Table update done through ReversibleRowSet will be fire through theses listeners
      * @param table Table identifier [[catalog.]schema.]table
      * @param listener Listener instance
      */
-    void addUndoableEditListener(String table, UndoableEditListener listener);
+    void addTableEditListener(String table, TableEditListener listener);
 
     /**
      * Remove registered listener
      * @param table Table identifier [[catalog.]schema.]table
      * @param listener Listener instance to remove
      */
-    void removeUndoableEditListener(String table, UndoableEditListener listener);
+    void removeTableEditListener(String table, TableEditListener listener);
 
     /**
      * @param e Event to fire
      */
-    void fireUndoableEditHappened(UndoableEditEvent e);
+    void fireTableEditHappened(TableEditEvent e);
 
     /**
      * @param originalTableName Table name if not exists
@@ -103,4 +107,23 @@ public interface DataManager extends RowSetFactory {
      * @throws SQLException Exception while querying database
      */
     public String findUniqueTableName(String originalTableName) throws SQLException;
+
+    /**
+     * Fire event to DatabaseProgressionListener
+     * @param event Database event
+     */
+    void fireDatabaseProgression(StateEvent event);
+
+    /**
+     * Add a listener in order to retrieve long process progression
+     * @param listener Listener instance
+     * @param state DB event identifier
+     */
+    void addDatabaseProgressionListener(DatabaseProgressionListener listener, StateEvent.DB_STATES state);
+
+    /**
+     * Remove the listener.
+     * @param listener Listener instance
+     */
+    void removeDatabaseProgressionListener(DatabaseProgressionListener listener);
 }

@@ -63,20 +63,6 @@ public class UtilityTest {
     }
 
     @Test
-    public void testTableExists() throws SQLException {
-        try(Connection connection = dataSource.getConnection();
-        Statement st = connection.createStatement()) {
-            st.execute("DROP TABLE IF EXISTS TEST");
-            assertFalse(MetaData.tableExists("TEST", connection.getMetaData()));
-            st.execute("DROP SCHEMA IF EXISTS TESTSCHEMA");
-            st.execute("CREATE SCHEMA TESTSCHEMA");
-            st.execute("CREATE TABLE TESTSCHEMA.TEST(id integer primary key)");
-            assertTrue(MetaData.tableExists("TESTSCHEMA.TEST", connection.getMetaData()));
-            st.execute("DROP TABLE IF EXISTS TESTSCHEMA.TEST");
-        }
-    }
-
-    @Test
     public void testTableUniqueName() throws SQLException {
         try(Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement()) {

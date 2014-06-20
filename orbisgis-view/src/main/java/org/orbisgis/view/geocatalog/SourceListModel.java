@@ -30,27 +30,26 @@ package org.orbisgis.view.geocatalog;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sql.DataSource;
-import javax.swing.AbstractListModel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.DatabaseProgressionListener;
+import org.orbisgis.corejdbc.StateEvent;
 import org.orbisgis.sif.common.ContainerItemProperties;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.TableSystemFilter;
@@ -64,7 +63,7 @@ import static org.apache.commons.collections.ComparatorUtils.NATURAL_COMPARATOR;
  * SourceListModel is a swing component that update the content of the geocatalog
  * according to the SourceManager content and the filter loaded.
  */
-public class SourceListModel extends AbstractListModel<ContainerItemProperties> {
+public class SourceListModel extends AbstractListModel<ContainerItemProperties> implements DatabaseProgressionListener {
     private static final I18n I18N = I18nFactory.getI18n(SourceListModel.class);
     private static final Logger LOGGER = Logger.getLogger(SourceListModel.class);
     private static final long serialVersionUID = 1L;
@@ -80,6 +79,17 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
     private DataSource dataSource;
     private CatalogComparator catalogComparator = new CatalogComparator();
     private boolean isH2;
+    private Map<String, Integer> columnMap = new HashMap<>();
+    // Update Geocatalog only if query starts with this command. (lowercase)
+    private static final String[] updateSourceListQuery = new String[] {"drop", "create","alter"};
+    private static final int MAX_LENGTH_QUERY;
+    static {
+        int maxLen = 0;
+        for(String query : updateSourceListQuery) {
+            maxLen = Math.max(maxLen, query.length());
+        }
+        MAX_LENGTH_QUERY = maxLen;
+    }
     /**
      * Read filters components and generate filter instances
      * @return A list of filters
@@ -92,16 +102,32 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
      * Constructor
      * @note Do not forget to call dispose()
      */
-    public SourceListModel(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public SourceListModel(DataManager dataManager) {
+        this.dataSource = dataManager.getDataSource();
         try(Connection connection = dataSource.getConnection()) {
             isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         } catch (SQLException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }
-        //Install listeners
+        //Install database listeners
+        dataManager.addDatabaseProgressionListener(this, StateEvent.DB_STATES.STATE_STATEMENT_END);
         //Call readDatabase when a SourceManager fire an event
         onDataManagerChange();
+    }
+
+    @Override
+    public void progressionUpdate(StateEvent state) {
+        // DataBase update
+        String name = state.getName();
+        if(name != null) {
+            name = name.substring(0,MAX_LENGTH_QUERY).trim().toLowerCase();
+            for(String query : updateSourceListQuery) {
+                if(name.startsWith(query)) {
+                    onDataManagerChange();
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -117,29 +143,33 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
      */
     public void onDataManagerChange() {
         //This is useless to invoke a refresh thread because
-        //The content will be soonly refreshed by another ReadDataManagerOnSwingThread
+        //The content will be refresh is coming soon fired by another ReadDataManagerOnSwingThread
         if(!awaitingRefresh.getAndSet(true)) {
-            SwingUtilities.invokeLater(new ReadDataManagerOnSwingThread(this));
+            ReadDataManagerOnSwingThread worker = new ReadDataManagerOnSwingThread(this);
+            worker.execute();
         }
     }
     /**
      * Refresh the JList on the swing thread
      */
-    private static class ReadDataManagerOnSwingThread implements Runnable {
+    private static class ReadDataManagerOnSwingThread extends SwingWorker<Boolean, Boolean> {
         private SourceListModel model;
 
         private ReadDataManagerOnSwingThread(SourceListModel model) {
             this.model = model;
         }
 
-        /**
-         * Refresh the JList on the swing thread
-         */
         @Override
-        public void run(){
-            model.awaitingRefresh.set(false);
+        protected Boolean doInBackground() throws Exception {
             model.readDatabase();
+            return true;
+        }
+
+        @Override
+        protected void done() {
+            //Refresh the JList on the swing thread
             model.doFilter();
+            model.awaitingRefresh.set(false);
         }
     }
 
@@ -290,9 +320,24 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
         }
     }
 
-    private static void putAttribute(Map<IFilter.ATTRIBUTES, String> tableAttr, IFilter.ATTRIBUTES attribute, ResultSet rs) {
+    private void putAttribute(Map<IFilter.ATTRIBUTES, String> tableAttr, IFilter.ATTRIBUTES attribute, ResultSet rs) {
         try {
-            tableAttr.put(attribute, rs.getString(attribute.toString().toLowerCase()));
+            String columnName = attribute.toString().toLowerCase();
+            Integer columnId = columnMap.get(columnName);
+            if(columnId == null) {
+                ResultSetMetaData meta = rs.getMetaData();
+                columnMap.put(columnName, 0);
+                for(int i=1; i<=meta.getColumnCount(); i++) {
+                    if(columnName.equals(meta.getCatalogName(i).toLowerCase())) {
+                        columnMap.put(columnName, i);
+                        columnId = i;
+                        break;
+                    }
+                }
+            }
+            if(columnId != null && columnId > 0) {
+                tableAttr.put(attribute, rs.getString(columnId));
+            }
         } catch (SQLException ex) {
             // Ignore
         }

@@ -1,4 +1,4 @@
-/**
+/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
@@ -28,21 +28,15 @@
  */
 package org.orbisgis.corejdbc;
 
+import java.util.EventListener;
+
 /**
- * This kind of RowSet hold an history of update commands. Undo and redo methods are available.
  * @author Nicolas Fortin
  */
-public interface ReversibleRowSet extends ReadRowSet {
-
+public interface DatabaseProgressionListener extends EventListener {
     /**
-     * Table update done through ReversibleRowSet will be fire through theses listeners
-     * @param listener Listener instance
+     * Called on database update
+     * @param state
      */
-    void addTableEditListener(String table, TableEditListener listener);
-
-    /**
-     * Remove registered listener
-     * @param listener Listener instance to remove
-     */
-    void removeTableEditListener(String table, TableEditListener listener);
+    void progressionUpdate(StateEvent state);
 }

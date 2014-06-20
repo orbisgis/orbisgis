@@ -96,6 +96,7 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
         if(rowSet != null) {
             try {
                 rowSet.close();
+                rowSet = null;
                 setOpen(false);
             } catch (SQLException ex) {
                 throw new EditableElementException(ex);

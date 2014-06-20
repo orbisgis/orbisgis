@@ -712,41 +712,4 @@ public final class OwsMapContext extends BeanMapContext {
          * public void setCoordinateReferenceSystem(CoordinateReferenceSystem
          * crs) { this.crs = crs; }
          */
-
-        /**
-        @Override
-        public void checkSelectionRefresh(final int[] selectedRows,
-                final int[] oldSelectedRows, final DataSource dataSource) {
-                Envelope env;
-                env = getBoundingBox();
-                boolean mustUpdate = false;
-                try {
-                        int geometryIndex = MetadataUtilities.getSpatialFieldIndex(dataSource.getMetadata());
-                        for (int i = 0; i < selectedRows.length; i++) {
-                                Geometry g = dataSource.getFieldValue(selectedRows[i],
-                                        geometryIndex).getAsGeometry();
-                                if (g.getEnvelopeInternal().intersects(env)) {
-                                        // geometry is on screen -> update
-                                        mustUpdate = true;
-                                        break;
-                                }
-                        }
-                        if (!mustUpdate) {
-                                for (int i = 0; i < oldSelectedRows.length; i++) {
-                                        Geometry g = dataSource.getFieldValue(oldSelectedRows[i],
-                                                geometryIndex).getAsGeometry();
-                                        if (g.getEnvelopeInternal().intersects(env)) {
-                                                // old geometry was on screen -> update
-                                                mustUpdate = true;
-                                                break;
-                                        }
-                                }
-                        }
-
-                } catch (DriverException ex) {
-                        mustUpdate = true;
-                }
-                setSelectionInducedRefresh(mustUpdate);
-        }
-        */
 }

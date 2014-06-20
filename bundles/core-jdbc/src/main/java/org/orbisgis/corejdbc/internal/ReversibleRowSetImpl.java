@@ -30,11 +30,11 @@ package org.orbisgis.corejdbc.internal;
 
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.progress.ProgressMonitor;
 
 import javax.sql.DataSource;
-import javax.swing.event.UndoableEditListener;
 import java.sql.SQLException;
 
 /**
@@ -62,12 +62,13 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
     }
 
     @Override
-    public void addUndoableEditListener(UndoableEditListener listener) {
-        manager.addUndoableEditListener(getTable(),listener);
+    public void addTableEditListener(String table, TableEditListener listener) {
+        manager.addTableEditListener(getTable(), listener);
+
     }
 
     @Override
-    public void removeUndoableEditListener(UndoableEditListener listener) {
-        manager.removeUndoableEditListener(getTable(),listener);
+    public void removeTableEditListener(String table, TableEditListener listener) {
+        manager.removeTableEditListener(getTable(), listener);
     }
 }

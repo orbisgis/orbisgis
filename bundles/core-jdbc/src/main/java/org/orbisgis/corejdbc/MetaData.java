@@ -67,7 +67,7 @@ public class MetaData {
         } else {
             uniqueName = tableName;
         }
-        while (tableExists(uniqueName.toString(), meta)) {
+        while (JDBCUtilities.tableExists(meta.getConnection(), uniqueName.toString())) {
             index++;
             if(!baseName.isEmpty()) {
                 uniqueName = new TableLocation(tableName.getCatalog(),tableName.getSchema(),
@@ -78,20 +78,6 @@ public class MetaData {
             }
         }
         return uniqueName.toString();
-    }
-
-    /**
-     *
-     * @param tableName Table identifier
-     * @param meta DatabaseMetaData instance
-     * @return True if table exists
-     * @throws SQLException
-     */
-    public static boolean tableExists(String tableName, DatabaseMetaData meta) throws SQLException {
-        TableLocation location = TableLocation.parse(tableName);
-        try(ResultSet rs = meta.getTables(location.getCatalog(), location.getSchema(), location.getTable(), null)) {
-            return rs.next();
-        }
     }
 
     /**
@@ -182,6 +168,21 @@ public class MetaData {
             default:
                 return false;
         }
+    }
+
+    /**
+     * Check if two table identifier are equals
+     * @param tableIdentifier First table identifier
+     * @param otherTableIdentifier Second table identifier
+     * @return True if there are equal.
+     */
+    public static boolean isTableIdentifierEquals(String tableIdentifier, String otherTableIdentifier) {
+        TableLocation tableLocation = TableLocation.parse(tableIdentifier);
+        TableLocation tableLocation1 = TableLocation.parse(otherTableIdentifier);
+        return (tableLocation.getSchema().isEmpty() && tableLocation1.getSchema().equalsIgnoreCase("public") ||
+                tableLocation1.getSchema().isEmpty() && tableLocation.getSchema().equalsIgnoreCase("public")  ||
+                tableLocation1.getSchema().equals(tableLocation.getSchema()))
+                && tableLocation.getTable().equals(tableLocation1.getTable());
     }
 
     /**

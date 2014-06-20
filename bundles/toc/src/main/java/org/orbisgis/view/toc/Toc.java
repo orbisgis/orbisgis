@@ -71,9 +71,13 @@ import javax.xml.bind.JAXBElement;
 
 import net.opengis.se._2_0.core.StyleType;
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
+import org.orbisgis.corejdbc.MetaData;
+import org.orbisgis.corejdbc.TableEditEvent;
+import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.BeanLayer;
 import org.orbisgis.coremap.layerModel.ILayer;
@@ -131,7 +135,7 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * The Toc Panel component
  */
-public class Toc extends JPanel implements EditorDockable, TocExt {
+public class Toc extends JPanel implements EditorDockable, TocExt, TableEditListener {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
 
         private static final long serialVersionUID = 1L;
@@ -189,11 +193,11 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
             saveAction.setEnabled(false);
             tools.add(saveAction);
-            DefaultAction addWMSAction = new DefaultAction("ADD_WMS_LAYER", I18N.tr("WMS layer"),
-                    I18N.tr("Add WMS layer"), OrbisGISIcon.getIcon("add"),
-                    EventHandler.create(ActionListener.class, this, "onAddWMSLayer"),
-                    KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
-            tools.add(addWMSAction);
+            DefaultAction refreshIconsAction = new DefaultAction("REFRESH_ICONS", I18N.tr("Refresh"),
+                    I18N.tr("Refresh layer icons"), OrbisGISIcon.getIcon("arrow_refresh"),
+                    EventHandler.create(ActionListener.class, this, "onRefreshTocTree"),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
+            tools.add(refreshIconsAction);
             dockingPanelParameters.setDockActions(tools);
         }
         private void initPopupActions() {
@@ -264,12 +268,21 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
 
             popupActions.addAction(new LayerAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
                     I18N.tr("Add layer group"),I18N.tr("Add layer group to the map context"),
-                    OrbisGISIcon.getIcon("add"),
+                    OrbisGISIcon.getIcon("folder_add"),
                     EventHandler.create(ActionListener.class, this, "onAddGroup"),null)
                         .setOnLayerGroup(true)
                         .setSingleSelection(true)
                         .setOnEmptySelection(true)
                         .setLogicalGroup(TocActionFactory.G_LAYER_GROUP));
+            DefaultAction addWMSAction = new LayerAction(this,"ADD_WMS_LAYER", I18N.tr("Add WMS layer"),
+                    I18N.tr("Add WMS layer to the map context"), OrbisGISIcon.getIcon("world_add"),
+                    EventHandler.create(ActionListener.class, this, "onAddWMSLayer"),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_DOWN_MASK))
+                    .setOnLayerGroup(true)
+                    .setSingleSelection(true)
+                    .setOnEmptySelection(true)
+                    .setLogicalGroup(TocActionFactory.G_LAYER_GROUP);
+            popupActions.addAction(addWMSAction);
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_REMOVE_LAYER, I18N.tr("Remove layer"),
                         I18N.tr("Remove the layer from the map context"),OrbisGISIcon.getIcon("remove"),
                         EventHandler.create(ActionListener.class, this, "onDeleteLayer"),null)
@@ -300,6 +313,15 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         mapElement.save();
                 }
         }
+
+        /**
+         * Refresh TOC tree icons
+         */
+        public void onRefreshTocTree() {
+            treeRenderer.clearTableIconCache();
+            treeModel.reload();
+        }
+
         /**
          * The user starts or stops editing a layer's geometries
          */
@@ -512,6 +534,8 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         if (editableElement instanceof EditableSource) {
                                 //From the GeoCatalog
                                 sourceToDrop.add((EditableSource) editableElement);
+                                // Clear cached icon
+                                treeRenderer.clearTableIconCache(((EditableSource) editableElement).getTableReference());
                         } else if (editableElement instanceof EditableLayer) {
                                 //From the TOC (move)
                                 ILayer layer = ((EditableLayer) editableElement).getLayer();
@@ -533,7 +557,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
 
                 if (!sourceToDrop.isEmpty()) {
                     BackgroundManager bm = Services.getService(BackgroundManager.class);//Cancel the drawing process
-                    bm.backgroundOperation(new DropDataSourceListProcess(dropNode, index, sourceToDrop));
+                    bm.nonBlockingBackgroundOperation(new DropDataSourceListProcess(dropNode, index, sourceToDrop));
                 }
         }
 
@@ -608,6 +632,13 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         ILayer layer =((TocTreeNodeLayer) node).getLayer();
                         if(!layer.acceptsChilds()) {
                                 layer.addPropertyChangeListener(Layer.PROP_STYLES,tocStyleListListener);
+                                try(Connection connection = mapContext.getDataManager().getDataSource().getConnection()) {
+                                    if (!layer.getTableReference().isEmpty() && JDBCUtilities.tableExists(connection,layer.getTableReference())) {
+                                        mapContext.getDataManager().addTableEditListener(layer.getTableReference(), this);
+                                    }
+                                } catch (SQLException ex) {
+                                    // Ignore
+                                }
                                 for(Style st : layer.getStyles()) {
                                         addPropertyListeners(new TocTreeNodeStyle(st));
                                 }
@@ -621,7 +652,25 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         st.addPropertyChangeListener(tocStyleListener);
                 }
         }
+
         /**
+         * One of layer change
+         * @param event Event object, source is table identifier.
+         */
+        @Override
+        public void tableChange(TableEditEvent event) {
+            // Found which layer(s) change
+            for(ILayer layer : mapContext.getLayers()) {
+                if(!layer.getTableReference().isEmpty()) {
+                    if(MetaData.isTableIdentifierEquals(event.getTableName(), layer.getTableReference())) {
+                        treeRenderer.clearTableIconCache(layer.getTableReference());
+                        treeModel.nodeChanged(new TocTreeNodeLayer(layer));
+                    }
+                }
+            }
+        }
+
+    /**
          * Recursively remove the property listeners of the provided node
          * @param node 
          */
@@ -630,6 +679,9 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         ILayer layer =((TocTreeNodeLayer) node).getLayer();
                         if(!layer.acceptsChilds()) {
                                 layer.removePropertyChangeListener(tocStyleListListener);
+                                if(!layer.getTableReference().isEmpty()) {
+                                    mapContext.getDataManager().removeTableEditListener(layer.getTableReference(), this);
+                                }
                                 for(Style st : layer.getStyles()) {
                                         removePropertyListeners(new TocTreeNodeStyle(st));
                                 }

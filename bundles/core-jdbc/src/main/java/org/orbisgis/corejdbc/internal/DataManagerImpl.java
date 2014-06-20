@@ -1,19 +1,22 @@
 package org.orbisgis.corejdbc.internal;
 
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtility;
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.DatabaseProgressionListener;
+import org.orbisgis.corejdbc.TableEditEvent;
+import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.ReversibleRowSet;
+import org.orbisgis.corejdbc.StateEvent;
 import org.orbisgis.utils.FileUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import javax.sql.rowset.*;
 import javax.sql.DataSource;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
 import java.io.File;
 import java.net.URI;
 import java.sql.*;
@@ -28,10 +31,16 @@ import java.util.Map;
  */
 @Component(service = {DataManager.class, RowSetFactory.class})
 public class DataManagerImpl implements DataManager {
+    private static Logger LOGGER = Logger.getLogger(DataManagerImpl.class);
     private DataSource dataSource;
+    private boolean isH2 = true;
+    private boolean isLocalH2Table = true;
+    private static final String H2TRIGGER = "org.orbisgis.h2triggers.H2Trigger";
+
     /** ReversibleRowSet fire row updates to their DataManager  */
-    private Map<String, List<UndoableEditListener>> tableEditionListener = new HashMap<>();
+    private Map<String, List<TableEditListener>> tableEditionListener = new HashMap<>();
     private static final Logger LOG = Logger.getLogger(DataManagerImpl.class);
+    private Map<StateEvent.DB_STATES, ArrayList<DatabaseProgressionListener>> progressionListenerMap = new HashMap<>();
 
     @Override
     public CachedRowSet createCachedRowSet() throws SQLException {
@@ -72,7 +81,7 @@ public class DataManagerImpl implements DataManager {
      * @param dataSource Active DataSource
      */
     public DataManagerImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
+        setDataSource(dataSource);
     }
 
     /**
@@ -164,13 +173,20 @@ public class DataManagerImpl implements DataManager {
     @Reference
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
+        try (Connection connection = dataSource.getConnection()) {
+            DatabaseMetaData meta = connection.getMetaData();
+            isH2 = JDBCUtilities.isH2DataBase(meta);
+            isLocalH2Table = connection.getMetaData().getURL().startsWith("jdbc:h2:")
+                    && !connection.getMetaData().getURL().startsWith("jdbc:h2:tcp:/");
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
+        }
     }
 
     public void unsetDataSource(DataSource dataSource) {
         this.dataSource = null;
         dispose();
     }
-
 
     @Override
     public boolean isTableExists(String tableName) throws SQLException {
@@ -181,40 +197,120 @@ public class DataManagerImpl implements DataManager {
         }
     }
 
+    @Override
+    public boolean hasTableEditListener(String tableIdentifier) {
+        TableLocation table = TableLocation.parse(tableIdentifier, isH2);
+        if("PUBLIC".equals(table.getSchema()) && !tableEditionListener.containsKey(table.toString(true))) {
+            // Maybe schema is not given in listener table identifier
+            table = new TableLocation("","",table.getTable());
+        }
+        String parsedTable = table.toString(isH2);
+        return tableEditionListener.containsKey(parsedTable);
+    }
 
     @Override
-    public void addUndoableEditListener(String table, UndoableEditListener listener) {
-        String parsedTable = TableLocation.parse(table).toString();
-        List<UndoableEditListener> listeners = tableEditionListener.get(parsedTable);
+    public void addTableEditListener(String table, TableEditListener listener) {
+        String parsedTable = TableLocation.parse(table, isH2).toString(isH2);
+        List<TableEditListener> listeners = tableEditionListener.get(parsedTable);
         if(listeners == null) {
             listeners = new ArrayList<>();
             tableEditionListener.put(parsedTable, listeners);
         }
-        listeners.add(listener);
-    }
-
-    @Override
-    public void removeUndoableEditListener(String table, UndoableEditListener listener) {
-        String parsedTable = TableLocation.parse(table).toString();
-        List<UndoableEditListener> listeners = tableEditionListener.get(parsedTable);
-        if(listeners != null) {
+        if(!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+        try(Connection connection = dataSource.getConnection();
+            Statement st = connection.createStatement()) {
+            // Add trigger
+            if(isLocalH2Table) {
+                    String triggerName = getH2TriggerName(table);
+                    st.execute("CREATE FORCE TRIGGER IF NOT EXISTS "+triggerName+" AFTER INSERT, UPDATE, DELETE ON "+table+" CALL \""+H2TRIGGER+"\"");
+            }
+        } catch (SQLException ex) {
             listeners.remove(listener);
+            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
     }
 
     @Override
-    public void fireUndoableEditHappened(UndoableEditEvent e) {
-        if(e.getSource() != null && e.getSource() instanceof ReadRowSet) {
-            String table = TableLocation.parse(((ReadRowSet) e.getSource()).getTable()).toString();
-            List<UndoableEditListener> listeners = tableEditionListener.get(table);
+    public void removeTableEditListener(String table, TableEditListener listener) {
+        String parsedTable = TableLocation.parse(table).toString();
+        List<TableEditListener> listeners = tableEditionListener.get(parsedTable);
+        if(listeners != null) {
+            listeners.remove(listener);
+            if(listeners.isEmpty()) {
+                // Remove trigger
+                String triggerName = getH2TriggerName(table);
+                try(Connection connection = dataSource.getConnection();
+                    Statement st = connection.createStatement()) {
+                    st.execute("DROP TRIGGER IF EXISTS "+triggerName);
+                } catch (SQLException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
+                tableEditionListener.remove(parsedTable);
+            }
+        }
+    }
+    private static String getH2TriggerName(String table) {
+        TableLocation tableIdentifier = TableLocation.parse(table, true);
+        return new TableLocation(tableIdentifier.getCatalog(), tableIdentifier.getSchema(),
+                "DM_"+tableIdentifier.getTable()).toString(true);
+    }
+    @Override
+    public void fireTableEditHappened(TableEditEvent e) {
+        if(e.getSource() != null) {
+            TableLocation table;
+            if(e.getSource() instanceof ReadRowSet) {
+                table = TableLocation.parse(((ReadRowSet) e.getSource()).getTable(), true);
+            } else {
+                table = TableLocation.parse(e.getSource().toString(), true);
+            }
+            if("PUBLIC".equals(table.getSchema()) && !tableEditionListener.containsKey(table.toString(true))) {
+                // Maybe schema is not given in listener table identifier
+                table = new TableLocation("","",table.getTable());
+            }
+            List<TableEditListener> listeners = tableEditionListener.get(table.toString(true));
             if(listeners != null) {
-                for(UndoableEditListener listener : listeners) {
+                for(TableEditListener listener : listeners) {
                     try {
-                        listener.undoableEditHappened(e);
+                        listener.tableChange(e);
                     } catch (Exception ex) {
                         LOG.error(ex.getLocalizedMessage(), ex);
                     }
                 }
+            }
+        }
+    }
+
+    @Override
+    public void addDatabaseProgressionListener(DatabaseProgressionListener listener, StateEvent.DB_STATES state) {
+        ArrayList<DatabaseProgressionListener> listenerList = progressionListenerMap.get(state);
+        if(listenerList != null) {
+            listenerList = new ArrayList<>(listenerList);
+        } else {
+            listenerList = new ArrayList<>();
+        }
+        listenerList.add(listener);
+        progressionListenerMap.put(state, listenerList);
+    }
+
+    @Override
+    public void removeDatabaseProgressionListener(DatabaseProgressionListener listener) {
+        for(Map.Entry<StateEvent.DB_STATES,ArrayList<DatabaseProgressionListener>> entry : progressionListenerMap.entrySet()) {
+            if(entry.getValue().contains(listener)) {
+                ArrayList<DatabaseProgressionListener> newList = new ArrayList<>(entry.getValue());
+                newList.remove(listener);
+                entry.setValue(newList);
+            }
+        }
+    }
+
+    @Override
+    public void fireDatabaseProgression(StateEvent event) {
+        ArrayList<DatabaseProgressionListener> listenerList = progressionListenerMap.get(event.getStateIdentifier());
+        if(listenerList != null) {
+            for(DatabaseProgressionListener listener : listenerList) {
+                listener.progressionUpdate(event);
             }
         }
     }
