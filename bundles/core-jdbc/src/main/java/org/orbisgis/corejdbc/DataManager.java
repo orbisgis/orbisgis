@@ -77,6 +77,12 @@ public interface DataManager extends RowSetFactory {
     public ReadRowSet createReadRowSet() throws SQLException;
 
     /**
+     * @param table Table identifier [[catalog.]schema.]table
+     * @return True if a table is currently monitored by this DataManager
+     */
+    boolean hasTableEditListener(String table);
+
+    /**
      * Table update done through ReversibleRowSet will be fire through theses listeners
      * @param table Table identifier [[catalog.]schema.]table
      * @param listener Listener instance

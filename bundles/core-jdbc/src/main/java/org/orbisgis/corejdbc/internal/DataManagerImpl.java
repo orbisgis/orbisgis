@@ -197,6 +197,16 @@ public class DataManagerImpl implements DataManager {
         }
     }
 
+    @Override
+    public boolean hasTableEditListener(String tableIdentifier) {
+        TableLocation table = TableLocation.parse(tableIdentifier, isH2);
+        if("PUBLIC".equals(table.getSchema()) && !tableEditionListener.containsKey(table.toString(true))) {
+            // Maybe schema is not given in listener table identifier
+            table = new TableLocation("","",table.getTable());
+        }
+        String parsedTable = table.toString(isH2);
+        return tableEditionListener.containsKey(parsedTable);
+    }
 
     @Override
     public void addTableEditListener(String table, TableEditListener listener) {
@@ -205,19 +215,21 @@ public class DataManagerImpl implements DataManager {
         if(listeners == null) {
             listeners = new ArrayList<>();
             tableEditionListener.put(parsedTable, listeners);
+        }
+        if(!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+        try(Connection connection = dataSource.getConnection();
+            Statement st = connection.createStatement()) {
             // Add trigger
             if(isLocalH2Table) {
-                try(Connection connection = dataSource.getConnection();
-                    Statement st = connection.createStatement()) {
                     String triggerName = getH2TriggerName(table);
-                    st.execute("DROP TRIGGER IF EXISTS "+triggerName);
-                    st.execute("CREATE FORCE TRIGGER "+triggerName+" AFTER INSERT, UPDATE, DELETE ON "+table+" CALL \""+H2TRIGGER+"\"");
-                } catch (SQLException ex) {
-                    LOGGER.error(ex.getLocalizedMessage(), ex);
-                }
+                    st.execute("CREATE FORCE TRIGGER IF NOT EXISTS "+triggerName+" AFTER INSERT, UPDATE, DELETE ON "+table+" CALL \""+H2TRIGGER+"\"");
             }
+        } catch (SQLException ex) {
+            listeners.remove(listener);
+            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
-        listeners.add(listener);
     }
 
     @Override
@@ -235,7 +247,7 @@ public class DataManagerImpl implements DataManager {
                 } catch (SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
-
+                tableEditionListener.remove(parsedTable);
             }
         }
     }

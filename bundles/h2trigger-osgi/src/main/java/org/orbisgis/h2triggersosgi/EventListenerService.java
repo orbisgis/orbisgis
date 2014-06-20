@@ -157,16 +157,11 @@ public class EventListenerService implements DatabaseEventListener, TriggerFacto
     }
 
     @Override
-    public Trigger createTrigger(Connection conn, String schemaName, String triggerName, String tableName, boolean before, int type) {
+    public Trigger createTrigger(Connection conn, String schemaName, String triggerName, String tableName, boolean before, int type) throws SQLException {
         if(dataManager != null) {
             TableTrigger trigger = new TableTrigger(dataManager);
-            try {
-                trigger.init(conn, schemaName, triggerName, tableName, before, type);
-                return trigger;
-            } catch (SQLException ex) {
-                logger.error("Cannot init trigger "+triggerName,ex);
-                return null;
-            }
+            trigger.init(conn, schemaName, triggerName, tableName, before, type);
+            return trigger;
         } else {
             return null;
         }

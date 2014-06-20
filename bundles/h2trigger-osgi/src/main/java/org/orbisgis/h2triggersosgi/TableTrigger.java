@@ -38,6 +38,7 @@ import org.orbisgis.corejdbc.TableEditEvent;
 import javax.swing.*;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -61,6 +62,12 @@ public class TableTrigger implements Trigger {
     public void init(Connection conn, String schemaName, String triggerName, String tableName, boolean before, int type) throws SQLException {
         this.update = type == UPDATE;
         this.tableIdentifier = new TableLocation(schemaName, tableName).toString(true);
+        if(!dataManager.hasTableEditListener(tableIdentifier)) {
+            try(Statement st = conn.createStatement()) {
+                st.execute("DROP TRIGGER IF EXISTS "+triggerName);
+            }
+            throw new SQLException("This trigger does not exists");
+        }
     }
 
     @Override
