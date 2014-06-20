@@ -26,28 +26,19 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.map.tools;
+package org.orbisgis.mapeditor.map.tools;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 import java.awt.Color;
-import java.io.File;
-import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Observable;
 import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.schema.DefaultMetadata;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.gdms.GdmsWriter;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.LayerException;
 import org.orbisgis.coremap.layerModel.MapContext;
@@ -59,15 +50,14 @@ import org.orbisgis.coremap.renderer.se.fill.SolidFill;
 import org.orbisgis.coremap.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
+import org.orbisgis.mapeditor.map.tool.ToolManager;
+import org.orbisgis.mapeditor.map.tool.TransitionException;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.map.tool.ToolManager;
-import org.orbisgis.view.map.tool.TransitionException;
 
 public class FencePolygonTool extends AbstractPolygonTool {
         private static Logger UILOGGER = Logger.getLogger("gui."+FencePolygonTool.class);
         private ILayer layer;
-        private String fenceFile = "fence.gdms";
-        private final String fenceLayerName = "fence";
+        private static final String FENCE_LAYER_NAME = "fence";
  
         @Override
         public void update(Observable o, Object arg) {
@@ -75,8 +65,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
         }
 
         @Override
-        protected void polygonDone(Polygon g, MapContext vc, ToolManager tm)
-                throws TransitionException {
+        protected void polygonDone(Polygon g, MapContext vc, ToolManager tm) throws TransitionException {
                 try {
                         if (null != layer) {
                                 vc.getLayerModel().remove(layer);
@@ -100,7 +89,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
                 } catch (LayerException e) {
                         UILOGGER.error(i18n.tr("Cannot use fence tool"), e);
                 }
-        }
+            }
 
         @Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
@@ -112,51 +101,29 @@ public class FencePolygonTool extends AbstractPolygonTool {
                 return true;
         }
 
+        /**
+         * @return Fence layer name with good capitalization
+         */
+        private String getFenceLayerName(boolean isH2) {
+            return TableLocation.parse(FENCE_LAYER_NAME, isH2).toString(isH2);
+        }
+
         private ILayer createFenceLayer(Geometry g) {
-                try {
-                        DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
-
-
-
-                        File file = new File(dsf.getResultDir() + File.separator + fenceFile);
-
-                        if (file.exists()) {
-                                file.delete();
+                try(Connection connection = mc.getDataManager().getDataSource().getConnection();
+                    Statement st = connection.createStatement()) {
+                        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                        String fenceLayer = getFenceLayerName(isH2);
+                        if(isH2) {
+                            st.execute("CREATE TABLE IF NOT EXISTS " + fenceLayer + " (THE_GEOM POLYGON)");
+                        } else {
+                            //PostGIS
+                            // TODO get SRID of the MapContext to build the fence
+                            st.execute("CREATE TABLE IF NOT EXISTS " + fenceLayer + " (THE_GEOM geometry(POLYGON,0))");
                         }
-
-                        if (dsf.getSourceManager().exists(fenceLayerName)) {
-                                dsf.getSourceManager().remove(fenceLayerName);
-                        }
-
-                        GdmsWriter writer;
-                        writer = new GdmsWriter(file);
-
-
-                        Metadata md = new DefaultMetadata(new Type[]{TypeFactory.createType(Type.POLYGON)}, new String[]{"the_geom"});
-
-                        writer.writeMetadata(1, md);
-                        writer.addValues(new Value[]{ValueFactory.createValue(g)});
-
-                        // write the row indexes
-                        writer.writeRowIndexes();
-                        // write envelope
-                        writer.writeExtent();
-                        writer.close();
-                        dsf.getSourceManager().register(fenceLayerName, file);
-
-                        DataManager dataManager = Services.getService(DataManager.class);
-                        return dataManager.createLayer(fenceLayerName);
-
-
-                } catch (DriverLoadException e) {
-                        UILOGGER.error(i18n.tr("Error while recovering fence vectorial layer"), e);
-                } catch (DriverException e) {
-                        UILOGGER.error(i18n.tr("Cannot create fence layer"), e);
-
-                } catch (LayerException e) {
-                        UILOGGER.error(i18n.tr("Cannot create fence layer"), e);
-
-                } catch (IOException e) {
+                        st.execute("DELETE FROM " + fenceLayer);
+                        st.execute("INSERT INTO " + fenceLayer + " VALUES (ST_PolyFromText('" + g.toString() + "', 0))");
+                        return mc.createLayer(fenceLayer);
+                } catch (SQLException | LayerException e) {
                         UILOGGER.error(i18n.tr("Cannot create fence layer"), e);
                 }
                 return null;
