@@ -411,9 +411,8 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
         // Drawing tools
         actions.addAction(new DefaultAction(MapEditorAction.A_DRAWING_GROUP,I18N.tr("Graphic tools")).setMenuGroup(true));
-        // TODO Fence tool
-        //actions.addAction(new ActionAutomaton(MapEditorAction.A_FENCE,new FencePolygonTool(),this)
-        //        .setParent(MapEditorAction.A_DRAWING_GROUP));
+        actions.addAction(new ActionAutomaton(MapEditorAction.A_FENCE,new FencePolygonTool(),this)
+                .setParent(MapEditorAction.A_DRAWING_GROUP));
         actions.addAction(new ActionAutomaton(MapEditorAction.A_PICK_COORDINATES, new PickCoordinatesPointTool(),this)
                 .setParent(MapEditorAction.A_DRAWING_GROUP));
 
