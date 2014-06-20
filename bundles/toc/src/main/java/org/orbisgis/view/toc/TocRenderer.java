@@ -162,6 +162,12 @@ public class TocRenderer extends TreeLaFRenderer {
             }
         }
     }
+    /**
+     * Remove node icon cache for the provided layer.
+     */
+    public void clearTableIconCache() {
+        clearTableIconCache(null);
+    }
 
     /**
      * Remove node icon cache for the provided layer.

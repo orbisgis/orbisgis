@@ -193,11 +193,11 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                     KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
             saveAction.setEnabled(false);
             tools.add(saveAction);
-            DefaultAction addWMSAction = new DefaultAction("ADD_WMS_LAYER", I18N.tr("WMS layer"),
-                    I18N.tr("Add WMS layer"), OrbisGISIcon.getIcon("add"),
-                    EventHandler.create(ActionListener.class, this, "onAddWMSLayer"),
-                    KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
-            tools.add(addWMSAction);
+            DefaultAction refreshIconsAction = new DefaultAction("REFRESH_ICONS", I18N.tr("Refresh"),
+                    I18N.tr("Refresh layer icons"), OrbisGISIcon.getIcon("arrow_refresh"),
+                    EventHandler.create(ActionListener.class, this, "onRefreshTocTree"),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
+            tools.add(refreshIconsAction);
             dockingPanelParameters.setDockActions(tools);
         }
         private void initPopupActions() {
@@ -268,12 +268,21 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
 
             popupActions.addAction(new LayerAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
                     I18N.tr("Add layer group"),I18N.tr("Add layer group to the map context"),
-                    OrbisGISIcon.getIcon("add"),
+                    OrbisGISIcon.getIcon("folder_add"),
                     EventHandler.create(ActionListener.class, this, "onAddGroup"),null)
                         .setOnLayerGroup(true)
                         .setSingleSelection(true)
                         .setOnEmptySelection(true)
                         .setLogicalGroup(TocActionFactory.G_LAYER_GROUP));
+            DefaultAction addWMSAction = new LayerAction(this,"ADD_WMS_LAYER", I18N.tr("Add WMS layer"),
+                    I18N.tr("Add WMS layer to the map context"), OrbisGISIcon.getIcon("world_add"),
+                    EventHandler.create(ActionListener.class, this, "onAddWMSLayer"),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_DOWN_MASK))
+                    .setOnLayerGroup(true)
+                    .setSingleSelection(true)
+                    .setOnEmptySelection(true)
+                    .setLogicalGroup(TocActionFactory.G_LAYER_GROUP);
+            popupActions.addAction(addWMSAction);
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_REMOVE_LAYER, I18N.tr("Remove layer"),
                         I18N.tr("Remove the layer from the map context"),OrbisGISIcon.getIcon("remove"),
                         EventHandler.create(ActionListener.class, this, "onDeleteLayer"),null)
@@ -304,6 +313,15 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                         mapElement.save();
                 }
         }
+
+        /**
+         * Refresh TOC tree icons
+         */
+        public void onRefreshTocTree() {
+            treeRenderer.clearTableIconCache();
+            treeModel.reload();
+        }
+
         /**
          * The user starts or stops editing a layer's geometries
          */
