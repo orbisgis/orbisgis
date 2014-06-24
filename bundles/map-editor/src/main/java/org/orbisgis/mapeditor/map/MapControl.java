@@ -63,6 +63,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class MapControl extends JComponent implements ContainerListener {
         //Minimal Time in ms between two intermediate paint of drawing process
         private static final long INTERMEDIATE_DRAW_PAINT_INTERVAL = 200;
+        private static final Point MAX_IMAGE_SIZE = new Point(20000, 20000);
         public static final String JOB_DRAWING_PREFIX_ID = "MapControl-Drawing";
         private static final Logger LOGGER = Logger.getLogger(MapControl.class);
         private static final I18n I18N = I18nFactory.getI18n(MapControl.class);
@@ -204,7 +205,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
             // then we render on top the already computed image
             // if it exists
-            if(updatedMapTranform.getImage() != null){
+            if(updatedMapTranform.getImage() != null && !mapTransform.getAdjustedExtent().isNull()){
                 if(status == UPDATED && !awaitingDrawing.get()) {
                     g.drawImage(updatedMapTranform.getImage(), 0, 0, null);
                 } else {
@@ -223,7 +224,10 @@ public class MapControl extends JComponent implements ContainerListener {
                     width = (int)(((double)width) * wRatio);
                     int hdiff = (int)(((double)height) * hRatio) - height;
                     height = (int)(((double)height) * hRatio);
-                    g.drawImage(updatedMapTranform.getImage(), pixelPosDirty.x - pixelPosTarget.x, pixelPosDirty.y - pixelPosTarget.y - hdiff, width, height, null);
+                    // Do not resize if the image to too big
+                    if(width < MAX_IMAGE_SIZE.x && height < MAX_IMAGE_SIZE.y) {
+                        g.drawImage(updatedMapTranform.getImage(), pixelPosDirty.x - pixelPosTarget.x, pixelPosDirty.y - pixelPosTarget.y - hdiff, width, height, null);
+                    }
                 }
                 toolManager.paintEdition(g);
             }
