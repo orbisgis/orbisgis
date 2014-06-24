@@ -33,6 +33,7 @@ import java.awt.*;
 import java.awt.event.ComponentListener;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
@@ -62,6 +63,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class MapControl extends JComponent implements ContainerListener {
         //Minimal Time in ms between two intermediate paint of drawing process
         private static final long INTERMEDIATE_DRAW_PAINT_INTERVAL = 200;
+        private static final Point MAX_IMAGE_SIZE = new Point(20000, 20000);
         public static final String JOB_DRAWING_PREFIX_ID = "MapControl-Drawing";
         private static final Logger LOGGER = Logger.getLogger(MapControl.class);
         private static final I18n I18N = I18nFactory.getI18n(MapControl.class);
@@ -97,7 +99,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
         PropertyChangeListener boundingBoxPropertyListener = EventHandler.create(PropertyChangeListener.class,this,"onMapContextBoundingBoxChange");
 
-        BufferedImage updatedImage=null; /*!< The last drawn image paint, shown when the status of the mapTransform is dirty */
+        MapTransform updatedMapTranform = new MapTransform();
 
 	public MapControl() {
 	}
@@ -194,14 +196,39 @@ public class MapControl extends JComponent implements ContainerListener {
             // before drawing anything.
             g.setColor(backColor);
             g.fillRect(0, 0, getWidth(), getHeight());
-            // then we render on top the already computed image
-            // if it exists
-            if (mapTransformImage != null && status == UPDATED) {
-                updatedImage = mapTransformImage;
+
+            // Overwrite the updateImage if the draw status is up to date.
+            if (mapTransformImage != null && status == UPDATED && !awaitingDrawing.get()) {
+                updatedMapTranform.setImage(mapTransformImage);
+                updatedMapTranform.setExtent(mapTransform.getExtent());
             }
 
-            if(updatedImage!=null){
-                g.drawImage(updatedImage, 0, 0, null);
+            // then we render on top the already computed image
+            // if it exists
+            if(updatedMapTranform.getImage() != null && !mapTransform.getAdjustedExtent().isNull()){
+                if(status == UPDATED && !awaitingDrawing.get()) {
+                    g.drawImage(updatedMapTranform.getImage(), 0, 0, null);
+                } else {
+                    // If the image extent is not the same as the current map context extent then
+                    // Compute the translation to apply to the updated image
+                    Envelope targetExtent = mapTransform.getAdjustedExtent();
+                    Point pixelPosTarget = mapTransform.fromMapPoint(
+                            new Point2D.Double(targetExtent.getMinX(), targetExtent.getMinY()));
+                    Point pixelPosDirty = mapTransform.fromMapPoint(
+                            new Point2D.Double(updatedMapTranform.getAdjustedExtent().getMinX(), updatedMapTranform.getAdjustedExtent().getMinY()));
+                    // Compute resize
+                    int width = updatedMapTranform.getImage().getWidth();
+                    int height = updatedMapTranform.getImage().getHeight();
+                    double wRatio = updatedMapTranform.getAdjustedExtent().getWidth() / targetExtent.getWidth();
+                    double hRatio = updatedMapTranform.getAdjustedExtent().getHeight() / targetExtent.getHeight();
+                    width = (int)(((double)width) * wRatio);
+                    int hdiff = (int)(((double)height) * hRatio) - height;
+                    height = (int)(((double)height) * hRatio);
+                    // Do not resize if the image to too big
+                    if(width < MAX_IMAGE_SIZE.x && height < MAX_IMAGE_SIZE.y) {
+                        g.drawImage(updatedMapTranform.getImage(), pixelPosDirty.x - pixelPosTarget.x, pixelPosDirty.y - pixelPosTarget.y - hdiff, width, height, null);
+                    }
+                }
                 toolManager.paintEdition(g);
             }
 

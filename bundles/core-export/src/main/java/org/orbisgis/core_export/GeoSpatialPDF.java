@@ -180,7 +180,7 @@ public class GeoSpatialPDF {
         //GPTS
         Envelope adjustedBbox = mt.getAdjustedExtent();
 
-        if (adjustedBbox != null) {
+        if (!adjustedBbox.isNull()) {
 
             //ly lx ly ux uy ux uy lx
             PdfArray gptsTable = new PdfArray();

@@ -53,7 +53,7 @@ public class MapTransform implements PointTransformation {
         private static final I18n I18N = I18nFactory.getI18n(MapTransform.class);
         private boolean adjustExtent;
         private BufferedImage image = null;
-        private Envelope adjustedExtent;
+        private Envelope adjustedExtent = new Envelope();
         private AffineTransform trans = new AffineTransform();
         private AffineTransform transInv = new AffineTransform();
         private Envelope extent;
@@ -399,7 +399,7 @@ public class MapTransform implements PointTransformation {
          * @param denominator
          */
         public void setScaleDenominator(double denominator) {
-                if (adjustedExtent != null) {
+                if (!adjustedExtent.isNull()) {
                         double currentScale = getScaleDenominator();
                         Coordinate center = getExtent().centre();
                         double expandFactor = (denominator/currentScale);
@@ -424,7 +424,7 @@ public class MapTransform implements PointTransformation {
          * @return
          */
         public double getScaleDenominator() {
-                if (adjustedExtent == null) {
+                if (adjustedExtent.isNull()) {
                         return 0;
                 } else {
                         return adjustedExtent.getWidth() / getImageMeters();
