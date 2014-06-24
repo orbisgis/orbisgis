@@ -98,8 +98,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
         PropertyChangeListener boundingBoxPropertyListener = EventHandler.create(PropertyChangeListener.class,this,"onMapContextBoundingBoxChange");
 
-        BufferedImage updatedImage=null; /*!< The last drawn image paint, shown when the status of the mapTransform is dirty */
-        Envelope updatedImageEnvelope = new Envelope();
+        MapTransform updatedMapTranform = new MapTransform();
 
 	public MapControl() {
 	}
@@ -199,15 +198,15 @@ public class MapControl extends JComponent implements ContainerListener {
 
             // Overwrite the updateImage if the draw status is up to date.
             if (mapTransformImage != null && status == UPDATED && !awaitingDrawing.get()) {
-                updatedImage = mapTransformImage;
-                updatedImageEnvelope = mapTransform.getAdjustedExtent();
+                updatedMapTranform.setImage(mapTransformImage);
+                updatedMapTranform.setExtent(mapTransform.getExtent());
             }
 
             // then we render on top the already computed image
             // if it exists
-            if(updatedImage!=null){
+            if(updatedMapTranform.getImage() != null){
                 if(status == UPDATED && !awaitingDrawing.get()) {
-                    g.drawImage(updatedImage, 0, 0, null);
+                    g.drawImage(updatedMapTranform.getImage(), 0, 0, null);
                 } else {
                     // If the image extent is not the same as the current map context extent then
                     // Compute the translation to apply to the updated image
@@ -215,8 +214,16 @@ public class MapControl extends JComponent implements ContainerListener {
                     Point pixelPosTarget = mapTransform.fromMapPoint(
                             new Point2D.Double(targetExtent.getMinX(), targetExtent.getMinY()));
                     Point pixelPosDirty = mapTransform.fromMapPoint(
-                            new Point2D.Double(updatedImageEnvelope.getMinX(), updatedImageEnvelope.getMinY()));
-                    g.drawImage(updatedImage, pixelPosDirty.x - pixelPosTarget.x, pixelPosDirty.y - pixelPosTarget.y, null);
+                            new Point2D.Double(updatedMapTranform.getAdjustedExtent().getMinX(), updatedMapTranform.getAdjustedExtent().getMinY()));
+                    // Compute resize
+                    int width = updatedMapTranform.getImage().getWidth();
+                    int height = updatedMapTranform.getImage().getHeight();
+                    double wRatio = updatedMapTranform.getAdjustedExtent().getWidth() / targetExtent.getWidth();
+                    double hRatio = updatedMapTranform.getAdjustedExtent().getHeight() / targetExtent.getHeight();
+                    width = (int)(((double)width) * wRatio);
+                    int hdiff = (int)(((double)height) * hRatio) - height;
+                    height = (int)(((double)height) * hRatio);
+                    g.drawImage(updatedMapTranform.getImage(), pixelPosDirty.x - pixelPosTarget.x, pixelPosDirty.y - pixelPosTarget.y - hdiff, width, height, null);
                 }
                 toolManager.paintEdition(g);
             }
