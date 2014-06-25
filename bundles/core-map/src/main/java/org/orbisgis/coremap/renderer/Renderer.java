@@ -178,8 +178,12 @@ public abstract class Renderer {
             int layerCount = 0;
             LinkedList<Symbolizer> symbs = new LinkedList<Symbolizer>();
             ResultSetProviderFactory layerDataFactory = rsProvider;
-            if(layerDataFactory == null && layer.getDataManager() != null && layer.getDataManager().getDataSource() != null) {
-                layerDataFactory = new DefaultResultSetProviderFactory(layer.getDataManager().getDataSource());
+            if(layerDataFactory == null) {
+                if(layer.getDataManager() != null && layer.getDataManager().getDataSource() != null) {
+                    layerDataFactory = new DefaultResultSetProviderFactory(layer.getDataManager().getDataSource());
+                } else {
+                    throw new SQLException("There is neither a ResultSetProviderFactory instance nor available DataSource in the vectorial layer");
+                }
             }
             try {
                 // i.e. TextSymbolizer are always drawn above all other layer !! Should now be handle with symbolizer level
