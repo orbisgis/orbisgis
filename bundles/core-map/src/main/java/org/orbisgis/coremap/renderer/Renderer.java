@@ -177,6 +177,10 @@ public abstract class Renderer {
                               ProgressMonitor pm, Envelope extent) throws SQLException {
             int layerCount = 0;
             LinkedList<Symbolizer> symbs = new LinkedList<Symbolizer>();
+            ResultSetProviderFactory layerDataFactory = rsProvider;
+            if(layerDataFactory == null && layer.getDataManager() != null && layer.getDataManager().getDataSource() != null) {
+                layerDataFactory = new DefaultResultSetProviderFactory(layer.getDataManager().getDataSource());
+            }
             try {
                 // i.e. TextSymbolizer are always drawn above all other layer !! Should now be handle with symbolizer level
                 // Standard rules (with filter or no filter but not with elsefilter)
@@ -193,7 +197,7 @@ public abstract class Renderer {
                 for (Rule r : rList) {
                     beginLayer(r.getName());
                     pm.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", 1);
-                    try(ResultSetProviderFactory.ResultSetProvider resultSetProvider = rsProvider.getResultSetProvider(layer)) {
+                    try(ResultSetProviderFactory.ResultSetProvider resultSetProvider = layerDataFactory.getResultSetProvider(layer)) {
                         try(SpatialResultSet rs = resultSetProvider.execute(pm, extent)) {
                             int fieldID = rs.getMetaData().unwrap(SpatialResultSetMetaData.class).getFirstGeometryFieldIndex();
                             while (rs.next()) {
@@ -321,9 +325,6 @@ public abstract class Renderer {
          */
         public void draw(MapTransform mt, Graphics2D g2, int width, int height,
                 ILayer lay, ProgressMonitor progressMonitor) {
-                if(rsProvider == null && lay.getDataManager() != null && lay.getDataManager().getDataSource() != null) {
-                    rsProvider = new DefaultResultSetProviderFactory(lay.getDataManager().getDataSource());
-                }
 
                 g2.setRenderingHints(mt.getRenderingHints());
 
