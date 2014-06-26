@@ -28,8 +28,8 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
     private static final I18n I18N = I18nFactory.getI18n(DefaultResultSetProviderFactory.class);
 
     /**
-     *
-     * @param dataSource
+     * Standard select * from mytable query without cache or index.
+     * @param dataSource Connection data source
      */
     public DefaultResultSetProviderFactory(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -64,7 +64,7 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
             }
             st = createStatement(connection, geometryFields.get(0), layer.getTableReference(), !layer.getSelection().isEmpty());
             st.setFetchSize(FETCH_SIZE);
-            PropertyChangeListener cancelListener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+            cancelListener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
             pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelListener);
             GeometryFactory geometryFactory = new GeometryFactory();
             if(st.getParameterMetaData().getParameterCount() > 0) {
