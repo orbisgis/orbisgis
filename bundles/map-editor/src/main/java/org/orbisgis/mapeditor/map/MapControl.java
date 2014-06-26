@@ -44,6 +44,9 @@ import org.orbisgis.core.Services;
 import org.orbisgis.coremap.layerModel.*;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.map.TransformListener;
+import org.orbisgis.coremap.renderer.ImageRenderer;
+import org.orbisgis.coremap.renderer.Renderer;
+import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
@@ -62,7 +65,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 public class MapControl extends JComponent implements ContainerListener {
         //Minimal Time in ms between two intermediate paint of drawing process
-        private static final long INTERMEDIATE_DRAW_PAINT_INTERVAL = 200;
+        private CachedResultSetContainer cachedResultSetContainer = new CachedResultSetContainer();
         private static final Point MAX_IMAGE_SIZE = new Point(20000, 20000);
         public static final String JOB_DRAWING_PREFIX_ID = "MapControl-Drawing";
         private static final Logger LOGGER = Logger.getLogger(MapControl.class);
@@ -260,7 +263,7 @@ public class MapControl extends JComponent implements ContainerListener {
                     mapTransform.setImage(inProcessImage);
 
                     // now we start the actual drawer
-                    drawer = new Drawer(mapContext, awaitingDrawing, this);
+                    drawer = new Drawer(mapContext, awaitingDrawing, this, cachedResultSetContainer);
                     BackgroundManager bm = Services.getService(BackgroundManager.class);
                     bm.nonBlockingBackgroundOperation(
                             new DefaultJobId(JOB_DRAWING_PREFIX_ID +
@@ -310,12 +313,14 @@ public class MapControl extends JComponent implements ContainerListener {
         private MapContext mapContext;
         private AtomicBoolean awaitingDrawing;
         private MapControl mapControl;
+        private ResultSetProviderFactory resultSetProviderFactory;
         private ProgressMonitor pm;
 
-        private Drawer(MapContext mapContext, AtomicBoolean awaitingDrawing, MapControl mapControl) {
+        private Drawer(MapContext mapContext, AtomicBoolean awaitingDrawing, MapControl mapControl, ResultSetProviderFactory resultSetProviderFactory) {
             this.mapContext = mapContext;
             this.awaitingDrawing = awaitingDrawing;
             this.mapControl = mapControl;
+            this.resultSetProviderFactory = resultSetProviderFactory;
         }
 
         @Override
@@ -327,7 +332,9 @@ public class MapControl extends JComponent implements ContainerListener {
         public void run(ProgressMonitor pm) {
             this.pm = pm;
             try {
-                mapContext.draw(mapControl.getMapTransform(), pm);
+                Renderer renderer = new ImageRenderer();
+                renderer.setRsProvider(resultSetProviderFactory);
+                renderer.draw(mapControl.getMapTransform(), mapContext.getLayerModel(), pm);
             } finally {
                 awaitingDrawing.set(false);
                 mapControl.repaint();

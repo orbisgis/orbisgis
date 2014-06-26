@@ -201,7 +201,7 @@ public abstract class Renderer {
                 for (Rule r : rList) {
                     beginLayer(r.getName());
                     pm.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", 1);
-                    try(ResultSetProviderFactory.ResultSetProvider resultSetProvider = layerDataFactory.getResultSetProvider(layer)) {
+                    try(ResultSetProviderFactory.ResultSetProvider resultSetProvider = layerDataFactory.getResultSetProvider(layer, pm)) {
                         try(SpatialResultSet rs = resultSetProvider.execute(pm, extent)) {
                             int fieldID = rs.getMetaData().unwrap(SpatialResultSetMetaData.class).getFirstGeometryFieldIndex();
                             while (rs.next()) {

@@ -35,6 +35,7 @@ import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.MetaData;
@@ -68,7 +69,7 @@ import java.util.regex.Pattern;
  *
  * @author Nicolas Fortin
  */
-public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSource, ResultSetMetaData, ReadRowSet {
+public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSource, SpatialResultSetMetaData, ReadRowSet {
     private static final int WAITING_FOR_RESULTSET = 5;
     private static final Logger LOGGER = Logger.getLogger(ReadRowSetImpl.class);
     private static final I18n I18N = I18nFactory.getI18n(ReadRowSetImpl.class, Locale.getDefault(), I18nFactory.FALLBACK);
@@ -1306,6 +1307,44 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             return rowPk.getKey(primaryKeyRowValue);
         } else {
             throw new IllegalStateException("The RowSet has not been initialised");
+        }
+    }
+
+    @Override
+    public boolean isWrapperFor(Class<?> aClass) throws SQLException {
+        return aClass.isAssignableFrom(this.getClass()) || super.isWrapperFor(aClass);
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> tClass) throws SQLException {
+        if(tClass.isAssignableFrom(this.getClass())) {
+            return tClass.cast(this);
+        } else {
+            return super.unwrap(tClass);
+        }
+    }
+
+    @Override
+    public int getGeometryType(int i) throws SQLException {
+        try(Resource res = resultSetHolder.getResource()) {
+            SpatialResultSetMetaData meta = res.getResultSet().getMetaData().unwrap(SpatialResultSetMetaData.class);
+            return meta.getGeometryType(i);
+        }
+    }
+
+    @Override
+    public int getGeometryType() throws SQLException {
+        try(Resource res = resultSetHolder.getResource()) {
+            SpatialResultSetMetaData meta = res.getResultSet().getMetaData().unwrap(SpatialResultSetMetaData.class);
+            return meta.getGeometryType();
+        }
+    }
+
+    @Override
+    public int getFirstGeometryFieldIndex() throws SQLException {
+        try(Resource res = resultSetHolder.getResource()) {
+            SpatialResultSetMetaData meta = res.getResultSet().getMetaData().unwrap(SpatialResultSetMetaData.class);
+            return meta.getFirstGeometryFieldIndex();
         }
     }
 
