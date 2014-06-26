@@ -94,6 +94,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
     private final Lock readLock = rwl.writeLock(); // Read here is exclusive
     private static final int FETCH_SIZE = 100;
+    // When close is called, in how many ms the result set is really closed
+    private int closeDelay = 0;
 
     /**
      * Constructor, row set based on primary key, significant faster on large table
@@ -326,10 +328,15 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public void close() throws SQLException {
         clearRowCache();
         try {
-            resultSetHolder.close();
+            resultSetHolder.delayedClose(closeDelay);
         } catch (Exception ex) {
             throw new SQLException(ex);
         }
+    }
+
+    @Override
+    public void setCloseDelay(int milliseconds) {
+        closeDelay = milliseconds;
     }
 
     public long getRowCount() throws SQLException {
@@ -1311,20 +1318,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     }
 
     @Override
-    public boolean isWrapperFor(Class<?> aClass) throws SQLException {
-        return aClass.isAssignableFrom(this.getClass()) || super.isWrapperFor(aClass);
-    }
-
-    @Override
-    public <T> T unwrap(Class<T> tClass) throws SQLException {
-        if(tClass.isAssignableFrom(this.getClass())) {
-            return tClass.cast(this);
-        } else {
-            return super.unwrap(tClass);
-        }
-    }
-
-    @Override
     public int getGeometryType(int i) throws SQLException {
         try(Resource res = resultSetHolder.getResource()) {
             SpatialResultSetMetaData meta = res.getResultSet().getMetaData().unwrap(SpatialResultSetMetaData.class);
@@ -1413,6 +1406,11 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         @Override
         public void close() throws Exception {
             lastUsage = 0;
+            openCount = 0;
+        }
+
+        public void delayedClose(int milliSec) {
+            lastUsage = System.currentTimeMillis() - RESULT_SET_TIMEOUT + milliSec;
             openCount = 0;
         }
 

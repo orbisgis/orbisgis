@@ -726,7 +726,7 @@ public abstract class AbstractRowSet extends BaseRowSet implements SpatialResult
 
     @Override
     public <T> T unwrap(Class<T> tClass) throws SQLException {
-        if(tClass.isAssignableFrom(SpatialResultSet.class)) {
+        if(tClass.isAssignableFrom(this.getClass())) {
             return tClass.cast(this);
         } else {
             throw new SQLFeatureNotSupportedException("Not a RowSet wrapper");
@@ -735,6 +735,6 @@ public abstract class AbstractRowSet extends BaseRowSet implements SpatialResult
 
     @Override
     public boolean isWrapperFor(Class<?> aClass) throws SQLException {
-        return aClass.isAssignableFrom(SpatialResultSet.class);
+        return aClass.isAssignableFrom(this.getClass());
     }
 }

@@ -53,6 +53,7 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
     private final Map<String, ReadRowSet> cache = new HashMap<>();
     private static final int LOCK_TIMEOUT = 10;
     private static I18n I18N = I18nFactory.getI18n(CachedResultSetContainer.class);
+    private static final int ROWSET_FREE_DELAY = 60000;
 
     @Override
     public CachedResultSet getResultSetProvider(ILayer layer, ProgressMonitor pm) throws SQLException {
@@ -61,12 +62,10 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
             return new CachedResultSet(readRowSet, layer.getTableReference());
         } else {
             readRowSet = layer.getDataManager().createReadRowSet();
-            try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
-                String pkName = MetaData.getPkName(connection, layer.getTableReference(), true);
-                readRowSet.initialize(layer.getTableReference(), pkName, pm);
-                cache.put(layer.getTableReference(), readRowSet);
-                return new CachedResultSet(readRowSet, layer.getTableReference());
-            }
+            readRowSet.setCloseDelay(ROWSET_FREE_DELAY);
+            readRowSet.initialize(layer.getTableReference(), "", pm);
+            cache.put(layer.getTableReference(), readRowSet);
+            return new CachedResultSet(readRowSet, layer.getTableReference());
         }
     }
 

@@ -332,9 +332,11 @@ public class MapControl extends JComponent implements ContainerListener {
         public void run(ProgressMonitor pm) {
             this.pm = pm;
             try {
+                long begin = System.currentTimeMillis();
                 Renderer renderer = new ImageRenderer();
                 renderer.setRsProvider(resultSetProviderFactory);
                 renderer.draw(mapControl.getMapTransform(), mapContext.getLayerModel(), pm);
+                LOGGER.info(I18N.tr("Rendering done in {0} seconds",(System.currentTimeMillis() - begin) / 1000.0 ));
             } finally {
                 awaitingDrawing.set(false);
                 mapControl.repaint();

@@ -53,4 +53,10 @@ public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
      * @return The read lock on this result set
      */
     Lock getReadLock();
+
+    /**
+     * Set the close delay of releasing of resources (0 ms by default)
+     * @param milliseconds Time in milliseconds
+     */
+    void setCloseDelay(int milliseconds);
 }
