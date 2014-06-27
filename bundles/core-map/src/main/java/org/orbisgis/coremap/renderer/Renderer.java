@@ -162,16 +162,7 @@ public abstract class Renderer {
                         layerCount +=drawStyle(style, g2, mt, layer, pm, extent);
                 }
                 return layerCount;
-        }
-        private PreparedStatement createStatement(Connection connection,String geometryField,String tableReference, boolean hasSelection) throws SQLException {
-            if(!hasSelection) {
-                return connection.prepareStatement(
-                        String.format("select * from %s where %s && ?", tableReference, geometryField));
-            } else {
-                return  connection.prepareStatement(
-                        String.format("select * from %s",tableReference));
-            }
-        }
+        }        
 
         private int drawStyle(Style style, Graphics2D g2,MapTransform mt, ILayer layer,
                               ProgressMonitor pm, Envelope extent) throws SQLException {
