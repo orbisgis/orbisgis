@@ -43,7 +43,9 @@ public interface ResultSetProviderFactory {
 
     /**
      * @param layer Layer to be requested
+     * @param pm ProgressMonitor allows to display the process and cancel it.
      * @return Object that query the database.
+     * @throws java.sql.SQLException
      */
     ResultSetProvider getResultSetProvider(ILayer layer, ProgressMonitor pm) throws SQLException;
 
@@ -54,8 +56,10 @@ public interface ResultSetProviderFactory {
         /**
          * The returned result set may preserve the {@link java.sql.ResultSet#getRow()} of the entire table without
          * filtering.
+         * @param pm ProgressMonitor allows to display the process and cancel it.
          * @param extent Filter entities by this envelope
          * @return The content of the table
+         * @throws java.sql.SQLException
          */
         SpatialResultSet execute(ProgressMonitor pm, Envelope extent) throws SQLException;
 
