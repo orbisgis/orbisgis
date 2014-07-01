@@ -35,6 +35,7 @@ import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.MetaData;
@@ -68,7 +69,7 @@ import java.util.regex.Pattern;
  *
  * @author Nicolas Fortin
  */
-public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSource, ResultSetMetaData, ReadRowSet {
+public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSource, SpatialResultSetMetaData, ReadRowSet {
     private static final int WAITING_FOR_RESULTSET = 5;
     private static final Logger LOGGER = Logger.getLogger(ReadRowSetImpl.class);
     private static final I18n I18N = I18nFactory.getI18n(ReadRowSetImpl.class, Locale.getDefault(), I18nFactory.FALLBACK);
@@ -93,6 +94,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
     private final Lock readLock = rwl.writeLock(); // Read here is exclusive
     private static final int FETCH_SIZE = 100;
+    // When close is called, in how many ms the result set is really closed
+    private int closeDelay = 0;
 
     /**
      * Constructor, row set based on primary key, significant faster on large table
@@ -325,10 +328,15 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public void close() throws SQLException {
         clearRowCache();
         try {
-            resultSetHolder.close();
+            resultSetHolder.delayedClose(closeDelay);
         } catch (Exception ex) {
             throw new SQLException(ex);
         }
+    }
+
+    @Override
+    public void setCloseDelay(int milliseconds) {
+        closeDelay = milliseconds;
     }
 
     public long getRowCount() throws SQLException {
@@ -1309,6 +1317,30 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         }
     }
 
+    @Override
+    public int getGeometryType(int i) throws SQLException {
+        try(Resource res = resultSetHolder.getResource()) {
+            SpatialResultSetMetaData meta = res.getResultSet().getMetaData().unwrap(SpatialResultSetMetaData.class);
+            return meta.getGeometryType(i);
+        }
+    }
+
+    @Override
+    public int getGeometryType() throws SQLException {
+        try(Resource res = resultSetHolder.getResource()) {
+            SpatialResultSetMetaData meta = res.getResultSet().getMetaData().unwrap(SpatialResultSetMetaData.class);
+            return meta.getGeometryType();
+        }
+    }
+
+    @Override
+    public int getFirstGeometryFieldIndex() throws SQLException {
+        try(Resource res = resultSetHolder.getResource()) {
+            SpatialResultSetMetaData meta = res.getResultSet().getMetaData().unwrap(SpatialResultSetMetaData.class);
+            return meta.getFirstGeometryFieldIndex();
+        }
+    }
+
     /**
      * This thread guaranty that the connection,ResultSet is released when no longer used.
      */
@@ -1374,6 +1406,11 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         @Override
         public void close() throws Exception {
             lastUsage = 0;
+            openCount = 0;
+        }
+
+        public void delayedClose(int milliSec) {
+            lastUsage = System.currentTimeMillis() - RESULT_SET_TIMEOUT + milliSec;
             openCount = 0;
         }
 
