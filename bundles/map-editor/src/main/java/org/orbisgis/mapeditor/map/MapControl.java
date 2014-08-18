@@ -41,6 +41,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
+import org.orbisgis.corejdbc.TableEditEvent;
+import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.coremap.layerModel.*;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.map.TransformListener;
@@ -80,7 +82,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	/** The map will query the data to obtain a new image. */
 	public static final int DIRTY = 1;
-        private RefreshLayerListener refreshLayerListener = new RefreshLayerListener();
+        private RefreshLayerListener refreshLayerListener = new RefreshLayerListener(this);
 
 	private int status = DIRTY;
 
@@ -171,7 +173,9 @@ public class MapControl extends JComponent implements ContainerListener {
 	private void addLayerListenerRecursively(ILayer rootLayer,
 			RefreshLayerListener refreshLayerListener) {
 		rootLayer.addLayerListener(refreshLayerListener);
-        // TODO add edition listener on EditorManagerImpl
+        if(!rootLayer.getTableReference().isEmpty() && rootLayer.getDataManager() != null) {
+            rootLayer.getDataManager().addTableEditListener(rootLayer.getTableReference(), refreshLayerListener);
+        }
 		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
 			addLayerListenerRecursively(rootLayer.getLayer(i),
 					refreshLayerListener);
@@ -181,6 +185,9 @@ public class MapControl extends JComponent implements ContainerListener {
 	private void removeLayerListenerRecursively(ILayer rootLayer,
 			RefreshLayerListener refreshLayerListener) {
 		rootLayer.removeLayerListener(refreshLayerListener);
+        if(!rootLayer.getTableReference().isEmpty() && rootLayer.getDataManager() != null) {
+            rootLayer.getDataManager().removeTableEditListener(rootLayer.getTableReference(), refreshLayerListener);
+        }
         // TODO remove edition listener on EditorManagerImpl
 		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
 			removeLayerListenerRecursively(rootLayer.getLayer(i),
@@ -381,13 +388,25 @@ public class MapControl extends JComponent implements ContainerListener {
             }
 	}
 
-    private class RefreshLayerListener implements LayerListener {
+    private static class RefreshLayerListener implements LayerListener, TableEditListener {
+        private MapControl mapControl;
+
+        private RefreshLayerListener(MapControl mapControl) {
+            this.mapControl = mapControl;
+        }
+
+        @Override
+        public void tableChange(TableEditEvent event) {
+            mapControl.cachedResultSetContainer.removeCache(event.getTableName());
+            mapControl.invalidateImage();
+            mapControl.repaint();
+        }
 
         @Override
         public void layerAdded(LayerCollectionEvent listener) {
             for (ILayer layer : listener.getAffected()) {
-                addLayerListenerRecursively(layer, this);
-                ILayer[] model = getMapContext().getLayers();
+                mapControl.addLayerListenerRecursively(layer, this);
+                ILayer[] model = mapControl.getMapContext().getLayers();
                 int count = 0;
                 //We check that we have only one spatial layer in
                 //the layer model. It it is the case, we will :
@@ -401,17 +420,17 @@ public class MapControl extends JComponent implements ContainerListener {
                 if (count == 1) {
                     final Envelope e = layer.getEnvelope();
                     if (e != null) {
-                        mapTransform.setExtent(e);
+                        mapControl.mapTransform.setExtent(e);
                     }
                 } else {
-                    invalidateImage();
+                    mapControl.invalidateImage();
                 }
             }
         }
 
                 @Override
 		public void layerMoved(LayerCollectionEvent listener) {
-			invalidateImage();
+                    mapControl.invalidateImage();
 		}
 
 		@Override
@@ -422,12 +441,12 @@ public class MapControl extends JComponent implements ContainerListener {
         @Override
 		public void layerRemoved(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
-				removeLayerListenerRecursively(layer, this);
+                mapControl.removeLayerListenerRecursively(layer, this);
 			}
-            if(!mapContext.isLayerModelSpatial()){
-                mapTransform.setExtent(new Envelope());
+            if(!mapControl.mapContext.isLayerModelSpatial()){
+                mapControl.mapTransform.setExtent(new Envelope());
             }
-            invalidateImage();
+            mapControl.invalidateImage();
 		}
 
                 @Override
@@ -436,18 +455,18 @@ public class MapControl extends JComponent implements ContainerListener {
 
                 @Override
 		public void visibilityChanged(LayerListenerEvent e) {
-			invalidateImage();
+                    mapControl.invalidateImage();
 		}
 
                 @Override
 		public void styleChanged(LayerListenerEvent e) {
-			invalidateImage();
+                    mapControl.invalidateImage();
                 }
 
                 @Override
 		public void selectionChanged(SelectionEvent e) {
                         //TODO use the bean property selection event (when feature/table-editor will be merged) to find if the redraw has to be done
-                        invalidateImage();
+                    mapControl.invalidateImage();
 		}
 	}
 
