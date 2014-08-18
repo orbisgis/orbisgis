@@ -187,6 +187,13 @@ public class MapControl extends JComponent implements ContainerListener {
 					refreshLayerListener);
 		}
 	}
+
+    /**
+     * Remove cached result set
+     */
+    public void clearCache() {
+        cachedResultSetContainer = new CachedResultSetContainer();
+    }
         
 	/**
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)

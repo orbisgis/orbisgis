@@ -30,7 +30,6 @@ package org.orbisgis.mapeditor.map;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.h2gis.utilities.SpatialResultSet;
-import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
@@ -38,7 +37,6 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,6 +65,15 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
             cache.put(layer.getTableReference(), readRowSet);
             return new CachedResultSet(readRowSet, layer.getTableReference());
         }
+    }
+
+    /**
+     * Remove cached ResultSet
+     * @param tableReference table identifier
+     */
+    public void removeCache(String tableReference) {
+        ReadRowSet removedCache = cache.remove(tableReference);
+        removedCache.setCloseDelay(0);
     }
 
     private static class CachedResultSet implements ResultSetProvider {

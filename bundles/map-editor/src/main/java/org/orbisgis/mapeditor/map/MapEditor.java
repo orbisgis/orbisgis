@@ -425,6 +425,10 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 OrbisGISIcon.getIcon("export_image"),
                 EventHandler.create(ActionListener.class,this,"onExportMapRendering"))
                 .setToolTipText(I18N.tr("Export image as file")));
+
+        // Cache control
+        actions.addAction(new DefaultAction(MapEditorAction.A_MAP_CLEAR_CACHE, I18N.tr("Clear cache"),
+                OrbisGISIcon.getIcon("arrow_refresh"), EventHandler.create(ActionListener.class, this ,"onClearCache")));
     }
 
     /**
@@ -438,6 +442,16 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         createActions();
         actions.registerContainer(toolBar);
         return toolBar;
+    }
+
+    /**
+     * User want to see table updates on MapEditor
+     */
+    public void onClearCache() {
+        mapControl.clearCache();
+        // Redraw
+        mapControl.invalidateImage();
+        repaint();
     }
 
     /**
