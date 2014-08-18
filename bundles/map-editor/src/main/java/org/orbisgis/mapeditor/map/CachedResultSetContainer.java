@@ -29,8 +29,9 @@
 package org.orbisgis.mapeditor.map;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SpatialResultSet;
-import org.orbisgis.corejdbc.MetaData;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
@@ -64,8 +65,30 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
             readRowSet = layer.getDataManager().createReadRowSet();
             readRowSet.setCloseDelay(ROWSET_FREE_DELAY);
             readRowSet.initialize(layer.getTableReference(), "", pm);
-            cache.put(layer.getTableReference(), readRowSet);
+            String tableRef;
+            try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {
+                boolean isH2 =  JDBCUtilities.isH2DataBase(connection.getMetaData());
+                tableRef = TableLocation.parse(layer.getTableReference(), isH2).toString(isH2);
+            }
+            cache.put(tableRef, readRowSet);
             return new CachedResultSet(readRowSet, layer.getTableReference());
+        }
+    }
+
+    /**
+     * Remove cached ResultSet
+     * @param tableReference table identifier
+     */
+    public void removeCache(String tableReference) {
+        if(!cache.containsKey(tableReference)) {
+            // Try with removing public schema
+            if(TableLocation.parse(tableReference).getSchema().equalsIgnoreCase("public")) {
+                tableReference = TableLocation.parse(tableReference).getTable();
+            }
+        }
+        ReadRowSet removedCache = cache.remove(tableReference);
+        if(removedCache != null) {
+            removedCache.setCloseDelay(0);
         }
     }
 
