@@ -399,7 +399,6 @@ public class MapControl extends JComponent implements ContainerListener {
         public void tableChange(TableEditEvent event) {
             mapControl.cachedResultSetContainer.removeCache(event.getTableName());
             mapControl.invalidateImage();
-            mapControl.repaint();
         }
 
         @Override

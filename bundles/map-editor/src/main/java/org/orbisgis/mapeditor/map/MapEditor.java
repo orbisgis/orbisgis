@@ -451,7 +451,6 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         mapControl.clearCache();
         // Redraw
         mapControl.invalidateImage();
-        repaint();
     }
 
     /**
