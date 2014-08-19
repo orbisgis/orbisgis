@@ -217,6 +217,14 @@ public class IntegerUnionTest {
             assertEquals(modelIt.next(), it.next()); // 10
             assertTrue(it.hasNext());
             assertEquals(modelIt.next(), it.next()); // 11
+            assertTrue(it.hasNext());
+            assertEquals(modelIt.next(), it.next()); // 12
+            assertTrue(it.hasNext());
+            assertEquals(modelIt.next(), it.next()); // 13
+            assertTrue(it.hasPrevious());
+            assertEquals(modelIt.previous(), it.previous()); // 13
+            assertTrue(it.hasPrevious());
+            assertEquals(modelIt.previous(), it.previous()); // 12
             assertTrue(it.hasPrevious());
             assertEquals(modelIt.previous(), it.previous()); // 11
             assertTrue(it.hasPrevious());
