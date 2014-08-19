@@ -36,6 +36,7 @@
                 <module>bundles/orbisgis-omanager</module>
                 <module>bundles/orbisgis-omanager-plugin</module>
                 <module>bundles/map-editor-api</module>
+                <module>bundles/h2rtree</module>
                 <module>orbisgis-view</module>
                 <module>bundles/map-editor</module>
                 <module>legend</module>
