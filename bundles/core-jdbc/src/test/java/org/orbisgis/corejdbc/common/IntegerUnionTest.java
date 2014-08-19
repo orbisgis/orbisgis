@@ -219,6 +219,11 @@ public class IntegerUnionTest {
             assertEquals(modelIt.next(), it.next()); // 11
             assertTrue(it.hasPrevious());
             assertEquals(modelIt.previous(), it.previous()); // 11
+            assertTrue(it.hasPrevious());
+            assertEquals(modelIt.previous(), it.previous()); // 10
+            assertTrue(it.hasPrevious());
+            assertEquals(modelIt.previous(), it.previous()); // 5
+            assertFalse(it.hasPrevious());
         }
         @BeforeClass
         public static void setUpClass() throws Exception {
