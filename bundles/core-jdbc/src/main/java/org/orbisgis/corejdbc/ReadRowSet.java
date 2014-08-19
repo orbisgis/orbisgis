@@ -5,6 +5,7 @@ import org.orbisgis.progress.ProgressMonitor;
 
 import javax.sql.rowset.JdbcRowSet;
 import java.sql.SQLException;
+import java.util.SortedSet;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -59,4 +60,10 @@ public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
      * @param milliseconds Time in milliseconds
      */
     void setCloseDelay(int milliseconds);
+
+    /**
+     * Filter row id in order to return only theses rows. Values returned by {@link #getRow()} are unchanged.
+     * @param rowIdSet Row number [1-n] ordered set
+     */
+    void setFilter(SortedSet<Integer> rowIdSet);
 }

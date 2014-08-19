@@ -141,6 +141,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>h2rtree</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>orbisgis-omanager-plugin</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>

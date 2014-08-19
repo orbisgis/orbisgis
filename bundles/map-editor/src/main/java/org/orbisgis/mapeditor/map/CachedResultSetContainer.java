@@ -35,6 +35,8 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
+import org.orbisgis.mapeditorapi.Index;
+import org.orbisgis.mapeditorapi.IndexProvider;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -55,6 +57,8 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
     private static final int LOCK_TIMEOUT = 10;
     private static I18n I18N = I18nFactory.getI18n(CachedResultSetContainer.class);
     private static final int ROWSET_FREE_DELAY = 60000;
+    private IndexProvider indexProvider;
+    private Map<String, Index<Integer>> indexMap = new HashMap<>();
 
     @Override
     public CachedResultSet getResultSetProvider(ILayer layer, ProgressMonitor pm) throws SQLException {
@@ -76,6 +80,37 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
     }
 
     /**
+     * Provide spatial query optimisation
+     * @param indexProvider Index factory
+     */
+    public void setIndexProvider(IndexProvider indexProvider) {
+        if(this.indexProvider != null) {
+            clearGeometryIndex();
+        }
+        this.indexProvider = indexProvider;
+    }
+
+    private void clearGeometryIndex() {
+        for(Index index : indexMap.values()) {
+            try {
+                index.close();
+            } catch (Exception ex) {
+                // Ignore
+            }
+        }
+        indexMap.clear();
+
+    }
+
+    public void clearCache() {
+        clearGeometryIndex();
+        for(ReadRowSet rowSet : cache.values()) {
+            rowSet.setCloseDelay(0);
+        }
+        cache.clear();
+    }
+
+    /**
      * Remove cached ResultSet
      * @param tableReference table identifier
      */
@@ -87,8 +122,16 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
             }
         }
         ReadRowSet removedCache = cache.remove(tableReference);
+        Index index = indexMap.remove(tableReference);
         if(removedCache != null) {
             removedCache.setCloseDelay(0);
+        }
+        if(index != null) {
+            try {
+                index.close();
+            } catch (Exception ex) {
+                // Ignore
+            }
         }
     }
 

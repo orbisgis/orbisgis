@@ -49,6 +49,7 @@ import org.orbisgis.coremap.map.TransformListener;
 import org.orbisgis.coremap.renderer.ImageRenderer;
 import org.orbisgis.coremap.renderer.Renderer;
 import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
+import org.orbisgis.mapeditorapi.IndexProvider;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
@@ -98,6 +99,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	private boolean showCoordinates = true;
 
+
 	TransformListener element;
 
 	Automaton defaultTool;
@@ -106,8 +108,13 @@ public class MapControl extends JComponent implements ContainerListener {
 
         MapTransform updatedMapTranform = new MapTransform();
 
-	public MapControl() {
-	}
+        /**
+         * Provide spatial query optimisation
+         * @param indexProvider Index factory
+         */
+        public void setIndexProvider(IndexProvider indexProvider) {
+            cachedResultSetContainer.setIndexProvider(indexProvider);
+        }
         private void setStatus(int newStatus) {
             status = newStatus;
         }
@@ -199,7 +206,7 @@ public class MapControl extends JComponent implements ContainerListener {
      * Remove cached result set
      */
     public void clearCache() {
-        cachedResultSetContainer = new CachedResultSetContainer();
+        cachedResultSetContainer.clearCache();
     }
         
 	/**

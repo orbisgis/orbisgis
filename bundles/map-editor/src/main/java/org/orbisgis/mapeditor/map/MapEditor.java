@@ -41,6 +41,7 @@ import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.map.TransformListener;
 import org.orbisgis.core_export.MapImageWriter;
 import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.mapeditorapi.IndexProvider;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
@@ -161,6 +162,14 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         //Set the Drop target
         dragDropHandler = new MapTransferHandler();
         this.setTransferHandler(dragDropHandler);
+    }
+
+    /**
+     * Provide spatial query optimisation
+     * @param indexProvider Index factory
+     */
+    public void setIndexProvider(IndexProvider indexProvider) {
+        mapControl.setIndexProvider(indexProvider);
     }
 
     private void updateMapLabel() {

@@ -30,6 +30,7 @@ package org.orbisgis.mapeditor;
 
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.mapeditor.map.MapEditor;
+import org.orbisgis.mapeditorapi.IndexProvider;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.viewapi.edition.EditorDockable;
 import org.orbisgis.viewapi.edition.EditorFactory;
@@ -44,6 +45,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 
 /**
  * MapEditor cannot be opened twice, the the factory is a SingleEditorFactory.
@@ -60,6 +62,7 @@ public class MapEditorFactory implements SingleEditorFactory {
         private DataManager dataManager;
         private ViewWorkspace viewWorkspace;
         private EditorManager editorManager;
+        private IndexProvider indexProvider;
 
         @Reference
         public void setEditorManager(EditorManager editorManager) {
@@ -83,6 +86,29 @@ public class MapEditorFactory implements SingleEditorFactory {
          */
         public void unsetDataManager(DataManager dataManager) {
             dispose();
+        }
+
+        /**
+         * Provide spatial query optimisation
+         * @param indexProvider Index factory
+         */
+        @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+        public void setIndexProvider(IndexProvider indexProvider) {
+            this.indexProvider = indexProvider;
+            if(mapPanel != null) {
+                mapPanel.setIndexProvider(indexProvider);
+            }
+        }
+
+        /**
+         * Provide spatial query optimisation
+         * @param indexProvider Index factory
+         */
+        public void unsetIndexProvider(IndexProvider indexProvider) {
+            this.indexProvider = null;
+            if(mapPanel != null) {
+                mapPanel.setIndexProvider(null);
+            }
         }
 
         @Activate
@@ -117,6 +143,9 @@ public class MapEditorFactory implements SingleEditorFactory {
         public EditorDockable[] getSinglePanels() {
                 if(mapPanel==null) {
                         mapPanel = new MapEditor(viewWorkspace,dataManager,editorManager);
+                        if(indexProvider != null) {
+                            mapPanel.setIndexProvider(indexProvider);
+                        }
                         //Plugins Action will be added to ActionCommands of MapEditor
                         mapEditorExt = new MenuItemServiceTracker<MapEditorExtension,MapEditorAction>(hostBundle,MapEditorAction.class,mapPanel.getActionCommands(),mapPanel);
                         mapEditorExt.open(); // Start loading actions
@@ -127,6 +156,8 @@ public class MapEditorFactory implements SingleEditorFactory {
                 }
                 return new EditorDockable[] {mapPanel};
         }
+
+
 
         @Override
         public String getId() {

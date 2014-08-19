@@ -28,15 +28,22 @@
  */
 package org.orbisgis.corejdbc.common;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.TreeSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit test of IntegerUnion
@@ -189,6 +196,30 @@ public class IntegerUnionTest {
                 check(mergeTool, new Integer[]{12, 12, 14, 53});
         }
 
+        @Test
+        public void testListIterator() {
+            IntegerUnion iu = new IntegerUnion(Arrays.asList(5, 10, 11, 12, 13, 45, 46));
+            List<Integer> model = new ArrayList<>(Arrays.asList(5, 10, 11, 12, 13, 45, 46));
+            ListIterator<Integer> it = iu.listIterator();
+            ListIterator<Integer> modelIt = model.listIterator();
+            assertFalse(it.hasPrevious());
+            assertTrue(it.hasNext());
+            assertEquals(modelIt.next(), it.next()); // 5
+            assertTrue(it.hasNext());
+            assertEquals(modelIt.next(), it.next()); // 10
+            assertTrue(it.hasPrevious());
+            assertEquals(modelIt.previous(), it.previous()); // 10
+            assertTrue(it.hasPrevious());
+            assertEquals(modelIt.previous(), it.previous()); // 5
+            assertTrue(it.hasNext());
+            assertEquals(modelIt.next(), it.next()); // 5
+            assertTrue(it.hasNext());
+            assertEquals(modelIt.next(), it.next()); // 10
+            assertTrue(it.hasNext());
+            assertEquals(modelIt.next(), it.next()); // 11
+            assertTrue(it.hasPrevious());
+            assertEquals(modelIt.previous(), it.previous()); // 11
+        }
         @BeforeClass
         public static void setUpClass() throws Exception {
         }
