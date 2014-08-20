@@ -118,6 +118,7 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
         public IntegerUnion(IntegerUnion externalSet) {
                 this.intervals = new ArrayList<Integer>(externalSet.intervals);
         }
+
         /**
          * Copy constructor with a generic collection
          * @param externalCollection 
@@ -132,7 +133,17 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
                         }
                 }
         }
-        
+
+        /**
+         * Copy constructor with a generic collection
+         * @param valueIterator Value to insert in this set
+         */
+        public IntegerUnion(Iterator<Integer> valueIterator) {
+            this();
+            while(valueIterator.hasNext()) {
+                internalAdd(valueIterator.next());
+            }
+        }
 
         @Override
         public boolean equals(Object obj) {

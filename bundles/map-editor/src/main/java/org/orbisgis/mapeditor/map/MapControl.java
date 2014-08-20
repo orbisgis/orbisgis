@@ -37,6 +37,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import org.apache.log4j.Logger;
@@ -112,8 +113,8 @@ public class MapControl extends JComponent implements ContainerListener {
          * Provide spatial query optimisation
          * @param indexProvider Index factory
          */
-        public void setIndexProvider(IndexProvider indexProvider) {
-            cachedResultSetContainer.setIndexProvider(indexProvider);
+        public void setIndexProvider(IndexProvider indexProvider, File indexCache) {
+            cachedResultSetContainer.setIndexProvider(indexProvider, indexCache);
         }
         private void setStatus(int newStatus) {
             status = newStatus;

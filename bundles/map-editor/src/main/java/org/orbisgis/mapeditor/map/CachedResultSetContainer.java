@@ -33,14 +33,18 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.ReadRowSet;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
 import org.orbisgis.mapeditorapi.Index;
 import org.orbisgis.mapeditorapi.IndexProvider;
 import org.orbisgis.progress.ProgressMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -56,37 +60,62 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
     private final Map<String, ReadRowSet> cache = new HashMap<>();
     private static final int LOCK_TIMEOUT = 10;
     private static I18n I18N = I18nFactory.getI18n(CachedResultSetContainer.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(CachedResultSetContainer.class);
     private static final int ROWSET_FREE_DELAY = 60000;
     private IndexProvider indexProvider;
+    private File indexCache;
     private Map<String, Index<Integer>> indexMap = new HashMap<>();
 
     @Override
     public CachedResultSet getResultSetProvider(ILayer layer, ProgressMonitor pm) throws SQLException {
+        ProgressMonitor rsTask = pm;
+        Index<Integer> index = indexMap.get(layer.getTableReference());
+        if(index == null && indexProvider != null) {
+            rsTask = pm.startTask(2);
+        }
         ReadRowSet readRowSet = cache.get(layer.getTableReference());
-        if(readRowSet != null) {
-            return new CachedResultSet(readRowSet, layer.getTableReference());
-        } else {
+        if(readRowSet == null) {
             readRowSet = layer.getDataManager().createReadRowSet();
             readRowSet.setCloseDelay(ROWSET_FREE_DELAY);
-            readRowSet.initialize(layer.getTableReference(), "", pm);
+            readRowSet.initialize(layer.getTableReference(), "", rsTask);
             String tableRef;
             try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {
                 boolean isH2 =  JDBCUtilities.isH2DataBase(connection.getMetaData());
                 tableRef = TableLocation.parse(layer.getTableReference(), isH2).toString(isH2);
             }
             cache.put(tableRef, readRowSet);
-            return new CachedResultSet(readRowSet, layer.getTableReference());
         }
+        if(index == null && indexProvider != null) {
+            // Create index
+            File mapIndexFile = new File(indexCache,System.currentTimeMillis() + ".index");
+            if(mapIndexFile.exists()) {
+                if(!mapIndexFile.delete()) {
+                    mapIndexFile = null;
+                    LOGGER.error("Cannot delete old cache file, abort rendering optimisation step");
+                }
+            }
+            if(mapIndexFile != null) {
+                index = indexProvider.createIndex(mapIndexFile, Integer.class);
+                ProgressMonitor createIndex = rsTask.startTask(I18N.tr("Create local spatial index"), readRowSet.getRowCount());
+                while (readRowSet.next()) {
+                    index.insert(readRowSet.getGeometry().getEnvelopeInternal(), readRowSet.getRow());
+                    createIndex.endTask();
+                }
+                indexMap.put(layer.getTableReference(), index);
+            }
+        }
+        return new CachedResultSet(readRowSet, layer.getTableReference(), index);
     }
 
     /**
      * Provide spatial query optimisation
      * @param indexProvider Index factory
      */
-    public void setIndexProvider(IndexProvider indexProvider) {
+    public void setIndexProvider(IndexProvider indexProvider, File indexCache) {
         if(this.indexProvider != null) {
             clearGeometryIndex();
         }
+        this.indexCache = indexCache;
         this.indexProvider = indexProvider;
     }
 
@@ -136,13 +165,15 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
     }
 
     private static class CachedResultSet implements ResultSetProvider {
-        ReadRowSet readRowSet;
-        String tableReference;
-        Lock lock;
+        private ReadRowSet readRowSet;
+        private String tableReference;
+        private Index<Integer> queryIndex;
+        private Lock lock;
 
-        private CachedResultSet(ReadRowSet readRowSet, String tableReference) {
+        private CachedResultSet(ReadRowSet readRowSet, String tableReference, Index<Integer> queryIndex) {
             this.readRowSet = readRowSet;
             this.tableReference = tableReference;
+            this.queryIndex = queryIndex;
         }
 
         @Override
@@ -150,7 +181,13 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
             lock = readRowSet.getReadLock();
             try {
                 lock.tryLock(LOCK_TIMEOUT, TimeUnit.SECONDS);
-                readRowSet.beforeFirst();
+                if( queryIndex != null) {
+                    IntegerUnion filteredRows = new IntegerUnion(queryIndex.query(extent));
+                    readRowSet.setFilter(filteredRows);
+                    readRowSet.absolute(filteredRows.first() -  1);
+                } else {
+                    readRowSet.beforeFirst();
+                }
                 return readRowSet;
             } catch (InterruptedException ex) {
                 throw new SQLException(I18N.tr("Lock timeout while fetching {0}, another job is using this resource.",
