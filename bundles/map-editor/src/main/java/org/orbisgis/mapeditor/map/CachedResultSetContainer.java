@@ -29,6 +29,7 @@
 package org.orbisgis.mapeditor.map;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.apache.commons.io.FileUtils;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
@@ -47,6 +48,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -128,7 +130,17 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
             }
         }
         indexMap.clear();
-
+        // Delete all temporary files
+        if(indexCache != null) {
+            Collection files = FileUtils.listFiles(indexCache, new String[]{"index"}, false);
+            for(Object fileObj : files) {
+                if(fileObj instanceof File) {
+                    if(!((File) fileObj).delete()) {
+                        LOGGER.warn("Cannot remove temporary index file");
+                    }
+                }
+            }
+        }
     }
 
     public void clearCache() {

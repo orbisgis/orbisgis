@@ -484,6 +484,7 @@ public class MapControl extends JComponent implements ContainerListener {
 		/*
 		 * if (drawer != null) { drawer.cancel(); }
 		 */
+            cachedResultSetContainer.clearCache();
             if(toolManager!=null) {
                 toolManager.freeResources();
                 toolManager = null;
