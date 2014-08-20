@@ -76,6 +76,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
     private DefaultFilter defaultFilter = new DefaultFilter();
     private AtomicBoolean awaitingRefresh=new AtomicBoolean(false); /*!< If true a swing runnable
          * is pending to refresh the content of SourceListModel*/
+    private boolean updateWhileAwaitingRefresh = false;
     private DataSource dataSource;
     private CatalogComparator catalogComparator = new CatalogComparator();
     private boolean isH2;
@@ -147,6 +148,8 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
         if(!awaitingRefresh.getAndSet(true)) {
             ReadDataManagerOnSwingThread worker = new ReadDataManagerOnSwingThread(this);
             worker.execute();
+        } else {
+            updateWhileAwaitingRefresh = true;
         }
     }
     /**
@@ -170,6 +173,13 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
             //Refresh the JList on the swing thread
             model.doFilter();
             model.awaitingRefresh.set(false);
+            // An update occurs during fetching tables
+            if(model.updateWhileAwaitingRefresh) {
+                model.updateWhileAwaitingRefresh = false;
+                model.awaitingRefresh.set(true);
+                ReadDataManagerOnSwingThread worker = new ReadDataManagerOnSwingThread(model);
+                worker.execute();
+            }
         }
     }
 
