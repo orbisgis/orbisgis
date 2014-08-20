@@ -56,12 +56,15 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.sql.*;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -100,8 +103,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private static final int FETCH_SIZE = 100;
     // When close is called, in how many ms the result set is really closed
     private int closeDelay = 0;
-    private SortedSet<Integer> rowFilter;
-    private Iterator<Integer> rowFilterIterator;
+    private IntegerUnion rowFilter;
+    private ListIterator<Integer> rowFilterIterator;
 
     /**
      * Constructor, row set based on primary key, significant faster on large table
@@ -114,9 +117,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     }
 
     @Override
-    public void setFilter(SortedSet<Integer> rowIdSet) {
-        rowFilter = Collections.unmodifiableSortedSet(rowIdSet);
-        rowFilterIterator = rowFilter.iterator();
+    public void setFilter(Collection<Integer> rowIdSet) {
+        rowFilter = new IntegerUnion(rowIdSet);
+        rowFilterIterator = rowFilter.listIterator();
     }
 
     @Override
@@ -330,10 +333,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public boolean next() throws SQLException {
-        rowId++;
-        updateRowCache();
-        notifyCursorMoved();
-        return rowId <= getRowCount();
+        moveCursorTo(rowId + 1);
+        return rowId <= getRowCount() && (rowFilterIterator == null || rowFilterIterator.hasNext());
     }
 
     @Override
@@ -466,7 +467,20 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     private boolean moveCursorTo(long i) throws SQLException {
         long oldRowId = rowId;
-        rowId=i;
+        if(rowFilterIterator != null) {
+            if(i < oldRowId) {
+                // back until expected rowid
+                while(rowId > i) {
+                    rowId = rowFilterIterator.previous();
+                }
+            } else if(i > oldRowId) {
+                while(rowId < i) {
+                    rowId = rowFilterIterator.next();
+                }
+            }
+        } else {
+            rowId = i;
+        }
         updateRowCache();
         if(rowId != oldRowId) {
             notifyCursorMoved();
