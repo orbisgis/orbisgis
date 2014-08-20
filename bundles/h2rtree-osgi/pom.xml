@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>h2rtree</artifactId>
+    <artifactId>h2rtree-osgi</artifactId>
     <name>Map editor rtree</name>
     <description>Provide H2 RTree index implementation for map editor</description>
     <parent>
@@ -14,16 +14,32 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>com.carrotgarden.maven</groupId>
+                <artifactId>carrot-maven-scr-plugin</artifactId>
+                <version>3.0.3</version>
+                <configuration>
+                    <enableDebugLogging>true</enableDebugLogging>
+                    <enableErrorLogging>true</enableErrorLogging>
+                    <enableInfoLogging>true</enableInfoLogging>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>clean</goal>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>2.3.7</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>org.orbisgis.index.impl</Export-Package>
-                        <Fragment-Host>org.h2</Fragment-Host>
-                        <Import-Package>!org.h2.*,*</Import-Package>
-                        <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
+                        <Private-Package>org.orbisgis.index.service.*</Private-Package>
+                        <Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
                     </instructions>
                 </configuration>
             </plugin>
@@ -33,11 +49,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>${h2-package}</groupId>
-            <artifactId>h2</artifactId>
-            <version>${h2-version}</version>
-        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -56,8 +67,19 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.enterprise</artifactId>
+            <version>5.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>map-editor-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2rtree</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

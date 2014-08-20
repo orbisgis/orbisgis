@@ -26,13 +26,15 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.index;
+package org.orbisgis.index.impl;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.h2.mvstore.MVStore;
 import org.h2.mvstore.rtree.MVRTreeMap;
 import org.h2.mvstore.rtree.SpatialKey;
 import org.orbisgis.mapeditorapi.Index;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -41,11 +43,15 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Nicolas Fortin
  */
 public class MVRTreeIndex<T> implements Index<T> {
+    private static final int PAGE_SPLIT_SIZE = 1000;
     private MVRTreeMap<T> treeMap;
     private AtomicLong id = new AtomicLong(0);
 
-    public MVRTreeIndex(MVRTreeMap<T> treeMap) {
-        this.treeMap = treeMap;
+    public MVRTreeIndex(File cache) {
+        MVStore s = new MVStore.Builder().
+                fileName(cache.getAbsolutePath()).pageSplitSize(PAGE_SPLIT_SIZE).open();
+        this.treeMap = s.openMap("data",
+                new MVRTreeMap.Builder<T>().dimensions(2));
     }
 
     @Override

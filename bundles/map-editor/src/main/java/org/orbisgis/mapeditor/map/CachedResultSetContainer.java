@@ -68,21 +68,21 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
 
     @Override
     public CachedResultSet getResultSetProvider(ILayer layer, ProgressMonitor pm) throws SQLException {
+        String tableRef;
+        try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {
+            boolean isH2 =  JDBCUtilities.isH2DataBase(connection.getMetaData());
+            tableRef = TableLocation.parse(layer.getTableReference(), isH2).toString(isH2);
+        }
         ProgressMonitor rsTask = pm;
-        Index<Integer> index = indexMap.get(layer.getTableReference());
+        Index<Integer> index = indexMap.get(tableRef);
         if(index == null && indexProvider != null) {
             rsTask = pm.startTask(2);
         }
-        ReadRowSet readRowSet = cache.get(layer.getTableReference());
+        ReadRowSet readRowSet = cache.get(tableRef);
         if(readRowSet == null) {
             readRowSet = layer.getDataManager().createReadRowSet();
             readRowSet.setCloseDelay(ROWSET_FREE_DELAY);
-            readRowSet.initialize(layer.getTableReference(), "", rsTask);
-            String tableRef;
-            try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {
-                boolean isH2 =  JDBCUtilities.isH2DataBase(connection.getMetaData());
-                tableRef = TableLocation.parse(layer.getTableReference(), isH2).toString(isH2);
-            }
+            readRowSet.initialize(tableRef, "", rsTask);
             cache.put(tableRef, readRowSet);
         }
         if(index == null && indexProvider != null) {
@@ -101,10 +101,10 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
                     index.insert(readRowSet.getGeometry().getEnvelopeInternal(), readRowSet.getRow());
                     createIndex.endTask();
                 }
-                indexMap.put(layer.getTableReference(), index);
+                indexMap.put(tableRef, index);
             }
         }
-        return new CachedResultSet(readRowSet, layer.getTableReference(), index);
+        return new CachedResultSet(readRowSet, tableRef, index);
     }
 
     /**

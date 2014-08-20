@@ -2,8 +2,8 @@ package org.orbisgis.index;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.junit.Test;
+import org.orbisgis.index.impl.MVRTreeIndex;
 import org.orbisgis.mapeditorapi.Index;
-import org.orbisgis.mapeditorapi.IndexProvider;
 
 import java.io.File;
 import java.util.Iterator;
@@ -19,8 +19,7 @@ public class IndexProviderTest {
 
     @Test //(timeout = 500)
     public void testBounds() throws Exception {
-        IndexProvider provider = new MVRTreeProvider();
-        Index<String> index = provider.createIndex(new File("target/"), String.class);
+        Index<String> index =  new MVRTreeIndex<>(new File("target/testindex.mvstore"));
         index.insert(new Envelope(3,4,2,3), "A");
         index.insert(new Envelope(4,5,6,7), "B");
         index.insert(new Envelope(6,7,3,4), "C");

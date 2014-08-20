@@ -333,8 +333,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public boolean next() throws SQLException {
-        moveCursorTo(rowId + 1);
-        return rowId <= getRowCount() && (rowFilterIterator == null || rowFilterIterator.hasNext());
+        return moveCursorTo(rowId + 1);
     }
 
     @Override
@@ -471,11 +470,29 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             if(i < oldRowId) {
                 // back until expected rowid
                 while(rowId > i) {
-                    rowId = rowFilterIterator.previous();
+                    if(rowFilterIterator.hasPrevious()) {
+                        rowId = rowFilterIterator.previous();
+                    } else {
+                        rowId = rowFilter.first();
+                        if(rowId > i) {
+                            // Before first
+                            rowId--;
+                        }
+                        break;
+                    }
                 }
             } else if(i > oldRowId) {
                 while(rowId < i) {
-                    rowId = rowFilterIterator.next();
+                    if(rowFilterIterator.hasNext()) {
+                        rowId = rowFilterIterator.next();
+                    } else {
+                        rowId = rowFilter.last();
+                        if(rowId < i) {
+                            // After last
+                            rowId++;
+                        }
+                        break;
+                    }
                 }
             }
         } else {
@@ -485,7 +502,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         if(rowId != oldRowId) {
             notifyCursorMoved();
         }
-        return rowId>0 && rowId <= getRowCount();
+        return !(rowId == 0 || rowId > getRowCount() || (rowFilterIterator != null && (rowId < rowFilter.first() || rowId > rowFilter.last())));
     }
 
     @Override
