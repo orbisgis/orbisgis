@@ -3,6 +3,6 @@
 #then
 #    mvn install -P osgi
 #else
-    mvn install
+    travis_retry mvn install
 #fi
 exit $?
