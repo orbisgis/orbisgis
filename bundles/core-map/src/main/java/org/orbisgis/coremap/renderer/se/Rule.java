@@ -135,8 +135,9 @@ public final class Rule extends AbstractSymbolizerNode {
                         int typeCode = SFSUtilities.getGeometryType(connection,location,"");
                         if(typeCode== GeometryTypeCodes.GEOMETRY || typeCode==GeometryTypeCodes.GEOMCOLLECTION) {
                             // No symbol for Geometry type code, fetch existing values
-                            String dimQuery = String.format("SELECT MIN(gdim) minDim from (SELECT ST_DIMENSION(%s) gdim" +
-                                            " from %s WHERE ST_DIMENSION(%s) IS NOT NULL LIMIT %d)",geomFieldName,
+                            String dimQuery = String.format("SELECT MIN(gdim) minDim,MAX(countgeom) geomCount from " +
+                                            "(SELECT ST_DIMENSION(%s) gdim, ST_NUMGEOMETRIES(%s) countgeom from %s" +
+                                            " WHERE ST_DIMENSION(%s) IS NOT NULL LIMIT %d)",geomFieldName,geomFieldName,
                                     location.toString(),geomFieldName, FETCH_DIMENSION_LIMIT);
                             try(Statement st = connection.createStatement();
                                  ResultSet rs = st.executeQuery(dimQuery)) {
@@ -150,7 +151,8 @@ public final class Rule extends AbstractSymbolizerNode {
                                              break;
                                          case 0:
                                              if(!rs.wasNull()) {
-                                                 typeCode = GeometryTypeCodes.POINT;
+                                                 typeCode = rs.getInt("geomCount") <= 1 ?
+                                                         GeometryTypeCodes.POINT : GeometryTypeCodes.MULTIPOINT;
                                              }
                                              break;
                                      }
@@ -160,8 +162,12 @@ public final class Rule extends AbstractSymbolizerNode {
                             }
                         }
                         switch (typeCode) {
-                            case GeometryTypeCodes.POINT:
                             case GeometryTypeCodes.MULTIPOINT:
+                                PointSymbolizer ps = new PointSymbolizer();
+                                ps.setOnVertex(true);
+                                symb = ps;
+                                break;
+                            case GeometryTypeCodes.POINT:
                                 symb = new PointSymbolizer();
                                 break;
                             case GeometryTypeCodes.LINESTRING:

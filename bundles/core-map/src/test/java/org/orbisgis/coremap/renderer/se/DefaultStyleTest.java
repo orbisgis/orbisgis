@@ -75,4 +75,22 @@ public class DefaultStyleTest {
         assertEquals(1, layer.getStyles().size());
         assertTrue(layer.getStyle(0).getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0) instanceof AreaSymbolizer);
     }
+
+    @Test
+    public void MultiPointDefaultStyle() throws Exception {
+        try(Statement st = getConnection().createStatement()) {
+            st.execute("DROP TABLE IF EXISTS GTABLE");
+            st.execute("CREATE TABLE GTABLE(the_geom GEOMETRY)");
+            st.execute("INSERT INTO GTABLE VALUES ('MULTIPOINT ((1 1))')");
+            st.execute("INSERT INTO GTABLE VALUES ('MULTIPOINT ((1 1), (3 3), (4 4), (1 1))')");
+        }
+        MapContext mc = new OwsMapContext(getDataManager());
+        ILayer layer = mc.createLayer("GTABLE");
+        layer.open();
+        assertEquals(1, layer.getStyles().size());
+        Symbolizer symb = layer.getStyle(0).getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        assertTrue(symb instanceof PointSymbolizer);
+        // Should draw all points
+        assertTrue(((PointSymbolizer) symb).isOnVertex());
+    }
 }
