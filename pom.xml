@@ -42,7 +42,6 @@
                 <module>bundles/map-editor</module>
                 <module>legend</module>
                 <module>bundles/toc</module>
-                <module>orbisgis-dist</module>
         </modules>
         <profiles>
             <profile>
@@ -50,6 +49,18 @@
                 <modules>
                     <module>integration-test</module>
                 </modules>
+            </profile>
+            <profile>
+                <id>default</id>
+                <activation>
+                    <activeByDefault>true</activeByDefault>
+                </activation>
+                <modules>
+                    <module>orbisgis-dist</module>
+                </modules>
+            </profile>
+            <profile>
+                <id>no-dist</id>
             </profile>
         </profiles>
         <properties>
