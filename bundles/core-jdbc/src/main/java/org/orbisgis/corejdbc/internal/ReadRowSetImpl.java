@@ -39,6 +39,7 @@ import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.MetaData;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
@@ -55,10 +56,16 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.sql.*;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -96,6 +103,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private static final int FETCH_SIZE = 100;
     // When close is called, in how many ms the result set is really closed
     private int closeDelay = 0;
+    private IntegerUnion rowFilter;
+    private ListIterator<Integer> rowFilterIterator;
 
     /**
      * Constructor, row set based on primary key, significant faster on large table
@@ -105,6 +114,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public ReadRowSetImpl(DataSource dataSource) {
         this.dataSource = dataSource;
         resultSetHolder = new ResultSetHolder(this);
+    }
+
+    @Override
+    public void setFilter(Collection<Integer> rowIdSet) {
+        rowFilter = new IntegerUnion(rowIdSet);
+        rowFilterIterator = rowFilter.listIterator();
     }
 
     @Override
@@ -318,10 +333,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public boolean next() throws SQLException {
-        rowId++;
-        updateRowCache();
-        notifyCursorMoved();
-        return rowId <= getRowCount();
+        return moveCursorTo(rowId + 1);
     }
 
     @Override
@@ -454,12 +466,43 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     private boolean moveCursorTo(long i) throws SQLException {
         long oldRowId = rowId;
-        rowId=i;
+        if(rowFilterIterator != null) {
+            if(i < oldRowId) {
+                // back until expected rowid
+                while(rowId > i) {
+                    if(rowFilterIterator.hasPrevious()) {
+                        rowId = rowFilterIterator.previous();
+                    } else {
+                        rowId = rowFilter.first();
+                        if(rowId > i) {
+                            // Before first
+                            rowId--;
+                        }
+                        break;
+                    }
+                }
+            } else if(i > oldRowId) {
+                while(rowId < i) {
+                    if(rowFilterIterator.hasNext()) {
+                        rowId = rowFilterIterator.next();
+                    } else {
+                        rowId = rowFilter.last();
+                        if(rowId < i) {
+                            // After last
+                            rowId++;
+                        }
+                        break;
+                    }
+                }
+            }
+        } else {
+            rowId = i;
+        }
         updateRowCache();
         if(rowId != oldRowId) {
             notifyCursorMoved();
         }
-        return rowId>0 && rowId <= getRowCount();
+        return !(rowId == 0 || rowId > getRowCount() || (rowFilterIterator != null && (rowId < rowFilter.first() || rowId > rowFilter.last())));
     }
 
     @Override

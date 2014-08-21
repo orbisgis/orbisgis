@@ -41,6 +41,7 @@ import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.map.TransformListener;
 import org.orbisgis.core_export.MapImageWriter;
 import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.mapeditorapi.IndexProvider;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
@@ -97,6 +98,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MapEditor extends JPanel implements TransformListener, MapEditorExtension   {
     private static final I18n I18N = I18nFactory.getI18n(MapEditor.class);
     private static final Logger GUILOGGER = Logger.getLogger("gui."+MapEditor.class);
+    private static final String GEOMETRY_INDEX_CACHE = "map_index";
     //The UID must be incremented when the serialization is not compatible with the new version of this class
     private static final long serialVersionUID = 1L;
     private MapControl mapControl = new MapControl();
@@ -161,6 +163,21 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         //Set the Drop target
         dragDropHandler = new MapTransferHandler();
         this.setTransferHandler(dragDropHandler);
+    }
+
+    /**
+     * Provide spatial query optimisation
+     * @param indexProvider Index factory
+     */
+    public void setIndexProvider(IndexProvider indexProvider) {
+        File tmpFolder = new File(viewWorkspace.getCoreWorkspace().getTempFolder(), GEOMETRY_INDEX_CACHE);
+        if(!tmpFolder.exists()) {
+            if(!tmpFolder.mkdirs()) {
+                GUILOGGER.warn(I18N.tr("Unable to create geometry index cache, rendering optimisation disabled"));
+                return;
+            }
+        }
+        mapControl.setIndexProvider(indexProvider, tmpFolder);
     }
 
     private void updateMapLabel() {

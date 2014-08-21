@@ -37,6 +37,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import org.apache.log4j.Logger;
@@ -49,6 +50,7 @@ import org.orbisgis.coremap.map.TransformListener;
 import org.orbisgis.coremap.renderer.ImageRenderer;
 import org.orbisgis.coremap.renderer.Renderer;
 import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
+import org.orbisgis.mapeditorapi.IndexProvider;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
@@ -98,6 +100,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	private boolean showCoordinates = true;
 
+
 	TransformListener element;
 
 	Automaton defaultTool;
@@ -106,8 +109,13 @@ public class MapControl extends JComponent implements ContainerListener {
 
         MapTransform updatedMapTranform = new MapTransform();
 
-	public MapControl() {
-	}
+        /**
+         * Provide spatial query optimisation
+         * @param indexProvider Index factory
+         */
+        public void setIndexProvider(IndexProvider indexProvider, File indexCache) {
+            cachedResultSetContainer.setIndexProvider(indexProvider, indexCache);
+        }
         private void setStatus(int newStatus) {
             status = newStatus;
         }
@@ -199,7 +207,7 @@ public class MapControl extends JComponent implements ContainerListener {
      * Remove cached result set
      */
     public void clearCache() {
-        cachedResultSetContainer = new CachedResultSetContainer();
+        cachedResultSetContainer.clearCache();
     }
         
 	/**
@@ -476,6 +484,7 @@ public class MapControl extends JComponent implements ContainerListener {
 		/*
 		 * if (drawer != null) { drawer.cancel(); }
 		 */
+            cachedResultSetContainer.clearCache();
             if(toolManager!=null) {
                 toolManager.freeResources();
                 toolManager = null;

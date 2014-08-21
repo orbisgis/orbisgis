@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.SortedSet;
 
 /**
@@ -117,6 +118,7 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
         public IntegerUnion(IntegerUnion externalSet) {
                 this.intervals = new ArrayList<Integer>(externalSet.intervals);
         }
+
         /**
          * Copy constructor with a generic collection
          * @param externalCollection 
@@ -131,7 +133,17 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
                         }
                 }
         }
-        
+
+        /**
+         * Copy constructor with a generic collection
+         * @param valueIterator Value to insert in this set
+         */
+        public IntegerUnion(Iterator<Integer> valueIterator) {
+            this();
+            while(valueIterator.hasNext()) {
+                internalAdd(valueIterator.next());
+            }
+        }
 
         @Override
         public boolean equals(Object obj) {
@@ -275,7 +287,7 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
 
         @Override
         public Iterator<Integer> iterator() {
-                return new ValueIterator(intervals.iterator());
+                return listIterator();
         }
 
         /**
@@ -390,41 +402,93 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
                 intervals.clear();
         }
 
-        private static class ValueIterator implements Iterator<Integer> {
-
-                private Iterator<Integer> it;
-                private Integer current = -1;
-                private Integer itEnd = 0;
-
-                public ValueIterator(Iterator<Integer> intervals) {
-                        it = intervals;
-                        if (it.hasNext()) {
-                                current = it.next() - 1;
-                                itEnd = it.next() + 1;
-                        }
-                }
-
-                @Override
-                public boolean hasNext() {
-                        return current + 1 < itEnd || it.hasNext();
-                }
-
-                @Override
-                public Integer next() {
-                        if (current + 1 < itEnd) {
-                                return ++current;
-                        } else {
-                                current = it.next();
-                                itEnd = it.next() + 1;
-                                return current;
-                        }
-                }
-
-                @Override
-                public void remove() {
-                        throw new UnsupportedOperationException("It won't be supported because it's not mandatory.");
-                }
+        /**
+         * @return Two direction iterator
+         */
+        public ListIterator<Integer> listIterator() {
+            return new ValueListIterator(intervals.listIterator());
         }
+
+        private static class ValueListIterator implements ListIterator<Integer>  {
+            protected int current = -1;
+            protected int itEnd = 0;
+            // Interval list iterator
+            private ListIterator<Integer> it;
+            private int itBegin = -1;
+            private boolean lastNext = true;
+
+            public ValueListIterator(ListIterator<Integer> listIterator) {
+                this.it = listIterator;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return current + 1 < itEnd || it.hasNext();
+            }
+
+            @Override
+            public Integer next() {
+                lastNext = true;
+                if (current + 1 < itEnd) {
+                    return ++current;
+                } else {
+                    current = it.next();
+                    itBegin = current;
+                    itEnd = it.next() + 1;
+                    return current;
+                }
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return current > itBegin || it.hasPrevious();
+            }
+
+            @Override
+            public Integer previous() {
+                if(current > itBegin && !lastNext) {
+                    return --current;
+                } else {
+                    if(lastNext) {
+                        lastNext = false;
+                        it.previous();
+                        it.previous();
+                        return current;
+                    } else {
+                        itEnd = it.previous() + 1;
+                        itBegin = it.previous();
+                        current = itEnd - 1;
+                    }
+                    return current;
+                }
+            }
+
+            @Override
+            public int nextIndex() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public int previousIndex() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void set(Integer integer) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void add(Integer integer) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("It won't be supported because it's not mandatory.");
+            }
+        }
+
         /**
          * This class convert an interval iterator into a serial iterator.
          * [0,2,5,7] become [0,1,2,5,6,7]
