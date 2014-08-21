@@ -176,9 +176,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
             // An update occurs during fetching tables
             if(model.updateWhileAwaitingRefresh) {
                 model.updateWhileAwaitingRefresh = false;
-                model.awaitingRefresh.set(true);
-                ReadDataManagerOnSwingThread worker = new ReadDataManagerOnSwingThread(model);
-                worker.execute();
+                model.onDataManagerChange();
             }
         }
     }
