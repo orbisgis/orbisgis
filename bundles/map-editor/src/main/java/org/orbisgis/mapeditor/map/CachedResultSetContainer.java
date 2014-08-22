@@ -33,6 +33,7 @@ import org.apache.commons.io.FileUtils;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
@@ -84,7 +85,9 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
         if(readRowSet == null) {
             readRowSet = layer.getDataManager().createReadRowSet();
             readRowSet.setCloseDelay(ROWSET_FREE_DELAY);
-            readRowSet.initialize(tableRef, "", rsTask);
+            try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {
+                readRowSet.initialize(tableRef, MetaData.getPkName(connection, tableRef, true), rsTask);
+            }
             cache.put(tableRef, readRowSet);
         }
         if(index == null && indexProvider != null) {
