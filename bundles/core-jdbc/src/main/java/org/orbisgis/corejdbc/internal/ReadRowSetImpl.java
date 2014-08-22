@@ -40,6 +40,8 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.LongUnion;
+import org.orbisgis.corejdbc.common.NumberUnion;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
@@ -206,33 +208,41 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                 } else {
                     // Calculate intervals
                     // Pk is a number, an interval of PK can be merged
-                    long beginFetch = Math.max(1, fetchDirection == FETCH_REVERSE ? rowId - fetchSize : rowId);
-                    long endFetch = Math.min(getRowCount(), fetchDirection == FETCH_REVERSE ? rowId : rowId + fetchSize);
+                    int beginFetch = (int)Math.max(1, fetchDirection == FETCH_REVERSE ? rowId - fetchSize : rowId);
+                    int endFetch = (int)Math.min(getRowCount(), fetchDirection == FETCH_REVERSE ? rowId : rowId + fetchSize);
                     int inc = fetchDirection == FETCH_REVERSE ? -1 : 1;
-                    IntegerUnion pkIntervals = new IntegerUnion();
+                    LongUnion pkIntervals = new LongUnion();
                     List<Object> pkValues = new ArrayList<>(fetchSize);
-                    for (long fetchRowId = beginFetch; fetchRowId <= endFetch; fetchRowId += inc) {
-                        if(rowFilter == null || rowFilter.contains((int)fetchRowId)) {
-                            Object pk = rowPk.get((int) fetchRowId);
-                            if (pk != null) {
-                                if (pk instanceof Integer) {
-                                    pkIntervals.add((Integer) pk);
-                                } else {
-                                    pkValues.add(pk);
+                    Object testPkType = rowPk.values().iterator().next();
+                    if(!(testPkType instanceof Integer || testPkType instanceof Long)) {
+                        for (long fetchRowId = beginFetch; fetchRowId <= endFetch; fetchRowId += inc) {
+                            if (rowFilter == null || rowFilter.contains((int) fetchRowId)) {
+                                pkValues.add(rowPk.get((int) fetchRowId));
+                            } else {
+                                if (endFetch <= getRowCount()) {
+                                    endFetch++; // Collect one more row
                                 }
                             }
-                        } else {
-                            if(endFetch <= getRowCount()) {
-                                endFetch++; // Collect one more row
+                        }
+
+                    } else {
+                        // Could merge int number to make faster and short request
+                        for (int fetchRowId = beginFetch; fetchRowId <= endFetch; fetchRowId += inc) {
+                            if (rowFilter == null || rowFilter.contains(fetchRowId)) {
+                                pkIntervals.add(((Number)rowPk.get(fetchRowId)).longValue());
+                            } else {
+                                if (endFetch <= getRowCount()) {
+                                    endFetch++; // Collect one more row
+                                }
                             }
                         }
                     }
                     StringBuilder whereClause = new StringBuilder();
                     if(!pkIntervals.isEmpty()) {
-                        Iterator<Integer> rangeIt = pkIntervals.getValueRanges().iterator();
+                        Iterator<Long> rangeIt = pkIntervals.getValueRanges().iterator();
                         while(rangeIt.hasNext()) {
-                            int beginRange = rangeIt.next();
-                            int endRange = rangeIt.next();
+                            long beginRange = rangeIt.next();
+                            long endRange = rangeIt.next();
                             if(endRange > beginRange) {
                                 if (whereClause.length() > 0) {
                                     whereClause.append(" OR ");
