@@ -206,19 +206,25 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                 } else {
                     // Calculate intervals
                     // Pk is a number, an interval of PK can be merged
-                    long beginFetch = fetchDirection == FETCH_REVERSE ? rowId - fetchSize : rowId;
-                    long endFetch = fetchDirection == FETCH_REVERSE ? rowId : rowId + fetchSize;
+                    long beginFetch = Math.max(1, fetchDirection == FETCH_REVERSE ? rowId - fetchSize : rowId);
+                    long endFetch = Math.min(getRowCount(), fetchDirection == FETCH_REVERSE ? rowId : rowId + fetchSize);
                     int inc = fetchDirection == FETCH_REVERSE ? -1 : 1;
                     IntegerUnion pkIntervals = new IntegerUnion();
                     List<Object> pkValues = new ArrayList<>(fetchSize);
                     for (long fetchRowId = beginFetch; fetchRowId <= endFetch; fetchRowId += inc) {
-                        Object pk = rowPk.get((int) rowId);
-                        if(pk != null) {
-                          if(pk instanceof Number) {
-                              pkIntervals.add(((Number) pk).intValue());
-                          } else {
-                              pkValues.add(pk);
-                          }
+                        if(rowFilter == null || rowFilter.contains((int)fetchRowId)) {
+                            Object pk = rowPk.get((int) fetchRowId);
+                            if (pk != null) {
+                                if (pk instanceof Integer) {
+                                    pkIntervals.add((Integer) pk);
+                                } else {
+                                    pkValues.add(pk);
+                                }
+                            }
+                        } else {
+                            if(endFetch <= getRowCount()) {
+                                endFetch++; // Collect one more row
+                            }
                         }
                     }
                     StringBuilder whereClause = new StringBuilder();
