@@ -106,6 +106,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private int closeDelay = 0;
     private IntegerUnion rowFilter;
     private ListIterator<Integer> rowFilterIterator;
+    private String orderBy = "";
 
     /**
      * Constructor, row set based on primary key, significant faster on large table
@@ -138,7 +139,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         try(Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement()) {
             st.setFetchSize(fetchSize);
-            try(ResultSet rs = st.executeQuery("SELECT "+pk_name+" FROM "+location)) {
+            try(ResultSet rs = st.executeQuery("SELECT "+pk_name+" FROM "+location+" "+ orderBy)) {
                 // Cache the primary key values
                 int pkRowId = 0;
                 while (rs.next()) {
@@ -285,11 +286,13 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         ignoreFirstColumn = true;
                     }
                     if(ignoreFirstColumn) {
-                        command = "SELECT "+pk_name+","+select_fields+" FROM "+getTable();
+                        command = "SELECT "+pk_name+","+select_fields+" FROM "+getTable()+" WHERE " + whereClause.toString()+" "+orderBy;
+                    } else {
+                        command = "SELECT "+select_fields+" FROM "+getTable()+" WHERE " + whereClause.toString()+" "+orderBy;
                     }
                     // Acquire row values by using primary key
                     try (Connection connection = dataSource.getConnection();
-                         PreparedStatement st = connection.prepareStatement(command + " WHERE " + whereClause.toString())) {
+                         PreparedStatement st = connection.prepareStatement(command)) {
                         int parameterIndex = 1;
                         for(Object pk : pkValues) {
                             st.setObject(parameterIndex++, pk);
@@ -336,7 +339,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public String getCommand() {
-        return String.format("SELECT "+select_fields+" FROM %s", location);
+        return String.format("SELECT "+select_fields+" FROM %s "+orderBy, location);
     }
 
     @Override
@@ -345,9 +348,11 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         final Pattern selectFieldPattern = Pattern.compile("^select(.+?)from", Pattern.CASE_INSENSITIVE);
         final Pattern commandPattern = Pattern.compile("from\\s+((([\"`][^\"`]+[\"`])|(\\w+))\\.){0,2}(([\"`][^\"`]+[\"`])|(\\w+))", Pattern.CASE_INSENSITIVE);
         final Pattern commandPatternTable = Pattern.compile("^from\\s+", Pattern.CASE_INSENSITIVE);
+        final Pattern orderByPattern = Pattern.compile("order\\sby\\s+(\\w+)$", Pattern.CASE_INSENSITIVE);
         String table = "";
         Matcher matcher = commandPattern.matcher(s);
         Matcher selectFieldMatcher = selectFieldPattern.matcher(s);
+        Matcher orderByMatcher = orderByPattern.matcher(s);
         if(selectFieldMatcher.find()) {
             select_fields = selectFieldMatcher.group(1);
         }
@@ -356,6 +361,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             if(tableMatcher.find()) {
                 table = matcher.group().substring(tableMatcher.group().length());
             }
+        }
+        if(orderByMatcher.find()) {
+            orderBy = orderByMatcher.group();
         }
         if(table.isEmpty()) {
             throw new SQLException("Command does not contain a table name, should be like this \"select * from tablename\"");
