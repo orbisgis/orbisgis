@@ -30,6 +30,8 @@ package org.orbisgis.view.table;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
@@ -131,6 +133,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
         private DataManager dataManager;
         private MCLayerListener layerListener;
         private MapContext mapContext;
+        /** Last fetched selected row in selection navigation */
+        private int currentSelectionNavigation = 0;
 
         /**
          * Constructor
@@ -186,7 +190,20 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 List<Action> actions = new LinkedList<>();
                 actions.add(new DefaultAction(TableEditorActions.A_REFRESH, I18N.tr("Refresh table content"),
                         OrbisGISIcon.getIcon("arrow_refresh"),
-                        EventHandler.create(ActionListener.class, this, "onMenuRefresh")));
+                        EventHandler.create(ActionListener.class, this, "onMenuRefresh"))
+                        .setLogicalGroup(TableEditorActions.LGROUP_READ));
+
+                actions.add(new DefaultAction(TableEditorActions.A_PREVIOUS_SELECTION, I18N.tr("Previous selection"),
+                        I18N.tr("Go to previous selected row"),OrbisGISIcon.getIcon("selection-previous"),
+                        EventHandler.create(ActionListener.class, this, "onPreviousSelection"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, InputEvent.CTRL_DOWN_MASK))
+                        .setLogicalGroup(TableEditorActions.LGROUP_READ));
+
+                actions.add(new DefaultAction(TableEditorActions.A_NEXT_SELECTION, I18N.tr("Next selection"),
+                    I18N.tr("Go to next selected row"),OrbisGISIcon.getIcon("selection-next"),
+                    EventHandler.create(ActionListener.class, this, "onNextSelection"),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.CTRL_DOWN_MASK))
+                        .setLogicalGroup(TableEditorActions.LGROUP_READ));
                 /*
                 TODO Edition
                 if(tableEditableElement.getDataSource().isEditable()) {
@@ -225,10 +242,60 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
         }
 
         /**
+         * @return The first visible row
+         */
+        private int getViewPosition() {
+            JViewport viewport = tableScrollPane.getViewport();
+            return table.rowAtPoint(viewport.getViewPosition());
+        }
+
+        private boolean isRowVisible(int row) {
+            JViewport viewport = tableScrollPane.getViewport();
+            return table.getVisibleRect().intersects(table.getCellRect(row, 0, true));
+        }
+
+        /**
+         * The user want to scroll to the next selected row
+         */
+        public void onNextSelection() {
+            // Get first shown row
+            int currentRow = currentSelectionNavigation;
+            if(!isRowVisible(currentRow)) {
+                currentRow = getViewPosition();
+            }
+            // Search next selected row
+            while (currentRow < tableModel.getRowCount()) {
+                if(table.getSelectionModel().isSelectedIndex(++currentRow)) {
+                    scrollToRow(currentRow);
+                    break;
+                }
+            }
+        }
+
+        /***
+         * The user want to scroll to the previous selected row
+         */
+        public void onPreviousSelection() {
+            // Get first shown row
+            int currentRow = currentSelectionNavigation;
+            if(!isRowVisible(currentRow)) {
+                currentRow = getViewPosition();
+            }
+            // Search next selected row
+            while (currentRow > 0) {
+                if(table.getSelectionModel().isSelectedIndex(--currentRow)) {
+                    scrollToRow(currentRow);
+                    break;
+                }
+            }
+        }
+
+        /**
          * @param modelRowId Scroll to this model row id
          */
         public void scrollToRow(int modelRowId) {
             SearchJob.scrollToRow(modelRowId, table);
+            currentSelectionNavigation = modelRowId;
         }
 
         /**

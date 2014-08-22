@@ -47,7 +47,10 @@ public interface TableEditorActions extends ActionFactoryService<SourceTable> {
     public static final String A_REMOVE_ROW = "A_REMOVE_ROW";
     //GROUP READ
     public static final String A_REFRESH = "A_REFRESH";
+    public static final String A_PREVIOUS_SELECTION = "A_PREVIOUS_SELECTION";
+    public static final String A_NEXT_SELECTION = "A_NEXT_SELECTION";
 
+    public static final String LGROUP_READ = "LGROUP_READ";
     public static final String LGROUP_EDITION = "LGROUP_EDITION";
     public static final String LGROUP_MODIFICATION_GROUP = "LGROUP_MODIFICATION_GROUP";
 }
