@@ -67,4 +67,9 @@ public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
      * @param rowIdSet Row number [1-n] to keep
      */
     void setFilter(Collection<Integer> rowIdSet);
+
+    /**
+     * @return The number of rows return by using next() from beforeFirst()
+     */
+    long getFilteredRowCount();
 }

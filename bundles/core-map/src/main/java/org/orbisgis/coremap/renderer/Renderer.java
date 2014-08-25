@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.LayerException;
 import org.orbisgis.coremap.map.MapTransform;
@@ -189,12 +190,21 @@ public abstract class Renderer {
                 // And now, features will be rendered
                 // Get a graphics for each symbolizer
                 initGraphics2D(symbs, g2, mt);
+                ProgressMonitor rulesProgress = pm.startTask(rList.size());
                 for (Rule r : rList) {
                     beginLayer(r.getName());
-                    pm.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", 1);
                     try(ResultSetProviderFactory.ResultSetProvider resultSetProvider = layerDataFactory.getResultSetProvider(layer, pm)) {
                         try(SpatialResultSet rs = resultSetProvider.execute(pm, extent)) {
                             int fieldID = rs.getMetaData().unwrap(SpatialResultSetMetaData.class).getFirstGeometryFieldIndex();
+                            ProgressMonitor rowSetProgress;
+                            // Read row count for progress monitor
+                            if(rs instanceof ReadRowSet) {
+                                rowSetProgress = rulesProgress.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", ((ReadRowSet) rs).getFilteredRowCount());
+                            } else {
+                                rs.last();
+                                rowSetProgress = rulesProgress.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", rs.getRow());
+                                rs.beforeFirst();
+                            }
                             while (rs.next()) {
                                 if (pm.isCancelled()) {
                                     break;
@@ -224,8 +234,8 @@ public abstract class Renderer {
                                     }
                                     endFeature(row, rs);
                                 }
+                                rowSetProgress.endTask();
                             }
-                            pm.endTask();
                             endLayer(r.getName());
                         }
                     } catch (SQLException ex) {
