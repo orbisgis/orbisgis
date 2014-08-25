@@ -561,6 +561,10 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private boolean moveCursorTo(long i) throws SQLException {
         i = Math.max(0, i);
         i = Math.min(getRowCount() + 1, i);
+        if(rowFilter != null) {
+            i = Math.max(rowFilter.first() - 1, i);
+            i = Math.min(rowFilter.last() + 1, i);
+        }
         long oldRowId = rowId;
         if(rowFilterIterator != null) {
             if(i < oldRowId) {
@@ -594,11 +598,16 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         } else {
             rowId = i;
         }
-        updateRowCache();
+        boolean validRow = !(rowId == 0 || rowId > getRowCount() || (rowFilter != null && (rowId < rowFilter.first() || rowId > rowFilter.last())));
+        if(validRow) {
+            updateRowCache();
+        } else {
+            currentRow = null;
+        }
         if(rowId != oldRowId) {
             notifyCursorMoved();
         }
-        return !(rowId == 0 || rowId > getRowCount() || (rowFilterIterator != null && (rowId < rowFilter.first() || rowId > rowFilter.last())));
+        return validRow;
     }
 
     @Override
