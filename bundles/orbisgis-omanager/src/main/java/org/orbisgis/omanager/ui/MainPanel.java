@@ -36,8 +36,10 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -349,11 +351,16 @@ public class MainPanel extends JPanel {
         }
 
         // Add other properties
-        for(Map.Entry<String,String> entry : itemDetails.entrySet()) {
+        for (Map.Entry<String, String> entry : itemDetails.entrySet()) {
             String originalKey = entry.getKey();
             String key = bundleHeader.convert(originalKey);
-            if(!key.isEmpty() && !entry.getValue().isEmpty()) {
-                addDescriptionItem(key,entry.getValue(),document);
+            if (!key.isEmpty() && !entry.getValue().isEmpty()) {
+                if (originalKey.equalsIgnoreCase("Bnd-LastModified")) {
+                    Date bundleUpdate = new Date(Long.valueOf(entry.getValue()));
+                    addDescriptionItem(key, DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG).format(bundleUpdate), document);
+                } else {
+                    addDescriptionItem(key, entry.getValue(), document);
+                }
             }
         }
         bundleDetails.setCaretPosition(0); // Got to the beginning of the document
