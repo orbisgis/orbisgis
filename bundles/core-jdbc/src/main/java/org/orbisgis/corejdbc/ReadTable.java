@@ -173,10 +173,33 @@ public class ReadTable {
         }
     }
 
+    /**
+     * Return a concatened and human readable format of provided result set
+     * @param rs result set to read
+     * @param maxFieldLength Maximum field length to print
+     * @param maxPrintedRows Maximum printed rows
+     * @param addColumns Add column header
+     * @param alignColumns Align columns by using padding
+     * @return human readable format of provided result set
+     * @throws SQLException
+     */
+    public static String resultSetToString(ResultSet rs,int maxFieldLength, int maxPrintedRows, boolean addColumns,
+                                           boolean alignColumns) throws SQLException {
+        return resultSetToString(rs, maxFieldLength, maxPrintedRows, addColumns, alignColumns, new AcceptAllFilter());
+    }
 
-    public static String resultSetToString(String query, Statement st,int maxFieldLength, int maxPrintedRows, boolean addColumns, boolean alignColumns) throws SQLException {
-        // Select generate a ResultSet
-        ResultSet rs = st.executeQuery(query);
+    /**
+     * Return a concatened and human readable format of provided result set
+     * @param rs result set to read
+     * @param maxFieldLength Maximum field length to print
+     * @param maxPrintedRows Maximum printed rows
+     * @param addColumns Add column header
+     * @param alignColumns Align columns by using padding
+     * @param resultSetFilter Accept or refuse rows by implementing this interface
+     * @return human readable format of provided result set
+     * @throws SQLException
+     */
+    public static String resultSetToString(ResultSet rs,int maxFieldLength, int maxPrintedRows, boolean addColumns, boolean alignColumns, ResultSetFilter resultSetFilter) throws SQLException {
         // Print headers
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
@@ -202,33 +225,50 @@ public class ReadTable {
         decimalFormat.setGroupingUsed(false);
         decimalFormat.setMaximumFractionDigits(16);
         while(rs.next() && shownLines < maxPrintedRows) {
-            String[] row = new String[columnCount];
-            for(int idColumn = 1; idColumn <= columnCount; idColumn ++) {
-                Object valObj = rs.getObject(idColumn);
-                String value;
-                if(valObj instanceof Number) {
-                    value = decimalFormat.format(valObj);
-                } else {
-                    value = rs.getString(idColumn);
-                }
-                if(value != null) {
-                    if(value.length() > maxFieldLength) {
-                        value = value.substring(0, maxFieldLength-2) + "..";
+            if(resultSetFilter.printRow(rs)) {
+                String[] row = new String[columnCount];
+                for (int idColumn = 1; idColumn <= columnCount; idColumn++) {
+                    Object valObj = rs.getObject(idColumn);
+                    String value;
+                    if (valObj instanceof Number) {
+                        value = decimalFormat.format(valObj);
+                    } else {
+                        value = rs.getString(idColumn);
                     }
-                } else {
-                    value = "NULL";
+                    if (value != null) {
+                        if (value.length() > maxFieldLength) {
+                            value = value.substring(0, maxFieldLength - 2) + "..";
+                        }
+                    } else {
+                        value = "NULL";
+                    }
+                    row[idColumn - 1] = value;
                 }
-                row[idColumn-1] = value;
+                shownLines++;
+                lines.append(String.format(formatStringBuilder.toString(), row));
+                lines.append("\n");
             }
-            shownLines++;
-            lines.append(String.format(formatStringBuilder.toString(),row));
-            lines.append("\n");
         }
         if(lines.length() != 0) {
             return lines.toString();
         } else {
             return I18N.tr("No attributes to show");
         }
+    }
+
+    private static class AcceptAllFilter implements ResultSetFilter {
+        @Override
+        public boolean printRow(ResultSet rs) {
+            return true;
+        }
+    }
+
+    public static interface ResultSetFilter {
+        /**
+         * @param rs Result set in valid row
+         * @return True if the row should be printed
+         */
+        boolean printRow(ResultSet rs) throws SQLException;
     }
 
     /**

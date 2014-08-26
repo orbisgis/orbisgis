@@ -217,7 +217,7 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
                 if( queryIndex != null) {
                     IntegerUnion filteredRows = new IntegerUnion(queryIndex.query(extent));
                     readRowSet.setFilter(filteredRows);
-                    readRowSet.absolute(filteredRows.first() -  1);
+                    readRowSet.beforeFirst();
                 } else {
                     readRowSet.beforeFirst();
                 }
