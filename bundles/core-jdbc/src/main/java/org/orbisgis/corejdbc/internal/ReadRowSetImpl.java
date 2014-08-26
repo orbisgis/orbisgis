@@ -123,6 +123,11 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     }
 
     @Override
+    public long getFilteredRowCount() {
+        return rowFilter.size();
+    }
+
+    @Override
     public Lock getReadLock() {
         return readLock;
     }
