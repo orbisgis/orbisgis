@@ -88,6 +88,7 @@ import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 import org.orbisgis.coremap.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
+import org.orbisgis.mapeditor.map.CachedResultSetContainer;
 import org.orbisgis.mapeditor.map.tool.Automaton.Code;
 import org.orbisgis.mapeditor.map.tools.PanTool;
 import org.orbisgis.mapeditor.map.tools.ToolUtilities;
@@ -133,6 +134,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         private LineSymbolizer lineSymbolizer;
         private PointSymbolizer pointSymbolizer;
         private ReversibleRowSet activeLayerRowSet;
+        private CachedResultSetContainer cachedResultSetContainer;
 
         /**
          * Creates a new EditionToolAdapter.
@@ -144,11 +146,12 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
          * @throws TransitionException
          */
         public ToolManager(Automaton defaultTool, MapContext mapContext,
-                MapTransform mapTransform, Component component)
+                MapTransform mapTransform, Component component, CachedResultSetContainer cachedResultSetContainer)
                 throws TransitionException {
                 this.mapTransform = mapTransform;
                 this.component = component;
                 this.mapContext = mapContext;
+                this.cachedResultSetContainer = cachedResultSetContainer;
 
                 setTool(defaultTool);
                 this.defaultTool = defaultTool;
@@ -174,6 +177,13 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         }
 
         /**
+         * @return Gives access to cached result set of all layers
+         */
+        public CachedResultSetContainer getCachedResultSetContainer() {
+            return cachedResultSetContainer;
+        }
+
+    /**
          * When the Edited Layer in the MapContext has been set/unset
          * @param evt
          */

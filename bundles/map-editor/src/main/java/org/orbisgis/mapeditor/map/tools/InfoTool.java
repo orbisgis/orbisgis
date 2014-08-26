@@ -33,10 +33,13 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 import java.util.Observable;
 import javax.sql.DataSource;
 import javax.swing.ImageIcon;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.SFSUtilities;
@@ -46,6 +49,8 @@ import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
+import org.orbisgis.mapeditor.map.CachedResultSetContainer;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
@@ -82,7 +87,7 @@ public class InfoTool extends AbstractRectangleTool {
         double maxy = rect.getMaxY();
         BackgroundManager bm = Services.getService(BackgroundManager.class);
         bm.backgroundOperation(new DefaultJobId(
-                "org.orbisgis.jobs.InfoTool"), new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), vc.getDataManager().getDataSource(),layer.getTableReference()));
+                "org.orbisgis.jobs.InfoTool"), new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), vc.getDataManager().getDataSource(),layer));
 
     }
 
@@ -108,12 +113,12 @@ public class InfoTool extends AbstractRectangleTool {
 
         private final Envelope envelope;
         private final DataSource sds;
-        private final String tableReference;
+        private final ILayer layer;
 
-        private PopulateViewJob(Envelope envelope, DataSource sds, String tableReference) {
+        private PopulateViewJob(Envelope envelope, DataSource sds, ILayer layer) {
             this.envelope = envelope;
             this.sds = sds;
-            this.tableReference = tableReference;
+            this.layer = layer;
         }
 
         @Override
@@ -123,35 +128,13 @@ public class InfoTool extends AbstractRectangleTool {
 
         @Override
         public void run(ProgressMonitor pm) {
-            GeometryFactory factory = new GeometryFactory();
-            String envelopeWKT = factory.toGeometry(envelope).toText();
-            try(Connection connection = SFSUtilities.wrapConnection(sds.getConnection())) {
-                String geomFieldName = SFSUtilities.getGeometryFields(connection,
-                        TableLocation.parse(tableReference)).get(0);
-                DatabaseMetaData meta = connection.getMetaData();
-                TableLocation tableLocation = TableLocation.parse(tableReference);
-                // Fetch column names, remove geometry column
-                StringBuilder fields = new StringBuilder();
-                try(ResultSet rs = meta.getColumns(tableLocation.getCatalog(), tableLocation.getSchema(),
-                        tableLocation.getTable(), null)) {
-                    while(rs.next()) {
-                        if(!geomFieldName.equals(rs.getString("COLUMN_NAME"))) {
-                            if(fields.length()!=0) {
-                                fields.append(", ");
-                            }
-                            fields.append(TableLocation.quoteIdentifier(rs.getString("COLUMN_NAME")));
-                        }
-                    }
-                }
-                String query = String.format("SELECT %s FROM %s WHERE %s && ST_GeomFromText('%s') AND ST_Intersects(%s, ST_GeomFromText('%s'))",
-                        fields.toString(),
-                        tableReference,
-                        TableLocation.quoteIdentifier(geomFieldName),envelopeWKT,
-                        TableLocation.quoteIdentifier(geomFieldName),envelopeWKT);
-                String lines = ReadTable.resultSetToString(query, connection.createStatement(), MAX_FIELD_LENGTH,
-                        MAX_PRINTED_ROWS, false, false);
+            try(ResultSetProviderFactory.ResultSetProvider rsCont =
+                        tm.getCachedResultSetContainer().getResultSetProvider(layer, pm);
+                    ResultSet rs = rsCont.execute(pm, envelope)) {
+                String lines = ReadTable.resultSetToString(rs, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, false, false,
+                        new EnvelopeFilter(envelope));
                 UILOGGER.info(lines);
-                if(lines.length() <= POPUP_MAX_LENGTH) {
+                if (lines.length() <= POPUP_MAX_LENGTH) {
                     POPUPLOGGER.info(lines);
                 }
             } catch (SQLException ex) {
@@ -160,6 +143,26 @@ public class InfoTool extends AbstractRectangleTool {
         }
     }
 
+    private static class EnvelopeFilter implements ReadTable.ResultSetFilter {
+        private Envelope envelope;
+        private String geomFieldName = "";
+
+        private EnvelopeFilter(Envelope envelope) {
+            this.envelope = envelope;
+        }
+
+        @Override
+        public boolean printRow(ResultSet rs) throws SQLException {
+            if(geomFieldName.isEmpty()) {
+                List<String> geomFields = SFSUtilities.getGeometryFields(rs);
+                if(!geomFields.isEmpty()) {
+                    geomFieldName = geomFields.get(0);
+                }
+            }
+            Object geomObj = rs.getObject(geomFieldName);
+            return geomObj instanceof Geometry && ((Geometry) geomObj).getEnvelopeInternal().intersects(envelope);
+        }
+    }
     @Override
     public String getTooltip() {
         return i18n.tr("Get feature attributes");

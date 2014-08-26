@@ -147,7 +147,7 @@ public class MapControl extends JComponent implements ContainerListener {
                         removeMouseWheelListener(toolManager);
                 }
 		toolManager = new ToolManager(defaultTool, mapContext, mapTransform,
-				this);
+				this, cachedResultSetContainer);
 
                 // Set extent with BoundingBox value
 		ILayer rootLayer = mapContext.getLayerModel();

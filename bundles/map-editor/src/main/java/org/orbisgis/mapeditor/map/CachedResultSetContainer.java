@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -68,13 +69,22 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
     private File indexCache;
     private Map<String, Index<Integer>> indexMap = new HashMap<>();
 
-    @Override
-    public CachedResultSet getResultSetProvider(ILayer layer, ProgressMonitor pm) throws SQLException {
-        String tableRef;
+    /**
+     * Reformat table name in order to be used as valid key.
+     * @param layer layer identifier
+     * @return canonical table name
+     * @throws SQLException
+     */
+    private String getCanonicalTableReference(ILayer layer) throws SQLException {
         try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {
             boolean isH2 =  JDBCUtilities.isH2DataBase(connection.getMetaData());
-            tableRef = TableLocation.parse(layer.getTableReference(), isH2).toString(isH2);
+            return TableLocation.parse(layer.getTableReference(), isH2).toString(isH2);
         }
+    }
+
+    @Override
+    public CachedResultSet getResultSetProvider(ILayer layer, ProgressMonitor pm) throws SQLException {
+        String tableRef = getCanonicalTableReference(layer);
         ProgressMonitor rsTask = pm;
         Index<Integer> index = indexMap.get(tableRef);
         if(index == null && indexProvider != null) {
@@ -176,6 +186,17 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
         }
     }
 
+    /**
+     * @return Index of table, in order to quickly get rowid by envelope. Null if not available
+     */
+    public Index<Integer> getIndexMap(ILayer layer){
+        try {
+            return indexMap.get(getCanonicalTableReference(layer));
+        } catch (SQLException ex) {
+            return null;
+        }
+    }
+
     private static class CachedResultSet implements ResultSetProvider {
         private ReadRowSet readRowSet;
         private String tableReference;
@@ -196,7 +217,7 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
                 if( queryIndex != null) {
                     IntegerUnion filteredRows = new IntegerUnion(queryIndex.query(extent));
                     readRowSet.setFilter(filteredRows);
-                    readRowSet.absolute(filteredRows.first() -  1);
+                    readRowSet.beforeFirst();
                 } else {
                     readRowSet.beforeFirst();
                 }

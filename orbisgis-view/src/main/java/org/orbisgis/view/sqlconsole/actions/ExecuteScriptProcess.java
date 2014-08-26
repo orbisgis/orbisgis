@@ -43,6 +43,7 @@ import javax.swing.*;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -107,8 +108,8 @@ public class ExecuteScriptProcess implements BackgroundJob {
                     long debQuery = System.currentTimeMillis();
                     String lowerCaseQuery = query.toLowerCase();
                     if(isExecuteQuery(lowerCaseQuery)) {
-                        try {
-                            LOGGER.info("\n" + ReadTable.resultSetToString(query, st, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, true, true));
+                        try(ResultSet rs = st.executeQuery(query)) {
+                            LOGGER.info("\n" + ReadTable.resultSetToString(rs, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, true, true));
                         } catch (SQLException ex) {
                             // May not accept executeQuery but simple query
                             if(!lowerCaseQuery.startsWith("select")) {
