@@ -201,9 +201,14 @@ public abstract class Renderer {
                             if(rs instanceof ReadRowSet) {
                                 rowSetProgress = rulesProgress.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", ((ReadRowSet) rs).getFilteredRowCount());
                             } else {
-                                rs.last();
-                                rowSetProgress = rulesProgress.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", rs.getRow());
-                                rs.beforeFirst();
+                                // Get row count if backward scroll possible
+                                if(rs.getType() == ResultSet.TYPE_SCROLL_INSENSITIVE) {
+                                    rs.last();
+                                    rowSetProgress = rulesProgress.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", rs.getRow());
+                                    rs.beforeFirst();
+                                } else {
+                                    rowSetProgress = rulesProgress.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", 1);
+                                }
                             }
                             while (rs.next()) {
                                 if (pm.isCancelled()) {
