@@ -198,6 +198,16 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                     EventHandler.create(ActionListener.class, this, "onRefreshTocTree"),
                     KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
             tools.add(refreshIconsAction);
+            tools.add(new DefaultAction(TocActionFactory.G_ADD, I18N.tr("Add")).setMenuGroup(true));
+            tools.add(new DefaultAction(TocActionFactory.A_ADD_LAYER_GROUP,
+                    I18N.tr("Add layer group"), I18N.tr("Add layer group to the map context"),
+                    OrbisGISIcon.getIcon("folder_add"),
+                    EventHandler.create(ActionListener.class, this, "onAddGroup"), null)
+                    .setParent(TocActionFactory.G_ADD));
+            tools.add(new DefaultAction(TocActionFactory.A_WMS_LAYER, I18N.tr("Add WMS layer"),
+                    I18N.tr("Add WMS layer to the map context"), OrbisGISIcon.getIcon("world_add"),
+                    EventHandler.create(ActionListener.class, this, "onAddWMSLayer"), null)
+                    .setParent(TocActionFactory.G_ADD));
             dockingPanelParameters.setDockActions(tools);
         }
         private void initPopupActions() {
