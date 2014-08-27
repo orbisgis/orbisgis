@@ -40,6 +40,8 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.LongUnion;
+import org.orbisgis.corejdbc.common.NumberUnion;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
@@ -56,16 +58,14 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -91,8 +91,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private boolean wasNull = true;
     /** Used to managed table without primary key (ResultSet are kept {@link ResultSetHolder#RESULT_SET_TIMEOUT} */
     protected final ResultSetHolder resultSetHolder;
-    private static final int CACHE_SIZE = 100;
-    private Map<Long, Object[]> cache = new LRUMap<>(CACHE_SIZE);
+    private int cacheSize = 100;
+    private Map<Long, Object[]> cache = new LRUMap<>(cacheSize);
     /** If the table contains a unique non null index then this variable contain the map between the row id [1-n] to the primary key value */
     private BidiMap<Integer, Object> rowPk;
     private String pk_name = "";
@@ -100,11 +100,13 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private int firstGeometryIndex = -1;
     private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
     private final Lock readLock = rwl.writeLock(); // Read here is exclusive
-    private static final int FETCH_SIZE = 100;
+    private int fetchSize = 50;
+    private int fetchDirection = FETCH_UNKNOWN;
     // When close is called, in how many ms the result set is really closed
     private int closeDelay = 0;
     private IntegerUnion rowFilter;
     private ListIterator<Integer> rowFilterIterator;
+    private String orderBy = "";
 
     /**
      * Constructor, row set based on primary key, significant faster on large table
@@ -141,8 +143,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         }
         try(Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement()) {
-            st.setFetchSize(FETCH_SIZE);
-            try(ResultSet rs = st.executeQuery("SELECT "+pk_name+" FROM "+location)) {
+            st.setFetchSize(fetchSize);
+            try(ResultSet rs = st.executeQuery("SELECT "+pk_name+" FROM "+location+" "+ orderBy)) {
                 // Cache the primary key values
                 int pkRowId = 0;
                 while (rs.next()) {
@@ -190,7 +192,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
      * Read the content of the DB near the current row id
      */
     protected void updateRowCache() throws SQLException {
-        if(!cache.containsKey(rowId)) {
+        if(!cache.containsKey(rowId) && rowId > 0 && rowId <= getRowCount()) {
             try(Resource res = resultSetHolder.getResource()) {
                 ResultSet rs = res.getResultSet();
                 final int columnCount = getColumnCount();
@@ -226,18 +228,105 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         cache.put(rowId, row);
                     }
                 } else {
-                    // Acquire row values by using primary key
-                    try(Connection connection = dataSource.getConnection();
-                        PreparedStatement st = connection.prepareStatement(getCommand()+" WHERE "+pk_name+" = ?")) {
-                        st.setObject(1, rowPk.get((int)rowId));
-                        try(ResultSet lineRs = st.executeQuery()) {
-                            Object[] row = new Object[columnCount];
-                            if(lineRs.next()) {
-                                for(int idColumn=1; idColumn <= columnCount; idColumn++) {
-                                    row[idColumn-1] = lineRs.getObject(idColumn);
+                    // Calculate intervals
+                    // Pk is a number, an interval of PK can be merged
+                    int beginFetch = (int)Math.max(1, fetchDirection == FETCH_REVERSE ? rowId - fetchSize : rowId);
+                    int endFetch = (int)Math.min(getRowCount(), fetchDirection == FETCH_REVERSE ? rowId : rowId + fetchSize);
+                    int inc = fetchDirection == FETCH_REVERSE ? -1 : 1;
+                    LongUnion pkIntervals = new LongUnion();
+                    List<Object> pkValues = new ArrayList<>(fetchSize);
+                    Object testPkType = rowPk.values().iterator().next();
+                    if(!(testPkType instanceof Integer || testPkType instanceof Long)) {
+                        for (long fetchRowId = beginFetch; fetchRowId <= endFetch; fetchRowId += inc) {
+                            if (rowFilter == null || rowFilter.contains((int) fetchRowId)) {
+                                pkValues.add(rowPk.get((int) fetchRowId));
+                            } else {
+                                if (endFetch <= getRowCount()) {
+                                    endFetch++; // Collect one more row
                                 }
                             }
-                            cache.put(rowId, row);
+                        }
+
+                    } else {
+                        // Could merge int number to make faster and short request
+                        for (int fetchRowId = beginFetch; fetchRowId <= endFetch; fetchRowId += inc) {
+                            if (rowFilter == null || rowFilter.contains(fetchRowId)) {
+                                pkIntervals.add(((Number)rowPk.get(fetchRowId)).longValue());
+                            } else {
+                                if (endFetch <= getRowCount()) {
+                                    endFetch++; // Collect one more row
+                                }
+                            }
+                        }
+                    }
+                    StringBuilder whereClause = new StringBuilder();
+                    if(!pkIntervals.isEmpty()) {
+                        Iterator<Long> rangeIt = pkIntervals.getValueRanges().iterator();
+                        while(rangeIt.hasNext()) {
+                            long beginRange = rangeIt.next();
+                            long endRange = rangeIt.next();
+                            if(endRange > beginRange) {
+                                if (whereClause.length() > 0) {
+                                    whereClause.append(" OR ");
+                                }
+                                whereClause.append(pk_name);
+                                whereClause.append(" >= ");
+                                whereClause.append(beginRange);
+                                whereClause.append(" AND ");
+                                whereClause.append(pk_name);
+                                whereClause.append(" <= ");
+                                whereClause.append(endRange);
+                            } else {
+                                // this is not a range; however it is a single value
+                                pkValues.add(beginRange);
+                            }
+                        }
+                    }
+                    if(!pkValues.isEmpty()) {
+                        if (whereClause.length() > 0) {
+                            whereClause.append(" OR ");
+                        }
+                        whereClause.append(pk_name);
+                        whereClause.append(" IN (");
+                        for(int paramId = 0; paramId < pkValues.size(); paramId++) {
+                            if(paramId > 0) {
+                                whereClause.append(",");
+                            }
+                            whereClause.append("?");
+                        }
+                        whereClause.append(")");
+                    }
+                    String command = getCommand();
+                    // if command doesn't contain the key then add the key
+                    boolean ignoreFirstColumn = false;
+                    try (Connection connection = dataSource.getConnection();
+                        Statement st = connection.createStatement();
+                        ResultSet rsCheck = st.executeQuery(command+" LIMIT 0")) {
+                        rsCheck.findColumn(pk_name);
+                    } catch (SQLException ex) {
+                        ignoreFirstColumn = true;
+                    }
+                    if(ignoreFirstColumn) {
+                        command = "SELECT "+pk_name+","+select_fields+" FROM "+getTable()+" WHERE " + whereClause.toString()+" "+orderBy;
+                    } else {
+                        command = "SELECT "+select_fields+" FROM "+getTable()+" WHERE " + whereClause.toString()+" "+orderBy;
+                    }
+                    // Acquire row values by using primary key
+                    try (Connection connection = dataSource.getConnection();
+                         PreparedStatement st = connection.prepareStatement(command)) {
+                        int parameterIndex = 1;
+                        for(Object pk : pkValues) {
+                            st.setObject(parameterIndex++, pk);
+                        }
+                        try (ResultSet lineRs = st.executeQuery()) {
+                            int offset = ignoreFirstColumn ? 1 : 0;
+                            while (lineRs.next()) {
+                                Object[] row = new Object[columnCount];
+                                for (int idColumn = 1 + offset; idColumn <= columnCount + offset; idColumn++) {
+                                    row[idColumn - 1 - offset] = lineRs.getObject(idColumn);
+                                }
+                                cache.put((long)rowPk.getKey(lineRs.getObject(pk_name)), row);
+                            }
                         }
                     }
                 }
@@ -271,7 +360,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public String getCommand() {
-        return String.format("SELECT "+select_fields+" FROM %s", location);
+        return String.format("SELECT "+select_fields+" FROM %s "+orderBy, location);
     }
 
     @Override
@@ -280,9 +369,11 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         final Pattern selectFieldPattern = Pattern.compile("^select(.+?)from", Pattern.CASE_INSENSITIVE);
         final Pattern commandPattern = Pattern.compile("from\\s+((([\"`][^\"`]+[\"`])|(\\w+))\\.){0,2}(([\"`][^\"`]+[\"`])|(\\w+))", Pattern.CASE_INSENSITIVE);
         final Pattern commandPatternTable = Pattern.compile("^from\\s+", Pattern.CASE_INSENSITIVE);
+        final Pattern orderByPattern = Pattern.compile("order\\sby\\s+(\\w+)$", Pattern.CASE_INSENSITIVE);
         String table = "";
         Matcher matcher = commandPattern.matcher(s);
         Matcher selectFieldMatcher = selectFieldPattern.matcher(s);
+        Matcher orderByMatcher = orderByPattern.matcher(s);
         if(selectFieldMatcher.find()) {
             select_fields = selectFieldMatcher.group(1);
         }
@@ -291,6 +382,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             if(tableMatcher.find()) {
                 table = matcher.group().substring(tableMatcher.group().length());
             }
+        }
+        if(orderByMatcher.find()) {
+            orderBy = orderByMatcher.group();
         }
         if(table.isEmpty()) {
             throw new SQLException("Command does not contain a table name, should be like this \"select * from tablename\"");
@@ -486,6 +580,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     }
 
     private boolean moveCursorTo(long i) throws SQLException {
+        i = Math.max(0, i);
+        i = Math.min(getRowCount() + 1, i);
+        if(rowFilter != null) {
+            i = Math.max(rowFilter.first() - 1, i);
+            i = Math.min(rowFilter.last() + 1, i);
+        }
         long oldRowId = rowId;
         if(rowFilterIterator != null) {
             if(i < oldRowId) {
@@ -527,7 +627,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         } else {
             rowId = i;
         }
-        boolean validRow = !(rowId == 0 || rowId > getRowCount() || (rowFilterIterator != null && !rowFilter.isEmpty() && (rowId < rowFilter.first() || rowId > rowFilter.last())));
+        boolean validRow = !(rowId == 0 || rowId > getRowCount() || (rowFilter != null && (rowId < rowFilter.first() || rowId > rowFilter.last())));
         if(validRow) {
             updateRowCache();
         } else {
@@ -551,21 +651,22 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public void setFetchDirection(int i) throws SQLException {
-        // Not used
+        fetchDirection = i;
     }
 
     @Override
     public int getFetchDirection() throws SQLException {
-        return RowSet.FETCH_FORWARD;
+        return fetchDirection;
     }
 
     @Override
     public void setFetchSize(int i) throws SQLException {
+        fetchSize = i;
     }
 
     @Override
     public int getFetchSize() throws SQLException {
-        return 1;
+        return fetchSize;
     }
 
     @Override
@@ -1434,7 +1535,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         private static final Logger LOGGER = Logger.getLogger(ResultSetHolder.class);
         private int openCount = 0;
         private Statement cancelStatement;
-
+        private static final int SUB_RESULT_SET_FETCH_SIZE = 50;
         private ResultSetHolder(DataSource dataSource) {
             this.dataSource = dataSource;
         }
@@ -1463,7 +1564,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         Statement st = connection.createStatement(isH2 ? ResultSet.TYPE_SCROLL_SENSITIVE : ResultSet.TYPE_FORWARD_ONLY,
                                 ResultSet.CONCUR_READ_ONLY)) {
                     cancelStatement = st;
-                    st.setFetchSize(FETCH_SIZE);
+                    st.setFetchSize(SUB_RESULT_SET_FETCH_SIZE);
                     if (!isH2) {
                         // Memory optimisation for PostGre
                         connection.setAutoCommit(false);

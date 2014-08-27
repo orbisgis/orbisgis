@@ -41,6 +41,7 @@ import javax.sql.rowset.RowSetFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -243,6 +244,52 @@ public class RowSetTest {
 
         @Override
         public void rowChanged(RowSetEvent rowSetEvent) {
+        }
+    }
+
+    @Test
+    public void testFilterRowSet() throws SQLException {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+            st.execute("drop table if exists test");
+            st.execute("create table test (id serial, str varchar(30), flt float)");
+            st.execute("insert into test values (42, 'marvin', 5), (666, 'satan', 6)," +
+                    " (43, 'bob', 7), (44, 'cop', 8)");
+            TableLocation table = TableLocation.parse("TEST");
+            try (ReadRowSetImpl rs = new ReadRowSetImpl(dataSource)) {
+                //rs.initialize(table, "id",new NullProgressMonitor());
+                rs.setCommand("SELECT * FROM TEST ORDER BY flt");
+                rs.execute();
+                rs.setFilter(Arrays.asList(1,3,4));
+                rs.beforeFirst();
+                assertTrue(rs.next());
+                assertEquals(42, rs.getInt(1));
+                assertEquals("marvin", rs.getString(2));
+                assertEquals(5, rs.getFloat(3), 1e-6);
+                assertTrue(rs.next());
+                assertTrue(rs.previous());
+                assertEquals(42, rs.getInt(1));
+                assertEquals("marvin", rs.getString(2));
+                assertEquals(5, rs.getFloat(3), 1e-6);
+                assertTrue(rs.next());
+                assertEquals(43, rs.getInt(1));
+                assertEquals("bob", rs.getString(2));
+                assertEquals(7, rs.getFloat(3), 1e-6);
+                assertTrue(rs.next());
+                assertEquals(44, rs.getInt(1));
+                assertEquals("cop", rs.getString(2));
+                assertEquals(8, rs.getFloat(3), 1e-6);
+                assertTrue(rs.first());
+                assertEquals(42, rs.getInt(1));
+                assertEquals("marvin", rs.getString(2));
+                assertEquals(5, rs.getFloat(3), 1e-6);
+                assertTrue(rs.absolute(4));
+                assertEquals(44, rs.getInt(1));
+                assertEquals("cop", rs.getString(2));
+                assertEquals(8, rs.getFloat(3), 1e-6);
+            }
+            st.execute("drop table if exists test");
         }
     }
 }
