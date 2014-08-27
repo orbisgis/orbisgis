@@ -202,7 +202,23 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     }
                 }
                 if(rowPk == null) {
-                    if(rs.absolute((int)rowId)) {
+                    boolean validRow = false;
+                    if(rs.getType() == ResultSet.TYPE_FORWARD_ONLY) {
+                        if(rowId < rs.getRow()) {
+                            // If the result set is Forward only, we have to re-execute the request in order to read the row
+                            resultSetHolder.close();
+                            res.close();
+                            try(Resource res2 = resultSetHolder.getResource()) {
+                                rs = res2.getResultSet();
+                            }
+                        }
+                        while (rs.getRow() < rowId) {
+                            validRow = rs.next();
+                        }
+                    } else {
+                        validRow = rs.absolute((int)rowId);
+                    }
+                    if(validRow) {
                         Object[] row = new Object[columnCount];
                         for(int idColumn=1; idColumn <= columnCount; idColumn++) {
                             row[idColumn-1] = rs.getObject(idColumn);
@@ -511,11 +527,16 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         } else {
             rowId = i;
         }
-        updateRowCache();
+        boolean validRow = !(rowId == 0 || rowId > getRowCount() || (rowFilterIterator != null && !rowFilter.isEmpty() && (rowId < rowFilter.first() || rowId > rowFilter.last())));
+        if(validRow) {
+            updateRowCache();
+        } else {
+            currentRow = null;
+        }
         if(rowId != oldRowId) {
             notifyCursorMoved();
         }
-        return !(rowId == 0 || rowId > getRowCount() || (rowFilterIterator != null && !rowFilter.isEmpty() && (rowId < rowFilter.first() || rowId > rowFilter.last())));
+        return validRow;
     }
 
     @Override
@@ -1403,7 +1424,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private static class ResultSetHolder implements Runnable,AutoCloseable {
         private static final int SLEEP_TIME = 1000;
         private static final int RESULT_SET_TIMEOUT = 60000;
-        public enum STATUS { NEVER_STARTED, STARTED , READY, CLOSED, EXCEPTION}
+        public enum STATUS { NEVER_STARTED, STARTED , READY, CLOSING, CLOSED, EXCEPTION}
         private Exception ex;
         private ResultSet resultSet;
         private DataSource dataSource;
@@ -1436,16 +1457,24 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         public void run() {
             lastUsage = System.currentTimeMillis();
             status = STATUS.STARTED;
-            try(Connection connection = dataSource.getConnection();
-                Statement st = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY)) {
-                cancelStatement = st;
-                st.setFetchSize(FETCH_SIZE);
-                try(ResultSet activeResultSet = st.executeQuery(command)) {
-                    resultSet = activeResultSet;
-                    status = STATUS.READY;
-                    while(lastUsage + RESULT_SET_TIMEOUT > System.currentTimeMillis() || openCount != 0) {
-                        Thread.sleep(SLEEP_TIME);
+            try (Connection connection = dataSource.getConnection()) {
+                boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                try (
+                        Statement st = connection.createStatement(isH2 ? ResultSet.TYPE_SCROLL_SENSITIVE : ResultSet.TYPE_FORWARD_ONLY,
+                                ResultSet.CONCUR_READ_ONLY)) {
+                    cancelStatement = st;
+                    st.setFetchSize(FETCH_SIZE);
+                    if (!isH2) {
+                        // Memory optimisation for PostGre
+                        connection.setAutoCommit(false);
+                    }
+                    // PostGreSQL use cursor only if auto commit is false
+                    try (ResultSet activeResultSet = st.executeQuery(command)) {
+                        resultSet = activeResultSet;
+                        status = STATUS.READY;
+                        while (lastUsage + RESULT_SET_TIMEOUT > System.currentTimeMillis() || openCount != 0) {
+                            Thread.sleep(SLEEP_TIME);
+                        }
                     }
                 }
             } catch (Exception ex) {
@@ -1453,16 +1482,17 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                 this.ex = ex;
                 status = STATUS.EXCEPTION;
             } finally {
-                if(status != STATUS.EXCEPTION) {
+                if (status != STATUS.EXCEPTION) {
                     status = STATUS.CLOSED;
                 }
             }
         }
 
         @Override
-        public void close() throws Exception {
+        public void close() throws SQLException {
             lastUsage = 0;
             openCount = 0;
+            status = STATUS.CLOSING;
         }
 
         public void delayedClose(int milliSec) {
