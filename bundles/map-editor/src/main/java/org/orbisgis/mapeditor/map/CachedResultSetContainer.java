@@ -31,6 +31,7 @@ package org.orbisgis.mapeditor.map;
 import com.vividsolutions.jts.geom.Envelope;
 import org.apache.commons.io.FileUtils;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.MetaData;
@@ -50,6 +51,7 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -112,11 +114,23 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
             if(mapIndexFile != null) {
                 index = indexProvider.createIndex(mapIndexFile, Integer.class);
                 ProgressMonitor createIndex = rsTask.startTask(I18N.tr("Create local spatial index"), readRowSet.getRowCount());
-                while (readRowSet.next()) {
-                    index.insert(readRowSet.getGeometry().getEnvelopeInternal(), readRowSet.getRow());
-                    createIndex.endTask();
+                try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
+                    String geometryField = SFSUtilities.getGeometryFields(connection,
+                            TableLocation.parse(layer.getTableReference())).get(0);
+                    boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                    try(Statement st = connection.createStatement();
+                        SpatialResultSet rs = st.executeQuery("select "+
+                                TableLocation.capsIdentifier(geometryField, isH2)+" from "+layer.getTableReference())
+                                .unwrap(SpatialResultSet.class)) {
+                        while(rs.next()) {
+                            index.insert(rs.getGeometry().getEnvelopeInternal(), rs.getRow());
+                            createIndex.endTask();
+                        }
+                    }
+                    indexMap.put(tableRef, index);
+                } catch (SQLException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
-                indexMap.put(tableRef, index);
             }
         }
         return new CachedResultSet(readRowSet, tableRef, index);

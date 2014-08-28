@@ -144,6 +144,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         try(Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement()) {
             st.setFetchSize(fetchSize);
+            connection.setAutoCommit(false); // Use postgre cursor
             try(ResultSet rs = st.executeQuery("SELECT "+pk_name+" FROM "+location+" "+ orderBy)) {
                 // Cache the primary key values
                 int pkRowId = 0;
@@ -306,26 +307,28 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     } catch (SQLException ex) {
                         ignoreFirstColumn = true;
                     }
-                    if(ignoreFirstColumn) {
-                        command = "SELECT "+pk_name+","+select_fields+" FROM "+getTable()+" WHERE " + whereClause.toString()+" "+orderBy;
-                    } else {
-                        command = "SELECT "+select_fields+" FROM "+getTable()+" WHERE " + whereClause.toString()+" "+orderBy;
-                    }
-                    // Acquire row values by using primary key
-                    try (Connection connection = dataSource.getConnection();
-                         PreparedStatement st = connection.prepareStatement(command)) {
-                        int parameterIndex = 1;
-                        for(Object pk : pkValues) {
-                            st.setObject(parameterIndex++, pk);
+                    if(whereClause.length()>0) {
+                        if (ignoreFirstColumn) {
+                            command = "SELECT " + pk_name + "," + select_fields + " FROM " + getTable() + " WHERE " + whereClause.toString() + " " + orderBy;
+                        } else {
+                            command = "SELECT " + select_fields + " FROM " + getTable() + " WHERE " + whereClause.toString() + " " + orderBy;
                         }
-                        try (ResultSet lineRs = st.executeQuery()) {
-                            int offset = ignoreFirstColumn ? 1 : 0;
-                            while (lineRs.next()) {
-                                Object[] row = new Object[columnCount];
-                                for (int idColumn = 1 + offset; idColumn <= columnCount + offset; idColumn++) {
-                                    row[idColumn - 1 - offset] = lineRs.getObject(idColumn);
+                        // Acquire row values by using primary key
+                        try (Connection connection = dataSource.getConnection();
+                             PreparedStatement st = connection.prepareStatement(command)) {
+                            int parameterIndex = 1;
+                            for (Object pk : pkValues) {
+                                st.setObject(parameterIndex++, pk);
+                            }
+                            try (ResultSet lineRs = st.executeQuery()) {
+                                int offset = ignoreFirstColumn ? 1 : 0;
+                                while (lineRs.next()) {
+                                    Object[] row = new Object[columnCount];
+                                    for (int idColumn = 1 + offset; idColumn <= columnCount + offset; idColumn++) {
+                                        row[idColumn - 1 - offset] = lineRs.getObject(idColumn);
+                                    }
+                                    cache.put((long) rowPk.getKey(lineRs.getObject(pk_name)), row);
                                 }
-                                cache.put((long)rowPk.getKey(lineRs.getObject(pk_name)), row);
                             }
                         }
                     }
@@ -582,7 +585,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private boolean moveCursorTo(long i) throws SQLException {
         i = Math.max(0, i);
         i = Math.min(getRowCount() + 1, i);
-        if(rowFilter != null) {
+        if(rowFilter != null && !rowFilter.isEmpty()) {
             i = Math.max(rowFilter.first() - 1, i);
             i = Math.min(rowFilter.last() + 1, i);
         }
@@ -627,7 +630,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         } else {
             rowId = i;
         }
-        boolean validRow = !(rowId == 0 || rowId > getRowCount() || (rowFilter != null && (rowId < rowFilter.first() || rowId > rowFilter.last())));
+        boolean validRow = !(rowId == 0 || rowId > getRowCount() || (rowFilter != null && !rowFilter.isEmpty() && (rowId < rowFilter.first() || rowId > rowFilter.last())));
         if(validRow) {
             updateRowCache();
         } else {

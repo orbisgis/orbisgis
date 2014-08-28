@@ -30,6 +30,7 @@ package org.orbisgis.postgis_jts_osgi;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.postgis.jts.JtsGeometry;
+import org.postgresql.util.PGobject;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -175,8 +176,10 @@ public class PreparedStatementWrapper implements PreparedStatement {
     @Override
     public void setObject(int parameterIndex, Object x) throws SQLException {
         if(x instanceof Geometry) {
-            JtsGeometry geometry = new JtsGeometry((Geometry)x);
+            JtsGeometry geometry = new JtsGeometry((Geometry) x);
             preparedStatement.setObject(parameterIndex, geometry);
+        } else if (x instanceof PGObjectWrapper) {
+            preparedStatement.setObject(parameterIndex, ((PGObjectWrapper) x).getPGobject());
         } else {
             preparedStatement.setObject(parameterIndex, x);
         }
