@@ -104,6 +104,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private IntegerUnion rowFilter;
     private ListIterator<Integer> rowFilterIterator;
     private String orderBy = "";
+    // Create id > i AND id < j if j-i is superior than this value
+    private static final int RANGE_INTERVAL_USAGE = 50;
 
     /**
      * Constructor, row set based on primary key, significant faster on large table
@@ -112,7 +114,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
      */
     public ReadRowSetImpl(DataSource dataSource) {
         this.dataSource = dataSource;
-        resultSetHolder = new ResultSetHolder(this);
+        resultSetHolder = new ResultSetHolder(fetchSize, this);
     }
 
     @Override
@@ -209,7 +211,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         cachedColumnNames.put(metaData.getColumnName(idColumn).toUpperCase(), idColumn);
                     }
                 }
-                if(rowPk == null || fetchDirection == ResultSet.TYPE_FORWARD_ONLY) {
+                // Do not use pk if not available or if using indeterminate fetch without filtering
+                if(rowPk == null || (fetchDirection == ResultSet.FETCH_FORWARD &&
+                        (rowFilter == null || rs.getType() != ResultSet.TYPE_FORWARD_ONLY))) {
                     boolean validRow = false;
                     if(rs.getType() == ResultSet.TYPE_FORWARD_ONLY) {
                         if(rowId < rs.getRow()) {
@@ -274,7 +278,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         while(rangeIt.hasNext()) {
                             long beginRange = rangeIt.next();
                             long endRange = rangeIt.next();
-                            if(endRange > beginRange) {
+                            if(endRange - beginRange > RANGE_INTERVAL_USAGE) {
                                 if (whereClause.length() > 0) {
                                     whereClause.append(" OR ");
                                 }
@@ -287,7 +291,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                                 whereClause.append(endRange);
                             } else {
                                 // this is not a range; however it is a single value
-                                pkValues.add(beginRange);
+                                for(long paramValue = beginRange; paramValue <= endRange; paramValue++) {
+                                    pkValues.add(paramValue);
+                                }
                             }
                         }
                     }
@@ -1544,6 +1550,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private static class ResultSetHolder implements Runnable,AutoCloseable {
         private static final int SLEEP_TIME = 1000;
         private static final int RESULT_SET_TIMEOUT = 60000;
+        private final int fetchSize;
         public enum STATUS { NEVER_STARTED, STARTED , READY, CLOSING, CLOSED, EXCEPTION}
         private Exception ex;
         private ResultSet resultSet;
@@ -1554,8 +1561,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         private static final Logger LOGGER = Logger.getLogger(ResultSetHolder.class);
         private int openCount = 0;
         private Statement cancelStatement;
-        private static final int SUB_RESULT_SET_FETCH_SIZE = 50;
-        private ResultSetHolder(DataSource dataSource) {
+
+        private ResultSetHolder(int fetchSize, DataSource dataSource) {
+            this.fetchSize = fetchSize;
             this.dataSource = dataSource;
         }
 
@@ -1583,7 +1591,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         Statement st = connection.createStatement(isH2 ? ResultSet.TYPE_SCROLL_SENSITIVE : ResultSet.TYPE_FORWARD_ONLY,
                                 ResultSet.CONCUR_READ_ONLY)) {
                     cancelStatement = st;
-                    st.setFetchSize(SUB_RESULT_SET_FETCH_SIZE);
+                    st.setFetchSize(fetchSize);
                     if (!isH2) {
                         // Memory optimisation for PostGre
                         connection.setAutoCommit(false);
