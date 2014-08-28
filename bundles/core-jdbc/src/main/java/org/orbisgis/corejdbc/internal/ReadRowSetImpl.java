@@ -119,13 +119,18 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public void setFilter(Collection<Integer> rowIdSet) {
-        rowFilter = new IntegerUnion(rowIdSet);
-        rowFilterIterator = rowFilter.listIterator();
+        if(rowIdSet != null) {
+            rowFilter = new IntegerUnion(rowIdSet);
+            rowFilterIterator = rowFilter.listIterator();
+        } else {
+            rowFilter = null;
+            rowFilterIterator = null;
+        }
     }
 
     @Override
-    public long getFilteredRowCount() {
-        return rowFilter.size();
+    public long getFilteredRowCount() throws SQLException {
+        return rowFilter == null ? getRowCount() : rowFilter.size();
     }
 
     @Override

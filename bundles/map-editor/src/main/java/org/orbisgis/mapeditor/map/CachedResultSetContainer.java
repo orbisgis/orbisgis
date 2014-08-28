@@ -47,7 +47,6 @@ import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -68,6 +67,8 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
     private static I18n I18N = I18nFactory.getI18n(CachedResultSetContainer.class);
     private static Logger LOGGER = LoggerFactory.getLogger(CachedResultSetContainer.class);
     private static final int ROWSET_FREE_DELAY = 60000;
+    // (0-1] Use spatial index query if the query envelope area rational number is smaller than this value.
+    private static final double RATIONAL_USAGE_INDEX = 0.5;
     private IndexProvider indexProvider;
     private File indexCache;
     private Map<String, Index<Integer>> indexMap = new HashMap<>();
@@ -133,7 +134,7 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
                 }
             }
         }
-        return new CachedResultSet(readRowSet, tableRef, index);
+        return new CachedResultSet(readRowSet, tableRef, index, layer.getEnvelope());
     }
 
     /**
@@ -219,11 +220,13 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
         private String tableReference;
         private Index<Integer> queryIndex;
         private Lock lock;
+        private Envelope tableEnvelope;
 
-        private CachedResultSet(ReadRowSet readRowSet, String tableReference, Index<Integer> queryIndex) {
+        private CachedResultSet(ReadRowSet readRowSet, String tableReference, Index<Integer> queryIndex, Envelope tableEnvelope) {
             this.readRowSet = readRowSet;
             this.tableReference = tableReference;
             this.queryIndex = queryIndex;
+            this.tableEnvelope = tableEnvelope;
         }
 
         @Override
@@ -231,11 +234,14 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
             lock = readRowSet.getReadLock();
             try {
                 lock.tryLock(LOCK_TIMEOUT, TimeUnit.SECONDS);
-                if( queryIndex != null) {
+                // Do intersection of envelope
+                double intersectionPercentage = extent.intersection(tableEnvelope).getArea() / tableEnvelope.getArea();
+                if( queryIndex != null && intersectionPercentage < RATIONAL_USAGE_INDEX) {
                     IntegerUnion filteredRows = new IntegerUnion(queryIndex.query(extent));
                     readRowSet.setFilter(filteredRows);
                     readRowSet.beforeFirst();
                 } else {
+                    readRowSet.setFilter(null);
                     readRowSet.beforeFirst();
                 }
                 return readRowSet;
