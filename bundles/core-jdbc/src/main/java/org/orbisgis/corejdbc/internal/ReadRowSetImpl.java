@@ -91,8 +91,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private boolean wasNull = true;
     /** Used to managed table without primary key (ResultSet are kept {@link ResultSetHolder#RESULT_SET_TIMEOUT} */
     protected final ResultSetHolder resultSetHolder;
-    private int cacheSize = 100;
-    private Map<Long, Object[]> cache = new LRUMap<>(cacheSize);
     /** If the table contains a unique non null index then this variable contain the map between the row id [1-n] to the primary key value */
     private BidiMap<Integer, Object> rowPk;
     private String pk_name = "";
@@ -100,7 +98,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private int firstGeometryIndex = -1;
     private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
     private final Lock readLock = rwl.writeLock(); // Read here is exclusive
-    private int fetchSize = 50;
+    private int fetchSize = 200;
+    private Map<Long, Object[]> cache = new LRUMap<>(fetchSize + 1);
     private int fetchDirection = FETCH_UNKNOWN;
     // When close is called, in how many ms the result set is really closed
     private int closeDelay = 0;
@@ -180,6 +179,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         if(currentRow == null) {
             updateRowCache();
         }
+        if(currentRow == null) {
+            throw new SQLException("Not in a valid row "+rowId+"/"+getRowCount());
+        }
     }
 
     /**
@@ -237,10 +239,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     LongUnion pkIntervals = new LongUnion();
                     List<Object> pkValues = new ArrayList<>(fetchSize);
                     Object testPkType = rowPk.values().iterator().next();
+                    int pkFetchSize = 0;
                     if(!(testPkType instanceof Integer || testPkType instanceof Long)) {
                         for (long fetchRowId = beginFetch; fetchRowId <= endFetch; fetchRowId += inc) {
                             if (rowFilter == null || rowFilter.contains((int) fetchRowId)) {
                                 pkValues.add(rowPk.get((int) fetchRowId));
+                                pkFetchSize++;
                             } else {
                                 if (endFetch <= getRowCount()) {
                                     endFetch++; // Collect one more row
@@ -253,6 +257,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         for (int fetchRowId = beginFetch; fetchRowId <= endFetch; fetchRowId += inc) {
                             if (rowFilter == null || rowFilter.contains(fetchRowId)) {
                                 pkIntervals.add(((Number)rowPk.get(fetchRowId)).longValue());
+                                pkFetchSize++;
                             } else {
                                 if (endFetch <= getRowCount()) {
                                     endFetch++; // Collect one more row
@@ -314,22 +319,25 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                             command = "SELECT " + select_fields + " FROM " + getTable() + " WHERE " + whereClause.toString() + " " + orderBy;
                         }
                         // Acquire row values by using primary key
-                        try (Connection connection = dataSource.getConnection();
-                             PreparedStatement st = connection.prepareStatement(command)) {
-                            int parameterIndex = 1;
-                            for (Object pk : pkValues) {
-                                st.setObject(parameterIndex++, pk);
-                            }
-                            try (ResultSet lineRs = st.executeQuery()) {
-                                int offset = ignoreFirstColumn ? 1 : 0;
-                                while (lineRs.next()) {
-                                    Object[] row = new Object[columnCount];
-                                    for (int idColumn = 1 + offset; idColumn <= columnCount + offset; idColumn++) {
-                                        row[idColumn - 1 - offset] = lineRs.getObject(idColumn);
-                                    }
-                                    cache.put((long) rowPk.getKey(lineRs.getObject(pk_name)), row);
-                                }
-                            }
+                        try (Connection connection = dataSource.getConnection()) {
+                            connection.setAutoCommit(false);
+                             try(PreparedStatement st = connection.prepareStatement(command)) {
+                                 st.setFetchSize(pkFetchSize);
+                                 int parameterIndex = 1;
+                                 for (Object pk : pkValues) {
+                                     st.setObject(parameterIndex++, pk);
+                                 }
+                                 try (ResultSet lineRs = st.executeQuery()) {
+                                     int offset = ignoreFirstColumn ? 1 : 0;
+                                     while (lineRs.next()) {
+                                         Object[] row = new Object[columnCount];
+                                         for (int idColumn = 1 + offset; idColumn <= columnCount + offset; idColumn++) {
+                                             row[idColumn - 1 - offset] = lineRs.getObject(idColumn);
+                                         }
+                                         cache.put((long) rowPk.getKey(lineRs.getObject(pk_name)), row);
+                                     }
+                                 }
+                             }
                         }
                     }
                 }
@@ -665,6 +673,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     @Override
     public void setFetchSize(int i) throws SQLException {
         fetchSize = i;
+        LRUMap<Long, Object[]> lruMap = new LRUMap<>(fetchSize + 1);
+        lruMap.putAll(cache);
+        cache = lruMap;
     }
 
     @Override
