@@ -49,6 +49,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
@@ -98,6 +99,7 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
         if(readRowSet == null) {
             readRowSet = layer.getDataManager().createReadRowSet();
             readRowSet.setCloseDelay(ROWSET_FREE_DELAY);
+            readRowSet.setFetchDirection(ResultSet.FETCH_FORWARD);
             try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {
                 readRowSet.initialize(tableRef, MetaData.getPkName(connection, tableRef, true), rsTask);
             }

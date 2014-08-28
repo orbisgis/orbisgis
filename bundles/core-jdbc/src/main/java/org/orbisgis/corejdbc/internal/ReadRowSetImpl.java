@@ -41,14 +41,12 @@ import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.common.LongUnion;
-import org.orbisgis.corejdbc.common.NumberUnion;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
-import javax.sql.RowSet;
 import javax.sql.rowset.JdbcRowSet;
 import javax.sql.rowset.RowSetWarning;
 import java.beans.EventHandler;
@@ -182,7 +180,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             throw new SQLException("Not in a valid row "+rowId+"/"+getRowCount());
         }
         if(currentRow == null) {
-            updateRowCache();
+            refreshRowCache();
         }
         if(currentRow == null) {
             throw new SQLException("Not in a valid row "+rowId+"/"+getRowCount());
@@ -199,7 +197,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     /**
      * Read the content of the DB near the current row id
      */
-    protected void updateRowCache() throws SQLException {
+    protected void refreshRowCache() throws SQLException {
         if(!cache.containsKey(rowId) && rowId > 0 && rowId <= getRowCount()) {
             try(Resource res = resultSetHolder.getResource()) {
                 ResultSet rs = res.getResultSet();
@@ -211,7 +209,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         cachedColumnNames.put(metaData.getColumnName(idColumn).toUpperCase(), idColumn);
                     }
                 }
-                if(rowPk == null) {
+                if(rowPk == null || fetchDirection == ResultSet.TYPE_FORWARD_ONLY) {
                     boolean validRow = false;
                     if(rs.getType() == ResultSet.TYPE_FORWARD_ONLY) {
                         if(rowId < rs.getRow()) {
@@ -436,10 +434,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     @Override
     public void execute(ProgressMonitor pm) throws SQLException {
         if(!pk_name.isEmpty()) {
-            resultSetHolder.setCommand(getCommand()+" LIMIT 0");
             cachePrimaryKey(pm);
+        }
+        if(fetchDirection != ResultSet.FETCH_FORWARD) {
+            // Always use PK to fetch rows
+            resultSetHolder.setCommand(getCommand() + " LIMIT 0");
         } else {
-            // Does not contain a primary key. A vast amount of memory may be required.
             resultSetHolder.setCommand(getCommand());
             PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, resultSetHolder, "cancel");
             pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
@@ -645,7 +645,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         }
         boolean validRow = !(rowId == 0 || rowId > getRowCount() || (rowFilter != null && !rowFilter.isEmpty() && (rowId < rowFilter.first() || rowId > rowFilter.last())));
         if(validRow) {
-            updateRowCache();
+            refreshRowCache();
         } else {
             currentRow = null;
         }
