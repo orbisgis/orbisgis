@@ -63,7 +63,7 @@ import java.util.SortedSet;
  * @TODO Add function to push a range instead of a single
  * @author Nicolas Fortin
  */
-public class IntegerUnion implements SortedSet<Integer>, Serializable {
+public class IntegerUnion implements NumberUnion<Integer> {
         private static final long serialVersionUID = 1L;
         
         // int intervals ex: 0,15,50,60 for 0 to 15 and 50 to 60    
@@ -490,8 +490,8 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
         }
 
         /**
-         * This class convert an interval iterator into a serial iterator.
-         * [0,2,5,7] become [0,1,2,5,6,7]
+         * This class converts an interval iterator into a serial iterator.
+         * [0,2,5,7] becomes [0,1,2,5,6,7]
          */
         private static class IntegerComparator implements Comparator<Integer> {
 

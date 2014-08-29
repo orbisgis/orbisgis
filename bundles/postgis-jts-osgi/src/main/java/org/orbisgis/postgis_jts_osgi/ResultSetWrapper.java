@@ -33,6 +33,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import org.postgis.PGboxbase;
 import org.postgis.Point;
 import org.postgis.jts.JtsGeometry;
+import org.postgresql.util.PGobject;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -87,9 +88,7 @@ public class ResultSetWrapper implements ResultSet {
     @Override
     public Object getObject(int columnIndex) throws SQLException {
         Object object = rs.getObject(columnIndex);
-        if(!spatialFields.contains(columnIndex)) {
-            return object;
-        } else {
+        if(spatialFields.contains(columnIndex)) {
             if(object instanceof JtsGeometry) {
                 return ((JtsGeometry) object).getGeometry();
             } else if(object instanceof PGboxbase) {
@@ -98,9 +97,12 @@ public class ResultSetWrapper implements ResultSet {
                 Point upRight = box.getURT();
                 Envelope envelope = new Envelope(bottomLeft.x, upRight.x, bottomLeft.y, upRight.y);
                 return geometryFactory.toGeometry(envelope);
-            } else {
-                return object;
             }
+        }
+        if(object instanceof PGobject) {
+            return new PGObjectWrapper((PGobject) object);
+        } else {
+            return object;
         }
     }
 

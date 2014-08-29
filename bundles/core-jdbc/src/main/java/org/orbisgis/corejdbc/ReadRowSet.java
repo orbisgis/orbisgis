@@ -71,5 +71,5 @@ public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
     /**
      * @return The number of rows return by using next() from beforeFirst()
      */
-    long getFilteredRowCount();
+    long getFilteredRowCount() throws SQLException;
 }

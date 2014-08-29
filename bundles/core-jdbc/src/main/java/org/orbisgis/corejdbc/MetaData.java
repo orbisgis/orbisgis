@@ -254,26 +254,35 @@ public class MetaData {
         String pkName = "";
         try (Statement st = connection.createStatement()) {
             DatabaseMetaData meta = connection.getMetaData();
-            if (systemColumn && JDBCUtilities.isH2DataBase(meta)) {
-                boolean hasSpatialIndex = false;
-                try (PreparedStatement preparedStatement = SFSUtilities.prepareInformationSchemaStatement(connection,
-                        tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable(),
-                        "INFORMATION_SCHEMA.INDEXES", "", "TABLE_CATALOG", "TABLE_SCHEMA", "TABLE_NAME")) {
-                    try (ResultSet rs = preparedStatement.executeQuery()) {
-                        while (rs.next()) {
-                            if ("SPATIAL INDEX".equals(rs.getString("INDEX_TYPE_NAME"))) {
-                                hasSpatialIndex = true;
-                                break;
+            if (systemColumn) {
+                if(JDBCUtilities.isH2DataBase(meta)) {
+                    boolean hasSpatialIndex = false;
+                    try (PreparedStatement preparedStatement = SFSUtilities.prepareInformationSchemaStatement(connection,
+                            tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable(),
+                            "INFORMATION_SCHEMA.INDEXES", "", "TABLE_CATALOG", "TABLE_SCHEMA", "TABLE_NAME")) {
+                        try (ResultSet rs = preparedStatement.executeQuery()) {
+                            while (rs.next()) {
+                                if ("SPATIAL INDEX".equals(rs.getString("INDEX_TYPE_NAME"))) {
+                                    hasSpatialIndex = true;
+                                    break;
+                                }
                             }
                         }
                     }
-                }
-                if (!hasSpatialIndex) {
-                    try (ResultSet rs = st.executeQuery("select _ROWID_ from " + tableLocation + " LIMIT 0")) {
-                        // Issue https://github.com/irstv/orbisgis/issues/662
-                        // Cannot use _ROWID_ in conjunction with spatial index
-                        // TODO use always _ROWID_ when issue is fixed
-                        return rs.getMetaData().getColumnName(1);
+                    if (!hasSpatialIndex) {
+                        try (ResultSet rs = st.executeQuery("select _ROWID_ from " + tableLocation + " LIMIT 0")) {
+                            // Issue https://github.com/irstv/orbisgis/issues/662
+                            // Cannot use _ROWID_ in conjunction with spatial index
+                            // TODO use always _ROWID_ when issue is fixed
+                            pkName = rs.getMetaData().getColumnName(1);
+                        } catch (SQLException ex) {
+                            //Ignore, key does not exists
+                        }
+                    }
+                } else {
+                    // Use PostGre system column
+                    try (ResultSet rs = st.executeQuery("select ctid from " + tableLocation + " LIMIT 0")) {
+                        pkName = rs.getMetaData().getColumnName(1);
                     } catch (SQLException ex) {
                         //Ignore, key does not exists
                     }

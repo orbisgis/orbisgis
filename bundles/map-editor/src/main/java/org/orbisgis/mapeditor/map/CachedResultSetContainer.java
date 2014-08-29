@@ -31,8 +31,10 @@ package org.orbisgis.mapeditor.map;
 import com.vividsolutions.jts.geom.Envelope;
 import org.apache.commons.io.FileUtils;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
@@ -45,15 +47,17 @@ import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Use and keep ReadRowSet instance instead of native ResultSet.
@@ -65,9 +69,13 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
     private static I18n I18N = I18nFactory.getI18n(CachedResultSetContainer.class);
     private static Logger LOGGER = LoggerFactory.getLogger(CachedResultSetContainer.class);
     private static final int ROWSET_FREE_DELAY = 60000;
+    private static final long WAIT_FOR_INITIALISATION_TIMEOUT = 10000;
+    // (0-1] Use spatial index query if the query envelope area rational number is smaller than this value.
+    private static final double RATIONAL_USAGE_INDEX = 0.5;
     private IndexProvider indexProvider;
     private File indexCache;
     private Map<String, Index<Integer>> indexMap = new HashMap<>();
+    private final ReentrantLock lock = new ReentrantLock();
 
     /**
      * Reformat table name in order to be used as valid key.
@@ -84,39 +92,64 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
 
     @Override
     public CachedResultSet getResultSetProvider(ILayer layer, ProgressMonitor pm) throws SQLException {
-        String tableRef = getCanonicalTableReference(layer);
-        ProgressMonitor rsTask = pm;
-        Index<Integer> index = indexMap.get(tableRef);
-        if(index == null && indexProvider != null) {
-            rsTask = pm.startTask(2);
-        }
-        ReadRowSet readRowSet = cache.get(tableRef);
-        if(readRowSet == null) {
-            readRowSet = layer.getDataManager().createReadRowSet();
-            readRowSet.setCloseDelay(ROWSET_FREE_DELAY);
-            readRowSet.initialize(tableRef, "", rsTask);
-            cache.put(tableRef, readRowSet);
-        }
-        if(index == null && indexProvider != null) {
-            // Create index
-            File mapIndexFile = new File(indexCache,System.currentTimeMillis() + ".index");
-            if(mapIndexFile.exists()) {
-                if(!mapIndexFile.delete()) {
-                    mapIndexFile = null;
-                    LOGGER.error("Cannot delete old cache file, abort rendering optimisation step");
+        try {
+            if(lock.tryLock(WAIT_FOR_INITIALISATION_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                String tableRef = getCanonicalTableReference(layer);
+                ProgressMonitor rsTask = pm;
+                Index<Integer> index = indexMap.get(tableRef);
+                if (index == null && indexProvider != null) {
+                    rsTask = pm.startTask(2);
                 }
-            }
-            if(mapIndexFile != null) {
-                index = indexProvider.createIndex(mapIndexFile, Integer.class);
-                ProgressMonitor createIndex = rsTask.startTask(I18N.tr("Create local spatial index"), readRowSet.getRowCount());
-                while (readRowSet.next()) {
-                    index.insert(readRowSet.getGeometry().getEnvelopeInternal(), readRowSet.getRow());
-                    createIndex.endTask();
+                ReadRowSet readRowSet = cache.get(tableRef);
+                if (readRowSet == null) {
+                    readRowSet = layer.getDataManager().createReadRowSet();
+                    readRowSet.setCloseDelay(ROWSET_FREE_DELAY);
+                    readRowSet.setFetchDirection(ResultSet.FETCH_FORWARD);
+                    try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {
+                        readRowSet.initialize(tableRef, MetaData.getPkName(connection, tableRef, true), rsTask);
+                    }
+                    cache.put(tableRef, readRowSet);
                 }
-                indexMap.put(tableRef, index);
+                if (index == null && indexProvider != null) {
+                    // Create index
+                    File mapIndexFile = new File(indexCache, System.currentTimeMillis() + ".index");
+                    if (mapIndexFile.exists()) {
+                        if (!mapIndexFile.delete()) {
+                            mapIndexFile = null;
+                            LOGGER.error("Cannot delete old cache file, abort rendering optimisation step");
+                        }
+                    }
+                    if (mapIndexFile != null) {
+                        index = indexProvider.createIndex(mapIndexFile, Integer.class);
+                        ProgressMonitor createIndex = rsTask.startTask(I18N.tr("Create local spatial index"), readRowSet.getRowCount());
+                        try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {
+                            String geometryField = SFSUtilities.getGeometryFields(connection,
+                                    TableLocation.parse(layer.getTableReference())).get(0);
+                            boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                            try (Statement st = connection.createStatement();
+                                 SpatialResultSet rs = st.executeQuery("select " +
+                                         TableLocation.capsIdentifier(geometryField, isH2) + " from " + layer.getTableReference())
+                                         .unwrap(SpatialResultSet.class)) {
+                                while (rs.next()) {
+                                    index.insert(rs.getGeometry().getEnvelopeInternal(), rs.getRow());
+                                    createIndex.endTask();
+                                }
+                            }
+                            indexMap.put(tableRef, index);
+                        } catch (SQLException ex) {
+                            LOGGER.error(ex.getLocalizedMessage(), ex);
+                        }
+                    }
+                }
+                return new CachedResultSet(readRowSet, tableRef, index, layer.getEnvelope());
+            } else {
+                throw new SQLException("Cannot draw until layer data source is not initialized");
             }
+        } catch (InterruptedException ex) {
+            throw new SQLException("Cannot draw until layer data source is not initialized");
+        } finally {
+            lock.unlock();
         }
-        return new CachedResultSet(readRowSet, tableRef, index);
     }
 
     /**
@@ -202,11 +235,13 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
         private String tableReference;
         private Index<Integer> queryIndex;
         private Lock lock;
+        private Envelope tableEnvelope;
 
-        private CachedResultSet(ReadRowSet readRowSet, String tableReference, Index<Integer> queryIndex) {
+        private CachedResultSet(ReadRowSet readRowSet, String tableReference, Index<Integer> queryIndex, Envelope tableEnvelope) {
             this.readRowSet = readRowSet;
             this.tableReference = tableReference;
             this.queryIndex = queryIndex;
+            this.tableEnvelope = tableEnvelope;
         }
 
         @Override
@@ -214,11 +249,14 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
             lock = readRowSet.getReadLock();
             try {
                 lock.tryLock(LOCK_TIMEOUT, TimeUnit.SECONDS);
-                if( queryIndex != null) {
+                // Do intersection of envelope
+                double intersectionPercentage = extent.intersection(tableEnvelope).getArea() / tableEnvelope.getArea();
+                if( queryIndex != null && intersectionPercentage < RATIONAL_USAGE_INDEX) {
                     IntegerUnion filteredRows = new IntegerUnion(queryIndex.query(extent));
                     readRowSet.setFilter(filteredRows);
                     readRowSet.beforeFirst();
                 } else {
+                    readRowSet.setFilter(null);
                     readRowSet.beforeFirst();
                 }
                 return readRowSet;

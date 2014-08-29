@@ -123,9 +123,9 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
             throws UnsupportedOperationException, EditableElementException {
         if(rowSet == null) {
             try(Connection connection = dataManager.getDataSource().getConnection()) {
+                boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
                 String pkName = MetaData.getPkName(connection, tableReference, true);
                 rowSet = dataManager.createReversibleRowSet();
-                boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
                 rowSet.initialize(TableLocation.parse(tableReference, isH2).toString(isH2), pkName, progressMonitor);
             } catch (SQLException | IllegalArgumentException ex) {
                 throw new EditableElementException(ex);
