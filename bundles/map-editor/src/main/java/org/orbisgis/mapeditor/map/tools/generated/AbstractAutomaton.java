@@ -56,7 +56,6 @@ public abstract class AbstractAutomaton implements Automaton {
     @Override
     public void init(MapContext mc, ToolManager tm) throws TransitionException,
             FinishedAutomatonException {
-        logger.info("status: " + status);
         this.mc = mc;
         this.tm = tm;
         status = Status.STANDBY;
