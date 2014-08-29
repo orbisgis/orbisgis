@@ -490,8 +490,8 @@ public class IntegerUnion implements NumberUnion<Integer> {
         }
 
         /**
-         * This class convert an interval iterator into a serial iterator.
-         * [0,2,5,7] become [0,1,2,5,6,7]
+         * This class converts an interval iterator into a serial iterator.
+         * [0,2,5,7] becomes [0,1,2,5,6,7]
          */
         private static class IntegerComparator implements Comparator<Integer> {
 

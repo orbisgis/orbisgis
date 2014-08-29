@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.SortedSet;
 
 /**
+ * Common interface with IntegerUnion and LongUnion.
+ * Java limitation on Number super-type does not allow the creation of a unique class.
  * @author Nicolas Fortin
  */
 public interface NumberUnion<T extends Number> extends SortedSet<T>, Serializable {

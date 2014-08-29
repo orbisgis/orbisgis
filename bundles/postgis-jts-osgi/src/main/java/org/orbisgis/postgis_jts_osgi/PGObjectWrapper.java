@@ -31,7 +31,7 @@ package org.orbisgis.postgis_jts_osgi;
 import org.postgresql.util.PGobject;
 
 /**
- * PostGRE driver forget to override hashCode
+ * PostGRE driver forgets to override hashCode
  * Necessary until https://github.com/pgjdbc/pgjdbc/pull/181 is merged
  */
 public class PGObjectWrapper {

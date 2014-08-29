@@ -10,6 +10,27 @@ import java.util.ListIterator;
 import java.util.SortedSet;
 
 /**
+ * This class aggregates consecutive long.
+ *
+ * The goal is to reduce memory usage, ordering by ascending index,
+ * the trade-off is the additional CPU cycle for insertion and deletion.
+ * Values are returned sorted and without duplicates.
+ *
+ * The behaviour of this class is exactly the same as a {@link SortedSet}
+ *
+ * Sample :
+ *
+ * {@code
+ *      //Writing this
+ *      for(long i : new LongUnion(0,99)) {
+ *      }
+ *      //Is equivalent to writing
+ *      for(long i=0; i<=99; i++) {
+ *      }
+ * }
+ *
+ * This class is not thread safe
+ *
  * @author Nicolas Fortin
  */
 public class LongUnion implements NumberUnion<Long> {
@@ -439,8 +460,8 @@ public class LongUnion implements NumberUnion<Long> {
     }
 
     /**
-     * This class convert an interval iterator into a serial iterator.
-     * [0,2,5,7] become [0,1,2,5,6,7]
+     * This class converts an interval iterator into a serial iterator.
+     * [0,2,5,7] becomes [0,1,2,5,6,7]
      */
     private static class LongComparator implements Comparator<Long> {
 
