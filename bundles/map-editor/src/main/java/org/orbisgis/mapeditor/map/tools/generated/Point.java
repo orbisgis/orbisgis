@@ -51,7 +51,6 @@ public abstract class Point extends AbstractAutomaton {
     @Override
 	public void transition(Code code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
-		logger.info("transition code: " + code);
                 Status preStatus;
                 switch(status){
                         case STANDBY :

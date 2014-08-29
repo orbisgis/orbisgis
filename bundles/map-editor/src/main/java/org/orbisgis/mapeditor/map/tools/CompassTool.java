@@ -112,7 +112,6 @@ public class CompassTool extends AbstractAutomaton {
                     preStatus = status;
                     try {
                         status = Status.TWO_POINTS;
-                        logger.info("status: " + status);
                         transitionTo_TwoPoints(tm);
                         if (isFinished(status)) {
                             throw new FinishedAutomatonException();
