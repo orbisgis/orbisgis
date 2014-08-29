@@ -85,8 +85,8 @@ public class ImportFiles implements BackgroundJob {
                 String ext = FilenameUtils.getExtension(file.getName());
                 DriverFunction driverFunction = driverFunctionContainer.getDriverFromExt(ext, driverType);
                 if(driverFunction != null) {
-                    TableLocation tableName = TableLocation.parse(dataManager.findUniqueTableName(
-                            FileUtils.getNameFromURI(file.toURI())), isH2);
+                    TableLocation tableName = new TableLocation("","",dataManager.findUniqueTableName(
+                            TableLocation.capsIdentifier(FileUtils.getNameFromURI(file.toURI()), isH2)));
                     driverFunction.importFile(connection, tableName.toString() ,file, new H2GISProgressMonitor(filePm));
                 } else {
                     LOGGER.error(I18N.tr("No driver found for {0} extension", ext));

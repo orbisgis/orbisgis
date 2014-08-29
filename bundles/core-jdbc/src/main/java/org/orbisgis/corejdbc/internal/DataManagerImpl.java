@@ -116,7 +116,7 @@ public class DataManagerImpl implements DataManager {
             if(!path.exists()) {
                 throw new SQLException("Specified source does not exists");
             }
-            String tableName = findUniqueTableName(FileUtils.getNameFromURI(uri).toUpperCase());
+            String tableName = findUniqueTableName(TableLocation.capsIdentifier(FileUtils.getNameFromURI(uri), isH2));
             try (Connection connection = dataSource.getConnection()) {
                 // Find if a linked table use this file path
                 DatabaseMetaData meta = connection.getMetaData();
@@ -139,7 +139,7 @@ public class DataManagerImpl implements DataManager {
                 // TODO if tcp, use DriverManager
                 PreparedStatement st = connection.prepareStatement("CALL FILE_TABLE(?,?)");
                 st.setString(1, path.getAbsolutePath());
-                st.setString(2, tableName);
+                st.setString(2, new TableLocation("","",tableName).toString(isH2));
                 st.execute();
             }
             return tableName;
