@@ -30,9 +30,7 @@ package org.orbisgis.corejdbc;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import org.apache.commons.collections4.OrderedIterator;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -233,5 +231,21 @@ public class JDBCUtilityTest {
             st.execute("CREATE SPATIAL INDEX ON TEST(geom)");
             assertEquals("", MetaData.getPkName(connection, "TEST", true));
         }
+    }
+    
+    @Test
+    public void testTableType() throws SQLException {
+         try(Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS TABLE_TEST");
+            st.execute("CREATE TABLE TABLE_TEST(gid integer auto_increment)");
+            assertEquals(MetaData.getTableType(connection, "TABLE_TEST"), MetaData.TableType.TABLE);
+            st.execute("DROP TABLE IF EXISTS TABLE_GLOBAL");
+            st.execute("CREATE GLOBAL TEMPORARY TABLE TABLE_GLOBAL(gid integer auto_increment)");
+            //H2 database type is limited
+            assertEquals(MetaData.getTableType(connection, "TABLE_GLOBAL"), MetaData.TableType.TABLE);
+            st.execute("DROP VIEW IF EXISTS VIEW_TEST");
+            st.execute("CREATE VIEW VIEW_TEST as SELECT * FROM TABLE_TEST");
+            assertEquals(MetaData.getTableType(connection, "VIEW_TEST"), MetaData.TableType.VIEW);
+         }
     }
 }

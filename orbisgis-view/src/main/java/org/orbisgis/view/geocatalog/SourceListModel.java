@@ -101,6 +101,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
 
     /**
      * Constructor
+     * @param dataManager
      * @note Do not forget to call dispose()
      */
     public SourceListModel(DataManager dataManager) {
