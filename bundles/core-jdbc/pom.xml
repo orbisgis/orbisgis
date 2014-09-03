@@ -123,5 +123,12 @@
             <artifactId>log4j</artifactId>
             <version>${log4j-version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>h2drivers</artifactId>
+            <version>${h2-gis-version}</version>
+            <scope>test</scope>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 </project>
