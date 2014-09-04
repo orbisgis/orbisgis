@@ -388,6 +388,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             int countSystemTable = 0;
             int countOther = 0;
             ArrayList<String> sources = new ArrayList<String>();
+            List<String> reservedTables = java.util.Arrays.asList("spatial_ref_sys", "geography_columns", "geometry_columns", "raster_columns", "raster_overviews");
             try (Connection connection = dataManager.getDataSource().getConnection()) {
                 List<ContainerItemProperties> selectedValues = getSourceList().getSelectedValuesList();
                 for (ContainerItemProperties source : selectedValues) {
@@ -398,7 +399,9 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                         sources.add(tableName);
                     } else if (tableType.equals(MetaData.TableType.SYSTEM_TABLE)) {
                         countSystemTable++;
-                    } else {
+                    } else if (reservedTables.contains(tableName.toLowerCase())){
+                        countSystemTable++;
+                    }else {
                         sources.add(tableName);
                         countOther++;
                     }
@@ -409,7 +412,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             //We display a warning because some SYSTEM_TABLE have been selected.
             if (countSystemTable > 0) {
                 JOptionPane.showMessageDialog(this,
-                        I18N.tr("Cannot remove permanently the {0} SYSTEM TABLE.", countSystemTable),
+                        I18N.tr("Cannot remove permanently a table system."),
                         I18N.tr("Remove GeoCatalog tables"),
                         JOptionPane.WARNING_MESSAGE);
             } else {
