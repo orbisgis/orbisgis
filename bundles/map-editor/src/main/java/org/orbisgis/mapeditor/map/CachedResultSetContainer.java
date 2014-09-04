@@ -29,6 +29,19 @@
 package org.orbisgis.mapeditor.map;
 
 import com.vividsolutions.jts.geom.Envelope;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.io.FileUtils;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
@@ -46,18 +59,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import java.io.File;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Use and keep ReadRowSet instance instead of native ResultSet.
@@ -130,6 +131,8 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
                                  SpatialResultSet rs = st.executeQuery("select " +
                                          TableLocation.capsIdentifier(geometryField, isH2) + " from " + layer.getTableReference())
                                          .unwrap(SpatialResultSet.class)) {
+                                createIndex.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
+                                        EventHandler.create(PropertyChangeListener.class, st, "cancel"));
                                 while (rs.next()) {
                                     index.insert(rs.getGeometry().getEnvelopeInternal(), rs.getRow());
                                     createIndex.endTask();
