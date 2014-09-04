@@ -131,12 +131,18 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
                                  SpatialResultSet rs = st.executeQuery("select " +
                                          TableLocation.capsIdentifier(geometryField, isH2) + " from " + layer.getTableReference())
                                          .unwrap(SpatialResultSet.class)) {
+                                PropertyChangeListener cancel = EventHandler.create(PropertyChangeListener.class, st, "cancel");
                                 createIndex.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
-                                        EventHandler.create(PropertyChangeListener.class, st, "cancel"));
-                                while (rs.next()) {
-                                    index.insert(rs.getGeometry().getEnvelopeInternal(), rs.getRow());
-                                    createIndex.endTask();
+                                        cancel);
+                                try {
+                                    while (rs.next()) {
+                                        index.insert(rs.getGeometry().getEnvelopeInternal(), rs.getRow());
+                                        createIndex.endTask();
+                                    }
+                                } finally {
+                                    createIndex.removePropertyChangeListener(cancel);
                                 }
+                              
                             }
                             indexMap.put(tableRef, index);
                         } catch (SQLException ex) {
