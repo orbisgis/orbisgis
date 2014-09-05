@@ -84,14 +84,8 @@ public class SelectionTool extends AbstractSelectionTool {
 	}
 
 	@Override
-	public boolean isEnabled(MapContext vc, ToolManager tm) {
-        ILayer selectedLayer = getLayer(vc);
-		if (selectedLayer!=null) {
-            if (!selectedLayer.getTableReference().isEmpty()) {
-                    return selectedLayer.isVisible();
-            }
-		}
-		return false;
+	public boolean isEnabled(MapContext vc, ToolManager tm) {        
+            return getAvailableLayer().length>0;
 	}
 
         @Override

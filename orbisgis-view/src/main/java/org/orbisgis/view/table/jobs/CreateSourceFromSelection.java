@@ -98,9 +98,7 @@ public class CreateSourceFromSelection implements BackgroundJob {
 
         @Override
         public void run(ProgressMonitor pm) {
-
                 try {
-
                         // Populate the new source
                         try(Connection connection = dataSource.getConnection();
                             Statement st = connection.createStatement()) {
