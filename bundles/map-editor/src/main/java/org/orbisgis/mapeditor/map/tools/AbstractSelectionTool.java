@@ -51,6 +51,7 @@
  */
 package org.orbisgis.mapeditor.map.tools;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -134,10 +135,10 @@ public abstract class AbstractSelectionTool extends Selection {
             }
             rect.add(tm.getValues()[0], tm.getValues()[1]);
             Geometry selectionRect = rect.getEnvelope(ToolManager.toolsGeometryFactory);
-            for (ILayer iLayer : getAvailableLayers(mc)) {                
+            for (ILayer iLayer : getAvailableLayers(mc, selectionRect.getEnvelopeInternal())) {  
                 SelectionWorker selectionWorker = new SelectionWorker(this,selectionRect, mc, tm,
                     (tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK,intersects, iLayer);
-            selectionWorker.execute();
+                selectionWorker.execute();
             }
         }
 
@@ -368,17 +369,19 @@ public abstract class AbstractSelectionTool extends Selection {
         }
     
     /**
-     * Retrieves all layers that are selected, visible and have reference to
-     * a table.
+     * Retrieves all layers that are selected, visible, that have reference to
+     * a table and in fine intersect with a specified envelope (eg : mapcontext).
      * @param mapContext
      * @return 
      */    
-    public ILayer[] getAvailableLayers(MapContext mapContext) {
+    public ILayer[] getAvailableLayers(MapContext mapContext, Envelope envelope) {
         Set<ILayer> availableLayers = new HashSet<ILayer>();
         if(mapContext!=null){
         for (ILayer layer : mapContext.getSelectedLayers()) {
             if (layer.isVisible() && !layer.getTableReference().isEmpty()) {
+                if(layer.getEnvelope().intersects(envelope)){
                 availableLayers.add(layer);
+                }
             }
         }
         for (Style style : mapContext.getSelectedStyles()) {

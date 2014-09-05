@@ -38,8 +38,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
@@ -55,7 +54,6 @@ import org.orbisgis.coremap.layerModel.LayerException;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.map.TransformListener;
-import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.mapeditor.map.ext.MapEditorAction;
 import org.orbisgis.mapeditor.map.ext.MapEditorExtension;
 import org.orbisgis.mapeditor.map.jobs.ReadMapContextJob;
@@ -460,7 +458,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 .setToolTipText(I18N.tr("Export image as file")));
 
         // Cache control
-        actions.addAction(new DefaultAction(MapEditorAction.A_MAP_CLEAR_CACHE, I18N.tr("Clear cache"),
+        actions.addAction(new DefaultAction(MapEditorAction.A_MAP_CLEAR_CACHE, I18N.tr("Refresh"),
                 OrbisGISIcon.getIcon("arrow_refresh"), EventHandler.create(ActionListener.class, this ,"onClearCache")));
     }
 
@@ -719,8 +717,18 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
      * The user click on the button Zoom to selection
      */
     public void onZoomToAllSelection() {
+        ArrayList<ILayer> selectedLayers = new ArrayList<ILayer>();
+        for (ILayer iLayer : mapContext.getLayers()) {
+            if (!iLayer.getSelection().isEmpty()) {
+                selectedLayers.add(iLayer);
+            }
+        }
+        if (!selectedLayers.isEmpty()) {
             BackgroundManager bm = Services.getService(BackgroundManager.class);
-            bm.backgroundOperation(new ZoomToSelection(mapContext, mapContext.getLayers()));
+            bm.backgroundOperation(new ZoomToSelection(mapContext, selectedLayers.toArray(new ILayer[selectedLayers.size()])));
+        } else {
+            GUILOGGER.warn(I18N.tr("There is any selection available."));
+        }
     }
     
     /**

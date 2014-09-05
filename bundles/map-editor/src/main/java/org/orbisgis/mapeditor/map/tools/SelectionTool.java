@@ -85,7 +85,7 @@ public class SelectionTool extends AbstractSelectionTool {
 
 	@Override
 	public boolean isEnabled(MapContext vc, ToolManager tm) {        
-            return getAvailableLayers(vc).length>0;
+            return getAvailableLayers(vc, vc.getBoundingBox()).length>0;
 	}
 
         @Override
