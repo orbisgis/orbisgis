@@ -134,7 +134,7 @@ public abstract class AbstractSelectionTool extends Selection {
             }
             rect.add(tm.getValues()[0], tm.getValues()[1]);
             Geometry selectionRect = rect.getEnvelope(ToolManager.toolsGeometryFactory);
-            for (ILayer iLayer : getAvailableLayer()) {                
+            for (ILayer iLayer : getAvailableLayers(mc)) {                
                 SelectionWorker selectionWorker = new SelectionWorker(this,selectionRect, mc, tm,
                     (tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK,intersects, iLayer);
             selectionWorker.execute();
@@ -366,20 +366,29 @@ public abstract class AbstractSelectionTool extends Selection {
                 }
             }
         }
-       
-    public ILayer[] getAvailableLayer() {
+    
+    /**
+     * Retrieves all layers that are selected, visible and have reference to
+     * a table.
+     * @param mapContext
+     * @return 
+     */    
+    public ILayer[] getAvailableLayers(MapContext mapContext) {
         Set<ILayer> availableLayers = new HashSet<ILayer>();
-        for (ILayer layer : mc.getSelectedLayers()) {
+        if(mapContext!=null){
+        for (ILayer layer : mapContext.getSelectedLayers()) {
             if (layer.isVisible() && !layer.getTableReference().isEmpty()) {
                 availableLayers.add(layer);
             }
         }
-        for (Style style : mc.getSelectedStyles()) {
+        for (Style style : mapContext.getSelectedStyles()) {
             ILayer layer = style.getLayer();
             if (layer.isVisible() && !layer.getTableReference().isEmpty()) {
                 availableLayers.add(layer);
             }
         }
+        }
         return availableLayers.toArray(new ILayer[availableLayers.size()]);
+        
     }
 }
