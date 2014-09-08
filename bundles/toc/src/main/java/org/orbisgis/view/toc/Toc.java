@@ -183,10 +183,11 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                 // Fetch Map
                 // Find a map element among other editors
                 setEditableElement(MapElement.fetchFirstMapElement(editorManager));
+                popupActions.setAccelerators(tree);
         }
 
         private void initTitleActions() {
-               List<Action> tools = new ArrayList<Action>();
+            List<Action> tools = new ArrayList<Action>();
             saveAction = new DefaultAction("SAVE_MAP", I18N.tr("Save"),
                     I18N.tr("Save the Map"), OrbisGISIcon.getIcon("save"),
                     EventHandler.create(ActionListener.class, this, "onSaveMapContext"),
@@ -196,7 +197,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
             DefaultAction refreshIconsAction = new DefaultAction("REFRESH_ICONS", I18N.tr("Refresh"),
                     I18N.tr("Refresh layer icons"), OrbisGISIcon.getIcon("arrow_refresh"),
                     EventHandler.create(ActionListener.class, this, "onRefreshTocTree"),
-                    KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
+                    KeyStroke.getKeyStroke("ctrl R"));
             tools.add(refreshIconsAction);
             tools.add(new DefaultAction(TocActionFactory.G_ADD, I18N.tr("Add")).setMenuGroup(true));
             tools.add(new DefaultAction(TocActionFactory.A_ADD_LAYER_GROUP,
@@ -214,7 +215,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
             // Layer actions
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_ZOOM_TO, I18N.tr("Zoom to"),
                     I18N.tr("Zoom to the layer bounding box"), OrbisGISIcon.getIcon("magnifier"),
-                    EventHandler.create(ActionListener.class, this, "zoomToLayer"), null)
+                    EventHandler.create(ActionListener.class, this, "zoomToLayer"), KeyStroke.getKeyStroke("ctrl Z"))
                         .setLogicalGroup(TocActionFactory.G_ZOOM));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_ZOOM_TO_SELECTION,
                     I18N.tr("Zoom to selection"), I18N.tr("Zoom to selected geometries"),
@@ -231,7 +232,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_IMPORT_STYLE,
                     I18N.tr("Import style"), I18N.tr("Import a style from a file."),
                     OrbisGISIcon.getIcon("palette_import"),
-                    EventHandler.create(ActionListener.class, this, "onImportStyle"),null)
+                    EventHandler.create(ActionListener.class, this, "onImportStyle"),KeyStroke.getKeyStroke("ctrl I"))
                         .setSingleSelection(true)
                         .setOnRealLayerOnly(true)
                         .setOnVectorSourceOnly(true)
@@ -239,7 +240,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_ADD_STYLE,
                     I18N.tr("Create a thematic map"), I18N.tr("Add a new legend."),
                     OrbisGISIcon.getIcon("palette_add"),
-                    EventHandler.create(ActionListener.class, this, "onAddStyle"),null)
+                    EventHandler.create(ActionListener.class, this, "onAddStyle"),KeyStroke.getKeyStroke("ctrl N"))
                         .setSingleSelection(true)
                         .setOnRealLayerOnly(true)
                         .setOnVectorSourceOnly(true)
@@ -247,7 +248,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_OPEN_ATTRIBUTES,
                     I18N.tr("Open the attributes"), I18N.tr("Open a spreadsheet view of the attributes."),
                     OrbisGISIcon.getIcon("openattributes"),
-                    EventHandler.create(ActionListener.class,this, "onMenuShowTable"),null)
+                    EventHandler.create(ActionListener.class,this, "onMenuShowTable"),KeyStroke.getKeyStroke("ctrl T"))
                         .setOnRealLayerOnly(true)
                         .setOnVectorSourceOnly(true)
                         .setLogicalGroup(TocActionFactory.G_ATTRIBUTES));
@@ -295,7 +296,8 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
             popupActions.addAction(addWMSAction);
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_REMOVE_LAYER, I18N.tr("Remove layer"),
                         I18N.tr("Remove the layer from the map context"),OrbisGISIcon.getIcon("remove"),
-                        EventHandler.create(ActionListener.class, this, "onDeleteLayer"),null)
+                        EventHandler.create(ActionListener.class, this, "onDeleteLayer"),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0))
                         .setLogicalGroup(TocActionFactory.G_REMOVE));
             // Style actions
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_ADD_LEGEND,
