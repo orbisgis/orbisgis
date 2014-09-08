@@ -244,7 +244,7 @@ public class SQLConsolePanel extends JPanel {
                 actions.addAction(new DefaultAction(SQLAction.A_SQL_TIMEOUT,
                         I18N.tr("Timeout"),
                         I18N.tr("Custom a time out to execute the SQL statement"),
-                        OrbisGISIcon.getIcon("remove"),
+                        OrbisGISIcon.getIcon("timeout_sql"),
                         EventHandler.create(ActionListener.class,this,"onSQLTimeOut"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK)
                 ).setLogicalGroup("custom"));
@@ -416,14 +416,13 @@ public class SQLConsolePanel extends JPanel {
         String TIME_OUT = "timeout";
         final TextBoxType timeoutTXT = new TextBoxType(8);
         timeoutTXT.getComponent().setEnabled(timeOut>0);
-        final CheckBoxChoice checkBox = new CheckBoxChoice(timeOut==0);
-        checkBox.addActionListener(new ActionListener() {
+        final CheckBoxChoice cBNoTimeOut = new CheckBoxChoice(timeOut == 0);
+        cBNoTimeOut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (checkBox.isSelected()) {
-                    timeoutTXT.getComponent().setEnabled(false);
-                } else {
-                    timeoutTXT.getComponent().setEnabled(true);
+                timeoutTXT.getComponent().setEnabled(!cBNoTimeOut.isSelected());
+                if(cBNoTimeOut.isSelected()) {
+                    timeoutTXT.setValue("0");
                 }
             }
         });
@@ -433,7 +432,7 @@ public class SQLConsolePanel extends JPanel {
                 String.valueOf(timeOut),
                 timeoutTXT);
         String CHECKBOX = "checkbox";
-        timeOutPanel.addInput(CHECKBOX, I18N.tr("Unlimited time out"), checkBox);
+        timeOutPanel.addInput(CHECKBOX, I18N.tr("Unlimited time out"), cBNoTimeOut);
         MIPValidationInteger mipVal = new MIPValidationInteger(TIME_OUT, I18N.tr("Time out as seconds"));
         mipVal.setMinValue(0);
         timeOutPanel.addValidation(mipVal);
