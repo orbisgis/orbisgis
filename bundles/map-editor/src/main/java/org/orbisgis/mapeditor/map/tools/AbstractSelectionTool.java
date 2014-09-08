@@ -51,6 +51,7 @@
  */
 package org.orbisgis.mapeditor.map.tools;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -79,6 +80,7 @@ import org.orbisgis.mapeditor.map.tools.generated.Selection;
 import org.orbisgis.progress.NullProgressMonitor;
 
 import javax.swing.*;
+import org.orbisgis.coremap.renderer.se.Style;
 
 /**
  * Tool to select geometries
@@ -126,17 +128,18 @@ public abstract class AbstractSelectionTool extends Selection {
 
         @Override
         public void transitionTo_TwoPoints(MapContext mc, ToolManager tm)
-                throws TransitionException, FinishedAutomatonException {
-            ILayer activeLayer = getLayer(mc);
+                throws TransitionException, FinishedAutomatonException {           
             boolean intersects = true;
             if (rect.getMinX() < tm.getValues()[0]) {
                 intersects = false;
             }
             rect.add(tm.getValues()[0], tm.getValues()[1]);
             Geometry selectionRect = rect.getEnvelope(ToolManager.toolsGeometryFactory);
-            SelectionWorker selectionWorker = new SelectionWorker(this,selectionRect, mc, tm,
-                    (tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK,intersects, activeLayer);
-            selectionWorker.execute();
+            for (ILayer iLayer : getAvailableLayers(mc, selectionRect.getEnvelopeInternal())) {  
+                SelectionWorker selectionWorker = new SelectionWorker(this,selectionRect, mc, tm,
+                    (tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK,intersects, iLayer);
+                selectionWorker.execute();
+            }
         }
 
         @Override
@@ -364,4 +367,31 @@ public abstract class AbstractSelectionTool extends Selection {
                 }
             }
         }
+    
+    /**
+     * Retrieves all layers that are selected, visible, that have reference to
+     * a table and in fine intersect with a specified envelope (eg : mapcontext).
+     * @param mapContext
+     * @return 
+     */    
+    public ILayer[] getAvailableLayers(MapContext mapContext, Envelope envelope) {
+        Set<ILayer> availableLayers = new HashSet<ILayer>();
+        if(mapContext!=null){
+        for (ILayer layer : mapContext.getSelectedLayers()) {
+            if (layer.isVisible() && !layer.getTableReference().isEmpty()) {
+                if(layer.getEnvelope().intersects(envelope)){
+                availableLayers.add(layer);
+                }
+            }
+        }
+        for (Style style : mapContext.getSelectedStyles()) {
+            ILayer layer = style.getLayer();
+            if (layer.isVisible() && !layer.getTableReference().isEmpty()) {
+                availableLayers.add(layer);
+            }
+        }
+        }
+        return availableLayers.toArray(new ILayer[availableLayers.size()]);
+        
+    }
 }
