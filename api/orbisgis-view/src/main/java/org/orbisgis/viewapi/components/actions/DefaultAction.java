@@ -107,6 +107,13 @@ public class DefaultAction extends AbstractAction {
         public ActionListener getActionListener() {
                 return actionListener;
         }
+        
+        public DefaultAction setKeyStroke(KeyStroke keyStroke){
+            if(keyStroke!=null){
+                putValue(ACCELERATOR_KEY, keyStroke);
+            }
+            return this;
+        }
         /**
          * 
          * @return The action shortcut
