@@ -61,15 +61,18 @@ public class ExecuteScriptProcess implements BackgroundJob {
         private ScriptSplitterFactory splitterFactory;
         private static final int MAX_PRINTED_ROWS = 100;
         private static final int MAX_FIELD_LENGTH = 30;
+        private int timeOut =0;
         /**
          * @param panel Console panel (Can be null)
          * @param ds DataSource to acquire DBMS Connection
          * @param splitterFactory Sql Parser
+         * @param timeOut in seconds to execute the statement
          */
-        public ExecuteScriptProcess(SQLConsolePanel panel, DataSource ds, ScriptSplitterFactory splitterFactory) {
-                this.ds = ds;
+        public ExecuteScriptProcess(SQLConsolePanel panel, DataSource ds, ScriptSplitterFactory splitterFactory, int timeOut) {
+                this.ds = ds; 
                 this.panel = panel;
                 this.splitterFactory = splitterFactory;
+                this.timeOut=timeOut;
         }
 
         @Override
@@ -143,6 +146,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
                 ProgressMonitor pm = progress.startTask(I18N.tr("Execute SQL Request"), panel.getScriptPanel().getLineCount());
                 try(Connection connection = ds.getConnection()) {
                     try(Statement st = connection.createStatement()) {
+                        st.setQueryTimeout(timeOut);
                         // If the user clicks on cancel, cancel the execution
                         pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL ,
                                 EventHandler.create(PropertyChangeListener.class, st, "cancel"));
