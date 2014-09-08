@@ -29,6 +29,8 @@ package org.orbisgis.view.geocatalog;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
@@ -199,8 +201,9 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 registerFilterFactories();
                 // Register built-ins popup actions
                 createPopupActions();
+                popupActions.setAccelerators(sourceList);
         }
-
+        
         public void registeTrackers(BundleContext hostContext) {
             popupActionTracker = new MenuItemServiceTracker<PopupTarget, PopupMenu>(hostContext,PopupMenu.class,
                     popupActions,this);
@@ -586,7 +589,8 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_FILE,I18N.tr("File"),
                         I18N.tr("Add a file from hard drive."),
                         OrbisGISIcon.getIcon("page_white_add"),EventHandler.create(ActionListener.class,
-                        this,"onMenuAddLinkedFile"),null).setParent(PopupMenu.M_ADD));
+                        this,"onMenuAddLinkedFile"),KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)
+                       ).addStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)).setParent(PopupMenu.M_ADD));
                 //Popup:Add:Folder
                 popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_FOLDER,I18N.tr("Folder"),
                         I18N.tr("Add a set of file from an hard drive folder."),
@@ -599,11 +603,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 //        OrbisGISIcon.getIcon("database_add"),EventHandler.create(ActionListener.class,
                 //        this,"onMenuAddFromDataBase"),null).setParent(PopupMenu.M_ADD));
             }
-            //Popup:Add:WMS
-            //popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_WMS,I18N.tr("WMS server"),
-            //        I18N.tr("Add a WebMapService"),
-            //        OrbisGISIcon.getIcon("server_connect"),EventHandler.create(ActionListener.class,
-            //        this,"onMenuAddWMSServer"),null).setParent(PopupMenu.M_ADD));
             //Popup:Import
             popupActions.addAction(new DefaultAction(PopupMenu.M_IMPORT,I18N.tr("Import")).setMenuGroup(true).setLogicalGroup(PopupMenu.GROUP_IMPORT));
             //Popup:Import:File
