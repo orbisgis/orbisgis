@@ -30,26 +30,25 @@ package org.orbisgis.corejdbc;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import org.apache.commons.collections4.OrderedIterator;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.*;
+import javax.sql.DataSource;
+import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.progress.NullProgressMonitor;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.h2gis.drivers.DriverManager;
 
 /**
  * @author Nicolas Fortin
@@ -62,6 +61,7 @@ public class JDBCUtilityTest {
     public static void tearUp() throws Exception {
         dataSource = SFSUtilities.wrapSpatialDataSource(SpatialH2UT.createDataSource(JDBCUtilityTest.class.getSimpleName(), true));
         connection = dataSource.getConnection();
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new DriverManager(), "");
     }
 
     @AfterClass
@@ -233,5 +233,24 @@ public class JDBCUtilityTest {
             st.execute("CREATE SPATIAL INDEX ON TEST(geom)");
             assertEquals("", MetaData.getPkName(connection, "TEST", true));
         }
+    }
+    
+    @Test
+    public void testTableType() throws SQLException {
+         try(Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS TABLE_TEST");
+            st.execute("CREATE TABLE TABLE_TEST(gid integer auto_increment)");
+            assertEquals(MetaData.getTableType(connection, "TABLE_TEST"), MetaData.TableType.TABLE);
+            st.execute("DROP TABLE IF EXISTS TABLE_GLOBAL");
+            st.execute("CREATE GLOBAL TEMPORARY TABLE TABLE_GLOBAL(gid integer auto_increment)");
+            //H2 database type is limited
+            assertEquals(MetaData.getTableType(connection, "TABLE_GLOBAL"), MetaData.TableType.TABLE);
+            st.execute("DROP VIEW IF EXISTS VIEW_TEST");
+            st.execute("CREATE VIEW VIEW_TEST as SELECT * FROM TABLE_TEST");
+            assertEquals(MetaData.getTableType(connection, "VIEW_TEST"), MetaData.TableType.VIEW);
+            st.execute("drop table if exists EXTERNAL_TABLE");
+            st.execute("CALL FILE_TABLE('"+JDBCUtilityTest.class.getResource("bv_sap.shp").getPath()+"', 'EXTERNAL_TABLE');");
+            assertEquals(MetaData.getTableType(connection, "EXTERNAL_TABLE"), MetaData.TableType.EXTERNAL);
+         }
     }
 }

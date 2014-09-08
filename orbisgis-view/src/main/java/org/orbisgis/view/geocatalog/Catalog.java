@@ -33,19 +33,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import javax.sql.DataSource;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FilenameUtils;
@@ -59,26 +54,20 @@ import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Arrays;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DriverFunctionContainer;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.SaveFilePanel;
-import org.h2gis.utilities.TableLocation;
-import org.orbisgis.sif.multiInputPanel.ComboBoxChoice;
-import org.orbisgis.sif.multiInputPanel.DirectoryComboBoxChoice;
-import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.utils.CollectionUtils;
-import org.orbisgis.utils.FileUtils;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.background.H2GISProgressMonitor;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
 import org.orbisgis.view.geocatalog.jobs.DropTable;
 import org.orbisgis.view.geocatalog.jobs.ImportFiles;
-import org.orbisgis.view.workspace.ViewWorkspace;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
@@ -87,10 +76,8 @@ import org.orbisgis.viewapi.docking.DockingPanel;
 import org.orbisgis.viewapi.docking.DockingPanelParameters;
 import org.orbisgis.viewapi.edition.EditableElement;
 import org.orbisgis.viewapi.edition.EditableElementException;
-import org.orbisgis.view.geocatalog.actions.ActionOnNonEmptySourceList;
 import org.orbisgis.view.geocatalog.actions.ActionOnSelection;
 import org.orbisgis.viewapi.edition.EditorManager;
-import org.orbisgis.viewapi.geocatalog.ext.GeoCatalogExt;
 import org.orbisgis.viewapi.geocatalog.ext.GeoCatalogMenu;
 import org.orbisgis.viewapi.geocatalog.ext.PopupMenu;
 import org.orbisgis.viewapi.geocatalog.ext.PopupTarget;
@@ -397,16 +384,57 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          * The user can remove added source from the geocatalog
          */
         public void onMenuRemoveSource() {
-            String[] res = getSelectedSources();
-            int option = JOptionPane.showConfirmDialog(this,
-                    I18N.tr("The following tables will be removed.\n{0}\n The content of theses tables will be permanently lost !\n Are you sure ?", StringUtils.join(res, "\n")),
-                    I18N.tr("Delete GeoCatalog tables"),
-                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if (option == JOptionPane.YES_OPTION) {
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.nonBlockingBackgroundOperation(new DropTable(dataManager.getDataSource(), res, this));
+            int countExternalTable = 0;
+            int countSystemTable = 0;
+            int countOther = 0;
+            ArrayList<String> sources = new ArrayList<String>();
+            List<String> reservedTables = java.util.Arrays.asList("spatial_ref_sys", "geography_columns", "geometry_columns", "raster_columns", "raster_overviews");
+            try (Connection connection = dataManager.getDataSource().getConnection()) {
+                List<ContainerItemProperties> selectedValues = getSourceList().getSelectedValuesList();
+                for (ContainerItemProperties source : selectedValues) {
+                    String tableName = source.getKey();
+                    MetaData.TableType tableType = MetaData.getTableType(connection, tableName);
+                    if (tableType.equals(MetaData.TableType.EXTERNAL)) {
+                        countExternalTable++;
+                        sources.add(tableName);
+                    } else if (tableType.equals(MetaData.TableType.SYSTEM_TABLE)) {
+                        countSystemTable++;
+                    } else if (reservedTables.contains(tableName.toLowerCase())){
+                        countSystemTable++;
+                    }else {
+                        sources.add(tableName);
+                        countOther++;
+                    }
+                }
+            } catch (SQLException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
             }
-        }
+            //We display a warning because some SYSTEM_TABLE have been selected.
+            if (countSystemTable > 0) {
+                JOptionPane.showMessageDialog(this,
+                        I18N.tr("Cannot remove permanently a table system."),
+                        I18N.tr("Remove GeoCatalog tables"),
+                        JOptionPane.WARNING_MESSAGE);
+            } else {
+                //We display the table type
+                StringBuilder sb = new StringBuilder(I18N.tr("Do you want..."));
+                if (countOther > 0) {
+                    sb.append(I18N.trn("\n...to remove permanently {0} table", "\n...to remove permanently {0} tables", countOther, countOther));
+                }
+                if (countExternalTable > 0) {
+                    sb.append(I18N.trn("\n...to disconnect {0} external table", "\n...to disconnect {0} external tables", countExternalTable, countExternalTable));
+                }
+                sb.append("?");
+                int option = JOptionPane.showConfirmDialog(this,
+                        sb.toString(),
+                        I18N.tr("Delete GeoCatalog tables"),
+                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (option == JOptionPane.YES_OPTION) {
+                    BackgroundManager bm = Services.getService(BackgroundManager.class);
+                    bm.nonBlockingBackgroundOperation(new DropTable(dataManager.getDataSource(), sources.toArray(new String[sources.size()]), this));
+                }
+            }
+    }
 
         /**
          * The user can export a source in a file.
@@ -515,62 +543,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             }
         }
 
-        /**
-         * The user can load several WMS layers from the same server.
-         */
-        public void onMenuAddWMSServer() {
-                /*
-                SourceManager sm = dm.getSourceManager();
-                SRSPanel srsPanel = new SRSPanel();
-                LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel(srsPanel);
-                WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);
-                if (UIFactory.showDialog(new UIPanel[]{wmsConnection,
-                                layerConfiguration, srsPanel})) {
-                        WMService service = wmsConnection.getServiceDescription();
-                        Capabilities cap = service.getCapabilities();
-                        MapImageFormatChooser mfc = new MapImageFormatChooser(service.getVersion());
-                        mfc.setTransparencyRequired(true);
-                        String validImageFormat = mfc.chooseFormat(cap.getMapFormats());
-                        if (validImageFormat == null) {
-                                LOGGER.error(I18N.tr("Cannot find a valid image format for this WMS server"));
-                        } else {
-                                Object[] layers = layerConfiguration.getSelectedLayers();
-                                for (Object layer : layers) {
-                                        String layerName = ((MapLayer) layer).getName();
-                                        String uniqueLayerName = layerName;
-                                        if (sm.exists(layerName)) {
-                                                uniqueLayerName = sm.getUniqueName(layerName);
-                                        }
-                                        URI origin = URI.create(service.getServerUrl());
-                                        StringBuilder url = new StringBuilder(origin.getQuery());
-                                        url.append("SERVICE=WMS&REQUEST=GetMap");
-                                        String version = service.getVersion();
-                                        url.append("&VERSION=").append(version);
-                                        if(WMService.WMS_1_3_0.equals(version)){
-                                            url.append("&CRS=");
-                                        } else {
-                                            url.append("&SRS=");
-                                        }
-                                        url.append(srsPanel.getSRS());
-                                        url.append("&LAYERS=").append(layerName);
-                                        url.append("&FORMAT=").append(validImageFormat);
-                                        try{
-                                            URI streamUri = new URI(origin.getScheme(), origin.getUserInfo(),origin.getHost(), origin.getPort(),
-                                                origin.getPath(), url.toString(), origin.getFragment());
-                                            WMSStreamSource wmsSource = new WMSStreamSource(streamUri);
-                                            StreamSourceDefinition streamSourceDefinition = new StreamSourceDefinition(wmsSource);
-                                            sm.register(uniqueLayerName, streamSourceDefinition);
-                                        } catch (UnsupportedEncodingException uee){
-                                            LOGGER.error(I18N.tr("Can't read the given URI: "+uee.getCause()));
-                                        } catch (URISyntaxException use){
-                                            LOGGER.error(I18N.tr("The given URI contains illegal character"),use);
-                                        }
-                                }
-                        }
-                }
-                */
-        }
-
         private void createPopupActions() {
             boolean isEmbeddedDataBase = true;
             try(Connection connection = dataManager.getDataSource().getConnection()) {
@@ -598,12 +570,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 //        I18N.tr("Add one or more tables from a DataBase"),
                 //        OrbisGISIcon.getIcon("database_add"),EventHandler.create(ActionListener.class,
                 //        this,"onMenuAddFromDataBase"),null).setParent(PopupMenu.M_ADD));
-            }
-            //Popup:Add:WMS
-            //popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_WMS,I18N.tr("WMS server"),
-            //        I18N.tr("Add a WebMapService"),
-            //        OrbisGISIcon.getIcon("server_connect"),EventHandler.create(ActionListener.class,
-            //        this,"onMenuAddWMSServer"),null).setParent(PopupMenu.M_ADD));
+            }            
             //Popup:Import
             popupActions.addAction(new DefaultAction(PopupMenu.M_IMPORT,I18N.tr("Import")).setMenuGroup(true).setLogicalGroup(PopupMenu.GROUP_IMPORT));
             //Popup:Import:File
