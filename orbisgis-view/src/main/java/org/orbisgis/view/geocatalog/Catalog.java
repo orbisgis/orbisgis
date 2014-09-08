@@ -418,16 +418,11 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             } else {
                 //We display the table type
                 StringBuilder sb = new StringBuilder(I18N.tr("Do you want..."));
-                if (countOther == 1) {
-                    sb.append(I18N.tr("\n...to remove permanently {0} table", countOther));
-                } else if (countOther > 1) {
-                    sb.append(I18N.tr("\n...to remove permanently {0} tables", countOther));
+                if (countOther > 0) {
+                    sb.append(I18N.trn("\n...to remove permanently {0} table", "\n...to remove permanently {0} tables", countOther, countOther));
                 }
-
-                if (countExternalTable == 1) {
-                    sb.append(I18N.tr("\n...to disconnect {0} external table", countExternalTable));
-                } else if (countExternalTable > 1) {
-                    sb.append(I18N.tr("\n...to disconnect {0} external tables", countExternalTable));
+                if (countExternalTable > 0) {
+                    sb.append(I18N.trn("\n...to disconnect {0} external table", "\n...to disconnect {0} external tables", countExternalTable, countExternalTable));
                 }
                 sb.append("?");
                 int option = JOptionPane.showConfirmDialog(this,
