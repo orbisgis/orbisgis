@@ -64,12 +64,15 @@ public class ZoomToSelection implements BackgroundJob {
                 Envelope selectionEnvelope = new Envelope();
                 for(ILayer layer : layers) {
                     if(layer.isVisible()) {
-                        Envelope layerEnv = getLayerSelectionEnvelope(pm, layer);
+                        Set<Integer> data = layer.getSelection();
+                        if(!data.isEmpty()){
+                        Envelope layerEnv = getLayerSelectionEnvelope(pm, data, layer.getTableReference());
                         if(layerEnv!=null) {
                             selectionEnvelope.expandToInclude(layerEnv);
                         }
                         if(pm.isCancelled()) {
                             return;
+                        }
                         }
                     }
                 }
@@ -80,16 +83,23 @@ public class ZoomToSelection implements BackgroundJob {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
             }
         }
-
-        private Envelope getLayerSelectionEnvelope(ProgressMonitor pm, ILayer layer) throws SQLException {
+        
+        /**
+         * Compute the envelope based on the selection
+         * @param pm
+         * @param data
+         * @param tableReference
+         * @return
+         * @throws SQLException 
+         */
+        private Envelope getLayerSelectionEnvelope(ProgressMonitor pm, Set<Integer> data,String tableReference) throws SQLException {
             SortedSet<Integer> sortedSet;
-            Set<Integer> data = layer.getSelection();
             if(data instanceof SortedSet) {
                 sortedSet = (SortedSet<Integer>)data;
             } else {
                 sortedSet = new IntegerUnion(data);
             }
-            return ReadTable.getTableSelectionEnvelope(mapContext.getDataManager(), layer.getTableReference(),sortedSet, pm);
+            return ReadTable.getTableSelectionEnvelope(mapContext.getDataManager(), tableReference,sortedSet, pm);
         }
         
         @Override

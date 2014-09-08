@@ -44,6 +44,8 @@ public interface MapEditorAction extends ActionFactoryService<MapEditorExtension
     // Group
     public static final String A_MEASURE_GROUP = "A_MEASURE_GROUP";
     public static final String A_DRAWING_GROUP = "A_DRAWING_GROUP";
+    public static final String A_CLEAR_SELECTION_GROUP = "A_CLEAR_SELECTION_GROUP";    
+    public static final String A_ZOOM_SELECTION_GROUP = "A_ZOOM_SELECTION_GROUP";
 
     // Built-in Automaton
     public static final String A_ZOOM_IN = "A_ZOOM_IN";
@@ -59,8 +61,10 @@ public interface MapEditorAction extends ActionFactoryService<MapEditorExtension
 
     // Standard actions
     public static final String A_FULL_EXTENT = "A_FULL_EXTENT";
-    public static final String A_ZOOM_SELECTION = "A_ZOOM_SELECTION";
-    public static final String A_CLEAR_SELECTION = "A_CLEAR_SELECTION";
+    public static final String A_ZOOM_ALL_SELECTION = "A_ZOOM_ALL_SELECTION";
+    public static final String A_ZOOM_LAYER_SELECTION = "A_ZOOM_LAYER_SELECTION";
+    public static final String A_CLEAR_ALL_SELECTION = "A_CLEAR_ALL_SELECTION";
+    public static final String A_CLEAR_LAYER_SELECTION = "A_CLEAR_LAYER_SELECTION";
     public static final String A_DATA_SOURCE_FROM_SELECTION = "A_DATA_SOURCE_FROM_SELECTION";
     public static final String A_MAP_TREE = "A_MAP_TREE";
     public static final String A_MAP_EXPORT_IMAGE = "A_MAP_EXPORT_IMAGE";

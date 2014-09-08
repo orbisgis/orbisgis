@@ -29,9 +29,24 @@
 package org.orbisgis.mapeditor.map;
 
 import com.vividsolutions.jts.geom.Envelope;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.Point2D;
+import java.beans.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.*;
+import javax.swing.event.TreeExpansionListener;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
+import org.orbisgis.core_export.MapImageWriter;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
@@ -39,8 +54,16 @@ import org.orbisgis.coremap.layerModel.LayerException;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.map.TransformListener;
-import org.orbisgis.core_export.MapImageWriter;
-import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.mapeditor.map.ext.MapEditorAction;
+import org.orbisgis.mapeditor.map.ext.MapEditorExtension;
+import org.orbisgis.mapeditor.map.jobs.ReadMapContextJob;
+import org.orbisgis.mapeditor.map.mapsManager.MapsManager;
+import org.orbisgis.mapeditor.map.mapsManager.TreeLeafMapContextFile;
+import org.orbisgis.mapeditor.map.mapsManager.TreeLeafMapElement;
+import org.orbisgis.mapeditor.map.tool.ToolManager;
+import org.orbisgis.mapeditor.map.tool.TransitionException;
+import org.orbisgis.mapeditor.map.toolbar.ActionAutomaton;
+import org.orbisgis.mapeditor.map.tools.*;
 import org.orbisgis.mapeditorapi.IndexProvider;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.NullProgressMonitor;
@@ -55,42 +78,17 @@ import org.orbisgis.view.background.ZoomToSelection;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
 import org.orbisgis.view.edition.EditableTransferListener;
+import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.table.jobs.CreateSourceFromSelection;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.viewapi.docking.DockingPanelParameters;
 import org.orbisgis.viewapi.edition.EditableElement;
 import org.orbisgis.viewapi.edition.EditableElementException;
 import org.orbisgis.viewapi.edition.EditableSource;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.mapeditor.map.ext.MapEditorAction;
-import org.orbisgis.mapeditor.map.ext.MapEditorExtension;
-import org.orbisgis.view.table.jobs.CreateSourceFromSelection;
-import org.orbisgis.mapeditor.map.jobs.ReadMapContextJob;
-import org.orbisgis.mapeditor.map.mapsManager.MapsManager;
-import org.orbisgis.mapeditor.map.mapsManager.TreeLeafMapContextFile;
-import org.orbisgis.mapeditor.map.mapsManager.TreeLeafMapElement;
-import org.orbisgis.mapeditor.map.tool.ToolManager;
-import org.orbisgis.mapeditor.map.tool.TransitionException;
-import org.orbisgis.mapeditor.map.toolbar.ActionAutomaton;
-import org.orbisgis.mapeditor.map.tools.*;
 import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import javax.swing.*;
-import javax.swing.event.TreeExpansionListener;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.Point2D;
-import java.beans.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The Map Editor Panel
@@ -403,15 +401,31 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         actions.addAction(new ActionAutomaton(MapEditorAction.A_INFO_TOOL,new InfoTool(),this)
                 .addTrackedMapContextProperty(MapContext.PROP_SELECTEDLAYERS)
                 .addTrackedMapContextProperty(MapContext.PROP_SELECTEDSTYLES).setLogicalGroup("selection"));
+        
         actions.addAction(new ActionAutomaton(MapEditorAction.A_SELECTION,new SelectionTool(),this)
                 .addTrackedMapContextProperty(MapContext.PROP_SELECTEDLAYERS)
                 .addTrackedMapContextProperty(MapContext.PROP_SELECTEDSTYLES).setLogicalGroup("selection"));
-        actions.addAction(new DefaultAction(MapEditorAction.A_CLEAR_SELECTION, I18N.tr("Clear selection"),
-                OrbisGISIcon.getIcon("edit-clear"),EventHandler.create(ActionListener.class,this,"onClearSelection"))
-                .setToolTipText(I18N.tr("Clear all selected geometries of all layers")).setLogicalGroup("selection"));
-        actions.addAction(new DefaultAction(MapEditorAction.A_ZOOM_SELECTION, I18N.tr("Zoom to selection"),
-                OrbisGISIcon.getIcon("zoom_selected"),EventHandler.create(ActionListener.class,this,"onZoomToSelection"))
-                .setToolTipText(I18N.tr("Zoom to visible selected geometries")).setLogicalGroup("selection"));
+        
+        //Clear selection group
+        actions.addAction(new DefaultAction(MapEditorAction.A_CLEAR_SELECTION_GROUP,I18N.tr("Clear selection tools")).setMenuGroup(true));
+        actions.addAction(new DefaultAction(MapEditorAction.A_CLEAR_ALL_SELECTION, I18N.tr("Clear all selection"),
+                OrbisGISIcon.getIcon("edit-clear_all"),EventHandler.create(ActionListener.class,this,"onClearAllSelection"))
+                .setToolTipText(I18N.tr("Clear all selected geometries of all layers")).setParent(MapEditorAction.A_CLEAR_SELECTION_GROUP));
+        actions.addAction(new DefaultAction(MapEditorAction.A_CLEAR_LAYER_SELECTION, I18N.tr("Clear selected layers"),
+                OrbisGISIcon.getIcon("edit-clear"),EventHandler.create(ActionListener.class,this,"onClearLayerSelection"))
+                .setToolTipText(I18N.tr("Clear all selected geometries of the selected layers")).setParent(MapEditorAction.A_CLEAR_SELECTION_GROUP));
+        
+        
+        //Zoom to selection group
+        actions.addAction(new DefaultAction(MapEditorAction.A_ZOOM_SELECTION_GROUP,I18N.tr("Zoom to tools")).setMenuGroup(true));
+        actions.addAction(new DefaultAction(MapEditorAction.A_ZOOM_ALL_SELECTION, I18N.tr("Zoom to all selection"),
+                OrbisGISIcon.getIcon("zoom_selected_all"),EventHandler.create(ActionListener.class,this,"onZoomToAllSelection"))
+                .setToolTipText(I18N.tr("Zoom to all selected geometries")).setParent(MapEditorAction.A_ZOOM_SELECTION_GROUP));
+        actions.addAction(new DefaultAction(MapEditorAction.A_ZOOM_LAYER_SELECTION, I18N.tr("Zoom to layer selection"),
+                OrbisGISIcon.getIcon("zoom_selected"),EventHandler.create(ActionListener.class,this,"onZoomToLayerSelection"))
+                .setToolTipText(I18N.tr("Zoom to selected geometries of the selected layers")).setParent(MapEditorAction.A_ZOOM_SELECTION_GROUP));
+        
+        
         actions.addAction(new DefaultAction(MapEditorAction.A_DATA_SOURCE_FROM_SELECTION, I18N.tr("Create datasource from selection"),
                 OrbisGISIcon.getIcon("table_go"),
                 EventHandler.create(ActionListener.class,this,"onCreateDataSourceFromSelection"))
@@ -444,7 +458,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 .setToolTipText(I18N.tr("Export image as file")));
 
         // Cache control
-        actions.addAction(new DefaultAction(MapEditorAction.A_MAP_CLEAR_CACHE, I18N.tr("Clear cache"),
+        actions.addAction(new DefaultAction(MapEditorAction.A_MAP_CLEAR_CACHE, I18N.tr("Refresh"),
                 OrbisGISIcon.getIcon("arrow_refresh"), EventHandler.create(ActionListener.class, this ,"onClearCache")));
     }
 
@@ -453,13 +467,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
      */
     public ActionCommands getActionCommands() {
         return actions;
-    }
-    private JToolBar createToolBar() {
-        JToolBar toolBar = new JToolBar();
-        createActions();
-        actions.registerContainer(toolBar);
-        return toolBar;
-    }
+    }    
 
     /**
      * User want to see table updates on MapEditor
@@ -673,23 +681,70 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         }
     }
     /**
-     * The user click on the button clear selection
+     * The user click on the button clear selection.
+     * The selected layers are cleaned.
      */
-    public void onClearSelection() {
-            for(ILayer layer : mapContext.getLayers()) {
-                    if(!layer.acceptsChilds()) {
+    public void onClearLayerSelection() {
+        ILayer[] selectedLayers = getMapControl().getToolManager().getSelectedLayerAndStyle();
+        // Loop through all selected layers.
+        if (selectedLayers == null || selectedLayers.length == 0) {
+            GUILOGGER.warn(I18N.tr("Please select a layer or a style in the TOC."));
+        } else {
+            for (ILayer layer : selectedLayers) {
+                if (!layer.acceptsChilds()) {
+                    if (!layer.getSelection().isEmpty()) {
                         layer.setSelection(new IntegerUnion());
                     }
+                }
             }
+        }
+    }
+    
+    /**
+     * The user click on the button, all selection are cleaned in the layers
+     */
+    public void onClearAllSelection() {
+        for (ILayer layer : mapContext.getLayers()) {
+            if (!layer.acceptsChilds()) {
+                if (!layer.getSelection().isEmpty()) {
+                    layer.setSelection(new IntegerUnion());
+                }
+            }
+        }
     }
 
     /**
      * The user click on the button Zoom to selection
      */
-    public void onZoomToSelection() {
+    public void onZoomToAllSelection() {
+        ArrayList<ILayer> selectedLayers = new ArrayList<ILayer>();
+        for (ILayer iLayer : mapContext.getLayers()) {
+            if (!iLayer.getSelection().isEmpty()) {
+                selectedLayers.add(iLayer);
+            }
+        }
+        if (!selectedLayers.isEmpty()) {
             BackgroundManager bm = Services.getService(BackgroundManager.class);
-            bm.backgroundOperation(new ZoomToSelection(mapContext, mapContext.getLayers()));
+            bm.backgroundOperation(new ZoomToSelection(mapContext, selectedLayers.toArray(new ILayer[selectedLayers.size()])));
+        } else {
+            GUILOGGER.warn(I18N.tr("There is any selection available."));
+        }
     }
+    
+    /**
+     * Zoom on selected geometries of each selected layers
+     */    
+    public void onZoomToLayerSelection(){
+        ILayer[] selectedLayers = getMapControl().getToolManager().getSelectedLayerAndStyle();
+        // Loop through all selected layers.
+        if (selectedLayers == null || selectedLayers.length == 0) {
+            GUILOGGER.warn(I18N.tr("Please select a layer or a style in the TOC"));
+        } else {
+            BackgroundManager bm = Services.getService(BackgroundManager.class);
+            bm.backgroundOperation(new ZoomToSelection(mapContext, selectedLayers));
+        }
+    }
+    
 
 
     /**
@@ -697,17 +752,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
      */
     public void onCreateDataSourceFromSelection() {
         // Get the selected layer(s)
-        ILayer[] selectedLayers = mapContext.getSelectedLayers();
-        // If no layers are selected, but one or more styles are selected, then
-        // set the selected layers to the layers of those styles.
-        // See #514 (as well as #124, #359).
-        if (selectedLayers.length == 0) {
-            ArrayList<ILayer> selectedLayerList = new ArrayList<ILayer>();
-            for (Style style : mapContext.getSelectedStyles()) {
-                selectedLayerList.add(style.getLayer());
-            }
-            selectedLayers = selectedLayerList.toArray(new ILayer[1]);
-        }
+        ILayer[] selectedLayers = getMapControl().getToolManager().getSelectedLayerAndStyle();
         // Loop through all selected layers.
         if (selectedLayers == null || selectedLayers.length == 0) {
             GUILOGGER.warn(I18N.tr("No layers are selected."));
@@ -737,6 +782,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         }
     }
 
+    
     /**
      * Give information on the behaviour of this panel related to the current
      * docking system

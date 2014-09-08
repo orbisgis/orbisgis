@@ -28,6 +28,18 @@
  */
 package org.orbisgis.view.sqlconsole.ui;
 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.beans.EventHandler;
+import java.io.IOException;
+import javax.sql.DataSource;
+import javax.swing.*;
+import javax.swing.event.CaretListener;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -36,6 +48,10 @@ import org.orbisgis.core.Services;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
+import org.orbisgis.sif.multiInputPanel.CheckBoxChoice;
+import org.orbisgis.sif.multiInputPanel.MIPValidationInteger;
+import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
+import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
@@ -50,19 +66,6 @@ import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.viewapi.sqlconsole.ui.ext.SQLAction;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import javax.sql.DataSource;
-import javax.swing.*;
-import javax.swing.event.CaretListener;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.beans.EventHandler;
-import java.io.IOException;
 
 /**
  * SQL Panel that contain a RSyntaxTextArea
@@ -103,6 +106,7 @@ public class SQLConsolePanel extends JPanel {
         private DefaultAction formatSQLAction;
         private DefaultAction saveAction;
         private DataSource dataSource;
+        private int timeOut =0;
         
         /**
          * Creates a console for sql.
@@ -236,6 +240,14 @@ public class SQLConsolePanel extends JPanel {
                         OrbisGISIcon.getIcon("builtinfunctionmap"),
                         EventHandler.create(ActionListener.class,sqlFunctionsPanel,"switchPanelVisibilityState"),
                         null).setLogicalGroup("custom"));
+                //Time out action
+                actions.addAction(new DefaultAction(SQLAction.A_SQL_TIMEOUT,
+                        I18N.tr("Timeout"),
+                        I18N.tr("Custom a time out to execute the SQL statement"),
+                        OrbisGISIcon.getIcon("timeout_sql"),
+                        EventHandler.create(ActionListener.class,this,"onSQLTimeOut"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK)
+                ).setLogicalGroup("custom"));
         }
 
         /**
@@ -277,7 +289,7 @@ public class SQLConsolePanel extends JPanel {
         public void onExecute() {      
                 if (scriptPanel.getDocument().getLength() > 0) {
                     BackgroundManager bm = Services.getService(BackgroundManager.class);
-                    bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(this, dataSource, splitterFactory));
+                    bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(this, dataSource, splitterFactory, timeOut));
                 }
         }
                
@@ -396,8 +408,41 @@ public class SQLConsolePanel extends JPanel {
                 character = scriptPanel.getCaretOffsetFromLineStart();
                 setStatusMessage(message);
         }
-        private JToolBar getStatusToolBar() {
+        /**
+     * Open a panel to change the SQL time out
+     */
+    public void onSQLTimeOut() {
+        MultiInputPanel timeOutPanel = new MultiInputPanel(I18N.tr("Query Time out"));
+        String TIME_OUT = "timeout";
+        final TextBoxType timeoutTXT = new TextBoxType(8);
+        timeoutTXT.getComponent().setEnabled(timeOut>0);
+        final CheckBoxChoice cBNoTimeOut = new CheckBoxChoice(timeOut == 0);
+        cBNoTimeOut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                timeoutTXT.getComponent().setEnabled(!cBNoTimeOut.isSelected());
+                if(cBNoTimeOut.isSelected()) {
+                    timeoutTXT.setValue("0");
+                }
+            }
+        });
 
+        timeOutPanel.addInput(TIME_OUT,
+                I18N.tr("Number of seconds"),
+                String.valueOf(timeOut),
+                timeoutTXT);
+        String CHECKBOX = "checkbox";
+        timeOutPanel.addInput(CHECKBOX, I18N.tr("Unlimited time out"), cBNoTimeOut);
+        MIPValidationInteger mipVal = new MIPValidationInteger(TIME_OUT, I18N.tr("Time out as seconds"));
+        mipVal.setMinValue(0);
+        timeOutPanel.addValidation(mipVal);
+
+        if (UIFactory.showDialog(timeOutPanel, true, true)) {
+            timeOut = Integer.valueOf(timeOutPanel.getInput(TIME_OUT));
+        }
+    }
+        
+        private JToolBar getStatusToolBar() {
                 if (infoToolBar == null) {
                         infoToolBar = new JToolBar();
                         infoToolBar.setTransferHandler(new ScriptPanelTransferHandler(scriptPanel, dataSource));
