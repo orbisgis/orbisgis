@@ -35,8 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.orbisgis.coreapi.workspace.CoreWorkspace;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Core Workspace Folder information
