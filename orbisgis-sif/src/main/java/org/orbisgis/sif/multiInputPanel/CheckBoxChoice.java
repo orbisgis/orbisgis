@@ -39,22 +39,20 @@ import javax.swing.JCheckBox;
  * @author Erwan Bocher
  * @author Alexis Guéganno
  */
-public class CheckBoxChoice implements InputType {
-
-        private JCheckBox jCheckBox;
-
+public class CheckBoxChoice extends JCheckBox implements InputType {
+        
+        
         public CheckBoxChoice(boolean b) {
-                this(b, "");
+                super("", b);
         }
 
         public CheckBoxChoice(boolean b, String text) {
-            jCheckBox = new JCheckBox(text);
-            jCheckBox.setSelected(b);
+            super(text,b);
         }
 
         @Override
         public Component getComponent() {
-                return jCheckBox;
+                return this;
         }       
 
         /**
@@ -63,7 +61,7 @@ public class CheckBoxChoice implements InputType {
          */
         @Override
         public String getValue() {
-                return Boolean.toString(jCheckBox.isSelected());
+                return Boolean.toString(this.isSelected());
         }
 
         /**
@@ -75,6 +73,6 @@ public class CheckBoxChoice implements InputType {
          */
         @Override
         public void setValue(String value) {
-                jCheckBox.setSelected(Boolean.parseBoolean(value));
+                this.setSelected(Boolean.parseBoolean(value));
         }
 }
