@@ -259,9 +259,7 @@ public class WorkspaceSelectionDialog extends JPanel {
         // Save the workspace list, including the previous one
         List<File> workspaces = comboBox.getValues();
         File wkFile = new File(wkDialog.getComboBox().getValue());
-        if(workspaces.remove(wkFile)){
-            
-        }
+        workspaces.remove(wkFile);            
         if (oldWorkspacePath != null && !oldWorkspacePath.isEmpty()) {
             workspaces.add(new File(oldWorkspacePath));
         }
