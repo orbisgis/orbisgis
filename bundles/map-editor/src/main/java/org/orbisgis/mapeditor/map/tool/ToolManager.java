@@ -69,6 +69,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import javax.sql.RowSet;
 import javax.swing.ImageIcon;
@@ -82,6 +83,7 @@ import org.orbisgis.coremap.map.TransformListener;
 import org.orbisgis.coremap.renderer.se.AreaSymbolizer;
 import org.orbisgis.coremap.renderer.se.LineSymbolizer;
 import org.orbisgis.coremap.renderer.se.PointSymbolizer;
+import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.coremap.renderer.se.fill.SolidFill;
 import org.orbisgis.coremap.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
@@ -522,12 +524,14 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 component.setCursor(c);
         }
 
-        /**
-         * Seems to be a cache of values for Automatons
-         */
-        public double[] getValues() {
-                return values;
-        }
+     /**
+     * Seems to be a cache of values for Automatons
+     *
+     * @return
+     */
+    public double[] getValues() {
+        return values;
+    }
 
         /**
          * Seems to be a cache of values for Automatons
@@ -869,6 +873,21 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         public Component getComponent() {
                 return component;
         }
+        
+     /**
+     * If no layers node are selected, but one or more styles are selected, then
+     * set the selected layers to the layers of those styles.
+     *
+     * @return selected layers
+     */
+    public ILayer[] getSelectedLayerAndStyle() {
+        Set<ILayer> selectedLayers
+                = new HashSet<>(Arrays.asList(mapContext.getSelectedLayers()));
+        for (Style style : mapContext.getSelectedStyles()) {
+            selectedLayers.add(style.getLayer());
+        }
+        return selectedLayers.toArray(new ILayer[selectedLayers.size()]);
+    }
 
 
 }
