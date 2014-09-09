@@ -45,5 +45,6 @@ public interface SQLAction extends ActionFactoryService<SQLConsoleEditor> {
     public static final String A_UNQUOTE = "M_UNQUOTE";
     public static final String A_COMMENT = "M_COMMENT";
     public static final String A_BLOCKCOMMENT = "M_BLOCKCOMMENT";
-    public static final String A_SQL_LIST = "M_SQL_LIST";
+    public static final String A_SQL_LIST = "M_SQL_LIST";    
+    public static final String A_SQL_TIMEOUT = "M_SQL_TIMEOUT";
 }
