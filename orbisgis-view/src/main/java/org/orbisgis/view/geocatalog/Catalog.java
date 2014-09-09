@@ -29,23 +29,20 @@ package org.orbisgis.view.geocatalog;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import javax.sql.DataSource;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FilenameUtils;
@@ -65,20 +62,13 @@ import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.SaveFilePanel;
-import org.h2gis.utilities.TableLocation;
-import org.orbisgis.sif.multiInputPanel.ComboBoxChoice;
-import org.orbisgis.sif.multiInputPanel.DirectoryComboBoxChoice;
-import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.utils.CollectionUtils;
-import org.orbisgis.utils.FileUtils;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.background.H2GISProgressMonitor;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
 import org.orbisgis.view.geocatalog.jobs.DropTable;
 import org.orbisgis.view.geocatalog.jobs.ImportFiles;
-import org.orbisgis.view.workspace.ViewWorkspace;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
@@ -87,10 +77,8 @@ import org.orbisgis.viewapi.docking.DockingPanel;
 import org.orbisgis.viewapi.docking.DockingPanelParameters;
 import org.orbisgis.viewapi.edition.EditableElement;
 import org.orbisgis.viewapi.edition.EditableElementException;
-import org.orbisgis.view.geocatalog.actions.ActionOnNonEmptySourceList;
 import org.orbisgis.view.geocatalog.actions.ActionOnSelection;
 import org.orbisgis.viewapi.edition.EditorManager;
-import org.orbisgis.viewapi.geocatalog.ext.GeoCatalogExt;
 import org.orbisgis.viewapi.geocatalog.ext.GeoCatalogMenu;
 import org.orbisgis.viewapi.geocatalog.ext.PopupMenu;
 import org.orbisgis.viewapi.geocatalog.ext.PopupTarget;
@@ -199,8 +187,9 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 registerFilterFactories();
                 // Register built-ins popup actions
                 createPopupActions();
+                popupActions.setAccelerators(sourceList);
         }
-
+        
         public void registeTrackers(BundleContext hostContext) {
             popupActionTracker = new MenuItemServiceTracker<PopupTarget, PopupMenu>(hostContext,PopupMenu.class,
                     popupActions,this);
@@ -430,9 +419,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                                 savedFile, getDriverFromExt(FilenameUtils.getExtension(savedFile.getName()),
                                         DriverFunction.IMPORT_DRIVER_TYPE.COPY),dataManager.getDataSource()));
                         }
-
                 }
-
         }
 
         /**
@@ -464,6 +451,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
 
         /**
          * The user can load several files from a folder
+         * @param type
          */
         public void addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE type) {
             OpenFolderPanel folderSourcePanel = new OpenFolderPanel("Geocatalog.LinkFolder" ,I18N.tr("Select the folder to import"));
@@ -513,63 +501,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             public boolean accept(File dir, String name) {
                 return accept(new File(dir, name));
             }
-        }
-
-        /**
-         * The user can load several WMS layers from the same server.
-         */
-        public void onMenuAddWMSServer() {
-                /*
-                SourceManager sm = dm.getSourceManager();
-                SRSPanel srsPanel = new SRSPanel();
-                LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel(srsPanel);
-                WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);
-                if (UIFactory.showDialog(new UIPanel[]{wmsConnection,
-                                layerConfiguration, srsPanel})) {
-                        WMService service = wmsConnection.getServiceDescription();
-                        Capabilities cap = service.getCapabilities();
-                        MapImageFormatChooser mfc = new MapImageFormatChooser(service.getVersion());
-                        mfc.setTransparencyRequired(true);
-                        String validImageFormat = mfc.chooseFormat(cap.getMapFormats());
-                        if (validImageFormat == null) {
-                                LOGGER.error(I18N.tr("Cannot find a valid image format for this WMS server"));
-                        } else {
-                                Object[] layers = layerConfiguration.getSelectedLayers();
-                                for (Object layer : layers) {
-                                        String layerName = ((MapLayer) layer).getName();
-                                        String uniqueLayerName = layerName;
-                                        if (sm.exists(layerName)) {
-                                                uniqueLayerName = sm.getUniqueName(layerName);
-                                        }
-                                        URI origin = URI.create(service.getServerUrl());
-                                        StringBuilder url = new StringBuilder(origin.getQuery());
-                                        url.append("SERVICE=WMS&REQUEST=GetMap");
-                                        String version = service.getVersion();
-                                        url.append("&VERSION=").append(version);
-                                        if(WMService.WMS_1_3_0.equals(version)){
-                                            url.append("&CRS=");
-                                        } else {
-                                            url.append("&SRS=");
-                                        }
-                                        url.append(srsPanel.getSRS());
-                                        url.append("&LAYERS=").append(layerName);
-                                        url.append("&FORMAT=").append(validImageFormat);
-                                        try{
-                                            URI streamUri = new URI(origin.getScheme(), origin.getUserInfo(),origin.getHost(), origin.getPort(),
-                                                origin.getPath(), url.toString(), origin.getFragment());
-                                            WMSStreamSource wmsSource = new WMSStreamSource(streamUri);
-                                            StreamSourceDefinition streamSourceDefinition = new StreamSourceDefinition(wmsSource);
-                                            sm.register(uniqueLayerName, streamSourceDefinition);
-                                        } catch (UnsupportedEncodingException uee){
-                                            LOGGER.error(I18N.tr("Can't read the given URI: "+uee.getCause()));
-                                        } catch (URISyntaxException use){
-                                            LOGGER.error(I18N.tr("The given URI contains illegal character"),use);
-                                        }
-                                }
-                        }
-                }
-                */
-        }
+        }        
 
         private void createPopupActions() {
             boolean isEmbeddedDataBase = true;
@@ -586,12 +518,13 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_FILE,I18N.tr("File"),
                         I18N.tr("Add a file from hard drive."),
                         OrbisGISIcon.getIcon("page_white_add"),EventHandler.create(ActionListener.class,
-                        this,"onMenuAddLinkedFile"),null).setParent(PopupMenu.M_ADD));
+                        this,"onMenuAddLinkedFile"),KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)
+                       ).addStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)).setParent(PopupMenu.M_ADD));
                 //Popup:Add:Folder
                 popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_FOLDER,I18N.tr("Folder"),
                         I18N.tr("Add a set of file from an hard drive folder."),
                         OrbisGISIcon.getIcon("folder_add"),EventHandler.create(ActionListener.class,
-                        this,"onMenuAddFilesFromFolder"),null).setParent(PopupMenu.M_ADD));
+                        this,"onMenuAddFilesFromFolder"),KeyStroke.getKeyStroke("ctrl alt O")).setParent(PopupMenu.M_ADD));
 
                 //Popup:Add:DataBase
                 //popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_DB,I18N.tr("DataBase"),
@@ -599,22 +532,17 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 //        OrbisGISIcon.getIcon("database_add"),EventHandler.create(ActionListener.class,
                 //        this,"onMenuAddFromDataBase"),null).setParent(PopupMenu.M_ADD));
             }
-            //Popup:Add:WMS
-            //popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_WMS,I18N.tr("WMS server"),
-            //        I18N.tr("Add a WebMapService"),
-            //        OrbisGISIcon.getIcon("server_connect"),EventHandler.create(ActionListener.class,
-            //        this,"onMenuAddWMSServer"),null).setParent(PopupMenu.M_ADD));
             //Popup:Import
             popupActions.addAction(new DefaultAction(PopupMenu.M_IMPORT,I18N.tr("Import")).setMenuGroup(true).setLogicalGroup(PopupMenu.GROUP_IMPORT));
             //Popup:Import:File
             popupActions.addAction(new DefaultAction(PopupMenu.M_IMPORT_FILE,I18N.tr("File"),
                     I18N.tr("Copy the content of a file from hard drive."),
                     OrbisGISIcon.getIcon("page_white_add"),EventHandler.create(ActionListener.class,
-                    this,"onMenuImportFile"),null).setParent(PopupMenu.M_IMPORT));
+                    this,"onMenuImportFile"),KeyStroke.getKeyStroke("ctrl I")).setParent(PopupMenu.M_IMPORT));
             popupActions.addAction(new DefaultAction(PopupMenu.M_IMPORT_FOLDER,I18N.tr("Folder"),
                     I18N.tr("Add a set of file from an hard drive folder."),
                     OrbisGISIcon.getIcon("folder_add"),EventHandler.create(ActionListener.class,
-                    this,"onMenuImportFilesFromFolder"),null).setParent(PopupMenu.M_IMPORT));
+                    this,"onMenuImportFilesFromFolder"),KeyStroke.getKeyStroke("ctrl alt I")).setParent(PopupMenu.M_IMPORT));
 
             //Popup:Save
             popupActions.addAction(new ActionOnSelection(
@@ -625,7 +553,8 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             //Popup:Save:File
             popupActions.addAction(new ActionOnSelection(PopupMenu.M_SAVE_FILE,I18N.tr("File"),
                     I18N.tr("Save selected sources in files"),OrbisGISIcon.getIcon("page_white_save"),
-                    EventHandler.create(ActionListener.class,this,"onMenuSaveInfile"),getListSelectionModel()).setParent(PopupMenu.M_SAVE));
+                    EventHandler.create(ActionListener.class,this,"onMenuSaveInfile"),getListSelectionModel()).
+                    setKeyStroke(KeyStroke.getKeyStroke("ctrl S")).setParent(PopupMenu.M_SAVE));
             //Popup:Save:Db
             //TODO Add linked table then transfer data
             //popupActions.addAction(new ActionOnSelection(PopupMenu.M_SAVE_DB,I18N.tr("Database"),
@@ -634,17 +563,17 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             //Popup:Open attributes
             popupActions.addAction(new ActionOnSelection(PopupMenu.M_OPEN_ATTRIBUTES,I18N.tr("Open the attributes"),
                     I18N.tr("Open the data source table"),OrbisGISIcon.getIcon("openattributes"),
-                    EventHandler.create(ActionListener.class,this, "onMenuShowTable"),getListSelectionModel()).setLogicalGroup(PopupMenu.GROUP_OPEN));
+                    EventHandler.create(ActionListener.class,this, "onMenuShowTable"),getListSelectionModel()).setKeyStroke(KeyStroke.getKeyStroke("ctrl T")).setLogicalGroup(PopupMenu.GROUP_OPEN));
             //Popup:Remove sources
             popupActions.addAction(new ActionOnSelection(PopupMenu.M_REMOVE,I18N.tr("Remove the source"),
                     I18N.tr("Remove from this list the selected sources."),OrbisGISIcon.getIcon("remove"),
                     EventHandler.create(ActionListener.class,this,"onMenuRemoveSource"),getListSelectionModel())
-                        .setLogicalGroup(PopupMenu.GROUP_CLOSE));
+                     .setKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0)).setLogicalGroup(PopupMenu.GROUP_CLOSE));
             //Popup:Refresh
             popupActions.addAction(new DefaultAction(PopupMenu.M_REFRESH,I18N.tr("Refresh"),
                     I18N.tr("Read the content of the database"),
                     OrbisGISIcon.getIcon("arrow_refresh"),EventHandler.create(ActionListener.class,
-                    this,"refreshSourceList"),null).setLogicalGroup(PopupMenu.GROUP_OPEN));
+                    this,"refreshSourceList"),KeyStroke.getKeyStroke("ctrl R")).setLogicalGroup(PopupMenu.GROUP_OPEN));
         }
 
         public void refreshSourceList() {
