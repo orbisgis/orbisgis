@@ -3,6 +3,7 @@ package org.orbisgis.view.background;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.orbisgis.progress.ProgressMonitor;
 
+import java.beans.PropertyChangeListener;
 import java.sql.Statement;
 
 /**
@@ -11,7 +12,6 @@ import java.sql.Statement;
  */
 public class H2GISProgressMonitor implements ProgressVisitor {
     private ProgressMonitor progressMonitor;
-    private Statement statement;
 
     public H2GISProgressMonitor(ProgressMonitor progressMonitor) {
         this.progressMonitor = progressMonitor;
@@ -20,13 +20,6 @@ public class H2GISProgressMonitor implements ProgressVisitor {
     @Override
     public void endOfProgress() {
         progressMonitor.endTask();
-    }
-
-    /**
-     * @param statement Statement to cancel if the processing is canceled
-     */
-    public void setStatement(Statement statement) {
-        this.statement = statement;
     }
 
     @Override
@@ -52,5 +45,26 @@ public class H2GISProgressMonitor implements ProgressVisitor {
     @Override
     public double getProgression() {
         return progressMonitor.getOverallProgress();
+    }
+
+    @Override
+    public boolean isCanceled() {
+        return progressMonitor.isCancelled();
+    }
+
+    @Override
+    public void cancel() {
+        progressMonitor.setCancelled(true);
+    }
+
+    @Override
+    public void addPropertyChangeListener(String property, PropertyChangeListener listener) {
+        progressMonitor.addPropertyChangeListener(property.equals(PROPERTY_CANCELED)
+                ? ProgressMonitor.PROP_CANCEL: property, listener);
+    }
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        progressMonitor.removePropertyChangeListener(listener);
     }
 }

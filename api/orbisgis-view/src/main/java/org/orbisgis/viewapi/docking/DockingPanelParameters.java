@@ -330,18 +330,22 @@ public class DockingPanelParameters implements Serializable, PropertyHost, Vetoa
                 propertySupport.firePropertyChange(PROP_TITLE, oldTitle, title);
         }
 
+        @Override
         public void addPropertyChangeListener(PropertyChangeListener listener) {
                 propertySupport.addPropertyChangeListener(listener);
         }
 
+        @Override
         public void addPropertyChangeListener(String prop, PropertyChangeListener listener) {
                 propertySupport.addPropertyChangeListener(prop, listener);
         }
 
+        @Override
         public void removePropertyChangeListener(PropertyChangeListener listener) {
                 propertySupport.removePropertyChangeListener(listener);
         }
 
+        @Override
         public void removePropertyChangeListener(String prop, PropertyChangeListener listener) {
                 propertySupport.removePropertyChangeListener(prop, listener);
         }

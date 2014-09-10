@@ -29,6 +29,8 @@ package org.orbisgis.view.geocatalog;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
@@ -186,8 +188,9 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 registerFilterFactories();
                 // Register built-ins popup actions
                 createPopupActions();
+                popupActions.setAccelerators(sourceList);
         }
-
+        
         public void registeTrackers(BundleContext hostContext) {
             popupActionTracker = new MenuItemServiceTracker<PopupTarget, PopupMenu>(hostContext,PopupMenu.class,
                     popupActions,this);
@@ -458,9 +461,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                                 savedFile, getDriverFromExt(FilenameUtils.getExtension(savedFile.getName()),
                                         DriverFunction.IMPORT_DRIVER_TYPE.COPY),dataManager.getDataSource()));
                         }
-
                 }
-
         }
 
         /**
@@ -492,6 +493,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
 
         /**
          * The user can load several files from a folder
+         * @param type
          */
         public void addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE type) {
             OpenFolderPanel folderSourcePanel = new OpenFolderPanel("Geocatalog.LinkFolder" ,I18N.tr("Select the folder to import"));
@@ -541,7 +543,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             public boolean accept(File dir, String name) {
                 return accept(new File(dir, name));
             }
-        }
+        }        
 
         private void createPopupActions() {
             boolean isEmbeddedDataBase = true;
@@ -558,12 +560,13 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_FILE,I18N.tr("File"),
                         I18N.tr("Add a file from hard drive."),
                         OrbisGISIcon.getIcon("page_white_add"),EventHandler.create(ActionListener.class,
-                        this,"onMenuAddLinkedFile"),null).setParent(PopupMenu.M_ADD));
+                        this,"onMenuAddLinkedFile"),KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)
+                       ).addStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)).setParent(PopupMenu.M_ADD));
                 //Popup:Add:Folder
                 popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_FOLDER,I18N.tr("Folder"),
                         I18N.tr("Add a set of file from an hard drive folder."),
                         OrbisGISIcon.getIcon("folder_add"),EventHandler.create(ActionListener.class,
-                        this,"onMenuAddFilesFromFolder"),null).setParent(PopupMenu.M_ADD));
+                        this,"onMenuAddFilesFromFolder"),KeyStroke.getKeyStroke("ctrl alt O")).setParent(PopupMenu.M_ADD));
 
                 //Popup:Add:DataBase
                 //popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_DB,I18N.tr("DataBase"),
@@ -577,11 +580,11 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             popupActions.addAction(new DefaultAction(PopupMenu.M_IMPORT_FILE,I18N.tr("File"),
                     I18N.tr("Copy the content of a file from hard drive."),
                     OrbisGISIcon.getIcon("page_white_add"),EventHandler.create(ActionListener.class,
-                    this,"onMenuImportFile"),null).setParent(PopupMenu.M_IMPORT));
+                    this,"onMenuImportFile"),KeyStroke.getKeyStroke("ctrl I")).setParent(PopupMenu.M_IMPORT));
             popupActions.addAction(new DefaultAction(PopupMenu.M_IMPORT_FOLDER,I18N.tr("Folder"),
                     I18N.tr("Add a set of file from an hard drive folder."),
                     OrbisGISIcon.getIcon("folder_add"),EventHandler.create(ActionListener.class,
-                    this,"onMenuImportFilesFromFolder"),null).setParent(PopupMenu.M_IMPORT));
+                    this,"onMenuImportFilesFromFolder"),KeyStroke.getKeyStroke("ctrl alt I")).setParent(PopupMenu.M_IMPORT));
 
             //Popup:Save
             popupActions.addAction(new ActionOnSelection(
@@ -592,7 +595,8 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             //Popup:Save:File
             popupActions.addAction(new ActionOnSelection(PopupMenu.M_SAVE_FILE,I18N.tr("File"),
                     I18N.tr("Save selected sources in files"),OrbisGISIcon.getIcon("page_white_save"),
-                    EventHandler.create(ActionListener.class,this,"onMenuSaveInfile"),getListSelectionModel()).setParent(PopupMenu.M_SAVE));
+                    EventHandler.create(ActionListener.class,this,"onMenuSaveInfile"),getListSelectionModel()).
+                    setKeyStroke(KeyStroke.getKeyStroke("ctrl S")).setParent(PopupMenu.M_SAVE));
             //Popup:Save:Db
             //TODO Add linked table then transfer data
             //popupActions.addAction(new ActionOnSelection(PopupMenu.M_SAVE_DB,I18N.tr("Database"),
@@ -601,17 +605,17 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             //Popup:Open attributes
             popupActions.addAction(new ActionOnSelection(PopupMenu.M_OPEN_ATTRIBUTES,I18N.tr("Open the attributes"),
                     I18N.tr("Open the data source table"),OrbisGISIcon.getIcon("openattributes"),
-                    EventHandler.create(ActionListener.class,this, "onMenuShowTable"),getListSelectionModel()).setLogicalGroup(PopupMenu.GROUP_OPEN));
+                    EventHandler.create(ActionListener.class,this, "onMenuShowTable"),getListSelectionModel()).setKeyStroke(KeyStroke.getKeyStroke("ctrl T")).setLogicalGroup(PopupMenu.GROUP_OPEN));
             //Popup:Remove sources
             popupActions.addAction(new ActionOnSelection(PopupMenu.M_REMOVE,I18N.tr("Remove the source"),
                     I18N.tr("Remove from this list the selected sources."),OrbisGISIcon.getIcon("remove"),
                     EventHandler.create(ActionListener.class,this,"onMenuRemoveSource"),getListSelectionModel())
-                        .setLogicalGroup(PopupMenu.GROUP_CLOSE));
+                     .setKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0)).setLogicalGroup(PopupMenu.GROUP_CLOSE));
             //Popup:Refresh
             popupActions.addAction(new DefaultAction(PopupMenu.M_REFRESH,I18N.tr("Refresh"),
                     I18N.tr("Read the content of the database"),
                     OrbisGISIcon.getIcon("arrow_refresh"),EventHandler.create(ActionListener.class,
-                    this,"refreshSourceList"),null).setLogicalGroup(PopupMenu.GROUP_OPEN));
+                    this,"refreshSourceList"),KeyStroke.getKeyStroke("ctrl R")).setLogicalGroup(PopupMenu.GROUP_OPEN));
         }
 
         public void refreshSourceList() {
