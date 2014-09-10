@@ -374,4 +374,52 @@ public class MetaData {
         }
         return infos.toString();
     }
+    
+    /**
+     * Retrieves the table type available for a given table.
+     * 
+     * @param connection Database connection
+     * @param tableName The table of the table
+     * @return the type of the table
+     * @throws SQLException 
+     */
+    public static TableType getTableType(Connection connection, String tableName) throws SQLException {
+        TableLocation tableLoc = TableLocation.parse(tableName);
+        try (ResultSet rs = connection.getMetaData().getTables(tableLoc.getCatalog(), tableLoc.getSchema(),
+                tableLoc.getTable(), null)) {
+            while (rs.next()) {
+                String type = rs.getString(4).toUpperCase();                
+                switch (type) {
+                    case "TABLE":
+                        return TableType.TABLE;
+                    case "VIEW":
+                        return TableType.VIEW;
+                    case "SYSTEM TABLE":
+                        return TableType.SYSTEM_TABLE;
+                    case "GLOBAL TEMPORARY":
+                        return TableType.GLOBAL_TEMPORARY;
+                    case "LOCAL TEMPORARY":
+                        return TableType.LOCAL_TEMPORARY;
+                    case "ALIAS":
+                        return TableType.ALIAS;
+                    case "SYNONYM":
+                        return TableType.SYNONYM;
+                    case "EXTERNAL":
+                        return TableType.EXTERNAL;
+                    default:
+                        return TableType.TABLE;
+                }
+            }
+        }
+        throw new SQLException(I18N.tr("Cannot find the table {0}", tableName));
+    }
+
+    /**
+     * List of available table types
+     */
+    public enum TableType {
+        EXTERNAL, SYSTEM_TABLE, VIEW, TABLE,
+        GLOBAL_TEMPORARY,
+        LOCAL_TEMPORARY, ALIAS, SYNONYM
+    }
 }

@@ -56,6 +56,7 @@ import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Arrays;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DriverFunctionContainer;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
@@ -386,16 +387,57 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          * The user can remove added source from the geocatalog
          */
         public void onMenuRemoveSource() {
-            String[] res = getSelectedSources();
-            int option = JOptionPane.showConfirmDialog(this,
-                    I18N.tr("The following tables will be removed.\n{0}\n The content of theses tables will be permanently lost !\n Are you sure ?", StringUtils.join(res, "\n")),
-                    I18N.tr("Delete GeoCatalog tables"),
-                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if (option == JOptionPane.YES_OPTION) {
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.nonBlockingBackgroundOperation(new DropTable(dataManager.getDataSource(), res, this));
+            int countExternalTable = 0;
+            int countSystemTable = 0;
+            int countOther = 0;
+            ArrayList<String> sources = new ArrayList<String>();
+            List<String> reservedTables = java.util.Arrays.asList("spatial_ref_sys", "geography_columns", "geometry_columns", "raster_columns", "raster_overviews");
+            try (Connection connection = dataManager.getDataSource().getConnection()) {
+                List<ContainerItemProperties> selectedValues = getSourceList().getSelectedValuesList();
+                for (ContainerItemProperties source : selectedValues) {
+                    String tableName = source.getKey();
+                    MetaData.TableType tableType = MetaData.getTableType(connection, tableName);
+                    if (tableType.equals(MetaData.TableType.EXTERNAL)) {
+                        countExternalTable++;
+                        sources.add(tableName);
+                    } else if (tableType.equals(MetaData.TableType.SYSTEM_TABLE)) {
+                        countSystemTable++;
+                    } else if (reservedTables.contains(tableName.toLowerCase())){
+                        countSystemTable++;
+                    }else {
+                        sources.add(tableName);
+                        countOther++;
+                    }
+                }
+            } catch (SQLException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
             }
-        }
+            //We display a warning because some SYSTEM_TABLE have been selected.
+            if (countSystemTable > 0) {
+                JOptionPane.showMessageDialog(this,
+                        I18N.tr("Cannot remove permanently a table system."),
+                        I18N.tr("Remove GeoCatalog tables"),
+                        JOptionPane.WARNING_MESSAGE);
+            } else {
+                //We display the table type
+                StringBuilder sb = new StringBuilder(I18N.tr("Do you want..."));
+                if (countOther > 0) {
+                    sb.append(I18N.trn("\n...to remove permanently {0} table", "\n...to remove permanently {0} tables", countOther, countOther));
+                }
+                if (countExternalTable > 0) {
+                    sb.append(I18N.trn("\n...to disconnect {0} external table", "\n...to disconnect {0} external tables", countExternalTable, countExternalTable));
+                }
+                sb.append("?");
+                int option = JOptionPane.showConfirmDialog(this,
+                        sb.toString(),
+                        I18N.tr("Delete GeoCatalog tables"),
+                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (option == JOptionPane.YES_OPTION) {
+                    BackgroundManager bm = Services.getService(BackgroundManager.class);
+                    bm.nonBlockingBackgroundOperation(new DropTable(dataManager.getDataSource(), sources.toArray(new String[sources.size()]), this));
+                }
+            }
+    }
 
         /**
          * The user can export a source in a file.
@@ -531,7 +573,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 //        I18N.tr("Add one or more tables from a DataBase"),
                 //        OrbisGISIcon.getIcon("database_add"),EventHandler.create(ActionListener.class,
                 //        this,"onMenuAddFromDataBase"),null).setParent(PopupMenu.M_ADD));
-            }
+            }            
             //Popup:Import
             popupActions.addAction(new DefaultAction(PopupMenu.M_IMPORT,I18N.tr("Import")).setMenuGroup(true).setLogicalGroup(PopupMenu.GROUP_IMPORT));
             //Popup:Import:File
