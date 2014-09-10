@@ -31,7 +31,6 @@ package org.orbisgis.view.workspace;
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.workspace.CoreWorkspaceImpl;
-import org.orbisgis.coreapi.workspace.CoreWorkspace;
 import org.orbisgis.sif.multiInputPanel.DirectoryComboBoxChoice;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
@@ -42,7 +41,6 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import org.orbisgis.sif.components.CustomButton;
@@ -260,12 +258,15 @@ public class WorkspaceSelectionDialog extends JPanel {
         }
         // Save the workspace list, including the previous one
         List<File> workspaces = comboBox.getValues();
+        File wkFile = new File(wkDialog.getComboBox().getValue());
+        workspaces.remove(wkFile);            
         if (oldWorkspacePath != null && !oldWorkspacePath.isEmpty()) {
             workspaces.add(new File(oldWorkspacePath));
         }
+        workspaces.add(0, wkFile);
         coreWorkspace.writeKnownWorkspaces(workspaces);
         // Initialize the workspace if empty or new
-        File wkFile = new File(wkDialog.getComboBox().getValue());
+       
         File[] files = wkFile.listFiles();
         if (!wkFile.exists() || (files != null && files.length == 0)) {
             ViewWorkspace.initWorkspaceFolder(wkFile);
