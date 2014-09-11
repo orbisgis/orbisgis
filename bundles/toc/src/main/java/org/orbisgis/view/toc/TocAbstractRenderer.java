@@ -40,7 +40,7 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.view.components.renderers.TreeLaFRenderer;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.toc.icons.TocIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -56,10 +56,10 @@ public abstract class TocAbstractRenderer extends TreeLaFRenderer {
             IOException {
         try {
             if (layer.acceptsChilds()) {
-                return OrbisGISIcon.getIcon("layers");
+                return TocIcon.getIcon("layers");
             } else {
                 if (layer.isStream()) {
-                    return OrbisGISIcon.getIcon("server_connect");
+                    return TocIcon.getIcon("server_connect");
                 } else {
                     try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {
                         // Create a legend for each spatial field
@@ -68,22 +68,22 @@ public abstract class TocAbstractRenderer extends TreeLaFRenderer {
                             switch (type) {
                                 case GeometryTypeCodes.GEOMETRY:
                                 case GeometryTypeCodes.GEOMCOLLECTION:
-                                    return OrbisGISIcon.getIcon("layermixe");
+                                    return TocIcon.getIcon("layermixe");
                                 case GeometryTypeCodes.POINT:
                                 case GeometryTypeCodes.MULTIPOINT:
-                                    return OrbisGISIcon.getIcon("layerpoint");
+                                    return TocIcon.getIcon("layerpoint");
                                 case GeometryTypeCodes.LINESTRING:
                                 case GeometryTypeCodes.MULTILINESTRING:
-                                    return OrbisGISIcon.getIcon("layerline");
+                                    return TocIcon.getIcon("layerline");
                                 case GeometryTypeCodes.POLYGON:
                                 case GeometryTypeCodes.MULTIPOLYGON:
-                                    return OrbisGISIcon.getIcon("layerpolygon");
+                                    return TocIcon.getIcon("layerpolygon");
                                 default:
                                     throw new RuntimeException(I18N.tr("Unable to find appropriate icon for typeCode {0}", type));
                             }
 
                         } else {
-                            return OrbisGISIcon.getIcon("remove");
+                            return TocIcon.getIcon("remove");
                             // TODO Raster
                             /*
                             if (layer.getRaster().getType() == ImagePlus.COLOR_RGB) {
@@ -99,7 +99,7 @@ public abstract class TocAbstractRenderer extends TreeLaFRenderer {
         } catch (Exception ex) {
             // Error while reading datasource, may be a thread race condition or the table does not exists
             LOGGER.trace(I18N.tr("Error while drawing the Toc tree"));
-            return OrbisGISIcon.getIcon("remove");
+            return TocIcon.getIcon("remove");
         }
     }
 
