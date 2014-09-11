@@ -195,7 +195,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
             saveAction.setEnabled(false);
             tools.add(saveAction);
             DefaultAction refreshIconsAction = new DefaultAction("REFRESH_ICONS", I18N.tr("Refresh"),
-                    I18N.tr("Refresh layer icons"), TocIcon.getIcon("arrow_refresh"),
+                    I18N.tr("Refresh layer icons"), TocIcon.getIcon("refresh"),
                     EventHandler.create(ActionListener.class, this, "onRefreshTocTree"),
                     KeyStroke.getKeyStroke("ctrl R"));
             tools.add(refreshIconsAction);
