@@ -39,6 +39,7 @@ import javax.swing.tree.TreePath;
 import org.orbisgis.sif.CRFlowLayout;
 import org.orbisgis.sif.CarriageReturn;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.button.JButtonTextField;
 import org.orbisgis.view.components.resourceTree.FilterTreeModelDecorator;
 import org.orbisgis.view.toc.icons.TocIcon;
@@ -57,8 +58,8 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
     private static final String CURRENT_RIGHT = "CURRENT_RIGHT";
     private TreeModel optionTreeModel;
     private JButton btnCurrentRight;
-    private JButton btnCurrentLeft;
-    private JButton btnAllLeft;
+    private CustomButton btnCurrentLeft;
+    private CustomButton btnAllLeft;
     private JTree treeOption;
     private JList lstSelection;
     private ActionListener actionListener;
@@ -101,8 +102,8 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
      * @param actionCommand
      * @return
      */
-    private JButton createButton(String iconName, String actionCommand) {
-        JButton button = new JButton(TocIcon.getIcon(iconName));
+    private CustomButton createButton(String iconName, String actionCommand) {
+        CustomButton button = new CustomButton(TocIcon.getIcon(iconName));
         button.setActionCommand(actionCommand);
         button.addActionListener(actionListener);
         return button;
