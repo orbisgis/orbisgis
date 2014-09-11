@@ -2,7 +2,6 @@ package org.orbisgis.mapeditor.map.mapsManager;
 
 import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.viewapi.util.MenuCommonFunctions;
 
 import javax.swing.*;
@@ -11,6 +10,7 @@ import java.beans.EventHandler;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 
 /**
  * A folder that can be unlinked with map manager.
@@ -53,7 +53,7 @@ public class TreeNodeUserFolder extends TreeNodeFolder {
         super.feedPopupMenu(menu);
         // Add unlink menu
         JMenuItem folderRemove = new JMenuItem(I18N.tr("Unlink"),
-                OrbisGISIcon.getIcon("disconnect"));
+                MapEditorIcons.getIcon("disconnect"));
         folderRemove.setToolTipText(I18N.tr("Unlink the folder, without deleting it"));
         folderRemove.setActionCommand("unlink");
         folderRemove.addActionListener(

@@ -44,10 +44,10 @@ import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
 import org.orbisgis.view.components.fstree.PopupTreeNode;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.viewapi.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -173,7 +173,7 @@ public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements Pop
         @Override
         public void feedPopupMenu(JPopupMenu menu) {
                 JMenuItem addServer = new JMenuItem(I18N.tr("Add Map Catalog server"),
-                        OrbisGISIcon.getIcon("world_add"));
+                        MapEditorIcons.getIcon("world_add"));
                 addServer.setToolTipText(I18N.tr("Add a new remote map catalog"));
                 addServer.setActionCommand("TreeNodeRemoteRoot:addServer");
                 addServer.addActionListener(
