@@ -41,7 +41,7 @@ import org.orbisgis.sif.CarriageReturn;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.components.button.JButtonTextField;
 import org.orbisgis.view.components.resourceTree.FilterTreeModelDecorator;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.toc.icons.TocIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -102,7 +102,7 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
      * @return
      */
     private JButton createButton(String iconName, String actionCommand) {
-        JButton button = new JButton(OrbisGISIcon.getIcon(iconName));
+        JButton button = new JButton(TocIcon.getIcon(iconName));
         button.setActionCommand(actionCommand);
         button.addActionListener(actionListener);
         return button;

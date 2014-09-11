@@ -224,9 +224,9 @@ public class TocRenderer extends TreeLaFRenderer {
                         // TODO Raster
                             /*
                             if (layer.getRaster().getType() == ImagePlus.COLOR_RGB) {
-                                return OrbisGISIcon.getIcon("layerrgb");
+                                return TocIcon.getIcon("layerrgb");
                             } else {
-                                return OrbisGISIcon.getIcon("raster");
+                                return TocIcon.getIcon("raster");
                             }
                             */
                     }

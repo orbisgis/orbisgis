@@ -49,7 +49,7 @@ import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.geocatalog.Catalog;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.toc.icons.TocIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -86,7 +86,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
         cmbURLServer.setEditable(true);
         pnlURL.add(cmbURLServer, "span 2");
         
-        CustomButton btnConnect = new CustomButton(OrbisGISIcon.getIcon("server_connect"));
+        CustomButton btnConnect = new CustomButton(TocIcon.getIcon("server_connect"));
         btnConnect.setToolTipText(I18N.tr("Connect to the server."));
         btnConnect.addActionListener(new ActionListener() {
             @Override
@@ -95,7 +95,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
             }
         });
         
-        CustomButton btnDelete = new CustomButton(OrbisGISIcon.getIcon("remove"));
+        CustomButton btnDelete = new CustomButton(TocIcon.getIcon("remove"));
         btnDelete.setToolTipText(I18N.tr("Delete the server connection."));
         btnDelete.addActionListener(new ActionListener() {
             @Override
@@ -109,7 +109,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
             }
         });
 
-        CustomButton btnUpdate = new CustomButton(OrbisGISIcon.getIcon("arrow_refresh"));
+        CustomButton btnUpdate = new CustomButton(TocIcon.getIcon("refresh"));
         btnUpdate.setToolTipText(I18N.tr("Reload the server connection."));
         btnUpdate.addActionListener(new ActionListener() {
             @Override
