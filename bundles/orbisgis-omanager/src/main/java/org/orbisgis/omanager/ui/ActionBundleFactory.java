@@ -85,7 +85,7 @@ public class ActionBundleFactory {
                     .setActionListener(EventHandler.create(ActionListener.class, bundleItem.getBundle(), "stop")));
         }
         if(bundleItem.isUpdateReady()) {
-            actions.add(new ActionBundle(I18N.tr("Update"), I18N.tr("Update the selected plugin"),getIcon("arrow_refresh"))
+            actions.add(new ActionBundle(I18N.tr("Update"), I18N.tr("Update the selected plugin"),getIcon("refresh"))
                     .setActionListener(EventHandler.create(ActionListener.class, bundleItem.getBundle(), "update")));
         }
         if(bundleItem.isUninstallReady()) {
