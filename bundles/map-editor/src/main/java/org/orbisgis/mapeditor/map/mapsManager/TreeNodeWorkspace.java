@@ -153,7 +153,7 @@ public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements Drop
         public void feedPopupMenu(JPopupMenu menu) {
                 if(downloaded.get()) {
                         JMenuItem updateMenu = new JMenuItem(I18N.tr("Update"),
-                                OrbisGISIcon.getIcon("arrow_refresh"));
+                                OrbisGISIcon.getIcon("refresh"));
                         updateMenu.setToolTipText(I18N.tr("Download the workspace content"));
                         updateMenu.setActionCommand("Update");
                         updateMenu.addActionListener(

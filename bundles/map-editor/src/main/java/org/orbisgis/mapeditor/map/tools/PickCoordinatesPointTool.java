@@ -58,7 +58,7 @@ import java.util.Observable;
 import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
 import org.orbisgis.coremap.layerModel.MapContext;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
 
@@ -94,7 +94,7 @@ public class PickCoordinatesPointTool extends AbstractPointTool {
 
         @Override
         public ImageIcon getImageIcon() {
-               return OrbisGISIcon.getIcon("coordinate_capture");
+               return MapEditorIcons.getIcon("coordinate_capture");
         }
 
         @Override

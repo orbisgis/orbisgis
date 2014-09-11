@@ -43,9 +43,9 @@ import javax.swing.*;
 import org.apache.log4j.Logger;
 import org.cts.crs.CoordinateReferenceSystem;
 import org.orbisgis.core.events.OGVetoableChangeSupport;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.statusbar.StatusBar;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -92,7 +92,7 @@ public class MapStatusBar extends StatusBar {
                 // Projection
                 projectionLabel = new JLabel();
                 addComponent(projectionLabel, SwingConstants.RIGHT);
-                JButton changeProjection = new CustomButton(OrbisGISIcon.getIcon("world"));
+                JButton changeProjection = new CustomButton(MapEditorIcons.getIcon("world_projection"));
                 changeProjection.setToolTipText(I18N.tr("Change coordinate reference system"));
                 //changeProjection.setContentAreaFilled(false);
                 addComponent(changeProjection,SwingConstants.RIGHT,false);

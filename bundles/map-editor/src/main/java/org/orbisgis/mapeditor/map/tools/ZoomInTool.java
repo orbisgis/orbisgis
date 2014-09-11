@@ -57,7 +57,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Observable;
 import javax.swing.ImageIcon;
 import org.orbisgis.coremap.layerModel.MapContext;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
 
@@ -107,18 +107,19 @@ public class ZoomInTool extends AbstractRectangleTool {
 		return ToolUtilities.layerCountGreaterThan(vc, 0);
 	}
 
+        @Override
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return true;
 	}
 
         @Override
 	public ImageIcon getImageIcon() {
-		return OrbisGISIcon.getIcon("zoom_in");
+		return MapEditorIcons.getIcon("zoom_in");
 	}
 
         @Override
         public ImageIcon getCursor() {
-            return OrbisGISIcon.getIcon("zoom_in");
+            return MapEditorIcons.getIcon("zoom_in");
         }
         @Override
 	public String getName() {

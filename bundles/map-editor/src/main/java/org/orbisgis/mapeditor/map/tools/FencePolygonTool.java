@@ -50,9 +50,9 @@ import org.orbisgis.coremap.renderer.se.fill.SolidFill;
 import org.orbisgis.coremap.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
-import org.orbisgis.view.icons.OrbisGISIcon;
 
 public class FencePolygonTool extends AbstractPolygonTool {
         private static Logger UILOGGER = Logger.getLogger("gui."+FencePolygonTool.class);
@@ -140,7 +140,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
     }
 
     @Override
-        public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("shape_polygon_edit");
-        }
+    public ImageIcon getImageIcon() {
+        return MapEditorIcons.getIcon("shape_polygon_edit");
+    }
 }

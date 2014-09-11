@@ -57,7 +57,7 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import javax.swing.ImageIcon;
 import org.orbisgis.coremap.layerModel.MapContext;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.tool.FinishedAutomatonException;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
@@ -70,7 +70,7 @@ public class PanTool extends AbstractDragTool {
 
         @Override
         public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("pan");
+            return MapEditorIcons.getIcon("pan");
         }
         
         
@@ -135,7 +135,7 @@ public class PanTool extends AbstractDragTool {
 
     @Override
     public ImageIcon getCursor() {
-        return OrbisGISIcon.getIcon("pan");
+        return MapEditorIcons.getIcon("pan");
     }
         
 }

@@ -197,7 +197,7 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
                 MenuCommonFunctions.updateOrInsertMenuItem(menu, folderRemove);
                 if(downloaded.get()) {
                         JMenuItem updateMenu = new JMenuItem(I18N.tr("Update"),
-                                OrbisGISIcon.getIcon("arrow_refresh"));
+                                OrbisGISIcon.getIcon("refresh"));
                         updateMenu.setToolTipText(I18N.tr("Download the server content"));
                         updateMenu.setActionCommand("Update");
                         updateMenu.addActionListener(

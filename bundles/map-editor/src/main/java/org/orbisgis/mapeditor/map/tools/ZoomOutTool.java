@@ -65,7 +65,7 @@ import org.orbisgis.mapeditor.map.tools.generated.ZoomOut;
 
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 
 /**
  * Tool to zoom out
@@ -117,17 +117,19 @@ public class ZoomOutTool extends ZoomOut {
 	public void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm) {
 	}
 
+        @Override
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
 		return ToolUtilities.layerCountGreaterThan(vc, 0);
 	}
 
+        @Override
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return true;
 	}
 
         @Override
 	public ImageIcon getImageIcon() {
-		return OrbisGISIcon.getIcon("zoom_out");
+		return MapEditorIcons.getIcon("zoom_out");
 	}
 
         @Override
@@ -142,7 +144,7 @@ public class ZoomOutTool extends ZoomOut {
 
         @Override
         public ImageIcon getCursor() {
-            return OrbisGISIcon.getIcon("zoom_out");
+            return MapEditorIcons.getIcon("zoom_out");
         }
         
 }
