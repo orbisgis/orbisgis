@@ -32,9 +32,9 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import javax.swing.ImageIcon;
 import javax.swing.Timer;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeLeaf;
 import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -103,7 +103,7 @@ public class TreeNodeBusy extends AbstractTreeNodeLeaf implements TreeNodeCustom
 
         @Override
         public ImageIcon getLeafIcon() {
-                return OrbisGISIcon.getIcon(frames[curFrame]);
+                return MapEditorIcons.getIcon(frames[curFrame]);
         }
 
         @Override

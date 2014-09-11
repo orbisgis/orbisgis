@@ -35,7 +35,6 @@ import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
 import org.orbisgis.view.components.fstree.PopupTreeNode;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.viewapi.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -51,6 +50,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 
 /**
  * List of local map folders
@@ -65,6 +65,7 @@ public class TreeNodeLocalRoot extends AbstractTreeNodeContainer implements Popu
 
         /**
          * Default constructor
+        * @param factoryManager
          */
         public TreeNodeLocalRoot(TreeNodeFileFactoryManager factoryManager) {
                 setLabel(I18N.tr("Local"));
@@ -163,7 +164,7 @@ public class TreeNodeLocalRoot extends AbstractTreeNodeContainer implements Popu
         @Override
         public void feedPopupMenu(JPopupMenu menu) {
                 JMenuItem addServer = new JMenuItem(I18N.tr("Add Map Catalog folder"),
-                        OrbisGISIcon.getIcon("folder_add"));
+                        MapEditorIcons.getIcon("folder_add"));
                 addServer.setToolTipText(I18N.tr("Add link to a local folder"));
                 addServer.setActionCommand("TreeNodeLocalRoot:addFolder");
                 addServer.addActionListener(

@@ -56,6 +56,7 @@ import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.map.TransformListener;
 import org.orbisgis.mapeditor.map.ext.MapEditorAction;
 import org.orbisgis.mapeditor.map.ext.MapEditorExtension;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.jobs.ReadMapContextJob;
 import org.orbisgis.mapeditor.map.mapsManager.MapsManager;
 import org.orbisgis.mapeditor.map.mapsManager.TreeLeafMapContextFile;
@@ -78,7 +79,6 @@ import org.orbisgis.view.background.ZoomToSelection;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
 import org.orbisgis.view.edition.EditableTransferListener;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.table.jobs.CreateSourceFromSelection;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.viewapi.docking.DockingPanelParameters;
@@ -137,7 +137,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName("map_editor");
         updateMapLabel();
-        dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
+        dockingPanelParameters.setTitleIcon(MapEditorIcons.getIcon("map"));
         dockingPanelParameters.setMinimizable(false);
         dockingPanelParameters.setExternalizable(false);
         dockingPanelParameters.setCloseable(false);
@@ -394,7 +394,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         actions.addAction(new ActionAutomaton(MapEditorAction.A_ZOOM_OUT,new ZoomOutTool(),this).setLogicalGroup("navigation"));
         actions.addAction(new ActionAutomaton(MapEditorAction.A_PAN,new PanTool(),this).setLogicalGroup("navigation"));
         actions.addAction(new DefaultAction(MapEditorAction.A_FULL_EXTENT,I18N.tr("Full extent"),
-                OrbisGISIcon.getIcon("world"),EventHandler.create(ActionListener.class,this,"onFullExtent"))
+                MapEditorIcons.getIcon("zoom_extent"),EventHandler.create(ActionListener.class,this,"onFullExtent"))
                 .setToolTipText(I18N.tr("Zoom to show all geometries")).setLogicalGroup("navigation"));
 
         // Selection tools
@@ -409,25 +409,25 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         //Clear selection group
         actions.addAction(new DefaultAction(MapEditorAction.A_CLEAR_SELECTION_GROUP,I18N.tr("Clear selection tools")).setMenuGroup(true));
         actions.addAction(new DefaultAction(MapEditorAction.A_CLEAR_ALL_SELECTION, I18N.tr("Clear all selection"),
-                OrbisGISIcon.getIcon("edit-clear_all"),EventHandler.create(ActionListener.class,this,"onClearAllSelection"))
+                MapEditorIcons.getIcon("edit-clear_all"),EventHandler.create(ActionListener.class,this,"onClearAllSelection"))
                 .setToolTipText(I18N.tr("Clear all selected geometries of all layers")).setParent(MapEditorAction.A_CLEAR_SELECTION_GROUP));
         actions.addAction(new DefaultAction(MapEditorAction.A_CLEAR_LAYER_SELECTION, I18N.tr("Clear selected layers"),
-                OrbisGISIcon.getIcon("edit-clear"),EventHandler.create(ActionListener.class,this,"onClearLayerSelection"))
+                MapEditorIcons.getIcon("edit-clear"),EventHandler.create(ActionListener.class,this,"onClearLayerSelection"))
                 .setToolTipText(I18N.tr("Clear all selected geometries of the selected layers")).setParent(MapEditorAction.A_CLEAR_SELECTION_GROUP));
         
         
         //Zoom to selection group
         actions.addAction(new DefaultAction(MapEditorAction.A_ZOOM_SELECTION_GROUP,I18N.tr("Zoom to tools")).setMenuGroup(true));
         actions.addAction(new DefaultAction(MapEditorAction.A_ZOOM_ALL_SELECTION, I18N.tr("Zoom to all selection"),
-                OrbisGISIcon.getIcon("zoom_selected_all"),EventHandler.create(ActionListener.class,this,"onZoomToAllSelection"))
+                MapEditorIcons.getIcon("zoom_selected_all"),EventHandler.create(ActionListener.class,this,"onZoomToAllSelection"))
                 .setToolTipText(I18N.tr("Zoom to all selected geometries")).setParent(MapEditorAction.A_ZOOM_SELECTION_GROUP));
         actions.addAction(new DefaultAction(MapEditorAction.A_ZOOM_LAYER_SELECTION, I18N.tr("Zoom to layer selection"),
-                OrbisGISIcon.getIcon("zoom_selected"),EventHandler.create(ActionListener.class,this,"onZoomToLayerSelection"))
+                MapEditorIcons.getIcon("zoom_selected"),EventHandler.create(ActionListener.class,this,"onZoomToLayerSelection"))
                 .setToolTipText(I18N.tr("Zoom to selected geometries of the selected layers")).setParent(MapEditorAction.A_ZOOM_SELECTION_GROUP));
         
         
         actions.addAction(new DefaultAction(MapEditorAction.A_DATA_SOURCE_FROM_SELECTION, I18N.tr("Create datasource from selection"),
-                OrbisGISIcon.getIcon("table_go"),
+                MapEditorIcons.getIcon("table_go"),
                 EventHandler.create(ActionListener.class,this,"onCreateDataSourceFromSelection"))
                 .setToolTipText(I18N.tr("Create a datasource from the current selection")).setLogicalGroup("selection"));
 
@@ -449,17 +449,17 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
         // Maps manager
         actions.addAction(new DefaultAction(MapEditorAction.A_MAP_TREE, I18N.tr("Maps tree"),
-                OrbisGISIcon.getIcon("map"),
+                MapEditorIcons.getIcon("map"),
                 EventHandler.create(ActionListener.class,this,"onShowHideMapsTree"))
                 .setToolTipText(I18N.tr("Show/Hide maps tree")));
         actions.addAction(new DefaultAction(MapEditorAction.A_MAP_EXPORT_IMAGE, I18N.tr("Export map as image"),
-                OrbisGISIcon.getIcon("export_image"),
+                MapEditorIcons.getIcon("export_image"),
                 EventHandler.create(ActionListener.class,this,"onExportMapRendering"))
                 .setToolTipText(I18N.tr("Export image as file")));
 
         // Cache control
         actions.addAction(new DefaultAction(MapEditorAction.A_MAP_CLEAR_CACHE, I18N.tr("Refresh"),
-                OrbisGISIcon.getIcon("arrow_refresh"), EventHandler.create(ActionListener.class, this ,"onClearCache")));
+                MapEditorIcons.getIcon("refresh"), EventHandler.create(ActionListener.class, this ,"onClearCache")));
     }
 
     /**
@@ -619,7 +619,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 I18N.tr("Export map as image"),
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
-                OrbisGISIcon.getIcon("map_catalog"),
+                MapEditorIcons.getIcon("map_catalog"),
                 new Object[]{I18N.tr("OK"), I18N.tr("Cancel"), refreshButton},
                 null);
 
