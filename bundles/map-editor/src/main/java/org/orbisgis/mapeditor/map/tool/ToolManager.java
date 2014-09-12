@@ -507,18 +507,8 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
 
                         c = crossCursor;
                 } else {
-                        Dimension size = Toolkit.getDefaultToolkit().getBestCursorSize(32,
-                                32);
-                        BufferedImage bi = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(
-                                size.width, size.height, Transparency.BITMASK);
-                        Image image = cursor.getImage();
-                        int xOffset = (size.width - image.getWidth(null)) / 2;
-                        int yOffset = (size.height - image.getHeight(null)) / 2;
-                        bi.createGraphics().drawImage(image, xOffset, yOffset, null);
-
-                        Point hotSpot = getTool().getHotSpotOffset();
-                        hotSpot = new Point(hotSpot.x + xOffset, hotSpot.y + yOffset);
-                        c = Toolkit.getDefaultToolkit().createCustomCursor(bi, hotSpot, "");
+                        Point hotSpot = getTool().getHotSpotOffset();                        
+                        c = Toolkit.getDefaultToolkit().createCustomCursor(cursor.getImage(), hotSpot, "");
                 }
 
                 component.setCursor(c);

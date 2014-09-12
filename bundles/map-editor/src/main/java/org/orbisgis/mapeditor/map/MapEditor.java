@@ -392,11 +392,11 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         // Navigation tools
         actions.addAction(new ActionAutomaton(MapEditorAction.A_ZOOM_IN,new ZoomInTool(),this).setLogicalGroup("navigation"));
         actions.addAction(new ActionAutomaton(MapEditorAction.A_ZOOM_OUT,new ZoomOutTool(),this).setLogicalGroup("navigation"));
-        actions.addAction(new ActionAutomaton(MapEditorAction.A_PAN,new PanTool(),this).setLogicalGroup("navigation"));
         actions.addAction(new DefaultAction(MapEditorAction.A_FULL_EXTENT,I18N.tr("Full extent"),
                 MapEditorIcons.getIcon("zoom_extent"),EventHandler.create(ActionListener.class,this,"onFullExtent"))
                 .setToolTipText(I18N.tr("Zoom to show all geometries")).setLogicalGroup("navigation"));
-
+        actions.addAction(new ActionAutomaton(MapEditorAction.A_PAN,new PanTool(),this).setLogicalGroup("navigation"));
+       
         // Selection tools
         actions.addAction(new ActionAutomaton(MapEditorAction.A_INFO_TOOL,new InfoTool(),this)
                 .addTrackedMapContextProperty(MapContext.PROP_SELECTEDLAYERS)
