@@ -31,7 +31,6 @@ package org.orbisgis.view.icons;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import org.orbisgis.sif.icons.BaseIcon;
-import org.orbisgis.sif.icons.SifIcon;
 
 
 /**

@@ -231,7 +231,7 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                 MenuCommonFunctions.updateOrInsertMenuItem(menu, copyPathMenu);
                 // Read the file system to update the tree
                 JMenuItem updateMenu = new JMenuItem(I18N.tr("Update"),
-                        OrbisGISIcon.getIcon("arrow_refresh"));
+                        OrbisGISIcon.getIcon("refresh"));
                 updateMenu.setToolTipText(I18N.tr("Update the content of this folder from the file system"));
                 updateMenu.setActionCommand("Update");
                 updateMenu.addActionListener(

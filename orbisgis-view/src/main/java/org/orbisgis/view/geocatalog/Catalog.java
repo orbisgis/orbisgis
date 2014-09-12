@@ -614,7 +614,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             //Popup:Refresh
             popupActions.addAction(new DefaultAction(PopupMenu.M_REFRESH,I18N.tr("Refresh"),
                     I18N.tr("Read the content of the database"),
-                    OrbisGISIcon.getIcon("arrow_refresh"),EventHandler.create(ActionListener.class,
+                    OrbisGISIcon.getIcon("refresh"),EventHandler.create(ActionListener.class,
                     this,"refreshSourceList"),KeyStroke.getKeyStroke("ctrl R")).setLogicalGroup(PopupMenu.GROUP_OPEN));
         }
 
