@@ -138,8 +138,9 @@ public interface Automaton extends Observer {
 	public ImageIcon getImageIcon();
         
 	/**
-	 * Null to use the cross cursor
-	 */
+	* Null to use the cross cursor
+        * @return ImageIcon
+	*/
         public ImageIcon getCursor();
 
 	public boolean isEnabled(MapContext vc, ToolManager tm);

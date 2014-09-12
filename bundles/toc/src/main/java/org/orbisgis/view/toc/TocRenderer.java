@@ -116,7 +116,7 @@ public class TocRenderer extends TreeLaFRenderer {
                                         
                                         if(!layerNode.getTableReference().isEmpty() &&
                                                 !nodeLabel.equals(layerNode.getTableReference())) {
-                                                nodeLabel = I18N.tr("Layer:{0} DataSource :({1})",nodeLabel,layerNode.getTableReference());
+                                                nodeLabel = nodeLabel + " ("+ layerNode.getTableReference()+")";
                                         }
                                         rendererComponent.setText(nodeLabel);
                                         

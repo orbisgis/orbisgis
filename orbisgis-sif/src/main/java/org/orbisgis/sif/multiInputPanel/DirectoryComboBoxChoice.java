@@ -63,8 +63,8 @@ public class DirectoryComboBoxChoice extends ComboBoxChoice {
                 super(fileToStringArray(folders));
                 browseFolders = new CustomButton(SifIcon.getIcon("open"));
                 browseFolders.setToolTipText(I18N.tr("Select folder"));
-                mainComponent.add(comp, "width 250!");
-                mainComponent.add(browseFolders, "width 16!");
+                mainComponent.add(comp, "width 260!");
+                mainComponent.add(browseFolders, "width 24!");
         }
 
         /**
