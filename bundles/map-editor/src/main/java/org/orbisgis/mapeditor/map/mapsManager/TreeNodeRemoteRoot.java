@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -48,6 +49,7 @@ import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
 import org.orbisgis.view.components.fstree.PopupTreeNode;
+import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
 import org.orbisgis.viewapi.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -56,7 +58,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * List of remote map catalog servers
  * @author Nicolas Fortin
  */
-public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements PopupTreeNode {
+public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements PopupTreeNode, TreeNodeCustomIcon {
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeRemoteRoot.class);
         private static final Logger LOGGER = Logger.getLogger(TreeNodeRemoteRoot.class);
         // This list must be updated to the current state of shown servers
@@ -181,4 +183,19 @@ public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements Pop
                         this, "onAddServer"));
                 MenuCommonFunctions.updateOrInsertMenuItem(menu, addServer);
         }
+        
+    @Override
+    public ImageIcon getLeafIcon() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public ImageIcon getClosedIcon() {
+        return MapEditorIcons.getIcon("folder");
+    }
+
+    @Override
+    public ImageIcon getOpenIcon() {
+        return MapEditorIcons.getIcon("folder_open");
+    }
 }

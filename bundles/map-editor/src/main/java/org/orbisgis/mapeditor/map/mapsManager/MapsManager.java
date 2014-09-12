@@ -97,7 +97,7 @@ public class MapsManager extends JPanel {
                 if(!rootFolderPath.exists()) {
                     rootFolderPath.mkdirs();
                 }
-                TreeNodeFolder workspaceFolder = new TreeNodeFolder(rootFolderPath,tree);
+                TreeNodeDiskFolder workspaceFolder = new TreeNodeDiskFolder(rootFolderPath,tree);
                 workspaceFolder.setLabel(I18N.tr("default"));
                 rootFolder = new TreeNodeLocalRoot(tree);
                 rootRemote = new TreeNodeRemoteRoot(dataManager, new File(mapContextPath));

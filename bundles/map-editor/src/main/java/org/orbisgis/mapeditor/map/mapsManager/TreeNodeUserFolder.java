@@ -1,7 +1,6 @@
 package org.orbisgis.mapeditor.map.mapsManager;
 
 import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
-import org.orbisgis.view.components.fstree.TreeNodeFolder;
 import org.orbisgis.viewapi.util.MenuCommonFunctions;
 
 import javax.swing.*;
@@ -16,7 +15,7 @@ import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
  * A folder that can be unlinked with map manager.
  * @author Nicolas Fortin
  */
-public class TreeNodeUserFolder extends TreeNodeFolder {
+public class TreeNodeUserFolder extends TreeNodeDiskFolder {
     private MapsManagerPersistence mapsManagerPersistence;
 
     /**
@@ -60,5 +59,5 @@ public class TreeNodeUserFolder extends TreeNodeFolder {
                 EventHandler.create(ActionListener.class,
                         this, "onUnlinkFolder"));
         MenuCommonFunctions.updateOrInsertMenuItem(menu, folderRemove, false);
-    }
+        }       
 }

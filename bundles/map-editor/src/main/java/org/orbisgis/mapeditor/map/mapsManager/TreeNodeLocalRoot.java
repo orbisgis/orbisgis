@@ -28,20 +28,6 @@
  */
 package org.orbisgis.mapeditor.map.mapsManager;
 
-import org.apache.log4j.Logger;
-import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.components.OpenFolderPanel;
-import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
-import org.orbisgis.view.components.fstree.PopupTreeNode;
-import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
-import org.orbisgis.view.components.fstree.TreeNodeFolder;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
@@ -50,19 +36,35 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
+import org.apache.log4j.Logger;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.components.OpenFolderPanel;
+import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
+import org.orbisgis.view.components.fstree.PopupTreeNode;
+import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
+import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
+import org.orbisgis.view.components.fstree.TreeNodeFolder;
+import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * List of local map folders
  * @author Nicolas Fortin
  */
-public class TreeNodeLocalRoot extends AbstractTreeNodeContainer implements PopupTreeNode {
+public class TreeNodeLocalRoot extends AbstractTreeNodeContainer implements PopupTreeNode,  TreeNodeCustomIcon {
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeLocalRoot.class);
         private static final Logger LOGGER = Logger.getLogger(TreeNodeLocalRoot.class);
         // This list must be updated to the current state of shown servers
         private MapsManagerPersistence mapsManagerPersistence;
         private TreeNodeFileFactoryManager factoryManager;
-
+               
         /**
          * Default constructor
         * @param factoryManager
@@ -172,4 +174,22 @@ public class TreeNodeLocalRoot extends AbstractTreeNodeContainer implements Popu
                         this, "onAddFolder"));
                 MenuCommonFunctions.updateOrInsertMenuItem(menu, addServer);
         }
+
+    @Override
+    public ImageIcon getLeafIcon() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public ImageIcon getClosedIcon() {
+        return MapEditorIcons.getIcon("folder");
+    }
+
+    @Override
+    public ImageIcon getOpenIcon() {
+         return MapEditorIcons.getIcon("folder_open");
+    }
+        
+        
+        
 }

@@ -261,7 +261,7 @@ public class CompassTool extends AbstractAutomaton {
 
     @Override
     public ImageIcon getImageIcon() {
-        return MapEditorIcons.getIcon("angle");
+        return MapEditorIcons.getIcon("mesureangle");
     }
 
     @Override
@@ -274,6 +274,7 @@ public class CompassTool extends AbstractAutomaton {
         return i18n.tr("This tool mesure the angle");
     }
 
+    @Override
     public void update(Observable o, Object o1) {
     }
 
@@ -288,6 +289,7 @@ public class CompassTool extends AbstractAutomaton {
     }
 
 
+    @Override
     public boolean isFinished(Status status) {
         switch (status) {
             case STANDBY:
@@ -317,6 +319,7 @@ public class CompassTool extends AbstractAutomaton {
         }
     }
 
+    @Override
     public String getMessage() {
         switch (status) {
             case STANDBY:

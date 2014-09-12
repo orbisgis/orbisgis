@@ -449,9 +449,9 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
         // Maps manager
         actions.addAction(new DefaultAction(MapEditorAction.A_MAP_TREE, I18N.tr("Maps tree"),
-                MapEditorIcons.getIcon("map"),
+                MapEditorIcons.getIcon("map_manager"),
                 EventHandler.create(ActionListener.class,this,"onShowHideMapsTree"))
-                .setToolTipText(I18N.tr("Show/Hide maps tree")));
+                .setToolTipText(I18N.tr("Show/Hide Maps Manager")));
         actions.addAction(new DefaultAction(MapEditorAction.A_MAP_EXPORT_IMAGE, I18N.tr("Export map as image"),
                 MapEditorIcons.getIcon("export_image"),
                 EventHandler.create(ActionListener.class,this,"onExportMapRendering"))

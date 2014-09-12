@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler.TransferSupport;
@@ -53,6 +54,7 @@ import org.orbisgis.mapeditor.map.TransferableMap;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.DownloadRemoteMapContext;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.UploadMapContext;
+import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
 import org.orbisgis.viewapi.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -61,7 +63,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * A workspace on a remote server, hold a list of map context
  * @author Nicolas Fortin
  */
-public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements DropDestinationTreeNode, PopupTreeNode {
+public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements DropDestinationTreeNode, PopupTreeNode, TreeNodeCustomIcon {
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeWorkspace.class);
         private static final Logger LOGGER = Logger.getLogger(TreeNodeWorkspace.class);
         AtomicBoolean downloaded = new AtomicBoolean(false);
@@ -161,4 +163,19 @@ public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements Drop
                         MenuCommonFunctions.updateOrInsertMenuItem(menu, updateMenu);
                 }
         }
+        
+    @Override
+    public ImageIcon getLeafIcon() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public ImageIcon getClosedIcon() {
+        return MapEditorIcons.getIcon("folder");
+    }
+ 
+    @Override
+    public ImageIcon getOpenIcon() {
+        return MapEditorIcons.getIcon("folder_open");
+    }
 }
