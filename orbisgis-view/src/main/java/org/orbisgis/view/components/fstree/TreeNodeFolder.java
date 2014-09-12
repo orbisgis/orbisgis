@@ -105,6 +105,11 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
         public void setLoaded(boolean loaded) {
             this.loaded = loaded;
         }
+        
+        protected TreeNodeFolder createInstance(File folderPath,
+                TreeNodeFileFactoryManager factoryManager) {
+            return new TreeNodeFolder(folderPath, factoryManager);
+        }
 
         /**
          * Read the file system and insert the new files and folders
@@ -143,7 +148,8 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                 for(String childPath : fsList) {
                         File newChild = new File(getFilePath(), childPath);
                         if (newChild.isDirectory()) {
-                                TreeNodeFolder subDir = new TreeNodeFolder(newChild, factoryManager);
+                                TreeNodeFolder subDir = 
+                                        createInstance(newChild, factoryManager);
                                 model.insertNodeInto(subDir, this, children.size());
                         } else {
                                 AbstractTreeNode child = factoryManager.create(newChild);

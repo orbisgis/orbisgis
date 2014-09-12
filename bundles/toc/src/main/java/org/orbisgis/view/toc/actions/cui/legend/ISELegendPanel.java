@@ -29,7 +29,6 @@
 package org.orbisgis.view.toc.actions.cui.legend;
 
 import java.awt.Component;
-import org.orbisgis.view.toc.actions.cui.LegendContext;
 
 /**
  * Root interface for UI panels in the SimpleStyleEditor.
