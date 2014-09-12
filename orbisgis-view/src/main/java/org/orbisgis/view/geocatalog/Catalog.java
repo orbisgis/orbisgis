@@ -603,7 +603,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             //        EventHandler.create(ActionListener.class,this,"onMenuSaveInDB"),getListSelectionModel()).setParent(PopupMenu.M_SAVE));
             //Popup:Open attributes
             popupActions.addAction(new ActionOnSelection(PopupMenu.M_OPEN_ATTRIBUTES,I18N.tr("Open the attributes"),
-                    I18N.tr("Open the data source table"),OrbisGISIcon.getIcon("openattributes"),
+                    I18N.tr("Open the data source table"),OrbisGISIcon.getIcon("table"),
                     EventHandler.create(ActionListener.class,this, "onMenuShowTable"),getListSelectionModel()).setKeyStroke(KeyStroke.getKeyStroke("ctrl T")).setLogicalGroup(PopupMenu.GROUP_OPEN));
             //Popup:Remove sources
             popupActions.addAction(new ActionOnSelection(PopupMenu.M_REMOVE,I18N.tr("Remove the source"),

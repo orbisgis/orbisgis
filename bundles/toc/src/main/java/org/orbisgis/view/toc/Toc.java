@@ -247,7 +247,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                         .setLogicalGroup(TocActionFactory.G_STYLE));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_OPEN_ATTRIBUTES,
                     I18N.tr("Open the attributes"), I18N.tr("Open a spreadsheet view of the attributes."),
-                    TocIcon.getIcon("openattributes"),
+                    TocIcon.getIcon("table"),
                     EventHandler.create(ActionListener.class,this, "onMenuShowTable"),KeyStroke.getKeyStroke("ctrl T"))
                         .setOnRealLayerOnly(true)
                         .setOnVectorSourceOnly(true)

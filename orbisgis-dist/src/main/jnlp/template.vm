@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?> 
-<jnlp codebase="http://www.orbisgis.org/store/releases/orbisgis-h2-4.0-SNAPSHOT" href="$outputFile">
+<jnlp codebase="http://www.orbisgis.org/store/releases/orbisgis-5.0-SNAPSHOT" href="$outputFile">
         <information> 
-                <title>OrbisGIS Monomap 4.0-SNAPSHOT</title> 
+                <title>OrbisGIS 5.0.0 SNAPSHOT</title> 
                 <vendor>IRSTV - Atelier SIG</vendor> 
                 <homepage href="http://www.orbisgis.org/"/> 
                 <description>OrbisGIS is a Geographic Information System dedicated to scientific spatial simulation. It is developed by French IRSTV institute and is able to manipulate and create vectorial and raster spatial data. OrbisGIS is distributed under GPL 3 license.</description> 
                 <description kind="short">OrbisGIS is a Geographic Information System dedicated to scientific spatial simulation. It is developed by French IRSTV institute and is able to manipulate and create vectorial and raster spatial data. OrbisGIS is distributed under GPL 3 license.</description> 
-                <icon href="images/mini_orbisgis.png"/> 
+                <icon href="images/orbisgis.png"/> 
                 <icon kind="splash" href="images/logo_orbisgis.jpg"/> 
                 <offline-allowed/> 
         </information> 

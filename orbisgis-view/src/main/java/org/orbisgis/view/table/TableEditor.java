@@ -697,7 +697,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                         }
                         JMenuItem showStats =                         
                                 new JMenuItem(text,
-                                OrbisGISIcon.getIcon("sum")
+                                OrbisGISIcon.getIcon("statistics")
                                 );
                         showStats.addActionListener(
                         EventHandler.create(ActionListener.class,this,
