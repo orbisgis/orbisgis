@@ -9,8 +9,8 @@ import java.util.List;
  * @author Nicolas Fortin
  */
 public interface CoreWorkspace extends Serializable {
-    int MAJOR_VERSION = 4; // Load a workspace only if the major version is equal
-    int MINOR_VERSION = 1; // increment on new features
+    int MAJOR_VERSION = 5; // Load a workspace only if the major version is equal
+    int MINOR_VERSION = 0; // increment on new features
     int REVISION_VERSION = 0;  // increment on fix
     String PROP_APPLICATIONFOLDER = "applicationFolder";
     String PROP_WORKSPACEFOLDER = "workspaceFolder";
