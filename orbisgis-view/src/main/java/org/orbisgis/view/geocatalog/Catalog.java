@@ -48,7 +48,6 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.utilities.JDBCUtilities;
@@ -328,8 +327,8 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             return null;
         }
 
-        private void importFile(DriverFunction.IMPORT_DRIVER_TYPE type) {
-            OpenFilePanel linkSourcePanel = new OpenFilePanel("Geocatalog.LinkFile" ,I18N.tr("Select the file to import"));
+        private void importFile(DriverFunction.IMPORT_DRIVER_TYPE type, String panelMessage) {
+            OpenFilePanel linkSourcePanel = new OpenFilePanel("Geocatalog.LinkFile" ,panelMessage);
             for(DriverFunction driverFunction : fileDrivers) {
                 try {
                     if(driverFunction.getImportDriverType() == type) {
@@ -359,7 +358,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          * selected files.
          */
         public void onMenuImportFile() {
-            importFile(DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+            importFile(DriverFunction.IMPORT_DRIVER_TYPE.COPY, I18N.tr("Select the file to import"));
         }
 
         /**
@@ -369,7 +368,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          * selected files.
          */
         public void onMenuAddLinkedFile() {
-            importFile(DriverFunction.IMPORT_DRIVER_TYPE.LINK);
+            importFile(DriverFunction.IMPORT_DRIVER_TYPE.LINK, I18N.tr("Select the file to open"));
         }
 
         /**
