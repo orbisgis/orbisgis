@@ -80,7 +80,7 @@ public class PluginShell extends JPanel implements DockingPanel {
                 this.hostBundle = hostBundle;
                 parameters.setName("plugin-shell");
                 parameters.setTitle(I18N.tr("Plugin Shell"));
-                parameters.setTitleIcon(new ImageIcon(PluginShell.class.getResource("panel_icon.png")));
+                parameters.setTitleIcon(new ImageIcon(PluginShell.class.getResource("osgi_console.png")));
                 outputField.setEditable(false);
                 outputField.setText(I18N.tr("Plugin shell, type \"help\" for command list.\n"));
                 // Initialising components

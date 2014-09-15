@@ -334,7 +334,7 @@ public class LegendTree extends JPanel {
         toolBar.add(jButtonMenuDown);
 
         JButton jButtonMenuAdd = new JButton();
-        jButtonMenuAdd.setIcon(TocIcon.getIcon("picture_add"));
+        jButtonMenuAdd.setIcon(TocIcon.getIcon("add"));
         jButtonMenuAdd.setToolTipText(I18N.tr("Add"));
         ActionListener aladd = EventHandler.create(
                 ActionListener.class, this, "addElement");
@@ -343,7 +343,7 @@ public class LegendTree extends JPanel {
         toolBar.add(jButtonMenuAdd);
 
         jButtonMenuDel = new JButton();
-        jButtonMenuDel.setIcon(TocIcon.getIcon("picture_delete"));
+        jButtonMenuDel.setIcon(TocIcon.getIcon("delete"));
         jButtonMenuDel.setToolTipText(I18N.tr("Delete"));
         ActionListener alrem = EventHandler.create(
                 ActionListener.class, this, "removeSelectedElement");
@@ -351,7 +351,7 @@ public class LegendTree extends JPanel {
         toolBar.add(jButtonMenuDel);
 
         jButtonMenuRename = new JButton();
-        jButtonMenuRename.setIcon(TocIcon.getIcon("picture_edit"));
+        jButtonMenuRename.setIcon(TocIcon.getIcon("pencil"));
         jButtonMenuRename.setToolTipText(I18N.tr("Rename"));
         jButtonMenuRename.addActionListener(new ActionListener() {
             @Override
@@ -547,6 +547,7 @@ public class LegendTree extends JPanel {
 
         private Component getComponent(ILegendPanel legend, JLabel lab) {
             lab.setText(legend.getLegend().getName());
+            lab.setIcon(TocIcon.getIcon("symbol_style"));
             return lab;
         }
 
@@ -556,6 +557,7 @@ public class LegendTree extends JPanel {
                 s = "Unknown";
             }
             lab.setText(s);
+            lab.setIcon(TocIcon.getIcon("rule_style"));
             return lab;
         }
 
@@ -565,6 +567,7 @@ public class LegendTree extends JPanel {
                 s = "Unknown";
             }
             lab.setText(s);
+            lab.setIcon(TocIcon.getIcon("palette"));
             return lab;
         }
     }

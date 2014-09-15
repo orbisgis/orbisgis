@@ -109,7 +109,7 @@ public class TocRenderer extends TreeLaFRenderer {
                                         ImageIcon nodeIcon = getLayerIcon(layerNode);
                                         if(mapContext!=null && layerNode.equals(mapContext.getActiveLayer())) {
                                             nodeIcon = IconCellRendererUtility.mergeIcons
-                                                    (nodeIcon, TocIcon.getIcon("layer_edit"));
+                                                    (nodeIcon, TocIcon.getIcon("pencil"));
                                         }
                                         rendererComponent.setIcon(nodeIcon);
                                         String nodeLabel = layerNode.getName();

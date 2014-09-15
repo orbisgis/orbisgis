@@ -19,7 +19,7 @@ public interface CoreWorkspace extends Serializable {
     String PROP_PLUGINCACHE = "pluginCache";
     String PROP_LOGFILE = "logFile";
     String VERSION_FILE = "org.orbisgis.version.txt";
-    String CITY_VERSION = "Espoo";
+    String CITY_VERSION = "Molène";
 
     /**
      * Read the file located at {@link #getDataBaseUriFilePath()}

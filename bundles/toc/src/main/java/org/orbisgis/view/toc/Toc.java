@@ -214,7 +214,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
         private void initPopupActions() {
             // Layer actions
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_ZOOM_TO, I18N.tr("Zoom to"),
-                    I18N.tr("Zoom to the layer bounding box"), TocIcon.getIcon("magnifier"),
+                    I18N.tr("Zoom to the layer bounding box"), TocIcon.getIcon("zoom_layer"),
                     EventHandler.create(ActionListener.class, this, "zoomToLayer"), null)
                         .setLogicalGroup(TocActionFactory.G_ZOOM));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_ZOOM_TO_SELECTION,
@@ -255,7 +255,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
             // DataSource Drawing Actions
             popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_EDIT_GEOMETRY,
                     I18N.tr("Start editing"), I18N.tr("The edit geometry toolbar will update this layer's data source."),
-                    TocIcon.getIcon("layer_edit"),
+                    TocIcon.getIcon("pencil"),
                     EventHandler.create(ActionListener.class,this, "onMenuSetActiveLayer"),null)
                         .setEnabledOnNotActiveLayer(true)
                         .setSingleSelection(true));
@@ -305,7 +305,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                     TocIcon.getIcon("palette_add"),
                     EventHandler.create(ActionListener.class, this, "onAddLegend"),null).setOnSingleStyleSelection(true));
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_SIMPLE_EDITION,
-                    I18N.tr("Simple style editor"), I18N.tr("Open the simple editor for SE styles"),
+                    I18N.tr("Style editor"), I18N.tr("Open the simple editor for SE styles"),
                     TocIcon.getIcon("palette_edit"),
                     EventHandler.create(ActionListener.class, this, "onSimpleEditor"),null).setOnSingleStyleSelection(true));
             popupActions.addAction(new StyleAction(this,TocActionFactory.A_REMOVE_STYLE,

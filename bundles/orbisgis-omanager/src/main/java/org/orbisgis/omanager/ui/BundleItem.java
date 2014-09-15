@@ -333,4 +333,11 @@ public class BundleItem {
     public boolean isDeployAndStartReady() {
         return isDeployReady();
     }
+    
+     /**
+     * @return True if the bundle has no Activator and cannot be started
+     */
+    public boolean isFragment() {
+        return getDetails().containsKey(Constants.FRAGMENT_HOST);
+    }
 }

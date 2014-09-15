@@ -75,7 +75,8 @@ public class ActionBundleFactory {
 
     public List<Action> create(final BundleItem bundleItem) {
         List<Action> actions = new ArrayList<Action>();
-
+       
+        if(!bundleItem.isFragment()){
         if(bundleItem.isStartReady()) {
             actions.add(new ActionBundle(I18N.tr("Start"),I18N.tr("Activate the selected plugin"),getIcon("execute"))
                     .setActionListener(EventHandler.create(ActionListener.class, bundleItem.getBundle(), "start")));
@@ -88,6 +89,7 @@ public class ActionBundleFactory {
             actions.add(new ActionBundle(I18N.tr("Update"), I18N.tr("Update the selected plugin"),getIcon("refresh"))
                     .setActionListener(EventHandler.create(ActionListener.class, bundleItem.getBundle(), "update")));
         }
+        }
         if(bundleItem.isUninstallReady()) {
             actions.add(new ActionBundle(I18N.tr("Uninstall"), I18N.tr("Remove the selected plugin"),getIcon("uninstall"))
                     .setActionListener(EventHandler.create(ActionListener.class, bundleItem.getBundle(), "uninstall")));
@@ -95,8 +97,10 @@ public class ActionBundleFactory {
         if(bundleItem.isDeployReady()) {
             actions.add(new ActionDeploy(I18N.tr("Download"),I18N.tr("Download the selected plugin"),false,bundleItem.getObrResource(),bundleContext,frame,getIcon("download")));
         }
+        if(!bundleItem.isFragment()){
         if(bundleItem.isDeployAndStartReady()) {
             actions.add(new ActionDeploy(I18N.tr("Download & Start"),I18N.tr("Download the selected plugin and start it"),true,bundleItem.getObrResource(),bundleContext,frame,getIcon("download_and_start")));
+        }
         }
         return actions;
     }
