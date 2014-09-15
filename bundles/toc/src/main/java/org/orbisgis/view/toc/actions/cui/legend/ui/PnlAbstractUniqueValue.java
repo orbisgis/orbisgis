@@ -42,7 +42,6 @@ import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.background.*;
-import org.orbisgis.view.joblist.JobListItem;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legend.components.ColorConfigurationPanel;
 import org.orbisgis.view.toc.actions.cui.legend.components.ColorScheme;
@@ -52,7 +51,6 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -298,7 +296,8 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
                 Statement st = connection.createStatement()) {
                 PropertyChangeListener cancelPm = EventHandler.create(PropertyChangeListener.class, st, "cancel");
                 progress.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelPm);
-                try(ResultSet rs = st.executeQuery("SELECT DISTINCT "+ TableLocation.quoteIdentifier(fieldName)+" FROM "+ getTable())) {
+                try(ResultSet rs = st.executeQuery("SELECT DISTINCT "+ TableLocation.quoteIdentifier(fieldName)+" FROM "+ getTable()
+                + " WHERE "+ TableLocation.quoteIdentifier(fieldName) + " IS NOT NULL")) {
                     final ProgressMonitor pm = progress.startTask(I18N.tr("Retrieving classes"),
                             ReadTable.getRowCount(connection, getTable()));
                     final int warn = 100;

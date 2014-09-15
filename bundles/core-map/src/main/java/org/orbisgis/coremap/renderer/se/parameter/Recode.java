@@ -251,7 +251,12 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
             ToType ret = getMapItemValue(key);
             return ret == null ? fallbackValue : ret;
         } catch (Exception e) {
-            LOGGER.error(I18N.tr("Fallback ({0})",key),e);
+            if(key.isEmpty()){
+              LOGGER.warn(I18N.tr("A fallback symbol is used for null or empty value"),e);
+            }
+            else{
+              LOGGER.warn(I18N.tr("A fallback symbol is used for the value {0}",key),e);  
+            }
             return fallbackValue;
         }
     }
