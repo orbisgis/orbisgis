@@ -97,8 +97,8 @@ public class RealAttribute extends ValueReference implements RealParameter {
     public Double getValue(Map<String,Object> map) throws ParameterException {
         try {
             Object value = this.getFieldValue(map);
-            if (value instanceof Double) {
-                return (Double)value;
+            if (value instanceof Number) {
+                return ((Number)value).doubleValue();
             } else {
                 return null;
             }
