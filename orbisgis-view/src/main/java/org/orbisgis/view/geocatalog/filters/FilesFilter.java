@@ -30,9 +30,6 @@ package org.orbisgis.view.geocatalog.filters;
 
 import org.h2gis.utilities.TableLocation;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Map;
 
 /**
