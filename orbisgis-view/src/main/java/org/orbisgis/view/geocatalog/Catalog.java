@@ -480,22 +480,22 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          * The user can load several files from a folder
          */
         public void onMenuAddFilesFromFolder() {
-            addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+            addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE.LINK, I18N.tr("Select the folder to open"));
         }
 
         /**
          * The user can copy several files from a folder
          */
         public void onMenuImportFilesFromFolder() {
-            addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+            addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE.COPY, I18N.tr("Select the folder to import"));
         }
 
         /**
          * The user can load several files from a folder
          * @param type
          */
-        public void addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE type) {
-            OpenFolderPanel folderSourcePanel = new OpenFolderPanel("Geocatalog.LinkFolder" ,I18N.tr("Select the folder to import"));
+        public void addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE type, String message) {
+            OpenFolderPanel folderSourcePanel = new OpenFolderPanel("Geocatalog.LinkFolder" ,message);
             for(DriverFunction driverFunction : fileDrivers) {
                 try {
                     if(driverFunction.getImportDriverType() == type) {
