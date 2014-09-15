@@ -5,7 +5,7 @@
     <name>sqlconsole-parser</name>
     <description>SQL Parser for RSyntaxArea</description>
     <parent>
-        <artifactId>orbisgis-h2</artifactId>
+        <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>
         <version>5.0.0-SNAPSHOT</version>
         <relativePath>../..</relativePath>
