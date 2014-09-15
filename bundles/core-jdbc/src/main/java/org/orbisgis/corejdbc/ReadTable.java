@@ -373,7 +373,7 @@ public class ReadTable {
                 }
                 String geomField = geomFields.get(0);
                 String request = "SELECT ST_Envelope("+TableLocation.quoteIdentifier(geomField)+", ST_SRID("+TableLocation.quoteIdentifier(geomField)+")) env_geom FROM "+tableName;
-                ProgressMonitor selectPm = pm.startTask(rowsId.size());
+                ProgressMonitor selectPm = pm.startTask(I18N.tr("Computing the extent of {0} ", tableName), rowsId.size());
                 try(ReadRowSet rs = manager.createReadRowSet()) {
                     rs.setCommand(request);
                     rs.execute(pm);
