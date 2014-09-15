@@ -188,7 +188,7 @@ public class TocRenderer extends TreeLaFRenderer {
                 return TocIcon.getIcon("layers");
             } else {
                 if (layer.isStream()) {
-                    return TocIcon.getIcon("server_connect");
+                    return TocIcon.getIcon("wms_layer");
                 } else {
                     if(!tableGeomType.containsKey(layer.getTableReference())) {
                         tableGeomType.put(layer.getTableReference(), -2);

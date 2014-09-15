@@ -59,7 +59,7 @@ public abstract class TocAbstractRenderer extends TreeLaFRenderer {
                 return TocIcon.getIcon("layers");
             } else {
                 if (layer.isStream()) {
-                    return TocIcon.getIcon("server_connect");
+                    return TocIcon.getIcon("wms_layer");
                 } else {
                     try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {
                         // Create a legend for each spatial field

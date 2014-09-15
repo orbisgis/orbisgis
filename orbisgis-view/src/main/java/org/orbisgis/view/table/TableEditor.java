@@ -430,44 +430,45 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 if(hasSelectedRows || tableSorter.isFiltered()) {
                         pop.addSeparator();
                 }
-                if(hasSelectedRows) {
-                        JMenuItem deselectAll = new JMenuItem(
-                                I18N.tr("Clear selection"),OrbisGISIcon.getIcon("edit-clear"));
-                        deselectAll.setToolTipText(I18N.tr("Deselect all lines"));
-                        deselectAll.addActionListener(
-                                EventHandler.create(ActionListener.class,
-                                this,"onMenuClearSelection"));
-                        pop.add(deselectAll);
-                        JMenuItem inverseSelection = new JMenuItem(
-                                I18N.tr("Reverse selection"),
-                                OrbisGISIcon.getIcon("reverse_selection"));
-                        inverseSelection.setToolTipText(I18N.tr("Reverse the current selection"));
-                        inverseSelection.addActionListener(
-                                EventHandler.create(ActionListener.class,
-                                this,"onMenuReverseSelection"));
-                        pop.add(inverseSelection);
+                if(hasSelectedRows) {                    
                         
-                        JMenuItem createDataSourceSelection = new JMenuItem(
-                                I18N.tr("Create datasource from selection"),
-                                OrbisGISIcon.getIcon("table_go"));
-                        createDataSourceSelection.setToolTipText(
-                                I18N.tr("Create a datasource from the current selection"));
-                        createDataSourceSelection.addActionListener(
-                                EventHandler.create(ActionListener.class,
-                                this, "onCreateDataSourceFromSelection"));
-                        pop.add(createDataSourceSelection);
-                        
-                        
-                        if(isDataOnShownMapContext()) {
-                                JMenuItem zoomToSelection = new JMenuItem(
-                                        I18N.tr("Zoom to selection"),
+                    JMenuItem createDataSourceSelection = new JMenuItem(
+                            I18N.tr("Create datasource from selection"),
+                            OrbisGISIcon.getIcon("table_go"));
+                    createDataSourceSelection.setToolTipText(
+                            I18N.tr("Create a datasource from the current selection"));
+                    createDataSourceSelection.addActionListener(
+                            EventHandler.create(ActionListener.class,
+                                    this, "onCreateDataSourceFromSelection"));
+                    pop.add(createDataSourceSelection);
+
+                    JMenuItem deselectAll = new JMenuItem(
+                            I18N.tr("Clear selection"), OrbisGISIcon.getIcon("edit-clear"));
+                    deselectAll.setToolTipText(I18N.tr("Deselect all lines"));
+                    deselectAll.addActionListener(
+                            EventHandler.create(ActionListener.class,
+                                    this, "onMenuClearSelection"));
+                    pop.add(deselectAll);
+
+                    if (isDataOnShownMapContext()) {
+                        JMenuItem zoomToSelection = new JMenuItem(
+                                I18N.tr("Zoom to selection"),
                                 OrbisGISIcon.getIcon("zoom_selected"));
-                                zoomToSelection.setToolTipText(I18N.tr("In the map editor, zoom to the selected rows"));
-                                zoomToSelection.addActionListener(
-                                        EventHandler.create(ActionListener.class,
-                                        this,"onMenuZoomToSelection"));
-                                pop.add(zoomToSelection);
-                        }
+                        zoomToSelection.setToolTipText(I18N.tr("In the map editor, zoom to the selected rows"));
+                        zoomToSelection.addActionListener(
+                                EventHandler.create(ActionListener.class,
+                                        this, "onMenuZoomToSelection"));
+                        pop.add(zoomToSelection);
+                    }
+
+                    JMenuItem inverseSelection = new JMenuItem(
+                            I18N.tr("Reverse selection"),
+                            OrbisGISIcon.getIcon("reverse_selection"));
+                    inverseSelection.setToolTipText(I18N.tr("Reverse the current selection"));
+                    inverseSelection.addActionListener(
+                            EventHandler.create(ActionListener.class,
+                                    this, "onMenuReverseSelection"));
+                    pop.add(inverseSelection);
                         
                 }
                 JMenuItem findSameCells = new JMenuItem(
