@@ -8,11 +8,9 @@ import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;
 
 /**
- *
+ * TreeNodeFolder is overloaded in order to define custom folder icons.
  * @author ebocher
  */
-
-
 public class TreeNodeDiskFolder extends TreeNodeFolder implements TreeNodeCustomIcon {
 
     public TreeNodeDiskFolder(File folderPath, TreeNodeFileFactoryManager factoryManager) {
