@@ -52,7 +52,6 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.FileTree;
 import org.orbisgis.view.components.fstree.FileTreeModel;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
-import org.orbisgis.view.components.fstree.TreeNodeFolder;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.ReadStoredMap;
 import org.orbisgis.viewapi.edition.EditorManager;
 import org.xnap.commons.i18n.I18n;

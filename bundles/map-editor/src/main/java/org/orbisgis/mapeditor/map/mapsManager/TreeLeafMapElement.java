@@ -120,7 +120,7 @@ public abstract class TreeLeafMapElement extends AbstractTreeNodeLeaf implements
         @Override
         public void feedPopupMenu(JPopupMenu menu) {
                 if(!loaded) {
-                        JMenuItem openMapItem = new JMenuItem(I18N.tr("Open the map"), MapEditorIcons.getIcon("open"));
+                        JMenuItem openMapItem = new JMenuItem(I18N.tr("Open the map"), MapEditorIcons.getIcon("open_map"));
                         openMapItem.addActionListener(EventHandler.create(ActionListener.class,this,"onOpenMap"));
                         openMapItem.setActionCommand("TreeNodeMapElement:OpenMap");
                         MenuCommonFunctions.updateOrInsertMenuItem(menu, openMapItem);
