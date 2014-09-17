@@ -56,7 +56,7 @@ public class SQLConsole implements EditorDockable,SQLConsoleEditor {
         public SQLConsole(DataSource dataSource) {
                 sqlPanel = new SQLConsolePanel(dataSource);
                 dockingPanelParameters.setTitle(I18N.tr("SQL Console"));
-                dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("script_code"));
+                dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("sql_code"));
                 dockingPanelParameters.setDockActions(sqlPanel.getActions().getActions());
                 // Tools that will be created later will also be set in the docking panel
                 // thanks to this listener

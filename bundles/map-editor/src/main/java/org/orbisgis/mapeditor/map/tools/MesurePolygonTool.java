@@ -36,7 +36,7 @@ import java.util.Observable;
 import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
 import org.orbisgis.coremap.layerModel.MapContext;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.tool.DrawingException;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
@@ -80,9 +80,10 @@ public class MesurePolygonTool extends AbstractPolygonTool {
 
         @Override
         public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("mesurearea");
+            return MapEditorIcons.getIcon("mesurearea");
         }
 
+        @Override
 	public String getName() {
 		return i18n.tr("Mesure area");
 	}

@@ -52,11 +52,11 @@ import org.orbisgis.sif.multiInputPanel.MIPValidation;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.orbisgis.view.components.renderers.TreeLaFRenderer;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanelFactory;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.LegendTreeModel;
+import org.orbisgis.view.toc.icons.TocIcon;
 import org.orbisgis.view.toc.wrapper.RuleWrapper;
 import org.orbisgis.view.toc.wrapper.StyleWrapper;
 import org.xnap.commons.i18n.I18n;
@@ -318,7 +318,7 @@ public class LegendTree extends JPanel {
         toolBar.setFloatable(false);
 
         jButtonMenuUp = new JButton();
-        jButtonMenuUp.setIcon(OrbisGISIcon.getIcon("go-up"));
+        jButtonMenuUp.setIcon(TocIcon.getIcon("go-up"));
         jButtonMenuUp.setToolTipText(I18N.tr("Up"));
         ActionListener alu = EventHandler.create(
                 ActionListener.class, this, "moveSelectedElementUp");
@@ -326,7 +326,7 @@ public class LegendTree extends JPanel {
         toolBar.add(jButtonMenuUp);
 
         jButtonMenuDown = new JButton();
-        jButtonMenuDown.setIcon(OrbisGISIcon.getIcon("go-down"));
+        jButtonMenuDown.setIcon(TocIcon.getIcon("go-down"));
         jButtonMenuDown.setToolTipText(I18N.tr("Down"));
         ActionListener ald = EventHandler.create(
                 ActionListener.class, this, "moveSelectedElementDown");
@@ -334,7 +334,7 @@ public class LegendTree extends JPanel {
         toolBar.add(jButtonMenuDown);
 
         JButton jButtonMenuAdd = new JButton();
-        jButtonMenuAdd.setIcon(OrbisGISIcon.getIcon("picture_add"));
+        jButtonMenuAdd.setIcon(TocIcon.getIcon("add"));
         jButtonMenuAdd.setToolTipText(I18N.tr("Add"));
         ActionListener aladd = EventHandler.create(
                 ActionListener.class, this, "addElement");
@@ -343,7 +343,7 @@ public class LegendTree extends JPanel {
         toolBar.add(jButtonMenuAdd);
 
         jButtonMenuDel = new JButton();
-        jButtonMenuDel.setIcon(OrbisGISIcon.getIcon("picture_delete"));
+        jButtonMenuDel.setIcon(TocIcon.getIcon("delete"));
         jButtonMenuDel.setToolTipText(I18N.tr("Delete"));
         ActionListener alrem = EventHandler.create(
                 ActionListener.class, this, "removeSelectedElement");
@@ -351,7 +351,7 @@ public class LegendTree extends JPanel {
         toolBar.add(jButtonMenuDel);
 
         jButtonMenuRename = new JButton();
-        jButtonMenuRename.setIcon(OrbisGISIcon.getIcon("picture_edit"));
+        jButtonMenuRename.setIcon(TocIcon.getIcon("pencil"));
         jButtonMenuRename.setToolTipText(I18N.tr("Rename"));
         jButtonMenuRename.addActionListener(new ActionListener() {
             @Override
@@ -547,6 +547,7 @@ public class LegendTree extends JPanel {
 
         private Component getComponent(ILegendPanel legend, JLabel lab) {
             lab.setText(legend.getLegend().getName());
+            lab.setIcon(TocIcon.getIcon("symbol_style"));
             return lab;
         }
 
@@ -556,6 +557,7 @@ public class LegendTree extends JPanel {
                 s = "Unknown";
             }
             lab.setText(s);
+            lab.setIcon(TocIcon.getIcon("rule_style"));
             return lab;
         }
 
@@ -565,6 +567,7 @@ public class LegendTree extends JPanel {
                 s = "Unknown";
             }
             lab.setText(s);
+            lab.setIcon(TocIcon.getIcon("palette"));
             return lab;
         }
     }

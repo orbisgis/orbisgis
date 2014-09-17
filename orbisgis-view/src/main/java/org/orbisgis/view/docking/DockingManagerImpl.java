@@ -132,7 +132,7 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
 
                 //DEFAULT property of a view
                 // commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, I18N.tr("Docked Window") );
-                commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_ICON, OrbisGISIcon.getIcon("mini_orbisgis") );
+                commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_ICON, OrbisGISIcon.getIcon("orbisgis") );
                 commonControl.getController().getThemeManager().setBackgroundPaint(ThemeManager.BACKGROUND_PAINT + ".station.toolbar.container",new ToolBarBackGround());
                 commonControl.putProperty( ToolbarDockStation.SIDE_GAP, 2 );
                 commonControl.putProperty( ToolbarDockStation.GAP, 2 );

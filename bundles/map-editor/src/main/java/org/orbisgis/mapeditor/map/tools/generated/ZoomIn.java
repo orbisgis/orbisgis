@@ -110,6 +110,7 @@ public abstract class ZoomIn extends AbstractAutomaton {
                 }
 	}
 
+        @Override
 	public boolean isFinished(Status status) {
                 switch(status){
                         case STANDBY:
@@ -141,6 +142,7 @@ public abstract class ZoomIn extends AbstractAutomaton {
                 }
 	}
 
+        @Override
 	public abstract void transitionTo_Standby(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException;
 
@@ -166,6 +168,7 @@ public abstract class ZoomIn extends AbstractAutomaton {
 	public abstract void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException;
 
+        @Override
 	public String getMessage() {
                 switch(status){
                         case STANDBY:

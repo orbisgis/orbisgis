@@ -48,8 +48,8 @@ import org.orbisgis.view.components.fstree.TransferableList;
 import org.orbisgis.view.components.fstree.TransferableNodePaths;
 import org.orbisgis.view.components.fstree.TreeNodeCustomLabel;
 import org.orbisgis.view.components.fstree.TreeNodePath;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.mapeditor.map.TransferableMap;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.jobs.ReadMapContextJob;
 import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.util.MenuCommonFunctions;
@@ -120,7 +120,7 @@ public abstract class TreeLeafMapElement extends AbstractTreeNodeLeaf implements
         @Override
         public void feedPopupMenu(JPopupMenu menu) {
                 if(!loaded) {
-                        JMenuItem openMapItem = new JMenuItem(I18N.tr("Open the map"), OrbisGISIcon.getIcon("map"));
+                        JMenuItem openMapItem = new JMenuItem(I18N.tr("Open the map"), MapEditorIcons.getIcon("open_map"));
                         openMapItem.addActionListener(EventHandler.create(ActionListener.class,this,"onOpenMap"));
                         openMapItem.setActionCommand("TreeNodeMapElement:OpenMap");
                         MenuCommonFunctions.updateOrInsertMenuItem(menu, openMapItem);

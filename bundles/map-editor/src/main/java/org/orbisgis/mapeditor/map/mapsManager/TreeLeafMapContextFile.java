@@ -45,11 +45,11 @@ import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.layerModel.LayerException;
 import org.orbisgis.coremap.layerModel.OwsMapContext;
 import org.orbisgis.coremap.renderer.se.common.Description;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
@@ -123,7 +123,7 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
                 super.feedPopupMenu(menu);
                 if(!isLoaded()) {
                         JMenuItem folderRemove = new JMenuItem(I18N.tr("Delete"),
-                                OrbisGISIcon.getIcon("remove"));
+                                MapEditorIcons.getIcon("remove"));
                         folderRemove.setToolTipText(I18N.tr("Remove permanently the map"));
                         folderRemove.setActionCommand("delete");
                         folderRemove.addActionListener(
@@ -141,7 +141,7 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
 
         @Override
         public ImageIcon getLeafIcon() {
-                return OrbisGISIcon.getIcon("map");
+                return MapEditorIcons.getIcon("map");
         }
 
         @Override

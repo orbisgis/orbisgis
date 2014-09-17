@@ -55,7 +55,7 @@ import java.util.Observable;
 import javax.swing.ImageIcon;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 
 
@@ -100,6 +100,6 @@ public class SelectionTool extends AbstractSelectionTool {
 
         @Override
         public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("select");
+            return MapEditorIcons.getIcon("select");
         }
 }

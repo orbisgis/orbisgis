@@ -52,7 +52,7 @@ public class MapLayer {
     private MapLayer parent;
     private String name;
     private String title;
-  private ArrayList<String> srsList;
+    private ArrayList<String> srsList;
     private ArrayList<MapLayer> subLayers;
     // Default bounding box in geographic coordinates
     private BoundingBox bbox;  

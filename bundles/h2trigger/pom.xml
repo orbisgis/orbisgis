@@ -5,9 +5,9 @@
     <name>h2trigger</name>
     <description>Additionnal h2 components like triggers and database triggerFactory. This is a work around for OSGi class loader constraint</description>
     <parent>
-        <artifactId>orbisgis-h2</artifactId>
+        <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>5.0.0-SNAPSHOT</version>
         <relativePath>../..</relativePath>
     </parent>
     <packaging>bundle</packaging>

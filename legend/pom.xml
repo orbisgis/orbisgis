@@ -6,9 +6,9 @@
         <name>legend</name>
         <url>http://www.orbisgis.org</url>
         <parent>
-                <artifactId>orbisgis-h2</artifactId>
+                <artifactId>orbisgis</artifactId>
                 <groupId>org.orbisgis</groupId>
-                <version>4.1.0-SNAPSHOT</version>
+                <version>5.0.0-SNAPSHOT</version>
                 <relativePath>../</relativePath>
         </parent>
         <properties>

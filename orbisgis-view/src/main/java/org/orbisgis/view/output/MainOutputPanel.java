@@ -61,7 +61,7 @@ public class MainOutputPanel extends JPanel implements DockingPanel,MainLogFrame
     public MainOutputPanel() {
         dockingParameters.setName("mainLog");
         dockingParameters.setTitle(I18N.tr("Output"));
-        dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("format-justify-fill"));
+        dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("output"));
         dockingParameters.setCloseable(true);
         
         //Create the action tools

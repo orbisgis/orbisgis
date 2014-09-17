@@ -72,6 +72,7 @@ public interface RealParameter extends SeParameter, Comparable {
          * Tries to retrieve the value associated to this RealParameter in the map.
          * Note that it is up to the realization to know the key used to retrieve
          * the value in the map.
+         * @param map
          * @return
          * @throws ParameterException
          */

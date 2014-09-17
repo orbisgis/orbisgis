@@ -51,8 +51,8 @@ import org.orbisgis.view.components.fstree.DropDestinationTreeNode;
 import org.orbisgis.view.components.fstree.PopupTreeNode;
 import org.orbisgis.view.components.fstree.TransferableList;
 import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.mapeditor.map.TransferableMap;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.DeleteRemoteMapContext;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.UploadMapContext;
 import org.orbisgis.viewapi.util.MenuCommonFunctions;
@@ -94,7 +94,7 @@ public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeC
 
         @Override
         public ImageIcon getLeafIcon() {
-                return OrbisGISIcon.getIcon("map");
+                return MapEditorIcons.getIcon("map");
         }
 
         @Override
@@ -155,7 +155,7 @@ public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeC
         @Override
         public void feedPopupMenu(JPopupMenu menu) {
                 JMenuItem remove = new JMenuItem(I18N.tr("Delete"),
-                        OrbisGISIcon.getIcon("remove"));
+                        MapEditorIcons.getIcon("remove"));
                 remove.setToolTipText(I18N.tr("Remove this map on the server"));
                 remove.setActionCommand("delete");
                 remove.addActionListener(

@@ -127,7 +127,7 @@ public class ColorLabel extends JPanel {
         if (source.isEnabled()) {
             JLabel lab = (JLabel) source;
             ColorPicker picker = new ColorPicker(lab.getBackground());
-            if (UIFactory.showDialog(picker, false, true)) {
+            if (UIFactory.showDialog(picker, true, true)) {
                 Color color = picker.getColor();
                 source.setBackground(color);
             }

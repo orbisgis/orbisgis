@@ -43,7 +43,6 @@ import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
-import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.map.MapTransform;

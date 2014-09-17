@@ -39,9 +39,10 @@ import javax.swing.tree.TreePath;
 import org.orbisgis.sif.CRFlowLayout;
 import org.orbisgis.sif.CarriageReturn;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.button.JButtonTextField;
 import org.orbisgis.view.components.resourceTree.FilterTreeModelDecorator;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.toc.icons.TocIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -57,8 +58,8 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
     private static final String CURRENT_RIGHT = "CURRENT_RIGHT";
     private TreeModel optionTreeModel;
     private JButton btnCurrentRight;
-    private JButton btnCurrentLeft;
-    private JButton btnAllLeft;
+    private CustomButton btnCurrentLeft;
+    private CustomButton btnAllLeft;
     private JTree treeOption;
     private JList lstSelection;
     private ActionListener actionListener;
@@ -101,8 +102,8 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
      * @param actionCommand
      * @return
      */
-    private JButton createButton(String iconName, String actionCommand) {
-        JButton button = new JButton(OrbisGISIcon.getIcon(iconName));
+    private CustomButton createButton(String iconName, String actionCommand) {
+        CustomButton button = new CustomButton(TocIcon.getIcon(iconName));
         button.setActionCommand(actionCommand);
         button.addActionListener(actionListener);
         return button;
@@ -140,9 +141,9 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
     private Component getAddRemoveButtons() {
         JPanel ret = new JPanel();
         ret.setLayout(new CRFlowLayout());
-        btnCurrentRight = createButton("current_right", CURRENT_RIGHT);
-        btnCurrentLeft = createButton("current_left", CURRENT_LEFT);
-        btnAllLeft = createButton("all_left", ALL_LEFT);
+        btnCurrentRight = createButton("go-next", CURRENT_RIGHT);
+        btnCurrentLeft = createButton("go-previous", CURRENT_LEFT);
+        btnAllLeft = createButton("edit-clear", ALL_LEFT);
         ret.add(btnCurrentRight);
         ret.add(new CarriageReturn());
         ret.add(btnCurrentLeft);

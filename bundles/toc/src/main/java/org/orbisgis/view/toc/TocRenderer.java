@@ -52,7 +52,7 @@ import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.view.components.renderers.IconCellRendererUtility;
 import org.orbisgis.view.components.renderers.TreeLaFRenderer;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.toc.icons.TocIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -109,14 +109,14 @@ public class TocRenderer extends TreeLaFRenderer {
                                         ImageIcon nodeIcon = getLayerIcon(layerNode);
                                         if(mapContext!=null && layerNode.equals(mapContext.getActiveLayer())) {
                                             nodeIcon = IconCellRendererUtility.mergeIcons
-                                                    (nodeIcon, OrbisGISIcon.getIcon("edition/layer_edit"));
+                                                    (nodeIcon, TocIcon.getIcon("pencil"));
                                         }
                                         rendererComponent.setIcon(nodeIcon);
                                         String nodeLabel = layerNode.getName();
                                         
                                         if(!layerNode.getTableReference().isEmpty() &&
                                                 !nodeLabel.equals(layerNode.getTableReference())) {
-                                                nodeLabel = I18N.tr("Layer:{0} DataSource :({1})",nodeLabel,layerNode.getTableReference());
+                                                nodeLabel = nodeLabel + " ("+ layerNode.getTableReference()+")";
                                         }
                                         rendererComponent.setText(nodeLabel);
                                         
@@ -124,7 +124,7 @@ public class TocRenderer extends TreeLaFRenderer {
                                         checkBox.setSelected(layerNode.isVisible());
                                 } else if(value instanceof TocTreeNodeStyle)  {
                                         Style styleNode = ((TocTreeNodeStyle) value).getStyle();
-                                        rendererComponent.setIcon(OrbisGISIcon.getIcon("palette"));
+                                        rendererComponent.setIcon(TocIcon.getIcon("palette"));
                                         rendererComponent.setText(styleNode.getName());
                                         checkBox.setSelected(styleNode.isVisible());
                                 }
@@ -185,10 +185,10 @@ public class TocRenderer extends TreeLaFRenderer {
             IOException {
         try {
             if (layer.acceptsChilds()) {
-                return OrbisGISIcon.getIcon("layers");
+                return TocIcon.getIcon("layers");
             } else {
                 if (layer.isStream()) {
-                    return OrbisGISIcon.getIcon("server_connect");
+                    return TocIcon.getIcon("wms_layer");
                 } else {
                     if(!tableGeomType.containsKey(layer.getTableReference())) {
                         tableGeomType.put(layer.getTableReference(), -2);
@@ -204,29 +204,29 @@ public class TocRenderer extends TreeLaFRenderer {
                         switch (type) {
                             case GeometryTypeCodes.GEOMETRY:
                             case GeometryTypeCodes.GEOMCOLLECTION:
-                                return OrbisGISIcon.getIcon("layermixe");
+                                return TocIcon.getIcon("layermixe");
                             case GeometryTypeCodes.POINT:
                             case GeometryTypeCodes.MULTIPOINT:
-                                return OrbisGISIcon.getIcon("layerpoint");
+                                return TocIcon.getIcon("layerpoint");
                             case GeometryTypeCodes.LINESTRING:
                             case GeometryTypeCodes.MULTILINESTRING:
-                                return OrbisGISIcon.getIcon("layerline");
+                                return TocIcon.getIcon("layerline");
                             case GeometryTypeCodes.POLYGON:
                             case GeometryTypeCodes.MULTIPOLYGON:
-                                return OrbisGISIcon.getIcon("layerpolygon");
+                                return TocIcon.getIcon("layerpolygon");
                             default:
                                 throw new RuntimeException(I18N.tr("Unable to find appropriate icon for typeCode {0}", type));
                         }
                     } else if(type == -2) {
-                        return OrbisGISIcon.getIcon("information_geo");
+                        return TocIcon.getIcon("information_geo");
                     } else {
-                        return OrbisGISIcon.getIcon("remove");
+                        return TocIcon.getIcon("remove");
                         // TODO Raster
                             /*
                             if (layer.getRaster().getType() == ImagePlus.COLOR_RGB) {
-                                return OrbisGISIcon.getIcon("layerrgb");
+                                return TocIcon.getIcon("layerrgb");
                             } else {
-                                return OrbisGISIcon.getIcon("raster");
+                                return TocIcon.getIcon("raster");
                             }
                             */
                     }
@@ -235,7 +235,7 @@ public class TocRenderer extends TreeLaFRenderer {
         } catch (Exception ex) {
             // Error while reading datasource, may be a thread race condition or the table does not exists
             UILOGGER.trace(I18N.tr("Error while drawing the Toc tree"));
-            return OrbisGISIcon.getIcon("remove");
+            return TocIcon.getIcon("remove");
         }
     }
     /**

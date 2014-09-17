@@ -53,7 +53,7 @@ public class BeanShellFrame implements EditorDockable {
         public BeanShellFrame() {
                 parameters.setName(EDITOR_NAME);
                 parameters.setTitle(I18N.tr("BeanShell"));
-                parameters.setTitleIcon(OrbisGISIcon.getIcon("page_white_cup"));
+                parameters.setTitleIcon(OrbisGISIcon.getIcon("beanshell"));
                 parameters.setDockActions(panel.getActions().getActions());
                 // If a map is already loaded fetch it in the EditorManager
                 try {

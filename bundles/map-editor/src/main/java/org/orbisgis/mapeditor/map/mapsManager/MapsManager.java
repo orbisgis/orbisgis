@@ -52,7 +52,6 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.FileTree;
 import org.orbisgis.view.components.fstree.FileTreeModel;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
-import org.orbisgis.view.components.fstree.TreeNodeFolder;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.ReadStoredMap;
 import org.orbisgis.viewapi.edition.EditorManager;
 import org.xnap.commons.i18n.I18n;
@@ -97,7 +96,7 @@ public class MapsManager extends JPanel {
                 if(!rootFolderPath.exists()) {
                     rootFolderPath.mkdirs();
                 }
-                TreeNodeFolder workspaceFolder = new TreeNodeFolder(rootFolderPath,tree);
+                TreeNodeDiskFolder workspaceFolder = new TreeNodeDiskFolder(rootFolderPath,tree);
                 workspaceFolder.setLabel(I18N.tr("default"));
                 rootFolder = new TreeNodeLocalRoot(tree);
                 rootRemote = new TreeNodeRemoteRoot(dataManager, new File(mapContextPath));

@@ -45,11 +45,11 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
 import org.orbisgis.view.components.fstree.PopupTreeNode;
 import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.DownloadWorkspaces;
 import org.orbisgis.viewapi.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
@@ -141,11 +141,11 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
         private ImageIcon getServerIcon() {
                 switch(serverStatus) {
                         case DISCONNECTED:
-                                return OrbisGISIcon.getIcon("world_disconnected");
+                                return MapEditorIcons.getIcon("world_disconnected");
                         case CONNECTED:
-                                return OrbisGISIcon.getIcon("world_connected");
+                                return MapEditorIcons.getIcon("world_connected");
                         default:
-                                return OrbisGISIcon.getIcon("connection_error");
+                                return MapEditorIcons.getIcon("connection_error");
                 }
         }
         /**
@@ -188,7 +188,7 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
                         }
                 }           
                 JMenuItem folderRemove = new JMenuItem(I18N.tr("Delete"),
-                        OrbisGISIcon.getIcon("world_delete"));
+                        MapEditorIcons.getIcon("world_delete"));
                 folderRemove.setToolTipText(I18N.tr("Remove this server"));
                 folderRemove.setActionCommand("delete");
                 folderRemove.addActionListener(
@@ -197,7 +197,7 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
                 MenuCommonFunctions.updateOrInsertMenuItem(menu, folderRemove);
                 if(downloaded.get()) {
                         JMenuItem updateMenu = new JMenuItem(I18N.tr("Update"),
-                                OrbisGISIcon.getIcon("arrow_refresh"));
+                                MapEditorIcons.getIcon("refresh"));
                         updateMenu.setToolTipText(I18N.tr("Download the server content"));
                         updateMenu.setActionCommand("Update");
                         updateMenu.addActionListener(

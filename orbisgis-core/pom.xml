@@ -7,9 +7,9 @@
     <url>http://orbisgis.org</url>
     <packaging>bundle</packaging>
     <parent>
-        <artifactId>orbisgis-h2</artifactId>
+        <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>5.0.0-SNAPSHOT</version>
     </parent>
     <build>
         <plugins>

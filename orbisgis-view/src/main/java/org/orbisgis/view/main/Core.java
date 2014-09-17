@@ -269,7 +269,7 @@ public class Core {
      * Init the SIF ui factory
      */
     private void initSIF() {
-        UIFactory.setDefaultImageIcon(OrbisGISIcon.getIcon("mini_orbisgis"));        // Load SIF properties
+        UIFactory.setDefaultImageIcon(OrbisGISIcon.getIcon("orbisgis"));        // Load SIF properties
         try {
             UIFactory.loadState(new File(viewWorkspace.getSIFPath()));
         } catch (IOException ex) {

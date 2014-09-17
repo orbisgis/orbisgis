@@ -48,7 +48,6 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.utilities.JDBCUtilities;
@@ -328,8 +327,8 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             return null;
         }
 
-        private void importFile(DriverFunction.IMPORT_DRIVER_TYPE type) {
-            OpenFilePanel linkSourcePanel = new OpenFilePanel("Geocatalog.LinkFile" ,I18N.tr("Select the file to import"));
+        private void importFile(DriverFunction.IMPORT_DRIVER_TYPE type, String panelMessage) {
+            OpenFilePanel linkSourcePanel = new OpenFilePanel("Geocatalog.LinkFile" ,panelMessage);
             for(DriverFunction driverFunction : fileDrivers) {
                 try {
                     if(driverFunction.getImportDriverType() == type) {
@@ -359,7 +358,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          * selected files.
          */
         public void onMenuImportFile() {
-            importFile(DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+            importFile(DriverFunction.IMPORT_DRIVER_TYPE.COPY, I18N.tr("Select the file to import"));
         }
 
         /**
@@ -369,7 +368,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          * selected files.
          */
         public void onMenuAddLinkedFile() {
-            importFile(DriverFunction.IMPORT_DRIVER_TYPE.LINK);
+            importFile(DriverFunction.IMPORT_DRIVER_TYPE.LINK, I18N.tr("Select the file to open"));
         }
 
         /**
@@ -481,22 +480,22 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          * The user can load several files from a folder
          */
         public void onMenuAddFilesFromFolder() {
-            addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+            addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE.LINK, I18N.tr("Select the folder to open"));
         }
 
         /**
          * The user can copy several files from a folder
          */
         public void onMenuImportFilesFromFolder() {
-            addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+            addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE.COPY, I18N.tr("Select the folder to import"));
         }
 
         /**
          * The user can load several files from a folder
          * @param type
          */
-        public void addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE type) {
-            OpenFolderPanel folderSourcePanel = new OpenFolderPanel("Geocatalog.LinkFolder" ,I18N.tr("Select the folder to import"));
+        public void addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE type, String message) {
+            OpenFolderPanel folderSourcePanel = new OpenFolderPanel("Geocatalog.LinkFolder" ,message);
             for(DriverFunction driverFunction : fileDrivers) {
                 try {
                     if(driverFunction.getImportDriverType() == type) {
@@ -604,7 +603,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             //        EventHandler.create(ActionListener.class,this,"onMenuSaveInDB"),getListSelectionModel()).setParent(PopupMenu.M_SAVE));
             //Popup:Open attributes
             popupActions.addAction(new ActionOnSelection(PopupMenu.M_OPEN_ATTRIBUTES,I18N.tr("Open the attributes"),
-                    I18N.tr("Open the data source table"),OrbisGISIcon.getIcon("openattributes"),
+                    I18N.tr("Open the data source table"),OrbisGISIcon.getIcon("table"),
                     EventHandler.create(ActionListener.class,this, "onMenuShowTable"),getListSelectionModel()).setKeyStroke(KeyStroke.getKeyStroke("ctrl T")).setLogicalGroup(PopupMenu.GROUP_OPEN));
             //Popup:Remove sources
             popupActions.addAction(new ActionOnSelection(PopupMenu.M_REMOVE,I18N.tr("Remove the source"),
@@ -614,7 +613,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             //Popup:Refresh
             popupActions.addAction(new DefaultAction(PopupMenu.M_REFRESH,I18N.tr("Refresh"),
                     I18N.tr("Read the content of the database"),
-                    OrbisGISIcon.getIcon("arrow_refresh"),EventHandler.create(ActionListener.class,
+                    OrbisGISIcon.getIcon("refresh"),EventHandler.create(ActionListener.class,
                     this,"refreshSourceList"),KeyStroke.getKeyStroke("ctrl R")).setLogicalGroup(PopupMenu.GROUP_OPEN));
         }
 

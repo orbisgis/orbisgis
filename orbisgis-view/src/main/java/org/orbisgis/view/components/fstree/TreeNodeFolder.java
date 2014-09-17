@@ -105,6 +105,11 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
         public void setLoaded(boolean loaded) {
             this.loaded = loaded;
         }
+        
+        protected TreeNodeFolder createInstance(File folderPath,
+                TreeNodeFileFactoryManager factoryManager) {
+            return new TreeNodeFolder(folderPath, factoryManager);
+        }
 
         /**
          * Read the file system and insert the new files and folders
@@ -143,7 +148,8 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                 for(String childPath : fsList) {
                         File newChild = new File(getFilePath(), childPath);
                         if (newChild.isDirectory()) {
-                                TreeNodeFolder subDir = new TreeNodeFolder(newChild, factoryManager);
+                                TreeNodeFolder subDir = 
+                                        createInstance(newChild, factoryManager);
                                 model.insertNodeInto(subDir, this, children.size());
                         } else {
                                 AbstractTreeNode child = factoryManager.create(newChild);
@@ -231,7 +237,7 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                 MenuCommonFunctions.updateOrInsertMenuItem(menu, copyPathMenu);
                 // Read the file system to update the tree
                 JMenuItem updateMenu = new JMenuItem(I18N.tr("Update"),
-                        OrbisGISIcon.getIcon("arrow_refresh"));
+                        OrbisGISIcon.getIcon("refresh"));
                 updateMenu.setToolTipText(I18N.tr("Update the content of this folder from the file system"));
                 updateMenu.setActionCommand("Update");
                 updateMenu.addActionListener(

@@ -29,33 +29,26 @@ package org.orbisgis.mapeditor.map.tools;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.geom.Rectangle2D;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Observable;
 import javax.sql.DataSource;
 import javax.swing.ImageIcon;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
-import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
-import org.orbisgis.mapeditor.map.CachedResultSetContainer;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.DefaultJobId;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
 
@@ -175,6 +168,6 @@ public class InfoTool extends AbstractRectangleTool {
 
     @Override
     public ImageIcon getImageIcon() {
-        return OrbisGISIcon.getIcon("information");
+        return MapEditorIcons.getIcon("information");
     }
 }

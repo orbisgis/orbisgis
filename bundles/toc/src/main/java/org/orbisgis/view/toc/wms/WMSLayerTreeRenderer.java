@@ -33,6 +33,7 @@ import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.JTree;
 import org.orbisgis.view.components.renderers.TreeLaFRenderer;
+import org.orbisgis.view.toc.icons.TocIcon;
 
 /**
  * Dedicated renderer for WMS layers in the associated factory.
@@ -62,6 +63,7 @@ public class WMSLayerTreeRenderer extends TreeLaFRenderer {
             JLabel lab = (JLabel) comp;
             MapLayer layer = (MapLayer) value;
             lab.setText(layer.getName());
+            lab.setIcon(TocIcon.getIcon("layer"));
         }
         return comp;
     }

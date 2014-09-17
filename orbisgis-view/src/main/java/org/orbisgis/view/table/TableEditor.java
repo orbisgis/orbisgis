@@ -149,7 +149,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 //the source is removed
                 this.tableEditableElement = element;
                 dockingPanelParameters = new DockingPanelParameters();
-                dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("openattributes"));
+                dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("table"));
                 dockingPanelParameters.setDefaultDockingLocation(
                         new DockingLocation(DockingLocation.Location.STACKED_ON, "map_editor"));
                 tableScrollPane = new JScrollPane(makeTable());
@@ -189,7 +189,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
         private List<Action> getDockActions() {
                 List<Action> actions = new LinkedList<>();
                 actions.add(new DefaultAction(TableEditorActions.A_REFRESH, I18N.tr("Refresh table content"),
-                        OrbisGISIcon.getIcon("arrow_refresh"),
+                        OrbisGISIcon.getIcon("table_refresh"),
                         EventHandler.create(ActionListener.class, this, "onMenuRefresh"))
                         .setLogicalGroup(TableEditorActions.LGROUP_READ));
 
@@ -410,7 +410,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 JPopupMenu pop = new JPopupMenu();
                 boolean hasSelectedRows = table.getSelectedRowCount()>0;
                 if(hasSelectedRows) {
-                        JMenuItem addRowFilter = new JMenuItem(I18N.tr("Filter selected rows"));
+                        JMenuItem addRowFilter = new JMenuItem(I18N.tr("Filter selected rows"),
+                        OrbisGISIcon.getIcon("row_filter"));
                         addRowFilter.setToolTipText(I18N.tr("Show only the selected rows"));
                         addRowFilter.addActionListener(
                                 EventHandler.create(ActionListener.class,
@@ -419,7 +420,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 }
                 if(tableSorter.isFiltered()) {
                         JMenuItem removeRowFilter = new JMenuItem(
-                                I18N.tr("Clear row filter"));
+                                I18N.tr("Clear row filter"), OrbisGISIcon.getIcon("remove"));
                         removeRowFilter.setToolTipText(I18N.tr("Show all rows"));
                         removeRowFilter.addActionListener(
                                 EventHandler.create(ActionListener.class,
@@ -429,44 +430,45 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 if(hasSelectedRows || tableSorter.isFiltered()) {
                         pop.addSeparator();
                 }
-                if(hasSelectedRows) {
-                        JMenuItem deselectAll = new JMenuItem(
-                                I18N.tr("Clear selection"),OrbisGISIcon.getIcon("edit-clear"));
-                        deselectAll.setToolTipText(I18N.tr("Deselect all lines"));
-                        deselectAll.addActionListener(
-                                EventHandler.create(ActionListener.class,
-                                this,"onMenuClearSelection"));
-                        pop.add(deselectAll);
-                        JMenuItem inverseSelection = new JMenuItem(
-                                I18N.tr("Reverse selection"),
-                                OrbisGISIcon.getIcon("arrow_refresh"));
-                        inverseSelection.setToolTipText(I18N.tr("Reverse the current selection"));
-                        inverseSelection.addActionListener(
-                                EventHandler.create(ActionListener.class,
-                                this,"onMenuReverseSelection"));
-                        pop.add(inverseSelection);
+                if(hasSelectedRows) {                    
                         
-                        JMenuItem createDataSourceSelection = new JMenuItem(
-                                I18N.tr("Create datasource from selection"),
-                                OrbisGISIcon.getIcon("table_go"));
-                        createDataSourceSelection.setToolTipText(
-                                I18N.tr("Create a datasource from the current selection"));
-                        createDataSourceSelection.addActionListener(
-                                EventHandler.create(ActionListener.class,
-                                this, "onCreateDataSourceFromSelection"));
-                        pop.add(createDataSourceSelection);
-                        
-                        
-                        if(isDataOnShownMapContext()) {
-                                JMenuItem zoomToSelection = new JMenuItem(
-                                        I18N.tr("Zoom to selection"),
+                    JMenuItem createDataSourceSelection = new JMenuItem(
+                            I18N.tr("Create datasource from selection"),
+                            OrbisGISIcon.getIcon("table_go"));
+                    createDataSourceSelection.setToolTipText(
+                            I18N.tr("Create a datasource from the current selection"));
+                    createDataSourceSelection.addActionListener(
+                            EventHandler.create(ActionListener.class,
+                                    this, "onCreateDataSourceFromSelection"));
+                    pop.add(createDataSourceSelection);
+
+                    JMenuItem deselectAll = new JMenuItem(
+                            I18N.tr("Clear selection"), OrbisGISIcon.getIcon("edit-clear"));
+                    deselectAll.setToolTipText(I18N.tr("Deselect all lines"));
+                    deselectAll.addActionListener(
+                            EventHandler.create(ActionListener.class,
+                                    this, "onMenuClearSelection"));
+                    pop.add(deselectAll);
+
+                    if (isDataOnShownMapContext()) {
+                        JMenuItem zoomToSelection = new JMenuItem(
+                                I18N.tr("Zoom to selection"),
                                 OrbisGISIcon.getIcon("zoom_selected"));
-                                zoomToSelection.setToolTipText(I18N.tr("In the map editor, zoom to the selected rows"));
-                                zoomToSelection.addActionListener(
-                                        EventHandler.create(ActionListener.class,
-                                        this,"onMenuZoomToSelection"));
-                                pop.add(zoomToSelection);
-                        }
+                        zoomToSelection.setToolTipText(I18N.tr("In the map editor, zoom to the selected rows"));
+                        zoomToSelection.addActionListener(
+                                EventHandler.create(ActionListener.class,
+                                        this, "onMenuZoomToSelection"));
+                        pop.add(zoomToSelection);
+                    }
+
+                    JMenuItem inverseSelection = new JMenuItem(
+                            I18N.tr("Reverse selection"),
+                            OrbisGISIcon.getIcon("reverse_selection"));
+                    inverseSelection.setToolTipText(I18N.tr("Reverse the current selection"));
+                    inverseSelection.addActionListener(
+                            EventHandler.create(ActionListener.class,
+                                    this, "onMenuReverseSelection"));
+                    pop.add(inverseSelection);
                         
                 }
                 JMenuItem findSameCells = new JMenuItem(
@@ -696,7 +698,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                         }
                         JMenuItem showStats =                         
                                 new JMenuItem(text,
-                                OrbisGISIcon.getIcon("sum")
+                                OrbisGISIcon.getIcon("statistics")
                                 );
                         showStats.addActionListener(
                         EventHandler.create(ActionListener.class,this,
