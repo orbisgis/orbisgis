@@ -54,8 +54,8 @@ public class ActionDeploy  extends ActionBundle {
     private BundleContext bundleContext;
     private Component frame;
 
-    public ActionDeploy(String label, String toolTipText, boolean start, Resource resource,BundleContext bundleContext,Component frame,Icon icon) {
-        super(label, toolTipText, icon);
+    public ActionDeploy(String label, String toolTipText, boolean start, Resource resource,BundleContext bundleContext,Component frame,Icon icon, boolean isPlugin) {
+        super(label, toolTipText, icon, frame, isPlugin);
         this.start = start;
         this.resource = resource;
         this.bundleContext = bundleContext;
@@ -117,7 +117,6 @@ public class ActionDeploy  extends ActionBundle {
      * Called by user on action launch.
      */
     public void doWork() {
-
 
         ServiceReference<RepositoryAdmin> repositoryAdminServiceReference = bundleContext.getServiceReference(RepositoryAdmin.class);
         if(repositoryAdminServiceReference==null) {

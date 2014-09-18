@@ -124,13 +124,14 @@ public class MainPanel extends JPanel implements Plugin, CustomPlugin{
     /**
      * Constructor of the main plugin panel
      * @param bundleContext Bundle context instance in order to manage them.
+     * @param isPlugin specify plugin category
      */
     public MainPanel(BundleContext bundleContext, boolean isPlugin) {
         super(new BorderLayout());        
         this.bundleContext = bundleContext;
         this.isPlugin=isPlugin;
         initRepositoryTracker();
-        actionFactory = new ActionBundleFactory(bundleContext,this);
+        actionFactory = new ActionBundleFactory(bundleContext,this, isPlugin);
         // Main Panel (South button, center Split Pane)
         // Buttons on south of main panel
         JPanel southButtons = new JPanel();
