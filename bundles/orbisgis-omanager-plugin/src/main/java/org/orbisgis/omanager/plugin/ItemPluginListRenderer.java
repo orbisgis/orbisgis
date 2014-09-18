@@ -26,29 +26,34 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
+package org.orbisgis.omanager.plugin;
 
-package org.orbisgis.omanager.ui;
-
-import org.apache.felix.shell.gui.Plugin;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import java.awt.Component;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 
 /**
- * Serve Plugin service.
- * @author Nicolas Fortin
+ * Decorate a Jlist with a custom icon to identify plugins
+ * @author Erwan Bocher
  */
-public class Activator implements BundleActivator {
+public class ItemPluginListRenderer implements ListCellRenderer<ItemPlugin> {
 
+    private ListCellRenderer<? super ItemPlugin> lookAndFeelRenderer;
+
+    public ItemPluginListRenderer(JList list) {
+        lookAndFeelRenderer = list.getCellRenderer();
+    }   
+    
+    
     @Override
-    public void start(BundleContext bundleContext) throws Exception {
-        bundleContext.registerService(Plugin.class,new MainPanel(bundleContext, true),null);
-        bundleContext.registerService(Plugin.class,new MainPanel(bundleContext, false),null);
+    public Component getListCellRendererComponent(JList<? extends ItemPlugin> list, ItemPlugin value, int index, boolean isSelected, boolean cellHasFocus) {
+        Component lafComp = lookAndFeelRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        if (lafComp instanceof JLabel && value != null) {
+            JLabel label = (JLabel) lafComp;
+            label.setIcon(value.getIcon());
+        }
+        return lafComp;
     }
 
-    @Override
-    public void stop(BundleContext bundleContext) throws Exception {
-        
-    }
-
-     
 }

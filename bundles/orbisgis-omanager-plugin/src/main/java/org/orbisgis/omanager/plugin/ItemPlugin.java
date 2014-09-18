@@ -27,28 +27,39 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.omanager.ui;
+package org.orbisgis.omanager.plugin;
 
-import org.apache.felix.shell.gui.Plugin;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import javax.swing.Icon;
 
 /**
- * Serve Plugin service.
- * @author Nicolas Fortin
+ * Class to manage a title and an icon for a plugin
+ * @author Erwan Bocher
  */
-public class Activator implements BundleActivator {
+public class ItemPlugin {
+    private final String pluginName;
+    private final Icon icon;
 
-    @Override
-    public void start(BundleContext bundleContext) throws Exception {
-        bundleContext.registerService(Plugin.class,new MainPanel(bundleContext, true),null);
-        bundleContext.registerService(Plugin.class,new MainPanel(bundleContext, false),null);
+    /**
+     * Item plugin for a JList
+     * @param pluginName the name of the plugin
+     * @param icon its icon
+     */
+    public ItemPlugin(String pluginName, Icon icon) {
+        this.pluginName = pluginName;
+        this.icon = icon;
+    }
+
+    /**
+     * Plugin icon
+     * @return 
+     */
+    public Icon getIcon() {
+        return icon;
     }
 
     @Override
-    public void stop(BundleContext bundleContext) throws Exception {
-        
+    public String toString() {
+       return pluginName;
     }
-
-     
+    
 }

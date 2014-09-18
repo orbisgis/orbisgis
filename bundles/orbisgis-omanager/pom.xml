@@ -65,6 +65,12 @@
         </properties>
         <dependencies>
                 <dependency>
+                        <groupId>${project.groupId}</groupId>
+                        <artifactId>orbisgis-omanager-plugin</artifactId>
+                        <version>${project.version}</version>
+                        <scope>provided</scope>
+                </dependency>
+                <dependency>
                         <groupId>org.osgi</groupId>
                         <artifactId>org.osgi.core</artifactId>
                         <version>4.3.1</version>
@@ -103,6 +109,6 @@
                     <groupId>com.googlecode.gettext-commons</groupId>
                     <artifactId>gettext-commons</artifactId>
                     <version>${gettext-commons-version}</version>
-                </dependency>
+                </dependency>                
         </dependencies>
 </project>

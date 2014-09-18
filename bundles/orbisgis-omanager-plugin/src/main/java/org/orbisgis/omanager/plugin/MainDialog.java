@@ -30,13 +30,16 @@
 package org.orbisgis.omanager.plugin;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.beans.EventHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -59,7 +62,7 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
     private static final Dimension DEFAULT_DIMENSION = new Dimension(980,480);
     private static final I18n I18N = I18nFactory.getI18n(MainDialog.class);
     private static final Logger LOGGER = Logger.getLogger("gui."+MainDialog.class);
-    private JList shellPlugins = new JList();
+    private JList<ItemPlugin> shellPlugins = new JList();
     private List<Plugin> loadedPlugins = new ArrayList<Plugin>();
     private BundleContext bundleContext;
     private JPanel centerComponent = new JPanel(new BorderLayout());
@@ -74,6 +77,7 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
         this.bundleContext = bundleContext;
         JPanel contentPane = new JPanel(new BorderLayout());
         shellPlugins.setVisible(false);
+        shellPlugins.setCellRenderer(new ItemPluginListRenderer(shellPlugins));
         contentPane.add(shellPlugins,BorderLayout.WEST);
         contentPane.add(centerComponent,BorderLayout.CENTER);
         setDefaultCloseOperation(HIDE_ON_CLOSE);
@@ -127,7 +131,13 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
     private void updateLoadedPluginsList() {
         DefaultListModel pluginNames = new DefaultListModel();
         for(Plugin plugin : loadedPlugins) {
-            pluginNames.addElement(plugin.getName());
+            if(plugin instanceof CustomPlugin){
+                pluginNames.addElement(new ItemPlugin(plugin.getName(), ((CustomPlugin)plugin).getIcon()));
+            }
+            else{
+            pluginNames.addElement(new ItemPlugin(plugin.getName(),
+            new ImageIcon(ManagerMenuFactory.class.getResource("panel_icon.png"))));
+            }
         }
         shellPlugins.setModel(pluginNames);
         // Set selection

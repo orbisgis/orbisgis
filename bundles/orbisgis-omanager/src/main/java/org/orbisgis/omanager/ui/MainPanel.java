@@ -29,6 +29,7 @@
 package org.orbisgis.omanager.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
@@ -38,21 +39,17 @@ import java.net.URI;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -63,12 +60,10 @@ import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -76,7 +71,9 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
+import org.apache.felix.shell.gui.Plugin;
 import org.apache.log4j.Logger;
+import org.orbisgis.omanager.plugin.CustomPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -89,7 +86,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Dialog that handle bundles.
  * @author Nicolas Fortin
  */
-public class MainPanel extends JPanel {
+public class MainPanel extends JPanel implements Plugin, CustomPlugin{
     private static final Dimension MINIMUM_BUNDLE_LIST_DIMENSION = new Dimension(100,50);
     private static final Dimension MINIMUM_BUNDLE_DESCRIPTION_DIMENSION = new Dimension(250,50);
     private static final int MINIMUM_SEARCH_COLUMNS = 10;
@@ -103,7 +100,6 @@ public class MainPanel extends JPanel {
     private Map<String,ImageIcon> buttonIcons = new HashMap<>();
 
     // Bundle Category filter
-    private JComboBox<String> bundleCategory = new JComboBox<>();
     private JTextField bundleSearchField = new JTextField(MINIMUM_SEARCH_COLUMNS);
     private JTextPane bundleDetails = new JTextPane();
     private JList<BundleItem> bundleList = new JList<>();
@@ -124,13 +120,15 @@ public class MainPanel extends JPanel {
      * in ms Launch a search if the user don't type any character within this time.
      */
     private static final long LAUNCH_SEARCH_IDLE_TIME = 300;
+    private final boolean isPlugin;
     /**
      * Constructor of the main plugin panel
      * @param bundleContext Bundle context instance in order to manage them.
      */
-    public MainPanel(BundleContext bundleContext) {
-        super(new BorderLayout());
+    public MainPanel(BundleContext bundleContext, boolean isPlugin) {
+        super(new BorderLayout());        
         this.bundleContext = bundleContext;
+        this.isPlugin=isPlugin;
         initRepositoryTracker();
         actionFactory = new ActionBundleFactory(bundleContext,this);
         // Main Panel (South button, center Split Pane)
@@ -163,12 +161,17 @@ public class MainPanel extends JPanel {
         bundleList.setCellRenderer(new BundleListRenderer(bundleList));
         bundleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         bundleList.addListSelectionListener(EventHandler.create(ListSelectionListener.class,this,"onBundleSelectionChange",""));
-        bundleList.getModel().addListDataListener(EventHandler.create(ListDataListener.class,this,"onListUpdate"));
-        onListUpdate();
+        //bundleList.getModel().addListDataListener(EventHandler.create(ListDataListener.class,this,"onListUpdate"));
+        //onListUpdate();
         applyFilters();
     }
 
-    private ImageIcon getIcon(String iconName) {
+    /**
+     * Get an icon for a button
+     * @param iconName
+     * @return 
+     */
+    private ImageIcon getBtIcon(String iconName) {
         ImageIcon icon = buttonIcons.get(iconName);
         if(icon==null) {
             try {
@@ -226,68 +229,32 @@ public class MainPanel extends JPanel {
                      !repositoryAdminTrackerCustomizer.getRepositories().isEmpty());
          }
     }
-    /**
-     * The Data Model of the Bundle list has been updated.
-     */
-    public void onListUpdate() {
-        Object oldValue = bundleCategory.getSelectedItem();
-        readSelectedBundle();
-        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-        // Update the list of categories
-        Set<String> categories = new HashSet<>();
-        int size = bundleList.getModel().getSize();
-        ListModel<BundleItem> listModel = bundleList.getModel();
-        for(int i=0; i<size; i++) {
-            BundleItem item = listModel.getElementAt(i);
-            if(item != null) {
-                for(String category : item.getBundleCategories()) {
-                    categories.add(category.trim().toLowerCase());
-                }
-            }
-        }
-        if(!categories.contains(DEFAULT_CATEGORY)) {
-            categories.add(DEFAULT_CATEGORY);
-        }
-        model.addElement(I18N.tr("All"));
-        List<String> sortedCategories = new ArrayList<>(categories);
-        Collections.sort(sortedCategories,String.CASE_INSENSITIVE_ORDER);
-        String selectedValue= DEFAULT_CATEGORY;
-        if(oldValue instanceof String) {
-            selectedValue = (String)oldValue;
-        }
-        for(String category : sortedCategories) {
-            model.addElement(category);
-            if(category.equalsIgnoreCase(selectedValue)) {
-                model.setSelectedItem(category);
-            }
-        }
-        bundleCategory.setModel(model);
-    }
+    
     private void addSouthButtons(JPanel southButtons) {
 
-        JButton addFile = new ButtonIcon(getIcon("install_plugin_from_disk"));
+        JButton addFile = new ButtonIcon(getBtIcon("install_plugin_from_disk"));
         addFile.setToolTipText(I18N.tr("Add a plugin from disk. Dependencies are not automatically resolved."));
         addFile.addActionListener(EventHandler.create(ActionListener.class, this, "onAddBundleJar"));
         southButtons.add(addFile);
 
-        JButton addUrl = new ButtonIcon(getIcon("install_plugin_from_url"));
+        JButton addUrl = new ButtonIcon(getBtIcon("install_plugin_from_url"));
         addUrl.setToolTipText(I18N.tr("Add a plugin from a URL (file:// or http(s)://). Dependencies are not automatically resolved."));
         addUrl.addActionListener(EventHandler.create(ActionListener.class,this,"onAddBundleJarUri"));
         southButtons.add(addUrl);
 
         southButtons.add(new JSeparator(JSeparator.VERTICAL));
-        JButton repositoryUrls = new ButtonIcon(getIcon("repository_add"));
+        JButton repositoryUrls = new ButtonIcon(getBtIcon("repository_add"));
         repositoryUrls.setToolTipText(I18N.tr("Add a remote bundle repository."));
         repositoryUrls.addActionListener(EventHandler.create(ActionListener.class,this,"onAddBundleRepository"));
         southButtons.add(repositoryUrls);
 
-        repositoryRemove = new ButtonIcon(getIcon("repository_remove"));
+        repositoryRemove = new ButtonIcon(getBtIcon("repository_remove"));
         repositoryRemove.setToolTipText(I18N.tr("Remove a remote bundle repository."));
         repositoryRemove.addActionListener(EventHandler.create(ActionListener.class,this,"onRemoveBundleRepository"));
         southButtons.add(repositoryRemove);
         onRepositoryChange();
 
-        JButton refreshRepositories = new ButtonIcon(getIcon("repository_refresh"));
+        JButton refreshRepositories = new ButtonIcon(getBtIcon("repository_refresh"));
         refreshRepositories.setToolTipText(I18N.tr("Reload available plugins from all remote repositories."));
         refreshRepositories.addActionListener(EventHandler.create(ActionListener.class,this,"onReloadPlugins"));
         southButtons.add(refreshRepositories);
@@ -390,10 +357,12 @@ public class MainPanel extends JPanel {
         if(radioFilter!=null) {
             filters.add(radioFilter);
         }
-        if(bundleCategory.getSelectedIndex()>0
-                && bundleCategory.getSelectedItem() instanceof String) {
-            filters.add(new ItemFilterCategory((String)bundleCategory.getSelectedItem()));
+        
+        if(isPlugin){
+            filters.add(new ItemFilterCategory("orbisgis"));
         }
+        
+        
         String filterTextValue = bundleSearchField.getText().trim();
         if(!filterTextValue.isEmpty()) {
             filters.add(new ItemFilterContains(filterTextValue));
@@ -586,9 +555,7 @@ public class MainPanel extends JPanel {
         createRadioButton(I18N.tr("Updatable"), I18N.tr("Show only bundles that can be updated."), false,
                 "onFilterBundleUpdate", filterGroup, radioBar);
 
-        // Category
-        bundleCategory.addActionListener(EventHandler.create(ActionListener.class,this,"onFilterByBundleCategory"));
-        radioBar.add(bundleCategory);
+        
         // Find text
         bundleSearchField.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,this,"onSearchTextChange"));
         bundleSearchField.addActionListener(EventHandler.create(ActionListener.class, this, "onSearchTextValidate"));
@@ -620,6 +587,31 @@ public class MainPanel extends JPanel {
             process.execute();
         }
     }
+
+    @Override
+    public Component getGUI() {
+        return this;
+    }
+
+    @Override
+    public String getName() {
+        if(isPlugin){
+            return I18N.tr("Plugins");
+        }
+        return I18N.tr("Systems");
+    }
+
+    @Override
+    public Icon getIcon() {
+        if(isPlugin){
+            return new ImageIcon(MainPanel.class.getResource("defaulticon.png"));
+        }
+        return new ImageIcon(MainPanel.class.getResource("plugin_system.png"));
+    }
+    
+    
+    
+    
     private class CheckBundleFilteringTextInput extends SwingWorker<Boolean,Boolean> {
         long oldLastTypedWordInFindTextField;
         @Override
