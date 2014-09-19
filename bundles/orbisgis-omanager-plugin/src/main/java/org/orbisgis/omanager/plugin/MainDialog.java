@@ -97,6 +97,11 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
             if(selected >= 0 && selected < loadedPlugins.size()) {
                 centerComponent.add(loadedPlugins.get(shellPlugins.getSelectedIndex()).getGUI(),BorderLayout.CENTER);
             }
+            //By default display the first element in the list
+            else if(selected==-1){
+                centerComponent.add(loadedPlugins.get(0).getGUI(),BorderLayout.CENTER);
+                shellPlugins.setSelectedIndex(0);
+            }
             centerComponent.updateUI();
         }
     }

@@ -50,11 +50,11 @@ public class ActionBundle extends AbstractAction {
     private final boolean isPlugin;
     private final Component frame;
 
-    public ActionBundle(String label, String toolTipText,Icon icon, Component frame, boolean isPlugin) {
+    public ActionBundle(String label, String toolTipText,Icon icon, Component frame, boolean warnUser) {
         super(label);
         putValue(SHORT_DESCRIPTION,toolTipText);
         putValue(SMALL_ICON, icon);
-        this.isPlugin=isPlugin;
+        this.isPlugin=warnUser;
         this.frame=frame;
     }
 

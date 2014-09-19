@@ -162,8 +162,6 @@ public class MainPanel extends JPanel implements Plugin, CustomPlugin{
         bundleList.setCellRenderer(new BundleListRenderer(bundleList));
         bundleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         bundleList.addListSelectionListener(EventHandler.create(ListSelectionListener.class,this,"onBundleSelectionChange",""));
-        //bundleList.getModel().addListDataListener(EventHandler.create(ListDataListener.class,this,"onListUpdate"));
-        //onListUpdate();
         applyFilters();
     }
 
@@ -607,7 +605,9 @@ public class MainPanel extends JPanel implements Plugin, CustomPlugin{
         if(isPlugin){
             return new ImageIcon(MainPanel.class.getResource("defaulticon.png"));
         }
+        else{
         return new ImageIcon(MainPanel.class.getResource("plugin_system.png"));
+        }
     }
     
     
