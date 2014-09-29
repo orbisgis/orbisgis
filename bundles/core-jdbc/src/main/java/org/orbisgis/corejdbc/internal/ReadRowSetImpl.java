@@ -122,6 +122,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         if(rowIdSet != null) {
             rowFilter = new IntegerUnion(rowIdSet);
             rowFilterIterator = rowFilter.listIterator();
+            if(!rowFilter.isEmpty()) {
+                rowId = rowFilter.first() - 1;
+            } else {
+                rowId = 0;
+            }
+            currentRow = null;
         } else {
             rowFilter = null;
             rowFilterIterator = null;
@@ -583,12 +589,20 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public boolean first() throws SQLException {
-        return moveCursorTo(1);
+        if(rowFilter == null || rowFilter.isEmpty()) {
+            return moveCursorTo(1);
+        } else {
+            return moveCursorTo(rowFilter.first());
+        }
     }
 
     @Override
     public boolean last() throws SQLException {
-        return moveCursorTo((int)getRowCount());
+        if(rowFilter == null || rowFilter.isEmpty()) {
+            return moveCursorTo((int)getRowCount());
+        } else {
+            return moveCursorTo(rowFilter.last());
+        }
     }
 
     @Override
@@ -634,9 +648,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         rowId = rowFilterIterator.next();
                     } else {
                         if(!rowFilter.isEmpty()) {
-                            rowId = rowFilter.last();
+                            rowId = rowFilter.last() + 1;
                         } else {
-                            rowId = getRowCount();
+                            rowId = getRowCount() + 1;
                         }
                         if(rowId < i) {
                             // After last
