@@ -54,8 +54,8 @@ public class ActionDeploy  extends ActionBundle {
     private BundleContext bundleContext;
     private Component frame;
 
-    public ActionDeploy(String label, String toolTipText, boolean start, Resource resource,BundleContext bundleContext,Component frame,Icon icon) {
-        super(label, toolTipText, icon);
+    public ActionDeploy(String label, String toolTipText, boolean start, Resource resource,BundleContext bundleContext,Component frame,Icon icon, boolean warnUser) {
+        super(label, toolTipText, icon, frame, warnUser);
         this.start = start;
         this.resource = resource;
         this.bundleContext = bundleContext;
@@ -117,8 +117,6 @@ public class ActionDeploy  extends ActionBundle {
      * Called by user on action launch.
      */
     public void doWork() {
-
-
         ServiceReference<RepositoryAdmin> repositoryAdminServiceReference = bundleContext.getServiceReference(RepositoryAdmin.class);
         if(repositoryAdminServiceReference==null) {
             LOGGER.error(I18N.tr("OSGi repository service is not available"));
