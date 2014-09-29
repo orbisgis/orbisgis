@@ -41,6 +41,7 @@ import javax.sql.rowset.RowSetFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.SortedSet;
@@ -261,7 +262,7 @@ public class RowSetTest {
                 //rs.initialize(table, "id",new NullProgressMonitor());
                 rs.setCommand("SELECT * FROM TEST ORDER BY flt");
                 rs.execute();
-                rs.setFilter(Arrays.asList(1,3,4));
+                rs.setFilter(Arrays.asList(1, 3, 4));
                 rs.beforeFirst();
                 assertTrue(rs.next());
                 assertEquals(42, rs.getInt(1));
@@ -288,6 +289,21 @@ public class RowSetTest {
                 assertEquals(44, rs.getInt(1));
                 assertEquals("cop", rs.getString(2));
                 assertEquals(8, rs.getFloat(3), 1e-6);
+                assertTrue(rs.absolute(1));
+                assertEquals(42, rs.getInt(1));
+                assertEquals("marvin", rs.getString(2));
+                assertEquals(1, rs.getRow());
+                rs.setFilter(Arrays.asList(3));
+                rs.beforeFirst();
+                assertTrue(rs.next());
+                assertEquals(3, rs.getRow());
+                assertEquals(43, rs.getInt(1));
+                assertEquals("bob", rs.getString(2));
+                assertEquals(7, rs.getFloat(3), 1e-6);
+                rs.setFilter(new ArrayList<Integer>());
+                rs.beforeFirst();
+                assertFalse(rs.first());
+                assertFalse(rs.next());
             }
             st.execute("drop table if exists test");
         }
