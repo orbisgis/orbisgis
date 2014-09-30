@@ -26,22 +26,27 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
+package org.orbisgis.omanager.ui;
 
-package org.orbisgis.omanager.plugin;
-
-import javax.swing.Icon;
+import org.apache.felix.shell.gui.Plugin;
+import org.orbisgis.omanager.plugin.api.CustomPlugin;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 
 /**
- * This interface is used to expose an icon to the plugin list available in
- * the plugin manager UI.
- * 
- * @author Erwan Bocher
+ * Panel that show all plugins, for advanced users.
+ * Must define a class for OSGi check reason.
+ * @author Nicolas Fortin
  */
-public interface CustomPlugin {
-    
-    /**
-     * Return the plugin icon
-     * @return 
-     */
-     Icon getIcon();
+@Component(service = {CustomPlugin.class, Plugin.class})
+public class MainSystemPanel extends MainPanel {
+    public MainSystemPanel() {
+        super(false);
+    }
+
+    @Activate
+    public void activate(BundleContext bc) {
+        initialize(bc);
+    }
 }

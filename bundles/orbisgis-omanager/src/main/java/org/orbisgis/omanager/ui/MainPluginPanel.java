@@ -26,29 +26,27 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-
 package org.orbisgis.omanager.ui;
 
 import org.apache.felix.shell.gui.Plugin;
-import org.osgi.framework.BundleActivator;
+import org.orbisgis.omanager.plugin.api.CustomPlugin;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 
 /**
- * Serve Plugin service.
+ * Show only filtered plugins, for all users.
+ * Must define a class for OSGi check reason.
  * @author Nicolas Fortin
  */
-public class Activator implements BundleActivator {
-
-    @Override
-    public void start(BundleContext bundleContext) throws Exception {
-        bundleContext.registerService(Plugin.class,new MainPanel(bundleContext, true),null);
-        bundleContext.registerService(Plugin.class,new MainPanel(bundleContext, false),null);
+@Component(service = {CustomPlugin.class, Plugin.class})
+public class MainPluginPanel extends MainPanel {
+    public MainPluginPanel() {
+        super(true);
     }
 
-    @Override
-    public void stop(BundleContext bundleContext) throws Exception {
-        
+    @Activate
+    public void activate(BundleContext bc) {
+        initialize(bc);
     }
-
-     
 }

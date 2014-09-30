@@ -26,34 +26,24 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.omanager.plugin;
 
-import java.awt.Component;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
+package org.orbisgis.omanager.plugin.api;
+
+import org.apache.felix.shell.gui.Plugin;
+
+import javax.swing.Icon;
 
 /**
- * Decorate a Jlist with a custom icon to identify plugins
+ * This interface is used to expose an icon to the plugin list available in
+ * the plugin manager UI.
+ * 
  * @author Erwan Bocher
  */
-public class ItemPluginListRenderer implements ListCellRenderer<ItemPlugin> {
-
-    private ListCellRenderer<? super ItemPlugin> lookAndFeelRenderer;
-
-    public ItemPluginListRenderer(JList list) {
-        lookAndFeelRenderer = list.getCellRenderer();
-    }   
+public interface CustomPlugin extends Plugin {
     
-    
-    @Override
-    public Component getListCellRendererComponent(JList<? extends ItemPlugin> list, ItemPlugin value, int index, boolean isSelected, boolean cellHasFocus) {
-        Component lafComp = lookAndFeelRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        if (lafComp instanceof JLabel && value != null) {
-            JLabel label = (JLabel) lafComp;
-            label.setIcon(value.getIcon());
-        }
-        return lafComp;
-    }
-
+    /**
+     * Return the plugin icon
+     * @return 
+     */
+     Icon getIcon();
 }

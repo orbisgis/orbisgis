@@ -71,9 +71,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
-import org.apache.felix.shell.gui.Plugin;
 import org.apache.log4j.Logger;
-import org.orbisgis.omanager.plugin.CustomPlugin;
+import org.orbisgis.omanager.plugin.api.CustomPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -86,7 +85,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Dialog that handle bundles.
  * @author Nicolas Fortin
  */
-public class MainPanel extends JPanel implements Plugin, CustomPlugin{
+public class MainPanel extends JPanel implements CustomPlugin {
     private static final Dimension MINIMUM_BUNDLE_LIST_DIMENSION = new Dimension(100,50);
     private static final Dimension MINIMUM_BUNDLE_DESCRIPTION_DIMENSION = new Dimension(250,50);
     private static final int MINIMUM_SEARCH_COLUMNS = 10;
@@ -95,7 +94,7 @@ public class MainPanel extends JPanel implements Plugin, CustomPlugin{
     private static final int BORDER_PIXEL_GAP = 2;
     private static final int PROPERTY_TEXT_SIZE_INCREMENT = 3;
     private static final int PROPERTY_TITLE_SIZE_INCREMENT = 4;
-    private static final String DEFAULT_CATEGORY = "OrbisGIS";
+    private static final String DEFAULT_CATEGORY = "orbisgis";
     private ItemFilterStatusFactory.Status radioFilterStatus = ItemFilterStatusFactory.Status.ALL;
     private Map<String,ImageIcon> buttonIcons = new HashMap<>();
 
@@ -123,13 +122,18 @@ public class MainPanel extends JPanel implements Plugin, CustomPlugin{
     private final boolean isPlugin;
     /**
      * Constructor of the main plugin panel
-     * @param bundleContext Bundle context instance in order to manage them.
      * @param isPlugin specify plugin category
      */
-    public MainPanel(BundleContext bundleContext, boolean isPlugin) {
-        super(new BorderLayout());        
-        this.bundleContext = bundleContext;
+    public MainPanel(boolean isPlugin) {
+        super(new BorderLayout());
         this.isPlugin=isPlugin;
+    }
+
+    /**
+     * @param bundleContext Bundle context instance in order to manage them.
+     */
+    protected void initialize(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
         initRepositoryTracker();
         actionFactory = new ActionBundleFactory(bundleContext,this, isPlugin);
         // Main Panel (South button, center Split Pane)
@@ -358,7 +362,7 @@ public class MainPanel extends JPanel implements Plugin, CustomPlugin{
         }
         
         if(isPlugin){
-            filters.add(new ItemFilterCategory("orbisgis"));
+            filters.add(new ItemFilterCategory(DEFAULT_CATEGORY));
         }
         
         
@@ -602,11 +606,10 @@ public class MainPanel extends JPanel implements Plugin, CustomPlugin{
 
     @Override
     public Icon getIcon() {
-        if(isPlugin){
-            return new ImageIcon(MainPanel.class.getResource("defaulticon.png"));
-        }
-        else{
-        return new ImageIcon(MainPanel.class.getResource("plugin_system.png"));
+        if (isPlugin) {
+            return new ImageIcon(MainPanel.class.getResource("defaultIcon.png"));
+        } else {
+            return new ImageIcon(MainPanel.class.getResource("plugin_system.png"));
         }
     }
     

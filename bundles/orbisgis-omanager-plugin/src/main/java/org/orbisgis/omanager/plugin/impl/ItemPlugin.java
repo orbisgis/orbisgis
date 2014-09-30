@@ -27,7 +27,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.omanager.plugin;
+package org.orbisgis.omanager.plugin.impl;
 
 import javax.swing.Icon;
 
