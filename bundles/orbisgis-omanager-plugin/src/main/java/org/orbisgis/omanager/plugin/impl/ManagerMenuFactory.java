@@ -66,7 +66,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Create menu item and create the main menu when the user click on the menu item.
  * @author Nicolas Fortin
  */
-@Component(immediate = true)
+@Component
 public class ManagerMenuFactory implements MainFrameAction {
     private static final Logger LOGGER = Logger.getLogger("gui."+ManagerMenuFactory.class);
     public static final String MENU_MANAGE_PLUGINS = "A_MANAGE_PLUGINS";
