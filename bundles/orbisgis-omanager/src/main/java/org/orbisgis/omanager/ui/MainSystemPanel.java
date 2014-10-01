@@ -26,50 +26,27 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-
 package org.orbisgis.omanager.ui;
 
-import java.awt.Component;
 import org.apache.felix.shell.gui.Plugin;
-import org.osgi.framework.BundleActivator;
+import org.orbisgis.omanager.plugin.api.CustomPlugin;
 import org.osgi.framework.BundleContext;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 
 /**
- * Serve Plugin service.
+ * Panel that show all plugins, for advanced users.
+ * Must define a class for OSGi check reason.
  * @author Nicolas Fortin
  */
-public class Activator implements BundleActivator, Plugin {
-    private static final I18n I18N = I18nFactory.getI18n(MainPanel.class);
-    private String shellName;
-    private MainPanel mainPanel;
-    private BundleContext bundleContext;
-
-    @Override
-    public void start(BundleContext bundleContext) throws Exception {
-        this.bundleContext = bundleContext;
-        shellName = I18N.tr("Fusion"); // Means Local&Repo on the same time
-        bundleContext.registerService(Plugin.class,this,null);
+@Component(service = {CustomPlugin.class, Plugin.class})
+public class MainSystemPanel extends MainPanel {
+    public MainSystemPanel() {
+        super(false);
     }
 
-    @Override
-    public void stop(BundleContext bundleContext) throws Exception {
-        if(mainPanel!=null) {
-            mainPanel.dispose();
-        }
-    }
-
-    @Override
-    public String getName() {
-        return shellName;
-    }
-
-    @Override
-    public Component getGUI() {
-        if(mainPanel==null) {
-            mainPanel = new MainPanel(bundleContext);
-        }
-        return mainPanel;
+    @Activate
+    public void activate(BundleContext bc) {
+        initialize(bc);
     }
 }

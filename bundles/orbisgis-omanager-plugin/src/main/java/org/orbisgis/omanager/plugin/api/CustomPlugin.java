@@ -26,32 +26,24 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.omanager.plugin;
 
-import org.orbisgis.viewapi.main.frames.ext.MainFrameAction;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.obr.RepositoryAdmin;
-import org.osgi.util.tracker.ServiceTracker;
+package org.orbisgis.omanager.plugin.api;
+
+import org.apache.felix.shell.gui.Plugin;
+
+import javax.swing.Icon;
 
 /**
- * Register the OSGi plugin manager menu item.
- * @author Nicolas Fortin
+ * This interface is used to expose an icon to the plugin list available in
+ * the plugin manager UI.
+ * 
+ * @author Erwan Bocher
  */
-public class Activator implements BundleActivator {
-        private ServiceTracker<RepositoryAdmin,RepositoryAdmin> obrTracker;
-
-        @Override
-        public void start(BundleContext bc) throws Exception {
-            // Register the new main menu item "manage plug-ins"
-            bc.registerService(MainFrameAction.class,new ManagerMenuFactory(bc),null);
-            obrTracker = new ServiceTracker<RepositoryAdmin,RepositoryAdmin>(bc,RepositoryAdmin.class,new RepositoryAdminTracker(bc));
-            obrTracker.open();
-        }
-
-        @Override
-        public void stop(BundleContext bc) throws Exception {
-            // Save Repository list
-            obrTracker.close();
-        }
+public interface CustomPlugin extends Plugin {
+    
+    /**
+     * Return the plugin icon
+     * @return 
+     */
+     Icon getIcon();
 }

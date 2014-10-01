@@ -29,25 +29,33 @@
 
 package org.orbisgis.omanager.ui;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
-import javax.swing.SwingWorker;
+import javax.swing.JOptionPane;
 import org.apache.log4j.Logger;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Root class of all bundle actions.
  * @author Nicolas Fortin
  */
 public class ActionBundle extends AbstractAction {
+     private static final I18n I18N = I18nFactory.getI18n(ActionBundle.class);
     protected static Logger LOGGER = Logger.getLogger(ActionBundle.class);
     private ActionListener action;
+    private final boolean isPlugin;
+    private final Component frame;
 
-    public ActionBundle(String label, String toolTipText,Icon icon) {
+    public ActionBundle(String label, String toolTipText,Icon icon, Component frame, boolean warnUser) {
         super(label);
         putValue(SHORT_DESCRIPTION,toolTipText);
         putValue(SMALL_ICON, icon);
+        this.isPlugin=warnUser;
+        this.frame=frame;
     }
 
     /**
@@ -60,8 +68,31 @@ public class ActionBundle extends AbstractAction {
         return this;
     }
 
+    @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        // If this is done outside the SwingEventThread then a thread lock can occur
+        if(isPlugin){            
+            doAction(actionEvent);
+        }
+        else{
+            int result = JOptionPane.showConfirmDialog(frame,
+                    I18N.tr("You will do an action on a plugin used by the system.\n"
+                            + "After that, OrbisGIS could be unstable.\n"
+                            + "Do you confirm ?"),
+                    I18N.tr("Security message"),
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (result == JOptionPane.YES_OPTION) {
+                doAction(actionEvent);
+            }
+        }
+       
+    }    
+    
+    /**
+     * Do the action
+     * @param actionEvent 
+     */
+    private void doAction(ActionEvent actionEvent){
+         // If this is done outside the SwingEventThread then a thread lock can occur
         try {
             action.actionPerformed(actionEvent);
         } catch (Exception ex) {
