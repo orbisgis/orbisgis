@@ -153,6 +153,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         }
         try(Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement()) {
+            PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
             st.setFetchSize(fetchSize);
             connection.setAutoCommit(false); // Use postgre cursor
             try(ResultSet rs = st.executeQuery("SELECT "+pk_name+" FROM "+location+" "+ orderBy)) {
@@ -163,6 +165,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     rowPk.put(pkRowId, rs.getObject(1));
                     cachePm.endTask();
                 }
+            } finally {
+                pm.removePropertyChangeListener(listener);
             }
         } catch (SQLException ex) {
             throw new IllegalArgumentException(ex);
