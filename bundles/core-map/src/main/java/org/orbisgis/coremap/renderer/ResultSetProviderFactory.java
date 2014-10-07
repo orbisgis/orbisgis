@@ -50,6 +50,11 @@ public interface ResultSetProviderFactory {
     ResultSetProvider getResultSetProvider(ILayer layer, ProgressMonitor pm) throws SQLException;
 
     /**
+     * @return Localized result set identifier
+     */
+    String getName();
+
+    /**
      * Object that query the database.
      */
     public interface ResultSetProvider extends AutoCloseable {

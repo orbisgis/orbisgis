@@ -92,6 +92,11 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
     }
 
     @Override
+    public String getName() {
+        return "Local index";
+    }
+
+    @Override
     public CachedResultSet getResultSetProvider(ILayer layer, ProgressMonitor pm) throws SQLException {
         try {
             if(lock.tryLock(WAIT_FOR_INITIALISATION_TIMEOUT, TimeUnit.MILLISECONDS)) {
