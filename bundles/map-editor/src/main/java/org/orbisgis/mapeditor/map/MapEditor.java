@@ -38,8 +38,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
 import javax.swing.event.TreeExpansionListener;
@@ -54,6 +54,7 @@ import org.orbisgis.coremap.layerModel.LayerException;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.map.TransformListener;
+import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
 import org.orbisgis.mapeditor.map.ext.MapEditorAction;
 import org.orbisgis.mapeditor.map.ext.MapEditorExtension;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
@@ -87,6 +88,9 @@ import org.orbisgis.viewapi.edition.EditableElementException;
 import org.orbisgis.viewapi.edition.EditableSource;
 import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.workspace.ViewWorkspace;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -121,6 +125,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     private DataManager dataManager;
     private ViewWorkspace viewWorkspace;
     private EditorManager editorManager;
+    private Map<ResultSetProviderFactory, Action> rsFactories = new HashMap<>();
 
     private boolean userChangedWidth = false;
     private boolean userChangedHeight = false;
@@ -161,6 +166,24 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         //Set the Drop target
         dragDropHandler = new MapTransferHandler();
         this.setTransferHandler(dragDropHandler);
+    }
+
+    public void addResultSetProviderFactory(ResultSetProviderFactory resultSetProviderFactory) {
+        Action rsAction = new DefaultAction("RSF_"+resultSetProviderFactory.getName(),
+                resultSetProviderFactory.getName(),null,
+                EventHandler.create(ActionListener.class, this, "onChangeRendererData", ""))
+                .setMenuGroup(true).setParent(MapEditorAction.A_DATA_PROVIDERS)
+                .setButtonGroup(MapEditorAction.TOGGLE_GROUP_DATA_PROVIDERS);
+        rsFactories.put(resultSetProviderFactory, rsAction);
+        actions.addAction(rsAction);
+    }
+
+    public void removeResultSetProviderFactory(ResultSetProviderFactory resultSetProviderFactory) {
+        actions.removeAction(rsFactories.remove(resultSetProviderFactory));
+    }
+
+    public void onChangeRendererData(ActionEvent ae) {
+
     }
 
     /**
@@ -460,6 +483,12 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         // Cache control
         actions.addAction(new DefaultAction(MapEditorAction.A_MAP_CLEAR_CACHE, I18N.tr("Refresh"),
                 MapEditorIcons.getIcon("refresh"), EventHandler.create(ActionListener.class, this ,"onClearCache")));
+
+        // Parameters
+        actions.addAction(new DefaultAction(MapEditorAction.A_PARAMETERS,I18N.tr("Configuration"),
+                MapEditorIcons.getIcon("config")).setMenuGroup(true));
+        actions.addAction(new DefaultAction(MapEditorAction.A_DATA_PROVIDERS,I18N.tr("Data query"),
+                MapEditorIcons.getIcon("table_go")).setMenuGroup(true).setParent(MapEditorAction.A_PARAMETERS));
     }
 
     /**

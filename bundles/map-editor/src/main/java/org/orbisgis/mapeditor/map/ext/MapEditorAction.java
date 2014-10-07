@@ -40,6 +40,7 @@ public interface MapEditorAction extends ActionFactoryService<MapEditorExtension
      * putValue(ActionTools.TOGGLE_GROUP,MapEditorAction.TOGGLE_GROUP_AUTOMATONS);
      */
     public static final String TOGGLE_GROUP_AUTOMATONS = "automatons";
+    public static final String TOGGLE_GROUP_DATA_PROVIDERS = "DATA_PROVIDERS";
     // Map editor Actions ID
     // Group
     public static final String A_MEASURE_GROUP = "A_MEASURE_GROUP";
@@ -69,4 +70,9 @@ public interface MapEditorAction extends ActionFactoryService<MapEditorExtension
     public static final String A_MAP_TREE = "A_MAP_TREE";
     public static final String A_MAP_EXPORT_IMAGE = "A_MAP_EXPORT_IMAGE";
     public static final String A_MAP_CLEAR_CACHE = "A_MAP_CLEAR_CACHE";
+
+    // Parameters
+    public static final String A_PARAMETERS = "A_PARAMETERS";
+    public static final String A_DATA_PROVIDERS = "A_DATA_PROVIDERS";
+
 }

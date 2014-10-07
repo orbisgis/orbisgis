@@ -29,6 +29,7 @@
 package org.orbisgis.mapeditor;
 
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
 import org.orbisgis.mapeditor.map.MapEditor;
 import org.orbisgis.mapeditorapi.IndexProvider;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
@@ -46,6 +47,10 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * MapEditor cannot be opened twice, the the factory is a SingleEditorFactory.
@@ -63,6 +68,7 @@ public class MapEditorFactory implements SingleEditorFactory {
         private ViewWorkspace viewWorkspace;
         private EditorManager editorManager;
         private IndexProvider indexProvider;
+        private List<ResultSetProviderFactory> rsFactories = new ArrayList<>();
 
         @Reference
         public void setEditorManager(EditorManager editorManager) {
@@ -71,6 +77,21 @@ public class MapEditorFactory implements SingleEditorFactory {
 
         public void unsetEditorManager(EditorManager editorManager) {
             dispose();
+        }
+
+        @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+        public void addResultSetProviderFactory(ResultSetProviderFactory resultSetProviderFactory) {
+            rsFactories.add(resultSetProviderFactory);
+            if(mapPanel != null) {
+                mapPanel.addResultSetProviderFactory(resultSetProviderFactory);
+            }
+        }
+
+        public void removeResultSetProviderFactory(ResultSetProviderFactory resultSetProviderFactory) {
+            rsFactories.remove(resultSetProviderFactory);
+            if(mapPanel != null) {
+                mapPanel.removeResultSetProviderFactory(resultSetProviderFactory);
+            }
         }
 
         /**
@@ -145,6 +166,9 @@ public class MapEditorFactory implements SingleEditorFactory {
                         mapPanel = new MapEditor(viewWorkspace,dataManager,editorManager);
                         if(indexProvider != null) {
                             mapPanel.setIndexProvider(indexProvider);
+                        }
+                        for(ResultSetProviderFactory rsF  : rsFactories) {
+                            mapPanel.addResultSetProviderFactory(rsF);
                         }
                         //Plugins Action will be added to ActionCommands of MapEditor
                         mapEditorExt = new MenuItemServiceTracker<MapEditorExtension,MapEditorAction>(hostBundle,MapEditorAction.class,mapPanel.getActionCommands(),mapPanel);
