@@ -64,6 +64,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -104,8 +105,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private IntegerUnion rowFilter;
     private ListIterator<Integer> rowFilterIterator;
     private String orderBy = "";
-    // Create id > i AND id < j if j-i is superior than this value
-    private static final int RANGE_INTERVAL_USAGE = 50;
+    private static final int QUERY_PK_FETCH_ROWS = 5;
+
 
     /**
      * Constructor, row set based on primary key, significant faster on large table
@@ -222,8 +223,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     }
                 }
                 // Do not use pk if not available or if using indeterminate fetch without filtering
-                if(rowPk == null || (fetchDirection == ResultSet.FETCH_FORWARD &&
-                        (rowFilter == null || rs.getType() != ResultSet.TYPE_FORWARD_ONLY))) {
+                if(rowPk == null) {
                     boolean validRow = false;
                     if(rs.getType() == ResultSet.TYPE_FORWARD_ONLY) {
                         if(rowId < rs.getRow()) {
@@ -248,65 +248,30 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         cache.put(rowId, row);
                     }
                 } else {
-                    // Calculate intervals
-                    // Pk is a number, an interval of PK can be merged
-                    int beginFetch = (int)Math.max(1, fetchDirection == FETCH_REVERSE ? rowId - fetchSize : rowId);
-                    int endFetch = (int)Math.min(getRowCount(), fetchDirection == FETCH_REVERSE ? rowId : rowId + fetchSize);
-                    int inc = fetchDirection == FETCH_REVERSE ? -1 : 1;
-                    LongUnion pkIntervals = new LongUnion();
                     List<Object> pkValues = new ArrayList<>(fetchSize);
-                    Object testPkType = rowPk.values().iterator().next();
-                    int pkFetchSize = 0;
-                    if(!(testPkType instanceof Integer || testPkType instanceof Long)) {
-                        for (long fetchRowId = beginFetch; fetchRowId <= endFetch; fetchRowId += inc) {
-                            if (rowFilter == null || rowFilter.contains((int) fetchRowId)) {
+                    pkValues.add(rowPk.get((int) rowId));
+                    // Fetch next QUERY_PK_FETCH_ROWS rows
+                    if(rowFilter == null) {
+                        int fetchedRows = 0;
+                        for(long fetchRowId = rowId + 1; fetchRowId <= getRowCount(); fetchRowId++) {
+                            if(fetchedRows++ < QUERY_PK_FETCH_ROWS) {
                                 pkValues.add(rowPk.get((int) fetchRowId));
-                                pkFetchSize++;
                             } else {
-                                if (endFetch <= getRowCount()) {
-                                    endFetch++; // Collect one more row
-                                }
+                                break;
                             }
                         }
-
                     } else {
-                        // Could merge int number to make faster and short request
-                        for (int fetchRowId = beginFetch; fetchRowId <= endFetch; fetchRowId += inc) {
-                            if (rowFilter == null || rowFilter.contains(fetchRowId)) {
-                                pkIntervals.add(((Number)rowPk.get(fetchRowId)).longValue());
-                                pkFetchSize++;
+                        int fetchedRows = 0;
+                        Iterator<Integer> it = rowFilter.listIterator((int)rowId);
+                        while(it.hasNext()) {
+                            if(fetchedRows++ < QUERY_PK_FETCH_ROWS) {
+                                pkValues.add(rowPk.get(it.next()));
                             } else {
-                                if (endFetch <= getRowCount()) {
-                                    endFetch++; // Collect one more row
-                                }
+                                break;
                             }
                         }
                     }
                     StringBuilder whereClause = new StringBuilder();
-                    if(!pkIntervals.isEmpty()) {
-                        Iterator<Long> rangeIt = pkIntervals.getValueRanges().iterator();
-                        while(rangeIt.hasNext()) {
-                            long beginRange = rangeIt.next();
-                            long endRange = rangeIt.next();
-                            if(endRange - beginRange > RANGE_INTERVAL_USAGE) {
-                                if (whereClause.length() > 0) {
-                                    whereClause.append(" OR ");
-                                }
-                                whereClause.append(pk_name);
-                                whereClause.append(" >= ");
-                                whereClause.append(beginRange);
-                                whereClause.append(" AND ");
-                                whereClause.append(pk_name);
-                                whereClause.append(" <= ");
-                                whereClause.append(endRange);
-                            } else {
-                                // this is not a range; however it is a single value
-                                for(long paramValue = beginRange; paramValue <= endRange; paramValue++) {
-                                    pkValues.add(paramValue);
-                                }
-                            }
-                        }
-                    }
                     if(!pkValues.isEmpty()) {
                         if (whereClause.length() > 0) {
                             whereClause.append(" OR ");
@@ -341,7 +306,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         try (Connection connection = dataSource.getConnection()) {
                             connection.setAutoCommit(false);
                              try(PreparedStatement st = connection.prepareStatement(command)) {
-                                 st.setFetchSize(pkFetchSize);
                                  int parameterIndex = 1;
                                  for (Object pk : pkValues) {
                                      st.setObject(parameterIndex++, pk);
@@ -451,8 +415,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public void execute(ProgressMonitor pm) throws SQLException {
         if(!pk_name.isEmpty()) {
             cachePrimaryKey(pm);
-        }
-        if(fetchDirection != ResultSet.FETCH_FORWARD) {
             // Always use PK to fetch rows
             resultSetHolder.setCommand(getCommand() + " LIMIT 0");
         } else {

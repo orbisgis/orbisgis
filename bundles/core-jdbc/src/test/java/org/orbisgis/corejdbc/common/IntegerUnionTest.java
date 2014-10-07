@@ -35,12 +35,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -239,5 +241,50 @@ public class IntegerUnionTest {
 
         @AfterClass
         public static void tearDownClass() throws Exception {
+        }
+
+        @Test
+        public void testTailSet() {
+            IntegerUnion iu = new IntegerUnion(Arrays.asList(5, 10, 11, 12, 13, 45, 46));
+            SortedSet<Integer> tail = iu.tailSet(11);
+            assertArrayEquals(new Integer[] {11, 12, 13, 45, 46}, tail.toArray());
+
+            tail = iu.tailSet(45);
+            assertArrayEquals(new Integer[] {45, 46}, tail.toArray());
+
+            tail = iu.tailSet(10);
+            assertArrayEquals(new Integer[] {10, 11, 12, 13, 45, 46}, tail.toArray());
+
+            tail = iu.tailSet(46);
+            assertArrayEquals(new Integer[] {46}, tail.toArray());
+
+            tail = iu.tailSet(20);
+            assertArrayEquals(new Integer[] {45, 46}, tail.toArray());
+        }
+
+        private static Integer[] iteratorToList(ListIterator<Integer> it) {
+            List<Integer> lst = new ArrayList<>();
+            while(it.hasNext()) {
+                lst.add(it.next());
+            }
+            return lst.toArray(new Integer[lst.size()]);
+        }
+
+        @Test
+        public void testIteratorIndex() {
+            IntegerUnion iu = new IntegerUnion(Arrays.asList(5, 10, 11, 12, 13, 45, 46));
+            assertArrayEquals(new Integer[] {11, 12, 13, 45, 46}, iteratorToList(iu.listIterator(11)));
+
+            assertArrayEquals(new Integer[] {12, 13, 45, 46}, iteratorToList(iu.listIterator(12)));
+
+            assertArrayEquals(new Integer[] {13, 45, 46}, iteratorToList(iu.listIterator(13)));
+
+            assertArrayEquals(new Integer[] {45, 46}, iteratorToList(iu.listIterator(20)));
+
+            assertArrayEquals(new Integer[] {45, 46}, iteratorToList(iu.listIterator(44)));
+
+            assertArrayEquals(new Integer[] {45, 46}, iteratorToList(iu.listIterator(45)));
+
+            assertArrayEquals(new Integer[] {46}, iteratorToList(iu.listIterator(46)));
         }
 }

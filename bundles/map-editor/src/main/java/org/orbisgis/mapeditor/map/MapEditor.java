@@ -915,15 +915,10 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 if(eElement instanceof EditableSource) {
                     try {
                         EditableSource edit = (EditableSource) eElement;
-                        if(!edit.isOpen()){
-                            edit.open(pm);
-                        }
                         dropLayer.addLayer(mapContext.createLayer(edit.getTableReference()));
                     } catch (LayerException e) {
                         //This layer can not be inserted, we continue to the next layer
                         GUILOGGER.warn(I18N.tr("Unable to create and drop the layer"),e);
-                    } catch (EditableElementException e) {
-                        GUILOGGER.warn(I18N.tr("A problem occurred while opening the DataSource :"), e);
                     }
                 } else if(eElement instanceof MapElement) {
                         final MapElement mapElement = (MapElement)eElement;
