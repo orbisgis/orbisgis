@@ -485,10 +485,10 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 MapEditorIcons.getIcon("refresh"), EventHandler.create(ActionListener.class, this ,"onClearCache")));
 
         // Parameters
-        actions.addAction(new DefaultAction(MapEditorAction.A_PARAMETERS,I18N.tr("Configuration"),
-                MapEditorIcons.getIcon("config")).setMenuGroup(true));
-        actions.addAction(new DefaultAction(MapEditorAction.A_DATA_PROVIDERS,I18N.tr("Data query"),
-                MapEditorIcons.getIcon("table_go")).setMenuGroup(true).setParent(MapEditorAction.A_PARAMETERS));
+        //actions.addAction(new DefaultAction(MapEditorAction.A_PARAMETERS,I18N.tr("Configuration"),
+        //        MapEditorIcons.getIcon("config")).setMenuGroup(true));
+        //actions.addAction(new DefaultAction(MapEditorAction.A_DATA_PROVIDERS,I18N.tr("Data query"),
+        //        MapEditorIcons.getIcon("table_go")).setMenuGroup(true).setParent(MapEditorAction.A_PARAMETERS));
     }
 
     /**

@@ -40,7 +40,6 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.common.IntegerUnion;
-import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
@@ -64,7 +63,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.SortedSet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -97,7 +95,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private int firstGeometryIndex = -1;
     private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
     private final Lock readLock = rwl.writeLock(); // Read here is exclusive
-    private int fetchSize = 200;
+    private int fetchSize = 15;
     private Map<Long, Object[]> cache = new LRUMap<>(fetchSize + 1);
     private int fetchDirection = FETCH_UNKNOWN;
     // When close is called, in how many ms the result set is really closed
@@ -105,7 +103,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private IntegerUnion rowFilter;
     private ListIterator<Integer> rowFilterIterator;
     private String orderBy = "";
-    private static final int QUERY_PK_FETCH_ROWS = 5;
 
 
     /**
@@ -254,7 +251,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     if(rowFilter == null) {
                         int fetchedRows = 0;
                         for(long fetchRowId = rowId + 1; fetchRowId <= getRowCount(); fetchRowId++) {
-                            if(fetchedRows++ < QUERY_PK_FETCH_ROWS) {
+                            if(fetchedRows++ < fetchSize) {
                                 pkValues.add(rowPk.get((int) fetchRowId));
                             } else {
                                 break;
@@ -264,7 +261,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         int fetchedRows = 0;
                         Iterator<Integer> it = rowFilter.listIterator((int)rowId);
                         while(it.hasNext()) {
-                            if(fetchedRows++ < QUERY_PK_FETCH_ROWS) {
+                            if(fetchedRows++ < fetchSize) {
                                 pkValues.add(rowPk.get(it.next()));
                             } else {
                                 break;
