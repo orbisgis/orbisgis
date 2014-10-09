@@ -414,7 +414,7 @@ public interface ILayer {
 	 * @throws UnsupportedOperationException
 	 *             If this layer doesn't support selection
 	 */
-	Set<Integer> getSelection() throws UnsupportedOperationException;
+	Set<Long> getSelection() throws UnsupportedOperationException;
 
 	/**
 	 * Sets the array of the selected rows
@@ -423,7 +423,7 @@ public interface ILayer {
 	 * @throws UnsupportedOperationException
 	 *             If this layer doesn't support selection
 	 */
-	void setSelection(Set<Integer> newSelection) throws UnsupportedOperationException;
+	void setSelection(Set<Long> newSelection) throws UnsupportedOperationException;
 
         /**
          * Gets the list of all the {@code Rule} embedded in the {@code Style}

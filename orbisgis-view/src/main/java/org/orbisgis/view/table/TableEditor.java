@@ -37,6 +37,7 @@ import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.*;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,6 +68,7 @@ import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditorapi.MapElement;
@@ -127,7 +129,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
         private Point cellHighlight = new Point(-1,-1); // cell under cursor on right click
         private PropertyChangeListener editableSelectionListener =
                 EventHandler.create(PropertyChangeListener.class,this,
-                "onEditableSelectionChange","newValue");
+                "onEditableSelectionChange");
         private ActionCommands popupActions = new ActionCommands();
         private DataSource dataSource;
         private DataManager dataManager;
@@ -227,17 +229,20 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
         /**
          * The editable selection has been updated,
          * propagate in the table if necessary
-         * @param newValue 
          */
-        public void onEditableSelectionChange(SortedSet<Integer> newValue) {
+        public void onEditableSelectionChange() {
                 if (!onUpdateEditableSelection.getAndSet(true)) {
-                        try {
-                                setRowSelection(newValue, -1);
-                                // Scroll to first selection
-                                scrollToRow(newValue.first() - 1);
-                        } finally {
-                                onUpdateEditableSelection.set(false);
-                        }
+                    // Convert primary key value into row number
+                    try {
+                        SortedSet<Integer> modelRows = tableEditableElement.getSelectionTableRow();
+                        setRowSelection(modelRows, -1);
+                        // Scroll to first selection
+                        scrollToRow(modelRows.first() - 1);
+                    } catch (EditableElementException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
+                    } finally {
+                            onUpdateEditableSelection.set(false);
+                    }
                 }
         }
 
@@ -838,9 +843,13 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 tableRowHeader = new TableRowHeader(table);
                 tableScrollPane.setRowHeaderView(tableRowHeader);
                 //Apply the selection
-                setRowSelection(new IntegerUnion(tableEditableElement.getSelection()), -1);
-                if(!tableEditableElement.getSelection().isEmpty()) {
-                    scrollToRow(tableEditableElement.getSelection().first() - 1);
+                try {
+                    setRowSelection(tableEditableElement.getSelectionTableRow(), -1);
+                    if (!table.getSelectionModel().isSelectionEmpty()) {
+                        scrollToRow(table.getSelectionModel().getMinSelectionIndex());
+                    }
+                } catch (EditableElementException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
                 table.getSelectionModel().addListSelectionListener(
                         EventHandler.create(ListSelectionListener.class,this,
@@ -977,22 +986,24 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
 
         private void updateEditableSelection() {
                 try {
-                        tableEditableElement.setSelection(getTableModelSelection(1));
-                        // Update layer selection
-                        if(mapContext != null) {
-                            TableLocation editorTable = TableLocation.parse(tableEditableElement.getTableReference());
-                            // Search layers with same table identifier
-                            ILayer[] layers = mapContext.getLayers();
-                            for(ILayer layer : layers) {
-                                if(!layer.getTableReference().isEmpty()) {
-                                    TableLocation layerTable = TableLocation.parse(layer.getTableReference());
-                                    if (editorTable.getSchema().equals(layerTable.getSchema()) &&
-                                            editorTable.getTable().equals(layerTable.getTable())) {
-                                        layer.setSelection(getTableModelSelection(1));
-                                    }
+                    tableEditableElement.setSelectionTableRow(getTableModelSelection(1));
+                    // Update layer selection
+                    if (mapContext != null) {
+                        TableLocation editorTable = TableLocation.parse(tableEditableElement.getTableReference());
+                        // Search layers with same table identifier
+                        ILayer[] layers = mapContext.getLayers();
+                        for (ILayer layer : layers) {
+                            if (!layer.getTableReference().isEmpty()) {
+                                TableLocation layerTable = TableLocation.parse(layer.getTableReference());
+                                if (editorTable.getSchema().equals(layerTable.getSchema()) &&
+                                        editorTable.getTable().equals(layerTable.getTable())) {
+                                    layer.setSelection(tableEditableElement.getSelection());
                                 }
                             }
                         }
+                    }
+                } catch (EditableElementException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
                 } finally {
                         onUpdateEditableSelection.set(false);
                 }

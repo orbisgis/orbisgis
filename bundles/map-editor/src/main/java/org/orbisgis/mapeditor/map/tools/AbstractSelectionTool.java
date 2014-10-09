@@ -60,24 +60,19 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.corejdbc.common.IntegerUnion;
-import org.orbisgis.corejdbc.MetaData;
+import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
-import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
 import org.orbisgis.coremap.ui.editors.map.tool.Rectangle2DDouble;
 import org.orbisgis.mapeditor.map.tool.*;
 import org.orbisgis.mapeditor.map.tools.generated.Selection;
-import org.orbisgis.progress.NullProgressMonitor;
 
 import javax.swing.*;
 import org.orbisgis.coremap.renderer.se.Style;
@@ -274,7 +269,7 @@ public abstract class AbstractSelectionTool extends Selection {
         public void drawIn_MakeMove(Graphics g, MapContext vc, ToolManager tm) {
         }
 
-        private static class SelectionWorker extends SwingWorker<Set<Integer>, Set<Integer>> {
+        private static class SelectionWorker extends SwingWorker<Set<Long>, Set<Long>> {
             AbstractSelectionTool automaton;
             Geometry selectionRect;
             MapContext mc;
@@ -296,44 +291,18 @@ public abstract class AbstractSelectionTool extends Selection {
             }
 
             @Override
-            protected Set<Integer> doInBackground() throws Exception {
-                Set<Integer> newSelection;
-                if(tm.getCachedResultSetContainer().getIndexMap(activeLayer) == null) {
-                    // Get all primary value where default geometry intersects a bounding box
-                    Map<Object, Integer> keyToRowId;
-                    try (Connection connection = SFSUtilities.wrapConnection(activeLayer.getDataManager().getDataSource().getConnection())) {
-                            String loadedTable = activeLayer.getTableReference();
-                            String pkName = MetaData.getPkName(connection, loadedTable, false);
-                            if (!pkName.isEmpty()) {
-                                keyToRowId = MetaData.primaryKeyToRowId(connection, loadedTable, pkName);
-                            } else {
-                                keyToRowId = new HashMap<>();
-                            }
-                        String geomFieldName = SFSUtilities.getGeometryFields(connection,
-                                TableLocation.parse(activeLayer.getTableReference())).get(0);
-                        newSelection = ReadTable.getTableRowIdByEnvelope(mc.getDataManager(),
-                                activeLayer.getTableReference(), geomFieldName, selectionRect, !intersects, keyToRowId);
+            protected Set<Long> doInBackground() throws Exception {
+                Set<Long> newSelection;
+                // Get all primary value where default geometry intersects a bounding box
+                try (Connection connection = SFSUtilities.wrapConnection(activeLayer.getDataManager().getDataSource().getConnection())) {
+                    String geomFieldName = SFSUtilities.getGeometryFields(connection,
+                            TableLocation.parse(activeLayer.getTableReference())).get(0);
+                    newSelection = ReadTable.getTablePkByEnvelope(mc.getDataManager(),
+                            activeLayer.getTableReference(), geomFieldName, selectionRect, !intersects);
 
-                    } catch (SQLException e) {
-                        automaton.transition(Code.NO_SELECTION);
-                        throw new TransitionException(e);
-                    }
-                } else {
-                    // Index query available
-                    try(ResultSetProviderFactory.ResultSetProvider resultSetProvider = tm.getCachedResultSetContainer()
-                            .getResultSetProvider(activeLayer, new NullProgressMonitor());
-                        SpatialResultSet rs =  resultSetProvider.execute(new NullProgressMonitor(), selectionRect.getEnvelopeInternal())) {
-                        newSelection = new HashSet<>();
-                        while (rs.next()) {
-                            if((intersects && selectionRect.intersects(rs.getGeometry())) ||
-                                    (!intersects && selectionRect.contains(rs.getGeometry()))) {
-                                newSelection.add(rs.getRow());
-                            }
-                        }
-                    } catch (SQLException ex) {
-                        automaton.transition(Code.NO_SELECTION);
-                        throw new TransitionException(ex);
-                    }
+                } catch (SQLException e) {
+                    automaton.transition(Code.NO_SELECTION);
+                    throw new TransitionException(e);
                 }
                 return newSelection;
             }
@@ -342,8 +311,8 @@ public abstract class AbstractSelectionTool extends Selection {
             protected void done() {
                 try {
                     if (controlDown) {
-                        IntegerUnion newSel = new IntegerUnion(activeLayer.getSelection());
-                        for (int el : get()) {
+                        LongUnion newSel = new LongUnion(activeLayer.getSelection());
+                        for (long el : get()) {
                             if (!newSel.remove(el)) {
                                 newSel.add(el);
                             }

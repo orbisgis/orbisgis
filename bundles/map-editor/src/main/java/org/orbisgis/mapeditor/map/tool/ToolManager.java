@@ -136,7 +136,6 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         private LineSymbolizer lineSymbolizer;
         private PointSymbolizer pointSymbolizer;
         private ReversibleRowSet activeLayerRowSet;
-        private CachedResultSetContainer cachedResultSetContainer;
 
         /**
          * Creates a new EditionToolAdapter.
@@ -148,12 +147,11 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
          * @throws TransitionException
          */
         public ToolManager(Automaton defaultTool, MapContext mapContext,
-                MapTransform mapTransform, Component component, CachedResultSetContainer cachedResultSetContainer)
+                MapTransform mapTransform, Component component)
                 throws TransitionException {
                 this.mapTransform = mapTransform;
                 this.component = component;
                 this.mapContext = mapContext;
-                this.cachedResultSetContainer = cachedResultSetContainer;
 
                 setTool(defaultTool);
                 this.defaultTool = defaultTool;
@@ -176,13 +174,6 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                         }
                 });
                 buildSymbolizers();
-        }
-
-        /**
-         * @return Gives access to cached result set of all layers
-         */
-        public CachedResultSetContainer getCachedResultSetContainer() {
-            return cachedResultSetContainer;
         }
 
     /**

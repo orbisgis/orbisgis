@@ -35,7 +35,9 @@ import java.util.SortedSet;
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.view.geocatalog.EditableSourceImpl;
+import org.orbisgis.viewapi.edition.EditableElementException;
 import org.orbisgis.viewapi.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -49,7 +51,7 @@ public class TableEditableElementImpl extends EditableSourceImpl implements Tabl
         public static final String TYPE_ID = "TableEditableElement";
         private static final Logger LOGGER = Logger.getLogger(TableEditableElementImpl.class);
         // Properties
-        protected IntegerUnion selectedGeometries;
+        protected LongUnion selectedGeometries;
         private final I18n i18n = I18nFactory.getI18n(TableEditableElementImpl.class);
 
         /**
@@ -58,9 +60,9 @@ public class TableEditableElementImpl extends EditableSourceImpl implements Tabl
          * @param sourceName
          * @param dataManager
          */
-        public TableEditableElementImpl(Set<Integer> selection, String sourceName, DataManager dataManager) {
+        public TableEditableElementImpl(Set<Long> selection, String sourceName, DataManager dataManager) {
                 super(sourceName, dataManager);
-                this.selectedGeometries = new IntegerUnion(selection);
+                this.selectedGeometries = new LongUnion(selection);
         }
 
         /**
@@ -70,7 +72,7 @@ public class TableEditableElementImpl extends EditableSourceImpl implements Tabl
          */
         public TableEditableElementImpl(String sourceName, DataManager dataManager) {
                 super(sourceName, dataManager);
-                this.selectedGeometries = new IntegerUnion();
+                this.selectedGeometries = new LongUnion();
         }
 
         @Override
@@ -79,15 +81,32 @@ public class TableEditableElementImpl extends EditableSourceImpl implements Tabl
         }
 
         @Override
-        public SortedSet<Integer> getSelection() {
+        public SortedSet<Long> getSelection() {
             return Collections.unmodifiableSortedSet(selectedGeometries);
         }
 
         @Override
-        public void setSelection(Set<Integer> selection) {
+        public void setSelectionTableRow(SortedSet<Integer> selection) throws EditableElementException {
+            SortedSet<Long> modelRows = new LongUnion();
+            for(int rowNum : selection) {
+                modelRows.add(getRowSet().getRowPK(rowNum));
+            }
+        }
+
+        @Override
+        public SortedSet<Integer> getSelectionTableRow() throws EditableElementException {
+            SortedSet<Integer> modelRows = new IntegerUnion();
+            for (long value : selectedGeometries) {
+                modelRows.add(getRowSet().getRowId(value));
+            }
+            return modelRows;
+        }
+
+    @Override
+        public void setSelection(Set<Long> selection) {
                 LOGGER.debug("Editable selection change");
-                Set<Integer> oldSelection = this.selectedGeometries;
-                this.selectedGeometries = new IntegerUnion(selection);
+                Set<Long> oldSelection = this.selectedGeometries;
+                this.selectedGeometries = new LongUnion(selection);
                 propertyChangeSupport.firePropertyChange(PROP_SELECTION, oldSelection, getSelection());
         }
 

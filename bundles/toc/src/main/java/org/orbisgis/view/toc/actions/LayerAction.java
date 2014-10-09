@@ -144,13 +144,7 @@ public class LayerAction extends DefaultAction {
             }
             hasRealLayer = !layerNode.getLayer().acceptsChilds();
             if(hasRealLayer && onVectorSourceOnly && !hasNonVectorSource) {
-                try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
-                    TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
-                    List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableLocation);
-                    hasNonVectorSource = geomFields.isEmpty();
-                } catch (SQLException ex) {
-                    LOGGER.error(ex.getLocalizedMessage(), ex);
-                }
+                hasNonVectorSource = layer.getTableReference().isEmpty();
             }
         }
         return (!onLayerWithRowSelection || rowSelection) &&

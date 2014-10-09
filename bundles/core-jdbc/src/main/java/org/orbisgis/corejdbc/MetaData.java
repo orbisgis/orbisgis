@@ -81,6 +81,22 @@ public class MetaData {
     }
 
     /**
+     * Get table long system identifier
+     * @param table Table identifier or empty string
+     * @return system row column name or expression
+     */
+    public static String getSystemLongRowIdentifier(String table, boolean isH2) {
+        if(!table.isEmpty()) {
+            table = table + ".";
+        }
+        if(isH2) {
+            return table + "_ROWID_";
+        } else {
+            return "((" + table + "ctid::text::point)[0]::bigint << 32) | (" + table + "ctid::text::point)[1]::bigint";
+        }
+    }
+
+    /**
      * Compute the map of primary key to row id.
      * @param connection Active connection, not closed by this function
      * @param table Table identifier [[catalog.]schema.]table
@@ -246,6 +262,7 @@ public class MetaData {
      *
      * @param connection Connection
      * @param table      Table location
+     * @param systemColumn If true system column are also returned if no primary key is found
      * @return The primary key name or empty
      * @throws SQLException
      */
@@ -256,33 +273,15 @@ public class MetaData {
             DatabaseMetaData meta = connection.getMetaData();
             if (systemColumn) {
                 if(JDBCUtilities.isH2DataBase(meta)) {
-                    boolean hasSpatialIndex = false;
-                    try (PreparedStatement preparedStatement = SFSUtilities.prepareInformationSchemaStatement(connection,
-                            tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable(),
-                            "INFORMATION_SCHEMA.INDEXES", "", "TABLE_CATALOG", "TABLE_SCHEMA", "TABLE_NAME")) {
-                        try (ResultSet rs = preparedStatement.executeQuery()) {
-                            while (rs.next()) {
-                                if ("SPATIAL INDEX".equals(rs.getString("INDEX_TYPE_NAME"))) {
-                                    hasSpatialIndex = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if (!hasSpatialIndex) {
-                        try (ResultSet rs = st.executeQuery("select _ROWID_ from " + tableLocation + " LIMIT 0")) {
-                            // Issue https://github.com/irstv/orbisgis/issues/662
-                            // Cannot use _ROWID_ in conjunction with spatial index
-                            // TODO use always _ROWID_ when issue is fixed
-                            pkName = rs.getMetaData().getColumnName(1);
-                        } catch (SQLException ex) {
-                            //Ignore, key does not exists
-                        }
+                    try (ResultSet rs = st.executeQuery("select _ROWID_ from " + tableLocation + " LIMIT 0")) {
+                        pkName = rs.getMetaData().getColumnName(1);
+                    } catch (SQLException ex) {
+                        //Ignore, key does not exists
                     }
                 } else {
                     // Use PostGre system column
                     try (ResultSet rs = st.executeQuery("select ctid from " + tableLocation + " LIMIT 0")) {
-                        pkName = rs.getMetaData().getColumnName(1);
+                        pkName = getSystemLongRowIdentifier(tableLocation.toString(false), false);
                     } catch (SQLException ex) {
                         //Ignore, key does not exists
                     }

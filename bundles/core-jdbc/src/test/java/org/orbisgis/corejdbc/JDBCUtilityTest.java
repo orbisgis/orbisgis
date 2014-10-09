@@ -46,6 +46,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.h2gis.drivers.DriverManager;
@@ -168,10 +169,10 @@ public class JDBCUtilityTest {
                     "('MULTIPOLYGON (((-75 -67, -38 -16, 44 24, 99 26, 112 4, -35 -79, -75 -67)))');");
             // Check selection algorithm
             Envelope envelope = new Envelope(-116, -55, -69, -19);
-            Set<Integer> intersected = ReadTable.getTableRowIdByEnvelope(dataManager, "TEST", "GEOM", new GeometryFactory().toGeometry(envelope),
-                    false, null);
-            IntegerUnion rowIds = new IntegerUnion(intersected);
-            Iterator<Integer> it = rowIds.iterator();
+            Set<Long> intersected = ReadTable.getTablePkByEnvelope(dataManager, "TEST", "GEOM", new GeometryFactory().toGeometry(envelope),
+                    false);
+            LongUnion rowIds = new LongUnion(intersected);
+            Iterator<Long> it = rowIds.iterator();
             assertEquals(1 ,it.next().intValue());
             assertEquals(3 ,it.next().intValue());
             assertFalse(it.hasNext());

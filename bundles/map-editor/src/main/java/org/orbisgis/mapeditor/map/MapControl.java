@@ -69,7 +69,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 public class MapControl extends JComponent implements ContainerListener {
         //Minimal Time in ms between two intermediate paint of drawing process
-        private CachedResultSetContainer cachedResultSetContainer = new CachedResultSetContainer();
+        private ResultSetProviderFactory resultSetProviderFactory;
         private static final Point MAX_IMAGE_SIZE = new Point(20000, 20000);
         public static final String JOB_DRAWING_PREFIX_ID = "MapControl-Drawing";
         private static final Logger LOGGER = Logger.getLogger(MapControl.class);
@@ -114,7 +114,9 @@ public class MapControl extends JComponent implements ContainerListener {
          * @param indexProvider Index factory
          */
         public void setIndexProvider(IndexProvider indexProvider, File indexCache) {
-            cachedResultSetContainer.setIndexProvider(indexProvider, indexCache);
+            if(resultSetProviderFactory instanceof  CachedResultSetContainer) {
+                ((CachedResultSetContainer) resultSetProviderFactory).setIndexProvider(indexProvider, indexCache);
+            }
         }
         private void setStatus(int newStatus) {
             status = newStatus;
@@ -140,16 +142,15 @@ public class MapControl extends JComponent implements ContainerListener {
 		setOpaque(true);
 		setStatus(DIRTY);
 
-                // creating objects
-                if(toolManager!=null) {
-                        removeMouseListener(toolManager);
-                        removeMouseMotionListener(toolManager);
-                        removeMouseWheelListener(toolManager);
-                }
-		toolManager = new ToolManager(defaultTool, mapContext, mapTransform,
-				this, cachedResultSetContainer);
+        // creating objects
+        if(toolManager!=null) {
+                removeMouseListener(toolManager);
+                removeMouseMotionListener(toolManager);
+                removeMouseWheelListener(toolManager);
+        }
+		toolManager = new ToolManager(defaultTool, mapContext, mapTransform,this);
 
-                // Set extent with BoundingBox value
+        // Set extent with BoundingBox value
 		ILayer rootLayer = mapContext.getLayerModel();
 		Envelope boundingBox = mapContext.getBoundingBox();
 		if (boundingBox != null) {
@@ -158,23 +159,23 @@ public class MapControl extends JComponent implements ContainerListener {
 			mapTransform.setExtent(rootLayer.getEnvelope());
 		}
 
-                setLayout(new BorderLayout());
-                
-                // adding listeners at the endupdatedImage
-                // to prevent multiple useless repaint
-		toolManager.addToolListener(new MapToolListener());
-		addMouseListener(toolManager);
-                addMouseMotionListener(toolManager);
-                addMouseWheelListener(toolManager);
-                
-		mapTransform.addTransformListener(new MapControlTransformListener());
-                
-                //Component event invalidate the picture
-                this.addComponentListener(EventHandler.create(ComponentListener.class, this,"invalidateImage"));
-		// Add editable element listen transform event
-                if(element!=null) {
-                        mapTransform.addTransformListener(element);
-                }
+        setLayout(new BorderLayout());
+
+        // adding listeners at the endupdatedImage
+        // to prevent multiple useless repaint
+        toolManager.addToolListener(new MapToolListener());
+        addMouseListener(toolManager);
+        addMouseMotionListener(toolManager);
+        addMouseWheelListener(toolManager);
+
+        mapTransform.addTransformListener(new MapControlTransformListener());
+
+        //Component event invalidate the picture
+        this.addComponentListener(EventHandler.create(ComponentListener.class, this, "invalidateImage"));
+        // Add editable element listen transform event
+        if (element != null) {
+            mapTransform.addTransformListener(element);
+        }
 
 	}
 
@@ -207,7 +208,9 @@ public class MapControl extends JComponent implements ContainerListener {
      * Remove cached result set
      */
     public void clearCache() {
-        cachedResultSetContainer.clearCache();
+        if(resultSetProviderFactory instanceof  CachedResultSetContainer) {
+            ((CachedResultSetContainer) resultSetProviderFactory).clearCache();
+        }
     }
         
 	/**
@@ -285,7 +288,7 @@ public class MapControl extends JComponent implements ContainerListener {
                     mapTransform.setImage(inProcessImage);
 
                     // now we start the actual drawer
-                    drawer = new Drawer(mapContext, awaitingDrawing, this, cachedResultSetContainer);
+                    drawer = new Drawer(mapContext, awaitingDrawing, this, resultSetProviderFactory);
                     BackgroundManager bm = Services.getService(BackgroundManager.class);
                     bm.nonBlockingBackgroundOperation(
                             new DefaultJobId(JOB_DRAWING_PREFIX_ID +
@@ -405,7 +408,9 @@ public class MapControl extends JComponent implements ContainerListener {
 
         @Override
         public void tableChange(TableEditEvent event) {
-            mapControl.cachedResultSetContainer.removeCache(event.getTableName());
+            if(mapControl.resultSetProviderFactory instanceof  CachedResultSetContainer) {
+                ((CachedResultSetContainer) mapControl.resultSetProviderFactory).removeCache(event.getTableName());
+            }
             mapControl.invalidateImage();
         }
 
@@ -484,7 +489,7 @@ public class MapControl extends JComponent implements ContainerListener {
 		/*
 		 * if (drawer != null) { drawer.cancel(); }
 		 */
-            cachedResultSetContainer.clearCache();
+            clearCache();
             if(toolManager!=null) {
                 toolManager.freeResources();
                 toolManager = null;

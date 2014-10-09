@@ -90,7 +90,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     /** Used to managed table without primary key (ResultSet are kept {@link ResultSetHolder#RESULT_SET_TIMEOUT} */
     protected final ResultSetHolder resultSetHolder;
     /** If the table contains a unique non null index then this variable contain the map between the row id [1-n] to the primary key value */
-    private BidiMap<Integer, Object> rowPk;
+    private BidiMap<Integer, Long> rowPk;
     private String pk_name = "";
     private String select_fields = "*";
     private int firstGeometryIndex = -1;
@@ -160,7 +160,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                 int pkRowId = 0;
                 while (rs.next()) {
                     pkRowId++;
-                    rowPk.put(pkRowId, rs.getObject(1));
+                    rowPk.put(pkRowId, rs.getLong(1));
                     cachePm.endTask();
                 }
             }
@@ -1526,9 +1526,18 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     }
 
     @Override
-    public Integer getRowId(Object primaryKeyRowValue) {
+    public int getRowId(Object primaryKeyRowValue) {
         if(!pk_name.isEmpty()) {
             return rowPk.getKey(primaryKeyRowValue);
+        } else {
+            throw new IllegalStateException("The RowSet has not been initialised");
+        }
+    }
+
+    @Override
+    public long getRowPK(int rowNumber) {
+        if(!pk_name.isEmpty()) {
+            return rowPk.get(rowNumber);
         } else {
             throw new IllegalStateException("The RowSet has not been initialised");
         }

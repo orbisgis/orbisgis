@@ -408,42 +408,39 @@ public class ReadTable {
      * @param geometryColumn Name of the geometry column
      * @param selection Selection polygon
      * @param contains If true selection is used with contains, else this is intersects.
-     * @param pkToRowId Map from {@link org.orbisgis.core-jdbc.MetaData#primaryKeyToRowId(java.sql.Connection, String, String)}
      * @return List of row id.
      * @throws SQLException
      */
-    public static Set<Integer> getTableRowIdByEnvelope(DataManager dataManager, String table,
-                                                       String geometryColumn, Geometry selection, boolean contains,
-                                                       Map<Object, Integer> pkToRowId) throws SQLException {
-        Set<Integer> newSelection = new HashSet<>(50);
+    public static Set<Long> getTablePkByEnvelope(DataManager dataManager, String table,String geometryColumn,
+                                                    Geometry selection, boolean contains) throws SQLException {
+        Set<Long> newSelection = new HashSet<>(50);
         TableLocation tableLocation = TableLocation.parse(table);
         // There is a where condition then system row index can't be used
         try(Connection connection = dataManager.getDataSource().getConnection()) {
-            String pkName = MetaData.getPkName(connection, tableLocation.toString(), false);
-            if(!pkName.isEmpty() && pkToRowId != null) {
+            String pkName = MetaData.getPkName(connection, tableLocation.toString(), true, true);
+            boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            if(!isH2 || !pkName.isEmpty()) {
+                String from = tableLocation.toString();
+                if(pkName.isEmpty()) {
+                    // Use PostGre sub-request
+                    pkName = "_ROW_ID_";
+                    from = "(select ROW_NUMBER() OVER() "+pkName+", "+TableLocation.quoteIdentifier(geometryColumn)+
+                            " from "+ tableLocation.toString() +") fromTable";
+                }
                 String sqlFunction = contains ? "ST_CONTAINS(?, %s)" : "ST_INTERSECTS(?, %s)";
                 try(PreparedStatement st = connection.prepareStatement(String.format("SELECT %s FROM %s WHERE %s && ? AND " + sqlFunction,
-                        TableLocation.quoteIdentifier(pkName), tableLocation,
+                        TableLocation.quoteIdentifier(pkName), from,
                         TableLocation.quoteIdentifier(geometryColumn), TableLocation.quoteIdentifier(geometryColumn)))) {
                     st.setObject(1, selection);
                     st.setObject(2, selection);
                     try(SpatialResultSet rs = st.executeQuery().unwrap(SpatialResultSet.class)) {
                         while (rs.next()) {
-                            newSelection.add(pkToRowId.get(rs.getObject(1)));
+                            newSelection.add(rs.getLong(1));
                         }
                     }
                 }
             } else {
-                // Pk is not available, query is much slower
-                try(ReadRowSet r = dataManager.createReadRowSet()) {
-                    r.setCommand(String.format("SELECT %s FROM %s",TableLocation.quoteIdentifier(geometryColumn), tableLocation.toString()));
-                    r.execute();
-                    while(r.next()) {
-                        if((contains && selection.contains(r.getGeometry())) || (!contains && selection.intersects(r.getGeometry()))) {
-                            newSelection.add(r.getRow());
-                        }
-                    }
-                }
+                throw new SQLException("Table "+table+" do not contain any information in order to identify row");
             }
         }
         return newSelection;
