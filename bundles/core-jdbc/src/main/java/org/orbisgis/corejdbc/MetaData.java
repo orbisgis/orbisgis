@@ -92,7 +92,7 @@ public class MetaData {
         if(isH2) {
             return table + "_ROWID_";
         } else {
-            return "((" + table + "ctid::text::point)[0]::bigint << 32) | (" + table + "ctid::text::point)[1]::bigint";
+            return table + "ctid";
         }
     }
 

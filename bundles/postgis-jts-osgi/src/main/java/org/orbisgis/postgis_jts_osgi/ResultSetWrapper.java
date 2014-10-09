@@ -33,7 +33,9 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import org.postgis.PGboxbase;
 import org.postgis.Point;
 import org.postgis.jts.JtsGeometry;
+import org.postgresql.core.types.PGFloat;
 import org.postgresql.util.PGobject;
+import org.postgresql.util.PGtokenizer;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -54,10 +56,12 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * @author Nicolas Fortin
@@ -65,7 +69,9 @@ import java.util.Set;
 public class ResultSetWrapper implements ResultSet {
     private Statement statementWrapper;
     private ResultSet rs;
+    private static final Set<String> GEOMETRY_COLUMNS = new HashSet<>(Arrays.asList("geometry", "box2d", "box3d"));
     private Set<Integer> spatialFields = new HashSet<Integer>();
+    private Set<Integer> tidFields = new HashSet<>();
     private GeometryFactory geometryFactory = new GeometryFactory();
 
     public ResultSetWrapper(Statement statementWrapper, ResultSet rs) {
@@ -76,8 +82,10 @@ public class ResultSetWrapper implements ResultSet {
             ResultSetMetaData meta = rs.getMetaData();
             for(int col = 1; col <= meta.getColumnCount(); col++) {
                 String typeName = meta.getColumnTypeName(col);
-                if(typeName!= null && (typeName.equals("geometry") || typeName.equals("box2d") || typeName.equals("box3d"))) {
+                if(GEOMETRY_COLUMNS.contains(typeName)) {
                     spatialFields.add(col);
+                } else if(typeName.equals("tid")) {
+                    tidFields.add(col);
                 }
             }
         } catch (Exception ex) {
@@ -912,7 +920,34 @@ public class ResultSetWrapper implements ResultSet {
 
     @Override
     public long getLong(int columnIndex) throws SQLException {
-        return rs.getLong(columnIndex);
+        if(!tidFields.contains(columnIndex)) {
+            return rs.getLong(columnIndex);
+        } else {
+            // Cast into long value
+            return ctidToLong(rs.getObject(columnIndex).toString());
+        }
+    }
+
+    /**
+     * @param ctid value ex: (0,41)
+     * @return Long cast
+     */
+    public static long ctidToLong(String ctid) {
+        final int comma = ctid.indexOf(",");
+        return (Long.valueOf(ctid.substring(1,comma)) << 32)
+                | Long.valueOf(ctid.substring(comma + 1, ctid.length() - 1));
+    }
+
+    /**
+     * @param value Long value of ctid
+     * @return PGObject instance
+     * @throws SQLException
+     */
+    public static PGobject longToTid(long value) throws SQLException {
+        PGobject pGobject = new PGobject();
+        pGobject.setType("tid");
+        pGobject.setValue("(" + Long.toString(value >> 32)+","+Long.toString(value << 32 >> 32)+ ")");
+        return pGobject;
     }
 
     @Override
@@ -992,7 +1027,7 @@ public class ResultSetWrapper implements ResultSet {
 
     @Override
     public long getLong(String columnLabel) throws SQLException {
-        return rs.getLong(columnLabel);
+        return getLong(findColumn(columnLabel));
     }
 
     @Override
