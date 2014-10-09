@@ -271,26 +271,20 @@ public class MetaData {
         String pkName = "";
         try (Statement st = connection.createStatement()) {
             DatabaseMetaData meta = connection.getMetaData();
-            if (systemColumn) {
-                if(JDBCUtilities.isH2DataBase(meta)) {
-                    try (ResultSet rs = st.executeQuery("select _ROWID_ from " + tableLocation + " LIMIT 0")) {
-                        pkName = rs.getMetaData().getColumnName(1);
-                    } catch (SQLException ex) {
-                        //Ignore, key does not exists
-                    }
-                } else {
-                    // Use PostGre system column
-                    try (ResultSet rs = st.executeQuery("select ctid from " + tableLocation + " LIMIT 0")) {
-                        pkName = getSystemLongRowIdentifier(tableLocation.toString(false), false);
-                    } catch (SQLException ex) {
-                        //Ignore, key does not exists
-                    }
-                }
-            }
             int pkId = JDBCUtilities.getIntegerPrimaryKey(connection, tableLocation.toString());
             if (pkId > 0) {
                 // This table has a Primary key, get the field name
-                pkName = JDBCUtilities.getFieldName(connection.getMetaData(), tableLocation.toString(), pkId);
+                return JDBCUtilities.getFieldName(connection.getMetaData(), tableLocation.toString(), pkId);
+            }
+            if (systemColumn) {
+                boolean isH2 = JDBCUtilities.isH2DataBase(meta);
+                String systemRowName = getSystemLongRowIdentifier(tableLocation.toString(isH2), isH2);
+                // Check if this system column is available
+                try (ResultSet rs = st.executeQuery("select "+systemRowName+" from " + tableLocation + " LIMIT 0")) {
+                    pkName = systemRowName;
+                } catch (SQLException ex) {
+                    //Ignore, key does not exists
+                }
             }
         }
         return pkName;
