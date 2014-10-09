@@ -35,6 +35,7 @@ import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.progress.ProgressMonitor;
+import org.osgi.service.component.annotations.Component;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -50,22 +51,19 @@ import java.util.List;
  * Standard select * from mytable query without cache or index.
  * @author Nicolas Fortin
  */
+@Component
 public class DefaultResultSetProviderFactory implements ResultSetProviderFactory {
-    private DataSource dataSource;
     private static final int FETCH_SIZE = 300;
     private static final I18n I18N = I18nFactory.getI18n(DefaultResultSetProviderFactory.class);
 
-    /**
-     * Standard select * from mytable query without cache or index.
-     * @param dataSource Connection data source
-     */
-    public DefaultResultSetProviderFactory(DataSource dataSource) {
-        this.dataSource = dataSource;
+    @Override
+    public ResultSetProvider getResultSetProvider(ILayer layer, ProgressMonitor pm) {
+        return new DefaultResultSetProvider(layer.getDataManager().getDataSource(), layer);
     }
 
     @Override
-    public ResultSetProvider getResultSetProvider(ILayer layer, ProgressMonitor pm) {
-        return new DefaultResultSetProvider(dataSource, layer);
+    public String getName() {
+        return "Remote index";
     }
 
     private static class DefaultResultSetProvider implements ResultSetProvider {
