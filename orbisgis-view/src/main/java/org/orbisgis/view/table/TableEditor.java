@@ -513,13 +513,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
         }
 
         public void onMenuZoomToSelection() {
-                int[] viewSelection = table.getSelectedRows();
-                if(viewSelection.length==0) {
+                if(table.getSelectionModel().isSelectionEmpty()) {
                         return;
-                }
-                int[] modelSelection = new int[viewSelection.length];
-                for(int i=0;i<viewSelection.length;i++) {
-                        modelSelection[i] = table.convertRowIndexToModel(viewSelection[i]);
                 }
                 //Retrieve the MapContext
                 MapContext mapContext=null;
@@ -532,12 +527,12 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                         }
                 }
                 if(mapContext==null) {
-                        //Programmation error, useless to translate
+                        //Software error, useless to translate
                         LOGGER.error("MapContext lost between popup creation and click");
                         return;
                 }                
                 ZoomToSelectionJob zoomJob = new ZoomToSelectionJob(dataManager, tableEditableElement.getTableReference()
-                        ,getTableModelSelection(1), mapContext);
+                        , tableEditableElement.getSelection(), mapContext);
                 launchJob(zoomJob);                
         }
         

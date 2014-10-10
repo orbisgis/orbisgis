@@ -427,14 +427,8 @@ public class ReadTable {
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             String pkName = MetaData.getPkName(connection, tableLocation.toString(), true);
             boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-            if(!isH2 || !pkName.isEmpty()) {
+            if(!pkName.isEmpty()) {
                 String from = tableLocation.toString();
-                if(pkName.isEmpty()) {
-                    // Use PostGre sub-request
-                    pkName = "_ROW_ID_";
-                    from = "(select ROW_NUMBER() OVER() "+pkName+", "+TableLocation.quoteIdentifier(geometryColumn)+
-                            " from "+ tableLocation.toString() +") fromTable";
-                }
                 String sqlFunction = contains ? "ST_CONTAINS(?, %s)" : "ST_INTERSECTS(?, %s)";
                 try(PreparedStatement st = connection.prepareStatement(String.format("SELECT %s FROM %s WHERE %s && ? AND " + sqlFunction,
                         TableLocation.quoteIdentifier(pkName), from,
