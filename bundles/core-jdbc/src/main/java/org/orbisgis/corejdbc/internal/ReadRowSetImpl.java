@@ -191,9 +191,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         }
         if(currentRow == null) {
             refreshRowCache();
-        }
-        if(currentRow == null) {
-            throw new SQLException("Not in a valid row "+rowId+"/"+getRowCount());
+            if(currentRow == null) {
+                throw new SQLException("Not in a valid row "+rowId+"/"+getRowCount());
+            }
         }
     }
 
@@ -252,7 +252,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         int fetchedRows = 0;
                         for(long fetchRowId = rowId + 1; fetchRowId <= getRowCount(); fetchRowId++) {
                             if(fetchedRows++ < fetchSize) {
-                                pkValues.add(rowPk.get((int) fetchRowId));
+                                pkValues.add(rowPk.get(fetchRowId));
                             } else {
                                 break;
                             }
@@ -314,7 +314,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                                          for (int idColumn = 1 + offset; idColumn <= columnCount + offset; idColumn++) {
                                              row[idColumn - 1 - offset] = lineRs.getObject(idColumn);
                                          }
-                                         cache.put((long) rowPk.getKey(lineRs.getObject(pk_name)), row);
+                                         cache.put(rowPk.getKey(lineRs.getLong(pk_name)).longValue(), row);
                                      }
                                  }
                              }
@@ -1491,7 +1491,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     @Override
     public int getRowId(Object primaryKeyRowValue) {
         if(!pk_name.isEmpty()) {
-            return rowPk.getKey(primaryKeyRowValue);
+            return rowPk.getKey(primaryKeyRowValue).intValue();
         } else {
             throw new IllegalStateException("The RowSet has not been initialised");
         }

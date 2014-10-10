@@ -417,7 +417,7 @@ public class ReadTable {
         TableLocation tableLocation = TableLocation.parse(table);
         // There is a where condition then system row index can't be used
         try(Connection connection = dataManager.getDataSource().getConnection()) {
-            String pkName = MetaData.getPkName(connection, tableLocation.toString(), true, true);
+            String pkName = MetaData.getPkName(connection, tableLocation.toString(), true);
             boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             if(!isH2 || !pkName.isEmpty()) {
                 String from = tableLocation.toString();

@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.LayerException;
@@ -186,7 +187,7 @@ public abstract class Renderer {
                 // fetch symbolizers and rules
                 style.getSymbolizers(mt, symbs, rList, fRList);
                 // Create new dataSource with only feature in current extent
-                Set<Integer> selected = layer.getSelection();
+                Set<Long> selectedRows = layer.getSelection();
                 // And now, features will be rendered
                 // Get a graphics for each symbolizer
                 initGraphics2D(symbs, g2, mt);
@@ -195,6 +196,7 @@ public abstract class Renderer {
                     beginLayer(r.getName());
                     try(ResultSetProviderFactory.ResultSetProvider resultSetProvider = layerDataFactory.getResultSetProvider(layer, pm)) {
                         try(SpatialResultSet rs = resultSetProvider.execute(pm, extent)) {
+                            int pkColumn = rs.findColumn(resultSetProvider.getPkName());
                             int fieldID = rs.getMetaData().unwrap(SpatialResultSetMetaData.class).getFirstGeometryFieldIndex();
                             ProgressMonitor rowSetProgress;
                             // Read row count for progress monitor
@@ -225,17 +227,16 @@ public abstract class Renderer {
                                 }
                                 // Do not display the geometry when the envelope
                                 //doesn't intersect the current mapcontext area.
-                                if (theGeom == null || (theGeom != null &&
-                                        theGeom.getEnvelopeInternal().intersects(extent))) {
-                                    int row = rs.getRow();
-                                    boolean emphasis = selected.contains(row);
+                                if (theGeom == null || theGeom.getEnvelopeInternal().intersects(extent)) {
+                                    long row = rs.getLong(pkColumn);
+                                    boolean selected = selectedRows.contains(row);
 
                                     beginFeature(row, rs);
 
                                     List<Symbolizer> sl = r.getCompositeSymbolizer().getSymbolizerList();
                                     for (Symbolizer s : sl) {
                                         boolean res = drawFeature(s, theGeom, rs, row,
-                                                extent, emphasis, mt);
+                                                extent, selected, mt);
                                     }
                                     endFeature(row, rs);
                                 }
@@ -259,7 +260,7 @@ public abstract class Renderer {
         }
 
         private boolean drawFeature(Symbolizer s, Geometry geom, ResultSet rs,
-                        Integer originalIndex, Envelope extent, boolean selected,
+                        long rowIdentifier, Envelope extent, boolean selected,
                         MapTransform mt) throws ParameterException,
                         IOException, SQLException {
                 Geometry theGeom = geom;
@@ -269,7 +270,7 @@ public abstract class Renderer {
                         //exception will be thrown by the call to draw,
                         //and a message will be shown to the user...
                         VectorSymbolizer vs = (VectorSymbolizer)s;
-                        theGeom = vs.getGeometry(rs, originalIndex.longValue());
+                        theGeom = vs.getGeometry(rs, rowIdentifier);
                         if(theGeom != null && theGeom.getEnvelopeInternal().intersects(extent)){
                                 somethingReached = true;
                         }
@@ -277,7 +278,7 @@ public abstract class Renderer {
                 if(somethingReached || theGeom != null){
                         Graphics2D g2S;
                         g2S = getGraphics2D(s);
-                        s.draw(g2S, rs, originalIndex, selected, mt, theGeom);
+                        s.draw(g2S, rs, rowIdentifier, selected, mt, theGeom);
                         releaseGraphics2D(g2S);
                         return true;
                 }else {

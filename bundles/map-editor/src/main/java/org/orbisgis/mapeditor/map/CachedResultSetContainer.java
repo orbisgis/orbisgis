@@ -261,6 +261,11 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
         }
 
         @Override
+        public String getPkName() {
+            return readRowSet.getPkName();
+        }
+
+        @Override
             public SpatialResultSet execute(ProgressMonitor pm, Envelope extent) throws SQLException {
             lock = readRowSet.getReadLock();
             try {

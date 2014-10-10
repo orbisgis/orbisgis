@@ -33,9 +33,12 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.progress.ProgressMonitor;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -74,10 +77,22 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
         private PreparedStatement st;
         private PropertyChangeListener cancelListener;
         private ProgressMonitor pm;
+        private static final Logger LOGGER = LoggerFactory.getLogger(DefaultResultSetProvider.class);
+        private String pkName = "";
 
         private DefaultResultSetProvider(DataSource dataSource, ILayer layer) {
             this.dataSource = dataSource;
             this.layer = layer;
+            try {
+                pkName = MetaData.getPkName(connection, layer.getTableReference(), true);
+            } catch (SQLException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+            }
+        }
+
+        @Override
+        public String getPkName() {
+            return pkName;
         }
 
         @Override
