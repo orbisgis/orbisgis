@@ -137,9 +137,9 @@ public class JDBCUtilityTest {
 
     @Test
     public void testStats() throws SQLException {
-        Set<Integer> indexes = new TreeSet<>(Arrays.asList(new Integer[]{0, 2, 3, 4, 8, 10, 15, 30, 45, 78}));
+        Set<Long> indexes = new TreeSet<>(Arrays.asList(new Long[]{0l, 2l, 3l, 4l, 8l, 10l, 15l, 30l, 45l, 78l}));
         try(Statement st = connection.createStatement()) {
-            String table = CreateTable.createIndexTempTable(connection, new NullProgressMonitor(), indexes, 5);
+            String table = CreateTable.createIndexTempTable(connection, new NullProgressMonitor(), indexes,"ROWID", 5);
             // Do stats using sql
             String[] props = ReadTable.computeStatsSQL(connection, table, "ROWID", new NullProgressMonitor());
             checkStats(props);

@@ -65,6 +65,7 @@ public class ReadTable {
     public enum STATS { COUNT, SUM, AVG, STDDEV_SAMP, MIN, MAX}
     protected final static I18n I18N = I18nFactory.getI18n(ReadTable.class, Locale.getDefault(), I18nFactory.FALLBACK);
     private static Logger LOGGER = Logger.getLogger(ReadTable.class);
+    private static final int INSERT_BATCH_SIZE = 30;
 
     public static Collection<Integer> getSortedColumnRowIndex(Connection connection, String table, String columnName, boolean ascending, ProgressMonitor progressMonitor) throws SQLException {
         columnName = TableLocation.quoteIdentifier(columnName);
@@ -363,7 +364,6 @@ public class ReadTable {
     public static Envelope getTableSelectionEnvelope(DataManager manager, String tableName, SortedSet<Long> rowsId, ProgressMonitor pm) throws SQLException {
         try( Connection connection = manager.getDataSource().getConnection();
                 Statement st = connection.createStatement()) {
-            boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             PropertyChangeListener cancelListener =  EventHandler.create(PropertyChangeListener.class, st, "cancel");
             pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,cancelListener);
             try {
@@ -374,17 +374,8 @@ public class ReadTable {
                 }
                 String geomField = geomFields.get(0);
                 // Create a temporary table that contain selected pk
-                String selectionTable = MetaData.getNewUniqueName(tableName, connection.getMetaData(),
-                        TableLocation.capsIdentifier("selection", isH2));
-                st.execute("CREATE TEMPORARY TABLE "+selectionTable+"(pk bigint primary key)");
+                String selectionTable = CreateTable.createIndexTempTable(connection, pm,rowsId,"pk", INSERT_BATCH_SIZE);
                 try {
-                    try (PreparedStatement insert = connection.prepareStatement("INSERT INTO " + selectionTable + " VALUES(?)")) {
-                        for (long rowPk : rowsId) {
-                            insert.setLong(1, rowPk);
-                            insert.addBatch();
-                        }
-                        insert.executeBatch();
-                    }
                     String pkName = MetaData.getPkName(connection, tableName, true);
                     StringBuilder pkEquality = new StringBuilder("t1." + pkName + " = ");
                     if (!pkName.equals(MetaData.POSTGRE_ROW_IDENTIFIER)) {

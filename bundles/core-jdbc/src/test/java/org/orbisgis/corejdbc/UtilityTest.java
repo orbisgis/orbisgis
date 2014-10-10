@@ -78,12 +78,12 @@ public class UtilityTest {
 
     @Test
     public void testCreateTableIndex() throws SQLException {
-        Set<Integer> indexes = new TreeSet<>(Arrays.asList(new Integer[]{0, 2, 3, 4, 8, 10, 15, 30, 45, 78}));
+        Set<Long> indexes = new TreeSet<>(Arrays.asList(new Long[]{0l, 2l, 3l, 4l, 8l, 10l, 15l, 30l, 45l, 78l}));
         try(Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement()) {
-            String table = CreateTable.createIndexTempTable(connection, new NullProgressMonitor(), indexes, 5);
+            String table = CreateTable.createIndexTempTable(connection, new NullProgressMonitor(), indexes,"pk", 5);
             // Read table content
-            Iterator<Integer> it = indexes.iterator();
+            Iterator<Long> it = indexes.iterator();
             try(ResultSet rs = st.executeQuery("SELECT * FROM "+table)) {
                 while(rs.next() && it.hasNext()) {
                     assertEquals(it.next().intValue(), rs.getInt(1));

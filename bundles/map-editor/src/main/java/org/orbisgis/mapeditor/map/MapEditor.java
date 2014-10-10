@@ -49,6 +49,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core_export.MapImageWriter;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.LayerException;
 import org.orbisgis.coremap.layerModel.MapContext;
@@ -722,7 +723,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             for (ILayer layer : selectedLayers) {
                 if (!layer.acceptsChilds()) {
                     if (!layer.getSelection().isEmpty()) {
-                        layer.setSelection(new IntegerUnion());
+                        layer.setSelection(new HashSet<Long>());
                     }
                 }
             }
@@ -736,7 +737,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         for (ILayer layer : mapContext.getLayers()) {
             if (!layer.acceptsChilds()) {
                 if (!layer.getSelection().isEmpty()) {
-                    layer.setSelection(new IntegerUnion());
+                    layer.setSelection(new HashSet<Long>());
                 }
             }
         }
@@ -787,7 +788,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             GUILOGGER.warn(I18N.tr("No layers are selected."));
         } else {
             for (ILayer layer : selectedLayers) {
-                Set<Integer> selection = layer.getSelection();
+                Set<Long> selection = layer.getSelection();
                 // If there is a nonempty selection, then ask the user to name it.
                 if (!selection.isEmpty()) {
                     try {

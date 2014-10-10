@@ -65,7 +65,7 @@ public class CreateSourceFromSelection implements BackgroundJob {
       
         private final DataSource dataSource;
         private final String tableName;
-        private final Set<Integer> selectedRows;
+        private final Set<Long> selectedRows;
         private String newName;
 
         /**
@@ -76,7 +76,7 @@ public class CreateSourceFromSelection implements BackgroundJob {
          * @param selectedRows Selected Rows
          */
         public CreateSourceFromSelection(DataSource dataSource,
-                Set<Integer> selectedRows, String tableName) {
+                Set<Long> selectedRows, String tableName) {
                 this.dataSource = dataSource;
                 this.selectedRows = selectedRows;
                 this.tableName = tableName;
@@ -90,7 +90,7 @@ public class CreateSourceFromSelection implements BackgroundJob {
          * @param newName      New name to use to register the DataSource
          */
         public CreateSourceFromSelection(DataSource dataSource,
-                                         Set<Integer> selectedRows, String tableName,
+                                         Set<Long> selectedRows, String tableName,
                                          String newName) {
             this(dataSource, selectedRows, tableName);
             this.newName = newName;
