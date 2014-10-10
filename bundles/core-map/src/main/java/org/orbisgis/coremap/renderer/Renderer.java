@@ -172,7 +172,7 @@ public abstract class Renderer {
             ResultSetProviderFactory layerDataFactory = rsProvider;
             if(layerDataFactory == null) {
                 if(layer.getDataManager() != null && layer.getDataManager().getDataSource() != null) {
-                    layerDataFactory = new DefaultResultSetProviderFactory(layer.getDataManager().getDataSource());
+                    layerDataFactory = new DefaultResultSetProviderFactory();
                 } else {
                     throw new SQLException("There is neither a ResultSetProviderFactory instance nor available DataSource in the vectorial layer");
                 }

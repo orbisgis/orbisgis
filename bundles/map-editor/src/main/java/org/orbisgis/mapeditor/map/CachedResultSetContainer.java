@@ -67,6 +67,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class CachedResultSetContainer implements ResultSetProviderFactory {
     private final Map<String, ReadRowSet> cache = new HashMap<>();
     private static final int LOCK_TIMEOUT = 10;
+    private static final int FETCH_SIZE = 50;
     private static I18n I18N = I18nFactory.getI18n(CachedResultSetContainer.class);
     private static Logger LOGGER = LoggerFactory.getLogger(CachedResultSetContainer.class);
     private static final int ROWSET_FREE_DELAY = 60000;
@@ -92,6 +93,11 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
     }
 
     @Override
+    public String getName() {
+        return "Local index";
+    }
+
+    @Override
     public CachedResultSet getResultSetProvider(ILayer layer, ProgressMonitor pm) throws SQLException {
         try {
             if(lock.tryLock(WAIT_FOR_INITIALISATION_TIMEOUT, TimeUnit.MILLISECONDS)) {
@@ -104,6 +110,7 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
                 ReadRowSet readRowSet = cache.get(tableRef);
                 if (readRowSet == null) {
                     readRowSet = layer.getDataManager().createReadRowSet();
+                    readRowSet.setFetchSize(FETCH_SIZE);
                     readRowSet.setCloseDelay(ROWSET_FREE_DELAY);
                     readRowSet.setFetchDirection(ResultSet.FETCH_FORWARD);
                     try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {

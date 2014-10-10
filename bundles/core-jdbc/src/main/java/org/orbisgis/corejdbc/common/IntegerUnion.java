@@ -316,7 +316,18 @@ public class IntegerUnion implements NumberUnion<Integer> {
 
         @Override
         public SortedSet<Integer> tailSet(Integer e) {
-                throw new UnsupportedOperationException("Not supported yet.");
+            int index = Collections.binarySearch(intervals, e);
+            if(index < 0) {
+                index = -index - 1; //retrieve the insertion point
+            }
+            IntegerUnion retVal = new IntegerUnion();
+            if(index % 2 != 0) {
+                retVal.intervals = new ArrayList<>(intervals.subList(index, intervals.size()));
+                retVal.intervals.add(0, e);
+            } else {
+                retVal.intervals = intervals.subList(index, intervals.size());
+            }
+            return retVal;
         }
 
         @Override
@@ -409,6 +420,20 @@ public class IntegerUnion implements NumberUnion<Integer> {
             return new ValueListIterator(intervals.listIterator());
         }
 
+        public ListIterator<Integer> listIterator(int from) {
+            int index = Collections.binarySearch(intervals, from);
+            if(index < 0) {
+                index = -index - 1; //retrieve the insertion point
+            }
+            if(index % 2 == 0) {
+                return new ValueListIterator(intervals.listIterator(index));
+            } else {
+                ListIterator<Integer> it = intervals.listIterator(index);
+                int end = it.next();
+                return new ValueListIterator(it, from, end + 1);
+            }
+        }
+
         private static class ValueListIterator implements ListIterator<Integer>  {
             protected int current = -1;
             protected int itEnd = 0;
@@ -419,6 +444,13 @@ public class IntegerUnion implements NumberUnion<Integer> {
 
             public ValueListIterator(ListIterator<Integer> listIterator) {
                 this.it = listIterator;
+            }
+
+            public ValueListIterator(ListIterator<Integer> listIterator, int itBegin, int itEnd ) {
+                this.it = listIterator;
+                this.itBegin = itBegin;
+                this.current = itBegin - 1;
+                this.itEnd = itEnd;
             }
 
             @Override
