@@ -450,8 +450,8 @@ public class LayerCollection extends BeanLayer {
 
 
         @Override
-	public void setSelection(Set<Integer> newSelection) {
-		throw new UnsupportedOperationException(I18N.tr("No row selection in a layer collection"));
+	    public void setSelection(Set<Long> newSelection) {
+		    throw new UnsupportedOperationException(I18N.tr("No row selection in a layer collection"));
         }
     
         @Override

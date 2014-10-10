@@ -360,9 +360,10 @@ public class ReadTable {
      * @return Envelope of rows
      * @throws SQLException
      */
-    public static Envelope getTableSelectionEnvelope(DataManager manager, String tableName, SortedSet<Integer> rowsId, ProgressMonitor pm) throws SQLException {
+    public static Envelope getTableSelectionEnvelope(DataManager manager, String tableName, SortedSet<Long> rowsId, ProgressMonitor pm) throws SQLException {
         try( Connection connection = manager.getDataSource().getConnection();
                 Statement st = connection.createStatement()) {
+            boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             PropertyChangeListener cancelListener =  EventHandler.create(PropertyChangeListener.class, st, "cancel");
             pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,cancelListener);
             try {
@@ -372,29 +373,36 @@ public class ReadTable {
                     throw new SQLException(I18N.tr("Table table {0} does not contain any geometry fields", tableName));
                 }
                 String geomField = geomFields.get(0);
-                String request = "SELECT ST_Envelope("+TableLocation.quoteIdentifier(geomField)+", ST_SRID("+TableLocation.quoteIdentifier(geomField)+")) env_geom FROM "+tableName;
-                ProgressMonitor selectPm = pm.startTask(I18N.tr("Computing the extent of {0} ", tableName), rowsId.size());
-                try(ReadRowSet rs = manager.createReadRowSet()) {
-                    rs.setCommand(request);
-                    rs.execute(pm);
-                    //Evaluate the selection bounding box
-                    for(int modelId : rowsId) {
-                        if(rs.absolute(modelId)) {
-                            Envelope rowEnvelope = rs.getGeometry("env_geom").getEnvelopeInternal();
-                            if(selectionEnvelope != null) {
-                                selectionEnvelope.expandToInclude(rowEnvelope);
-                            } else {
-                                selectionEnvelope = rowEnvelope;
-                            }
-                            if(pm.isCancelled()) {
-                                throw new SQLException("Operation canceled by user");
-                            } else {
-                                selectPm.endTask();
-                            }
+                // Create a temporary table that contain selected pk
+                String selectionTable = MetaData.getNewUniqueName(tableName, connection.getMetaData(),
+                        TableLocation.capsIdentifier("selection", isH2));
+                st.execute("CREATE TEMPORARY TABLE "+selectionTable+"(pk bigint primary key)");
+                try {
+                    try (PreparedStatement insert = connection.prepareStatement("INSERT INTO " + selectionTable + " VALUES(?)")) {
+                        for (long rowPk : rowsId) {
+                            insert.setLong(1, rowPk);
+                            insert.addBatch();
+                        }
+                        insert.executeBatch();
+                    }
+                    String pkName = MetaData.getPkName(connection, tableName, true);
+                    StringBuilder pkEquality = new StringBuilder("t1." + pkName + " = ");
+                    if (!pkName.equals(MetaData.POSTGRE_ROW_IDENTIFIER)) {
+                        pkEquality.append("t2.pk");
+                    } else {
+                        pkEquality.append(MetaData.castLongToTid("t2.pk"));
+                    }
+                    // Join with temp table and compute the envelope on the server side
+                    try (SpatialResultSet rs = st.executeQuery("SELECT ST_EXTENT(" + TableLocation.quoteIdentifier(geomField) +
+                            ") ext FROM " + tableName + " t1, " + selectionTable + " t2 where " + pkEquality).unwrap(SpatialResultSet.class)) {
+                        if (rs.next()) {
+                            selectionEnvelope = rs.getGeometry().getEnvelopeInternal();
                         }
                     }
+                    return selectionEnvelope;
+                } finally {
+                    st.execute("DROP TABLE IF EXISTS "+selectionTable);
                 }
-                return selectionEnvelope;
             } finally {
                 pm.removePropertyChangeListener(cancelListener);
             }

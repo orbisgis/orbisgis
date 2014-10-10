@@ -48,6 +48,7 @@ import java.util.Map;
 public class MetaData {
     private static final I18n I18N = I18nFactory.getI18n(MetaData.class, Locale.getDefault(), I18nFactory.FALLBACK);
     private static final Logger LOGGER = Logger.getLogger(MetaData.class);
+    public static final String POSTGRE_ROW_IDENTIFIER = "ctid";
 
     /**
      * Returns a new unique name when registering a {@link javax.sql.DataSource}.
@@ -82,18 +83,19 @@ public class MetaData {
 
     /**
      * Get table long system identifier
-     * @param table Table identifier or empty string
      * @return system row column name or expression
      */
-    public static String getSystemLongRowIdentifier(String table, boolean isH2) {
-        if(!table.isEmpty()) {
-            table = table + ".";
-        }
-        if(isH2) {
-            return table + "_ROWID_";
-        } else {
-            return table + "ctid";
-        }
+    public static String getSystemLongRowIdentifier(boolean isH2) {
+        return isH2 ? "_ROWID_" : POSTGRE_ROW_IDENTIFIER;
+    }
+
+    /**
+     * PostgreSQL ctid is not long, and long value must be casted into tid type.
+     * @param pkName
+     * @return
+     */
+    public static String castLongToTid(String pkName) {
+        return "CONCAT('(', "+pkName+" >> 32,',',"+pkName+" << 32 >> 32,')')::tid";
     }
 
     /**
@@ -278,7 +280,7 @@ public class MetaData {
             }
             if (systemColumn) {
                 boolean isH2 = JDBCUtilities.isH2DataBase(meta);
-                String systemRowName = getSystemLongRowIdentifier(tableLocation.toString(isH2), isH2);
+                String systemRowName = getSystemLongRowIdentifier(isH2);
                 // Check if this system column is available
                 try (ResultSet rs = st.executeQuery("select "+systemRowName+" from " + tableLocation + " LIMIT 0")) {
                     pkName = systemRowName;

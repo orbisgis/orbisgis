@@ -41,6 +41,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.viewapi.docking.DockingPanelLayout;
 import org.orbisgis.viewapi.table.TableEditableElement;
 import org.orbisgis.viewapi.util.XElement;
@@ -91,12 +92,12 @@ public class TablePanelLayout implements DockingPanelLayout {
         private void writeSelection(OutputStream out) throws IOException {
                 ObjectOutputStream selectionOut = new ObjectOutputStream(out);
                 //Do not save byte consuming selection
-                IntegerUnion mergedSelection;
-                Set<Integer> selection = tableEditableElement.getSelection();
-                if(selection instanceof IntegerUnion) {
-                        mergedSelection = (IntegerUnion) selection;
+                LongUnion mergedSelection;
+                Set<Long> selection = tableEditableElement.getSelection();
+                if(selection instanceof LongUnion) {
+                        mergedSelection = (LongUnion) selection;
                 } else {
-                        mergedSelection = new IntegerUnion(selection);
+                        mergedSelection = new LongUnion(selection);
                 }
                 if(mergedSelection.getValueRanges().size()>MAX_SELECTION_SERIALISATION_SIZE) {
                         selectionOut.writeObject(new IntegerUnion());
@@ -107,14 +108,14 @@ public class TablePanelLayout implements DockingPanelLayout {
                 selectionOut.close();                
         }
         
-        private IntegerUnion readSelection(InputStream in) {
+        private LongUnion readSelection(InputStream in) {
                 try {
                         ObjectInputStream selectionIn = new ObjectInputStream(in);
-                        return (IntegerUnion)selectionIn.readObject();
+                        return (LongUnion)selectionIn.readObject();
                 } catch (ClassNotFoundException | IOException ex) {
                         LOGGER.error(I18N.tr("Selection deserialisation failed"),ex);
                 }
-            return new IntegerUnion();
+            return new LongUnion();
         }
         @Override
         public void readStream(DataInputStream in) throws IOException {

@@ -256,7 +256,7 @@ public class Layer extends BeanLayer {
 	}
 
 	@Override
-	public void setSelection(Set<Integer> newSelection) {
+	public void setSelection(Set<Long> newSelection) {
 		super.setSelection(newSelection);
 		fireSelectionChanged();
 	}

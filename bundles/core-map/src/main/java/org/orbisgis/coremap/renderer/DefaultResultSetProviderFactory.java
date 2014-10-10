@@ -83,8 +83,8 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
         private DefaultResultSetProvider(DataSource dataSource, ILayer layer) {
             this.dataSource = dataSource;
             this.layer = layer;
-            try {
-                pkName = MetaData.getPkName(connection, layer.getTableReference(), true);
+            try(Connection conn = dataSource.getConnection()) {
+                pkName = MetaData.getPkName(conn, layer.getTableReference(), true);
             } catch (SQLException ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
             }
