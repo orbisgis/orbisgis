@@ -559,9 +559,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
          * The user can export the selected rows into a new datasource
          */
         public void onCreateDataSourceFromSelection() {
-            Set<Integer> selection = getTableModelSelection(1);
             // If there is a nonempty selection, then ask the user to name it.
-            if (!selection.isEmpty()) {
+            if (!tableEditableElement.getSelection().isEmpty()) {
                 try {
                     String newName = CreateSourceFromSelection.showNewNameDialog(
                             this, dataSource, tableEditableElement.getTableReference());
@@ -572,7 +571,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                         bm.backgroundOperation(
                                 new CreateSourceFromSelection(
                                         dataSource,
-                                        selection, tableEditableElement.getTableReference(), newName));
+                                        tableEditableElement.getSelection(), tableEditableElement.getTableReference(), newName));
                     }
                 } catch (SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);

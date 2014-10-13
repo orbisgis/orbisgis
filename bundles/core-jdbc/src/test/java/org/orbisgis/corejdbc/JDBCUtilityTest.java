@@ -31,6 +31,7 @@ package org.orbisgis.corejdbc;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
@@ -45,7 +46,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.progress.NullProgressMonitor;
@@ -248,5 +248,24 @@ public class JDBCUtilityTest {
             st.execute("CALL FILE_TABLE('"+JDBCUtilityTest.class.getResource("bv_sap.shp").getPath()+"', 'EXTERNAL_TABLE');");
             assertEquals(MetaData.getTableType(connection, "EXTERNAL_TABLE"), MetaData.TableType.EXTERNAL);
          }
+    }
+
+    @Test
+    public void testTableCreateFromPK() throws SQLException {
+        try(Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS INTTABLE, INTTABLE_SEL");
+            st.execute("CREATE TABLE INTTABLE (pk bigint primary key, \"vals\" integer)");
+            st.execute("INSERT INTO INTTABLE VALUES (1, 20), (2, 5), (3, 15), (4, 4), (5, 1)");
+            CreateTable.createTableFromRowPkSelection(dataSource, "INTTABLE", new HashSet<>(Arrays.asList(1l, 3l, 5l)),
+                    "INTTABLE_SEL",new NullProgressMonitor());
+            try(ResultSet rs = st.executeQuery("SELECT \"vals\" FROM INTTABLE_SEL")) {
+                assertTrue(rs.next());
+                assertEquals(20, rs.getInt(1));
+                assertTrue(rs.next());
+                assertEquals(15, rs.getInt(1));
+                assertTrue(rs.next());
+                assertEquals(1, rs.getInt(1));
+            }
+        }
     }
 }

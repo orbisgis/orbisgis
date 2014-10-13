@@ -29,10 +29,12 @@
 package org.orbisgis.corejdbc;
 
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
@@ -42,12 +44,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Methods that need write rights on database
  * @author Nicolas Fortin
  */
 public class CreateTable {
+    private static final int INSERT_BATCH_SIZE = 30;
     protected final static I18n I18N = I18nFactory.getI18n(CreateTable.class, Locale.getDefault(), I18nFactory.FALLBACK);
 
     /**
@@ -94,6 +98,37 @@ public class CreateTable {
                 insertProgress.removePropertyChangeListener(listener);
             }
             return tempTableName;
+        }
+    }
+
+
+    public static void createTableFromRowPkSelection(DataSource dataSource, String tableName, Set<Long> selectedRows,
+                                                     String newName, ProgressMonitor pm) throws SQLException {
+        // Populate the new source
+        try(Connection connection = dataSource.getConnection();
+            Statement st = connection.createStatement()) {
+            DatabaseMetaData meta = connection.getMetaData();
+            // Find an unique name to register
+            if (newName == null) {
+                newName = MetaData.getNewUniqueName(tableName,meta,"selection");
+            }
+            // Create row id table
+            String tempTableName = CreateTable.createIndexTempTable(connection, pm, selectedRows,"ROWID", INSERT_BATCH_SIZE);
+            PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
+                    listener);
+            // Copy content using pk
+            String primaryKeyName = MetaData.getPkName(connection, tableName, true);
+            StringBuilder pkEquality = new StringBuilder("a.%s = ");
+            if (!primaryKeyName.equals(MetaData.POSTGRE_ROW_IDENTIFIER)) {
+                pkEquality.append("b.ROWID");
+            } else {
+                pkEquality.append(MetaData.castLongToTid("b.ROWID"));
+            }
+            st.execute(String.format("CREATE TABLE %s AS SELECT a.* FROM %s a,%s b " +
+                            "WHERE "+pkEquality, TableLocation.parse(newName),
+                    TableLocation.parse(tableName),tempTableName, primaryKeyName));
+            pm.removePropertyChangeListener(listener);
         }
     }
 }

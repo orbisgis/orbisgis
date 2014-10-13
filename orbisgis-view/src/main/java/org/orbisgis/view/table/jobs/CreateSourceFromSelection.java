@@ -30,8 +30,6 @@
 package org.orbisgis.view.table.jobs;
 
 import java.awt.*;
-import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -99,31 +97,7 @@ public class CreateSourceFromSelection implements BackgroundJob {
         @Override
         public void run(ProgressMonitor pm) {
                 try {
-                        // Populate the new source
-                        try(Connection connection = dataSource.getConnection();
-                            Statement st = connection.createStatement()) {
-                            DatabaseMetaData meta = connection.getMetaData();
-                            // Find an unique name to register
-                            if (newName == null) {
-                                newName = MetaData.getNewUniqueName(tableName,meta,"selection");
-                            }
-                            // Create row id table
-                            String tempTableName = CreateTable.createIndexTempTable(connection, pm, selectedRows, INSERT_BATCH_SIZE);
-                            PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
-                            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
-                                    listener);
-                            // Copy content using pk
-                            int primaryKeyIndex = JDBCUtilities.getIntegerPrimaryKey(connection, tableName);
-                            if(primaryKeyIndex == 0) {
-                                // Should never happen because the check is done before the creation of this class
-                                throw new SQLException("Cannot create table from table selection that does not contains a primary key");
-                            }
-                            String primaryKeyName = JDBCUtilities.getFieldName(meta, tableName, primaryKeyIndex);
-                            st.execute(String.format("CREATE TABLE %s AS SELECT a.* FROM %s a,%s b " +
-                                    "WHERE a.%s = b.ROWID ",TableLocation.parse(newName),
-                                    TableLocation.parse(tableName),tempTableName, primaryKeyName));
-                            pm.removePropertyChangeListener(listener);
-                        }
+                    CreateTable.createTableFromRowPkSelection(dataSource, tableName, selectedRows, newName, pm);
                 } catch (SQLException e) {
                         GUILOGGER.error("The selection cannot be created.", e);
                         if(newName!=null && !newName.isEmpty()) {
