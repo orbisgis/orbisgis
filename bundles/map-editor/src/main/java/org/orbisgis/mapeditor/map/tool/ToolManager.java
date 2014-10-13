@@ -66,16 +66,20 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 import javax.sql.RowSet;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.apache.log4j.Logger;
+import org.orbisgis.corejdbc.CreateTable;
 import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.coremap.layerModel.*;
 import org.orbisgis.coremap.map.MapTransform;
@@ -96,6 +100,7 @@ import org.orbisgis.mapeditor.map.tools.PanTool;
 import org.orbisgis.mapeditor.map.tools.ToolUtilities;
 import org.orbisgis.mapeditor.map.tools.ZoomInTool;
 import org.orbisgis.mapeditor.map.tools.ZoomOutTool;
+import org.orbisgis.progress.NullProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -108,6 +113,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         public static GeometryFactory toolsGeometryFactory = new GeometryFactory();
         private static final I18n I18N = I18nFactory.getI18n(ToolManager.class);
         private static Logger UILOGGER = Logger.getLogger("gui."+ToolManager.class);
+        private static final int TRY_LOCK_TIME = 5000;
         private Automaton currentTool;
         private ILayer activeLayer = null;
         private PropertyChangeListener mapContextListener;
@@ -683,18 +689,23 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                         || (activeLayer.getSelection().isEmpty()) || activeLayerRowSet == null) {
                         return;
                 }
-                Set<Integer> selection = activeLayer.getSelection();
+                Set<Long> selection = activeLayer.getSelection();
+                Lock readLock = activeLayerRowSet.getReadLock();
                 try {
-                        for (int selectedRow : selection) {
-                                Primitive p;
-                                Geometry geometry = activeLayerRowSet.getGeometry(selectedRow);
-                                if (geometry != null) {
-                                        p = new Primitive(geometry, selectedRow);
-                                        Handler[] handlers = p.getHandlers();
-                                        currentHandlers.addAll(Arrays.asList(handlers));
-                                }
+                    if(readLock.tryLock(TRY_LOCK_TIME, TimeUnit.MILLISECONDS)) {
+                        activeLayerRowSet.setFilter(activeLayer.getSelection());
+                        for (long selectedRowPk : selection) {
+                            Primitive p;
+                            Geometry geometry = activeLayerRowSet.getGeometry(selectedRowPk);
+                            if (geometry != null) {
+                                p = new Primitive(geometry, selectedRowPk);
+                                Handler[] handlers = p.getHandlers();
+                                currentHandlers.addAll(Arrays.asList(handlers));
+                            }
                         }
-                } catch (SQLException e) {
+                    }
+                } catch (SQLException | InterruptedException e) {
+                        readLock.unlock();
                         UILOGGER.warn(
                                 I18N.tr("Cannot recalculate the handlers"), e);
                 }
