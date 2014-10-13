@@ -66,7 +66,6 @@ import java.util.Set;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.ReadTable;
-import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
@@ -148,15 +147,14 @@ public abstract class AbstractSelectionTool extends Selection {
         public void transitionTo_PointWithSelection(MapContext mc, ToolManager tm)
                 throws TransitionException, FinishedAutomatonException {
                 Point2D p = new Point2D.Double(tm.getValues()[0], tm.getValues()[1]);
-
-                BitSet geom = new BitSet();
+                HashSet<Long> geom = new HashSet<>();
                 ArrayList<Handler> handlers = tm.getCurrentHandlers();
                 selected.clear();
                 for (Handler handler : handlers) {
                             /*
                              * Don't select two handlers from the same geometry
                              */
-                    if (geom.get(handler.getGeometryIndex())) {
+                    if (geom.contains(handler.getGeometryPK())) {
                         continue;
                     }
 
@@ -170,7 +168,7 @@ public abstract class AbstractSelectionTool extends Selection {
                             throw new TransitionException(ex.getLocalizedMessage(), ex);
                         }
                         selected.add(handler);
-                        geom.set(handler.getGeometryIndex());
+                        geom.add(handler.getGeometryPK());
                     }
                 }
 

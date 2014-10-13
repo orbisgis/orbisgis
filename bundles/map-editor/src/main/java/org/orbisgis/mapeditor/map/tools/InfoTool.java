@@ -29,16 +29,22 @@ package org.orbisgis.mapeditor.map.tools;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.geom.Rectangle2D;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Observable;
 import javax.sql.DataSource;
 import javax.swing.ImageIcon;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.coremap.layerModel.ILayer;
@@ -102,7 +108,7 @@ public class InfoTool extends AbstractRectangleTool {
     /**
      * This class is used to print the selected features in the console, or in the popup if there is only one feature.
      */
-    private class PopulateViewJob implements BackgroundJob {
+    private static class PopulateViewJob implements BackgroundJob {
 
         private final Envelope envelope;
         private final DataSource sds;
@@ -121,14 +127,37 @@ public class InfoTool extends AbstractRectangleTool {
 
         @Override
         public void run(ProgressMonitor pm) {
-            try(ResultSetProviderFactory.ResultSetProvider rsCont =
-                        tm.getCachedResultSetContainer().getResultSetProvider(layer, pm);
-                    ResultSet rs = rsCont.execute(pm, envelope)) {
-                String lines = ReadTable.resultSetToString(rs, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, false, false,
-                        new EnvelopeFilter(envelope));
-                UILOGGER.info(lines);
-                if (lines.length() <= POPUP_MAX_LENGTH) {
-                    POPUPLOGGER.info(lines);
+            GeometryFactory geometryFactory = new GeometryFactory();
+            Geometry envGeom = geometryFactory.toGeometry(envelope);
+            TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
+            try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
+                // Fetch SRID for PostGIS constraints
+                try(PreparedStatement pst = SFSUtilities.prepareInformationSchemaStatement(connection,
+                        tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable(),
+                        "PUBLIC.GEOMETRY_COLUMNS", "");
+                    ResultSet rs = pst.executeQuery()) {
+                    if(rs.next()) {
+                        int srid = rs.getInt("srid");
+                        if(srid > 0) {
+                            envGeom.setSRID(srid);
+                        }
+                    }
+                }
+                List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableLocation);
+                if(geomFields.isEmpty()) {
+                    return;
+                }
+                try(PreparedStatement pst = connection.prepareStatement("SELECT * FROM "+layer.getTableReference()+
+                        " WHERE "+TableLocation.quoteIdentifier(geomFields.get(0))+" = ?")) {
+                    pst.setObject(1, envGeom);
+                    try(ResultSet rs = pst.executeQuery()) {
+                        String lines = ReadTable.resultSetToString(rs, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, false, false,
+                                new EnvelopeFilter(envelope));
+                        UILOGGER.info(lines);
+                        if (lines.length() <= POPUP_MAX_LENGTH) {
+                            POPUPLOGGER.info(lines);
+                        }
+                    }
                 }
             } catch (SQLException ex) {
                 UILOGGER.error(ex.getLocalizedMessage(), ex);

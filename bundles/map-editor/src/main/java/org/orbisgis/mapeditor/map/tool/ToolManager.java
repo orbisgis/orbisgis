@@ -72,6 +72,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import javax.sql.RowSet;
@@ -81,6 +82,7 @@ import javax.swing.JPopupMenu;
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.CreateTable;
 import org.orbisgis.corejdbc.ReversibleRowSet;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.*;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.map.TransformListener;
@@ -693,12 +695,18 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 Lock readLock = activeLayerRowSet.getReadLock();
                 try {
                     if(readLock.tryLock(TRY_LOCK_TIME, TimeUnit.MILLISECONDS)) {
-                        activeLayerRowSet.setFilter(activeLayer.getSelection());
-                        for (long selectedRowPk : selection) {
+                        // Fetch row num using selected pk
+                        SortedSet<Integer> modelRows = new IntegerUnion();
+                        for (long value : selection) {
+                            modelRows.add(activeLayerRowSet.getRowId(value));
+                        }
+                        activeLayerRowSet.setFilter(modelRows);
+                        activeLayerRowSet.beforeFirst();
+                        while (activeLayerRowSet.next()){
                             Primitive p;
-                            Geometry geometry = activeLayerRowSet.getGeometry(selectedRowPk);
+                            Geometry geometry = activeLayerRowSet.getGeometry();
                             if (geometry != null) {
-                                p = new Primitive(geometry, selectedRowPk);
+                                p = new Primitive(geometry, activeLayerRowSet.getLong(activeLayerRowSet.getPkName()));
                                 Handler[] handlers = p.getHandlers();
                                 currentHandlers.addAll(Arrays.asList(handlers));
                             }

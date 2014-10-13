@@ -68,11 +68,11 @@ public class MultipointHandler extends AbstractHandler implements Handler {
          * @param pointIndex
          * @param vertexIndex
          * @param p
-         * @param geomIndex
+         * @param geomPk
          */
         public MultipointHandler(Geometry g, int pointIndex, int vertexIndex,
-                Coordinate p, int geomIndex) {
-                super(g, vertexIndex, p, geomIndex);
+                Coordinate p, long geomPk) {
+                super(g, vertexIndex, p, geomPk);
                 this.pointIndex = pointIndex;
         }
 

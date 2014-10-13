@@ -64,8 +64,8 @@ public class MultiPolygonHandler extends AbstractHandler implements Handler {
 
         public MultiPolygonHandler(com.vividsolutions.jts.geom.Geometry g,
                 int polygonIndex, int holeIndex, int vertexIndex, Coordinate p,
-                int geomIndex) {
-                super(g, vertexIndex, p, geomIndex);
+                long geomPk) {
+                super(g, vertexIndex, p, geomPk);
                 this.polygonIndex = polygonIndex;
                 this.holeIndex = holeIndex;
         }

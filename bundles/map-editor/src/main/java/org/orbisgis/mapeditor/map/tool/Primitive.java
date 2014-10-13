@@ -63,19 +63,19 @@ import com.vividsolutions.jts.geom.*;
 public class Primitive {
 
         private Geometry geometry;
-        private int geomIndex;
+        private long geomPK;
 
         /**
          * Creates a new Primitive
          *
          * @param g
          *            Geometry to be wrapped
-         * @param geomIndex
+         * @param geomPK
          *            index of the geometry in the Theme it was read
          */
-        public Primitive(Geometry g, int geomIndex) {
+        public Primitive(Geometry g, long geomPK) {
                 this.geometry = g;
-                this.geomIndex = geomIndex;
+                this.geomPK = geomPK;
         }
 
         public Handler[] getHandlers() {
@@ -87,7 +87,7 @@ public class Primitive {
                         ret = new Handler[hndPoints.length];
                         for (int i = 0; i < hndPoints.length; i++) {
                                 ret[i] = new PointHandler(geometry,
-                                        i, hndPoints[i], geomIndex);
+                                        i, hndPoints[i], geomPK);
                         }
                         return ret;
                 } else if (geometry instanceof MultiPoint) {
@@ -96,7 +96,7 @@ public class Primitive {
                                 hndPoints = geometry.getGeometryN(g).getCoordinates();
                                 for (int i = 0; i < hndPoints.length; i++) {
                                         retArray.add(new MultipointHandler(geometry, g, i,
-                                                hndPoints[i], geomIndex));
+                                                hndPoints[i], geomPK));
                                 }
                         }
                         return retArray.toArray(new Handler[retArray.size()]);
@@ -106,7 +106,7 @@ public class Primitive {
                                 hndPoints = geometry.getGeometryN(g).getCoordinates();
                                 for (int i = 0; i < hndPoints.length; i++) {
                                         retArray.add(new MultilineHandler(geometry, g, i,
-                                                hndPoints[i], geomIndex));
+                                                hndPoints[i], geomPK));
                                 }
                         }
                         return retArray.toArray(new Handler[retArray.size()]);
@@ -116,7 +116,7 @@ public class Primitive {
                                 hndPoints = geometry.getGeometryN(g).getCoordinates();
                                 for (int i = 0; i < hndPoints.length; i++) {
                                         retArray.add(new PolygonHandler(geometry, g - 1, i,
-                                                hndPoints[i], geomIndex));
+                                                hndPoints[i], geomPK));
                                 }
                         }
                         return retArray.toArray(new Handler[retArray.size()]);
@@ -128,7 +128,7 @@ public class Primitive {
                                         hndPoints = pol.getGeometryN(r).getCoordinates();
                                         for (int i = 0; i < hndPoints.length; i++) {
                                                 retArray.add(new MultiPolygonHandler(geometry, g,
-                                                        r - 1, i, hndPoints[i], geomIndex));
+                                                        r - 1, i, hndPoints[i], geomPK));
                                         }
                                 }
                         }

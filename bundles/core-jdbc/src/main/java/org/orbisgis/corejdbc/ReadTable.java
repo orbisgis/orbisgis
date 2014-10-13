@@ -237,7 +237,7 @@ public class ReadTable {
                         value = rs.getString(idColumn);
                     }
                     if (value != null) {
-                        if (value.length() > maxFieldLength) {
+                        if (columnCount > 1 && value.length() > maxFieldLength) {
                             value = value.substring(0, maxFieldLength - 2) + "..";
                         }
                     } else {

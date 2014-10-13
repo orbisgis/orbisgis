@@ -114,5 +114,5 @@ public interface Handler {
 	 * 
 	 * @return
 	 */
-	public int getGeometryIndex();
+	public long getGeometryPK();
 }

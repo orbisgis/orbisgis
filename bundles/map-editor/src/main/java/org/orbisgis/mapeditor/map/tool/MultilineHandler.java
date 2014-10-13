@@ -62,8 +62,8 @@ public class MultilineHandler extends AbstractHandler implements Handler {
         private int linestringIndex;
 
         public MultilineHandler(Geometry g, int linestringIndex, int vertexIndex,
-                Coordinate p, int geomIndex) {
-                super(g, vertexIndex, p, geomIndex);
+                Coordinate p, long geomPk) {
+                super(g, vertexIndex, p, geomPk);
                 this.linestringIndex = linestringIndex;
         }
 
