@@ -91,6 +91,7 @@ public class TableEditableElementImpl extends EditableSourceImpl implements Tabl
             for(int rowNum : selection) {
                 modelRows.add(getRowSet().getRowPK(rowNum));
             }
+            setSelection(modelRows);
         }
 
         @Override

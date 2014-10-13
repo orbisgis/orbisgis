@@ -133,11 +133,13 @@ public class CreateSourceFromSelection implements BackgroundJob {
             JLabel message = new JLabel(I18N.tr(newNameMessage));
             try(Connection connection = dataSource.getConnection()) {
                 DatabaseMetaData meta = connection.getMetaData();
+                boolean isH2 = JDBCUtilities.isH2DataBase(meta);
                 while (!inputAccepted) {
                     newName = JOptionPane.showInputDialog(
                             parent,
                             message.getText(),
-                            MetaData.getNewUniqueName(sourceTable, meta, I18N.tr("selection")));
+                            MetaData.getNewUniqueName(sourceTable, meta,
+                                    TableLocation.capsIdentifier(I18N.tr("selection"), isH2)));
                     // Check if the user canceled the operation.
                     if (newName == null) {
                         // Just exit

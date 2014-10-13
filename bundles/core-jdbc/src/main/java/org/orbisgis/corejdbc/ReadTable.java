@@ -83,7 +83,7 @@ public class ReadTable {
             progressMonitor.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
                     listener);
             try {
-                int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection, table.toUpperCase());
+                int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection, tableLocation.toString());
                 if (pkIndex > 0) {
                     ProgressMonitor jobProgress = progressMonitor.startTask(2);
                     // Do not cache values

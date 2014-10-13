@@ -989,8 +989,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                         for (ILayer layer : layers) {
                             if (!layer.getTableReference().isEmpty()) {
                                 TableLocation layerTable = TableLocation.parse(layer.getTableReference());
-                                if (editorTable.getSchema().equals(layerTable.getSchema()) &&
-                                        editorTable.getTable().equals(layerTable.getTable())) {
+                                if (editorTable.equals(layerTable)) {
                                     layer.setSelection(tableEditableElement.getSelection());
                                 }
                             }

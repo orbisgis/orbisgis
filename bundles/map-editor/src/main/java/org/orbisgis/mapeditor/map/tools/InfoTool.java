@@ -166,11 +166,12 @@ public class InfoTool extends AbstractRectangleTool {
     }
 
     private static class EnvelopeFilter implements ReadTable.ResultSetFilter {
-        private Envelope envelope;
+        private Geometry envelope;
         private String geomFieldName = "";
 
         private EnvelopeFilter(Envelope envelope) {
-            this.envelope = envelope;
+            GeometryFactory factory = new GeometryFactory();
+            this.envelope = factory.toGeometry(envelope);
         }
 
         @Override
@@ -182,7 +183,7 @@ public class InfoTool extends AbstractRectangleTool {
                 }
             }
             Object geomObj = rs.getObject(geomFieldName);
-            return geomObj instanceof Geometry && ((Geometry) geomObj).getEnvelopeInternal().intersects(envelope);
+            return geomObj instanceof Geometry && ((Geometry) geomObj).intersects(envelope);
         }
     }
     @Override
