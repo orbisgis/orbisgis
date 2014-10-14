@@ -11,21 +11,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>wms-client</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1-SNAPSHOT</version>
 	<name>WMS-Client</name>
 	<url>http://www.orbisgis.org</url>
-	<repositories>  
-		<repository>  
-			<id>IRSTV</id>  
-			<name>IRSTV repository</name>  
-			<url>http://repo.orbisgis.org</url>  
-		</repository>  
-		<repository>
-			<id>osgeo</id>
-			<name>Open Source Geospatial Foundation Repository</name>
-			<url>http://download.osgeo.org/webdav/geotools/</url>
-		</repository>
-	</repositories>  
 	<dependencies>
                 <dependency>
                         <groupId>biz.source_code</groupId>
@@ -41,12 +28,12 @@
                 <dependency>
                         <groupId>com.vividsolutions</groupId>
                         <artifactId>jts</artifactId>
-                        <version>1.13</version>
+                        <version>${jts-version}</version>
                 </dependency>
                 <dependency>
                         <groupId>xerces</groupId>
                         <artifactId>xercesImpl</artifactId>
-                        <version>2.10.0</version>
+                        <version>2.11.0</version>
                 </dependency>
                 <dependency>
                         <groupId>log4j</groupId>
@@ -70,13 +57,6 @@
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<instructions>
-						<Export-Package>org.gdms.data.*, org.gdms.sql.function.*</Export-Package>
-						<Private-Package>org.gdms.*</Private-Package>
-						<Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
-					</instructions>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -86,19 +66,6 @@
 					<source>1.7</source>
 					<target>1.7</target>
 					<showWarnings>true</showWarnings>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>org.gdms.tool.Shell</mainClass>
-						</manifest>
-						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-					</archive>
 				</configuration>
 			</plugin>
 			<plugin>
