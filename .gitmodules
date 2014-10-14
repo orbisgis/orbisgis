@@ -1,0 +1,3 @@
+[submodule "bundles/felix"]
+	path = bundles/felix
+	url = https://github.com/apache/felix.git

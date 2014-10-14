@@ -33,6 +33,7 @@
                 <module>bundles/sql-parser-api</module>
                 <module>bundles/sqlconsole-parser</module>
                 <module>bundles/orbisgis-oshell</module>
+                <module>bundles/felix/shell.gui</module>
                 <module>bundles/orbisgis-omanager</module>
                 <module>bundles/orbisgis-omanager-plugin</module>
                 <module>bundles/map-editor-api</module>
