@@ -59,12 +59,7 @@ public class TableEditorFactory implements MultipleEditorFactory {
                     LOGGER.info(I18N.tr("This data source ({0}) is already shown in an editor.",editableTable.getTableReference()));
                     return null;
                 }
-                if(openEditable(editableTable)) {
-                    return new TablePanelLayout(editableTable);
-                }else {
-                    LOGGER.info(I18N.tr("In a consequence of an unreachable table {0},the associated data editor could not be recovered.",editableTable.getTableReference()));
-                    return null;
-                }
+                return new TablePanelLayout(editableTable);
             } else {
                 return null;
             }
@@ -76,18 +71,7 @@ public class TableEditorFactory implements MultipleEditorFactory {
         public void setDataManager(DataManager dataManager) {
             this.dataManager = dataManager;
         }
-        
-        private boolean openEditable(TableEditableElement table) {
-                if(!table.isOpen()) {
-                    try {
-                        table.open(new NullProgressMonitor());
-                    } catch (EditableElementException ex) {
-                        LOGGER.error(ex.getLocalizedMessage(), ex);
-                        return false;
-                    }
-                }
-                return table.isOpen();
-        }
+
         
         private boolean isEditableAlreadyOpened(EditableElement editable) {
                 EditorManager em = Services.getService(EditorManager.class);
@@ -112,13 +96,8 @@ public class TableEditorFactory implements MultipleEditorFactory {
         @Override
         public EditorDockable create(DockingPanelLayout layout) {
                 TableEditableElement editableTable = ((TablePanelLayout)layout).getTableEditableElement();
-                //Check the DataSource state                
-                if(!openEditable(editableTable)) {
-                        LOGGER.info(I18N.tr("In a consequence of an unreachable table {0},the associated data editor could not be recovered.",editableTable.getTableReference()));
-                        return null;
-                } else {
-                        return new TableEditor(editableTable, dataManager);
-                }
+                //Check the DataSource state
+                return new TableEditor(editableTable, dataManager);
         }
 
         @Override
