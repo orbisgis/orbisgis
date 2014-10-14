@@ -148,7 +148,7 @@ public class InfoTool extends AbstractRectangleTool {
                     return;
                 }
                 try(PreparedStatement pst = connection.prepareStatement("SELECT * FROM "+layer.getTableReference()+
-                        " WHERE "+TableLocation.quoteIdentifier(geomFields.get(0))+" = ?")) {
+                        " WHERE "+TableLocation.quoteIdentifier(geomFields.get(0))+" && ?")) {
                     pst.setObject(1, envGeom);
                     try(ResultSet rs = pst.executeQuery()) {
                         String lines = ReadTable.resultSetToString(rs, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, false, false,
