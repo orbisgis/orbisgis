@@ -47,6 +47,7 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -103,8 +104,10 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
             if(geometryFields.isEmpty()) {
                 throw new SQLException(I18N.tr("Table {0} does not contains geometry fields",layer.getTableReference()));
             }
-            st = createStatement(connection, geometryFields.get(0), layer.getTableReference(), !layer.getSelection().isEmpty());
+            st = createStatement(connection, geometryFields.get(0), layer.getTableReference());
             st.setFetchSize(FETCH_SIZE);
+            st.setFetchDirection(ResultSet.FETCH_FORWARD);
+            connection.setAutoCommit(false);
             cancelListener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
             pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelListener);
             GeometryFactory geometryFactory = new GeometryFactory();
@@ -114,14 +117,10 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
             return st.executeQuery().unwrap(SpatialResultSet.class);
         }
 
-        private PreparedStatement createStatement(Connection connection,String geometryField,String tableReference, boolean hasSelection) throws SQLException {
-            if(!hasSelection) {
+        private PreparedStatement createStatement(Connection connection,String geometryField,String tableReference) throws SQLException {
                 return connection.prepareStatement(
-                        String.format("select * from %s where %s && ?", tableReference, geometryField));
-            } else {
-                return  connection.prepareStatement(
-                        String.format("select * from %s",tableReference));
-            }
+                        String.format("select "+pkName+",* from %s where %s && ?", tableReference, geometryField),
+                        ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         }
 
         @Override

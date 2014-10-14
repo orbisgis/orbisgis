@@ -710,16 +710,11 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
 
             @Override
             public void run(ProgressMonitor pm) {
-                try {
-                    source.open(pm);
-                    EditorManager editorManager = Services.getService(EditorManager.class);
-                    if(SwingUtilities.isEventDispatchThread()) {
-                        editorManager.openEditable(source);
-                    } else {
-                        SwingUtilities.invokeLater(new OpenEditableInSwingThread(source, editorManager));
-                    }
-                } catch (EditableElementException ex) {
-                    LOGGER.error(I18N.tr("Cannot open the table editor"),ex);
+                EditorManager editorManager = Services.getService(EditorManager.class);
+                if(SwingUtilities.isEventDispatchThread()) {
+                    editorManager.openEditable(source);
+                } else {
+                    SwingUtilities.invokeLater(new OpenEditableInSwingThread(source, editorManager));
                 }
             }
 

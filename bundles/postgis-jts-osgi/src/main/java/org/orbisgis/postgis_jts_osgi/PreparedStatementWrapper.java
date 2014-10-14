@@ -202,7 +202,7 @@ public class PreparedStatementWrapper implements PreparedStatement {
 
     @Override
     public void setRef(int parameterIndex, Ref x) throws SQLException {
-        preparedStatement.setRef(parameterIndex, x);
+        preparedStatement.setObject(parameterIndex, ResultSetWrapper.longToTid((Long)x.getObject()));
     }
 
     @Override
