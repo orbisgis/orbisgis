@@ -31,7 +31,6 @@ package org.orbisgis.mapeditor;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
 import org.orbisgis.mapeditor.map.MapEditor;
-import org.orbisgis.mapeditorapi.IndexProvider;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.viewapi.edition.EditorDockable;
 import org.orbisgis.viewapi.edition.EditorFactory;
@@ -67,7 +66,6 @@ public class MapEditorFactory implements SingleEditorFactory {
         private DataManager dataManager;
         private ViewWorkspace viewWorkspace;
         private EditorManager editorManager;
-        private IndexProvider indexProvider;
         private List<ResultSetProviderFactory> rsFactories = new ArrayList<>();
 
         @Reference
@@ -109,29 +107,6 @@ public class MapEditorFactory implements SingleEditorFactory {
             dispose();
         }
 
-        /**
-         * Provide spatial query optimisation
-         * @param indexProvider Index factory
-         */
-        @Reference(cardinality = ReferenceCardinality.OPTIONAL)
-        public void setIndexProvider(IndexProvider indexProvider) {
-            this.indexProvider = indexProvider;
-            if(mapPanel != null) {
-                mapPanel.setIndexProvider(indexProvider);
-            }
-        }
-
-        /**
-         * Provide spatial query optimisation
-         * @param indexProvider Index factory
-         */
-        public void unsetIndexProvider(IndexProvider indexProvider) {
-            this.indexProvider = null;
-            if(mapPanel != null) {
-                mapPanel.setIndexProvider(null);
-            }
-        }
-
         @Activate
         public void Activate(BundleContext bundleContext) {
             this.hostBundle = bundleContext;
@@ -164,9 +139,6 @@ public class MapEditorFactory implements SingleEditorFactory {
         public EditorDockable[] getSinglePanels() {
                 if(mapPanel==null) {
                         mapPanel = new MapEditor(viewWorkspace,dataManager,editorManager);
-                        if(indexProvider != null) {
-                            mapPanel.setIndexProvider(indexProvider);
-                        }
                         for(ResultSetProviderFactory rsF  : rsFactories) {
                             mapPanel.addResultSetProviderFactory(rsF);
                         }
