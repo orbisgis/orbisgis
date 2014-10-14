@@ -530,6 +530,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public int findColumn(String label) throws SQLException {
+        if(cachedColumnNames == null) {
+            cacheColumnNames();
+        }
         Integer columnId = cachedColumnNames.get(label.toUpperCase());
         if(columnId == null) {
             throw new SQLException("Column "+label+" does not exists");

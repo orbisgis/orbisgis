@@ -67,7 +67,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 public class MapControl extends JComponent implements ContainerListener {
         //Minimal Time in ms between two intermediate paint of drawing process
-        private ResultSetProviderFactory resultSetProviderFactory;
+        private ResultSetProviderFactory resultSetProviderFactory = new CachedResultSetContainer();
         private static final Point MAX_IMAGE_SIZE = new Point(20000, 20000);
         public static final String JOB_DRAWING_PREFIX_ID = "MapControl-Drawing";
         private static final Logger LOGGER = Logger.getLogger(MapControl.class);

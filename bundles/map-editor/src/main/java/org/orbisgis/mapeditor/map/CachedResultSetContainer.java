@@ -41,6 +41,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.renderer.DefaultResultSetProviderFactory;
@@ -64,23 +65,9 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
     private static final int ROWSET_FREE_DELAY = 60000;
     private static final long WAIT_FOR_INITIALISATION_TIMEOUT = 10000;
     // (0-1] Use spatial index query if the query envelope area rational number is smaller than this value.
-    private static final double RATIONAL_USAGE_INDEX = 0.75;
+    private static final double RATIONAL_USAGE_INDEX = 0.5;
     private final ReentrantLock lock = new ReentrantLock();
     private ResultSetProviderFactory defaultFactory = new DefaultResultSetProviderFactory();
-    private boolean isH2;
-
-    /**
-     * Reformat table name in order to be used as valid key.
-     * @param layer layer identifier
-     * @return canonical table name
-     * @throws SQLException
-     */
-    private String getCanonicalTableReference(ILayer layer) throws SQLException {
-        try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {
-            this.isH2 =  JDBCUtilities.isH2DataBase(connection.getMetaData());
-            return TableLocation.parse(layer.getTableReference(), isH2).toString(isH2);
-        }
-    }
 
     @Override
     public String getName() {
@@ -89,24 +76,35 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
 
     @Override
     public ResultSetProvider getResultSetProvider(ILayer layer, ProgressMonitor pm) throws SQLException {
-        if(!isH2) {
-            // Always use cursor with PostGIS
-            return defaultFactory.getResultSetProvider(layer, pm);
-        }
         try {
             if(lock.tryLock(WAIT_FOR_INITIALISATION_TIMEOUT, TimeUnit.MILLISECONDS)) {
-                String tableRef = getCanonicalTableReference(layer);
+                boolean isH2;
+                String integerPK = ""; // Not system PK
+                String tableRef;
+                try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {
+                    isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                    tableRef = TableLocation.parse(layer.getTableReference(), isH2).toString(isH2);
+                    integerPK = MetaData.getPkName(connection, tableRef, false);
+                }
+                if(!isH2) {
+                    // Always use cursor with PostGIS
+                    return defaultFactory.getResultSetProvider(layer, pm);
+                }
                 ReadRowSet readRowSet = cache.get(tableRef);
+                ResultSetProvider defaultResultSetProvider = defaultFactory.getResultSetProvider(layer, pm);
                 if (readRowSet == null) {
                     readRowSet = layer.getDataManager().createReadRowSet();
+                    // If the used PK is hidden (because it is system pk)
+                    if(integerPK.isEmpty()) {
+                        readRowSet.setCommand("SELECT " + defaultResultSetProvider.getPkName() + ", * FROM ");
+                    }
                     readRowSet.setFetchSize(FETCH_SIZE);
                     readRowSet.setCloseDelay(ROWSET_FREE_DELAY);
                     readRowSet.setFetchDirection(ResultSet.FETCH_FORWARD);
                     readRowSet.initialize(tableRef, "", pm);
                     cache.put(tableRef, readRowSet);
                 }
-                return new CachedResultSet(readRowSet, tableRef, layer.getEnvelope(),
-                        defaultFactory.getResultSetProvider(layer, pm));
+                return new CachedResultSet(readRowSet, tableRef, layer.getEnvelope(),defaultResultSetProvider);
             } else {
                 throw new SQLException("Cannot draw until layer data source is not initialized");
             }
@@ -147,17 +145,19 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
         private Lock lock;
         private Envelope tableEnvelope;
         private ResultSetProvider resultSetProvider;
+        private String pkName;
 
         private CachedResultSet(ReadRowSet readRowSet, String tableReference, Envelope tableEnvelope, ResultSetProvider resultSetProvider) {
             this.readRowSet = readRowSet;
             this.tableReference = tableReference;
             this.tableEnvelope = tableEnvelope;
             this.resultSetProvider = resultSetProvider;
+            this.pkName = resultSetProvider.getPkName();
         }
 
         @Override
         public String getPkName() {
-            return readRowSet.getPkName();
+            return pkName;
         }
 
         @Override

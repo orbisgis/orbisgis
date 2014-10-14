@@ -127,6 +127,9 @@ public class RowSetTest {
             try (ReadRowSet rs = new ReadRowSetImpl(dataSource)) {
                 rs.setCommand("select * from TEST");
                 rs.execute();
+                assertEquals(1, rs.findColumn("ID"));
+                assertEquals(2, rs.findColumn("STR"));
+                assertEquals(3, rs.findColumn("FLT"));
                 assertTrue(rs.next());
                 assertEquals(42, rs.getInt(1));
                 assertEquals("marvin", rs.getString(2));
