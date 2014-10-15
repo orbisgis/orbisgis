@@ -37,7 +37,7 @@ import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.*;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -68,7 +68,6 @@ import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.common.IntegerUnion;
-import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditorapi.MapElement;
@@ -174,18 +173,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
 
         @Override
         public void tableChange(TableEditEvent event) {
-            // TODO more precise refresh to avoid reloading entire table, structure and indexes.
-            if(initialised.getAndSet(false)) {
-                if (!tableModel.tableExists()) {
-                    if (SwingUtilities.isEventDispatchThread()) {
-                        dockingPanelParameters.setVisible(false);
-                    } else {
-                        SwingUtilities.invokeLater(new CloseTableEditor(this));
-                    }
-                } else {
-                    launchJob(new OpenEditableElement(this, tableEditableElement));
-                }
-            }
+            Services.getService(BackgroundManager.class)
+                    .nonBlockingBackgroundOperation(new RefreshTableJob(tableModel, tableEditableElement));
         }
 
         private List<Action> getDockActions() {
@@ -1227,4 +1216,85 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 tableEditor.dockingPanelParameters.setVisible(false);
             }
         }
+
+    private class RefreshTableJob extends SwingWorker<Boolean, Boolean> implements BackgroundJob {
+        private DataSourceTableModel model;
+        private TableEditableElement table;
+        private List<TableModelEvent> evts = new ArrayList<>();
+
+        private RefreshTableJob(DataSourceTableModel model, TableEditableElement table) {
+            this.model = model;
+            this.table = table;
+        }
+
+        @Override
+        public void run(ProgressMonitor pm) {
+            List<String> columnTypes = new ArrayList<>();
+            List<String> columnNames = new ArrayList<>();
+            try {
+                try {
+                    ResultSetMetaData meta = table.getRowSet().getMetaData();
+                    for(int col=1; col < meta.getColumnCount();col++) {
+                        columnNames.add(meta.getColumnName(col));
+                        columnTypes.add(meta.getColumnTypeName(col));
+                    }
+                } catch (SQLException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
+                table.close(pm);
+                table.open(pm);
+                try {
+                    ResultSetMetaData meta = table.getRowSet().getMetaData();
+                    for(int col=1; col < meta.getColumnCount();col++) {
+                        if(col <= columnNames.size()) {
+                            if(!columnNames.get(col - 1).equals(meta.getColumnName(col)) ||
+                                    !columnTypes.get(col - 1).equals(meta.getColumnTypeName(col))) {
+                                evts.add(new TableModelEvent(model,TableModelEvent.HEADER_ROW,
+                                        TableModelEvent.HEADER_ROW,col - 1,TableModelEvent.UPDATE));
+                            }
+                            //columnTypes.add(meta.getColumnTypeName(col + offset));
+                        } else {
+                            //New column
+                            evts.add(new TableModelEvent(model,TableModelEvent.HEADER_ROW,
+                                    TableModelEvent.HEADER_ROW,col - 1,TableModelEvent.INSERT));
+                        }
+                    }
+                    // Deleted columns
+                    if(meta.getColumnCount() < columnNames.size()) {
+                        for(int insertId = meta.getColumnCount();insertId <= columnNames.size(); insertId++) {
+                            new TableModelEvent(model,TableModelEvent.HEADER_ROW,
+                                    TableModelEvent.HEADER_ROW,meta.getColumnCount() - 1,TableModelEvent.DELETE);
+                        }
+                    }
+                } catch (SQLException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
+            } catch (EditableElementException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+            }
+            this.execute();
+        }
+
+        @Override
+        public String getTaskName() {
+            return I18N.tr("Refresh table content");
+        }
+
+        @Override
+        protected void done() {
+            model.setLastFetchRowCountTime(0);
+            // Swing Thread
+            // Send columns delete/insert/update events
+            for(TableModelEvent evt : evts) {
+                model.fireTableChanged(evt);
+            }
+            // Refresh shown data
+            model.fireTableDataChanged();
+        }
+
+        @Override
+        protected Boolean doInBackground() throws Exception {
+            return true;
+        }
+    }
 }
