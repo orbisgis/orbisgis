@@ -37,9 +37,11 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableEditListener;
@@ -172,6 +174,7 @@ public class MapControl extends JComponent implements ContainerListener {
 			RefreshLayerListener refreshLayerListener) {
 		rootLayer.addLayerListener(refreshLayerListener);
         if(!rootLayer.getTableReference().isEmpty() && rootLayer.getDataManager() != null) {
+            rootLayer.getDataManager().removeTableEditListener(rootLayer.getTableReference(), refreshLayerListener);
             rootLayer.getDataManager().addTableEditListener(rootLayer.getTableReference(), refreshLayerListener);
         }
 		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
@@ -397,9 +400,18 @@ public class MapControl extends JComponent implements ContainerListener {
 
         @Override
         public void tableChange(TableEditEvent event) {
-            if(mapControl.resultSetProviderFactory instanceof  CachedResultSetContainer) {
-                ((CachedResultSetContainer) mapControl.resultSetProviderFactory).removeCache(event.getTableName());
+            // Clear selection of all layers linked with this table
+            TableLocation tableName = TableLocation.parse(event.getTableName());
+            for(ILayer layer : mapControl.getMapContext().getLayers()) {
+                String layerTable = layer.getTableReference();
+                if(!layerTable.isEmpty() && TableLocation.parse(layerTable).equals(tableName)) {
+                    layer.setSelection(new HashSet<Long>());
+                    // The trigger may be lost
+                    mapControl.addLayerListenerRecursively(layer, this);
+                }
             }
+            mapControl.clearCache();
+            // Redraw
             mapControl.invalidateImage();
         }
 
