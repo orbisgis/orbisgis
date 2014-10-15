@@ -65,7 +65,7 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
     private static final int ROWSET_FREE_DELAY = 60000;
     private static final long WAIT_FOR_INITIALISATION_TIMEOUT = 10000;
     // (0-1] Use spatial index query if the query envelope area rational number is smaller than this value.
-    private static final double RATIONAL_USAGE_INDEX = 0.5;
+    private static final double RATIONAL_USAGE_INDEX = 0.2;
     private final ReentrantLock lock = new ReentrantLock();
     private ResultSetProviderFactory defaultFactory = new DefaultResultSetProviderFactory();
 
@@ -96,7 +96,7 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
                     readRowSet = layer.getDataManager().createReadRowSet();
                     // If the used PK is hidden (because it is system pk)
                     if(integerPK.isEmpty()) {
-                        readRowSet.setCommand("SELECT " + defaultResultSetProvider.getPkName() + ", * FROM ");
+                        readRowSet.setCommand("SELECT " + defaultResultSetProvider.getPkName() + ", * FROM "+tableRef);
                     }
                     readRowSet.setFetchSize(FETCH_SIZE);
                     readRowSet.setCloseDelay(ROWSET_FREE_DELAY);

@@ -29,9 +29,8 @@
 
 package org.orbisgis.omanager.plugin.api;
 
-import org.apache.felix.shell.gui.Plugin;
-
 import javax.swing.Icon;
+import java.awt.*;
 
 /**
  * This interface is used to expose an icon to the plugin list available in
@@ -39,11 +38,24 @@ import javax.swing.Icon;
  * 
  * @author Erwan Bocher
  */
-public interface CustomPlugin extends Plugin {
+public interface CustomPlugin {
     
     /**
      * Return the plugin icon
      * @return 
      */
      Icon getIcon();
+
+    /**
+     * Returns the name of the plugin.
+     * @return the name of the plugin.
+     **/
+    public String getName();
+
+    /**
+     * Returns the GUI associated with the plugin; this method should
+     * always return the same GUI instance when it is invoked.
+     * @return the GUI associated with the plugin.
+     **/
+    public Component getGUI();
 }

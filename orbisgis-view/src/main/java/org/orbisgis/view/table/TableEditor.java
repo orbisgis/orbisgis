@@ -236,8 +236,10 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                     try {
                         SortedSet<Integer> modelRows = tableEditableElement.getSelectionTableRow();
                         setRowSelection(modelRows, -1);
-                        // Scroll to first selection
-                        scrollToRow(modelRows.first() - 1);
+                        if(!modelRows.isEmpty()) {
+                            // Scroll to first selection
+                            scrollToRow(modelRows.first() - 1);
+                        }
                     } catch (EditableElementException ex) {
                         LOGGER.error(ex.getLocalizedMessage(), ex);
                     } finally {

@@ -28,7 +28,6 @@
  */
 package org.orbisgis.omanager.ui;
 
-import org.apache.felix.shell.gui.Plugin;
 import org.orbisgis.omanager.plugin.api.CustomPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -39,7 +38,7 @@ import org.osgi.service.component.annotations.Component;
  * Must define a class for OSGi check reason.
  * @author Nicolas Fortin
  */
-@Component(service = {CustomPlugin.class, Plugin.class})
+@Component(service = CustomPlugin.class)
 public class MainPluginPanel extends MainPanel {
     public MainPluginPanel() {
         super(true);
