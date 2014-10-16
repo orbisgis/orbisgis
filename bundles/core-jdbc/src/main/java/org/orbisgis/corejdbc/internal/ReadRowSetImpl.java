@@ -1512,7 +1512,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     @Override
     public int getRowId(Object primaryKeyRowValue) {
         if(!pk_name.isEmpty()) {
-            return rowPk.getKey(primaryKeyRowValue).intValue();
+            return rowPk.getKey(primaryKeyRowValue);
         } else {
             throw new IllegalStateException("The RowSet has not been initialised");
         }
@@ -1523,7 +1523,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         if(!pk_name.isEmpty()) {
             return rowPk.get(rowNumber);
         } else {
-            throw new IllegalStateException("The RowSet has not been initialised");
+            return Integer.valueOf(rowNumber).longValue();
         }
     }
 

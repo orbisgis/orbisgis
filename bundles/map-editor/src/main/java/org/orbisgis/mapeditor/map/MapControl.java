@@ -204,6 +204,14 @@ public class MapControl extends JComponent implements ContainerListener {
             ((CachedResultSetContainer) resultSetProviderFactory).clearCache();
         }
     }
+    /**
+     * Remove cached result set
+     */
+    public void clearCache(String tableReference) {
+        if(resultSetProviderFactory instanceof  CachedResultSetContainer) {
+            ((CachedResultSetContainer) resultSetProviderFactory).removeCache(tableReference);
+        }
+    }
         
 	/**
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
@@ -415,6 +423,17 @@ public class MapControl extends JComponent implements ContainerListener {
             mapControl.invalidateImage();
         }
 
+
+
+        private void clearLayerCacheRecursively(ILayer rootLayer) {
+            if(!rootLayer.getTableReference().isEmpty() && rootLayer.getDataManager() != null) {
+                mapControl.clearCache(rootLayer.getTableReference());
+            }
+            for (int i = 0; i < rootLayer.getLayerCount(); i++) {
+                clearLayerCacheRecursively(rootLayer.getLayer(i));
+            }
+        }
+
         @Override
         public void layerAdded(LayerCollectionEvent listener) {
             for (ILayer layer : listener.getAffected()) {
@@ -455,6 +474,7 @@ public class MapControl extends JComponent implements ContainerListener {
 		public void layerRemoved(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
                 mapControl.removeLayerListenerRecursively(layer, this);
+                clearLayerCacheRecursively(layer);
 			}
             if(!mapControl.mapContext.isLayerModelSpatial()){
                 mapControl.mapTransform.setExtent(new Envelope());
