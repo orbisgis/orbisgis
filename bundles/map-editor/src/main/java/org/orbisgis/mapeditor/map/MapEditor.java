@@ -32,14 +32,21 @@ import com.vividsolutions.jts.geom.Envelope;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
-import java.beans.*;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
-import java.util.*;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
 import javax.swing.event.TreeExpansionListener;
@@ -48,7 +55,6 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core_export.MapImageWriter;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.LayerException;
 import org.orbisgis.coremap.layerModel.MapContext;
@@ -66,7 +72,6 @@ import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
 import org.orbisgis.mapeditor.map.toolbar.ActionAutomaton;
 import org.orbisgis.mapeditor.map.tools.*;
-import org.orbisgis.mapeditorapi.IndexProvider;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
@@ -84,13 +89,9 @@ import org.orbisgis.view.table.jobs.CreateSourceFromSelection;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.viewapi.docking.DockingPanelParameters;
 import org.orbisgis.viewapi.edition.EditableElement;
-import org.orbisgis.viewapi.edition.EditableElementException;
 import org.orbisgis.viewapi.edition.EditableSource;
 import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.workspace.ViewWorkspace;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -100,7 +101,6 @@ import org.xnap.commons.i18n.I18nFactory;
 public class MapEditor extends JPanel implements TransformListener, MapEditorExtension   {
     private static final I18n I18N = I18nFactory.getI18n(MapEditor.class);
     private static final Logger GUILOGGER = Logger.getLogger("gui."+MapEditor.class);
-    private static final String GEOMETRY_INDEX_CACHE = "map_index";
     //The UID must be incremented when the serialization is not compatible with the new version of this class
     private static final long serialVersionUID = 1L;
     private MapControl mapControl = new MapControl();
@@ -184,21 +184,6 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
     public void onChangeRendererData(ActionEvent ae) {
 
-    }
-
-    /**
-     * Provide spatial query optimisation
-     * @param indexProvider Index factory
-     */
-    public void setIndexProvider(IndexProvider indexProvider) {
-        File tmpFolder = new File(viewWorkspace.getCoreWorkspace().getTempFolder(), GEOMETRY_INDEX_CACHE);
-        if(!tmpFolder.exists()) {
-            if(!tmpFolder.mkdirs()) {
-                GUILOGGER.warn(I18N.tr("Unable to create geometry index cache, rendering optimisation disabled"));
-                return;
-            }
-        }
-        mapControl.setIndexProvider(indexProvider, tmpFolder);
     }
 
     private void updateMapLabel() {
@@ -722,7 +707,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             for (ILayer layer : selectedLayers) {
                 if (!layer.acceptsChilds()) {
                     if (!layer.getSelection().isEmpty()) {
-                        layer.setSelection(new IntegerUnion());
+                        layer.setSelection(new HashSet<Long>());
                     }
                 }
             }
@@ -736,7 +721,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         for (ILayer layer : mapContext.getLayers()) {
             if (!layer.acceptsChilds()) {
                 if (!layer.getSelection().isEmpty()) {
-                    layer.setSelection(new IntegerUnion());
+                    layer.setSelection(new HashSet<Long>());
                 }
             }
         }
@@ -787,7 +772,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             GUILOGGER.warn(I18N.tr("No layers are selected."));
         } else {
             for (ILayer layer : selectedLayers) {
-                Set<Integer> selection = layer.getSelection();
+                Set<Long> selection = layer.getSelection();
                 // If there is a nonempty selection, then ask the user to name it.
                 if (!selection.isEmpty()) {
                     try {

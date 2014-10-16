@@ -66,8 +66,8 @@ import org.orbisgis.core.geometryUtils.GeometryEdit;
 public class PointHandler extends AbstractHandler implements Handler {
 
     public PointHandler(Geometry g, int vertexIndex,
-                Coordinate p, int geomIndex) {
-                super(g, vertexIndex, p, geomIndex);
+                Coordinate p, long geomPk) {
+                super(g, vertexIndex, p, geomPk);
         }
 
         public com.vividsolutions.jts.geom.Geometry moveJTSTo(final double x,

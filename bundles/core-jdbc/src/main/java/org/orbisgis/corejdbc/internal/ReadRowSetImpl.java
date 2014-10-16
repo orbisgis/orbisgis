@@ -48,6 +48,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.sql.DataSource;
 import javax.sql.rowset.JdbcRowSet;
 import javax.sql.rowset.RowSetWarning;
+import javax.sql.rowset.serial.SerialRef;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.io.InputStream;
@@ -84,12 +85,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     /** If the table has been updated or never read, rowCount is set to -1 (unknown) */
     private long cachedRowCount = -1;
     private int cachedColumnCount = -1;
-    private Map<String, Integer> cachedColumnNames;
+    private BidiMap<String, Integer> cachedColumnNames;
     private boolean wasNull = true;
     /** Used to managed table without primary key (ResultSet are kept {@link ResultSetHolder#RESULT_SET_TIMEOUT} */
     protected final ResultSetHolder resultSetHolder;
     /** If the table contains a unique non null index then this variable contain the map between the row id [1-n] to the primary key value */
-    private BidiMap<Integer, Object> rowPk;
+    private BidiMap<Integer, Long> rowPk;
     private String pk_name = "";
     private String select_fields = "*";
     private int firstGeometryIndex = -1;
@@ -103,6 +104,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private IntegerUnion rowFilter;
     private ListIterator<Integer> rowFilterIterator;
     private String orderBy = "";
+    private boolean isH2;
 
 
     /**
@@ -160,7 +162,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                 int pkRowId = 0;
                 while (rs.next()) {
                     pkRowId++;
-                    rowPk.put(pkRowId, rs.getObject(1));
+                    rowPk.put(pkRowId, rs.getLong(1));
                     cachePm.endTask();
                 }
             } finally {
@@ -191,9 +193,19 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         }
         if(currentRow == null) {
             refreshRowCache();
+            if(currentRow == null) {
+                throw new SQLException("Not in a valid row "+rowId+"/"+getRowCount());
+            }
         }
-        if(currentRow == null) {
-            throw new SQLException("Not in a valid row "+rowId+"/"+getRowCount());
+    }
+
+    private void cacheColumnNames() throws SQLException {
+        cachedColumnNames = new DualHashBidiMap<>();
+        try(Resource res = resultSetHolder.getResource()) {
+            ResultSetMetaData meta = res.getResultSet().getMetaData();
+            for (int idColumn = 1; idColumn <= meta.getColumnCount(); idColumn++) {
+                cachedColumnNames.put(meta.getColumnName(idColumn), idColumn);
+            }
         }
     }
 
@@ -213,11 +225,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                 ResultSet rs = res.getResultSet();
                 final int columnCount = getColumnCount();
                 if(cachedColumnNames == null) {
-                    cachedColumnNames = new HashMap<>(columnCount);
-                    ResultSetMetaData metaData = rs.getMetaData();
-                    for(int idColumn=1; idColumn <= columnCount; idColumn++) {
-                        cachedColumnNames.put(metaData.getColumnName(idColumn).toUpperCase(), idColumn);
-                    }
+                    cacheColumnNames();
                 }
                 // Do not use pk if not available or if using indeterminate fetch without filtering
                 if(rowPk == null) {
@@ -245,14 +253,17 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         cache.put(rowId, row);
                     }
                 } else {
-                    List<Object> pkValues = new ArrayList<>(fetchSize);
+                    List<Long> pkValues = new ArrayList<>(fetchSize);
                     pkValues.add(rowPk.get((int) rowId));
                     // Fetch next QUERY_PK_FETCH_ROWS rows
                     if(rowFilter == null) {
                         int fetchedRows = 0;
                         for(long fetchRowId = rowId + 1; fetchRowId <= getRowCount(); fetchRowId++) {
                             if(fetchedRows++ < fetchSize) {
-                                pkValues.add(rowPk.get((int) fetchRowId));
+                                Long key = rowPk.get((int)fetchRowId);
+                                if(key != null) {
+                                    pkValues.add(key);
+                                }
                             } else {
                                 break;
                             }
@@ -283,16 +294,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         }
                         whereClause.append(")");
                     }
-                    String command = getCommand();
+                    String command;
                     // if command doesn't contain the key then add the key
-                    boolean ignoreFirstColumn = false;
-                    try (Connection connection = dataSource.getConnection();
-                        Statement st = connection.createStatement();
-                        ResultSet rsCheck = st.executeQuery(command+" LIMIT 0")) {
-                        rsCheck.findColumn(pk_name);
-                    } catch (SQLException ex) {
-                        ignoreFirstColumn = true;
+                    if(cachedColumnNames == null) {
+                        cacheColumnNames();
                     }
+                    boolean ignoreFirstColumn = !cachedColumnNames.containsKey(pk_name);
                     if(whereClause.length()>0) {
                         if (ignoreFirstColumn) {
                             command = "SELECT " + pk_name + "," + select_fields + " FROM " + getTable() + " WHERE " + whereClause.toString() + " " + orderBy;
@@ -304,8 +311,15 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                             connection.setAutoCommit(false);
                              try(PreparedStatement st = connection.prepareStatement(command)) {
                                  int parameterIndex = 1;
-                                 for (Object pk : pkValues) {
-                                     st.setObject(parameterIndex++, pk);
+                                 if(isH2 || !pk_name.equals(MetaData.POSTGRE_ROW_IDENTIFIER)) {
+                                     for (long pk : pkValues) {
+                                         st.setLong(parameterIndex++, pk);
+                                     }
+                                 } else {
+                                     for (long pk : pkValues) {
+                                         Ref pkRef = new Tid(pk);
+                                         st.setRef(parameterIndex++, pkRef);
+                                     }
                                  }
                                  try (ResultSet lineRs = st.executeQuery()) {
                                      int offset = ignoreFirstColumn ? 1 : 0;
@@ -314,7 +328,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                                          for (int idColumn = 1 + offset; idColumn <= columnCount + offset; idColumn++) {
                                              row[idColumn - 1 - offset] = lineRs.getObject(idColumn);
                                          }
-                                         cache.put((long) rowPk.getKey(lineRs.getObject(pk_name)), row);
+                                         cache.put(rowPk.getKey(lineRs.getLong(pk_name)).longValue(), row);
                                      }
                                  }
                              }
@@ -410,6 +424,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public void execute(ProgressMonitor pm) throws SQLException {
+        try(Connection connection = dataSource.getConnection()) {
+            isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        }
         if(!pk_name.isEmpty()) {
             cachePrimaryKey(pm);
             // Always use PK to fetch rows
@@ -513,6 +530,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public int findColumn(String label) throws SQLException {
+        if(cachedColumnNames == null) {
+            cacheColumnNames();
+        }
         Integer columnId = cachedColumnNames.get(label.toUpperCase());
         if(columnId == null) {
             throw new SQLException("Column "+label+" does not exists");
@@ -863,9 +883,10 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public String getColumnName(int i) throws SQLException {
-        try(Resource res = resultSetHolder.getResource()) {
-            return res.getResultSet().getMetaData().getColumnName(i);
+        if(cachedColumnNames == null) {
+            cacheColumnNames();
         }
+        return cachedColumnNames.getKey(i);
     }
 
     @Override
@@ -1489,11 +1510,20 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     }
 
     @Override
-    public Integer getRowId(Object primaryKeyRowValue) {
+    public int getRowId(Object primaryKeyRowValue) {
         if(!pk_name.isEmpty()) {
             return rowPk.getKey(primaryKeyRowValue);
         } else {
             throw new IllegalStateException("The RowSet has not been initialised");
+        }
+    }
+
+    @Override
+    public long getRowPK(int rowNumber) {
+        if(!pk_name.isEmpty()) {
+            return rowPk.get(rowNumber);
+        } else {
+            return Integer.valueOf(rowNumber).longValue();
         }
     }
 
@@ -1676,6 +1706,34 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
         private ResultSet getResultSet() {
             return resultSet;
+        }
+    }
+
+    private static class Tid implements Ref {
+        private long value;
+
+        private Tid(long value) {
+            this.value = value;
+        }
+
+        @Override
+        public String getBaseTypeName() throws SQLException {
+            return "tid";
+        }
+
+        @Override
+        public Object getObject(Map<String, Class<?>> map) throws SQLException {
+            return value;
+        }
+
+        @Override
+        public Object getObject() throws SQLException {
+            return value;
+        }
+
+        @Override
+        public void setObject(Object value) throws SQLException {
+            throw new UnsupportedOperationException();
         }
     }
 }

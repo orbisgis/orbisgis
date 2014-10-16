@@ -64,8 +64,8 @@ public class PolygonHandler extends AbstractHandler implements Handler {
 	private int holeIndex;
 
 	public PolygonHandler(com.vividsolutions.jts.geom.Geometry geom,
-			int holeIndex, int vertexIndex, Coordinate p, int geomIndex) {
-		super(geom, vertexIndex, p, geomIndex);
+			int holeIndex, int vertexIndex, Coordinate p, long geomPk) {
+		super(geom, vertexIndex, p, geomPk);
 		this.holeIndex = holeIndex;
 	}
 

@@ -65,6 +65,7 @@ public class ReadTable {
     public enum STATS { COUNT, SUM, AVG, STDDEV_SAMP, MIN, MAX}
     protected final static I18n I18N = I18nFactory.getI18n(ReadTable.class, Locale.getDefault(), I18nFactory.FALLBACK);
     private static Logger LOGGER = Logger.getLogger(ReadTable.class);
+    private static final int INSERT_BATCH_SIZE = 30;
 
     public static Collection<Integer> getSortedColumnRowIndex(Connection connection, String table, String columnName, boolean ascending, ProgressMonitor progressMonitor) throws SQLException {
         columnName = TableLocation.quoteIdentifier(columnName);
@@ -82,7 +83,7 @@ public class ReadTable {
             progressMonitor.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
                     listener);
             try {
-                int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection, table.toUpperCase());
+                int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection, tableLocation.toString());
                 if (pkIndex > 0) {
                     ProgressMonitor jobProgress = progressMonitor.startTask(2);
                     // Do not cache values
@@ -236,7 +237,7 @@ public class ReadTable {
                         value = rs.getString(idColumn);
                     }
                     if (value != null) {
-                        if (value.length() > maxFieldLength) {
+                        if (columnCount > 1 && value.length() > maxFieldLength) {
                             value = value.substring(0, maxFieldLength - 2) + "..";
                         }
                     } else {
@@ -360,7 +361,7 @@ public class ReadTable {
      * @return Envelope of rows
      * @throws SQLException
      */
-    public static Envelope getTableSelectionEnvelope(DataManager manager, String tableName, SortedSet<Integer> rowsId, ProgressMonitor pm) throws SQLException {
+    public static Envelope getTableSelectionEnvelope(DataManager manager, String tableName, SortedSet<Long> rowsId, ProgressMonitor pm) throws SQLException {
         try( Connection connection = manager.getDataSource().getConnection();
                 Statement st = connection.createStatement()) {
             PropertyChangeListener cancelListener =  EventHandler.create(PropertyChangeListener.class, st, "cancel");
@@ -372,29 +373,27 @@ public class ReadTable {
                     throw new SQLException(I18N.tr("Table table {0} does not contain any geometry fields", tableName));
                 }
                 String geomField = geomFields.get(0);
-                String request = "SELECT ST_Envelope("+TableLocation.quoteIdentifier(geomField)+", ST_SRID("+TableLocation.quoteIdentifier(geomField)+")) env_geom FROM "+tableName;
-                ProgressMonitor selectPm = pm.startTask(I18N.tr("Computing the extent of {0} ", tableName), rowsId.size());
-                try(ReadRowSet rs = manager.createReadRowSet()) {
-                    rs.setCommand(request);
-                    rs.execute(pm);
-                    //Evaluate the selection bounding box
-                    for(int modelId : rowsId) {
-                        if(rs.absolute(modelId)) {
-                            Envelope rowEnvelope = rs.getGeometry("env_geom").getEnvelopeInternal();
-                            if(selectionEnvelope != null) {
-                                selectionEnvelope.expandToInclude(rowEnvelope);
-                            } else {
-                                selectionEnvelope = rowEnvelope;
-                            }
-                            if(pm.isCancelled()) {
-                                throw new SQLException("Operation canceled by user");
-                            } else {
-                                selectPm.endTask();
-                            }
+                // Create a temporary table that contain selected pk
+                String selectionTable = CreateTable.createIndexTempTable(connection, pm,rowsId,"pk", INSERT_BATCH_SIZE);
+                try {
+                    String pkName = MetaData.getPkName(connection, tableName, true);
+                    StringBuilder pkEquality = new StringBuilder("t1." + pkName + " = ");
+                    if (!pkName.equals(MetaData.POSTGRE_ROW_IDENTIFIER)) {
+                        pkEquality.append("t2.pk");
+                    } else {
+                        pkEquality.append(MetaData.castLongToTid("t2.pk"));
+                    }
+                    // Join with temp table and compute the envelope on the server side
+                    try (SpatialResultSet rs = st.executeQuery("SELECT ST_EXTENT(" + TableLocation.quoteIdentifier(geomField) +
+                            ") ext FROM " + tableName + " t1, " + selectionTable + " t2 where " + pkEquality).unwrap(SpatialResultSet.class)) {
+                        if (rs.next()) {
+                            selectionEnvelope = rs.getGeometry().getEnvelopeInternal();
                         }
                     }
+                    return selectionEnvelope;
+                } finally {
+                    st.execute("DROP TABLE IF EXISTS "+selectionTable);
                 }
-                return selectionEnvelope;
             } finally {
                 pm.removePropertyChangeListener(cancelListener);
             }
@@ -408,42 +407,33 @@ public class ReadTable {
      * @param geometryColumn Name of the geometry column
      * @param selection Selection polygon
      * @param contains If true selection is used with contains, else this is intersects.
-     * @param pkToRowId Map from {@link org.orbisgis.core-jdbc.MetaData#primaryKeyToRowId(java.sql.Connection, String, String)}
      * @return List of row id.
      * @throws SQLException
      */
-    public static Set<Integer> getTableRowIdByEnvelope(DataManager dataManager, String table,
-                                                       String geometryColumn, Geometry selection, boolean contains,
-                                                       Map<Object, Integer> pkToRowId) throws SQLException {
-        Set<Integer> newSelection = new HashSet<>(50);
+    public static Set<Long> getTablePkByEnvelope(DataManager dataManager, String table,String geometryColumn,
+                                                    Geometry selection, boolean contains) throws SQLException {
+        Set<Long> newSelection = new HashSet<>(50);
         TableLocation tableLocation = TableLocation.parse(table);
         // There is a where condition then system row index can't be used
         try(Connection connection = dataManager.getDataSource().getConnection()) {
-            String pkName = MetaData.getPkName(connection, tableLocation.toString(), false);
-            if(!pkName.isEmpty() && pkToRowId != null) {
+            String pkName = MetaData.getPkName(connection, tableLocation.toString(), true);
+            boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            if(!pkName.isEmpty()) {
+                String from = tableLocation.toString();
                 String sqlFunction = contains ? "ST_CONTAINS(?, %s)" : "ST_INTERSECTS(?, %s)";
                 try(PreparedStatement st = connection.prepareStatement(String.format("SELECT %s FROM %s WHERE %s && ? AND " + sqlFunction,
-                        TableLocation.quoteIdentifier(pkName), tableLocation,
+                        TableLocation.quoteIdentifier(pkName), from,
                         TableLocation.quoteIdentifier(geometryColumn), TableLocation.quoteIdentifier(geometryColumn)))) {
                     st.setObject(1, selection);
                     st.setObject(2, selection);
                     try(SpatialResultSet rs = st.executeQuery().unwrap(SpatialResultSet.class)) {
                         while (rs.next()) {
-                            newSelection.add(pkToRowId.get(rs.getObject(1)));
+                            newSelection.add(rs.getLong(1));
                         }
                     }
                 }
             } else {
-                // Pk is not available, query is much slower
-                try(ReadRowSet r = dataManager.createReadRowSet()) {
-                    r.setCommand(String.format("SELECT %s FROM %s",TableLocation.quoteIdentifier(geometryColumn), tableLocation.toString()));
-                    r.execute();
-                    while(r.next()) {
-                        if((contains && selection.contains(r.getGeometry())) || (!contains && selection.intersects(r.getGeometry()))) {
-                            newSelection.add(r.getRow());
-                        }
-                    }
-                }
+                throw new SQLException("Table "+table+" do not contain any information in order to identify row");
             }
         }
         return newSelection;

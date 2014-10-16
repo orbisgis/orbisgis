@@ -31,6 +31,7 @@ package org.orbisgis.corejdbc;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
@@ -45,7 +46,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.h2gis.drivers.DriverManager;
@@ -136,9 +137,9 @@ public class JDBCUtilityTest {
 
     @Test
     public void testStats() throws SQLException {
-        Set<Integer> indexes = new TreeSet<>(Arrays.asList(new Integer[]{0, 2, 3, 4, 8, 10, 15, 30, 45, 78}));
+        Set<Long> indexes = new TreeSet<>(Arrays.asList(new Long[]{0l, 2l, 3l, 4l, 8l, 10l, 15l, 30l, 45l, 78l}));
         try(Statement st = connection.createStatement()) {
-            String table = CreateTable.createIndexTempTable(connection, new NullProgressMonitor(), indexes, 5);
+            String table = CreateTable.createIndexTempTable(connection, new NullProgressMonitor(), indexes,"ROWID", 5);
             // Do stats using sql
             String[] props = ReadTable.computeStatsSQL(connection, table, "ROWID", new NullProgressMonitor());
             checkStats(props);
@@ -168,10 +169,10 @@ public class JDBCUtilityTest {
                     "('MULTIPOLYGON (((-75 -67, -38 -16, 44 24, 99 26, 112 4, -35 -79, -75 -67)))');");
             // Check selection algorithm
             Envelope envelope = new Envelope(-116, -55, -69, -19);
-            Set<Integer> intersected = ReadTable.getTableRowIdByEnvelope(dataManager, "TEST", "GEOM", new GeometryFactory().toGeometry(envelope),
-                    false, null);
-            IntegerUnion rowIds = new IntegerUnion(intersected);
-            Iterator<Integer> it = rowIds.iterator();
+            Set<Long> intersected = ReadTable.getTablePkByEnvelope(dataManager, "TEST", "GEOM", new GeometryFactory().toGeometry(envelope),
+                    false);
+            LongUnion rowIds = new LongUnion(intersected);
+            Iterator<Long> it = rowIds.iterator();
             assertEquals(1 ,it.next().intValue());
             assertEquals(3 ,it.next().intValue());
             assertFalse(it.hasNext());
@@ -223,15 +224,10 @@ public class JDBCUtilityTest {
 
     @Test
     public void pkTest() throws SQLException {
-        // Issue https://github.com/irstv/orbisgis/issues/662
-        // Cannot use _ROWID_ in conjunction with spatial index
-        // TODO remove unit test when issue is fixed
         try(Statement st = connection.createStatement()) {
             st.execute("DROP TABLE IF EXISTS TEST");
             st.execute("CREATE TABLE TEST(gid integer auto_increment, geom MULTIPOLYGON)");
             assertEquals("_ROWID_", MetaData.getPkName(connection, "TEST", true));
-            st.execute("CREATE SPATIAL INDEX ON TEST(geom)");
-            assertEquals("", MetaData.getPkName(connection, "TEST", true));
         }
     }
     
@@ -252,5 +248,24 @@ public class JDBCUtilityTest {
             st.execute("CALL FILE_TABLE('"+JDBCUtilityTest.class.getResource("bv_sap.shp").getPath()+"', 'EXTERNAL_TABLE');");
             assertEquals(MetaData.getTableType(connection, "EXTERNAL_TABLE"), MetaData.TableType.EXTERNAL);
          }
+    }
+
+    @Test
+    public void testTableCreateFromPK() throws SQLException {
+        try(Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS INTTABLE, INTTABLE_SEL");
+            st.execute("CREATE TABLE INTTABLE (pk bigint primary key, \"vals\" integer)");
+            st.execute("INSERT INTO INTTABLE VALUES (1, 20), (2, 5), (3, 15), (4, 4), (5, 1)");
+            CreateTable.createTableFromRowPkSelection(dataSource, "INTTABLE", new HashSet<>(Arrays.asList(1l, 3l, 5l)),
+                    "INTTABLE_SEL",new NullProgressMonitor());
+            try(ResultSet rs = st.executeQuery("SELECT \"vals\" FROM INTTABLE_SEL")) {
+                assertTrue(rs.next());
+                assertEquals(20, rs.getInt(1));
+                assertTrue(rs.next());
+                assertEquals(15, rs.getInt(1));
+                assertTrue(rs.next());
+                assertEquals(1, rs.getInt(1));
+            }
+        }
     }
 }

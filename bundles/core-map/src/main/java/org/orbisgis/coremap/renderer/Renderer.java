@@ -30,23 +30,16 @@ package org.orbisgis.coremap.renderer;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Logger;
-import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.LayerException;
@@ -59,7 +52,6 @@ import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 import org.orbisgis.coremap.stream.GeoStream;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.xnap.commons.i18n.I18n;
@@ -74,13 +66,9 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public abstract class Renderer {
 
-        static final double EXTRA_EXTENT_FACTOR = 0.01;
-        static final int ONE_HUNDRED_I = 100;
         static final int BATCH_SIZE = 1000;
-        static final int EXECP_POS = 20;
         private static final Logger LOGGER = Logger.getLogger(Renderer.class);
         private static final I18n I18N = I18nFactory.getI18n(Renderer.class);
-        private static final int FETCH_SIZE = 300;
         private ResultSetProviderFactory rsProvider = null;
 
         /**
@@ -186,35 +174,29 @@ public abstract class Renderer {
                 // fetch symbolizers and rules
                 style.getSymbolizers(mt, symbs, rList, fRList);
                 // Create new dataSource with only feature in current extent
-                Set<Integer> selected = layer.getSelection();
+                Set<Long> selectedRows = layer.getSelection();
                 // And now, features will be rendered
                 // Get a graphics for each symbolizer
                 initGraphics2D(symbs, g2, mt);
                 ProgressMonitor rulesProgress = pm.startTask(rList.size());
                 for (Rule r : rList) {
                     beginLayer(r.getName());
-                    try(ResultSetProviderFactory.ResultSetProvider resultSetProvider = layerDataFactory.getResultSetProvider(layer, pm)) {
-                        try(SpatialResultSet rs = resultSetProvider.execute(pm, extent)) {
+                    try(ResultSetProviderFactory.ResultSetProvider resultSetProvider = layerDataFactory.getResultSetProvider(layer, rulesProgress)) {
+                        try(SpatialResultSet rs = resultSetProvider.execute(rulesProgress, extent)) {
+                            int pkColumn = rs.findColumn(resultSetProvider.getPkName());
                             int fieldID = rs.getMetaData().unwrap(SpatialResultSetMetaData.class).getFirstGeometryFieldIndex();
                             ProgressMonitor rowSetProgress;
                             // Read row count for progress monitor
                             if(rs instanceof ReadRowSet) {
                                 rowSetProgress = rulesProgress.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", ((ReadRowSet) rs).getFilteredRowCount());
                             } else {
-                                // Get row count if backward scroll possible
-                                if(rs.getType() == ResultSet.TYPE_SCROLL_INSENSITIVE) {
-                                    rs.last();
-                                    rowSetProgress = rulesProgress.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", rs.getRow());
-                                    rs.beforeFirst();
-                                } else {
-                                    rowSetProgress = rulesProgress.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", 1);
-                                }
+                                rowSetProgress = rulesProgress.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", 1);
                             }
                             while (rs.next()) {
-                                if (pm.isCancelled()) {
+                                if (rulesProgress.isCancelled()) {
                                     break;
                                 }
-                                if (layerCount % BATCH_SIZE == 0 && pm.isCancelled()) {
+                                if (layerCount % BATCH_SIZE == 0 && rulesProgress.isCancelled()) {
                                     return layerCount;
                                 }
                                 Geometry theGeom = null;
@@ -225,17 +207,16 @@ public abstract class Renderer {
                                 }
                                 // Do not display the geometry when the envelope
                                 //doesn't intersect the current mapcontext area.
-                                if (theGeom == null || (theGeom != null &&
-                                        theGeom.getEnvelopeInternal().intersects(extent))) {
-                                    int row = rs.getRow();
-                                    boolean emphasis = selected.contains(row);
+                                if (theGeom == null || theGeom.getEnvelopeInternal().intersects(extent)) {
+                                    long row = rs.getLong(pkColumn);
+                                    boolean selected = selectedRows.contains(row);
 
                                     beginFeature(row, rs);
 
                                     List<Symbolizer> sl = r.getCompositeSymbolizer().getSymbolizerList();
                                     for (Symbolizer s : sl) {
                                         boolean res = drawFeature(s, theGeom, rs, row,
-                                                extent, emphasis, mt);
+                                                extent, selected, mt);
                                     }
                                     endFeature(row, rs);
                                 }
@@ -244,7 +225,7 @@ public abstract class Renderer {
                             endLayer(r.getName());
                         }
                     } catch (SQLException ex) {
-                        if(!pm.isCancelled()) {
+                        if(!rulesProgress.isCancelled()) {
                             printEx(ex, layer, g2);
                         }
                     }
@@ -259,7 +240,7 @@ public abstract class Renderer {
         }
 
         private boolean drawFeature(Symbolizer s, Geometry geom, ResultSet rs,
-                        Integer originalIndex, Envelope extent, boolean selected,
+                        long rowIdentifier, Envelope extent, boolean selected,
                         MapTransform mt) throws ParameterException,
                         IOException, SQLException {
                 Geometry theGeom = geom;
@@ -269,7 +250,7 @@ public abstract class Renderer {
                         //exception will be thrown by the call to draw,
                         //and a message will be shown to the user...
                         VectorSymbolizer vs = (VectorSymbolizer)s;
-                        theGeom = vs.getGeometry(rs, originalIndex.longValue());
+                        theGeom = vs.getGeometry(rs, rowIdentifier);
                         if(theGeom != null && theGeom.getEnvelopeInternal().intersects(extent)){
                                 somethingReached = true;
                         }
@@ -277,7 +258,7 @@ public abstract class Renderer {
                 if(somethingReached || theGeom != null){
                         Graphics2D g2S;
                         g2S = getGraphics2D(s);
-                        s.draw(g2S, rs, originalIndex, selected, mt, theGeom);
+                        s.draw(g2S, rs, rowIdentifier, selected, mt, theGeom);
                         releaseGraphics2D(g2S);
                         return true;
                 }else {

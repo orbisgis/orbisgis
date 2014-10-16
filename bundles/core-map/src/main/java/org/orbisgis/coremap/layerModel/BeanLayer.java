@@ -39,6 +39,7 @@ import java.util.Locale;
 import java.util.Set;
 import net.opengis.ows_context.LayerType;
 import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.coremap.renderer.se.common.Description;
@@ -55,7 +56,7 @@ public abstract class BeanLayer extends AbstractLayer {
         //bean properties
         private Description description;
         protected List<Style> styleList = new ArrayList<Style>();
-        protected IntegerUnion selection = new IntegerUnion();
+        protected LongUnion selection = new LongUnion();
         private boolean visible = true;
         private PropertyChangeListener styleListener = EventHandler.create(PropertyChangeListener.class,this,"onStyleChanged","");
 
@@ -281,14 +282,14 @@ public abstract class BeanLayer extends AbstractLayer {
         }
 
         @Override
-        public Set<Integer> getSelection() {
+        public Set<Long> getSelection() {
                 return selection;
         }
 
         @Override
-        public void setSelection(Set<Integer> newSelection) {
-                IntegerUnion oldSelection = selection;
-                selection = new IntegerUnion(newSelection);
+        public void setSelection(Set<Long> newSelection) {
+                LongUnion oldSelection = selection;
+                selection = new LongUnion(newSelection);
                 propertyChangeSupport.firePropertyChange(PROP_SELECTION, oldSelection, selection);
         }
 }

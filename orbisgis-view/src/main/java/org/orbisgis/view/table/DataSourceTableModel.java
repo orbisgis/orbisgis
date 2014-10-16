@@ -135,6 +135,10 @@ public class DataSourceTableModel extends AbstractTableModel {
                 }
         }
 
+    public void setLastFetchRowCountTime(long lastFetchRowCountTime) {
+        this.lastFetchRowCountTime = lastFetchRowCountTime;
+    }
+
     @Override
     public int getRowCount() {
         long time = System.currentTimeMillis();

@@ -37,10 +37,11 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import java.io.File;
+import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import org.apache.log4j.Logger;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableEditListener;
@@ -50,7 +51,6 @@ import org.orbisgis.coremap.map.TransformListener;
 import org.orbisgis.coremap.renderer.ImageRenderer;
 import org.orbisgis.coremap.renderer.Renderer;
 import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
-import org.orbisgis.mapeditorapi.IndexProvider;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
@@ -69,7 +69,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 public class MapControl extends JComponent implements ContainerListener {
         //Minimal Time in ms between two intermediate paint of drawing process
-        private CachedResultSetContainer cachedResultSetContainer = new CachedResultSetContainer();
+        private ResultSetProviderFactory resultSetProviderFactory = new CachedResultSetContainer();
         private static final Point MAX_IMAGE_SIZE = new Point(20000, 20000);
         public static final String JOB_DRAWING_PREFIX_ID = "MapControl-Drawing";
         private static final Logger LOGGER = Logger.getLogger(MapControl.class);
@@ -109,13 +109,6 @@ public class MapControl extends JComponent implements ContainerListener {
 
         MapTransform updatedMapTranform = new MapTransform();
 
-        /**
-         * Provide spatial query optimisation
-         * @param indexProvider Index factory
-         */
-        public void setIndexProvider(IndexProvider indexProvider, File indexCache) {
-            cachedResultSetContainer.setIndexProvider(indexProvider, indexCache);
-        }
         private void setStatus(int newStatus) {
             status = newStatus;
         }
@@ -140,16 +133,15 @@ public class MapControl extends JComponent implements ContainerListener {
 		setOpaque(true);
 		setStatus(DIRTY);
 
-                // creating objects
-                if(toolManager!=null) {
-                        removeMouseListener(toolManager);
-                        removeMouseMotionListener(toolManager);
-                        removeMouseWheelListener(toolManager);
-                }
-		toolManager = new ToolManager(defaultTool, mapContext, mapTransform,
-				this, cachedResultSetContainer);
+        // creating objects
+        if(toolManager!=null) {
+                removeMouseListener(toolManager);
+                removeMouseMotionListener(toolManager);
+                removeMouseWheelListener(toolManager);
+        }
+		toolManager = new ToolManager(defaultTool, mapContext, mapTransform,this);
 
-                // Set extent with BoundingBox value
+        // Set extent with BoundingBox value
 		ILayer rootLayer = mapContext.getLayerModel();
 		Envelope boundingBox = mapContext.getBoundingBox();
 		if (boundingBox != null) {
@@ -158,23 +150,23 @@ public class MapControl extends JComponent implements ContainerListener {
 			mapTransform.setExtent(rootLayer.getEnvelope());
 		}
 
-                setLayout(new BorderLayout());
-                
-                // adding listeners at the endupdatedImage
-                // to prevent multiple useless repaint
-		toolManager.addToolListener(new MapToolListener());
-		addMouseListener(toolManager);
-                addMouseMotionListener(toolManager);
-                addMouseWheelListener(toolManager);
-                
-		mapTransform.addTransformListener(new MapControlTransformListener());
-                
-                //Component event invalidate the picture
-                this.addComponentListener(EventHandler.create(ComponentListener.class, this,"invalidateImage"));
-		// Add editable element listen transform event
-                if(element!=null) {
-                        mapTransform.addTransformListener(element);
-                }
+        setLayout(new BorderLayout());
+
+        // adding listeners at the endupdatedImage
+        // to prevent multiple useless repaint
+        toolManager.addToolListener(new MapToolListener());
+        addMouseListener(toolManager);
+        addMouseMotionListener(toolManager);
+        addMouseWheelListener(toolManager);
+
+        mapTransform.addTransformListener(new MapControlTransformListener());
+
+        //Component event invalidate the picture
+        this.addComponentListener(EventHandler.create(ComponentListener.class, this, "invalidateImage"));
+        // Add editable element listen transform event
+        if (element != null) {
+            mapTransform.addTransformListener(element);
+        }
 
 	}
 
@@ -182,6 +174,7 @@ public class MapControl extends JComponent implements ContainerListener {
 			RefreshLayerListener refreshLayerListener) {
 		rootLayer.addLayerListener(refreshLayerListener);
         if(!rootLayer.getTableReference().isEmpty() && rootLayer.getDataManager() != null) {
+            rootLayer.getDataManager().removeTableEditListener(rootLayer.getTableReference(), refreshLayerListener);
             rootLayer.getDataManager().addTableEditListener(rootLayer.getTableReference(), refreshLayerListener);
         }
 		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
@@ -207,7 +200,17 @@ public class MapControl extends JComponent implements ContainerListener {
      * Remove cached result set
      */
     public void clearCache() {
-        cachedResultSetContainer.clearCache();
+        if(resultSetProviderFactory instanceof  CachedResultSetContainer) {
+            ((CachedResultSetContainer) resultSetProviderFactory).clearCache();
+        }
+    }
+    /**
+     * Remove cached result set
+     */
+    public void clearCache(String tableReference) {
+        if(resultSetProviderFactory instanceof  CachedResultSetContainer) {
+            ((CachedResultSetContainer) resultSetProviderFactory).removeCache(tableReference);
+        }
     }
         
 	/**
@@ -285,7 +288,7 @@ public class MapControl extends JComponent implements ContainerListener {
                     mapTransform.setImage(inProcessImage);
 
                     // now we start the actual drawer
-                    drawer = new Drawer(mapContext, awaitingDrawing, this, cachedResultSetContainer);
+                    drawer = new Drawer(mapContext, awaitingDrawing, this, resultSetProviderFactory);
                     BackgroundManager bm = Services.getService(BackgroundManager.class);
                     bm.nonBlockingBackgroundOperation(
                             new DefaultJobId(JOB_DRAWING_PREFIX_ID +
@@ -405,8 +408,30 @@ public class MapControl extends JComponent implements ContainerListener {
 
         @Override
         public void tableChange(TableEditEvent event) {
-            mapControl.cachedResultSetContainer.removeCache(event.getTableName());
+            // Clear selection of all layers linked with this table
+            TableLocation tableName = TableLocation.parse(event.getTableName());
+            for(ILayer layer : mapControl.getMapContext().getLayers()) {
+                String layerTable = layer.getTableReference();
+                if(!layerTable.isEmpty() && TableLocation.parse(layerTable).equals(tableName)) {
+                    layer.setSelection(new HashSet<Long>());
+                    // The trigger may be lost
+                    mapControl.addLayerListenerRecursively(layer, this);
+                }
+            }
+            mapControl.clearCache();
+            // Redraw
             mapControl.invalidateImage();
+        }
+
+
+
+        private void clearLayerCacheRecursively(ILayer rootLayer) {
+            if(!rootLayer.getTableReference().isEmpty() && rootLayer.getDataManager() != null) {
+                mapControl.clearCache(rootLayer.getTableReference());
+            }
+            for (int i = 0; i < rootLayer.getLayerCount(); i++) {
+                clearLayerCacheRecursively(rootLayer.getLayer(i));
+            }
         }
 
         @Override
@@ -449,6 +474,7 @@ public class MapControl extends JComponent implements ContainerListener {
 		public void layerRemoved(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
                 mapControl.removeLayerListenerRecursively(layer, this);
+                clearLayerCacheRecursively(layer);
 			}
             if(!mapControl.mapContext.isLayerModelSpatial()){
                 mapControl.mapTransform.setExtent(new Envelope());
@@ -484,7 +510,7 @@ public class MapControl extends JComponent implements ContainerListener {
 		/*
 		 * if (drawer != null) { drawer.cancel(); }
 		 */
-            cachedResultSetContainer.clearCache();
+            clearCache();
             if(toolManager!=null) {
                 toolManager.freeResources();
                 toolManager = null;

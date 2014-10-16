@@ -108,7 +108,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>h2spatial</artifactId>
+            <artifactId>h2spatial-ext</artifactId>
             <version>${h2-gis-version}</version>
             <scope>test</scope>
         </dependency>

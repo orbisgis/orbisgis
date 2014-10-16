@@ -44,7 +44,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
-import org.apache.felix.shell.gui.Plugin;
 import org.apache.log4j.Logger;
 import org.orbisgis.omanager.plugin.api.CustomPlugin;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
@@ -75,7 +74,7 @@ public class ManagerMenuFactory implements MainFrameAction {
     private static final I18n I18N = I18nFactory.getI18n(ManagerMenuFactory.class);
     private MainDialog mainPanel;
     private MainWindow target; // There is only one main window in the application, it can be stored here.
-    private List<Plugin> panels = new ArrayList<>();
+    private List<CustomPlugin> panels = new ArrayList<>();
     private AtomicBoolean addingRepositories = new AtomicBoolean(false);
     private RepositoryAdmin repositoryAdmin;
 
@@ -88,8 +87,8 @@ public class ManagerMenuFactory implements MainFrameAction {
         return actions;
     }
 
-    @Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, service = Plugin.class, policy = ReferencePolicy.DYNAMIC)
-    public void addPlugin(Plugin plugin) {
+    @Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, service = CustomPlugin.class, policy = ReferencePolicy.DYNAMIC)
+    public void addPlugin(CustomPlugin plugin) {
         if(!panels.contains(plugin)) {
             panels.add(plugin);
             if (mainPanel != null) {
@@ -98,7 +97,7 @@ public class ManagerMenuFactory implements MainFrameAction {
         }
     }
 
-    public void removePlugin(Plugin plugin) {
+    public void removePlugin(CustomPlugin plugin) {
         if(panels.remove(plugin)) {
             if (mainPanel != null) {
                 mainPanel.removePanel(plugin);
@@ -115,16 +114,6 @@ public class ManagerMenuFactory implements MainFrameAction {
         this.repositoryAdmin = null;
     }
 
-    @Reference(cardinality = ReferenceCardinality.MULTIPLE, service = CustomPlugin.class, policy = ReferencePolicy.DYNAMIC)
-    public void addCustomPlugin(CustomPlugin plugin) {
-        addPlugin(plugin);
-    }
-
-    public void removeCustomPlugin(CustomPlugin plugin) {
-        removePlugin(plugin);
-    }
-
-
     /**
      * Make and show the plug-ins manager
      */
@@ -132,7 +121,7 @@ public class ManagerMenuFactory implements MainFrameAction {
         if(mainPanel==null) {
             mainPanel = new MainDialog(target.getMainFrame());
             mainPanel.setModal(false);
-            for(Plugin plugin : panels) {
+            for(CustomPlugin plugin : panels) {
                 mainPanel.addPanel(plugin);
             }
         }

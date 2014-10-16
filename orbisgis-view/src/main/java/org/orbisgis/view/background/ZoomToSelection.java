@@ -37,6 +37,7 @@ import java.util.SortedSet;
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.ReadTable;
+import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
@@ -64,7 +65,7 @@ public class ZoomToSelection implements BackgroundJob {
                 Envelope selectionEnvelope = new Envelope();
                 for(ILayer layer : layers) {
                     if(layer.isVisible()) {
-                        Set<Integer> data = layer.getSelection();
+                        Set<Long> data = layer.getSelection();
                         if(!data.isEmpty()){
                         Envelope layerEnv = getLayerSelectionEnvelope(pm, data, layer.getTableReference());
                         if(layerEnv!=null) {
@@ -92,12 +93,12 @@ public class ZoomToSelection implements BackgroundJob {
          * @return
          * @throws SQLException 
          */
-        private Envelope getLayerSelectionEnvelope(ProgressMonitor pm, Set<Integer> data,String tableReference) throws SQLException {
-            SortedSet<Integer> sortedSet;
+        private Envelope getLayerSelectionEnvelope(ProgressMonitor pm, Set<Long> data,String tableReference) throws SQLException {
+            SortedSet<Long> sortedSet;
             if(data instanceof SortedSet) {
-                sortedSet = (SortedSet<Integer>)data;
+                sortedSet = (SortedSet<Long>)data;
             } else {
-                sortedSet = new IntegerUnion(data);
+                sortedSet = new LongUnion(data);
             }
             return ReadTable.getTableSelectionEnvelope(mapContext.getDataManager(), tableReference,sortedSet, pm);
         }

@@ -42,7 +42,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
-import org.apache.felix.shell.gui.Plugin;
 import org.apache.log4j.Logger;
 import org.orbisgis.omanager.plugin.api.CustomPlugin;
 import org.xnap.commons.i18n.I18n;
@@ -56,7 +55,7 @@ public class MainDialog extends JDialog {
     private static final I18n I18N = I18nFactory.getI18n(MainDialog.class);
     private static final Logger LOGGER = Logger.getLogger("gui." + MainDialog.class);
     private JList<ItemPlugin> shellPlugins = new JList<>();
-    private List<Plugin> loadedPlugins = new ArrayList<Plugin>();
+    private List<CustomPlugin> loadedPlugins = new ArrayList<>();
     private JPanel centerComponent = new JPanel(new BorderLayout());
     private ListSelectionListener modelListener = EventHandler.create(ListSelectionListener.class,this,"onShellSelectionChange");
 
@@ -96,7 +95,7 @@ public class MainDialog extends JDialog {
         }
     }
 
-    public void addPanel(Plugin plugin) {
+    public void addPanel(CustomPlugin plugin) {
         loadedPlugins.add(plugin);
         updateLoadedPluginsList();
         if(!shellPlugins.isVisible()) {
@@ -106,7 +105,7 @@ public class MainDialog extends JDialog {
         }
     }
 
-    public void removePanel(Plugin plugin) {
+    public void removePanel(CustomPlugin plugin) {
         loadedPlugins.remove(plugin);
         Object selected = shellPlugins.getSelectedValue();
         if((selected!=null && selected.equals(plugin.getName())) || loadedPlugins.isEmpty()) {
@@ -122,13 +121,8 @@ public class MainDialog extends JDialog {
 
     private void updateLoadedPluginsList() {
         DefaultListModel<ItemPlugin> pluginNames = new DefaultListModel<>();
-        for(Plugin plugin : loadedPlugins) {
-            try {
-                pluginNames.addElement(new ItemPlugin(plugin.getName(), ((CustomPlugin)plugin).getIcon()));
-            } catch (ClassCastException ex) {
-                pluginNames.addElement(new ItemPlugin(plugin.getName(),
-                        new ImageIcon(ManagerMenuFactory.class.getResource("panel_icon.png"))));
-            }
+        for(CustomPlugin plugin : loadedPlugins) {
+            pluginNames.addElement(new ItemPlugin(plugin.getName(), (plugin).getIcon()));
         }
         shellPlugins.setModel(pluginNames);
         // Set selection

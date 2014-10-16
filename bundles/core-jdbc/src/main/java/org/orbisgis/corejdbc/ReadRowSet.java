@@ -48,8 +48,16 @@ public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
     /**
      * @param primaryKeyRowValue The {@link #getPkName()} value of a row
      * @return Corresponding {@link #getRow()} value or null if there is no such object in the table.
+     * @see #getRowPK(int)
      */
-    public Integer getRowId(Object primaryKeyRowValue);
+    public int getRowId(Object primaryKeyRowValue);
+
+    /**
+     * @param rowNumber Table row number [1-n]
+     * @return Cached row primary key
+     * @see #getRowId(Object)
+     */
+    public long getRowPK(int rowNumber);
 
     /**
      * @return The read lock on this result set

@@ -28,29 +28,37 @@
  */
 package org.orbisgis.view.background;
 
+import org.orbisgis.progress.DefaultProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.RootProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 /**
  * Encapsulate a background job in order to attach Thread instance and job identifier.
  */
-public class Job implements BackgroundJob {
+public class Job extends DefaultProgressMonitor implements BackgroundJob {
 
+    private PropertyChangeSupport listeners = new PropertyChangeSupport(this);
+    private boolean canceled;
+    private String taskName = "";
     private JobId processId;
     private BackgroundJob lp;
-    private ProgressMonitor pm;
     private BackgroundManager jobQueue;
     private Thread currentThread = null;
     private boolean isBlocking;
     private static final I18n I18N = I18nFactory.getI18n(Job.class);
+    private static final double INC_PROGRESS_FIRE = 0.01;
+    private double lastFireProgress = 0;
 
 
     public Job(JobId processId, BackgroundJob lp, BackgroundManager jobQueue, boolean blocking) {
+        super(1, null);
         this.processId = processId;
         this.lp = lp;
-        this.pm = new RootProgressMonitor(lp.getTaskName(), 1);
         this.isBlocking = blocking;
         this.jobQueue = jobQueue;
     }
@@ -66,7 +74,7 @@ public class Job implements BackgroundJob {
      * @return The progress monitor of the job.
      */
     public ProgressMonitor getProgressMonitor() {
-        return pm;
+        return this;
     }
 
     @Override
@@ -88,7 +96,7 @@ public class Job implements BackgroundJob {
     }
 
     public void cancel() {
-        pm.setCancelled(true);
+        setCancelled(true);
     }
 
     /**
@@ -96,13 +104,13 @@ public class Job implements BackgroundJob {
      * @return
      */
     public Thread getReadyRunnable(){
-        currentThread = new Thread(new RunnableBackgroundJob(jobQueue, pm, this));
+        currentThread = new Thread(new RunnableBackgroundJob(jobQueue, this, this));
         return currentThread;
     }
 
     public synchronized void start() {
         RunnableBackgroundJob runnable = new RunnableBackgroundJob(jobQueue,
-                pm, this);
+                this, this);
         currentThread = new Thread(runnable);
         currentThread.start();
     }
@@ -124,5 +132,50 @@ public class Job implements BackgroundJob {
             }
 
         };
+    }
+
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        listeners.removePropertyChangeListener(listener);
+    }
+
+    @Override
+    public void addPropertyChangeListener(String property, PropertyChangeListener listener) {
+        listeners.addPropertyChangeListener(property, listener);
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return canceled;
+    }
+
+    @Override
+    public void setCancelled(boolean canceled) {
+        boolean oldValue = this.canceled;
+        this.canceled = canceled;
+        listeners.firePropertyChange(PROP_CANCEL, oldValue, canceled);
+    }
+
+    @Override
+    public String getCurrentTaskName() {
+        return taskName;
+    }
+
+    @Override
+    protected synchronized void pushProgression(double incProg) {
+        double oldProgress = getOverallProgress();
+        super.pushProgression(incProg);
+        if(oldProgress - lastFireProgress > INC_PROGRESS_FIRE) {
+            lastFireProgress = getOverallProgress();
+            listeners.firePropertyChange(PROP_PROGRESSION, oldProgress, lastFireProgress);
+        }
+    }
+
+    @Override
+    public void setTaskName(String taskName) {
+        String oldTaskName = this.taskName;
+        this.taskName = taskName;
+        listeners.firePropertyChange(PROP_TASKNAME, oldTaskName, taskName);
     }
 }

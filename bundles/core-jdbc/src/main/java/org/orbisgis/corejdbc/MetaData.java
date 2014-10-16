@@ -48,6 +48,7 @@ import java.util.Map;
 public class MetaData {
     private static final I18n I18N = I18nFactory.getI18n(MetaData.class, Locale.getDefault(), I18nFactory.FALLBACK);
     private static final Logger LOGGER = Logger.getLogger(MetaData.class);
+    public static final String POSTGRE_ROW_IDENTIFIER = "ctid";
 
     /**
      * Returns a new unique name when registering a {@link javax.sql.DataSource}.
@@ -78,6 +79,23 @@ public class MetaData {
             }
         }
         return uniqueName.toString();
+    }
+
+    /**
+     * Get table long system identifier
+     * @return system row column name or expression
+     */
+    public static String getSystemLongRowIdentifier(boolean isH2) {
+        return isH2 ? "_ROWID_" : POSTGRE_ROW_IDENTIFIER;
+    }
+
+    /**
+     * PostgreSQL ctid is not long, and long value must be casted into tid type.
+     * @param pkName
+     * @return
+     */
+    public static String castLongToTid(String pkName) {
+        return "CONCAT('(', "+pkName+" >> 32,',',"+pkName+" << 32 >> 32,')')::tid";
     }
 
     /**
@@ -246,6 +264,7 @@ public class MetaData {
      *
      * @param connection Connection
      * @param table      Table location
+     * @param systemColumn If true system column are also returned if no primary key is found
      * @return The primary key name or empty
      * @throws SQLException
      */
@@ -254,44 +273,20 @@ public class MetaData {
         String pkName = "";
         try (Statement st = connection.createStatement()) {
             DatabaseMetaData meta = connection.getMetaData();
-            if (systemColumn) {
-                if(JDBCUtilities.isH2DataBase(meta)) {
-                    boolean hasSpatialIndex = false;
-                    try (PreparedStatement preparedStatement = SFSUtilities.prepareInformationSchemaStatement(connection,
-                            tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable(),
-                            "INFORMATION_SCHEMA.INDEXES", "", "TABLE_CATALOG", "TABLE_SCHEMA", "TABLE_NAME")) {
-                        try (ResultSet rs = preparedStatement.executeQuery()) {
-                            while (rs.next()) {
-                                if ("SPATIAL INDEX".equals(rs.getString("INDEX_TYPE_NAME"))) {
-                                    hasSpatialIndex = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if (!hasSpatialIndex) {
-                        try (ResultSet rs = st.executeQuery("select _ROWID_ from " + tableLocation + " LIMIT 0")) {
-                            // Issue https://github.com/irstv/orbisgis/issues/662
-                            // Cannot use _ROWID_ in conjunction with spatial index
-                            // TODO use always _ROWID_ when issue is fixed
-                            pkName = rs.getMetaData().getColumnName(1);
-                        } catch (SQLException ex) {
-                            //Ignore, key does not exists
-                        }
-                    }
-                } else {
-                    // Use PostGre system column
-                    try (ResultSet rs = st.executeQuery("select ctid from " + tableLocation + " LIMIT 0")) {
-                        pkName = rs.getMetaData().getColumnName(1);
-                    } catch (SQLException ex) {
-                        //Ignore, key does not exists
-                    }
-                }
-            }
             int pkId = JDBCUtilities.getIntegerPrimaryKey(connection, tableLocation.toString());
             if (pkId > 0) {
                 // This table has a Primary key, get the field name
-                pkName = JDBCUtilities.getFieldName(connection.getMetaData(), tableLocation.toString(), pkId);
+                return JDBCUtilities.getFieldName(connection.getMetaData(), tableLocation.toString(), pkId);
+            }
+            if (systemColumn) {
+                boolean isH2 = JDBCUtilities.isH2DataBase(meta);
+                String systemRowName = getSystemLongRowIdentifier(isH2);
+                // Check if this system column is available
+                try (ResultSet rs = st.executeQuery("select "+systemRowName+" from " + tableLocation + " LIMIT 0")) {
+                    pkName = systemRowName;
+                } catch (SQLException ex) {
+                    //Ignore, key does not exists
+                }
             }
         }
         return pkName;

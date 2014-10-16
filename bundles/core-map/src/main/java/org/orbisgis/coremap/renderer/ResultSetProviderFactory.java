@@ -68,6 +68,11 @@ public interface ResultSetProviderFactory {
          */
         SpatialResultSet execute(ProgressMonitor pm, Envelope extent) throws SQLException;
 
+        /**
+         * @return The primary key column name, empty if there is no such thing.
+         */
+        String getPkName();
+
         @Override
         void close() throws SQLException;
     }

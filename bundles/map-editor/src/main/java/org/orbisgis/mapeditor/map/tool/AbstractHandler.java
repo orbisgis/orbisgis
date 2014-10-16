@@ -70,7 +70,7 @@ public abstract class AbstractHandler implements Handler {
 	protected int vertexIndex;
 	protected Coordinate point;
 	protected Geometry geometry;
-	protected int geomIndex;
+	protected long geomIndex;
 
 	/**
 	 * Creates a new PointHandler
@@ -79,13 +79,11 @@ public abstract class AbstractHandler implements Handler {
 	 *            Primitive this handler belongs to
 	 * @param vertexIndex
 	 *            index of the vertex this handler represents
-	 * @param primitiveIndex
-	 *            Index of the primitive in the Theme it was read
-	 * @param x
-	 * @param y
+	 * @param p
+     * @param geomIndex
 	 */
 	public AbstractHandler(com.vividsolutions.jts.geom.Geometry g,
-			int vertexIndex, Coordinate p, int geomIndex) {
+			int vertexIndex, Coordinate p, long geomIndex) {
 		this.vertexIndex = vertexIndex;
 		this.point = p;
 		this.geometry = g;
@@ -103,9 +101,6 @@ public abstract class AbstractHandler implements Handler {
 		g2.drawRect(p.x - tol / 2, p.y - tol / 2, tol, tol);
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#getPoint()
-	 */
 	public Point2D getPoint() {
 		return new Point2D.Double(point.x, point.y);
 	}
@@ -140,7 +135,7 @@ public abstract class AbstractHandler implements Handler {
 		return newCoords;
 	}
 
-	public int getGeometryIndex() {
+	public long getGeometryPK() {
 		return geomIndex;
 	}
 

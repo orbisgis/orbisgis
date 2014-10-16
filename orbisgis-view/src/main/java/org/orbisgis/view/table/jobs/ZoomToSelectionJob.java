@@ -49,7 +49,7 @@ public class ZoomToSelectionJob implements BackgroundJob {
         protected final static I18n I18N = I18nFactory.getI18n(ZoomToSelectionJob.class);
         private DataManager dataManager;
         private String tableName;
-        private SortedSet<Integer> modelSelection;
+        private SortedSet<Long> modelSelection;
         private MapContext mapContext;
 
 
@@ -60,7 +60,7 @@ public class ZoomToSelectionJob implements BackgroundJob {
          * @param modelSelection Selected rows
          * @param mapContext Loaded map context
          */
-        public ZoomToSelectionJob(DataManager dataManager, String tableName, SortedSet<Integer> modelSelection, MapContext mapContext) {
+        public ZoomToSelectionJob(DataManager dataManager, String tableName, SortedSet<Long> modelSelection, MapContext mapContext) {
             this.dataManager = dataManager;
             this.tableName = tableName;
             this.modelSelection = modelSelection;

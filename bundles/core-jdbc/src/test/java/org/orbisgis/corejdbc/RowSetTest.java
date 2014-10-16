@@ -26,6 +26,8 @@ package org.orbisgis.corejdbc;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -59,7 +61,10 @@ public class RowSetTest {
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        dataSource = SpatialH2UT.createDataSource(RowSetTest.class.getSimpleName(), true);
+        dataSource = SFSUtilities.wrapSpatialDataSource(SpatialH2UT.createDataSource(RowSetTest.class.getSimpleName(), false));
+        try(Connection connection = dataSource.getConnection()) {
+            CreateSpatialExtension.initSpatialExtension(connection);
+        }
     }
 
     @Test
@@ -70,17 +75,17 @@ public class RowSetTest {
             st.execute("DROP TABLE IF EXISTS PTS");
             st.execute("CREATE TABLE PTS(id integer primary key auto_increment, the_geom POINT)");
             st.execute("INSERT INTO PTS(the_geom) VALUES ('POINT(10 10)'),('POINT(15 15)'),('POINT(20 20)'),('POINT(25 25)')");
-            assertEquals(new Envelope(10,25,10,25), ReadTable.getTableSelectionEnvelope(dataManager, "PTS", getRows(1,2,3,4), new NullProgressMonitor()));
-            assertEquals(new Envelope(10,15,10,15), ReadTable.getTableSelectionEnvelope(dataManager, "PTS", getRows(1, 2), new NullProgressMonitor()));
-            assertEquals(new Envelope(15,20,15,20), ReadTable.getTableSelectionEnvelope(dataManager, "PTS", getRows(2, 3), new NullProgressMonitor()));
-            assertEquals(new Envelope(25,25,25,25), ReadTable.getTableSelectionEnvelope(dataManager, "PTS", getRows(4, 4), new NullProgressMonitor()));
+            assertEquals(new Envelope(10,25,10,25), ReadTable.getTableSelectionEnvelope(dataManager, "PTS", getRows(1l,2l,3l,4l), new NullProgressMonitor()));
+            assertEquals(new Envelope(10,15,10,15), ReadTable.getTableSelectionEnvelope(dataManager, "PTS", getRows(1l, 2l), new NullProgressMonitor()));
+            assertEquals(new Envelope(15,20,15,20), ReadTable.getTableSelectionEnvelope(dataManager, "PTS", getRows(2l, 3l), new NullProgressMonitor()));
+            assertEquals(new Envelope(25,25,25,25), ReadTable.getTableSelectionEnvelope(dataManager, "PTS", getRows(4l, 4l), new NullProgressMonitor()));
             st.execute("DROP TABLE IF EXISTS PTS");
         }
     }
 
-    private static SortedSet<Integer> getRows(Integer... rowId) {
-        SortedSet<Integer> rows = new TreeSet<>();
-        Collections.addAll(rows, rowId);
+    private static SortedSet<Long> getRows(Long... rowPk) {
+        SortedSet<Long> rows = new TreeSet<>();
+        Collections.addAll(rows, rowPk);
         return rows;
     }
 
@@ -122,6 +127,9 @@ public class RowSetTest {
             try (ReadRowSet rs = new ReadRowSetImpl(dataSource)) {
                 rs.setCommand("select * from TEST");
                 rs.execute();
+                assertEquals(1, rs.findColumn("ID"));
+                assertEquals(2, rs.findColumn("STR"));
+                assertEquals(3, rs.findColumn("FLT"));
                 assertTrue(rs.next());
                 assertEquals(42, rs.getInt(1));
                 assertEquals("marvin", rs.getString(2));

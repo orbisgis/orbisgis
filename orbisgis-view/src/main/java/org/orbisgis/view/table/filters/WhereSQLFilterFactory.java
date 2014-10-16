@@ -143,7 +143,7 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
                         LOGGER.info(I18N.tr("Find field value with the following request:\n{0}",request.toString()));
                         try(ResultSet rs = st.executeQuery(request.toString())) {
                             while(rs.next()) {
-                                filteredRows.add(rowSet.getRowId(rs.getObject(1)) - 1);
+                                filteredRows.add(rowSet.getRowId(rs.getLong(1)) - 1);
                             }
                         }
                     }

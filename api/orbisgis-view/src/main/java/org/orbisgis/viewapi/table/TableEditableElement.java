@@ -1,5 +1,6 @@
 package org.orbisgis.viewapi.table;
 
+import org.orbisgis.viewapi.edition.EditableElementException;
 import org.orbisgis.viewapi.edition.EditableSource;
 
 import java.util.Set;
@@ -14,13 +15,24 @@ public interface TableEditableElement extends EditableSource {
 
 
     /**
-     * @return the selected rows in the table
+     * @return Primary keys of the selected rows in the table
      */
-    public SortedSet<Integer> getSelection();
+    public SortedSet<Long> getSelection();
 
     /**
-     * Set the selected geometries in the table
+     * Set the selected rows in the table using primary key values.
      * @param selection Row's id
      */
-    public void setSelection(Set<Integer> selection);
+    public void setSelection(Set<Long> selection);
+
+    /**
+     * @return Row number [1-n] of the selected rows
+     */
+    public SortedSet<Integer> getSelectionTableRow() throws EditableElementException;
+
+    /**
+     * Update selection using row number.
+     * @param selection Row number [1-n] of the selected rows
+     */
+    public void setSelectionTableRow(SortedSet<Integer> selection) throws EditableElementException;
 }

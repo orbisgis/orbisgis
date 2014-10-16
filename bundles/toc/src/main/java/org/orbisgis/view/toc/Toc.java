@@ -52,6 +52,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -879,7 +880,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                 ILayer[] selectedLayers = mapContext.getSelectedLayers();
                 for(ILayer layer : selectedLayers) {
                         if(!layer.acceptsChilds()) {
-                                layer.setSelection(new IntegerUnion());
+                                layer.setSelection(new HashSet<Long>());
                         }
                 }
         }

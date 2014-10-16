@@ -66,17 +66,23 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 import javax.sql.RowSet;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.apache.log4j.Logger;
+import org.orbisgis.corejdbc.CreateTable;
 import org.orbisgis.corejdbc.ReversibleRowSet;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.*;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.map.TransformListener;
@@ -96,6 +102,7 @@ import org.orbisgis.mapeditor.map.tools.PanTool;
 import org.orbisgis.mapeditor.map.tools.ToolUtilities;
 import org.orbisgis.mapeditor.map.tools.ZoomInTool;
 import org.orbisgis.mapeditor.map.tools.ZoomOutTool;
+import org.orbisgis.progress.NullProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -108,6 +115,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         public static GeometryFactory toolsGeometryFactory = new GeometryFactory();
         private static final I18n I18N = I18nFactory.getI18n(ToolManager.class);
         private static Logger UILOGGER = Logger.getLogger("gui."+ToolManager.class);
+        private static final int TRY_LOCK_TIME = 5000;
         private Automaton currentTool;
         private ILayer activeLayer = null;
         private PropertyChangeListener mapContextListener;
@@ -136,7 +144,6 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         private LineSymbolizer lineSymbolizer;
         private PointSymbolizer pointSymbolizer;
         private ReversibleRowSet activeLayerRowSet;
-        private CachedResultSetContainer cachedResultSetContainer;
 
         /**
          * Creates a new EditionToolAdapter.
@@ -148,12 +155,11 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
          * @throws TransitionException
          */
         public ToolManager(Automaton defaultTool, MapContext mapContext,
-                MapTransform mapTransform, Component component, CachedResultSetContainer cachedResultSetContainer)
+                MapTransform mapTransform, Component component)
                 throws TransitionException {
                 this.mapTransform = mapTransform;
                 this.component = component;
                 this.mapContext = mapContext;
-                this.cachedResultSetContainer = cachedResultSetContainer;
 
                 setTool(defaultTool);
                 this.defaultTool = defaultTool;
@@ -176,13 +182,6 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                         }
                 });
                 buildSymbolizers();
-        }
-
-        /**
-         * @return Gives access to cached result set of all layers
-         */
-        public CachedResultSetContainer getCachedResultSetContainer() {
-            return cachedResultSetContainer;
         }
 
     /**
@@ -692,18 +691,29 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                         || (activeLayer.getSelection().isEmpty()) || activeLayerRowSet == null) {
                         return;
                 }
-                Set<Integer> selection = activeLayer.getSelection();
+                Set<Long> selection = activeLayer.getSelection();
+                Lock readLock = activeLayerRowSet.getReadLock();
                 try {
-                        for (int selectedRow : selection) {
-                                Primitive p;
-                                Geometry geometry = activeLayerRowSet.getGeometry(selectedRow);
-                                if (geometry != null) {
-                                        p = new Primitive(geometry, selectedRow);
-                                        Handler[] handlers = p.getHandlers();
-                                        currentHandlers.addAll(Arrays.asList(handlers));
-                                }
+                    if(readLock.tryLock(TRY_LOCK_TIME, TimeUnit.MILLISECONDS)) {
+                        // Fetch row num using selected pk
+                        SortedSet<Integer> modelRows = new IntegerUnion();
+                        for (long value : selection) {
+                            modelRows.add(activeLayerRowSet.getRowId(value));
                         }
-                } catch (SQLException e) {
+                        activeLayerRowSet.setFilter(modelRows);
+                        activeLayerRowSet.beforeFirst();
+                        while (activeLayerRowSet.next()){
+                            Primitive p;
+                            Geometry geometry = activeLayerRowSet.getGeometry();
+                            if (geometry != null) {
+                                p = new Primitive(geometry, activeLayerRowSet.getLong(activeLayerRowSet.getPkName()));
+                                Handler[] handlers = p.getHandlers();
+                                currentHandlers.addAll(Arrays.asList(handlers));
+                            }
+                        }
+                    }
+                } catch (SQLException | InterruptedException e) {
+                        readLock.unlock();
                         UILOGGER.warn(
                                 I18N.tr("Cannot recalculate the handlers"), e);
                 }
