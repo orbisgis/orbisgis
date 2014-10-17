@@ -314,10 +314,24 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         }
 
         @Override
-        public DriverFunction getDriverFromExt(String ext,DriverFunction.IMPORT_DRIVER_TYPE type ) {
+        public DriverFunction getImportDriverFromExt(String ext,DriverFunction.IMPORT_DRIVER_TYPE type ) {
             for(DriverFunction driverFunction : fileDrivers) {
                 if(driverFunction.getImportDriverType() == type) {
                     for(String fileExt : driverFunction.getImportFormats()) {
+                        if(fileExt.equalsIgnoreCase(ext)) {
+                            return driverFunction;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public DriverFunction getExportDriverFromExt(String ext,DriverFunction.IMPORT_DRIVER_TYPE type ) {
+            for(DriverFunction driverFunction : fileDrivers) {
+                if(driverFunction.getImportDriverType() == type) {
+                    for(String fileExt : driverFunction.getExportFormats()) {
                         if(fileExt.equalsIgnoreCase(ext)) {
                             return driverFunction;
                         }
@@ -457,7 +471,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                                 final File savedFile = outfilePanel.getSelectedFile().getAbsoluteFile();
                                 BackgroundManager bm = Services.getService(BackgroundManager.class);
                                 bm.backgroundOperation(new ExportInFileOperation(source,
-                                savedFile, getDriverFromExt(FilenameUtils.getExtension(savedFile.getName()),
+                                savedFile, getExportDriverFromExt(FilenameUtils.getExtension(savedFile.getName()),
                                         DriverFunction.IMPORT_DRIVER_TYPE.COPY),dataManager.getDataSource()));
                         }
                 }

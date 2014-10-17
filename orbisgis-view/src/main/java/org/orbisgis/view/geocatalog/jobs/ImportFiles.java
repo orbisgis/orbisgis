@@ -83,7 +83,7 @@ public class ImportFiles implements BackgroundJob {
             boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             for(File file : files) {
                 String ext = FilenameUtils.getExtension(file.getName());
-                DriverFunction driverFunction = driverFunctionContainer.getDriverFromExt(ext, driverType);
+                DriverFunction driverFunction = driverFunctionContainer.getImportDriverFromExt(ext, driverType);
                 if(driverFunction != null) {
                     TableLocation tableName = new TableLocation("","",dataManager.findUniqueTableName(
                             TableLocation.capsIdentifier(FileUtils.getNameFromURI(file.toURI()), isH2)));
