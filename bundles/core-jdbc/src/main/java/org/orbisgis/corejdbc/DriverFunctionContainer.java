@@ -46,10 +46,18 @@ public interface DriverFunctionContainer {
     void removeDriverFunction(DriverFunction driverFunction);
 
     /**
-     * Found DriverFunction using file extension and driver type
+     * Found DriverFunction using file extension and driver type that export table
      * @param ext Driver extension ex:shp
      * @param type Driver type, copy or link
      * @return Driver instance or null if not found.
      */
-    DriverFunction getDriverFromExt(String ext,DriverFunction.IMPORT_DRIVER_TYPE type );
+    DriverFunction getExportDriverFromExt(String ext,DriverFunction.IMPORT_DRIVER_TYPE type );
+
+    /**
+     * Found DriverFunction using file extension and driver type that import file
+     * @param ext Driver extension ex:shp
+     * @param type Driver type, copy or link
+     * @return Driver instance or null if not found.
+     */
+    DriverFunction getImportDriverFromExt(String ext,DriverFunction.IMPORT_DRIVER_TYPE type );
 }
