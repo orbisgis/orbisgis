@@ -35,6 +35,7 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.varia.LevelRangeFilter;
+import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
@@ -56,6 +57,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -249,6 +251,15 @@ public class MainContext {
      * Free resources
      */
     public void dispose() {
+        // Stop database
+        try(Connection connection = dataSource.getConnection();
+            Statement st = connection.createStatement()) {
+            if(JDBCUtilities.isH2DataBase(connection.getMetaData())) {
+                st.execute("SHUTDOWN DEFRAG");
+            }
+        } catch (SQLException ex) {
+            // Ignore
+        }
         // Stop plugin framework
         if(pluginHost!=null) {
             try {

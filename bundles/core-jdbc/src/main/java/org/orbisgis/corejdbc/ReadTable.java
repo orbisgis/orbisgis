@@ -386,7 +386,7 @@ public class ReadTable {
                     // Join with temp table and compute the envelope on the server side
                     try (SpatialResultSet rs = st.executeQuery("SELECT ST_EXTENT(" + TableLocation.quoteIdentifier(geomField) +
                             ") ext FROM " + tableName + " t1, " + selectionTable + " t2 where " + pkEquality).unwrap(SpatialResultSet.class)) {
-                        if (rs.next()) {
+                        if (rs.next() && rs.getGeometry() != null) {
                             selectionEnvelope = rs.getGeometry().getEnvelopeInternal();
                         }
                     }
