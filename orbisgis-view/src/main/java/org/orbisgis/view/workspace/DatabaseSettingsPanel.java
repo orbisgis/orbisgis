@@ -127,7 +127,7 @@ public class DatabaseSettingsPanel extends JDialog {
         urlValue = new JTextField();
         mainPanel.add(labelURL);
         mainPanel.add(urlValue, "span, grow, wrap");
-        JLabel exampleURL = new JLabel(I18N.tr("Example")+ " : jdbc:h2:/tmp/testdb;DB_CLOSE_DELAY=30");
+        JLabel exampleURL = new JLabel(I18N.tr("Example")+ " : jdbc:h2:/tmp/testdb;MV_STORE=FALSE;DB_CLOSE_DELAY=30");
         exampleURL.setFont(exampleURL.getFont().deriveFont(Font.ITALIC));
         mainPanel.add(exampleURL, "span, wrap");
         JLabel userLabel = new JLabel(I18N.tr("User name"));

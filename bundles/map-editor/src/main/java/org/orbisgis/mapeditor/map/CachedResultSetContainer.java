@@ -101,7 +101,7 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
                     readRowSet.setFetchSize(FETCH_SIZE);
                     readRowSet.setCloseDelay(ROWSET_FREE_DELAY);
                     readRowSet.setFetchDirection(ResultSet.FETCH_FORWARD);
-                    readRowSet.initialize(tableRef, "", pm);
+                    readRowSet.initialize(tableRef, integerPK, pm);
                     cache.put(tableRef, readRowSet);
                 }
                 return new CachedResultSet(readRowSet, tableRef, layer.getEnvelope(),defaultResultSetProvider);

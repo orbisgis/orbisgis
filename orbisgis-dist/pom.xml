@@ -244,7 +244,6 @@
             <version>${parent.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!-- scala-library 2.9.2 is not OSGi ready, import it in old-fashion way -->
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>

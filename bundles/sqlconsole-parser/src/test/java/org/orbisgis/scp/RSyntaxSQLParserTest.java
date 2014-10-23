@@ -47,10 +47,12 @@ public class RSyntaxSQLParserTest {
         assertEquals(0, notice.getOffset());
         assertEquals(5, notice.getLength());
 
+        // Expect Table identifier after FROM
+        // Add red underline with the word FROM
         notice = (ParserNotice) noticeList.get(1);
         assertEquals(0, notice.getLine());
-        assertEquals(6, notice.getOffset());
-        assertEquals(13, notice.getLength());
+        assertEquals(15, notice.getOffset());
+        assertEquals(4, notice.getLength());
 
         notice = (ParserNotice) noticeList.get(2);
         assertEquals(1, notice.getLine());
