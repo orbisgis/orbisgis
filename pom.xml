@@ -24,8 +24,6 @@
                 <module>bundles/core-map</module>
                 <module>bundles/core-export</module>
                 <module>wms-client</module>
-                <!-- <module>gdms</module> -->
-                <!-- <module>bundles/plugin-test</module>-->
                 <module>api/orbisgis-core</module>
                 <module>orbisgis-core</module>
                 <module>orbisgis-sif</module>
