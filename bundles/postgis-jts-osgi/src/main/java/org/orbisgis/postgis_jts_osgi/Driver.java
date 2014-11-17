@@ -9,6 +9,9 @@ import java.util.logging.Level;
 
 /**
  * Driver that provide directly the JTS Object when calling {@link java.sql.ResultSet#getObject(int)}
+ * To create linked table on H2 database to PostGIS db:
+ * CREATE LINKED TABLE mytable('org.orbisgis.postgis_jts_osgi.Driver',
+ * 'jdbc:postgresql_h2://serverdomain:5432/databasename', 'user', 'password', '(select * from mytable)');
  * @author Nicolas Fortin
  */
 public class Driver extends JtsWrapper {
