@@ -101,7 +101,7 @@ public class TableTrigger implements Trigger {
         private final DataManager dataManager;
         private final Queue<TableEditEvent> editStack;
         private final AtomicBoolean stateEventProcessing;
-        private static final int TIME_MAX_THREAD_ALIVE = 60000;
+        private static final int TIME_MAX_THREAD_ALIVE = 5000;
         private static final int SLEEP_TIME = 500;
 
         private TableEditEventProcess(DataManager dataManager, Queue<TableEditEvent> editStack, AtomicBoolean stateEventProcessing) {

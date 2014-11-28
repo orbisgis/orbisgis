@@ -171,7 +171,7 @@ public class EventListenerService implements DatabaseEventListener, TriggerFacto
         private final DataManager dataManager;
         private final Queue<StateEvent> eventStack;
         private final AtomicBoolean stateEventProcessing;
-        private static final int TIME_MAX_THREAD_ALIVE = 60000;
+        private static final int TIME_MAX_THREAD_ALIVE = 5000;
         private static final int SLEEP_TIME = 500;
 
         private StateEventProcess(DataManager dataManager, Queue<StateEvent> eventStack, AtomicBoolean stateEventProcessing) {
