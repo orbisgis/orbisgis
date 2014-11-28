@@ -101,6 +101,8 @@ public class TableTrigger implements Trigger {
         private final DataManager dataManager;
         private final Queue<TableEditEvent> editStack;
         private final AtomicBoolean stateEventProcessing;
+        private static final int TIME_MAX_THREAD_ALIVE = 60000;
+        private static final int SLEEP_TIME = 500;
 
         private TableEditEventProcess(DataManager dataManager, Queue<TableEditEvent> editStack, AtomicBoolean stateEventProcessing) {
             this.dataManager = dataManager;
@@ -110,10 +112,21 @@ public class TableTrigger implements Trigger {
 
         @Override
         public void run() {
-            while(!editStack.isEmpty()) {
-                dataManager.fireTableEditHappened(editStack.remove());
+            long begin = System.currentTimeMillis();
+            try {
+                while (!editStack.isEmpty() || System.currentTimeMillis() - begin < TIME_MAX_THREAD_ALIVE) {
+                    while (!editStack.isEmpty()) {
+                        dataManager.fireTableEditHappened(editStack.remove());
+                    }
+                    try {
+                        Thread.sleep(SLEEP_TIME);
+                    } catch (InterruptedException ex) {
+                        break;
+                    }
+                }
+            } finally {
+                stateEventProcessing.set(false);
             }
-            stateEventProcessing.set(false);
         }
     }
 }
