@@ -97,6 +97,11 @@ public interface DataManager extends RowSetFactory {
     void removeTableEditListener(String table, TableEditListener listener);
 
     /**
+     * Remove all listeners
+     */
+    void clearTableEditListener();
+
+    /**
      * @param e Event to fire
      */
     void fireTableEditHappened(TableEditEvent e);
