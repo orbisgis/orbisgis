@@ -78,6 +78,7 @@ public class ImportFiles implements BackgroundJob {
 
     @Override
     public void run(ProgressMonitor pm) {
+        long deb = System.currentTimeMillis();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             ProgressMonitor filePm = pm.startTask(files.size());
             boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
@@ -98,10 +99,10 @@ public class ImportFiles implements BackgroundJob {
             while((ex = ex.getNextException()) != null) {
                 LOGGER.error(ex.getLocalizedMessage());
             }
-
         } catch (IOException ex) {
             LOGGER.error(I18N.tr("Cannot import the file"), ex);
         }
+        LOGGER.info(I18N.tr("Importation done in {0} sec", (System.currentTimeMillis() - deb) / 1000d));
         catalog.refreshSourceList();
     }
 }

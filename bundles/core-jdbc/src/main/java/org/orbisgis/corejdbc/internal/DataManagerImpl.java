@@ -233,6 +233,15 @@ public class DataManagerImpl implements DataManager {
     }
 
     @Override
+    public void clearTableEditListener() {
+        for(Map.Entry<String,List<TableEditListener>> entry : new HashMap<>(tableEditionListener).entrySet()) {
+            for(TableEditListener listener : new ArrayList<>(entry.getValue())) {
+                removeTableEditListener(entry.getKey(), listener);
+            }
+        }
+    }
+
+    @Override
     public void removeTableEditListener(String table, TableEditListener listener) {
         String parsedTable = TableLocation.parse(table).toString();
         List<TableEditListener> listeners = tableEditionListener.get(parsedTable);

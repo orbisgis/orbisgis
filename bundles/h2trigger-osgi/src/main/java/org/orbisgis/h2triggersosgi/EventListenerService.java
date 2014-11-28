@@ -171,6 +171,8 @@ public class EventListenerService implements DatabaseEventListener, TriggerFacto
         private final DataManager dataManager;
         private final Queue<StateEvent> eventStack;
         private final AtomicBoolean stateEventProcessing;
+        private static final int TIME_MAX_THREAD_ALIVE = 5000;
+        private static final int SLEEP_TIME = 500;
 
         private StateEventProcess(DataManager dataManager, Queue<StateEvent> eventStack, AtomicBoolean stateEventProcessing) {
             this.dataManager = dataManager;
@@ -181,8 +183,16 @@ public class EventListenerService implements DatabaseEventListener, TriggerFacto
         @Override
         public void run() {
             try {
-                while (!eventStack.isEmpty()) {
-                    dataManager.fireDatabaseProgression(eventStack.remove());
+                long begin = System.currentTimeMillis();
+                while(!eventStack.isEmpty() || System.currentTimeMillis() - begin < TIME_MAX_THREAD_ALIVE) {
+                    while(!eventStack.isEmpty()) {
+                        dataManager.fireDatabaseProgression(eventStack.remove());
+                    }
+                    try {
+                        Thread.sleep(SLEEP_TIME);
+                    } catch (InterruptedException ex) {
+                        break;
+                    }
                 }
             } finally {
                 stateEventProcessing.set(false);
