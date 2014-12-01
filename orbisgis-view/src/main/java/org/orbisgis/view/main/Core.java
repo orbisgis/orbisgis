@@ -77,11 +77,9 @@ import org.orbisgis.viewapi.main.frames.ext.MainFrameAction;
 import org.orbisgis.viewapi.main.frames.ext.MainWindow;
 import org.orbisgis.viewapi.main.frames.ext.ToolBarAction;
 import org.orbisgis.view.output.OutputManager;
-import org.orbisgis.view.sqlconsole.SQLConsoleFactory;
 import org.orbisgis.view.table.TableEditorFactory;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.orbisgis.view.workspace.WorkspaceSelectionDialog;
-import org.osgi.framework.BundleException;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -334,13 +332,9 @@ public class Core {
      * Load the built-ins editors factories
      */
     private void loadEditorFactories() {
-            //editors.addEditorFactory(new TocEditorFactory(pluginFramework.getHostBundleContext()));
-            //editors.addEditorFactory(new MapEditorFactory(pluginFramework.getHostBundleContext(), mainContext.getDataManager(), viewWorkspace));
-            editors.addEditorFactory(new SQLConsoleFactory(pluginFramework.getHostBundleContext()));
             TableEditorFactory tableEditorFactory = new TableEditorFactory();
             tableEditorFactory.setDataManager(mainContext.getDataManager());
             editors.addEditorFactory(tableEditorFactory);
-            //editors.addEditorFactory(new BeanShellFrameFactory());
     }
 
     /**
