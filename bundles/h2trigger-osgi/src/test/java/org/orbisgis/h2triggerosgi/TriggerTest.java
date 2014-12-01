@@ -60,7 +60,7 @@ public class TriggerTest {
             Statement st = connection.createStatement()) {
             String query = "select * from GEOMETRY_COLUMNS";
             st.execute(query);
-            SwingUtilities.invokeAndWait(new DummyRunnable());
+            Thread.sleep(1000);
             assertNotNull(local.getLastState());
             assertEquals(query, local.getLastState().getName());
         }
@@ -84,7 +84,7 @@ public class TriggerTest {
             dataManager.addTableEditListener("TEST", tableEvents);
             assertTrue(tableEvents.getEvents().isEmpty());
             st.execute("INSERT INTO TEST VALUES (1)");
-            SwingUtilities.invokeAndWait(new DummyRunnable());
+            Thread.sleep(1000);
             List<TableEditEvent> evts = tableEvents.getEvents();
             assertEquals(1, evts.size());
             assertNull(evts.get(0).getUndoableEdit());

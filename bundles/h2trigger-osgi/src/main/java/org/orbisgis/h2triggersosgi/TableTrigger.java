@@ -92,12 +92,12 @@ public class TableTrigger implements Trigger {
     private void fireEvent(TableEditEvent evt) {
         editStack.add(evt);
         if(!stateEventProcessing.getAndSet(true)) {
-            SwingUtilities.invokeLater(new TableEditEventProcess(dataManager, editStack, stateEventProcessing));
+            new TableEditEventProcess(dataManager, editStack, stateEventProcessing).execute();
         }
 
     }
 
-    private static class TableEditEventProcess implements Runnable {
+    private static class TableEditEventProcess extends SwingWorker {
         private final DataManager dataManager;
         private final Queue<TableEditEvent> editStack;
         private final AtomicBoolean stateEventProcessing;
@@ -111,7 +111,7 @@ public class TableTrigger implements Trigger {
         }
 
         @Override
-        public void run() {
+        protected Object doInBackground() throws Exception {
             long begin = System.currentTimeMillis();
             try {
                 while (!editStack.isEmpty() || System.currentTimeMillis() - begin < TIME_MAX_THREAD_ALIVE) {
@@ -127,6 +127,7 @@ public class TableTrigger implements Trigger {
             } finally {
                 stateEventProcessing.set(false);
             }
+            return null;
         }
     }
 }

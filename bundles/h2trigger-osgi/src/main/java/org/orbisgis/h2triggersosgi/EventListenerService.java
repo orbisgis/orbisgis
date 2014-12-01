@@ -146,7 +146,8 @@ public class EventListenerService implements DatabaseEventListener, TriggerFacto
             StateEvent.DB_STATES stateEnum = StateEvent.DB_STATES.values()[state];
             eventStack.add(new StateEvent(stateEnum, name, x, max));
             if (!eventProcessRunning.getAndSet(true)) {
-                SwingUtilities.invokeLater(new StateEventProcess(dataManager, eventStack, eventProcessRunning));
+                //SwingUtilities.invokeLater();
+                new StateEventProcess(dataManager, eventStack, eventProcessRunning).execute();
             }
         }
     }
@@ -167,7 +168,7 @@ public class EventListenerService implements DatabaseEventListener, TriggerFacto
         }
     }
 
-    private static class StateEventProcess implements Runnable {
+    private static class StateEventProcess extends SwingWorker {
         private final DataManager dataManager;
         private final Queue<StateEvent> eventStack;
         private final AtomicBoolean stateEventProcessing;
@@ -181,7 +182,7 @@ public class EventListenerService implements DatabaseEventListener, TriggerFacto
         }
 
         @Override
-        public void run() {
+        protected Object doInBackground() throws Exception {
             try {
                 long begin = System.currentTimeMillis();
                 while(!eventStack.isEmpty() || System.currentTimeMillis() - begin < TIME_MAX_THREAD_ALIVE) {
@@ -197,6 +198,7 @@ public class EventListenerService implements DatabaseEventListener, TriggerFacto
             } finally {
                 stateEventProcessing.set(false);
             }
+            return null;
         }
     }
 }

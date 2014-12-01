@@ -228,7 +228,7 @@ public class DataManagerImpl implements DataManager {
             }
         } catch (SQLException ex) {
             listeners.remove(listener);
-            LOGGER.error(ex.getLocalizedMessage(), ex);
+            LOGGER.debug(ex.getLocalizedMessage(), ex);
         }
     }
 
