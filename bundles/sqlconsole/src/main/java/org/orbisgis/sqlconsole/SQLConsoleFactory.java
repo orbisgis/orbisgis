@@ -31,12 +31,12 @@ package org.orbisgis.sqlconsole;
 import org.fife.rsta.ac.LanguageSupport;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.viewapi.edition.EditorDockable;
+import org.orbisgis.viewapi.edition.EditorFactory;
 import org.orbisgis.viewapi.edition.SingleEditorFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -50,7 +50,7 @@ import java.util.Set;
  * manage the declaration of the SQLMetadataManager service.
  * @author Nicolas Fortin
  */
-@Component
+@Component(service = EditorFactory.class, immediate = true)
 public class SQLConsoleFactory implements SingleEditorFactory {
 
         public static final String factoryId = "SQLConsoleFactory";
@@ -65,6 +65,17 @@ public class SQLConsoleFactory implements SingleEditorFactory {
          * Default constructor
          */
         public SQLConsoleFactory() {
+
+        }
+
+
+        @Reference
+        public void setDataSource(DataSource dataSource) {
+            this.dataSource = dataSource;
+        }
+
+        public void unsetDataSource(DataSource dataSource) {
+            this.dataSource = null;
         }
 
         @Reference

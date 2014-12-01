@@ -216,6 +216,19 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>sqlconsole</artifactId>
+            <version>${parent.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <!-- As jar already include theses jars, do not copy theses -->
+                <exclusion>
+                    <groupId>org.commonjava.googlecode.markdown4j</groupId>
+                    <artifactId>markdown4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>toc</artifactId>
             <version>${parent.version}</version>
             <scope>provided</scope>

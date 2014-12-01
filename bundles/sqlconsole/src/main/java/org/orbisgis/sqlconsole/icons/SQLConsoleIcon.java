@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.icons;
+package org.orbisgis.sqlconsole.icons;
 
 import java.awt.Image;
 import javax.swing.ImageIcon;

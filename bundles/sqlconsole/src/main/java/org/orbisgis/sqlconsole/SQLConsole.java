@@ -36,7 +36,7 @@ import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
-import org.orbisgis.view.icons.SQLConsoleIcon;
+import org.orbisgis.sqlconsole.icons.SQLConsoleIcon;
 import org.orbisgis.viewapi.docking.DockingPanelParameters;
 import org.orbisgis.viewapi.edition.EditableElement;
 import org.orbisgis.viewapi.edition.EditorDockable;

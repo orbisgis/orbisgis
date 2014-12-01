@@ -56,7 +56,7 @@ import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.findReplace.FindReplaceDialog;
-import org.orbisgis.view.icons.SQLConsoleIcon;
+import org.orbisgis.sqlconsole.icons.SQLConsoleIcon;
 import org.orbisgis.sqlconsole.actions.ExecuteScriptProcess;
 import org.orbisgis.sqlconsole.blockComment.QuoteSQL;
 import org.orbisgis.sqlconsole.codereformat.CodeReformator;

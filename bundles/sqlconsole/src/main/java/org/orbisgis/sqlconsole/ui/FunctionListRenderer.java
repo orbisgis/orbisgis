@@ -29,7 +29,7 @@
 package org.orbisgis.sqlconsole.ui;
 
 import org.orbisgis.view.components.renderers.ListLaFRenderer;
-import org.orbisgis.view.icons.SQLConsoleIcon;
+import org.orbisgis.sqlconsole.icons.SQLConsoleIcon;
 
 import javax.swing.*;
 import java.awt.*;

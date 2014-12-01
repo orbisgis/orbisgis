@@ -1,4 +1,4 @@
-package org.orbisgis.view.sqlconsole.ui;
+package org.orbisgis.sqlconsole.ui;
 
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialext.CreateSpatialExtension;

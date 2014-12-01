@@ -1,4 +1,4 @@
-package org.orbisgis.view.sqlconsole.ui;
+package org.orbisgis.sqlconsole.ui;
 
 import org.junit.Test;
 
