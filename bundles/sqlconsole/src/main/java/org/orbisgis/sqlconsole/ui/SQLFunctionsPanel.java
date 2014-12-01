@@ -26,11 +26,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.sqlconsole.ui;
+package org.orbisgis.sqlconsole.ui;
 
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
-import org.orbisgis.view.sqlconsole.ui.functionFilters.NameFilterFactory;
+import org.orbisgis.sqlconsole.ui.functionFilters.NameFilterFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

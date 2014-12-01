@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.sqlconsole.actions;
+package org.orbisgis.sqlconsole.actions;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.ReadTable;
@@ -34,7 +34,7 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sqlparserapi.ScriptSplitter;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
+import org.orbisgis.sqlconsole.ui.SQLConsolePanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

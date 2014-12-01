@@ -26,20 +26,21 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.sqlconsole;
+package org.orbisgis.sqlconsole;
 
 import javax.sql.DataSource;
 import javax.swing.*;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
+import org.orbisgis.view.icons.SQLConsoleIcon;
 import org.orbisgis.viewapi.docking.DockingPanelParameters;
 import org.orbisgis.viewapi.edition.EditableElement;
 import org.orbisgis.viewapi.edition.EditorDockable;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
+import org.orbisgis.sqlconsole.ui.SQLConsolePanel;
 import org.orbisgis.viewapi.sqlconsole.ui.ext.SQLConsoleEditor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -56,7 +57,7 @@ public class SQLConsole implements EditorDockable,SQLConsoleEditor {
         public SQLConsole(DataSource dataSource) {
                 sqlPanel = new SQLConsolePanel(dataSource);
                 dockingPanelParameters.setTitle(I18N.tr("SQL Console"));
-                dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("sql_code"));
+                dockingPanelParameters.setTitleIcon(SQLConsoleIcon.getIcon("sql_code"));
                 dockingPanelParameters.setDockActions(sqlPanel.getActions().getActions());
                 // Tools that will be created later will also be set in the docking panel
                 // thanks to this listener
@@ -111,6 +112,10 @@ public class SQLConsole implements EditorDockable,SQLConsoleEditor {
 
         @Override
         public JTextArea getTextArea() {
+            return sqlPanel.getScriptPanel();
+        }
+
+        public RSyntaxTextArea getScriptPanel() {
             return sqlPanel.getScriptPanel();
         }
 }

@@ -36,6 +36,7 @@
                 <module>bundles/map-editor-api</module>
                 <module>orbisgis-view</module>
                 <module>bundles/map-editor</module>
+                <module>bundles/sqlconsole</module>
                 <module>legend</module>
                 <module>bundles/toc</module>
         </modules>

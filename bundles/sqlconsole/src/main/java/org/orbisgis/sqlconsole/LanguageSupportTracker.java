@@ -1,4 +1,4 @@
-package org.orbisgis.view.sqlconsole;
+package org.orbisgis.sqlconsole;
 
 import org.fife.rsta.ac.LanguageSupport;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;

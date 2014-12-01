@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.sqlconsole.codereformat;
+package org.orbisgis.sqlconsole.codereformat;
 
 import java.util.ArrayList;
 import java.util.List;

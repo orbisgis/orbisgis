@@ -26,10 +26,10 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.sqlconsole.blockComment;
+package org.orbisgis.sqlconsole.blockComment;
 
-import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
-import org.orbisgis.view.sqlconsole.util.QuoteUtilities;
+import org.orbisgis.sqlconsole.ui.SQLConsolePanel;
+import org.orbisgis.sqlconsole.util.QuoteUtilities;
 
 public class QuoteSQL {
 

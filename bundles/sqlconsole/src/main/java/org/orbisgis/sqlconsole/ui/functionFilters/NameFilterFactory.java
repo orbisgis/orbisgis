@@ -26,15 +26,15 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.sqlconsole.ui.functionFilters;
+package org.orbisgis.sqlconsole.ui.functionFilters;
 
 import java.awt.Component;
 import javax.swing.JTextField;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.components.filter.TextFieldDocumentListener;
-import org.orbisgis.view.sqlconsole.ui.FunctionElement;
-import org.orbisgis.view.sqlconsole.ui.FunctionFilter;
+import org.orbisgis.sqlconsole.ui.FunctionElement;
+import org.orbisgis.sqlconsole.ui.FunctionFilter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

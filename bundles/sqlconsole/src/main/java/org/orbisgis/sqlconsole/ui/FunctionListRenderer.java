@@ -26,10 +26,10 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.sqlconsole.ui;
+package org.orbisgis.sqlconsole.ui;
 
 import org.orbisgis.view.components.renderers.ListLaFRenderer;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.icons.SQLConsoleIcon;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,7 +52,7 @@ public class FunctionListRenderer extends ListLaFRenderer<FunctionElement> {
         
         private static Icon getFunctionIcon(FunctionElement value) {
                 int type = value.getFunctionType();
-                return OrbisGISIcon.getIcon("builtinfunctionmap");
+                return SQLConsoleIcon.getIcon("builtinfunctionmap");
         }
         @Override
         public Component getListCellRendererComponent(JList<? extends FunctionElement> jlist, FunctionElement sqlFunction, int index, boolean isSelected, boolean cellHasFocus) {

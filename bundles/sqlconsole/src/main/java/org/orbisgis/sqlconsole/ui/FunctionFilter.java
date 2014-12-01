@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.sqlconsole.ui;
+package org.orbisgis.sqlconsole.ui;
 
 /**
  * Data model for sql functions list filters

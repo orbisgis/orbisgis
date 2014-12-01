@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.sqlconsole.util;
+package org.orbisgis.sqlconsole.util;
 
 /*
  * Copyright (C) 2003 Gerd Wagner

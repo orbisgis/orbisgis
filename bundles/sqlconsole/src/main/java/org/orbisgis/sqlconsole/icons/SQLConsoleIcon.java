@@ -26,13 +26,39 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.sqlconsole.ui;
+package org.orbisgis.view.icons;
 
-import javax.swing.*;
+import java.awt.Image;
+import javax.swing.ImageIcon;
+import org.orbisgis.sif.icons.BaseIcon;
+
 
 /**
- * Function list component
- * @author Nicolas Fortin
+ * Use this class to retrieve the data of an icon
  */
-public class FunctionList extends JList<FunctionElement> {
+public final class SQLConsoleIcon {
+    private static BaseIcon iconManager = new BaseIcon();
+    
+    /**
+     * This is a static class
+     */
+    private SQLConsoleIcon() {
+    }
+
+    /**
+     * Retrieve icon awt Image by its name
+     * @param iconName The icon name, without extension. All icons are stored in the png format.
+     * @return The Image content requested, or an Image corresponding to a Missing Resource
+     */
+    public static Image getIconImage(String iconName) { 
+        return iconManager.getIconImage(SQLConsoleIcon.class, iconName);
+    }
+    /**
+     * Retrieve icon by its name
+     * @param iconName The icon name, without extension. All icons are stored in the png format.
+     * @return The ImageIcon requested, or an ImageIcon corresponding to a Missing Resource
+     */
+    public static ImageIcon getIcon(String iconName) {
+        return iconManager.getIcon(SQLConsoleIcon.class, iconName);
+    }
 }

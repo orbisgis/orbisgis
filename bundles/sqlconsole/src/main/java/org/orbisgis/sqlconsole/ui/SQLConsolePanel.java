@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.sqlconsole.ui;
+package org.orbisgis.sqlconsole.ui;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -56,11 +56,11 @@ import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.findReplace.FindReplaceDialog;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.sqlconsole.actions.ExecuteScriptProcess;
-import org.orbisgis.view.sqlconsole.blockComment.QuoteSQL;
-import org.orbisgis.view.sqlconsole.codereformat.CodeReformator;
-import org.orbisgis.view.sqlconsole.codereformat.CommentSpec;
+import org.orbisgis.view.icons.SQLConsoleIcon;
+import org.orbisgis.sqlconsole.actions.ExecuteScriptProcess;
+import org.orbisgis.sqlconsole.blockComment.QuoteSQL;
+import org.orbisgis.sqlconsole.codereformat.CodeReformator;
+import org.orbisgis.sqlconsole.codereformat.CommentSpec;
 import org.orbisgis.view.util.CommentUtil;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.viewapi.sqlconsole.ui.ext.SQLAction;
@@ -142,7 +142,7 @@ public class SQLConsolePanel extends JPanel {
                 executeAction = new DefaultAction(SQLAction.A_EXECUTE,
                         I18N.tr("Execute"),
                         I18N.tr("Run SQL statements"),
-                        OrbisGISIcon.getIcon("execute"),
+                        SQLConsoleIcon.getIcon("execute"),
                         EventHandler.create(ActionListener.class,this,"onExecute"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK)
                         ).setLogicalGroup("custom");
@@ -151,7 +151,7 @@ public class SQLConsolePanel extends JPanel {
                 clearAction = new DefaultAction(SQLAction.A_CLEAR,
                         I18N.tr("Clear"),
                         I18N.tr("Erase the content of the editor"),
-                        OrbisGISIcon.getIcon("erase"),
+                        SQLConsoleIcon.getIcon("erase"),
                         EventHandler.create(ActionListener.class,this,"onClear"),
                         null
                        ).setLogicalGroup("custom").setAfter(SQLAction.A_EXECUTE);
@@ -160,7 +160,7 @@ public class SQLConsolePanel extends JPanel {
                 findAction=new DefaultAction(SQLAction.A_SEARCH,
                         I18N.tr("Search.."),
                         I18N.tr("Search text in the document"),
-                        OrbisGISIcon.getIcon("find"),
+                        SQLConsoleIcon.getIcon("find"),
                         EventHandler.create(ActionListener.class,this,"openFindReplaceDialog"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK)
                        ).addStroke(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK))
@@ -220,7 +220,7 @@ public class SQLConsolePanel extends JPanel {
                 saveAction = new DefaultAction(SQLAction.A_SAVE,
                         I18N.tr("Save"),
                         I18N.tr("Save the editor content into a file"),
-                        OrbisGISIcon.getIcon("save"),
+                        SQLConsoleIcon.getIcon("save"),
                         EventHandler.create(ActionListener.class,this,"onSaveFile"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)
                        ).setLogicalGroup("custom");
@@ -229,7 +229,7 @@ public class SQLConsolePanel extends JPanel {
                 actions.addAction(new DefaultAction(SQLAction.A_OPEN,
                         I18N.tr("Open"),
                         I18N.tr("Load a file in this editor"),
-                        OrbisGISIcon.getIcon("open"),
+                        SQLConsoleIcon.getIcon("open"),
                         EventHandler.create(ActionListener.class,this,"onOpenFile"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)
                 ).setLogicalGroup("custom"));
@@ -237,14 +237,14 @@ public class SQLConsolePanel extends JPanel {
                 actions.addAction(new DefaultAction(SQLAction.A_SQL_LIST,
                         I18N.tr("SQL list"),
                         I18N.tr("Show/Hide SQL function list"),
-                        OrbisGISIcon.getIcon("builtinfunctionmap"),
+                        SQLConsoleIcon.getIcon("builtinfunctionmap"),
                         EventHandler.create(ActionListener.class,sqlFunctionsPanel,"switchPanelVisibilityState"),
                         null).setLogicalGroup("custom"));
                 //Time out action
                 actions.addAction(new DefaultAction(SQLAction.A_SQL_TIMEOUT,
                         I18N.tr("Timeout"),
                         I18N.tr("Custom a time out to execute the SQL statement"),
-                        OrbisGISIcon.getIcon("timeout_sql"),
+                        SQLConsoleIcon.getIcon("timeout_sql"),
                         EventHandler.create(ActionListener.class,this,"onSQLTimeOut"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK)
                 ).setLogicalGroup("custom"));
