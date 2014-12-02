@@ -26,32 +26,31 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.events;
+package org.orbisgis.sif.events;
 
 /**
- * Throw when a listener try to stop the propagation of an event.
+ * Exception raised by the OnEvent method of listeners
+ * This exception let other listener to manage the event if continueProcessing is True
  */
-public class EventException extends Exception {
-
+public class ListenerException extends Exception {
+    private boolean continueProcessing;
     /**
-     * Creates a new instance of <code>EventException</code> without detail message.
+     * Creates a new instance of <code>ListenerException</code> without detail message.
      */
-    public EventException() {
+    public ListenerException(boolean continueProcessing) {
+        this.continueProcessing = continueProcessing;
     }
 
     /**
-     * Constructs an instance of <code>EventException</code> with the specified detail message.
+     * Constructs an instance of <code>ListenerException</code> with the specified detail message.
      * @param msg the detail message.
      */
-    public EventException(String msg) {
+    public ListenerException(boolean continueProcessing,String msg) {
         super(msg);
+        this.continueProcessing = continueProcessing;
     }
-    /**
-     * Constructs an instance of <code>EventException</code> with throw information.
-     * @param thr The throw informations
-     * @note Use this constructor when catch another Exception
-     */
-    public EventException(Throwable thr) {
-        super(thr);
+    
+    boolean letContinueProcessing() {
+        return continueProcessing;
     }
 }

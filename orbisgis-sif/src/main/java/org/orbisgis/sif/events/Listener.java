@@ -26,18 +26,26 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.events.internals;
+package org.orbisgis.sif.events;
 
-import java.util.ArrayList;
-import org.orbisgis.core.events.ListenerContainer;
+import java.util.EventListener;
+import java.util.EventObject;
 /**
- * @package org.orbisgis.base.events.internals
- * Internal class of event/listener system
+ * @param <EventObjectType>  EventObject created by event source
+ * @brief Interface of all listeners
+ * All class that implements this interface can be listened for events through EventDispatcher
  */
-
-/**
- * Declaration of an ArrayList<ListenerContainer>
- */
-public class ListenerContainers extends ArrayList<ListenerContainer> {
-    private static final long serialVersionUID = 1L;
+public interface Listener<EventObjectType extends EventObject> extends EventListener {
+    /**
+     * The event has been fired
+     * Use java.beans.EventHandler.create to make a listener that will directly
+     * link from the source to the target method.
+     * You can also overload this method to call your related class method,
+     * try to not write too much code in your functor.
+     * @param evtData The event information, like the instance that fired the event.
+     * @throws ListenerException
+     */
+    void onEvent(EventObjectType evtData) throws ListenerException;
+    
+    
 }

@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.renderers;
+package org.orbisgis.sif.components.renderers;
 
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;

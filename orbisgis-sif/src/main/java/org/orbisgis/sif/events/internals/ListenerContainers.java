@@ -26,37 +26,18 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.events;
+package org.orbisgis.sif.events.internals;
 
-import org.orbisgis.core.events.internals.ListenerContainers;
+import java.util.ArrayList;
+import org.orbisgis.sif.events.ListenerContainer;
 /**
- * Release all listeners attached to a specific target in one call.
+ * @package org.orbisgis.base.events.internals
+ * Internal class of event/listener system
  */
-public class ListenerRelease {
 
-    private ListenerContainers containers = new ListenerContainers();
-
-    /**
-     * Add a container to manage with this class
-     * @param container The container instance
-     */
-    public void addContainer(ListenerContainer container) {
-        containers.add(container);
-    }
-    /**
-     * When a target is no longer used, the listeners created by it must be removed.
-     */
-    public void releaseListeners(Object target) {
-        for(ListenerContainer container : containers) {
-                container.removeListeners(target);
-        }
-    }
-    /**
-     * Remove all listeners of all containers.
-     */
-    public void clearListeners() {
-        for(ListenerContainer container : containers) {
-                container.clearListeners();
-        }        
-    }
+/**
+ * Declaration of an ArrayList<ListenerContainer>
+ */
+public class ListenerContainers extends ArrayList<ListenerContainer> {
+    private static final long serialVersionUID = 1L;
 }

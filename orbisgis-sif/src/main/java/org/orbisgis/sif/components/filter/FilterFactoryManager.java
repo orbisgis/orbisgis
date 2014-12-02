@@ -46,12 +46,12 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.events.EventException;
-import org.orbisgis.core.events.Listener;
-import org.orbisgis.core.events.ListenerContainer;
+import org.orbisgis.sif.events.EventException;
+import org.orbisgis.sif.events.Listener;
+import org.orbisgis.sif.events.ListenerContainer;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.CustomButton;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.sif.icons.SifIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -202,7 +202,7 @@ public class FilterFactoryManager<FilterInterface,FilterSerialisation extends Ac
     }
 
     /**
-     * @see FilterFactoryManager.setUserCanRemoveFilter
+     * @see FilterFactoryManager#setUserCanRemoveFilter(boolean)
      * @return False if the next remove buttons will not be created
      */
     public boolean isUserCanRemoveFilter() {
@@ -418,7 +418,7 @@ public class FilterFactoryManager<FilterInterface,FilterSerialisation extends Ac
      */
     private JButton makeRemoveFilterButton() {
         //Create a compact button
-        JButton removeFilterButton = new CustomButton(OrbisGISIcon.getIcon("delete"));
+        JButton removeFilterButton = new CustomButton(SifIcon.getIcon("delete"));
         removeFilterButton.setToolTipText(I18N.tr("Delete this filter"));
         return removeFilterButton;
     }
@@ -431,7 +431,7 @@ public class FilterFactoryManager<FilterInterface,FilterSerialisation extends Ac
         //This JPanel set the button at the top
         JPanel buttonAlignement = new JPanel(new BorderLayout());
         //Create a compact button
-        JButton addFilterButton = new CustomButton(OrbisGISIcon.getIcon("add_filter"));
+        JButton addFilterButton = new CustomButton(SifIcon.getIcon("add_filter"));
         buttonAlignement.add(addFilterButton,BorderLayout.NORTH);
         //Toottip
         addFilterButton.setToolTipText(I18N.tr("Add a new filter"));

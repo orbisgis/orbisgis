@@ -12,6 +12,7 @@
         <packaging>bundle</packaging>
         <name>orbisgis-sif</name>
         <url>http://maven.apache.org</url>
+        <description>In order to provide the same user experience over OrbisGIS gui modules this project aim to expose a common Swing usage.</description>
         <build>
       
                 <pluginManagement>

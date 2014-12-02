@@ -25,7 +25,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact
  * directly: info_at_ orbisgis.org
  */
-package org.orbisgis.core.events;
+package org.orbisgis.sif.events;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;

@@ -26,31 +26,37 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.events;
+package org.orbisgis.sif.events;
 
+import org.orbisgis.sif.events.internals.ListenerContainers;
 /**
- * Exception raised by the OnEvent method of listeners
- * This exception let other listener to manage the event if continueProcessing is True
+ * Release all listeners attached to a specific target in one call.
  */
-public class ListenerException extends Exception {
-    private boolean continueProcessing;
-    /**
-     * Creates a new instance of <code>ListenerException</code> without detail message.
-     */
-    public ListenerException(boolean continueProcessing) {
-        this.continueProcessing = continueProcessing;
-    }
+public class ListenerRelease {
+
+    private ListenerContainers containers = new ListenerContainers();
 
     /**
-     * Constructs an instance of <code>ListenerException</code> with the specified detail message.
-     * @param msg the detail message.
+     * Add a container to manage with this class
+     * @param container The container instance
      */
-    public ListenerException(boolean continueProcessing,String msg) {
-        super(msg);
-        this.continueProcessing = continueProcessing;
+    public void addContainer(ListenerContainer container) {
+        containers.add(container);
     }
-    
-    boolean letContinueProcessing() {
-        return continueProcessing;
+    /**
+     * When a target is no longer used, the listeners created by it must be removed.
+     */
+    public void releaseListeners(Object target) {
+        for(ListenerContainer container : containers) {
+                container.removeListeners(target);
+        }
+    }
+    /**
+     * Remove all listeners of all containers.
+     */
+    public void clearListeners() {
+        for(ListenerContainer container : containers) {
+                container.clearListeners();
+        }        
     }
 }

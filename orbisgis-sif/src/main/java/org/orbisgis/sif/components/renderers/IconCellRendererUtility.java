@@ -1,4 +1,4 @@
-package org.orbisgis.view.components.renderers;
+package org.orbisgis.sif.components.renderers;
 
 import javax.swing.*;
 import java.awt.*;
