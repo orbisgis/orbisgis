@@ -44,11 +44,13 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.swing.*;
+
 /**
  * Zoom to provided layer selection
  * @author Nicolas Fortin
  */
-public class ZoomToSelection implements BackgroundJob {
+public class ZoomToSelection extends SwingWorker {
         private static final I18n I18N = I18nFactory.getI18n(ZoomToSelection.class);
         private static final Logger LOGGER = Logger.getLogger(ZoomToSelection.class);
         private MapContext mapContext;
@@ -60,20 +62,20 @@ public class ZoomToSelection implements BackgroundJob {
         }
 
         @Override
-        public void run(ProgressMonitor pm) {
+        protected Object doInBackground() throws Exception {
             try {
                 Envelope selectionEnvelope = new Envelope();
                 for(ILayer layer : layers) {
                     if(layer.isVisible()) {
                         Set<Long> data = layer.getSelection();
                         if(!data.isEmpty()){
-                        Envelope layerEnv = getLayerSelectionEnvelope(pm, data, layer.getTableReference());
-                        if(layerEnv!=null) {
-                            selectionEnvelope.expandToInclude(layerEnv);
-                        }
-                        if(pm.isCancelled()) {
-                            return;
-                        }
+                            Envelope layerEnv = getLayerSelectionEnvelope(data, layer.getTableReference());
+                            if(layerEnv!=null) {
+                                selectionEnvelope.expandToInclude(layerEnv);
+                            }
+                            if(isCancelled()) {
+                                break;
+                            }
                         }
                     }
                 }
@@ -83,17 +85,17 @@ public class ZoomToSelection implements BackgroundJob {
             } catch (SQLException ex ){
                 LOGGER.error(ex.getLocalizedMessage(), ex);
             }
+            return null;
         }
         
         /**
          * Compute the envelope based on the selection
-         * @param pm
          * @param data
          * @param tableReference
          * @return
          * @throws SQLException 
          */
-        private Envelope getLayerSelectionEnvelope(ProgressMonitor pm, Set<Long> data,String tableReference) throws SQLException {
+        private Envelope getLayerSelectionEnvelope(Set<Long> data,String tableReference) throws SQLException {
             SortedSet<Long> sortedSet;
             if(data instanceof SortedSet) {
                 sortedSet = (SortedSet<Long>)data;
