@@ -32,8 +32,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.core.beanshell.BeanShellScriptTest;
-import org.orbisgis.core.beanshell.BeanshellScript;
 import org.orbisgis.core.context.main.MainContext;
 
 import javax.sql.DataSource;
@@ -51,14 +49,11 @@ public abstract class AbstractTest {
 
     @BeforeClass
     public static void init() throws Exception {
-        BeanshellScript.init(BeanShellScriptTest.mainParams("../src/test/resources/beanshell/helloWorld.bsh"));
-        mainContext = BeanshellScript.getMainContext();
         dataSource =  mainContext.getDataSource();
     }
 
     @AfterClass
-    public static void dispose() throws Exception {
-        BeanshellScript.dispose();
+    public static void dispose() throws Exception {        
         // Remove database file
         try {
             File dbFile = new File("workspace/database.h2.db");
