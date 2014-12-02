@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.background;
+package org.orbisgis.coremap.process;
 
 import com.vividsolutions.jts.geom.Envelope;
 
