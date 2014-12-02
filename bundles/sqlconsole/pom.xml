@@ -104,7 +104,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>orbisgis-view</artifactId>
+            <artifactId>orbisgis-sif</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

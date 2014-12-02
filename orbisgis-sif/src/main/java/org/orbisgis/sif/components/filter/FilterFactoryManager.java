@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.filter;
+package org.orbisgis.sif.components.filter;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
