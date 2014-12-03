@@ -37,7 +37,7 @@ import java.beans.PropertyChangeListener;
  *
  * Your method receive a ProgressMonitor instance named A. You know the number of task in your method
  * then you call {@link ProgressMonitor#startTask(String, long)} and you receive a new instance of ProgressMonitor named B.
- * With B you can advance in task by calling {@link org.orbisgis.progress.ProgressMonitor#endTask()} or
+ * With B you can advance in task by calling {@link org.orbisgis.commons.progress.ProgressMonitor#endTask()} or
  * by passing B to the sub method parameter.
  * 
  * @author Fernando GONZALEZ CORTES
