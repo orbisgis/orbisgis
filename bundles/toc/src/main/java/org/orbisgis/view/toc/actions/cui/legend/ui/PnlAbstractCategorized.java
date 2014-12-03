@@ -37,7 +37,7 @@ import org.orbisgis.coremap.renderer.se.parameter.Categorize;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.categorize.AbstractCategorizedLegend;
 import org.orbisgis.legend.thematic.map.MappedLegend;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;

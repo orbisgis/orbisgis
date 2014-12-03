@@ -70,7 +70,7 @@ import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.coremap.renderer.se.common.Description;
 import org.orbisgis.coremap.renderer.se.common.LocalizedText;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.URIUtility;

@@ -39,7 +39,7 @@ import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableEditListener;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.viewapi.edition.EditableElementException;
 import org.orbisgis.viewapi.edition.EditableSource;
 import org.xnap.commons.i18n.I18n;

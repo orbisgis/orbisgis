@@ -38,7 +38,7 @@ import javax.swing.JPopupMenu;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.mapeditorapi.MapElement;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeLeaf;

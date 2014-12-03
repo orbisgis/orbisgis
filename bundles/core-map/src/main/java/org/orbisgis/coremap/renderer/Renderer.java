@@ -50,7 +50,7 @@ import org.orbisgis.coremap.renderer.se.Symbolizer;
 import org.orbisgis.coremap.renderer.se.VectorSymbolizer;
 import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 import org.orbisgis.coremap.stream.GeoStream;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.SpatialResultSetMetaData;

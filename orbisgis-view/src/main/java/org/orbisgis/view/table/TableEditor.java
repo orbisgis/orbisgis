@@ -71,7 +71,7 @@ import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditorapi.MapElement;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;

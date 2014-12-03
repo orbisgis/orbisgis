@@ -33,7 +33,7 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.NullProgressMonitor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

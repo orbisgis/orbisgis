@@ -102,7 +102,7 @@ import org.orbisgis.mapeditor.map.tools.PanTool;
 import org.orbisgis.mapeditor.map.tools.ToolUtilities;
 import org.orbisgis.mapeditor.map.tools.ZoomInTool;
 import org.orbisgis.mapeditor.map.tools.ZoomOutTool;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

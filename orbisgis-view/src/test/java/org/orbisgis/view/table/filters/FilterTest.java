@@ -5,7 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.table.TableEditableElementImpl;
 import org.orbisgis.viewapi.table.TableEditableElement;

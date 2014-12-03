@@ -40,7 +40,7 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.common.IntegerUnion;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;

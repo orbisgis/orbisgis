@@ -11,7 +11,7 @@ import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.corejdbc.StateEvent;
-import org.orbisgis.utils.FileUtils;
+import org.orbisgis.commons.utils.FileUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 

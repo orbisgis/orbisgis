@@ -33,7 +33,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.corejdbc.internal.ReadRowSetImpl;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.NullProgressMonitor;
 
 import javax.sql.DataSource;
 import javax.sql.RowSetEvent;
