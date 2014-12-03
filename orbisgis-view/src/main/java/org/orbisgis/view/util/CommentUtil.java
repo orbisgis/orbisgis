@@ -30,7 +30,7 @@ package org.orbisgis.view.util;
 
 import org.apache.log4j.Logger;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.orbisgis.utils.TextUtils;
+import org.orbisgis.commons.utils.TextUtils;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

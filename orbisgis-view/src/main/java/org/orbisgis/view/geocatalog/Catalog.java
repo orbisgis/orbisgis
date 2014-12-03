@@ -62,7 +62,7 @@ import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.SaveFilePanel;
-import org.orbisgis.utils.CollectionUtils;
+import org.orbisgis.commons.utils.CollectionUtils;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;

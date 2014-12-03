@@ -50,7 +50,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.orbisgis.utils.TextUtils;
+import org.orbisgis.commons.utils.TextUtils;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

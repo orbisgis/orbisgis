@@ -35,7 +35,7 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DriverFunctionContainer;
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.utils.FileUtils;
+import org.orbisgis.commons.utils.FileUtils;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.H2GISProgressMonitor;
 import org.orbisgis.viewapi.geocatalog.ext.GeoCatalogExt;

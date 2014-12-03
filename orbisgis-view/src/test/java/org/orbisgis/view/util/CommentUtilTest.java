@@ -2,7 +2,7 @@ package org.orbisgis.view.util;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.junit.Test;
-import org.orbisgis.utils.TextUtils;
+import org.orbisgis.commons.utils.TextUtils;
 
 import javax.swing.text.BadLocationException;
 import java.awt.*;

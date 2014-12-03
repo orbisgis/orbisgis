@@ -74,7 +74,7 @@ import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.URIUtility;
-import org.orbisgis.utils.FileUtils;
+import org.orbisgis.commons.utils.FileUtils;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

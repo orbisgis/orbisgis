@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.LayerException;
 import org.orbisgis.coremap.renderer.se.Style;
-import org.orbisgis.utils.CollectionUtils;
+import org.orbisgis.commons.utils.CollectionUtils;
 import org.orbisgis.view.components.resourceTree.EnumIterator;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
