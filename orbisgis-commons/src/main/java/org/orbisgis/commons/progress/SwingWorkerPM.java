@@ -36,28 +36,28 @@ import java.beans.PropertyChangeListener;
  * Extend this class and use it as SwingWorker is documented in the Java API.This class compute the progression of
  * the swing worker and give the ability to set a task name.
  */
-public abstract class ProgressMonitorSW<T, V> extends SwingWorker<T, V> implements ProgressMonitor {
+public abstract class SwingWorkerPM<T, V> extends SwingWorker<T, V> implements ProgressMonitor {
     private final DefaultProgressMonitor defaultProgressMonitor;
 
     /**
      * Default constructor no default task name
      * @param taskName
      */
-    protected ProgressMonitorSW(String taskName, long subprocessCount) {
+    protected SwingWorkerPM(String taskName, long subprocessCount) {
         this.defaultProgressMonitor = new RootProgressMonitor(taskName, subprocessCount);
     }
 
     /**
      * Default constructor no default task name.
      */
-    protected ProgressMonitorSW() {
+    protected SwingWorkerPM() {
         this.defaultProgressMonitor = new RootProgressMonitor(1);
     }
 
     /**
      * Default constructor no default task name.
      */
-    protected ProgressMonitorSW(long subprocessCount) {
+    protected SwingWorkerPM(long subprocessCount) {
         this.defaultProgressMonitor = new RootProgressMonitor(subprocessCount);
     }
 

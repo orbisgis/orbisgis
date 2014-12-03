@@ -46,21 +46,17 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.TransferHandler.TransferSupport;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.core.Services;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.viewapi.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
@@ -369,9 +365,9 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
         
         /**
          * Create a file from a Reader instance in this folder
-         * @param ts
-         * @param flavor
-         * @return 
+         * @param tf Transferable instance
+         * @param flavor DataFlavor
+         * @return If the file has been created
          */
         private boolean importReader(Transferable tf, DataFlavor flavor) {
                 try {
@@ -414,16 +410,15 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
         }
         @Override
         public boolean importData(TransferSupport ts) {
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
                 if(ts.isDataFlavorSupported(TransferableNodePaths.PATHS_FLAVOR)) {
                         // Move Nodes and Move Files
-                        bm.nonBlockingBackgroundOperation(new DropTransferable(ts.getTransferable(), this));
+                        new DropTransferable(ts.getTransferable(), this).execute();
                         return true;                
                 } else {
                         DataFlavor[] flavors = ts.getDataFlavors();
                         for(DataFlavor flavor : flavors) {
                                 if(flavor.isRepresentationClassReader()) {
-                                        bm.nonBlockingBackgroundOperation(new DropTransferable(ts.getTransferable(), this));
+                                        new DropTransferable(ts.getTransferable(), this).execute();
                                         return true;
                                 }
                         }
@@ -475,73 +470,59 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
         /**
          * Process drop operation on this node
          */
-        private static class DropTransferable implements BackgroundJob {
+        private static class DropTransferable extends SwingWorkerPM {
                 Transferable transferable;
                 TreeNodeFolder folderNode;
 
                 public DropTransferable(Transferable transferable, TreeNodeFolder folderNode) {
                         this.transferable = transferable;
                         this.folderNode = folderNode;
+                        setTaskName(I18N.tr("Drop the content in the folder.."));
                 }
-                
-                @Override
-                public void run(ProgressMonitor pm) {
 
-                        if (transferable.isDataFlavorSupported(TransferableNodePaths.PATHS_FLAVOR)) {
-                                // Move Nodes and Move Files
-                                List<TreeNodePath> nodePath = new ArrayList<TreeNodePath>();
-                                try {
-                                        Object objTrans = transferable.
-                                                getTransferData(TransferableNodePaths.PATHS_FLAVOR);
-                                        if (objTrans instanceof List) {
-                                                nodePath = (List<TreeNodePath>) objTrans;
-                                        }
-                                } catch (UnsupportedFlavorException ex) {
-                                        LOGGER.error(ex.getLocalizedMessage(), ex);
-                                        return;
-                                } catch (IOException ex) {
-                                        LOGGER.error(ex.getLocalizedMessage(), ex);
-                                        return;
-                                }
-                                folderNode.transferTreeNodePath(nodePath);   
-                        } else {
-                                DataFlavor[] flavors = transferable.getTransferDataFlavors();
-                                for (DataFlavor flavor : flavors) {
-                                        if (flavor.isRepresentationClassReader()) {
-                                                folderNode.importReader(transferable, flavor);
-                                                break;
-                                        }
-                                }
+            @Override
+            protected Object doInBackground() throws Exception {
+                Thread.currentThread().setName(this.getClass().getSimpleName());
+                if (transferable.isDataFlavorSupported(TransferableNodePaths.PATHS_FLAVOR)) {
+                    // Move Nodes and Move Files
+                    List<TreeNodePath> nodePath = new ArrayList<TreeNodePath>();
+                    try {
+                        Object objTrans = transferable.
+                                getTransferData(TransferableNodePaths.PATHS_FLAVOR);
+                        if (objTrans instanceof List) {
+                            nodePath = (List<TreeNodePath>) objTrans;
                         }
-                        SwingUtilities.invokeLater(new UpdateTree(folderNode));
-                }
-
-                @Override
-                public String getTaskName() {
-                        return I18N.tr("Drop the content in the folder..");
-                }
-                
-        }
-        /**
-         * Update the whole folder tree
-         */
-        private static class UpdateTree implements Runnable {
-                TreeNodeFolder folderNode;
-
-                public UpdateTree(TreeNodeFolder folderNode) {
-                        this.folderNode = folderNode;
-                }
-                
-                @Override
-                public void run() {
-                        // Retrieve the top folder
-                        TreeNodeFolder topFolder = folderNode;
-                        TreeNode cursor = folderNode;
-                        while(cursor instanceof TreeNodeFolder) {
-                                topFolder = (TreeNodeFolder) cursor;
-                                cursor = cursor.getParent();
+                    } catch (UnsupportedFlavorException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
+                        return null;
+                    } catch (IOException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
+                        return null;
+                    }
+                    folderNode.transferTreeNodePath(nodePath);
+                } else {
+                    DataFlavor[] flavors = transferable.getTransferDataFlavors();
+                    for (DataFlavor flavor : flavors) {
+                        if (flavor.isRepresentationClassReader()) {
+                            folderNode.importReader(transferable, flavor);
+                            break;
                         }
-                        topFolder.updateTree();
-                }                
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                // Retrieve the top folder
+                TreeNodeFolder topFolder = folderNode;
+                TreeNode cursor = folderNode;
+                while(cursor instanceof TreeNodeFolder) {
+                    topFolder = (TreeNodeFolder) cursor;
+                    cursor = cursor.getParent();
+                }
+                topFolder.updateTree();
+            }
+
         }
 }

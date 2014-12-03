@@ -35,23 +35,19 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.commons.progress.ProgressMonitorSW;
-import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
-import org.orbisgis.commons.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import javax.swing.*;
 
 /**
  * Zoom to provided layer selection
  * @author Nicolas Fortin
  */
-public class ZoomToSelection extends ProgressMonitorSW {
+public class ZoomToSelection extends SwingWorkerPM {
         private static final I18n I18N = I18nFactory.getI18n(ZoomToSelection.class);
         private static final Logger LOGGER = Logger.getLogger(ZoomToSelection.class);
         private MapContext mapContext;
