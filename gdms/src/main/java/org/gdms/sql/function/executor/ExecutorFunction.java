@@ -33,7 +33,7 @@
  */
 package org.gdms.sql.function.executor;
 
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;

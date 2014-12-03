@@ -47,7 +47,7 @@ import org.orbisgis.coremap.layerModel.OwsMapContext;
 import org.orbisgis.coremap.renderer.se.common.Description;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditorapi.MapElement;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
 import org.orbisgis.viewapi.edition.EditorManager;

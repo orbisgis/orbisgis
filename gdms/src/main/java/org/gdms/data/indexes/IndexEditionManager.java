@@ -41,7 +41,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;

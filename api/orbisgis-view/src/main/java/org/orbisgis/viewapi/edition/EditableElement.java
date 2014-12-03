@@ -28,7 +28,7 @@
  */
 package org.orbisgis.viewapi.edition;
 
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import java.beans.PropertyChangeListener;
 

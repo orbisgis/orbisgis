@@ -37,7 +37,7 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.common.IntegerUnion;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.viewapi.table.TableEditableElement;
 import org.orbisgis.view.table.filters.TableSelectionFilter;

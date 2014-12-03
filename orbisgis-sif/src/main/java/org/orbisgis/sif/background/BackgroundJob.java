@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.background;
 
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 public interface BackgroundJob {
 

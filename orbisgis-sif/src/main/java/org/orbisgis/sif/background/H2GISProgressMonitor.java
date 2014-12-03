@@ -1,7 +1,7 @@
 package org.orbisgis.view.background;
 
 import org.h2gis.h2spatialapi.ProgressVisitor;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import java.beans.PropertyChangeListener;
 import java.sql.Statement;

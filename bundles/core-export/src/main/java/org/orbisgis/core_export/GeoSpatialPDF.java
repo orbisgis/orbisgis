@@ -49,7 +49,7 @@ import java.io.OutputStream;
 import org.apache.log4j.Logger;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.map.MapTransform;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 /**
  * Utility to export a layer or a group of layer in a geospatial pdf format

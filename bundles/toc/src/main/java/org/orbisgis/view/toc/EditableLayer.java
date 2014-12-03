@@ -33,7 +33,7 @@ import java.beans.PropertyChangeListener;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditorapi.MapElement;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.viewapi.edition.AbstractEditableElement;
 import org.orbisgis.viewapi.edition.EditableElementException;
 

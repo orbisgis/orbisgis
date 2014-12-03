@@ -52,7 +52,7 @@ import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.corejdbc.CreateTable;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.corejdbc.SortValueCachedComparator;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.table.DataSourceTableModel;
 import org.xnap.commons.i18n.I18n;

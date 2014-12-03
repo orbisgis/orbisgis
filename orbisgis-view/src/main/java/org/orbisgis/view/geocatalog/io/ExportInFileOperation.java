@@ -40,7 +40,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.orbisgis.core.Services;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.view.background.H2GISProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.orbisgis.view.background.BackgroundJob;

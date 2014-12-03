@@ -30,7 +30,7 @@ package org.orbisgis.sqlconsole.actions;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.ReadTable;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sqlparserapi.ScriptSplitter;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.view.background.BackgroundJob;

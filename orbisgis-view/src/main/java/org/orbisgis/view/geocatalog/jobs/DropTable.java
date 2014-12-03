@@ -30,7 +30,7 @@ package org.orbisgis.view.geocatalog.jobs;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.viewapi.geocatalog.ext.GeoCatalogExt;
 import org.xnap.commons.i18n.I18n;

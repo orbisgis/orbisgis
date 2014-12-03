@@ -51,7 +51,7 @@ import org.orbisgis.coremap.map.TransformListener;
 import org.orbisgis.coremap.renderer.ImageRenderer;
 import org.orbisgis.coremap.renderer.Renderer;
 import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.DefaultJobId;

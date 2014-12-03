@@ -35,7 +35,7 @@ import javax.swing.tree.TreeNode;
 import org.apache.log4j.Logger;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeBusy;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeMapCatalogServer;

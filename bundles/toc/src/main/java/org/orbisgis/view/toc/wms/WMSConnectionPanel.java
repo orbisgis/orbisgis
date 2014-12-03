@@ -42,7 +42,7 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.workspace.CoreWorkspaceImpl;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.sif.components.WideComboBox;

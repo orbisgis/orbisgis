@@ -36,7 +36,7 @@ package org.gdms.data;
 import java.net.URI;
 import java.util.List;
 
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import org.gdms.data.schema.Schema;
 import org.gdms.driver.DataSet;

@@ -29,7 +29,7 @@
 package org.orbisgis.view.background;
 
 import org.orbisgis.progress.DefaultProgressMonitor;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.progress.RootProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;

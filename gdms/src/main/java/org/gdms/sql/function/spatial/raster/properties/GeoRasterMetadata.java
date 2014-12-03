@@ -40,7 +40,7 @@ import java.util.Map;
 import org.grap.model.GeoRaster;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;

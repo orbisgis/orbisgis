@@ -37,7 +37,7 @@ import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import static org.junit.Assert.*;
 

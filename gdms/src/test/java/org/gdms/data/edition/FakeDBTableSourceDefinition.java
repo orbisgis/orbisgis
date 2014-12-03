@@ -41,7 +41,7 @@ import org.gdms.data.db.DBTableDataSourceAdapter;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.Driver;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 

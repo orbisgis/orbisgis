@@ -53,7 +53,7 @@ import org.orbisgis.coremap.layerModel.LayerListenerEvent;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.layerModel.OwsMapContext;
 import org.orbisgis.coremap.layerModel.SelectionEvent;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.viewapi.edition.AbstractEditableElement;

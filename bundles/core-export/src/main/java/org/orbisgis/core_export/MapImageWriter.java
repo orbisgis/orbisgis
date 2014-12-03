@@ -34,7 +34,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.ImageRenderer;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import javax.media.jai.JAI;
 import java.awt.Color;

@@ -53,7 +53,7 @@ import org.gdms.source.SourceManager;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 public abstract class AbstractRasterDriver extends AbstractDataSet implements FileReadWriteDriver {
 

@@ -37,7 +37,7 @@ import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.layerModel.mapcatalog.ConnectionProperties;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapCatalog;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeBusy;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeMapCatalogServer;

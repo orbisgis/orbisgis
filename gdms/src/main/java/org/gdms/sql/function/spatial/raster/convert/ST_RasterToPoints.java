@@ -44,7 +44,7 @@ import ij.process.ImageProcessor;
 import org.apache.log4j.Logger;
 import org.cts.crs.CoordinateReferenceSystem;
 import org.grap.model.GeoRaster;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;

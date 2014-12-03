@@ -29,7 +29,7 @@
 package org.orbisgis.mapeditor.map.jobs;
 
 import org.orbisgis.mapeditorapi.MapElement;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.viewapi.edition.EditorManager;
 import org.xnap.commons.i18n.I18n;

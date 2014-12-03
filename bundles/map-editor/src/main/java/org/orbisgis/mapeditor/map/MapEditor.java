@@ -74,7 +74,7 @@ import org.orbisgis.mapeditor.map.toolbar.ActionAutomaton;
 import org.orbisgis.mapeditor.map.tools.*;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.ColorPicker;
 import org.orbisgis.sif.components.SaveFilePanel;

@@ -34,7 +34,7 @@ import javax.swing.SwingUtilities;
 import net.opengis.ows._2.LanguageStringType;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.layerModel.OwsMapContext;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.mapeditor.map.mapsManager.TreeLeafMapElement;
 import org.xnap.commons.i18n.I18n;

@@ -36,7 +36,7 @@ import java.beans.PropertyChangeListener;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.Timer;
 
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.sif.common.ContainerItemProperties;
 

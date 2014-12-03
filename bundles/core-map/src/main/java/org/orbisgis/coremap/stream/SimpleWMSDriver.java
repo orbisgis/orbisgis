@@ -47,7 +47,7 @@ import com.vividsolutions.wms.WMService;
 import java.util.ArrayList;
 import java.util.Map;
 import org.apache.log4j.Logger;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

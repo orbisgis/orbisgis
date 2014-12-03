@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.table.filters;
 
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.viewapi.table.TableEditableElement;
 
 import java.sql.SQLException;
