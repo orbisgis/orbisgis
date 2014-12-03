@@ -56,27 +56,23 @@ import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DriverFunctionContainer;
 import org.orbisgis.corejdbc.MetaData;
-import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.commons.utils.CollectionUtils;
-import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
 import org.orbisgis.view.geocatalog.jobs.DropTable;
 import org.orbisgis.view.geocatalog.jobs.ImportFiles;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
-import org.orbisgis.view.components.filter.DefaultActiveFilter;
-import org.orbisgis.view.components.filter.FilterFactoryManager;
+import org.orbisgis.sif.components.filter.DefaultActiveFilter;
+import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.viewapi.docking.DockingPanel;
 import org.orbisgis.viewapi.docking.DockingPanelParameters;
 import org.orbisgis.viewapi.edition.EditableElement;
-import org.orbisgis.viewapi.edition.EditableElementException;
 import org.orbisgis.view.geocatalog.actions.ActionOnSelection;
 import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.geocatalog.ext.GeoCatalogMenu;
@@ -105,7 +101,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class Catalog extends JPanel implements DockingPanel,TitleActionBar,PopupTarget,DriverFunctionContainer {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
-
+        private EditorManager editorManager;
         private static final long serialVersionUID = 1L;
         private static final I18n I18N = I18nFactory.getI18n(Catalog.class);
         private static final Logger LOGGER = Logger.getLogger(Catalog.class);
@@ -150,9 +146,10 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
         /**
          * Default constructor
          */
-        public Catalog(DataManager dataManager) {
+        public Catalog(DataManager dataManager, EditorManager editorManager) {
                 super(new BorderLayout());
                 this.dataManager = dataManager;
+                this.editorManager = editorManager;
                 dockingParameters.setName("geocatalog");
                 dockingParameters.setTitle(I18N.tr("GeoCatalog"));
                 dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("geocatalog"));
@@ -302,15 +299,11 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
          * the table editor
          */
         public void onMenuShowTable() {
-                BackgroundManager manager = Services.getService(BackgroundManager.class);
-                if(manager != null) {
-                    String[] res = getSelectedSources();
-                    for (String source : res) {
-                            TableEditableElementImpl tableDocument = new TableEditableElementImpl(source, dataManager);
-                            OpenTableEditor job = new OpenTableEditor(tableDocument);
-                            manager.nonBlockingBackgroundOperation(job);
-                    }
-                }
+            String[] res = getSelectedSources();
+            for (String source : res) {
+                    TableEditableElementImpl tableDocument = new TableEditableElementImpl(source, dataManager);
+                    SwingUtilities.invokeLater(new OpenEditableInSwingThread(tableDocument, editorManager));
+            }
         }
 
         @Override
@@ -360,8 +353,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                 // We can retrieve the files that have been selected by the user
                 List<File> files = Arrays.asList(linkSourcePanel.getSelectedFiles());
                 ImportFiles importFileJob = new ImportFiles(this, this, files, dataManager, type);
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.nonBlockingBackgroundOperation(importFileJob);
+                importFileJob.execute();
             }
         }
 
@@ -446,8 +438,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                         I18N.tr("Delete GeoCatalog tables"),
                         JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (option == JOptionPane.YES_OPTION) {
-                    BackgroundManager bm = Services.getService(BackgroundManager.class);
-                    bm.nonBlockingBackgroundOperation(new DropTable(dataManager.getDataSource(), sources.toArray(new String[sources.size()]), this));
+                    new DropTable(dataManager.getDataSource(), sources.toArray(new String[sources.size()]), this).execute();
                 }
             }
     }
@@ -469,10 +460,9 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                         outfilePanel.loadState();
                         if (UIFactory.showDialog(outfilePanel, true, true)) {
                                 final File savedFile = outfilePanel.getSelectedFile().getAbsoluteFile();
-                                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                                bm.backgroundOperation(new ExportInFileOperation(source,
+                                new ExportInFileOperation(source,
                                 savedFile, getExportDriverFromExt(FilenameUtils.getExtension(savedFile.getName()),
-                                        DriverFunction.IMPORT_DRIVER_TYPE.COPY),dataManager.getDataSource()));
+                                        DriverFunction.IMPORT_DRIVER_TYPE.COPY),dataManager.getDataSource()).execute();
                         }
                 }
         }
@@ -535,8 +525,7 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
                     // for each folder, we apply the method processFolder.
                     // We use the filter selected by the user in the panel
                     // to succeed in this operation.
-                    BackgroundManager bm = Services.getService(BackgroundManager.class);
-                    bm.nonBlockingBackgroundOperation(new ImportFiles(this, this, fileToLoad, dataManager, type));
+                    new ImportFiles(this, this, fileToLoad, dataManager, type).execute();
                 }
         }
 
@@ -715,28 +704,6 @@ public class Catalog extends JPanel implements DockingPanel,TitleActionBar,Popup
             return sourceList.getSelectionModel();
         }
 
-        private static class OpenTableEditor implements BackgroundJob {
-            private TableEditableElement source;
-
-            private OpenTableEditor(TableEditableElement source) {
-                this.source = source;
-            }
-
-            @Override
-            public void run(ProgressMonitor pm) {
-                EditorManager editorManager = Services.getService(EditorManager.class);
-                if(SwingUtilities.isEventDispatchThread()) {
-                    editorManager.openEditable(source);
-                } else {
-                    SwingUtilities.invokeLater(new OpenEditableInSwingThread(source, editorManager));
-                }
-            }
-
-            @Override
-            public String getTaskName() {
-                return I18N.tr("Open source file");
-            }
-        }
 
         /**
          * Open window in swing process

@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.BackgroundJob;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.viewapi.geocatalog.ext.GeoCatalogExt;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -49,7 +49,7 @@ import java.sql.Statement;
  * Drop provided table reference
  * @author Nicolas Fortin
  */
-public class DropTable implements BackgroundJob, Runnable {
+public class DropTable extends SwingWorkerPM {
     private static final Logger LOGGER = Logger.getLogger("gui."+DropTable.class);
     private static final I18n I18N = I18nFactory.getI18n(DropTable.class);
     private DataSource dataSource;
@@ -67,17 +67,17 @@ public class DropTable implements BackgroundJob, Runnable {
         this.dataSource = dataSource;
         this.tableToDelete = tableToDelete;
         this.geocatalog = geocatalog;
+        setTaskName(I18N.tr("Drop selected tables"));
     }
 
-
     @Override
-    public void run(ProgressMonitor pm) {
+    protected Object doInBackground() throws Exception {
         try(Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement()) {
-            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
+            this.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
                     EventHandler.create(PropertyChangeListener.class, st, "cancel"));
             connection.setAutoCommit(false);
-            ProgressMonitor dropPm = pm.startTask(tableToDelete.length);
+            ProgressMonitor dropPm = this.startTask(tableToDelete.length);
             for (String resource : tableToDelete) {
                 TableLocation tableLocation = TableLocation.parse(resource,
                         JDBCUtilities.isH2DataBase(connection.getMetaData()));
@@ -88,7 +88,7 @@ public class DropTable implements BackgroundJob, Runnable {
                     LOGGER.error(I18N.tr("Cannot remove the source {0}", resource), ex);
                     connection.rollback();
                     connection.setAutoCommit(true);
-                    return;
+                    return null;
                 }
                 dropPm.endTask();
             }
@@ -99,15 +99,11 @@ public class DropTable implements BackgroundJob, Runnable {
         } catch (InvocationTargetException | InterruptedException ex) {
             LOGGER.trace(ex.getLocalizedMessage(), ex);
         }
+        return null;
     }
 
     @Override
-    public void run() {
+    protected void done() {
         geocatalog.refreshSourceList();
-    }
-
-    @Override
-    public String getTaskName() {
-        return I18N.tr("Drop selected tables");
     }
 }

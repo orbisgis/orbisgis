@@ -33,7 +33,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 
 import org.orbisgis.sif.common.ContainerItemProperties;
-import org.orbisgis.view.components.renderers.ListLaFRenderer;
+import org.orbisgis.sif.components.renderers.ListLaFRenderer;
 import org.orbisgis.view.geocatalog.CatalogSourceItem;
 import org.orbisgis.view.icons.OrbisGISIcon;
 

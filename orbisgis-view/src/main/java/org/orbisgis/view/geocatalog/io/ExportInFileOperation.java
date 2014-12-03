@@ -34,22 +34,18 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
-import javax.swing.JOptionPane;
-
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.h2gis.h2spatialapi.DriverFunction;
-import org.orbisgis.core.Services;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.H2GISProgressMonitor;
+import org.orbisgis.corejdbc.H2GISProgressMonitor;
 import org.xnap.commons.i18n.I18n;
-import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Export a table into a local file.
  */
-public class ExportInFileOperation implements BackgroundJob {
+public class ExportInFileOperation extends SwingWorkerPM {
 
         private static final I18n I18N = I18nFactory.getI18n(ExportInFileOperation.class);
         private static final Logger LOGGER = Logger.getLogger(ExportInFileOperation.class);
@@ -69,19 +65,16 @@ public class ExportInFileOperation implements BackgroundJob {
                 this.savedFile = savedFile;
                 this.driverFunction = driverFunction;
                 this.dataSource = dataSource;
+                setTaskName(I18N.tr("Save the source in a file."));
         }
 
-        @Override
-        public String getTaskName() {
-                return I18N.tr("Save the source in a file.");
+    @Override
+    protected Object doInBackground() throws Exception {
+        try(Connection connection = dataSource.getConnection()) {
+            driverFunction.exportTable(connection, sourceName , savedFile, new H2GISProgressMonitor(this));
+        } catch (SQLException | IOException ex) {
+            LOGGER.error(I18N.tr("Cannot create the file"), ex);
         }
-
-        @Override
-        public void run(ProgressMonitor pm) {
-                try(Connection connection = dataSource.getConnection()) {
-                    driverFunction.exportTable(connection, sourceName , savedFile, new H2GISProgressMonitor(pm));
-                } catch (SQLException | IOException ex) {
-                    LOGGER.error(I18N.tr("Cannot create the file"), ex);
-                }
-        }
+        return null;
+    }
 }

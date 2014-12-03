@@ -36,7 +36,7 @@ import java.beans.PropertyChangeSupport;
  * @author Nicolas Fortin
  */
 public class RootProgressMonitor extends DefaultProgressMonitor {
-    private PropertyChangeSupport listeners = new PropertyChangeSupport(this);
+    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private boolean canceled;
     private String taskName = "";
 
@@ -46,6 +46,10 @@ public class RootProgressMonitor extends DefaultProgressMonitor {
      */
     public RootProgressMonitor(long subprocess_size) {
         super(subprocess_size, null);
+    }
+
+    public void setPropertyChangeSupport(PropertyChangeSupport listeners) {
+        this.propertyChangeSupport = listeners;
     }
 
     /**
@@ -60,12 +64,12 @@ public class RootProgressMonitor extends DefaultProgressMonitor {
 
     @Override
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-        listeners.removePropertyChangeListener(listener);
+        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
     @Override
     public void addPropertyChangeListener(String property, PropertyChangeListener listener) {
-        listeners.addPropertyChangeListener(property, listener);
+        propertyChangeSupport.addPropertyChangeListener(property, listener);
     }
 
     @Override
@@ -77,7 +81,7 @@ public class RootProgressMonitor extends DefaultProgressMonitor {
     public void setCancelled(boolean canceled) {
         boolean oldValue = this.canceled;
         this.canceled = canceled;
-        listeners.firePropertyChange(PROP_CANCEL, oldValue, canceled);
+        propertyChangeSupport.firePropertyChange(PROP_CANCEL, oldValue, canceled);
     }
 
     @Override
@@ -89,13 +93,13 @@ public class RootProgressMonitor extends DefaultProgressMonitor {
     protected synchronized void pushProgression(double incProg) {
         double oldProgress = getOverallProgress();
         super.pushProgression(incProg);
-        listeners.firePropertyChange(PROP_PROGRESSION, oldProgress, getOverallProgress());
+        propertyChangeSupport.firePropertyChange(PROP_PROGRESSION, oldProgress, getOverallProgress());
     }
 
     @Override
     public void setTaskName(String taskName) {
         String oldTaskName = this.taskName;
         this.taskName = taskName;
-        listeners.firePropertyChange(PROP_TASKNAME, oldTaskName, taskName);
+        propertyChangeSupport.firePropertyChange(PROP_TASKNAME, oldTaskName, taskName);
     }
 }

@@ -29,16 +29,13 @@
 package org.orbisgis.view.geocatalog.filters.factories;
 
 import java.awt.Component;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Map;
 import javax.swing.JTextField;
 
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.view.components.filter.DefaultActiveFilter;
-import org.orbisgis.view.components.filter.FilterFactory;
-import org.orbisgis.view.components.filter.TextFieldDocumentListener;
+import org.orbisgis.sif.components.filter.DefaultActiveFilter;
+import org.orbisgis.sif.components.filter.FilterFactory;
+import org.orbisgis.sif.components.filter.TextFieldDocumentListener;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;

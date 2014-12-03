@@ -38,10 +38,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.CreateTable;
 import org.orbisgis.corejdbc.MetaData;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -54,12 +53,11 @@ import javax.swing.JOptionPane;
  *
  * @author ebocher
  */
-public class CreateSourceFromSelection implements BackgroundJob {
+public class CreateSourceFromSelection extends SwingWorkerPM {
 
         private static final I18n I18N = I18nFactory.getI18n(CreateSourceFromSelection.class);
         
         private static final Logger GUILOGGER = Logger.getLogger("gui."+CreateSourceFromSelection.class);
-        private static final int INSERT_BATCH_SIZE = 30;
       
         private final DataSource dataSource;
         private final String tableName;
@@ -78,6 +76,7 @@ public class CreateSourceFromSelection implements BackgroundJob {
                 this.dataSource = dataSource;
                 this.selectedRows = selectedRows;
                 this.tableName = tableName;
+                setTaskName(I18N.tr("Create a datasource from the current selection"));
         }
 
         /**
@@ -95,26 +94,22 @@ public class CreateSourceFromSelection implements BackgroundJob {
         }
 
         @Override
-        public void run(ProgressMonitor pm) {
-                try {
-                    CreateTable.createTableFromRowPkSelection(dataSource, tableName, selectedRows, newName, pm);
-                } catch (SQLException e) {
-                        GUILOGGER.error("The selection cannot be created.", e);
-                        if(newName!=null && !newName.isEmpty()) {
-                            try(Connection connection = dataSource.getConnection();
-                                Statement st = connection.createStatement()) {
-                                boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-                                st.execute("DROP TABLE IF EXISTS "+TableLocation.parse(newName, isH2).toString(isH2));
-                            } catch (SQLException ex) {
-                                GUILOGGER.error("Could not revert changes", e);
-                            }
-                        }
+        protected Object doInBackground() throws Exception {
+            try {
+                CreateTable.createTableFromRowPkSelection(dataSource, tableName, selectedRows, newName, this);
+            } catch (SQLException e) {
+                GUILOGGER.error("The selection cannot be created.", e);
+                if(newName!=null && !newName.isEmpty()) {
+                    try(Connection connection = dataSource.getConnection();
+                        Statement st = connection.createStatement()) {
+                        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                        st.execute("DROP TABLE IF EXISTS "+TableLocation.parse(newName, isH2).toString(isH2));
+                    } catch (SQLException ex) {
+                        GUILOGGER.error("Could not revert changes", e);
+                    }
                 }
-        }
-
-        @Override
-        public String getTaskName() {
-                return I18N.tr("Create a datasource from the current selection");
+            }
+            return null;
         }
 
         /**

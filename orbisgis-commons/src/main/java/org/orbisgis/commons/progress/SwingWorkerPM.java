@@ -37,7 +37,7 @@ import java.beans.PropertyChangeListener;
  * the swing worker and give the ability to set a task name.
  */
 public abstract class SwingWorkerPM<T, V> extends SwingWorker<T, V> implements ProgressMonitor {
-    private final DefaultProgressMonitor defaultProgressMonitor;
+    private final RootProgressMonitor defaultProgressMonitor;
 
     /**
      * Default constructor no default task name
@@ -45,6 +45,7 @@ public abstract class SwingWorkerPM<T, V> extends SwingWorker<T, V> implements P
      */
     protected SwingWorkerPM(String taskName, long subprocessCount) {
         this.defaultProgressMonitor = new RootProgressMonitor(taskName, subprocessCount);
+        defaultProgressMonitor.setPropertyChangeSupport(this.getPropertyChangeSupport());
     }
 
     /**
@@ -52,6 +53,7 @@ public abstract class SwingWorkerPM<T, V> extends SwingWorker<T, V> implements P
      */
     protected SwingWorkerPM() {
         this.defaultProgressMonitor = new RootProgressMonitor(1);
+        defaultProgressMonitor.setPropertyChangeSupport(this.getPropertyChangeSupport());
     }
 
     /**
@@ -59,6 +61,7 @@ public abstract class SwingWorkerPM<T, V> extends SwingWorker<T, V> implements P
      */
     protected SwingWorkerPM(long subprocessCount) {
         this.defaultProgressMonitor = new RootProgressMonitor(subprocessCount);
+        defaultProgressMonitor.setPropertyChangeSupport(this.getPropertyChangeSupport());
     }
 
     @Override
