@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.utils;
+package org.orbisgis.commons.utils;
 
 /**
  * Utilities to deal specifically with reading/writing unsigned numbers and bytes.

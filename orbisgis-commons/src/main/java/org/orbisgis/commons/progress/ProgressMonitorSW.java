@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.progress;
+package org.orbisgis.commons.progress;
 
 import javax.swing.*;
 import java.beans.PropertyChangeListener;

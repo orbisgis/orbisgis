@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.collections.twoqueue;
+package org.orbisgis.commons.collections.twoqueue;
 
 /**
  * This is a synchronized implementation of the TwoQueueBuffer structure.
