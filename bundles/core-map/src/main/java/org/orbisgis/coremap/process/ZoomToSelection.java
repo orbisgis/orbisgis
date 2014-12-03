@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
+import org.orbisgis.commons.progress.ProgressMonitorSW;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.corejdbc.common.LongUnion;
@@ -50,7 +51,7 @@ import javax.swing.*;
  * Zoom to provided layer selection
  * @author Nicolas Fortin
  */
-public class ZoomToSelection extends SwingWorker {
+public class ZoomToSelection extends ProgressMonitorSW {
         private static final I18n I18N = I18nFactory.getI18n(ZoomToSelection.class);
         private static final Logger LOGGER = Logger.getLogger(ZoomToSelection.class);
         private MapContext mapContext;
@@ -59,10 +60,12 @@ public class ZoomToSelection extends SwingWorker {
         public ZoomToSelection(MapContext mapContext, ILayer[] layers) {
             this.mapContext = mapContext;
             this.layers = layers;
+            setTaskName(I18N.tr("Zoom to the selected geometries"));
         }
 
         @Override
         protected Object doInBackground() throws Exception {
+            Thread.currentThread().setName(this.getClass().getSimpleName());
             try {
                 Envelope selectionEnvelope = new Envelope();
                 for(ILayer layer : layers) {
@@ -102,12 +105,6 @@ public class ZoomToSelection extends SwingWorker {
             } else {
                 sortedSet = new LongUnion(data);
             }
-            return ReadTable.getTableSelectionEnvelope(mapContext.getDataManager(), tableReference,sortedSet, pm);
+            return ReadTable.getTableSelectionEnvelope(mapContext.getDataManager(), tableReference,sortedSet, this);
         }
-        
-        @Override
-        public String getTaskName() {
-                return I18N.tr("Zoom to the selected geometries");
-        }
-        
 }
