@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.utils;
+package org.orbisgis.commons.utils;
 
 import java.io.File;
 import java.net.URI;
