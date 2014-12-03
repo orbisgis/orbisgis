@@ -1,4 +1,4 @@
-package org.orbisgis.view.background;
+package org.orbisgis.corejdbc;
 
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.orbisgis.commons.progress.ProgressMonitor;

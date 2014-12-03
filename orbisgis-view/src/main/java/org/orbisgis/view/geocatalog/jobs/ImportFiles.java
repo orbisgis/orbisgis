@@ -32,17 +32,15 @@ import org.apache.log4j.Logger;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DriverFunctionContainer;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.commons.utils.FileUtils;
-import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.background.H2GISProgressMonitor;
+import org.orbisgis.corejdbc.H2GISProgressMonitor;
 import org.orbisgis.viewapi.geocatalog.ext.GeoCatalogExt;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -53,7 +51,7 @@ import java.util.List;
  * This job load a bunch of files into a DataSource
  * @author Nicolas Fortin
  */
-public class ImportFiles implements BackgroundJob {
+public class ImportFiles extends SwingWorkerPM {
     private static final I18n I18N = I18nFactory.getI18n(ImportFiles.class);
     private static Logger LOGGER = Logger.getLogger(ImportFiles.class);
 
@@ -69,18 +67,14 @@ public class ImportFiles implements BackgroundJob {
         this.files = files;
         this.dataManager = dataManager;
         this.driverType = driverType;
+        setTaskName(I18N.tr("Import file"));
     }
 
     @Override
-    public String getTaskName() {
-        return I18N.tr("Import file");
-    }
-
-    @Override
-    public void run(ProgressMonitor pm) {
+    protected Object doInBackground() throws Exception {
         long deb = System.currentTimeMillis();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
-            ProgressMonitor filePm = pm.startTask(files.size());
+            ProgressMonitor filePm = this.startTask(files.size());
             boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             for(File file : files) {
                 String ext = FilenameUtils.getExtension(file.getName());
@@ -104,6 +98,7 @@ public class ImportFiles implements BackgroundJob {
         }
         LOGGER.info(I18N.tr("Importation done in {0} sec", (System.currentTimeMillis() - deb) / 1000d));
         catalog.refreshSourceList();
+        return null;
     }
 }
 

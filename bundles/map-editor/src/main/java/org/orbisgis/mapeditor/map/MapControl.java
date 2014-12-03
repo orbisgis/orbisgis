@@ -29,7 +29,37 @@
 package org.orbisgis.mapeditor.map;
 
 import com.vividsolutions.jts.geom.Envelope;
-import java.awt.*;
+import org.apache.log4j.Logger;
+import org.h2gis.utilities.TableLocation;
+import org.orbisgis.commons.progress.SwingWorkerPM;
+import org.orbisgis.corejdbc.TableEditEvent;
+import org.orbisgis.corejdbc.TableEditListener;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.Layer;
+import org.orbisgis.coremap.layerModel.LayerCollectionEvent;
+import org.orbisgis.coremap.layerModel.LayerListener;
+import org.orbisgis.coremap.layerModel.LayerListenerEvent;
+import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.SelectionEvent;
+import org.orbisgis.coremap.map.MapTransform;
+import org.orbisgis.coremap.map.TransformListener;
+import org.orbisgis.coremap.renderer.ImageRenderer;
+import org.orbisgis.coremap.renderer.Renderer;
+import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
+import org.orbisgis.mapeditor.map.tool.Automaton;
+import org.orbisgis.mapeditor.map.tool.ToolListener;
+import org.orbisgis.mapeditor.map.tool.ToolManager;
+import org.orbisgis.mapeditor.map.tool.TransitionException;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
+
+import javax.swing.JComponent;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
 import java.awt.event.ComponentListener;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
@@ -39,28 +69,6 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.JComponent;
-import org.apache.log4j.Logger;
-import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.Services;
-import org.orbisgis.corejdbc.TableEditEvent;
-import org.orbisgis.corejdbc.TableEditListener;
-import org.orbisgis.coremap.layerModel.*;
-import org.orbisgis.coremap.map.MapTransform;
-import org.orbisgis.coremap.map.TransformListener;
-import org.orbisgis.coremap.renderer.ImageRenderer;
-import org.orbisgis.coremap.renderer.Renderer;
-import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.background.DefaultJobId;
-import org.orbisgis.mapeditor.map.tool.Automaton;
-import org.orbisgis.mapeditor.map.tool.ToolListener;
-import org.orbisgis.mapeditor.map.tool.ToolManager;
-import org.orbisgis.mapeditor.map.tool.TransitionException;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * MapControl.
@@ -71,15 +79,14 @@ public class MapControl extends JComponent implements ContainerListener {
         //Minimal Time in ms between two intermediate paint of drawing process
         private ResultSetProviderFactory resultSetProviderFactory = new CachedResultSetContainer();
         private static final Point MAX_IMAGE_SIZE = new Point(20000, 20000);
-        public static final String JOB_DRAWING_PREFIX_ID = "MapControl-Drawing";
         private static final Logger LOGGER = Logger.getLogger(MapControl.class);
         private static final I18n I18N = I18nFactory.getI18n(MapControl.class);
 	private static int lastMapControlId = 0;
         private static final long serialVersionUID = 1L;
         private AtomicBoolean awaitingDrawing=new AtomicBoolean(false); /*!< A drawing process is currently requested, it is useless to request another */
-	private int mapControlId;
 
-	/** The map will draw the last generated image without querying the data. */
+
+    /** The map will draw the last generated image without querying the data. */
 	public static final int UPDATED = 0;
 
 	/** The map will query the data to obtain a new image. */
@@ -127,7 +134,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	final public void initMapControl(Automaton defaultTool) throws TransitionException {
 		synchronized (this) {
-			this.mapControlId = lastMapControlId++;
+            int mapControlId = lastMapControlId++;
 		}
 		setDoubleBuffered(true);
 		setOpaque(true);
@@ -289,16 +296,13 @@ public class MapControl extends JComponent implements ContainerListener {
 
                     // now we start the actual drawer
                     drawer = new Drawer(mapContext, awaitingDrawing, this, resultSetProviderFactory);
-                    BackgroundManager bm = Services.getService(BackgroundManager.class);
-                    bm.nonBlockingBackgroundOperation(
-                            new DefaultJobId(JOB_DRAWING_PREFIX_ID +
-                                    mapControlId), drawer);
+                    drawer.execute();
                 } else {
                     // Currently drawing with a mix of old and new map context !
                     // Stop the drawing
                     // The drawer will call paint when it will release the awaitingDrawing
                     try {
-                        drawer.cancel();
+                        drawer.cancel(false);
                     } catch (Exception ex) {
                         // Ignore errors
                     }
@@ -334,49 +338,33 @@ public class MapControl extends JComponent implements ContainerListener {
 		repaint();
 	}
 
-	private static class Drawer implements BackgroundJob {
+	private static class Drawer extends SwingWorkerPM {
         private MapContext mapContext;
         private AtomicBoolean awaitingDrawing;
         private MapControl mapControl;
         private ResultSetProviderFactory resultSetProviderFactory;
-        private ProgressMonitor pm;
 
         private Drawer(MapContext mapContext, AtomicBoolean awaitingDrawing, MapControl mapControl, ResultSetProviderFactory resultSetProviderFactory) {
             this.mapContext = mapContext;
             this.awaitingDrawing = awaitingDrawing;
             this.mapControl = mapControl;
             this.resultSetProviderFactory = resultSetProviderFactory;
+            setTaskName(I18N.tr("Drawing"));
         }
 
         @Override
-        public String getTaskName() {
-            return I18N.tr("Drawing");
-        }
-
-        @Override
-        public void run(ProgressMonitor pm) {
-            this.pm = pm;
+        protected Object doInBackground() throws Exception {
             try {
                 long begin = System.currentTimeMillis();
                 Renderer renderer = new ImageRenderer();
                 renderer.setRsProvider(resultSetProviderFactory);
-                renderer.draw(mapControl.getMapTransform(), mapContext.getLayerModel(), pm);
+                renderer.draw(mapControl.getMapTransform(), mapContext.getLayerModel(), this);
                 LOGGER.info(I18N.tr("Rendering done in {0} seconds",(System.currentTimeMillis() - begin) / 1000.0 ));
             } finally {
                 awaitingDrawing.set(false);
                 mapControl.repaint();
             }
-        }
-
-        public void cancel() {
-            synchronized (this) {
-                if (pm != null) {
-                    if(!pm.isCancelled()) {
-                        LOGGER.debug("Cancel drawing !");
-                    }
-                    pm.setCancelled(true);
-                }
-            }
+            return null;
         }
     }
 
