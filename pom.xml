@@ -17,6 +17,7 @@
                 <version>1</version>
         </parent>
         <modules>
+                <module>orbisgis-commons</module>
                 <module>bundles/postgis-jts-osgi</module>
                 <module>bundles/h2trigger</module>
                 <module>bundles/core-jdbc</module>

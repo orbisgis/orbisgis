@@ -55,13 +55,13 @@ public interface ProgressMonitor {
          *
          * @param taskName
          *            Task name
-         * @param end  
+         * @param end Number of task in the subtask
          */
         ProgressMonitor startTask(String taskName, long end);
 
         /**
          * Create a new child task to this parent task.
-         * @param end Number of sub task
+         * @param end Number of task in the subtask
          */
         ProgressMonitor startTask(long end);
 
