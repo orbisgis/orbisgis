@@ -26,10 +26,10 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.sif.events.internals;
+package org.orbisgis.commons.events.internals;
 
 import java.util.ArrayList;
-import org.orbisgis.sif.events.ListenerContainer;
+import org.orbisgis.commons.events.ListenerContainer;
 /**
  * @package org.orbisgis.base.events.internals
  * Internal class of event/listener system

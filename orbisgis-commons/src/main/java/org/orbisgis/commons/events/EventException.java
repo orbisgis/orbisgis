@@ -26,37 +26,32 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.sif.events;
+package org.orbisgis.commons.events;
 
-import org.orbisgis.sif.events.internals.ListenerContainers;
 /**
- * Release all listeners attached to a specific target in one call.
+ * Throw when a listener try to stop the propagation of an event.
  */
-public class ListenerRelease {
-
-    private ListenerContainers containers = new ListenerContainers();
+public class EventException extends Exception {
 
     /**
-     * Add a container to manage with this class
-     * @param container The container instance
+     * Creates a new instance of <code>EventException</code> without detail message.
      */
-    public void addContainer(ListenerContainer container) {
-        containers.add(container);
+    public EventException() {
+    }
+
+    /**
+     * Constructs an instance of <code>EventException</code> with the specified detail message.
+     * @param msg the detail message.
+     */
+    public EventException(String msg) {
+        super(msg);
     }
     /**
-     * When a target is no longer used, the listeners created by it must be removed.
+     * Constructs an instance of <code>EventException</code> with throw information.
+     * @param thr The throw informations
+     * @note Use this constructor when catch another Exception
      */
-    public void releaseListeners(Object target) {
-        for(ListenerContainer container : containers) {
-                container.removeListeners(target);
-        }
-    }
-    /**
-     * Remove all listeners of all containers.
-     */
-    public void clearListeners() {
-        for(ListenerContainer container : containers) {
-                container.clearListeners();
-        }        
+    public EventException(Throwable thr) {
+        super(thr);
     }
 }

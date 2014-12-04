@@ -26,12 +26,14 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.sif.events;
+package org.orbisgis.commons.events;
 
 import java.lang.ref.WeakReference;
 import java.security.InvalidParameterException;
 import java.util.*;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -46,7 +48,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 
 public class ListenerContainer<EventObjectType extends EventObject> {
-    private static Logger logger = Logger.getLogger(ListenerContainer.class);
+    private static Logger logger = LoggerFactory.getLogger(ListenerContainer.class);
     private ListenerContainer<EventObject> upLevelContainer = null; /*!< This container will call the upLevelContainer on a new event */
     private Map<Object,ArrayList<WeakReference<Listener<EventObjectType>>>> targetToListeners = Collections.synchronizedMap(new HashMap<Object,ArrayList<WeakReference<Listener<EventObjectType>>>>()); /*!< Contain the link between target and listeners */
     private Set<Listener<EventObjectType>> listeners = Collections.synchronizedSet(new HashSet<Listener<EventObjectType>>()); /*!< Listerners of this container */

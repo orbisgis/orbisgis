@@ -49,6 +49,16 @@
             <artifactId>commons-io</artifactId>
             <version>${commons-io-version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${sl4j-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.gettext-commons</groupId>
+            <artifactId>gettext-commons</artifactId>
+            <version>${gettext-commons-version}</version>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -26,31 +26,26 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.sif.events;
+package org.orbisgis.commons.events;
 
+import java.util.EventListener;
+import java.util.EventObject;
 /**
- * Exception raised by the OnEvent method of listeners
- * This exception let other listener to manage the event if continueProcessing is True
+ * @param <EventObjectType>  EventObject created by event source
+ * @brief Interface of all listeners
+ * All class that implements this interface can be listened for events through EventDispatcher
  */
-public class ListenerException extends Exception {
-    private boolean continueProcessing;
+public interface Listener<EventObjectType extends EventObject> extends EventListener {
     /**
-     * Creates a new instance of <code>ListenerException</code> without detail message.
+     * The event has been fired
+     * Use java.beans.EventHandler.create to make a listener that will directly
+     * link from the source to the target method.
+     * You can also overload this method to call your related class method,
+     * try to not write too much code in your functor.
+     * @param evtData The event information, like the instance that fired the event.
+     * @throws ListenerException
      */
-    public ListenerException(boolean continueProcessing) {
-        this.continueProcessing = continueProcessing;
-    }
-
-    /**
-     * Constructs an instance of <code>ListenerException</code> with the specified detail message.
-     * @param msg the detail message.
-     */
-    public ListenerException(boolean continueProcessing,String msg) {
-        super(msg);
-        this.continueProcessing = continueProcessing;
-    }
+    void onEvent(EventObjectType evtData) throws ListenerException;
     
-    boolean letContinueProcessing() {
-        return continueProcessing;
-    }
+    
 }
