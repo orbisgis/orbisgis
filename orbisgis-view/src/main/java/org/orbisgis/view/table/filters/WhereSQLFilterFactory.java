@@ -28,6 +28,24 @@
  */
 package org.orbisgis.view.table.filters;
 
+import org.apache.log4j.Logger;
+import org.h2gis.utilities.TableLocation;
+import org.orbisgis.commons.progress.ProgressMonitor;
+import org.orbisgis.corejdbc.ReadRowSet;
+import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.sif.components.CustomButton;
+import org.orbisgis.sif.components.filter.DefaultActiveFilter;
+import org.orbisgis.sif.components.filter.FilterFactory;
+import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.viewapi.edition.EditableElementException;
+import org.orbisgis.viewapi.table.TableEditableElement;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
@@ -37,29 +55,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import org.apache.log4j.Logger;
-import org.h2gis.utilities.TableLocation;
-import org.orbisgis.corejdbc.common.IntegerUnion;
-import org.orbisgis.corejdbc.MetaData;
-import org.orbisgis.corejdbc.ReadRowSet;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.sif.components.CustomButton;
-import org.orbisgis.view.components.filter.DefaultActiveFilter;
-import org.orbisgis.view.components.filter.FilterFactory;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.viewapi.edition.EditableElement;
-import org.orbisgis.viewapi.edition.EditableElementException;
-import org.orbisgis.viewapi.table.TableEditableElement;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Table extended filter using SQL where request
@@ -70,7 +66,6 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
     private final static I18n I18N = I18nFactory.getI18n(WhereSQLFilterFactory.class);
     private static final Logger LOGGER = Logger.getLogger(WhereSQLFilterFactory.class);
     /** Map Table primary key to the row id of regular select * from mytable */
-    private Map<Integer, Integer> primaryKeyToRowId = new HashMap<>();
 
     @Override
     public DefaultActiveFilter getDefaultFilterValue() {

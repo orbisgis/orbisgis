@@ -34,8 +34,6 @@ import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.coremap.layerModel.MapContext;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 import java.sql.SQLException;
@@ -53,7 +51,6 @@ public class ZoomToSelectedFeatures extends SwingWorkerPM {
         private SortedSet<Long> modelSelection;
         private MapContext mapContext;
 
-
         /**
          * Constructor.
          * @param dataManager data manager
@@ -69,19 +66,16 @@ public class ZoomToSelectedFeatures extends SwingWorkerPM {
             setTaskName(I18N.tr("Zoom to selection"));
         }
 
-
-        
         @Override
-        public void run(ProgressMonitor pm) {
-                Envelope selectionEnvelope = null;
-                try {
-                    selectionEnvelope = ReadTable.getTableSelectionEnvelope(dataManager, tableName, modelSelection, pm);
-                    if(selectionEnvelope!=null) {
-                        mapContext.setBoundingBox(selectionEnvelope);
-                    }
-                }catch (SQLException ex) {
-                        LOGGER.error(I18N.tr("Unable to establish the selection bounding box"),ex);
+        protected Object doInBackground() throws SQLException {
+            try {
+                Envelope selectionEnvelope = ReadTable.getTableSelectionEnvelope(dataManager, tableName, modelSelection, this);
+                if(selectionEnvelope!=null) {
+                    mapContext.setBoundingBox(selectionEnvelope);
                 }
+            }catch (SQLException ex) {
+                LOGGER.error(I18N.tr("Unable to establish the selection bounding box"),ex);
+            }
+            return null;
         }
-
 }

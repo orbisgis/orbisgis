@@ -62,6 +62,7 @@ import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.MetaData;
@@ -70,14 +71,13 @@ import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.coremap.process.ZoomToSelectedFeatures;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
-import org.orbisgis.view.components.filter.DefaultActiveFilter;
-import org.orbisgis.view.components.filter.FilterFactoryManager;
+import org.orbisgis.sif.components.filter.DefaultActiveFilter;
+import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.view.table.ext.TableEditorActions;
 import org.orbisgis.view.table.jobs.CreateSourceFromSelection;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
@@ -95,7 +95,6 @@ import org.orbisgis.view.table.filters.WhereSQLFilterFactory;
 import org.orbisgis.view.table.jobs.ComputeFieldStatistics;
 import org.orbisgis.view.table.jobs.OptimalWidthJob;
 import org.orbisgis.view.table.jobs.SearchJob;
-import org.orbisgis.view.table.jobs.ZoomToSelectionJob;
 import org.orbisgis.viewapi.edition.EditorManager;
 import org.orbisgis.viewapi.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
@@ -173,8 +172,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
 
         @Override
         public void tableChange(TableEditEvent event) {
-            Services.getService(BackgroundManager.class)
-                    .nonBlockingBackgroundOperation(new RefreshTableJob(tableModel, tableEditableElement));
+            new RefreshTableJob(tableModel, tableEditableElement).execute();
         }
 
         private List<Action> getDockActions() {
@@ -331,8 +329,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
         public void onApplySelectionFilter() {
                 List<TableSelectionFilter> filters = filterManager.getFilters();
                 if(!filterRunning.getAndSet(true)) {
-                        BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.nonBlockingBackgroundOperation(new SearchJob(filters.get(0), table, tableEditableElement,filterRunning));
+                        new SearchJob(filters.get(0), table, tableEditableElement,filterRunning).execute();
                 } else {
                         LOGGER.info(I18N.tr("Searching request is already launched. Please wait a moment, or cancel it."));
                 }
@@ -522,9 +519,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                         LOGGER.error("MapContext lost between popup creation and click");
                         return;
                 }                
-                ZoomToSelectionJob zoomJob = new ZoomToSelectionJob(dataManager, tableEditableElement.getTableReference()
-                        , tableEditableElement.getSelection(), mapContext);
-                launchJob(zoomJob);                
+                new ZoomToSelectedFeatures(dataManager, tableEditableElement.getTableReference()
+                        , tableEditableElement.getSelection(), mapContext).execute();
         }
         
         /**
@@ -558,11 +554,9 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                     // If newName is not null, then the user clicked OK and entered
                     // a valid name.
                     if (newName != null) {
-                        BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.backgroundOperation(
-                                new CreateSourceFromSelection(
+                        new CreateSourceFromSelection(
                                         dataSource,
-                                        tableEditableElement.getSelection(), tableEditableElement.getTableReference(), newName));
+                                        tableEditableElement.getSelection(), tableEditableElement.getTableReference(), newName).execute();
                     }
                 } catch (SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
@@ -701,10 +695,6 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
 
         }
         
-        private void launchJob(BackgroundJob job) {
-                Services.getService(BackgroundManager.class).nonBlockingBackgroundOperation(job);
-        }
-        
         /**
          * The user disable table sort
          */
@@ -758,14 +748,14 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 if (selectionModelRowId.isEmpty() && tableSorter.isFiltered()) {
                         selectionModelRowId.addAll(tableSorter.getViewToModelIndex());
                 }
-                launchJob(new ComputeFieldStatistics(selectionModelRowId, dataSource, popupCellAdress.x, tableEditableElement.getTableReference()));
+                new ComputeFieldStatistics(selectionModelRowId, dataSource, popupCellAdress.x, tableEditableElement.getTableReference()).execute();
         }
 
         /**
          * Compute the optimal width for this column
          */
         public void onMenuOptimalWidth() {
-                launchJob(new OptimalWidthJob(table, popupCellAdress.x));
+                new OptimalWidthJob(table, popupCellAdress.x).execute();
         }
 
         /**
@@ -799,7 +789,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
         public void addNotify() {
                 super.addNotify();
                 if(!initialised.getAndSet(true)) {
-                        launchJob(new OpenEditableElement(this, tableEditableElement));
+                        new OpenEditableElement(this, tableEditableElement).execute();
                 }
         }
         
@@ -1125,7 +1115,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 return this;
         }
         
-        private static class OpenEditableElement implements BackgroundJob {
+        private static class OpenEditableElement extends SwingWorkerPM {
 
                 private TableEditor tableEditor;
                 private TableEditableElement tableEditableElement;
@@ -1133,43 +1123,28 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 private OpenEditableElement(TableEditor tableEditor, TableEditableElement el) {
                     this.tableEditor = tableEditor;
                     this.tableEditableElement = el;
+                    setTaskName(I18N.tr("Open the table {0}", tableEditableElement.getTableReference()));
                 }
 
                 @Override
-                public void run(ProgressMonitor pm) {
+                protected Object doInBackground() throws Exception {
                     try {
                         try {
                             if (tableEditableElement.isOpen()) {
-                                tableEditableElement.close(pm);
+                                tableEditableElement.close(this);
                             }
-                            tableEditableElement.open(pm);
+                            tableEditableElement.open(this);
                         } catch (UnsupportedOperationException | EditableElementException ex) {
                             LOGGER.error(I18N.tr("Error while loading the table editor"), ex);
-                        }
-                        if (SwingUtilities.isEventDispatchThread()) {
-                            tableEditor.readDataSource();
-                        } else {
-                            SwingUtilities.invokeLater(new ReadDataSource(tableEditor));
                         }
                     } finally {
                         tableEditor.initialised.set(true);
                     }
+                    return null;
                 }
-
-                @Override
-                public String getTaskName() {
-                        return I18N.tr("Open the table {0}", tableEditableElement.getTableReference());
-                }
-        }
-        private static class ReadDataSource implements Runnable {
-            private TableEditor tableEditor;
-
-            private ReadDataSource(TableEditor tableEditor) {
-                this.tableEditor = tableEditor;
-            }
 
             @Override
-            public void run() {
+            protected void done() {
                 tableEditor.readDataSource();
             }
         }
@@ -1217,7 +1192,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
             }
         }
 
-    private class RefreshTableJob extends SwingWorker<Boolean, Boolean> implements BackgroundJob {
+    private class RefreshTableJob extends SwingWorkerPM<Boolean, Boolean> {
         private DataSourceTableModel model;
         private TableEditableElement table;
         private List<TableModelEvent> evts = new ArrayList<>();
@@ -1225,10 +1200,23 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
         private RefreshTableJob(DataSourceTableModel model, TableEditableElement table) {
             this.model = model;
             this.table = table;
+            setTaskName(I18N.tr("Refresh table content"));
         }
 
         @Override
-        public void run(ProgressMonitor pm) {
+        protected void done() {
+            model.setLastFetchRowCountTime(0);
+            // Swing Thread
+            // Send columns delete/insert/update events
+            for(TableModelEvent evt : evts) {
+                model.fireTableChanged(evt);
+            }
+            // Refresh shown data
+            model.fireTableDataChanged();
+        }
+
+        @Override
+        protected Boolean doInBackground() throws Exception {
             List<String> columnTypes = new ArrayList<>();
             List<String> columnNames = new ArrayList<>();
             try {
@@ -1241,8 +1229,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 } catch (SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
-                table.close(pm);
-                table.open(pm);
+                table.close(this);
+                table.open(this);
                 try {
                     ResultSetMetaData meta = table.getRowSet().getMetaData();
                     for(int col=1; col < meta.getColumnCount();col++) {
@@ -1272,28 +1260,6 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
             } catch (EditableElementException ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
             }
-            this.execute();
-        }
-
-        @Override
-        public String getTaskName() {
-            return I18N.tr("Refresh table content");
-        }
-
-        @Override
-        protected void done() {
-            model.setLastFetchRowCountTime(0);
-            // Swing Thread
-            // Send columns delete/insert/update events
-            for(TableModelEvent evt : evts) {
-                model.fireTableChanged(evt);
-            }
-            // Refresh shown data
-            model.fireTableDataChanged();
-        }
-
-        @Override
-        protected Boolean doInBackground() throws Exception {
             return true;
         }
     }
