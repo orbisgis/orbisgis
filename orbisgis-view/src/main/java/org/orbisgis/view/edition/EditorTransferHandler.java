@@ -29,9 +29,9 @@
 package org.orbisgis.view.edition;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.core.events.EventException;
-import org.orbisgis.core.events.Listener;
-import org.orbisgis.core.events.ListenerContainer;
+import org.orbisgis.commons.events.EventException;
+import org.orbisgis.commons.events.Listener;
+import org.orbisgis.commons.events.ListenerContainer;
 import org.orbisgis.viewapi.edition.EditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;

@@ -31,7 +31,7 @@ package org.orbisgis.view.components.fstree;
 import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.JTree;
-import org.orbisgis.view.components.renderers.TreeLaFRenderer;
+import org.orbisgis.sif.components.renderers.TreeLaFRenderer;
 
 /**
  * This rendered take the icon of the TreeNodeCustomIcon interface 

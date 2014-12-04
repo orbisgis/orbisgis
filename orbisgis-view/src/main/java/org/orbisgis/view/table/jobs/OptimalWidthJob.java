@@ -29,40 +29,47 @@
 package org.orbisgis.view.table.jobs;
 
 import java.awt.Component;
+import java.util.concurrent.ExecutionException;
 import javax.swing.JTable;
-import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.BackgroundJob;
+import org.orbisgis.commons.progress.SwingWorkerPM;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Computation of the optimal column width of the entire table
  */
-public class OptimalWidthJob implements BackgroundJob{
+public class OptimalWidthJob extends SwingWorkerPM<Integer, Integer> {
         protected final static I18n I18N = I18nFactory.getI18n(OptimalWidthJob.class);
+        private final static Logger LOGGER = LoggerFactory.getLogger(OptimalWidthJob.class);
         private JTable table;
         private int selectedColumn;
+
 
         public OptimalWidthJob(JTable table, int selectedColumn) {
                 this.table = table;
                 this.selectedColumn = selectedColumn;
+                setTaskName(I18N.tr("Computation of the optimal column width"));
         }
-        
-        @Override
-        public void run(ProgressMonitor pm) {
-                final int width = getColumnOptimalWidth(table,table.getRowCount(), Integer.MAX_VALUE,
-                        selectedColumn, pm);
-                final TableColumn col = table.getColumnModel().getColumn(selectedColumn);
-                SwingUtilities.invokeLater(new Runnable() {
 
-                        @Override
-                        public void run() {
-                                col.setPreferredWidth(width);
-                        }
-                });
+        @Override
+        protected Integer doInBackground() throws Exception {
+            return getColumnOptimalWidth(table,table.getRowCount(), Integer.MAX_VALUE,
+                    selectedColumn, this);
+        }
+
+        @Override
+        protected void done() {
+            try {
+                TableColumn col = table.getColumnModel().getColumn(selectedColumn);
+                col.setPreferredWidth(get());
+            } catch (ExecutionException|InterruptedException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+            }
         }
 
         /**
@@ -116,11 +123,6 @@ public class OptimalWidthJob implements BackgroundJob{
                 width += 2 * margin;
 
                 return width;
-        }
-
-        @Override
-        public String getTaskName() {
-                return I18N.tr("Computation of the optimal column width");
         }
 
 }

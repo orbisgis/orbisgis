@@ -36,9 +36,9 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
-import org.orbisgis.core.events.EventException;
-import org.orbisgis.core.events.Listener;
-import org.orbisgis.core.events.ListenerContainer;
+import org.orbisgis.commons.events.EventException;
+import org.orbisgis.commons.events.Listener;
+import org.orbisgis.commons.events.ListenerContainer;
 
 /**
  * A LOG4J Appender connected with the LogPanel.

@@ -37,7 +37,7 @@ import javax.swing.UIManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTWriter;
-import org.orbisgis.view.components.renderers.TableLaFCellRenderer;
+import org.orbisgis.sif.components.renderers.TableLaFCellRenderer;
 
 /**
  *
