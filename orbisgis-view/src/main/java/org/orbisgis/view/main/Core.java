@@ -45,6 +45,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import javax.swing.*;
 
 import org.apache.log4j.Logger;
@@ -55,9 +56,6 @@ import org.orbisgis.core.workspace.CoreWorkspaceImpl;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.CustomButton;
-import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.background.Job;
-import org.orbisgis.view.background.JobQueue;
 import org.orbisgis.view.docking.internals.EditorFactoryTracker;
 import org.orbisgis.view.docking.internals.EditorPanelTracker;
 import org.orbisgis.view.edition.EditorManagerImpl;
@@ -82,6 +80,7 @@ import org.orbisgis.view.workspace.ViewWorkspace;
 import org.orbisgis.view.workspace.WorkspaceSelectionDialog;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+import sun.awt.AppContext;
 
 /**
  * The core manage the view of the application.
@@ -106,7 +105,6 @@ public class Core {
     private ViewWorkspace viewWorkspace;
     private OutputManager loggerCollection;    /*!< Loggings panels */
 
-    private BackgroundManager backgroundManager;
     public static final Dimension MAIN_VIEW_SIZE = new Dimension(800, 600);/*!< Bounds of mainView, x,y and width height*/
 
     private DockingManager dockManager = null; /*!< The DockStation manager */
@@ -167,8 +165,6 @@ public class Core {
         } catch (SQLException ex) {
             throw new RuntimeException(ex.getLocalizedMessage(), ex);
         }
-        // Init jobqueue
-        initSwingJobs();
         initSIF();
         progressInfo.progressTo(20);
     }
@@ -321,7 +317,7 @@ public class Core {
      */
     private void makeGeoCatalogPanel() {
         //The geo-catalog view content is read from the SourceContext
-        geoCatalog = new Catalog(mainContext.getDataManager());
+        geoCatalog = new Catalog(mainContext.getDataManager(), editors);
         // Catalog extensions
         geoCatalog.registeTrackers(pluginFramework.getHostBundleContext());
         //Add the view as a new Docking Panel
@@ -335,18 +331,6 @@ public class Core {
             TableEditorFactory tableEditorFactory = new TableEditorFactory();
             tableEditorFactory.setDataManager(mainContext.getDataManager());
             editors.addEditorFactory(tableEditorFactory);
-    }
-
-    /**
-     * Initialisation of the BackGroundManager Service
-     */
-    private void initSwingJobs() {
-        backgroundManager = new JobQueue();
-        Services.registerService(
-                BackgroundManager.class,
-                I18N.tr("Execute tasks in background processes, showing progress bars. Gives access to the job queue"),
-                backgroundManager);
-        pluginFramework.getHostBundleContext().registerService(BackgroundManager.class, backgroundManager, null);
     }
 
     /**
@@ -530,13 +514,11 @@ public class Core {
      */
     public void dispose() {
         //Close all running jobs
-        for (Job job : backgroundManager.getActiveJobs()) {
-            try {
-                job.cancel();
-            } catch (Throwable ex) {
-                LOGGER.error(ex.getLocalizedMessage(), ex);
-                //Cancel the next job
-            }
+        final AppContext appContext = AppContext.getAppContext();
+        ExecutorService executorService =
+                (ExecutorService) appContext.get(SwingWorker.class);
+        if(executorService != null) {
+            executorService.shutdown();
         }
 
         //Free UI resources

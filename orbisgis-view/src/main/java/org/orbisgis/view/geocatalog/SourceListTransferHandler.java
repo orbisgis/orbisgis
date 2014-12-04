@@ -41,9 +41,9 @@ import javax.swing.JList;
 import javax.swing.TransferHandler;
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.sif.events.EventException;
-import org.orbisgis.sif.events.Listener;
-import org.orbisgis.sif.events.ListenerContainer;
+import org.orbisgis.commons.events.EventException;
+import org.orbisgis.commons.events.Listener;
+import org.orbisgis.commons.events.ListenerContainer;
 import org.orbisgis.view.components.UriListFlavor;
 
 /**
