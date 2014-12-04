@@ -66,7 +66,7 @@ import java.util.Set;
 import javax.swing.*;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.core.common.BeanPropertyChangeSupport;
+import org.orbisgis.commons.events.BeanPropertyChangeSupport;
 import org.orbisgis.viewapi.components.actions.ActionTools;
 import org.orbisgis.view.components.actions.ActionsHolder;
 import org.orbisgis.view.docking.internals.ApplicationRessourceDecorator;

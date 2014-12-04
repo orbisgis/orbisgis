@@ -26,12 +26,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.common;
+package org.orbisgis.commons.events;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.VetoableChangeSupport;
-import org.orbisgis.core.events.OGVetoableChangeSupport;
 
 /**
  * This class expose the bean property change support in conjunction with the VetoableChangeSupport.
