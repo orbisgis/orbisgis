@@ -28,42 +28,34 @@
  */
 package org.orbisgis.view.table.jobs;
 
-import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.TreeSet;
-import javax.sql.DataSource;
-import javax.swing.RowSorter.SortKey;
-import javax.swing.SortOrder;
-import javax.swing.SwingUtilities;
-
 import org.apache.log4j.Logger;
-import org.h2gis.utilities.JDBCUtilities;
-import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.commons.events.EventException;
 import org.orbisgis.commons.events.Listener;
 import org.orbisgis.commons.events.ListenerContainer;
-import org.orbisgis.corejdbc.CreateTable;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.ReadTable;
-import org.orbisgis.corejdbc.SortValueCachedComparator;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.BackgroundJob;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.view.table.DataSourceTableModel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.sql.DataSource;
+import javax.swing.RowSorter.SortKey;
+import javax.swing.SortOrder;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Sort the specified column and update the Table model.
  * The Data source is used to not store all the column values in memory
  * @author Nicolas Fortin
  */
-public class SortJob implements BackgroundJob {
+public class SortJob extends SwingWorkerPM<Collection<Integer>, Collection<Integer>> {
+        private static final int MAX_SORT_TIME = 10; // In seconds
         public interface SortJobListener extends Listener<SortJobEventSorted>{
                 
         }
@@ -71,9 +63,8 @@ public class SortJob implements BackgroundJob {
         private static final Logger LOGGER = Logger.getLogger(SortJob.class);
         private DataSourceTableModel model;
         private SortKey sortRequest;
-        private Integer columnToSort;
         private String columnSortName;
-        private ListenerContainer<SortJobEventSorted> eventSortedListeners = new ListenerContainer<SortJobEventSorted>();
+        private ListenerContainer<SortJobEventSorted> eventSortedListeners = new ListenerContainer<>();
         private Collection<Integer> modelIndex;
         private DataSource dataSource;
 
@@ -85,50 +76,36 @@ public class SortJob implements BackgroundJob {
          */
         public SortJob(SortKey sortRequest, DataSourceTableModel tableModel, Collection<Integer> modelIndex, DataSource dataSource) {
                 this.sortRequest = sortRequest;
-                this.columnToSort = sortRequest.getColumn();
+            Integer columnToSort = sortRequest.getColumn();
                 this.modelIndex = modelIndex;
                 this.dataSource = dataSource;
                 model = tableModel;
                 columnSortName = model.getColumnName(columnToSort);
+                setTaskName(I18N.tr("Sorting {0}",columnSortName));
         }
 
         public ListenerContainer<SortJobEventSorted> getEventSortedListeners() {
                 return eventSortedListeners;
         }
 
-
         @Override
-        public void run(ProgressMonitor pm) {
-            if (model.getRowCount() < 2) {
-                return;
-            }
+        protected Collection<Integer> doInBackground() throws SQLException {
             // Retrieve the index if the model have a restricted set of rows
             if (modelIndex == null) {
                 //Create an array [0 1 ..rows]
                 modelIndex = new IntegerUnion(0, model.getRowCount() - 1);
             }
             try(Connection connection = dataSource.getConnection()) {
-                final Collection<Integer> sortedRow = ReadTable.getSortedColumnRowIndex(connection, model.getTableName(), columnSortName, sortRequest.getSortOrder() == SortOrder.ASCENDING, pm);
-                SwingUtilities.invokeLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            //Update the table model on the swing thread
-                            eventSortedListeners.callListeners(new SortJobEventSorted(sortRequest, sortedRow, this));
-                        } catch (EventException ex) {
-                            //Ignore
-                        }
-                    }
-                });
-
-            } catch (IllegalStateException | SQLException ex) {
-                LOGGER.error(I18N.tr("Driver error"), ex);
+                return ReadTable.getSortedColumnRowIndex(connection, model.getTableName(), columnSortName, sortRequest.getSortOrder() == SortOrder.ASCENDING, this);
             }
         }
 
         @Override
-        public String getTaskName() {
-                return I18N.tr("Sorting {0}",columnSortName);
+        protected void done() {
+                try {
+                    eventSortedListeners.callListeners(new SortJobEventSorted(sortRequest, get(MAX_SORT_TIME, TimeUnit.SECONDS), this));
+                } catch (InterruptedException|ExecutionException|TimeoutException|EventException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
         }
 }

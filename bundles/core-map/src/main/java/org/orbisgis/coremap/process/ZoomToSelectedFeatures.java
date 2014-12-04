@@ -26,10 +26,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table.jobs;
+package org.orbisgis.coremap.process;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.apache.log4j.Logger;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.coremap.layerModel.MapContext;
@@ -44,9 +45,9 @@ import java.util.SortedSet;
  * Fetch selection extent and apply it to the map context.
  * @author Nicolas Fortin
  */
-public class ZoomToSelectionJob implements BackgroundJob {
-        private static final Logger LOGGER = Logger.getLogger(ZoomToSelectionJob.class);
-        protected final static I18n I18N = I18nFactory.getI18n(ZoomToSelectionJob.class);
+public class ZoomToSelectedFeatures extends SwingWorkerPM {
+        private static final Logger LOGGER = Logger.getLogger(ZoomToSelectedFeatures.class);
+        protected final static I18n I18N = I18nFactory.getI18n(ZoomToSelectedFeatures.class);
         private DataManager dataManager;
         private String tableName;
         private SortedSet<Long> modelSelection;
@@ -60,11 +61,12 @@ public class ZoomToSelectionJob implements BackgroundJob {
          * @param modelSelection Selected rows
          * @param mapContext Loaded map context
          */
-        public ZoomToSelectionJob(DataManager dataManager, String tableName, SortedSet<Long> modelSelection, MapContext mapContext) {
+        public ZoomToSelectedFeatures(DataManager dataManager, String tableName, SortedSet<Long> modelSelection, MapContext mapContext) {
             this.dataManager = dataManager;
             this.tableName = tableName;
             this.modelSelection = modelSelection;
             this.mapContext = mapContext;
+            setTaskName(I18N.tr("Zoom to selection"));
         }
 
 
@@ -82,9 +84,4 @@ public class ZoomToSelectionJob implements BackgroundJob {
                 }
         }
 
-        @Override
-        public String getTaskName() {
-                return I18N.tr("Zoom to selection");
-        }
-        
 }

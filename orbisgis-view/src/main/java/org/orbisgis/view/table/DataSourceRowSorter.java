@@ -38,8 +38,6 @@ import javax.swing.SortOrder;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.common.IntegerUnion;
-import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.table.jobs.SortJob;
 import org.orbisgis.view.table.jobs.SortJobEventSorted;
 
@@ -169,9 +167,11 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         }
         
         private void launchSortProcess(SortKey sortInformation) {
-                SortJob sortJob = new SortJob(sortInformation, model, viewToModel, dataSource);
-                sortJob.getEventSortedListeners().addListener(this, EventHandler.create(SortJob.SortJobListener.class,this,"onRowSortDone",""));
-                launchJob(sortJob);
+                if(model.getRowCount() > 0) {
+                    SortJob sortJob = new SortJob(sortInformation, model, viewToModel, dataSource);
+                    sortJob.getEventSortedListeners().addListener(this, EventHandler.create(SortJob.SortJobListener.class, this, "onRowSortDone", ""));
+                    sortJob.execute();
+                }
         }
 
         @Override
@@ -183,10 +183,6 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 }
         }
 
-        private void launchJob(BackgroundJob job) {
-                Services.getService(BackgroundManager.class).nonBlockingBackgroundOperation(job);
-        }
-        
         @Override
         public int convertRowIndexToView(int index) {
                 if(modelToView==null) {
