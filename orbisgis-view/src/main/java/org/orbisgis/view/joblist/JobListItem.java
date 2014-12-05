@@ -28,16 +28,11 @@
  */
 package org.orbisgis.view.joblist;
 
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.Timer;
+import javax.swing.SwingWorker;
 
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.Job;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.sif.common.ContainerItemProperties;
 
 /**
@@ -48,23 +43,25 @@ import org.orbisgis.sif.common.ContainerItemProperties;
 
 public class JobListItem extends ContainerItemProperties {
         private static final long serialVersionUID = 1L;
-        private Job job;
+        private SwingWorker job;
         private PropertyChangeListener listener =
                 EventHandler.create(PropertyChangeListener.class,
                                     this,
-                                    "onJobUpdate");
+                                    "updateJob");
         private JobListItemPanel itemPanel;
-        private AtomicBoolean progressionModified = new AtomicBoolean(true);
-        private Timer fetchProgressionTimer;
-        private static final int PROGRESSION_TIMER_INTERVAL = 80;
 
         public JobListItemPanel getItemPanel() {
                 return itemPanel;
         }
                 
-        public JobListItem(Job job) {
-                super(job.getId().toString(), job.getTaskName());
+        public JobListItem(SwingWorker job) {
+                super(job.toString(), job.toString());
                 this.job = job;
+        }
+
+        public JobListItem(SwingWorkerPM job) {
+            super(job.toString(), job.getCurrentTaskName());
+            this.job = job;
         }
 
         /**
@@ -73,28 +70,27 @@ public class JobListItem extends ContainerItemProperties {
          * @return 
          */
         public JobListItem listenToJob(boolean simplifiedPanel) {
-                job.getProgressMonitor().addPropertyChangeListener(ProgressMonitor.PROP_PROGRESSION, listener);
-                itemPanel = new JobListItemPanel(job,simplifiedPanel);
-                onJobUpdate();
-                fetchProgressionTimer = new Timer(PROGRESSION_TIMER_INTERVAL,new TimerFetchListener());
-                fetchProgressionTimer.start();
-                return this;
+            job.getPropertyChangeSupport().addPropertyChangeListener("progress", listener);
+            itemPanel = new JobListItemPanel(job, simplifiedPanel);
+            updateJob();
+            return this;
         }
         /**
          * Stop listening to the job and the timer
          */
         public void dispose() {
-                job.getProgressMonitor().removePropertyChangeListener(listener);
-                if(fetchProgressionTimer!=null) {
-                        fetchProgressionTimer.stop();
-                }
+                job.removePropertyChangeListener(listener);
         }
         
         /**
          * The user click on the cancel button
          */
         public void onCancel() {
-                job.cancel();
+                if(job instanceof SwingWorkerPM) {
+                    ((SwingWorkerPM) job).setCancelled(true);
+                } else {
+                    job.cancel(false);
+                }
         }
         
         /**
@@ -106,31 +102,12 @@ public class JobListItem extends ContainerItemProperties {
                         setLabel(itemPanel.getText());
                 }   
         }
-        /**
-         * Update the JobPanel content and the item text later
-         */
-        public void onJobUpdate() {     
-                progressionModified.set(true);
-        }
+
         /**
          * 
          * @return The associated Job
          */
-        public Job getJob() {
+        public SwingWorker getJob() {
                 return job;
-        }
-        /**
-         * Listen to timer events
-         */
-        private class TimerFetchListener implements ActionListener {
-
-                @Override
-                public void actionPerformed(ActionEvent ae) {
-                        //Update the job if the progression has been updated
-                        if(progressionModified.getAndSet(false)) {
-                                updateJob();
-                        }
-                }
-                
         }
 }

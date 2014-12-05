@@ -29,7 +29,9 @@
 package org.orbisgis.view.joblist;
 
 
+import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,19 +40,19 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.AbstractListModel;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+
 import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
-import org.orbisgis.view.background.BackgroundListener;
-import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.background.Job;
 import org.orbisgis.sif.common.ContainerItemProperties;
+import sun.awt.AppContext;
 
 /**
  * JList model of the Job list
  */
 public class JobListModel extends AbstractListModel {
+        private static final int FETCH_JOB_TIME = 500;
         private static final Logger LOGGER = Logger.getLogger(JobListModel.class);
-        private List<JobListItem> shownJobs = new ArrayList<JobListItem>();
+        private List<JobListItem> shownJobs = new ArrayList<>();
         /*!< If true a swing runnable is pending to refresh the content of
           the JobListModel
          */
@@ -58,42 +60,67 @@ public class JobListModel extends AbstractListModel {
         private PropertyChangeListener labelUpdateListener;
         
         //Store Job events
-        private List<Job> jobAdded = Collections.synchronizedList(new LinkedList<Job>());
-        private List<Job> jobRemoved = Collections.synchronizedList(new LinkedList<Job>());
-        private List<Job> jobUpdated = Collections.synchronizedList(new LinkedList<Job>());
+        private List<SwingWorker> jobAdded = Collections.synchronizedList(new LinkedList<SwingWorker>());
+        private List<SwingWorker> jobRemoved = Collections.synchronizedList(new LinkedList<SwingWorker>());
+        private List<SwingWorker> jobUpdated = Collections.synchronizedList(new LinkedList<SwingWorker>());
 
         /**
          * Remove all items before the release of this object
          */
         public void dispose() {
-                while(!shownJobs.isEmpty()) {
-                        shownJobs.remove(0).dispose();
-                }
+            while(!shownJobs.isEmpty()) {
+                shownJobs.remove(0).dispose();
+            }
+            final AppContext appContext = AppContext.getAppContext();
+            appContext.put(SwingWorker.class, null);
         }
-              
-        
-        
         
         /**
          * Attach listeners to the BackgroundManager
          * @return itself
          */
         public JobListModel listenToBackgroundManager() {
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                //bm.addBackgroundListener(EventHandler.create(BackgroundListener.class,this,"onJobListChange"));
-                bm.addBackgroundListener(new JobListBackgroundListener());
-                labelUpdateListener = EventHandler.create(PropertyChangeListener.class, this, "onJobItemLabelChange","source");
-                return this;
+            final AppContext appContext = AppContext.getAppContext();
+            WatchExecutorService executorService = new WatchExecutorService();
+            executorService.addActionListener(EventHandler.create(ActionListener.class, this, "onNewWorker","source"));
+            appContext.put(SwingWorker.class, executorService);
+            labelUpdateListener = EventHandler.create(PropertyChangeListener.class, this, "onJobItemLabelChange","source");
+            return this;
         }
-        
+
+        /**
+         * SwingWorker has been added to ThreadPool
+         * @param swingWorker SwingWorker instance
+         */
+        public void onNewWorker(SwingWorker swingWorker) {
+            jobAdded.add(swingWorker);
+            // Track en of worker
+            swingWorker.getPropertyChangeSupport().addPropertyChangeListener("state",
+                    EventHandler.create(PropertyChangeListener.class, this, "onWorkerStateChange", ""));
+            onJobListChange();
+        }
+
+        /**
+         * Worker state changed
+         * @param evt SwingWorker event
+         */
+        public void onWorkerStateChange(PropertyChangeEvent evt) {
+            switch ((SwingWorker.StateValue)evt.getNewValue()) {
+                case DONE:
+                    jobRemoved.add((SwingWorker)evt.getSource());
+                    break;
+                default:
+                    jobUpdated.add((SwingWorker)evt.getSource());
+            }
+        }
+
         @Override
         public int getSize() {
                 return shownJobs.size();
         }
 
         /**
-         * A job item change and the List must be notified
-         * @param item 
+         * @param item New task value
          */
         public void onJobItemLabelChange(JobListItem item) {
                 int jobIndex = shownJobs.indexOf(item);
@@ -113,7 +140,7 @@ public class JobListModel extends AbstractListModel {
          */
         private void updateJobList() {
                 while(!jobAdded.isEmpty()) {
-                        Job job = jobAdded.remove(0);
+                        SwingWorker job = jobAdded.remove(0);
                         //Added
                         JobListItem addedJobItem = new JobListItem(job).listenToJob(false);
                         addedJobItem.addPropertyChangeListener(ContainerItemProperties.PROP_LABEL,labelUpdateListener);
@@ -123,7 +150,7 @@ public class JobListModel extends AbstractListModel {
                 }
                 //Removed
                 while(!jobRemoved.isEmpty()) {
-                        Job job = jobRemoved.remove(0);
+                        SwingWorker job = jobRemoved.remove(0);
                         JobListItem jobId = new JobListItem(job);
                         int jobIndex = shownJobs.indexOf(jobId);
                         if(jobIndex!=-1) {
@@ -137,7 +164,7 @@ public class JobListModel extends AbstractListModel {
                 }
                 //Updated
                 while(!jobUpdated.isEmpty()) {
-                        Job job = jobUpdated.remove(0);
+                        SwingWorker job = jobUpdated.remove(0);
                         JobListItem changedJobItem = new JobListItem(job).listenToJob(false);
                         fireContentsChanged(changedJobItem, 0, 0);
                         LOGGER.debug("JobListModel:jobReplaced");
@@ -151,33 +178,18 @@ public class JobListModel extends AbstractListModel {
         }
         
         private class ReadJobListOnSwingThread  implements Runnable {
-
                 @Override
                 public void run() {
+                    try {
+                        do {
+                            updateJobList();
+                            Thread.sleep(FETCH_JOB_TIME);
+                        } while (!jobAdded.isEmpty());
+                    }catch (InterruptedException ex) {
+                        //Ignore
+                    } finally {
                         awaitingRefresh.set(false);
-                        updateJobList();
-                }
-                
-        }
-        
-        private class JobListBackgroundListener implements BackgroundListener {
-
-                @Override
-                public void jobAdded(Job job) {
-                        jobAdded.add(job);
-                        onJobListChange();
-                }
-
-                @Override
-                public void jobRemoved(Job job) {
-                        jobRemoved.add(job);
-                        onJobListChange();
-                }
-
-                @Override
-                public void jobReplaced(Job job) {
-                        jobUpdated.add(job);
-                        onJobListChange();
+                    }
                 }
                 
         }
