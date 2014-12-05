@@ -38,7 +38,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.TableModelListener;
-import org.orbisgis.view.components.renderers.ListLaFRenderer;
+import org.orbisgis.sif.components.renderers.ListLaFRenderer;
 
 /**
  * This list is set at the left of the table to show the row number.
