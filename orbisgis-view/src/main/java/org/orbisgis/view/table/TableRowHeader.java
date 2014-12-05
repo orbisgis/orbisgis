@@ -44,10 +44,9 @@ import org.orbisgis.sif.components.renderers.ListLaFRenderer;
  * This list is set at the left of the table to show the row number.
  * @author Erwan Bocher
  */
-public class TableRowHeader extends JList {
+public class TableRowHeader extends JList<Integer> {
         private static final long serialVersionUID = 1L;
-        private TableModelListener listener = EventHandler.create(TableModelListener.class,this,"tableChanged");
-        private final JTable table;
+    private final JTable table;
         private final RowHeaderListModel model;
 
         public TableRowHeader(JTable table) {
@@ -61,17 +60,16 @@ public class TableRowHeader extends JList {
                 setBorder(new RowHeaderBorder());
                 setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
                 syncRowCount(); // Initialize to initial size of table.
-                table.getModel().addTableModelListener(listener);
+            TableModelListener listener = EventHandler.create(TableModelListener.class, this, "tableChanged");
+            table.getModel().addTableModelListener(listener);
                 setOpaque(false);
         }
 
         @Override
         public void updateUI() {
                 super.updateUI();
-                if(table!=null) {
-                        setFixedCellHeight(table.getRowHeight());
-                        computeCellWidth();
-                }
+                setFixedCellHeight(table.getRowHeight());
+                computeCellWidth();
         }
         
         private void computeCellWidth() {
@@ -102,13 +100,13 @@ public class TableRowHeader extends JList {
         /**
          * List model used by the header for the attributes tables.
          */
-        private static class RowHeaderListModel extends AbstractListModel {
+        private static class RowHeaderListModel extends AbstractListModel<Integer> {
 
                 private static final long serialVersionUID = 1L;
                 private int size;
 
                 @Override
-                public Object getElementAt(int index) {
+                public Integer getElementAt(int index) {
                         return index + 1;
                 }
 
@@ -129,16 +127,14 @@ public class TableRowHeader extends JList {
                 }
         }
 
-        private class CellRenderer extends ListLaFRenderer {
+        private class CellRenderer extends ListLaFRenderer<Integer> {
 
-                private static final long serialVersionUID = 1L;
-
-                public CellRenderer(JList list) {
+                public CellRenderer(JList<Integer> list) {
                         super(list);
                 }
 
                 @Override
-                public Component getListCellRendererComponent(JList list, Object value,
+                public Component getListCellRendererComponent(JList<? extends Integer> list, Integer value,
                         int index, boolean selected, boolean hasFocus) {
                         // Never paint cells as "selected."
                         
