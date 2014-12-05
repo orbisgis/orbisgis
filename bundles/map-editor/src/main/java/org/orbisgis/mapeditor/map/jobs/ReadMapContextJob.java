@@ -28,9 +28,8 @@
  */
 package org.orbisgis.mapeditor.map.jobs;
 
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.mapeditorapi.MapElement;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.viewapi.edition.EditorManager;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -39,7 +38,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Open the MapContext and 
  * @author Nicolas Fortin
  */
-public class ReadMapContextJob implements BackgroundJob {
+public class ReadMapContextJob extends SwingWorkerPM {
 
     private static final I18n I18N = I18nFactory.getI18n(ReadMapContextJob.class);
     private MapElement editableMap;
@@ -53,16 +52,13 @@ public class ReadMapContextJob implements BackgroundJob {
     public ReadMapContextJob(MapElement editableMap, EditorManager editorManager) {
         this.editableMap = editableMap;
         this.editorManager = editorManager;
+        setTaskName(I18N.tr("Open the map context"));
     }
 
     @Override
-    public void run(ProgressMonitor pm) {
-        editableMap.open(pm);
+    protected Object doInBackground() throws Exception {
+        editableMap.open(this);
         editorManager.openEditable(editableMap);
-    }
-
-    @Override
-    public String getTaskName() {
-        return I18N.tr("Open the map context");
+        return null;
     }
 }
