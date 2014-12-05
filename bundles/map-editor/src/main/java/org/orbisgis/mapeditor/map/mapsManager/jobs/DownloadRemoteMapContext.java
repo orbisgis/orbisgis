@@ -30,13 +30,14 @@ package org.orbisgis.mapeditor.map.mapsManager.jobs;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeNode;
 import org.apache.log4j.Logger;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeBusy;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeMapCatalogServer;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeWorkspace;
@@ -47,7 +48,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Download the remote map context and update the tree
  * @author Nicolas Fortin
  */
-public class DownloadRemoteMapContext implements BackgroundJob {
+public class DownloadRemoteMapContext extends SwingWorkerPM<List<RemoteMapContext>, List<RemoteMapContext>> {
         private static final I18n I18N = I18nFactory.getI18n(ReadStoredMap.class);
         private TreeNodeWorkspace workspaceNode;
         private TreeNodeBusy treeNodeBusyHint;
@@ -56,54 +57,44 @@ public class DownloadRemoteMapContext implements BackgroundJob {
         public DownloadRemoteMapContext(TreeNodeWorkspace workspace, TreeNodeBusy treeNodeBusyHint) {
                 this.workspaceNode = workspace;
                 this.treeNodeBusyHint = treeNodeBusyHint;
+                setTaskName(I18N.tr("Download the context of {0}",workspaceNode));
         }
-        
+
         @Override
-        public void run(ProgressMonitor pm) {
-                //
+        protected List<RemoteMapContext> doInBackground() throws IOException {
+            Workspace workspace = workspaceNode.getWorkspace();
+            try {
+                treeNodeBusyHint.setDoAnimation(true);
+                return workspace.getMapContextList();
+            } finally {
+                // Stop animation
+                treeNodeBusyHint.setDoAnimation(false);
+            }
+        }
+
+        @Override
+        protected void done() {
+            try {
+                feedWorkspaceNode(get());
+            } catch (InterruptedException| ExecutionException ex) {
+                feedWorkspaceNode(null);
                 Workspace workspace = workspaceNode.getWorkspace();
-                try {
-                        treeNodeBusyHint.setDoAnimation(true);
-                        List<RemoteMapContext> contexts = workspace.getMapContextList();
-                        SwingUtilities.invokeLater(new FeedWorkspaceNode(workspaceNode, contexts));
-                } catch(IOException ex) {
-                        // Download fail, inform the user
-                        // By logging and by the server icon
-                        LOGGER.error(I18N.tr("Cannot download the server's contexts of {0}",workspace.getWorkspaceName()),ex);
-                        SwingUtilities.invokeLater(new FeedWorkspaceNode(workspaceNode, null));
-                } finally {
-                        // Stop animation
-                        treeNodeBusyHint.setDoAnimation(false);
-                }
-        }
+                LOGGER.error(I18N.tr("Cannot download the server's contexts of {0}",workspace.getWorkspaceName()),ex);
+            }
 
-        @Override
-        public String getTaskName() {
-                return I18N.tr("Download the context of {0}",workspaceNode);
         }
-        
-        private static class FeedWorkspaceNode implements Runnable {
-                TreeNodeWorkspace workspaceNode;
-                List<RemoteMapContext> contexts;
-
-                public FeedWorkspaceNode(TreeNodeWorkspace workspaceNode, List<RemoteMapContext> contexts) {
-                        this.workspaceNode = workspaceNode;
-                        this.contexts = contexts;
+        public void feedWorkspaceNode(List<RemoteMapContext> contexts) {
+            if(contexts != null) {
+                for(RemoteMapContext context : contexts) {
+                    workspaceNode.addContext(context);
                 }
-                @Override
-                public void run() {
-                        if(contexts!=null) {
-                                for(RemoteMapContext context : contexts) {
-                                        workspaceNode.addContext(context);
-                                }
-                        } else {
-                                TreeNode parent = workspaceNode.getParent();
-                                if(!(parent instanceof TreeNodeMapCatalogServer)) {
-                                        return;
-                                }
-                                TreeNodeMapCatalogServer server = (TreeNodeMapCatalogServer)parent;
-                                server.setServerStatus(TreeNodeMapCatalogServer.SERVER_STATUS.UNREACHABLE);                                
-                        }
-                }                
+            } else {
+                TreeNode parent = workspaceNode.getParent();
+                if(!(parent instanceof TreeNodeMapCatalogServer)) {
+                    return;
+                }
+                TreeNodeMapCatalogServer server = (TreeNodeMapCatalogServer)parent;
+                server.setServerStatus(TreeNodeMapCatalogServer.SERVER_STATUS.UNREACHABLE);
+            }
         }
 }

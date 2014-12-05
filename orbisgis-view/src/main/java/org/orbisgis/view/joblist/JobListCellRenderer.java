@@ -58,7 +58,7 @@ public class JobListCellRenderer implements ListCellRenderer {
         public Component getListCellRendererComponent(JList list, Object value, int index,
       boolean isSelected, boolean cellHasFocus) {
                 JobListItem item = (JobListItem) value;
-                item.onJobUpdate();
+                item.updateJob();
                 return item.getItemPanel();                
         }
         

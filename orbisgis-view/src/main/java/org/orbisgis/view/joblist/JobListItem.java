@@ -96,7 +96,7 @@ public class JobListItem extends ContainerItemProperties {
         /**
          * Read the job to update labels and controls
          */
-        private void updateJob() {
+        public void updateJob() {
                 if(itemPanel!=null) {
                         itemPanel.readJob();
                         setLabel(itemPanel.getText());

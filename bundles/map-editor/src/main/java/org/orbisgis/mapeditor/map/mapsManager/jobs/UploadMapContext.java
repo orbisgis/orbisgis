@@ -30,70 +30,73 @@ package org.orbisgis.mapeditor.map.mapsManager.jobs;
 
 import java.io.IOException;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+
 import org.apache.log4j.Logger;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Add or Replace a MapContext on the server
+ *
  * @author Nicolas Fortin
  */
-public class UploadMapContext implements BackgroundJob {
-        private static final I18n I18N = I18nFactory.getI18n(UploadMapContext.class);
-        private static final Logger LOGGER = Logger.getLogger(UploadMapContext.class);
-        private MapContext mapContext;
-        private TreeNodeWorkspace workspaceNode;
-        private Integer mapContextid;
+public class UploadMapContext extends SwingWorker {
+    private static final I18n I18N = I18nFactory.getI18n(UploadMapContext.class);
+    private static final Logger LOGGER = Logger.getLogger(UploadMapContext.class);
+    private MapContext mapContext;
+    private TreeNodeWorkspace workspaceNode;
+    private Integer mapContextid;
 
-        /**
-         * Upload a new Map Context or update an existing one
-         * @param mapContext Map context to upload
-         * @param workspaceNode Workspace tree node
-         * @param mapContextid Null on Add map context, or the map id on update 
-         */
-        public UploadMapContext(MapContext mapContext, TreeNodeWorkspace workspaceNode, int mapContextid) {
-                this.mapContext = mapContext;
-                this.workspaceNode = workspaceNode;
-                this.mapContextid = mapContextid;
-        }
-        
-        /**
-         * Update an existing remote map context
-         * @param mapContext
-         * @param workspaceNode 
-         */
-        public UploadMapContext(MapContext mapContext, TreeNodeWorkspace workspaceNode) {
-                this.mapContext = mapContext;
-                this.workspaceNode = workspaceNode;
-                this.mapContextid = null;
-        }
-        
-        
-        @Override
-        public void run(ProgressMonitor pm) {
-                Workspace workspace = workspaceNode.getWorkspace();
-                try {
-                        workspace.publishMapContext(mapContext,mapContextid);
-                        SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                        workspaceNode.update();
-                                }
-                        });
-                        
-                } catch(IOException ex) {
-                        LOGGER.error(ex.getLocalizedMessage(),ex);
+    /**
+     * Upload a new Map Context or update an existing one
+     *
+     * @param mapContext    Map context to upload
+     * @param workspaceNode Workspace tree node
+     * @param mapContextid  Null on Add map context, or the map id on update
+     */
+    public UploadMapContext(MapContext mapContext, TreeNodeWorkspace workspaceNode, int mapContextid) {
+        this.mapContext = mapContext;
+        this.workspaceNode = workspaceNode;
+        this.mapContextid = mapContextid;
+    }
+
+    /**
+     * Update an existing remote map context
+     *
+     * @param mapContext
+     * @param workspaceNode
+     */
+    public UploadMapContext(MapContext mapContext, TreeNodeWorkspace workspaceNode) {
+        this.mapContext = mapContext;
+        this.workspaceNode = workspaceNode;
+        this.mapContextid = null;
+    }
+
+    @Override
+    protected Object doInBackground() throws Exception {
+        Workspace workspace = workspaceNode.getWorkspace();
+        try {
+            workspace.publishMapContext(mapContext, mapContextid);
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    workspaceNode.update();
                 }
-        }
+            });
 
-        @Override
-        public String getTaskName() {
-                return I18N.tr("Uploading the map context..");
+        } catch (IOException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
-        
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return I18N.tr("Uploading the map context..");
+    }
+
 }

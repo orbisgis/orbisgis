@@ -29,11 +29,11 @@
 package org.orbisgis.sqlconsole.actions;
 
 import org.apache.log4j.Logger;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sqlparserapi.ScriptSplitter;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
-import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.sqlconsole.ui.SQLConsolePanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -50,11 +50,10 @@ import java.sql.Statement;
 /**
  * Execute SQL script in a background process
  */
-public class ExecuteScriptProcess implements BackgroundJob {
+public class ExecuteScriptProcess extends SwingWorkerPM {
 
-        private static final Logger LOGGER = Logger.getLogger("gui."+ExecuteScriptProcess.class);
+        private static final Logger LOGGER = Logger.getLogger("gui." + ExecuteScriptProcess.class);
         protected final static I18n I18N = I18nFactory.getI18n(ExecuteScriptProcess.class);
-        private static final String[] executeQueryCommands = new String[] {"select", "explain", "call", "show", "script"};
 
         private SQLConsolePanel panel;
         private DataSource ds;
@@ -73,13 +72,9 @@ public class ExecuteScriptProcess implements BackgroundJob {
                 this.panel = panel;
                 this.splitterFactory = splitterFactory;
                 this.timeOut=timeOut;
+                setTaskName(I18N.tr("Executing script"));
         }
 
-        @Override
-        public String getTaskName() {
-                return I18N.tr("Executing script");
-        }
-        
         private void showPanelMessage(final String message) {
                 if (panel != null) {
                         SwingUtilities.invokeLater(new Runnable() {
@@ -93,76 +88,61 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
         private void parseAndExecuteScript(ProgressMonitor pm, Statement st) throws SQLException {
             ScriptSplitter splitter = splitterFactory.create(panel.getScriptPanel().getDocument(), true);
-            int totalRequests = 0;
-            while(splitter.hasNext()) {
-                if (!splitter.next().trim().isEmpty()) {
-                    totalRequests++;
-                }
-            }
-            splitter = splitterFactory.create(panel.getScriptPanel().getDocument(), true);
-            int currentRequest = 0;
-            while(splitter.hasNext()) {
-                currentRequest++;
-                String query = splitter.next().trim();
-                if (!query.isEmpty()) {
-                    // Some queries need to be shown to the user
-                    LOGGER.info(I18N.tr("Execute request {0}/{1}: {2}",
-                            currentRequest, totalRequests, query));
-                    long debQuery = System.currentTimeMillis();
-                    String lowerCaseQuery = query.toLowerCase();
-                    if(isExecuteQuery(lowerCaseQuery)) {
-                        try(ResultSet rs = st.executeQuery(query)) {
-                            LOGGER.info("\n" + ReadTable.resultSetToString(rs, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, true, true));
-                        } catch (SQLException ex) {
-                            // May not accept executeQuery but simple query
-                            if(!lowerCaseQuery.startsWith("select")) {
-                                st.execute(query);
-                            } else {
-                                throw ex;
-                            }
-                        }
-                    } else {
-                        st.execute(query);
+            try {
+                panel.getScriptPanel().setEditable(false);
+                int totalRequests = 0;
+                while (splitter.hasNext()) {
+                    if (!splitter.next().trim().isEmpty()) {
+                        totalRequests++;
                     }
-                    LOGGER.info(I18N.tr("Done in {0} seconds\n",(System.currentTimeMillis() - debQuery) / 1000.));
-                    pm.endTask();
                 }
-            }
-        }
+                splitter = splitterFactory.create(panel.getScriptPanel().getDocument(), true);
+                int currentRequest = 0;
+                while (splitter.hasNext()) {
+                    currentRequest++;
+                    String query = splitter.next().trim();
+                    if (!query.isEmpty()) {
+                        // Some queries need to be shown to the user
+                        LOGGER.info(I18N.tr("Execute request {0}/{1}: {2}", currentRequest, totalRequests, query));
+                        long debQuery = System.currentTimeMillis();
+                        if (st.execute(query)) {
+                            ResultSet rs = st.getResultSet();
+                            LOGGER.info("\n" + ReadTable.resultSetToString(rs, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, true, true));
 
-    private boolean isExecuteQuery(String lc_query) {
-        boolean doExecuteQuery = false;
-        for(String command : executeQueryCommands) {
-            if(lc_query.startsWith(command)) {
-                return true;
+                        }
+                        LOGGER.info(I18N.tr("Done in {0} seconds\n", (System.currentTimeMillis() - debQuery) / 1000.));
+                        pm.endTask();
+                    }
+                }
+            } finally {
+                panel.getScriptPanel().setEditable(true);
             }
         }
-        return doExecuteQuery;
-    }
 
     @Override
-        public void run(ProgressMonitor progress) {
-                long t1 = System.currentTimeMillis();
-                ProgressMonitor pm = progress.startTask(I18N.tr("Execute SQL Request"), panel.getScriptPanel().getLineCount());
-                try(Connection connection = ds.getConnection()) {
-                    try(Statement st = connection.createStatement()) {
-                        st.setQueryTimeout(timeOut);
-                        // If the user clicks on cancel, cancel the execution
-                        pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL ,
-                                EventHandler.create(PropertyChangeListener.class, st, "cancel"));
-                        if(splitterFactory != null) {
-                            parseAndExecuteScript(pm, st);
-                        } else {
-                            st.execute(panel.getScriptPanel().getText().trim());
-                        }
-                    }
-                } catch (SQLException ex) {
-                    LOGGER.error(ex.getLocalizedMessage(), ex);
+    protected Object doInBackground() throws Exception {
+        long t1 = System.currentTimeMillis();
+        ProgressMonitor pm = startTask(I18N.tr("Execute SQL Request"), panel.getScriptPanel().getLineCount());
+        try(Connection connection = ds.getConnection()) {
+            try(Statement st = connection.createStatement()) {
+                st.setQueryTimeout(timeOut);
+                // If the user clicks on cancel, cancel the execution
+                pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL ,
+                        EventHandler.create(PropertyChangeListener.class, st, "cancel"));
+                if(splitterFactory != null) {
+                    parseAndExecuteScript(pm, st);
+                } else {
+                    st.execute(panel.getScriptPanel().getText().trim());
                 }
-                long t2 = System.currentTimeMillis();
-                double lastExecTime = ((t2 - t1) / 1000.0);
-                String message = I18N.tr("OVERALL EXECUTION TIME: {0} seconds",lastExecTime);
-                LOGGER.info(message);
-                showPanelMessage(message);
+            }
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
+        long t2 = System.currentTimeMillis();
+        double lastExecTime = ((t2 - t1) / 1000.0);
+        String message = I18N.tr("OVERALL EXECUTION TIME: {0} seconds",lastExecTime);
+        LOGGER.info(message);
+        showPanelMessage(message);
+        return null;
+    }
 }

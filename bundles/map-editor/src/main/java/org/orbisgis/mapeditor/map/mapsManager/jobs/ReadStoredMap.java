@@ -30,12 +30,12 @@ package org.orbisgis.mapeditor.map.mapsManager.jobs;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+
 import net.opengis.ows._2.LanguageStringType;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.layerModel.OwsMapContext;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.mapeditor.map.mapsManager.TreeLeafMapElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -45,64 +45,75 @@ import org.xnap.commons.i18n.I18nFactory;
  * described in the map context files.
  * @author Nicolas Fortin
  */
-public class ReadStoredMap implements BackgroundJob {
-        private static final I18n I18N = I18nFactory.getI18n(ReadStoredMap.class);
-        List<TreeLeafMapElement> mapContextFiles;
+public class ReadStoredMap extends SwingWorkerPM<ReadStoredMap.DoRename, ReadStoredMap.DoRename> {
+    private static final I18n I18N = I18nFactory.getI18n(ReadStoredMap.class);
+    List<TreeLeafMapElement> mapContextFiles;
 
-        /**
-         * Constructor using only one leaf map element
-         * @param mapContextFile
-         */
-        public ReadStoredMap(TreeLeafMapElement mapContextFile) {
-                mapContextFiles = new ArrayList<>();
-                mapContextFiles.add(mapContextFile);
-        }
+    /**
+     * @param mapContextFile  leaf map element
+     */
+    public ReadStoredMap(TreeLeafMapElement mapContextFile) {
+        mapContextFiles = new ArrayList<>();
+        mapContextFiles.add(mapContextFile);
+        setTaskName(I18N.tr("Parse maps title and description"));
+    }
 
-        /**
-         * Constructor using multiple leaf map element
-         * @param mapContextFiles Array of map elements.
-        */
-        public ReadStoredMap(List<TreeLeafMapElement> mapContextFiles) {
-                this.mapContextFiles = mapContextFiles;
-        }       
-        
-        @Override
-        public void run(ProgressMonitor pm) {
-                for(int elIndex=0; elIndex<mapContextFiles.size();elIndex++) {
-                        TreeLeafMapElement mapEl = mapContextFiles.get(elIndex);
-                        MapContext el = mapEl.getMapElement(pm, mapEl.getDataManager()).getMapContext();
-                        if(el instanceof OwsMapContext) {
-                                OwsMapContext mapContext = (OwsMapContext)el;
-                                if(mapContext.getJAXBObject().getGeneral()!=null) {
-                                        LanguageStringType title = mapContext.getJAXBObject().getGeneral().getTitle();
-                                        if(title!=null && !title.getValue().isEmpty())
-                                        SwingUtilities.invokeLater(new DoRename(mapEl,title.getValue()));
-                                }
-                        }
-                        pm.progressTo(elIndex / mapContextFiles.size() * 100);
-                        if(pm.isCancelled()) {
-                                return;
-                        }
+    /**
+     * Constructor using multiple leaf map element
+     *
+     * @param mapContextFiles Array of map elements.
+     */
+    public ReadStoredMap(List<TreeLeafMapElement> mapContextFiles) {
+        this.mapContextFiles = mapContextFiles;
+    }
+
+    @Override
+    protected DoRename doInBackground() throws Exception {
+        for (int elIndex = 0; elIndex < mapContextFiles.size(); elIndex++) {
+            TreeLeafMapElement mapEl = mapContextFiles.get(elIndex);
+            MapContext el = mapEl.getMapElement(this, mapEl.getDataManager()).getMapContext();
+            if (el instanceof OwsMapContext) {
+                OwsMapContext mapContext = (OwsMapContext) el;
+                if (mapContext.getJAXBObject().getGeneral() != null) {
+                    LanguageStringType title = mapContext.getJAXBObject().getGeneral().getTitle();
+                    if (title != null && !title.getValue().isEmpty()) {
+                        publish(new DoRename(mapEl, title.getValue()));
+                    }
                 }
+            }
+            setProgress(elIndex / mapContextFiles.size() * 100);
+            if (isCancelled()) {
+                break;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected void process(List<DoRename> chunks) {
+        for(DoRename doRename : chunks) {
+            if(doRename != null) {
+                doRename.getTreeNode().setLabel(doRename.getNewLabel());
+            }
+        }
+    }
+
+    public static class DoRename {
+        TreeLeafMapElement treeNode;
+        String newLabel;
+
+        public DoRename(TreeLeafMapElement treeNode, String newLabel) {
+            this.treeNode = treeNode;
+            this.newLabel = newLabel;
         }
 
-        @Override
-        public String getTaskName() {
-                return I18N.tr("Parse maps title and description");
+        public TreeLeafMapElement getTreeNode() {
+            return treeNode;
         }
-        
-        private static class DoRename implements Runnable {
-                TreeLeafMapElement treeNode;
-                String newLabel;
 
-                public DoRename(TreeLeafMapElement treeNode, String newLabel) {
-                        this.treeNode = treeNode;
-                        this.newLabel = newLabel;
-                }                
-                @Override
-                public void run() {
-                        treeNode.setLabel(newLabel);
-                }                
+        public String getNewLabel() {
+            return newLabel;
         }
+    }
         
 }

@@ -40,7 +40,6 @@ import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeLeaf;
 import org.orbisgis.view.components.fstree.DragTreeNode;
 import org.orbisgis.view.components.fstree.PopupTreeNode;
@@ -113,8 +112,7 @@ public abstract class TreeLeafMapElement extends AbstractTreeNodeLeaf implements
          * Open the selected map file (only the first one selected)
          */
         public void onOpenMap() {
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.backgroundOperation(new ReadMapContextJob(getMapElement(new NullProgressMonitor(), dataManager), editorManager));
+                new ReadMapContextJob(getMapElement(new NullProgressMonitor(), dataManager), editorManager).execute();
         }
 
         @Override

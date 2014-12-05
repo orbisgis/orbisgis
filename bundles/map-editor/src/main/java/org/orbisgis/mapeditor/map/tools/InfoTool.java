@@ -33,30 +33,24 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Observable;
-import javax.sql.DataSource;
 import javax.swing.ImageIcon;
+import javax.swing.SwingWorker;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import org.apache.log4j.Logger;
-import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
-import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.background.DefaultJobId;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Show selected geometry information.
@@ -84,9 +78,7 @@ public class InfoTool extends AbstractRectangleTool {
         double miny = rect.getMinY();
         double maxx = rect.getMaxX();
         double maxy = rect.getMaxY();
-        BackgroundManager bm = Services.getService(BackgroundManager.class);
-        bm.backgroundOperation(new DefaultJobId(
-                "org.orbisgis.jobs.InfoTool"), new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), vc.getDataManager().getDataSource(),layer));
+        new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), layer).execute();
 
     }
 
@@ -108,25 +100,24 @@ public class InfoTool extends AbstractRectangleTool {
     /**
      * This class is used to print the selected features in the console, or in the popup if there is only one feature.
      */
-    private static class PopulateViewJob implements BackgroundJob {
+    private static class PopulateViewJob extends SwingWorker {
 
         private final Envelope envelope;
-        private final DataSource sds;
         private final ILayer layer;
+        private static final I18n I18N = I18nFactory.getI18n(PopulateViewJob.class);
 
-        private PopulateViewJob(Envelope envelope, DataSource sds, ILayer layer) {
+        private PopulateViewJob(Envelope envelope, ILayer layer) {
             this.envelope = envelope;
-            this.sds = sds;
             this.layer = layer;
         }
 
         @Override
-        public String getTaskName() {
-            return "Getting info";
+        public String toString() {
+            return I18N.tr("Fetch area information");
         }
 
         @Override
-        public void run(ProgressMonitor pm) {
+        protected Object doInBackground() throws Exception {
             GeometryFactory geometryFactory = new GeometryFactory();
             Geometry envGeom = geometryFactory.toGeometry(envelope);
             TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
@@ -145,7 +136,7 @@ public class InfoTool extends AbstractRectangleTool {
                 }
                 List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableLocation);
                 if(geomFields.isEmpty()) {
-                    return;
+                    return null;
                 }
                 try(PreparedStatement pst = connection.prepareStatement("SELECT * FROM "+layer.getTableReference()+
                         " WHERE "+TableLocation.quoteIdentifier(geomFields.get(0))+" && ?")) {
@@ -162,6 +153,7 @@ public class InfoTool extends AbstractRectangleTool {
             } catch (SQLException ex) {
                 UILOGGER.error(ex.getLocalizedMessage(), ex);
             }
+            return null;
         }
     }
 

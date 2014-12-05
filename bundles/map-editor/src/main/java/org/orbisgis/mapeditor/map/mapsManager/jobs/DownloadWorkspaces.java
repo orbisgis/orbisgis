@@ -31,14 +31,14 @@ package org.orbisgis.mapeditor.map.mapsManager.jobs;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import javax.swing.SwingUtilities;
+import java.util.concurrent.ExecutionException;
+import javax.swing.SwingWorker;
+
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.layerModel.mapcatalog.ConnectionProperties;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapCatalog;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeBusy;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeMapCatalogServer;
 import org.xnap.commons.i18n.I18n;
@@ -46,66 +46,67 @@ import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Download the Workspaces and feed the server tree node.
+ *
  * @author Nicolas Fortin
  */
-public class DownloadWorkspaces implements BackgroundJob {
-        private static final I18n I18N = I18nFactory.getI18n(ReadStoredMap.class);
-        private TreeNodeMapCatalogServer server;
-        private TreeNodeBusy treeNodeBusyHint;
-        private static final Logger LOGGER = Logger.getLogger(DownloadWorkspaces.class);
-        private DataManager dataManager;
-        private File mapsFolder;
-        
-        public DownloadWorkspaces(TreeNodeMapCatalogServer server, TreeNodeBusy treeNodeBusyHint, DataManager dataManager, File mapsFolder) {
-                this.server = server;
-                this.treeNodeBusyHint = treeNodeBusyHint;
-                this.dataManager = dataManager;
-                this.mapsFolder = mapsFolder;
-        }
-        
-        @Override
-        public void run(ProgressMonitor pm) {
-                //
-                try {
-                        treeNodeBusyHint.setDoAnimation(true);
-                        ConnectionProperties parameters = new ConnectionProperties(server.getServerUrl(), dataManager, mapsFolder);
-                        RemoteMapCatalog mapServer = new RemoteMapCatalog(parameters);
-                        List<Workspace> workspaces = mapServer.getWorkspaces();
-                        SwingUtilities.invokeLater(new FeedServerNode(server, workspaces));
-                } catch(IOException ex) {
-                        // Download fail, inform the user
-                        // By logging and by the server icon
-                        LOGGER.error(I18N.tr("Cannot download the server's workspaces of {0}",server.getServerUrl().getHost()),ex);
-                        SwingUtilities.invokeLater(new FeedServerNode(server, null));
-                } finally {
-                        // Stop animation
-                        treeNodeBusyHint.setDoAnimation(false);
-                }
-        }
+public class DownloadWorkspaces extends SwingWorker<List<Workspace>, List<Workspace>> {
+    private static final I18n I18N = I18nFactory.getI18n(ReadStoredMap.class);
+    private TreeNodeMapCatalogServer server;
+    private TreeNodeBusy treeNodeBusyHint;
+    private static final Logger LOGGER = Logger.getLogger(DownloadWorkspaces.class);
+    private DataManager dataManager;
+    private File mapsFolder;
 
-        @Override
-        public String getTaskName() {
-                return I18N.tr("Download the workspaces of {0}",server.getServerUrl().getHost());
-        }
-        
-        private static class FeedServerNode implements Runnable {
-                TreeNodeMapCatalogServer server;
-                List<Workspace> workspaces;
+    public DownloadWorkspaces(TreeNodeMapCatalogServer server, TreeNodeBusy treeNodeBusyHint,
+                              DataManager dataManager, File mapsFolder) {
+        this.server = server;
+        this.treeNodeBusyHint = treeNodeBusyHint;
+        this.dataManager = dataManager;
+        this.mapsFolder = mapsFolder;
+    }
 
-                public FeedServerNode(TreeNodeMapCatalogServer server, List<Workspace> workspaces) {
-                        this.server = server;
-                        this.workspaces = workspaces;
-                }
-                @Override
-                public void run() {
-                        if(workspaces!=null) {
-                                for(Workspace workspace : workspaces) {
-                                        server.addWorkspace(workspace);
-                                }
-                                server.setServerStatus(TreeNodeMapCatalogServer.SERVER_STATUS.CONNECTED);
-                        } else {
-                                server.setServerStatus(TreeNodeMapCatalogServer.SERVER_STATUS.UNREACHABLE);
-                        }
-                }                
+    @Override
+    public String toString() {
+        return I18N.tr("Download the workspaces of {0}", server.getServerUrl().getHost());
+    }
+
+    @Override
+    protected List<Workspace> doInBackground() throws Exception {
+        //
+        try {
+            treeNodeBusyHint.setDoAnimation(true);
+            ConnectionProperties parameters = new ConnectionProperties(server.getServerUrl(), dataManager, mapsFolder);
+            RemoteMapCatalog mapServer = new RemoteMapCatalog(parameters);
+            return mapServer.getWorkspaces();
+        } catch (IOException ex) {
+            // Download fail, inform the user
+            // By logging and by the server icon
+            return null;
+        } finally {
+            // Stop animation
+            treeNodeBusyHint.setDoAnimation(false);
         }
+    }
+
+    @Override
+    protected void done() {
+        try {
+            feedServerNode(get());
+        } catch (InterruptedException | ExecutionException ex) {
+            feedServerNode(null);
+            LOGGER.error(I18N.tr("Cannot download the server's workspaces of {0}", server.getServerUrl().getHost()),
+                    ex);
+        }
+    }
+
+    private void feedServerNode(List<Workspace> workspaces) {
+        if (workspaces != null) {
+            for (Workspace workspace : workspaces) {
+                server.addWorkspace(workspace);
+            }
+            server.setServerStatus(TreeNodeMapCatalogServer.SERVER_STATUS.CONNECTED);
+        } else {
+            server.setServerStatus(TreeNodeMapCatalogServer.SERVER_STATUS.UNREACHABLE);
+        }
+    }
 }

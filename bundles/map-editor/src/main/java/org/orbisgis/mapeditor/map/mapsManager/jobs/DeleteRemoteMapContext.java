@@ -29,11 +29,10 @@
 package org.orbisgis.mapeditor.map.mapsManager.jobs;
 
 import java.io.IOException;
-import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.tree.TreeNode;
+
 import org.apache.log4j.Logger;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeRemoteMap;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeWorkspace;
 import org.xnap.commons.i18n.I18n;
@@ -41,42 +40,45 @@ import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Delete the remote map context and update the tree
+ *
  * @author Nicolas Fortin
  */
-public class DeleteRemoteMapContext  implements BackgroundJob  {
-        private static final I18n I18N = I18nFactory.getI18n(DeleteRemoteMapContext.class);
-        private static final Logger LOGGER = Logger.getLogger(DeleteRemoteMapContext.class);
-        private TreeNodeRemoteMap map;
-        /**
-         * Constructor
-         * @param map The map tree node
-         */
-        public DeleteRemoteMapContext(TreeNodeRemoteMap map) {
-                this.map = map;
-        }       
-        
-        @Override
-        public void run(ProgressMonitor pm) {
-                try {
-                        map.getRemoteMapContext().delete();
-                        SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                        TreeNode parent = map.getParent();
-                                        if (parent instanceof TreeNodeWorkspace) {
-                                                TreeNodeWorkspace workspace = (TreeNodeWorkspace) parent;
-                                                workspace.update();
-                                        }
-                                }
-                        });
-                } catch (IOException ex) {
-                        LOGGER.error(I18N.tr("The map cannot be removed"), ex);
-                }
-        }
+public class DeleteRemoteMapContext extends SwingWorker {
+    private static final I18n I18N = I18nFactory.getI18n(DeleteRemoteMapContext.class);
+    private static final Logger LOGGER = Logger.getLogger(DeleteRemoteMapContext.class);
+    private TreeNodeRemoteMap map;
 
-        @Override
-        public String getTaskName() {
-                return I18N.tr("Delete the remote map context");
+    /**
+     * Constructor
+     *
+     * @param map The map tree node
+     */
+    public DeleteRemoteMapContext(TreeNodeRemoteMap map) {
+        this.map = map;
+    }
+
+    @Override
+    protected Object doInBackground() throws Exception {
+        try {
+            map.getRemoteMapContext().delete();
+        } catch (IOException ex) {
+            LOGGER.error(I18N.tr("The map cannot be removed"), ex);
         }
-        
+        return null;
+    }
+
+    @Override
+    protected void done() {
+        TreeNode parent = map.getParent();
+        if (parent instanceof TreeNodeWorkspace) {
+            TreeNodeWorkspace workspace = (TreeNodeWorkspace) parent;
+            workspace.update();
+        }
+    }
+
+    @Override
+    public String toString() {
+        return I18N.tr("Delete the remote map context");
+    }
+
 }
