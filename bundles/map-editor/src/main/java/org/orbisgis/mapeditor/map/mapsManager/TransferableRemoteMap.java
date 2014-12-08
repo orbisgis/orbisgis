@@ -41,7 +41,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteCommons;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapContext;
-import org.orbisgis.view.components.fstree.TransferableFileContent;
+import org.orbisgis.sif.components.fstree.TransferableFileContent;
 import org.orbisgis.view.edition.TransferableEditableElement;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.mapeditor.map.TransferableMap;

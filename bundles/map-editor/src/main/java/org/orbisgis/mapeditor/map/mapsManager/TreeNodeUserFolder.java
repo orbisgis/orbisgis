@@ -1,6 +1,6 @@
 package org.orbisgis.mapeditor.map.mapsManager;
 
-import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
+import org.orbisgis.sif.components.fstree.TreeNodeFileFactoryManager;
 import org.orbisgis.viewapi.util.MenuCommonFunctions;
 
 import javax.swing.*;

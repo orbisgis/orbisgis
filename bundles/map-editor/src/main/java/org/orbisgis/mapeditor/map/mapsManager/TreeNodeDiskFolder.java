@@ -3,9 +3,9 @@ package org.orbisgis.mapeditor.map.mapsManager;
 import java.io.File;
 import javax.swing.ImageIcon;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
-import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
-import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
-import org.orbisgis.view.components.fstree.TreeNodeFolder;
+import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
+import org.orbisgis.sif.components.fstree.TreeNodeFileFactoryManager;
+import org.orbisgis.sif.components.fstree.TreeNodeFolder;
 
 /**
  * TreeNodeFolder is overloaded in order to define custom folder icons.

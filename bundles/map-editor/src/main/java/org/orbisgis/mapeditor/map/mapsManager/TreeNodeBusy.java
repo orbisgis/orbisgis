@@ -33,8 +33,8 @@ import java.beans.EventHandler;
 import javax.swing.ImageIcon;
 import javax.swing.Timer;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
-import org.orbisgis.view.components.fstree.AbstractTreeNodeLeaf;
-import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
+import org.orbisgis.sif.components.fstree.AbstractTreeNodeLeaf;
+import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
