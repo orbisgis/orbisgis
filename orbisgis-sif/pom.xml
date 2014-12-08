@@ -10,7 +10,7 @@
         </parent>
         <artifactId>orbisgis-sif</artifactId>
         <packaging>bundle</packaging>
-        <name>orbisgis-sif</name>
+        <name>Simple interface factory</name>
         <url>http://maven.apache.org</url>
         <description>In order to provide the same user experience over OrbisGIS gui modules this project aim to expose
             a common Swing usage. Nothing related with GIS should be included in this package.This package content is
