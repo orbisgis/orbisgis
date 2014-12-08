@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.util;
+package org.orbisgis.sif;
 
 import org.apache.log4j.Logger;
 import org.xnap.commons.i18n.I18n;
