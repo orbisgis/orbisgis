@@ -18,16 +18,17 @@
         </parent>
         <modules>
                 <module>orbisgis-commons</module>
+                <module>orbisgis-sif</module>
                 <module>bundles/postgis-jts-osgi</module>
                 <module>bundles/h2trigger</module>
                 <module>bundles/core-jdbc</module>
+                <module>bundles/editor-jdbc</module>
                 <module>bundles/h2trigger-osgi</module>
                 <module>bundles/core-map</module>
                 <module>bundles/core-export</module>
                 <module>wms-client</module>
                 <module>api/orbisgis-core</module>
                 <module>orbisgis-core</module>
-                <module>orbisgis-sif</module>
                 <module>api/orbisgis-view</module>
                 <module>bundles/sql-parser-api</module>
                 <module>bundles/sqlconsole-parser</module>
