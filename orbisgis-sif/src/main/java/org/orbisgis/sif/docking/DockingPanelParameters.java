@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.viewapi.docking;
+package org.orbisgis.sif.docking;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -36,11 +36,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.swing.*;
-
-import org.orbisgis.viewapi.util.PropertyHost;
-import org.orbisgis.viewapi.util.VetoablePropertyHost;
-
+import javax.swing.Action;
+import javax.swing.Icon;
 
 /**
  * Parameters of a panel in a docking environment

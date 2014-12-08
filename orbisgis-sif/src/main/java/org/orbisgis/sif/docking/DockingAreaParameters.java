@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.viewapi.docking;
+package org.orbisgis.sif.docking;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

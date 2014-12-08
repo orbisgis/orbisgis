@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.viewapi.docking;
+package org.orbisgis.sif.docking;
 
 /**
  * Used by GUI panels to set the default location of the docking panel

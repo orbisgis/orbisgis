@@ -26,29 +26,30 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.viewapi.docking;
+package org.orbisgis.sif.docking;
+
+import javax.swing.JComponent;
 
 /**
- * This factory provides a way to define multiple instance of 
+ * A panel must implement theses function to return a DockingPanel properties.
+ * @warning Do not change this interface otherwise the plugins
+ * that implement this interface will no longer work.
+ * Add new properties in dockingParameters instead.
+ * This interface allow to choose another Docking system later.
  */
-public interface DockingPanelFactory {
+
+
+public interface DockingPanel {
+    /**
+     * Give information on the behaviour of this panel related to the current
+     * docking system
+     * @return The panel parameter instance
+     */
+    DockingPanelParameters getDockingParameters();
     
     /**
-     * Create an empty layout, will be used to apply XML file or a byte stream
-     * @return 
+     * Return the content of the view.
+     * @return A swing content to show in this panel
      */
-    public DockingPanelLayout makeEmptyLayout();
-    /**
-     * 
-     * @param layout
-     * @return True if the layout corresponding to the layout of this factory
-     */
-    public boolean match(DockingPanelLayout layout);
-    /**
-     * Return a new DockingPanel for this panel informations
-     * @param layout
-     * @return 
-     */
-    public DockingPanel create(DockingPanelLayout layout);
-    
+    JComponent getComponent();
 }

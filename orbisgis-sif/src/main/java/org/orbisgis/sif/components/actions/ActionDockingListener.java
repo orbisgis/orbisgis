@@ -28,9 +28,10 @@
  */
 package org.orbisgis.sif.components.actions;
 
-import org.orbisgis.viewapi.docking.DockingPanelParameters;
+import org.orbisgis.sif.docking.DockingPanelParameters;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.SwingUtilities;
 import java.beans.IndexedPropertyChangeEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

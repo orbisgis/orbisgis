@@ -27,7 +27,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.viewapi.util;
+package org.orbisgis.sif.docking;
 
 /**
  * Limited API for bibliothek.util.xml.XElement
