@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.viewapi.util;
+package org.orbisgis.sif.common;
 
 import java.awt.event.ActionListener;
 import javax.swing.AbstractButton;

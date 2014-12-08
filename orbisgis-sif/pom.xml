@@ -88,5 +88,15 @@
                         <artifactId>miglayout-swing</artifactId>
                         <version>4.2</version>
                 </dependency>
+                <dependency>
+                    <groupId>com.fifesoft</groupId>
+                    <artifactId>autocomplete</artifactId>
+                    <version>${rsyntax-autocomplete-version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.fifesoft</groupId>
+                    <artifactId>rsyntaxtextarea</artifactId>
+                    <version>${rsyntax-version}</version>
+                </dependency>
         </dependencies>
 </project>

@@ -47,6 +47,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
+import org.orbisgis.sif.components.findReplace.FindReplaceDialog;
 import org.orbisgis.sif.multiInputPanel.CheckBoxChoice;
 import org.orbisgis.sif.multiInputPanel.MIPValidationInteger;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;

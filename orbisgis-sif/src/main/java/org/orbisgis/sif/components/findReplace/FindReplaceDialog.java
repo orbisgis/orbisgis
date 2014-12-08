@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.findReplace;
+package org.orbisgis.sif.components.findReplace;
 
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -42,7 +42,7 @@ import org.apache.log4j.Logger;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -50,7 +50,7 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * @author Erwan Bocher
  * FindReplaceDialog is based on the Fred Swartz job's.
- * http://leepoint.net/notes-java/GUI/layouts/gridbag-example.html
+ * https://web.archive.org/web/20140703173120/http://www.leepoint.net/notes-java/GUI/layouts/gridbag-example.html
  *
  */
 public final class FindReplaceDialog extends JDialog {

@@ -33,7 +33,7 @@ All methods return GBHelper object for call chaining.
 Author : Fred Swartz - January 30, 2007 - Placed in public domain.
  *
  */
-package org.orbisgis.view.components.findReplace;
+package org.orbisgis.sif.components.findReplace;
 
 import java.awt.GridBagConstraints;
 
