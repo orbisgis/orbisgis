@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.actions.intern;
+package org.orbisgis.sif.components.actions.intern;
 
 import java.awt.Component;
 import java.awt.Container;

@@ -27,7 +27,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.components.actions;
+package org.orbisgis.sif.components.actions;
 
 import javax.swing.Action;
 import java.beans.PropertyChangeListener;

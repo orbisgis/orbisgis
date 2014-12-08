@@ -1,4 +1,4 @@
-package org.orbisgis.view.components.actions;
+package org.orbisgis.sif.components.actions;
 
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;

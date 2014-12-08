@@ -26,12 +26,12 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.actions;
+package org.orbisgis.sif.components.actions;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.commons.events.BeanPropertyChangeSupport;
 import org.orbisgis.sif.components.CustomButton;
-import org.orbisgis.view.components.actions.intern.RemoveActionControls;
+import org.orbisgis.sif.components.actions.intern.RemoveActionControls;
 import org.orbisgis.view.components.button.DropDownButton;
 import org.orbisgis.viewapi.components.actions.ActionTools;
 

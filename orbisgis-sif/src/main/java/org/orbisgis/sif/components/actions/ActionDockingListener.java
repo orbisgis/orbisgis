@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.actions;
+package org.orbisgis.sif.components.actions;
 
 import org.orbisgis.viewapi.docking.DockingPanelParameters;
 
