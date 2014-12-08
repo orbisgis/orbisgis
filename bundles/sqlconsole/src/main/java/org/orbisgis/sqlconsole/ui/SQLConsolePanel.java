@@ -47,19 +47,20 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
+import org.orbisgis.sif.components.actions.ActionCommands;
+import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.components.findReplace.FindReplaceDialog;
 import org.orbisgis.sif.multiInputPanel.CheckBoxChoice;
 import org.orbisgis.sif.multiInputPanel.MIPValidationInteger;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
+import org.orbisgis.sqlconsole.api.SQLAction;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.sqlconsole.icons.SQLConsoleIcon;
 import org.orbisgis.sqlconsole.actions.ExecuteScriptProcess;
 import org.orbisgis.sqlconsole.blockComment.QuoteSQL;
 import org.orbisgis.sqlconsole.codereformat.CodeReformator;
 import org.orbisgis.sqlconsole.codereformat.CommentSpec;
-import org.orbisgis.viewapi.components.actions.DefaultAction;
-import org.orbisgis.viewapi.sqlconsole.ui.ext.SQLAction;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -284,8 +285,7 @@ public class SQLConsolePanel extends JPanel {
          */
         public void onExecute() {      
                 if (scriptPanel.getDocument().getLength() > 0) {
-                    BackgroundManager bm = Services.getService(BackgroundManager.class);
-                    bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(this, dataSource, splitterFactory, timeOut));
+                    new ExecuteScriptProcess(this, dataSource, splitterFactory, timeOut).execute();
                 }
         }
                

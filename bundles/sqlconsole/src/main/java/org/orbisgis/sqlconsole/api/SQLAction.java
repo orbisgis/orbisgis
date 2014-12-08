@@ -26,9 +26,10 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.viewapi.sqlconsole.ui.ext;
+package org.orbisgis.sqlconsole.api;
 
-import org.orbisgis.viewapi.components.actions.ActionFactoryService;
+
+import org.orbisgis.sif.components.actions.ActionFactoryService;
 
 /**
  * @author Nicolas Fortin

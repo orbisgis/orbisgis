@@ -29,11 +29,10 @@
 package org.orbisgis.view.util;
 
 import org.apache.log4j.Logger;
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.orbisgis.commons.utils.TextUtils;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 
@@ -57,7 +56,7 @@ public class CommentUtil {
      *
      * @param scriptPanel Script panel
      */
-    public static void commentOrUncommentSQL(RSyntaxTextArea scriptPanel) {
+    public static void commentOrUncommentSQL(JTextArea scriptPanel) {
         commentOrUncomment(scriptPanel, SQL_COMMENT_CHARACTER);
     }
 
@@ -66,7 +65,7 @@ public class CommentUtil {
      *
      * @param scriptPanel Script panel
      */
-    public static void commentOrUncommentJava(RSyntaxTextArea scriptPanel) {
+    public static void commentOrUncommentJava(JTextArea scriptPanel) {
         commentOrUncomment(scriptPanel, JAVA_COMMENT_CHARACTER);
     }
 
@@ -75,7 +74,7 @@ public class CommentUtil {
      *
      * @param scriptPanel Script panel
      */
-    private static void commentOrUncomment(RSyntaxTextArea scriptPanel, String commentCharacter) {
+    private static void commentOrUncomment(JTextArea scriptPanel, String commentCharacter) {
         // If the selection contains an unbroken range of commented lines,
         // then we uncomment.
         if (unbrokenRangeOfComments(scriptPanel, commentCharacter)) {
@@ -94,7 +93,7 @@ public class CommentUtil {
      * @return True iff the selected text consists of an unbroken range of
      * commented lines
      */
-    private static boolean unbrokenRangeOfComments(RSyntaxTextArea scriptPanel, String commentCharacter) {
+    private static boolean unbrokenRangeOfComments(JTextArea scriptPanel, String commentCharacter) {
 
         final Element root = scriptPanel.getDocument().getDefaultRootElement();
 
@@ -119,7 +118,7 @@ public class CommentUtil {
      *
      * @param scriptPanel Script panel
      */
-    public static void blockCommentOrUncomment(RSyntaxTextArea scriptPanel) {
+    public static void blockCommentOrUncomment(JTextArea scriptPanel) {
         if (scriptPanel.getSelectedText() != null) {
             if (alreadyBlockCommented(scriptPanel)) {
                 blockUncomment(scriptPanel);
@@ -134,7 +133,7 @@ public class CommentUtil {
      * @param scriptPanel Script panel
      * @return True iff the selection is already block commented
      */
-    private static boolean alreadyBlockCommented(RSyntaxTextArea scriptPanel) {
+    private static boolean alreadyBlockCommented(JTextArea scriptPanel) {
         try {
             return scriptPanel.getText(scriptPanel.getSelectionStart(), BLOCK_COMMENT_START.length()).equals(BLOCK_COMMENT_START)
                     && scriptPanel.getText(scriptPanel.getSelectionEnd() - BLOCK_COMMENT_END.length(), BLOCK_COMMENT_END.length()).equals(BLOCK_COMMENT_END);
@@ -150,7 +149,7 @@ public class CommentUtil {
      *
      * @param scriptPanel Script panel
      */
-    private static void blockComment(RSyntaxTextArea scriptPanel) {
+    private static void blockComment(JTextArea scriptPanel) {
         // Recover the index of the start of the selection.
         final int startOffset = scriptPanel.getSelectionStart();
         // Comment the selection.
@@ -167,7 +166,7 @@ public class CommentUtil {
      *
      * @param scriptPanel Script panel
      */
-    private static void blockUncomment(RSyntaxTextArea scriptPanel) {
+    private static void blockUncomment(JTextArea scriptPanel) {
         // Recover the index of the start of the selection.
         final int startOffset = scriptPanel.getSelectionStart();
         final int endOffset = scriptPanel.getSelectionEnd();
@@ -185,7 +184,7 @@ public class CommentUtil {
      *
      * @param scriptPanel Script panel
      */
-    private static void commentSQL(RSyntaxTextArea scriptPanel, String commentCharacter) {
+    private static void commentSQL(JTextArea scriptPanel, String commentCharacter) {
 
         final Element root = scriptPanel.getDocument().getDefaultRootElement();
 
@@ -203,7 +202,7 @@ public class CommentUtil {
      *
      * @param scriptPanel Script panel
      */
-    private static void uncommentSQL(RSyntaxTextArea scriptPanel, String commentCharacter) {
+    private static void uncommentSQL(JTextArea scriptPanel, String commentCharacter) {
 
         final Element root = scriptPanel.getDocument().getDefaultRootElement();
 

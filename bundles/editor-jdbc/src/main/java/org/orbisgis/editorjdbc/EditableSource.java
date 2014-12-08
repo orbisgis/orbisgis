@@ -26,10 +26,12 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.viewapi.edition;
+package org.orbisgis.editorjdbc;
 
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.ReversibleRowSet;
+import org.orbisgis.viewapi.edition.EditableElement;
+import org.orbisgis.viewapi.edition.EditableElementException;
 
 /**
  * @author Nicolas Fortin
