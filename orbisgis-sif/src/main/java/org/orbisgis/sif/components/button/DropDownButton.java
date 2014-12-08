@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.button;
+package org.orbisgis.sif.components.button;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -39,7 +39,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.sif.icons.SifIcon;
 
 /**
  * Drop Down Button, is a button that show a popup when clicked.
@@ -195,7 +195,7 @@ public class DropDownButton extends JToggleButton implements
          */
 	private static ImageIcon mergeIcons(ImageIcon iconFile) {
 		Image firstImage = iconFile.getImage();
-		Image secondImage = OrbisGISIcon.getIconImage("btn_dropdown");
+		Image secondImage = SifIcon.getIconImage("btn_dropdown");
 
 		int w = firstImage.getWidth(null) + secondImage.getWidth(null);
 		int h = Math.max(firstImage.getHeight(null), secondImage
