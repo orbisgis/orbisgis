@@ -1,4 +1,4 @@
-package org.orbisgis.viewapi.edition;
+package org.orbisgis.sif.edition;
 
 import java.util.Collection;
 

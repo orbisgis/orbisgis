@@ -26,9 +26,10 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.viewapi.edition;
+package org.orbisgis.sif.edition;
 
-import org.orbisgis.viewapi.docking.DockingPanel;
+
+import org.orbisgis.sif.docking.DockingPanel;
 
 /**
  * This particular panel is an editor.

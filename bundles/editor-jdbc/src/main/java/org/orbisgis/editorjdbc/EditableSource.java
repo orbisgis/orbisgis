@@ -30,8 +30,8 @@ package org.orbisgis.editorjdbc;
 
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.ReversibleRowSet;
-import org.orbisgis.viewapi.edition.EditableElement;
-import org.orbisgis.viewapi.edition.EditableElementException;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.EditableElementException;
 
 /**
  * @author Nicolas Fortin

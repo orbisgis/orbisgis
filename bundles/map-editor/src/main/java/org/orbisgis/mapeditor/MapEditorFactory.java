@@ -31,11 +31,10 @@ package org.orbisgis.mapeditor;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
 import org.orbisgis.mapeditor.map.MapEditor;
-import org.orbisgis.view.components.actions.MenuItemServiceTracker;
-import org.orbisgis.viewapi.edition.EditorDockable;
-import org.orbisgis.viewapi.edition.EditorFactory;
-import org.orbisgis.viewapi.edition.EditorManager;
-import org.orbisgis.viewapi.edition.SingleEditorFactory;
+import org.orbisgis.sif.edition.EditorDockable;
+import org.orbisgis.sif.edition.EditorFactory;
+import org.orbisgis.sif.edition.EditorManager;
+import org.orbisgis.sif.edition.SingleEditorFactory;
 import org.orbisgis.viewapi.main.frames.ext.ToolBarAction;
 import org.orbisgis.mapeditor.map.ext.MapEditorAction;
 import org.orbisgis.mapeditor.map.ext.MapEditorExtension;
@@ -60,13 +59,11 @@ public class MapEditorFactory implements SingleEditorFactory {
         private MapEditor mapPanel = null;
         //TODO reactive drawing
         //private DrawingToolBar drawingToolBar;
-        private ServiceRegistration<ToolBarAction> drawingToolbarService;
-        private MenuItemServiceTracker<MapEditorExtension,MapEditorAction> mapEditorExt;
-        private BundleContext hostBundle;
         private DataManager dataManager;
         private ViewWorkspace viewWorkspace;
         private EditorManager editorManager;
         private List<ResultSetProviderFactory> rsFactories = new ArrayList<>();
+        private List<MapEditorAction> mapEditorActionFactory = new ArrayList<>();
 
         @Reference
         public void setEditorManager(EditorManager editorManager) {
@@ -76,6 +73,23 @@ public class MapEditorFactory implements SingleEditorFactory {
         public void unsetEditorManager(EditorManager editorManager) {
             dispose();
         }
+
+
+        @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+        public void addMapEditorActionFactory(MapEditorAction mapEditorAction) {
+            mapEditorActionFactory.add(mapEditorAction);
+            if(mapPanel != null) {
+                mapPanel.getActionCommands().addActionFactory(mapEditorAction, mapPanel);
+            }
+        }
+
+        public void removeMapEditorActionFactory(MapEditorAction mapEditorAction) {
+            mapEditorActionFactory.remove(mapEditorAction);
+            if(mapPanel != null) {
+                mapPanel.getActionCommands().removeActionFactory(mapEditorAction);
+            }
+        }
+
 
         @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
         public void addResultSetProviderFactory(ResultSetProviderFactory resultSetProviderFactory) {
@@ -107,11 +121,6 @@ public class MapEditorFactory implements SingleEditorFactory {
             dispose();
         }
 
-        @Activate
-        public void Activate(BundleContext bundleContext) {
-            this.hostBundle = bundleContext;
-        }
-
         @Reference
         public void setViewWorkspace(ViewWorkspace viewWorkspace) {
             this.viewWorkspace = viewWorkspace;
@@ -124,12 +133,6 @@ public class MapEditorFactory implements SingleEditorFactory {
 
         @Override
         public void dispose() {
-            if(drawingToolbarService!=null) {
-                drawingToolbarService.unregister();
-            }
-            if(mapEditorExt!=null) {
-                mapEditorExt.close(); //Unregister MapEditor actions
-            }
             if(mapPanel!=null) {
                 mapPanel.dispose();
             }
@@ -142,9 +145,9 @@ public class MapEditorFactory implements SingleEditorFactory {
                         for(ResultSetProviderFactory rsF  : rsFactories) {
                             mapPanel.addResultSetProviderFactory(rsF);
                         }
-                        //Plugins Action will be added to ActionCommands of MapEditor
-                        mapEditorExt = new MenuItemServiceTracker<MapEditorExtension,MapEditorAction>(hostBundle,MapEditorAction.class,mapPanel.getActionCommands(),mapPanel);
-                        mapEditorExt.open(); // Start loading actions
+                        for(MapEditorAction mapEditorAction : mapEditorActionFactory) {
+                            mapPanel.getActionCommands().addActionFactory(mapEditorAction, mapPanel);
+                        }
                         // Create Drawing ToolBar
                         // TODO reactive drawing
                         // drawingToolBar = new DrawingToolBar(mapPanel);

@@ -28,7 +28,7 @@
  */
 package org.orbisgis.oshell;
 
-import org.orbisgis.viewapi.docking.DockingPanel;
+import org.orbisgis.sif.docking.DockingPanel;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 

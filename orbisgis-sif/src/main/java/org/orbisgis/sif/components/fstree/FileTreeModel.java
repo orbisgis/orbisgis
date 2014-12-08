@@ -26,26 +26,40 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.fstree;
+package org.orbisgis.sif.components.fstree;
 
-import javax.swing.TransferHandler;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 /**
  *
  * @author Nicolas Fortin
  */
-public interface DropDestinationTreeNode {
+public class FileTreeModel extends DefaultTreeModel {
+        private static final long serialVersionUID = 1L;
+
+        public FileTreeModel(TreeNode tn) {
+                super(tn);
+        }
+
+        public FileTreeModel(TreeNode tn, boolean bln) {
+                super(tn, bln);
+        }
+
         /**
-         * Accept of refuse the transferable
-         * @param ts
-         * @return 
+         * Register the tree model to this node
+         * @param newChild
+         * @param parent
+         * @param i 
          */
-        boolean canImport(TransferHandler.TransferSupport ts);
+        @Override
+        public void insertNodeInto(MutableTreeNode newChild, MutableTreeNode parent, int i) {
+                super.insertNodeInto(newChild, parent, i);
+                if(newChild instanceof AbstractTreeNode) {
+                        ((AbstractTreeNode)newChild).setModel(this);
+                }
+        }
+
         
-        /**
-         * Do the operation of drop
-         * @param ts
-         * @return 
-         */
-        public boolean importData(TransferHandler.TransferSupport ts);
 }

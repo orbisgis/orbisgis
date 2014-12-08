@@ -26,16 +26,19 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.fstree;
-
-import javax.swing.ImageIcon;
+package org.orbisgis.sif.components.fstree;
 
 /**
- * To set a custom Icon to a Node implements theses methods
+ * Node that support dragging implement this interface
  * @author Nicolas Fortin
  */
-public interface TreeNodeCustomIcon {
-        ImageIcon getLeafIcon();
-        ImageIcon getClosedIcon();
-        ImageIcon getOpenIcon();
+public interface DragTreeNode {
+        /**
+         * Complete the provided transferable
+         *
+         * @param transferable Transferable merged with other nodes
+         * @return True if it is done, false if the transferable is unknown by
+         * the node
+         */
+        boolean completeTransferable(TransferableList transferable);
 }

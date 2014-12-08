@@ -27,7 +27,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.viewapi.edition;
+package org.orbisgis.sif.edition;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

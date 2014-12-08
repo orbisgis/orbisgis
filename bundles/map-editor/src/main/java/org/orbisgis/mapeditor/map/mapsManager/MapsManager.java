@@ -48,12 +48,11 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.FileTree;
 import org.orbisgis.view.components.fstree.FileTreeModel;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.ReadStoredMap;
-import org.orbisgis.viewapi.edition.EditorManager;
+import org.orbisgis.sif.edition.EditorManager;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -169,8 +168,7 @@ public class MapsManager extends JPanel {
         
         private void updateMapsTitle() {
                 // Fetch all maps to find their titles
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.nonBlockingBackgroundOperation(new ReadStoredMap(getAllMapElements(rootFolder)));                
+                new ReadStoredMap(getAllMapElements(rootFolder)).execute();
         }
         
        /**

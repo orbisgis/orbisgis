@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.fstree;
+package org.orbisgis.sif.components.fstree;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.orbisgis.view.components.UriListFlavor;
+import org.orbisgis.sif.components.UriListFlavor;
 
 /**
  * Transferable that hold a list of TreeNodePath

@@ -26,9 +26,10 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.viewapi.edition;
+package org.orbisgis.sif.edition;
 
-import org.orbisgis.viewapi.docking.DockingPanelLayout;
+
+import org.orbisgis.sif.docking.DockingPanelLayout;
 
 /**
  * This factory can create an unlimited number of editors.
@@ -47,7 +48,7 @@ public interface MultipleEditorFactory extends EditorFactory {
      * @return Instance of DockingPanelLayout or null if the editable 
      * is not compatible with this factory
      */
-    public DockingPanelLayout makeEditableLayout(EditableElement editable);    
+    public DockingPanelLayout makeEditableLayout(EditableElement editable);
       
     
     // Serialisation

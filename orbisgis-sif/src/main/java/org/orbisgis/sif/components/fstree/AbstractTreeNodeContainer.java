@@ -26,14 +26,14 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.fstree;
+package org.orbisgis.sif.components.fstree;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
-import org.orbisgis.view.components.resourceTree.EnumIterator;
+import org.orbisgis.sif.components.resourceTree.EnumIterator;
 
 /**
  * A node that can contain other nodes

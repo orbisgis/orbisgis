@@ -1,9 +1,9 @@
 package org.orbisgis.mapeditor.map.ext;
 
 import org.orbisgis.mapeditorapi.MapElement;
-import org.orbisgis.viewapi.edition.EditorDockable;
+import org.orbisgis.sif.docking.PropertyHost;
+import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
-import org.orbisgis.viewapi.util.PropertyHost;
 
 /**
  * @author Nicolas Fortin

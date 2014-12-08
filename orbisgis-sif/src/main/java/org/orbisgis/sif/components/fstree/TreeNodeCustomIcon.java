@@ -26,20 +26,16 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.fstree;
+package org.orbisgis.sif.components.fstree;
 
-import javax.swing.JLabel;
+import javax.swing.ImageIcon;
 
 /**
- * Customise rendered label, overridden by TreeNodeCustomIcon.
+ * To set a custom Icon to a Node implements theses methods
  * @author Nicolas Fortin
  */
-public interface TreeNodeCustomLabel {
-        /**
-         * Change the parameters of the provided label.
-         * Called by the JTree renderer.
-         * @param label
-         * @return Return true is something has been done one the label 
-         */
-        boolean applyCustomLabel(JLabel label);
+public interface TreeNodeCustomIcon {
+        ImageIcon getLeafIcon();
+        ImageIcon getClosedIcon();
+        ImageIcon getOpenIcon();
 }

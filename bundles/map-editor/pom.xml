@@ -45,7 +45,7 @@
             </plugin>
             <plugin>
                 <groupId>com.googlecode.gettext-commons</groupId>
-                <version>1.2.4</version>
+                <version>${gettext-maven-plugin-version}</version>
                 <executions>
                     <execution>
                         <id>convert-po-class</id>
@@ -88,17 +88,22 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>orbisgis-view-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>core-map</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>orbisgis-view</artifactId>
+            <artifactId>map-editor-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>editor-jdbc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>orbisgis-sif</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

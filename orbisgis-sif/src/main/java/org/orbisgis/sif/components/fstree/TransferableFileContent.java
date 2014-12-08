@@ -26,14 +26,21 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.fstree;
+package org.orbisgis.sif.components.fstree;
 
-import java.io.File;
+import java.awt.datatransfer.DataFlavor;
+import java.io.Reader;
 
 /**
- * Item that is linked with the FileSystem, folder or file
+ * If a transferable object implement this interface then it could define the name and the content of a file.
  * @author Nicolas Fortin
  */
-public interface TreeNodePath {
-        File getFilePath();
+public interface TransferableFileContent {
+
+        public static final DataFlavor FILE_CONTENT_FLAVOR =
+                new DataFlavor(Reader.class, "TransferableFileContent");
+        /**
+         * @return File name proposal for this content
+         */
+        String getFileNameHint();
 }

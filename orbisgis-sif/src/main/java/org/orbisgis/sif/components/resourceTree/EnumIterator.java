@@ -26,60 +26,30 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.fstree;
+package org.orbisgis.sif.components.resourceTree;
 
 import java.util.Enumeration;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
+import java.util.Iterator;
 
 /**
- * A node without sub-nodes
+ * @param <Item> Enumeration item class
  * @author Nicolas Fortin
  */
-public abstract class AbstractTreeNodeLeaf extends AbstractTreeNode {
+public class EnumIterator<Item extends Object> implements Enumeration<Item> {
 
-        @Override
-        public void insert(MutableTreeNode mtn, int i) {
-                throw new UnsupportedOperationException("Not supported.");
+        private Iterator<Item> it;
+
+        public EnumIterator(Iterator<Item> it) {
+                this.it = it;
         }
 
         @Override
-        public void remove(int i) {
-                throw new UnsupportedOperationException("Not supported.");
+        public boolean hasMoreElements() {
+                return it.hasNext();
         }
 
         @Override
-        public void remove(MutableTreeNode mtn) {
-                throw new UnsupportedOperationException("Not supported.");
+        public Item nextElement() {
+                return it.next();
         }
-        
-        @Override
-        public TreeNode getChildAt(int i) {
-                throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public int getChildCount() {
-                return 0;
-        }
-
-        @Override
-        public int getIndex(TreeNode tn) {
-                throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public boolean getAllowsChildren() {
-                return false;
-        }
-
-        @Override
-        public boolean isLeaf() {
-                return true;
-        }
-
-        @Override
-        public Enumeration<? extends Object> children() {
-                throw new UnsupportedOperationException("Not supported.");
-        } 
 }

@@ -46,7 +46,7 @@
             </plugin>
             <plugin>
                 <groupId>com.googlecode.gettext-commons</groupId>
-                <version>1.2.4</version>
+                <version>${gettext-maven-plugin-version}</version>
                 <executions>
                     <execution>
                         <id>convert-po-class</id>
@@ -85,21 +85,6 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.enterprise</artifactId>
             <version>5.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>orbisgis-view-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>orbisgis-view</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>orbisgis-view-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

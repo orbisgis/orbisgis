@@ -26,31 +26,26 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.fstree;
+package org.orbisgis.sif.components.fstree;
 
-import java.io.File;
-import java.util.Collection;
+import javax.swing.TransferHandler;
 
 /**
- * Manage all kind of Files factory
+ *
  * @author Nicolas Fortin
  */
-public interface TreeNodeFileFactoryManager {
+public interface DropDestinationTreeNode {
         /**
-         * Register a factory for the provided file extension
-         * @param extension
-         * @param factory 
-         */
-        public void addFactory(String extension, TreeNodeFileFactory factory);
-       /**
-        * @return All registered TreeNodeFileFactory
-        */
-        public Collection<TreeNodeFileFactory> getFactories();
-        
-        /**
-         * Create a Node instance to handle the provided file
-         * @param filePath
+         * Accept of refuse the transferable
+         * @param ts
          * @return 
          */
-        public AbstractTreeNode create(File filePath);
+        boolean canImport(TransferHandler.TransferSupport ts);
+        
+        /**
+         * Do the operation of drop
+         * @param ts
+         * @return 
+         */
+        public boolean importData(TransferHandler.TransferSupport ts);
 }

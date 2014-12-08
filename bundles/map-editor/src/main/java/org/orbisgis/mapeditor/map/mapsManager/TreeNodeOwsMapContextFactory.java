@@ -38,10 +38,10 @@ import javax.swing.tree.MutableTreeNode;
 import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactory;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;
-import org.orbisgis.viewapi.edition.EditorManager;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.edition.EditorManager;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

@@ -10,7 +10,7 @@
         </parent>
         <artifactId>orbisgis-sif</artifactId>
         <packaging>bundle</packaging>
-        <name>Simple interface factory</name>
+        <name>orbisgis-sif</name>
         <url>http://maven.apache.org</url>
         <description>In order to provide the same user experience over OrbisGIS gui modules this project aim to expose
             a common Swing usage. Nothing related with GIS should be included in this package.This package content is
@@ -51,6 +51,7 @@
                                         </execution>
                                 </executions>
                                 <artifactId>gettext-maven-plugin</artifactId>
+                                <version>${gettext-maven-plugin-version}</version>
                                 <configuration>
                                         <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/sif/translation/language/</poDirectory>
                                         <targetBundle>org.orbisgis.sif.Messages</targetBundle>

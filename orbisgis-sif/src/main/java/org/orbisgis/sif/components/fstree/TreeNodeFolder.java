@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.fstree;
+package org.orbisgis.sif.components.fstree;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -54,11 +54,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.commons.progress.SwingWorkerPM;
-import org.orbisgis.core.Services;
-import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.common.MenuCommonFunctions;
+import org.orbisgis.sif.icons.SifIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -233,7 +231,7 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                 MenuCommonFunctions.updateOrInsertMenuItem(menu, copyPathMenu);
                 // Read the file system to update the tree
                 JMenuItem updateMenu = new JMenuItem(I18N.tr("Update"),
-                        OrbisGISIcon.getIcon("refresh"));
+                        SifIcon.getIcon("refresh"));
                 updateMenu.setToolTipText(I18N.tr("Update the content of this folder from the file system"));
                 updateMenu.setActionCommand("Update");
                 updateMenu.addActionListener(
@@ -242,7 +240,7 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                 MenuCommonFunctions.updateOrInsertMenuItem(menu, updateMenu);
                 // Add a new Sub Folder
                 JMenuItem newSubFolder = new JMenuItem(I18N.tr("New folder"),
-                        OrbisGISIcon.getIcon("folder_add"));
+                        SifIcon.getIcon("folder_add"));
                 newSubFolder.setToolTipText(I18N.tr("Create a sub-folder"));
                 newSubFolder.setActionCommand("TreeNodeFolder:newSubFolder");
                 newSubFolder.addActionListener(
@@ -253,7 +251,7 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                 //The root folder cannot be removed
                 if(parent instanceof TreeNodeFolder) {
                         JMenuItem folderRemove = new JMenuItem(I18N.tr("Delete"),
-                                OrbisGISIcon.getIcon("remove"));
+                                SifIcon.getIcon("remove"));
                         folderRemove.setToolTipText(I18N.tr("Remove permanently the folder"));
                         folderRemove.setActionCommand("delete");
                         folderRemove.addActionListener(

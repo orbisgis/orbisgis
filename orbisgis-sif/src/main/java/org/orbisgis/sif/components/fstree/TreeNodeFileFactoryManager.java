@@ -26,19 +26,31 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.fstree;
+package org.orbisgis.sif.components.fstree;
+
+import java.io.File;
+import java.util.Collection;
 
 /**
- * Node that support dragging implement this interface
+ * Manage all kind of Files factory
  * @author Nicolas Fortin
  */
-public interface DragTreeNode {
+public interface TreeNodeFileFactoryManager {
         /**
-         * Complete the provided transferable
-         *
-         * @param transferable Transferable merged with other nodes
-         * @return True if it is done, false if the transferable is unknown by
-         * the node
+         * Register a factory for the provided file extension
+         * @param extension
+         * @param factory 
          */
-        boolean completeTransferable(TransferableList transferable);
+        public void addFactory(String extension, TreeNodeFileFactory factory);
+       /**
+        * @return All registered TreeNodeFileFactory
+        */
+        public Collection<TreeNodeFileFactory> getFactories();
+        
+        /**
+         * Create a Node instance to handle the provided file
+         * @param filePath
+         * @return 
+         */
+        public AbstractTreeNode create(File filePath);
 }

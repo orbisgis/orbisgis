@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components;
+package org.orbisgis.sif.components;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;

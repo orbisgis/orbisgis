@@ -26,40 +26,20 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.fstree;
+package org.orbisgis.sif.components.fstree;
 
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
+import javax.swing.JLabel;
 
 /**
- *
+ * Customise rendered label, overridden by TreeNodeCustomIcon.
  * @author Nicolas Fortin
  */
-public class FileTreeModel extends DefaultTreeModel {
-        private static final long serialVersionUID = 1L;
-
-        public FileTreeModel(TreeNode tn) {
-                super(tn);
-        }
-
-        public FileTreeModel(TreeNode tn, boolean bln) {
-                super(tn, bln);
-        }
-
+public interface TreeNodeCustomLabel {
         /**
-         * Register the tree model to this node
-         * @param newChild
-         * @param parent
-         * @param i 
+         * Change the parameters of the provided label.
+         * Called by the JTree renderer.
+         * @param label
+         * @return Return true is something has been done one the label 
          */
-        @Override
-        public void insertNodeInto(MutableTreeNode newChild, MutableTreeNode parent, int i) {
-                super.insertNodeInto(newChild, parent, i);
-                if(newChild instanceof AbstractTreeNode) {
-                        ((AbstractTreeNode)newChild).setModel(this);
-                }
-        }
-
-        
+        boolean applyCustomLabel(JLabel label);
 }

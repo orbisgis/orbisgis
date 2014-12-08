@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */ 
-package org.orbisgis.viewapi.edition;
+package org.orbisgis.sif.edition;
 
 /**
  * The editor factory provides an adapted Editor for an EditableElement.

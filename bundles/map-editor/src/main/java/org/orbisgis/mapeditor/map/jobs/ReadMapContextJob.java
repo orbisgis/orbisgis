@@ -30,7 +30,7 @@ package org.orbisgis.mapeditor.map.jobs;
 
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.mapeditorapi.MapElement;
-import org.orbisgis.viewapi.edition.EditorManager;
+import org.orbisgis.sif.edition.EditorManager;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

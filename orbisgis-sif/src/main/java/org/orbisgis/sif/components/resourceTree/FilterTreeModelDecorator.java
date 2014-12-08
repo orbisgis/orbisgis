@@ -26,7 +26,7 @@
  * directly: info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.components.resourceTree;
+package org.orbisgis.sif.components.resourceTree;
 
 import javax.swing.JTree;
 import javax.swing.tree.TreeModel;

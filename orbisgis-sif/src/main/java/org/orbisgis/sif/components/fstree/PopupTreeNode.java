@@ -26,29 +26,14 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.fstree;
+package org.orbisgis.sif.components.fstree;
 
-import java.io.File;
 import javax.swing.JPopupMenu;
-import javax.swing.tree.MutableTreeNode;
 
 /**
- * All handled files type implements this factory
+ * Node that handle pop-up menu
  * @author Nicolas Fortin
  */
-public interface TreeNodeFileFactory {
-                /**
-                 * Construct a AbstractTreeNode instance 
-                 * @param filePath
-                 * @return Null or an instance of AbstractTreeNode
-                 */
-                AbstractTreeNode create(File filePath);
-                
-                /**
-                 * Add new menu items to nodes.
-                 * This method is called for all nodes in the Tree.
-                 * @param node
-                 * @param menu 
-                 */
-                void feedTreeNodePopupMenu(MutableTreeNode node, JPopupMenu menu);
+public interface PopupTreeNode {
+        void feedPopupMenu(JPopupMenu menu);
 }

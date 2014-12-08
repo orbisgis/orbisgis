@@ -34,7 +34,7 @@
                         </plugin>
                         <plugin>
                                 <groupId>com.googlecode.gettext-commons</groupId>
-                                <version>1.2.4</version>
+                                <version>${gettext-maven-plugin-version}</version>
                                 <executions>
                                         <execution>
                                                 <id>convert-po-class</id>
@@ -65,11 +65,6 @@
         </properties>
         <dependencies>
                 <dependency>
-                        <groupId>${project.groupId}</groupId>
-                        <artifactId>orbisgis-view-api</artifactId>
-                        <version>${project.version}</version>
-                </dependency>
-                <dependency>
                         <groupId>org.osgi</groupId>
                         <artifactId>org.osgi.core</artifactId>
                         <version>4.3.1</version>
@@ -88,6 +83,11 @@
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
                     <version>${log4j-version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>orbisgis-sif</artifactId>
+                    <version>${project.version}</version>
                 </dependency>
         </dependencies>
 </project>

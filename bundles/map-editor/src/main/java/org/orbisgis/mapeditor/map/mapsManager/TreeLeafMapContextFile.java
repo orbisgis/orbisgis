@@ -49,9 +49,9 @@ import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
-import org.orbisgis.viewapi.edition.EditorManager;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.edition.EditorManager;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
