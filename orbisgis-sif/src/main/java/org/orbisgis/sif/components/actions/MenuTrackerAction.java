@@ -1,7 +1,5 @@
 package org.orbisgis.sif.components.actions;
 
-import org.orbisgis.viewapi.components.actions.ActionFactoryService;
-
 import javax.swing.Action;
 import java.util.List;
 
@@ -13,8 +11,9 @@ import java.util.List;
 public class MenuTrackerAction<TargetComponent> {
         private ActionFactoryService<TargetComponent> actionFactory;
         private List<Action> actions;
+        private TargetComponent targetComponent;
 
-        public MenuTrackerAction(ActionFactoryService<TargetComponent> actionFactory, List<Action> actions) {
+        public MenuTrackerAction(ActionFactoryService<TargetComponent> actionFactory, List<Action> actions,TargetComponent targetComponent) {
                 this.actionFactory = actionFactory;
                 this.actions = actions;
         }
@@ -25,5 +24,9 @@ public class MenuTrackerAction<TargetComponent> {
 
         public List<Action> getActions() {
                 return actions;
+        }
+
+        public TargetComponent getTargetComponent() {
+            return targetComponent;
         }
 }

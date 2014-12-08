@@ -52,6 +52,24 @@ public interface ActionsHolder {
         void addActions(List<Action> newActions);
 
         /**
+         * Add actions using this action factory component
+         * @param factory New action factory
+         * @param targetComponent New actions will be related to this instance. {@link org.orbisgis.sif.components
+         * .actions.ActionFactoryService#createActions(Object)}
+         * @param <TargetComponent> Class related to actions.
+         * @throws java.lang.IllegalArgumentException If this factory is already used by this actions holder.
+         */
+        <TargetComponent> void addActionFactory(ActionFactoryService<TargetComponent> factory,
+                                                TargetComponent targetComponent) throws IllegalArgumentException;
+
+
+        /**
+         * Remove actions related to this action factory service
+         * @param actionFactoryService Action factory already added to this actions holder
+         */
+        <TargetComponent> void removeActionFactory(ActionFactoryService<TargetComponent> actionFactoryService);
+
+        /**
          * Remove this action list of all registered controls.
          * PropertyChange listeners of action will remove all related menu items.
          * @param action action to remove

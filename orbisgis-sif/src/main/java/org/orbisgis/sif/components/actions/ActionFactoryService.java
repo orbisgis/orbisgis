@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.viewapi.components.actions;
+package org.orbisgis.sif.components.actions;
 
 import javax.swing.Action;
 import java.util.List;
@@ -43,7 +43,7 @@ public interface ActionFactoryService<TargetComponent> {
          * Do not make a reference to created actions in the ActionFactoryService instance.
          * @param target Holder of new actions.
          * @return Action list instance, linked with target.
-         * @see ActionTools
+         * {@link ActionsHolder#addActionFactory(ActionFactoryService, Object)}
          */
         List<Action> createActions(TargetComponent target);
 

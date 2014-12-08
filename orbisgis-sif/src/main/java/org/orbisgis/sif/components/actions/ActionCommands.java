@@ -77,6 +77,7 @@ public class ActionCommands extends BeanPropertyChangeSupport implements Actions
         private List<Action> actions = new ArrayList<Action>();
         // Menu containers
         private List<JComponent> containers = new ArrayList<JComponent>();
+        private Map<ActionFactoryService, MenuTrackerAction> actionFromFactory = new HashMap<>();
 
         /**
          * Actions will be inserted in the registered tool bar.
@@ -92,6 +93,30 @@ public class ActionCommands extends BeanPropertyChangeSupport implements Actions
                 containers.add(menu);
                 applyActionsOnMenuContainer(menu,
                         actions.toArray(new Action[actions.size()]),true);
+        }
+
+        @Override
+        public <TargetComponent> void addActionFactory(ActionFactoryService<TargetComponent> factory, TargetComponent
+                targetComponent) throws IllegalArgumentException {
+            if(!actionFromFactory.containsKey(factory)) {
+                MenuTrackerAction<TargetComponent> menuTrackerAction =
+                        new MenuTrackerAction<>(factory, factory.createActions(targetComponent), targetComponent);
+                addActions(menuTrackerAction.getActions());
+                actionFromFactory.put(factory, menuTrackerAction);
+            } else {
+                // Developer exception
+                throw new IllegalArgumentException("ActionFactoryService instance is already pushed");
+            }
+        }
+
+        @Override
+        public <TargetComponent> void removeActionFactory(ActionFactoryService<TargetComponent> actionFactoryService) {
+            MenuTrackerAction<TargetComponent> trackerAction = actionFromFactory.get(actionFactoryService);
+            if(trackerAction != null) {
+                removeActions(trackerAction.getActions());
+                actionFactoryService.disposeActions(trackerAction.getTargetComponent(), trackerAction.getActions());
+                actionFromFactory.remove(actionFactoryService);
+            }
         }
 
         /**
