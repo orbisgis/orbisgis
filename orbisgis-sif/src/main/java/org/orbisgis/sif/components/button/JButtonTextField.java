@@ -26,17 +26,18 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.button;
+package org.orbisgis.sif.components.button;
+
+import org.orbisgis.sif.icons.SifIcon;
 
 import java.awt.Graphics;
 import java.awt.Insets;
 import javax.swing.Icon;
 import javax.swing.JTextField;
-import org.orbisgis.view.icons.OrbisGISIcon;
 
 public class JButtonTextField extends JTextField {
 
-	private static int columns = 8;
+	private static final int COLUMNS = 8;
 	private Icon icon;
 
 	/**
@@ -57,14 +58,14 @@ public class JButtonTextField extends JTextField {
 	 */
 	public JButtonTextField(int columns) {
 		super(columns);
-		this.icon = OrbisGISIcon.getIcon("small_search");
+		this.icon = SifIcon.getIcon("small_search");
 	}
 
 	/**
 	 * Create a jtextfield with an icon inside
 	 */
 	public JButtonTextField() {
-		super(columns);
+		super(COLUMNS);
 		this.icon = OrbisGISIcon.getIcon("small_search");
 	}
 
