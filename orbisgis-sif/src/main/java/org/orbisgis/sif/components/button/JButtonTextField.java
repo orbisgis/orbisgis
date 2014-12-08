@@ -66,7 +66,7 @@ public class JButtonTextField extends JTextField {
 	 */
 	public JButtonTextField() {
 		super(COLUMNS);
-		this.icon = OrbisGISIcon.getIcon("small_search");
+		this.icon = SifIcon.getIcon("small_search");
 	}
 
         @Override
