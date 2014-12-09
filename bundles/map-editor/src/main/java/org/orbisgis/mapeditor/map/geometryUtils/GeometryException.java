@@ -31,7 +31,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.orbisgis.core.geometryUtils;
+package org.orbisgis.mapeditor.map.geometryUtils;
 
 /**
  * Exception related to geometry utilities.
