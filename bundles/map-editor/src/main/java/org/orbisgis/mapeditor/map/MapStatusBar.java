@@ -45,7 +45,7 @@ import org.cts.crs.CoordinateReferenceSystem;
 import org.orbisgis.commons.events.OGVetoableChangeSupport;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.sif.components.CustomButton;
-import org.orbisgis.view.components.statusbar.StatusBar;
+import org.orbisgis.sif.components.StatusBar;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -154,8 +154,7 @@ public class MapStatusBar extends StatusBar {
         }
         
         /**
-         * Set the mouse coordinate in the Coordinate reference system
-         * @param coordinate 
+         * @param cursorCoordinate Set the mouse coordinate in the Coordinate reference system
          */
         public final void setCursorCoordinates(Point2D cursorCoordinate) {
                 if(!mouseCoordinates.equals(cursorCoordinate)) {
