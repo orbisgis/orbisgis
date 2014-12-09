@@ -41,11 +41,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler.TransferSupport;
 import javax.swing.tree.MutableTreeNode;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
-import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.sif.components.fstree.AbstractTreeNodeContainer;
 import org.orbisgis.sif.components.fstree.DropDestinationTreeNode;
 import org.orbisgis.sif.components.fstree.PopupTreeNode;
@@ -98,8 +96,7 @@ public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements Drop
                 TreeNodeBusy busyNode = new TreeNodeBusy();
                 model.insertNodeInto(busyNode, this, 0);
                 // Launch the download job
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.nonBlockingBackgroundOperation(new DownloadRemoteMapContext(this,busyNode));
+                new DownloadRemoteMapContext(this,busyNode).execute();
         }
         
 
@@ -138,8 +135,7 @@ public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements Drop
                         MapElement[] mapArray = (MapElement[])mapObj;
                         if(mapArray.length!=0) {
                                 MapContext mapToUpload = mapArray[0].getMapContext();
-                                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                                bm.nonBlockingBackgroundOperation(new UploadMapContext(mapToUpload, this));
+                                new UploadMapContext(mapToUpload, this).execute();
                         }
                         return true;
                 } catch (UnsupportedFlavorException ex) {

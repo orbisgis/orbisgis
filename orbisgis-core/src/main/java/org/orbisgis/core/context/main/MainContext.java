@@ -37,7 +37,6 @@ import org.apache.log4j.spi.Filter;
 import org.apache.log4j.varia.LevelRangeFilter;
 import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.corejdbc.internal.DataManagerImpl;
-import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.core.plugin.BundleReference;
 import org.orbisgis.core.plugin.BundleTools;
@@ -147,7 +146,6 @@ public class MainContext {
         if (initLogger) {
                 initFileLogger(coreWorkspace);
         }
-        registerServices();
     }
 
     /**
@@ -212,14 +210,6 @@ public class MainContext {
         }
     }
 
-    /**
-     * Register Services
-     */
-    private void registerServices() {
-        Services.registerService(CoreWorkspaceImpl.class, I18N.tr("Contains folders path"),
-                        coreWorkspace);
-    }
-    
     /**
      * Save the persistent state of all services.
      * Use this function before closing the core to retrieve the same state on

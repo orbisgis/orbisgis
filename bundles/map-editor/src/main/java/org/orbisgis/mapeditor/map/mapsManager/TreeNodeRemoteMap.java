@@ -38,7 +38,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler.TransferSupport;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.coremap.renderer.se.common.Description;

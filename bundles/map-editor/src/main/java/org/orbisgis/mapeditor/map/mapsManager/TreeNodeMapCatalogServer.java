@@ -42,7 +42,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;

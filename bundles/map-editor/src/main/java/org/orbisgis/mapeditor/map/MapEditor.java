@@ -64,7 +64,6 @@ import javax.swing.event.TreeExpansionListener;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.commons.progress.SwingWorkerPM;
-import org.orbisgis.core.Services;
 import org.orbisgis.core_export.MapImageWriter;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.layerModel.ILayer;
