@@ -28,25 +28,18 @@
  */
 package org.orbisgis.core.context.main;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
-import org.apache.log4j.spi.Filter;
-import org.apache.log4j.varia.LevelRangeFilter;
 import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.core.plugin.BundleReference;
-import org.orbisgis.core.plugin.BundleTools;
-import org.orbisgis.core.plugin.PluginHost;
 import org.orbisgis.core.workspace.CoreWorkspaceImpl;
 import org.h2gis.utilities.JDBCUrlParser;
 import org.h2gis.utilities.SFSUtilities;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
+import org.orbisgis.framework.BundleReference;
+import org.orbisgis.framework.BundleTools;
+import org.orbisgis.framework.PluginHost;
 import org.osgi.service.jdbc.DataSourceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 import javax.sql.DataSource;
@@ -57,7 +50,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -71,13 +63,12 @@ import java.util.Properties;
 
 
 public class MainContext {
-    private static final Logger LOGGER = Logger.getLogger(MainContext.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MainContext.class);
     private static final I18n I18N = I18nFactory.getI18n(MainContext.class);
     private CoreWorkspaceImpl coreWorkspace;
     private boolean debugMode;
     private static String CONSOLE_LOGGER = "ConsoleLogger";
     private DataSource dataSource;
-    private PluginHost pluginHost;
     private static final int BUNDLE_STABILITY_TIMEOUT = 3000;
     private static Map<String,String> URI_DRIVER_TO_OSGI_DRIVER = new HashMap<String, String>();
     private DataManager dataManager;

@@ -1,4 +1,4 @@
-package org.orbisgis.coreapi.workspace;
+package org.orbisgis.frameworkapi;
 
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -6,12 +6,10 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ * Core application parameters
  * @author Nicolas Fortin
  */
 public interface CoreWorkspace extends Serializable {
-    int MAJOR_VERSION = 5; // Load a workspace only if the major version is equal
-    int MINOR_VERSION = 0; // increment on new features
-    int REVISION_VERSION = 0;  // increment on fix
     String PROP_APPLICATIONFOLDER = "applicationFolder";
     String PROP_WORKSPACEFOLDER = "workspaceFolder";
     String PROP_SOURCEFOLDER = "sourceFolder";
@@ -19,7 +17,6 @@ public interface CoreWorkspace extends Serializable {
     String PROP_PLUGINCACHE = "pluginCache";
     String PROP_LOGFILE = "logFile";
     String VERSION_FILE = "org.orbisgis.version.txt";
-    String CITY_VERSION = "Molène";
 
     /**
      * Read the file located at {@link #getDataBaseUriFilePath()}
@@ -168,4 +165,24 @@ public interface CoreWorkspace extends Serializable {
      * @param listener The listener instance
      */
     void removePropertyChangeListener(String prop, PropertyChangeListener listener);
+
+    /**
+     * @return Major application version
+     */
+    int getVersionMajor();
+
+    /**
+     * @return Minor application version
+     */
+    int getVersionMinor();
+
+    /**
+     * @return Revision version.
+     */
+    int getVersionRevision();
+
+    /**
+     * @return Version qualifier
+     */
+    String getVersionQualifier();
 }

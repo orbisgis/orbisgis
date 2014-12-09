@@ -1,6 +1,6 @@
 package org.orbisgis.viewapi.workspace;
 
-import org.orbisgis.coreapi.workspace.CoreWorkspace;
+import org.orbisgis.frameworkapi.CoreWorkspace;
 
 import java.beans.PropertyChangeListener;
 

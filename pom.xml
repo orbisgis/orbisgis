@@ -17,6 +17,7 @@
                 <version>1</version>
         </parent>
         <modules>
+                <module>api/framework-api</module>
                 <module>framework</module>
                 <module>orbisgis-commons</module>
                 <module>orbisgis-sif</module>
@@ -28,7 +29,6 @@
                 <module>bundles/core-map</module>
                 <module>bundles/core-export</module>
                 <module>wms-client</module>
-                <module>api/orbisgis-core</module>
                 <module>orbisgis-core</module>
                 <module>bundles/sql-parser-api</module>
                 <module>bundles/sqlconsole-parser</module>

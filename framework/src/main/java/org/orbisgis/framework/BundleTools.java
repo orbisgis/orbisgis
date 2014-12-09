@@ -511,10 +511,17 @@ public class BundleTools {
         }
     }
 
-    private static BundleReference parseJarManifest(File jarFilePath, List<PackageDeclaration> packages) throws IOException {
+    /**
+     * Parse a Manifest in order to extract Exported Package
+     * @param jarFilePath Jar file
+     * @param packages package array or null (out)
+     * @throws IOException
+     */
+    public static BundleReference parseJarManifest(File jarFilePath, List<PackageDeclaration> packages) throws IOException {
         JarFile jar = new JarFile(jarFilePath);
         return parseManifest(jar.getManifest(), packages);
     }
+
     private static Set<String> getAllPackages() {
         Set<String> packages = new HashSet<String>();
         List<String> pathElements = getClassPath();

@@ -26,15 +26,17 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.workspace;
+package org.orbisgis.framework;
+
+import org.orbisgis.frameworkapi.CoreWorkspace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
-import org.orbisgis.coreapi.workspace.CoreWorkspace;
 
 /**
  * Core Workspace Folder information
@@ -44,13 +46,10 @@ import org.orbisgis.coreapi.workspace.CoreWorkspace;
  */
 
 public class CoreWorkspaceImpl implements CoreWorkspace {
-    private static final Logger LOGGER = Logger.getLogger(CoreWorkspaceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CoreWorkspaceImpl.class);
     private static final long serialVersionUID = 6L; /*<! Update this integer while adding properties (1 for each new property)*/
-    private static final String DEFAULT_APPLICATION_FOLDER = new File(System.getProperty("user.home"))
-            .getAbsolutePath() + File.separator + ".OrbisGIS" + File.separator
-            + MAJOR_VERSION + "." + MINOR_VERSION;
     private PropertyChangeSupport propertySupport;
-    private String applicationFolder = DEFAULT_APPLICATION_FOLDER;
+    private String applicationFolder = getDefaultApplicationFolder();
     private static final String DEFAULT_JDBC_USER = "sa";
     private static final boolean DEFAULT_JDBC_REQUIREPASSWORD = false;
     private String workspaceFolder;
@@ -66,19 +65,27 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
     private static final String CURRENT_WORKSPACE_FILENAME = "currentWorkspace.txt";
     private static final String ALL_WORKSPACE_FILENAME = "workspaces.txt";
     private static final String DATA_BASE_URI_FILE = "database.uri";
+    private final int version_major;
+    private final int version_minor;
+    private final int version_revision;
+    private final String version_qualifier;
 
-
-
-    /**
-     * bean constructor
-     */
-    public CoreWorkspaceImpl() {
+    public CoreWorkspaceImpl(int version_major, int version_minor, int version_revision, String version_qualifier) {
+        this.version_major = version_major;
+        this.version_minor = version_minor;
+        this.version_revision = version_revision;
+        this.version_qualifier = version_qualifier;
         propertySupport = new PropertyChangeSupport(this);
 
         //Read default workspace
         loadCurrentWorkSpace();
     }
 
+    private String getDefaultApplicationFolder() {
+        return new File(System.getProperty("user.home"))
+                .getAbsolutePath() + File.separator + ".OrbisGIS" + File.separator
+                + version_major + "." + version_minor;
+    }
     /**
      *
      * @return True if the selected JDBC connection require a password. H2 doesn't require password by default.
@@ -100,13 +107,13 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(new File(workspaceFolder,VERSION_FILE)));
-            writer.write(Integer.toString(MAJOR_VERSION));
+            writer.write(Integer.toString(version_major));
             writer.newLine();
-            writer.write(Integer.toString(MINOR_VERSION));
+            writer.write(Integer.toString(version_minor));
             writer.newLine();
-            writer.write(Integer.toString(REVISION_VERSION));
+            writer.write(Integer.toString(version_revision));
             writer.newLine();
-            writer.write(CITY_VERSION);
+            writer.write(version_qualifier);
             writer.newLine();
         } finally {
             if (writer != null) {
@@ -122,16 +129,20 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
      * @param workspaceFolder
      * @throws IOException Error while writing files or the folder is not empty
      */
-    public static void initWorkspaceFolder(File workspaceFolder) throws IOException {
+    public static void initWorkspaceFolder(File workspaceFolder, int version_major, int version_minor,
+                                           int version_revision, String version_qualifier) throws IOException {
         if(!workspaceFolder.exists()) {
-            workspaceFolder.mkdirs();
+            if(!workspaceFolder.mkdirs()) {
+                throw new IOException("Cannot create workspace directory");
+            }
         }
         File[] files = workspaceFolder.listFiles();
         if (files != null && files.length != 0) {
             // This method must be called with empty folder only
             throw new IOException("Workspace folder must be empty");
         }
-        CoreWorkspaceImpl coreWorspace = new CoreWorkspaceImpl();
+        CoreWorkspaceImpl coreWorspace = new CoreWorkspaceImpl(version_major, version_minor, version_revision,
+                version_qualifier);
         coreWorspace.setWorkspaceFolder(workspaceFolder.getAbsolutePath());
         coreWorspace.writeVersionFile();
         coreWorspace.writeUriFile();
@@ -492,5 +503,25 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
     @Override
     public void setDataBasePassword(String password) {
         this.databasePassword = password;
+    }
+
+    @Override
+    public int getVersionMajor() {
+        return version_major;
+    }
+
+    @Override
+    public int getVersionMinor() {
+        return version_minor;
+    }
+
+    @Override
+    public int getVersionRevision() {
+        return version_revision;
+    }
+
+    @Override
+    public String getVersionQualifier() {
+        return version_qualifier;
     }
 }

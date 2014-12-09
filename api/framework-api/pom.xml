@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <packaging>bundle</packaging>
-    <artifactId>orbisgis-core-api</artifactId>
-    <name>OrbisGIS Core API</name>
+    <artifactId>framework-api</artifactId>
+    <name>Framework API</name>
     <url>http://orbisgis.org</url>
     <build>
         <plugins>
@@ -15,7 +15,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Public-Package>org.orbisgis.core.api.*</Public-Package>
+                        <Public-Package>org.orbisgis.frameworkapi.*</Public-Package>
                         <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
                     </instructions>
                 </configuration>
@@ -39,22 +39,4 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.10</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>commons</artifactId>
-          <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>spatial-utilities</artifactId>
-            <version>${h2-gis-version}</version>
-        </dependency>
-    </dependencies>
 </project>

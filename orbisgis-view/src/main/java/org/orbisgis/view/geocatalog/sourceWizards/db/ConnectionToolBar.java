@@ -48,7 +48,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.commons.events.EventException;
 import org.orbisgis.commons.events.ListenerContainer;
 import org.orbisgis.commons.events.OGVetoableChangeSupport;
-import org.orbisgis.coreapi.workspace.CoreWorkspace;
+import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.view.geocatalog.Catalog;

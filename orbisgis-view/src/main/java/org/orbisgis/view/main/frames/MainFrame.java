@@ -40,7 +40,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.varia.DenyAllFilter;
 import org.apache.log4j.varia.LevelMatchFilter;
 import org.apache.log4j.varia.LevelRangeFilter;
-import org.orbisgis.coreapi.workspace.CoreWorkspace;
+import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.viewapi.components.actions.DefaultAction;
 import org.orbisgis.view.components.actions.MenuItemServiceTracker;
