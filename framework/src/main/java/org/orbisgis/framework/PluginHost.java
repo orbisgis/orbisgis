@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.plugin;
+package org.orbisgis.framework;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -40,13 +40,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
-import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Core internal manager for OSGI Framework
@@ -56,7 +57,7 @@ public class PluginHost {
     private Framework framework;
     private final static int STOP_TIMEOUT = 15000;
     private final static int BUNDLE_STATE_CHECK_INTERVAL = 100;
-    private static final Logger LOGGER = Logger.getLogger(PluginHost.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PluginHost.class);
     private File pluginCacheFolder;
     private List<PackageDeclaration> packageList = new ArrayList<PackageDeclaration>();
     /**

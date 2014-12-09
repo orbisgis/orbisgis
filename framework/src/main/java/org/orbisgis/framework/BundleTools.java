@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.plugin;
+package org.orbisgis.framework;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -53,13 +53,14 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.felix.framework.util.manifestparser.ManifestParser;
-import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.wiring.BundleCapability;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -69,7 +70,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 public class BundleTools {
-    private final static Logger LOGGER = Logger.getLogger(BundleTools.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(BundleTools.class);
     private final static I18n I18N = I18nFactory.getI18n(BundleTools.class);
     private final static String MANIFEST_FILENAME = "MANIFEST.MF";
     private final static String PACKAGE_NAMESPACE = "osgi.wiring.package";

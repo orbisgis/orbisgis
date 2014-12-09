@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.plugin;
+package org.orbisgis.framework;
 
 import org.osgi.framework.Version;
 
