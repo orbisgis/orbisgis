@@ -1,9 +1,9 @@
-package org.orbisgis.view.edition;
+package org.orbisgis.sif.edition;
 
 import org.orbisgis.commons.events.Listener;
 
 /**
- * Used by {@link org.orbisgis.view.edition.EditorTransferHandler} in order to receive drop events.
+ * Used by {@link EditorTransferHandler} in order to receive drop events.
  * @author Nicolas Fortin
  */
 public interface EditableTransferListener extends Listener<EditableTransferEvent> {

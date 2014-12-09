@@ -94,7 +94,7 @@ import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.sif.multiInputPanel.*;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
-import org.orbisgis.view.edition.EditableTransferListener;
+import org.orbisgis.sif.edition.EditableTransferListener;
 import org.orbisgis.view.table.jobs.CreateSourceFromSelection;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.docking.DockingPanelParameters;

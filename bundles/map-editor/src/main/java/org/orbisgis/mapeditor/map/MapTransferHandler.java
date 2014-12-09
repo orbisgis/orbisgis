@@ -29,10 +29,10 @@
 package org.orbisgis.mapeditor.map;
 
 import org.apache.log4j.Logger;
+import org.orbisgis.editorjdbc.EditableSource;
 import org.orbisgis.mapeditorapi.MapElement;
-import org.orbisgis.view.edition.EditorTransferHandler;
-import org.orbisgis.viewapi.edition.EditableElement;
-import org.orbisgis.viewapi.edition.EditableSource;
+import org.orbisgis.sif.edition.EditorTransferHandler;
+import org.orbisgis.sif.edition.EditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

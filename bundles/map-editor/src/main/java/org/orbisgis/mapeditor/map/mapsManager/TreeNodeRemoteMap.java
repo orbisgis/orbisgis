@@ -44,7 +44,6 @@ import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.coremap.renderer.se.common.Description;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.sif.components.fstree.AbstractTreeNodeLeaf;
 import org.orbisgis.sif.components.fstree.DragTreeNode;
 import org.orbisgis.sif.components.fstree.DropDestinationTreeNode;
@@ -55,7 +54,7 @@ import org.orbisgis.mapeditor.map.TransferableMap;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.DeleteRemoteMapContext;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.UploadMapContext;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -130,8 +129,7 @@ public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeC
                                         MapElement[] mapArray = (MapElement[])mapObj;
                                         if(mapArray.length!=0) {
                                                 MapContext mapToUpload = mapArray[0].getMapContext();
-                                                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                                                bm.nonBlockingBackgroundOperation(new UploadMapContext(mapToUpload, (TreeNodeWorkspace)getParent(),remoteMapConnection.getId()));
+                                                new UploadMapContext(mapToUpload, (TreeNodeWorkspace)getParent(),remoteMapConnection.getId()).execute();
                                         }
                                         return true;
                                 } else {
@@ -149,8 +147,7 @@ public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeC
                 }
         }
         public void onDeleteMap() {
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.nonBlockingBackgroundOperation(new DeleteRemoteMapContext(this));                
+                new DeleteRemoteMapContext(this).execute();
         }
         @Override
         public void feedPopupMenu(JPopupMenu menu) {

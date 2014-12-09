@@ -49,7 +49,7 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import org.orbisgis.viewapi.edition.EditableElement;
 import org.orbisgis.viewapi.edition.EditableElementException;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

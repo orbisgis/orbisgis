@@ -88,7 +88,7 @@ import org.orbisgis.viewapi.docking.DockingPanel;
 import org.orbisgis.viewapi.docking.DockingPanelFactory;
 import org.orbisgis.viewapi.docking.DockingPanelLayout;
 import org.orbisgis.viewapi.docking.DockingPanelParameters;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 /**

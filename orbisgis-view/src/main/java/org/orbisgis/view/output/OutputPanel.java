@@ -35,7 +35,7 @@ import java.beans.PropertyChangeListener;
 import javax.swing.*;
 import javax.swing.text.*;
 import org.apache.log4j.Logger;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

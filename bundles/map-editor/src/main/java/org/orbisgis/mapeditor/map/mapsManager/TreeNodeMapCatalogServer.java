@@ -46,12 +46,11 @@ import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
-import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.sif.components.fstree.AbstractTreeNodeContainer;
 import org.orbisgis.sif.components.fstree.PopupTreeNode;
 import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.DownloadWorkspaces;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -126,8 +125,7 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
                 TreeNodeBusy busyNode = new TreeNodeBusy();
                 model.insertNodeInto(busyNode, this, 0);
                 // Launch the download job
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.nonBlockingBackgroundOperation(new DownloadWorkspaces(this,busyNode,dataManager, mapsFolder));
+                new DownloadWorkspaces(this,busyNode,dataManager, mapsFolder).execute();
                 
         }
         @Override

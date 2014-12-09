@@ -26,9 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.edition;
-
-import org.orbisgis.viewapi.edition.EditableElement;
+package org.orbisgis.sif.edition;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;

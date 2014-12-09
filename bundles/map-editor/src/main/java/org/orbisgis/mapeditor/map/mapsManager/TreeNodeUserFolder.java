@@ -1,7 +1,7 @@
 package org.orbisgis.mapeditor.map.mapsManager;
 
 import org.orbisgis.sif.components.fstree.TreeNodeFileFactoryManager;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;

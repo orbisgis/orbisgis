@@ -26,12 +26,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.edition;
+package org.orbisgis.sif.edition;
 
 import java.util.EventObject;
 import javax.swing.TransferHandler;
 import javax.swing.TransferHandler.DropLocation;
-import org.orbisgis.viewapi.edition.EditableElement;
 
 /**
  * Transfer of Editable event

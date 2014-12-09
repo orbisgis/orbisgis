@@ -26,13 +26,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.edition;
+package org.orbisgis.sif.edition;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.commons.events.EventException;
-import org.orbisgis.commons.events.Listener;
 import org.orbisgis.commons.events.ListenerContainer;
-import org.orbisgis.viewapi.edition.EditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.TransferHandler;

@@ -56,7 +56,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.workspace.CoreWorkspaceImpl;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

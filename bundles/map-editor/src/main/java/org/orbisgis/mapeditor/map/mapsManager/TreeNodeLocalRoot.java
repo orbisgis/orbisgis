@@ -50,7 +50,7 @@ import org.orbisgis.sif.components.fstree.PopupTreeNode;
 import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
 import org.orbisgis.sif.components.fstree.TreeNodeFileFactoryManager;
 import org.orbisgis.sif.components.fstree.TreeNodeFolder;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
