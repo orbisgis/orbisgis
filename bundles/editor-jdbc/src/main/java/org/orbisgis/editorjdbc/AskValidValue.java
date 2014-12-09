@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.sif;
+package org.orbisgis.editorjdbc;
 
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.MetaData;

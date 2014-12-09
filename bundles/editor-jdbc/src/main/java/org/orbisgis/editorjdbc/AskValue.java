@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.sif;
+package org.orbisgis.editorjdbc;
 
 import java.awt.Component;
 import java.net.URL;
