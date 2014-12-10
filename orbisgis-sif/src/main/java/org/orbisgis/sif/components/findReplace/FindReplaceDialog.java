@@ -38,11 +38,12 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
-import org.apache.log4j.Logger;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
 import org.orbisgis.sif.common.MenuCommonFunctions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -56,7 +57,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public final class FindReplaceDialog extends JDialog {
         private static final long serialVersionUID = 1L;
         protected static final I18n I18N = I18nFactory.getI18n(FindReplaceDialog.class);
-        private static final Logger LOGGER = Logger.getLogger(FindReplaceDialog.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(FindReplaceDialog.class);
         private AtomicBoolean initialised = new AtomicBoolean(false);
         private final RSyntaxTextArea rSyntaxTextArea;
         //================================================================ constants

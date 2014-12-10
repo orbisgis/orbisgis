@@ -19,10 +19,11 @@
         <modules>
                 <module>api/framework-api</module>
                 <module>framework</module>
-                <module>workspace-gui</module>
-                <!--
+                <module>workspace-gui-api</module>
                 <module>orbisgis-commons</module>
                 <module>orbisgis-sif</module>
+                <module>workspace-gui</module>
+                <!--
                 <module>bundles/postgis-jts-osgi</module>
                 <module>bundles/h2trigger</module>
                 <module>bundles/core-jdbc</module>
@@ -45,7 +46,6 @@
                 <module>api/orbisgis-view</module>
                 <module>orbisgis-view</module>
                 -->
-    <module>wkgui-api</module>
   </modules>
         <profiles>
             <profile>

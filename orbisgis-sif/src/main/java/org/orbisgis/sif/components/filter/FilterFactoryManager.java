@@ -45,13 +45,14 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import org.apache.log4j.Logger;
 import org.orbisgis.commons.events.EventException;
 import org.orbisgis.commons.events.Listener;
 import org.orbisgis.commons.events.ListenerContainer;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.sif.icons.SifIcon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -73,7 +74,7 @@ public class FilterFactoryManager<FilterInterface,FilterSerialisation extends Ac
     public interface FilterChangeListener extends Listener<FilterChangeEventData> {            
     }
     private static final I18n I18N = I18nFactory.getI18n(FilterFactoryManager.class);
-    private static final Logger LOGGER = Logger.getLogger(FilterFactoryManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FilterFactoryManager.class);
     private JPanel filterListPanel;/*!< This panel contain the set of filters */
         //List of active filters
     private Map<Component,FilterSerialisation> filterValues = Collections.synchronizedMap(new HashMap<Component,FilterSerialisation>());

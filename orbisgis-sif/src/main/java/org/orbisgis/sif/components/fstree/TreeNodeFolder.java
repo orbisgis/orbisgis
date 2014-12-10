@@ -52,11 +52,12 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.sif.icons.SifIcon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -67,7 +68,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTreeNode, TreeNodePath, DropDestinationTreeNode, DragTreeNode {
         private File folderPath;
-        protected static final Logger LOGGER = Logger.getLogger("gui." + TreeNodeFolder.class);
+        protected static final Logger LOGGER = LoggerFactory.getLogger("gui." + TreeNodeFolder.class);
         protected static final I18n I18N = I18nFactory.getI18n(TreeNodeFolder.class);
         private TreeNodeFileFactoryManager factoryManager;
         private boolean loaded = false;

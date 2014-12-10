@@ -51,6 +51,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
@@ -70,15 +71,18 @@ public class WorkspaceSelectionDialog extends JPanel {
     private static final Logger LOGGER = LoggerFactory.getLogger(WorkspaceSelectionDialog.class);
     private DirectoryComboBoxChoice comboBox;
     private JCheckBox defaultCheckBox;
-    private CoreWorkspaceImpl selectedWorkspace = new CoreWorkspaceImpl();
+    private CoreWorkspaceImpl selectedWorkspace;
     private JLabel errorLabel = new JLabel();
+    private Window parent;
 
-    private WorkspaceSelectionDialog(int major) {
+    private WorkspaceSelectionDialog() {
         super(new MigLayout("wrap 1"));
     }
 
-    private void init(Component parent,
-                      CoreWorkspaceImpl coreWorkspace) {
+    private void init(Window parent, CoreWorkspaceImpl coreWorkspace) {
+        this.parent = parent;
+        selectedWorkspace = new CoreWorkspaceImpl(coreWorkspace.getVersionMajor(), coreWorkspace.getVersionMinor(),
+                coreWorkspace.getVersionRevision(), coreWorkspace.getVersionQualifier());
         // Get the list of known workspaces
         List<File> knownWorkspaces = coreWorkspace.readKnownWorkspacesPath();
 
@@ -145,7 +149,7 @@ public class WorkspaceSelectionDialog extends JPanel {
      * The user click on add open button
      */
     public void onOpenDBPanel() {
-        DatabaseSettingsPanel databaseSettingsPanel = new DatabaseSettingsPanel((JDialog) getTopLevelAncestor());
+        DatabaseSettingsPanel databaseSettingsPanel = new DatabaseSettingsPanel(parent, selectedWorkspace);
         databaseSettingsPanel.setConnectionName(new File(selectedWorkspace.getWorkspaceFolder()).getName());
         databaseSettingsPanel.setUser(selectedWorkspace.getDataBaseUser());
         databaseSettingsPanel.setURL(selectedWorkspace.getJDBCConnectionReference());
@@ -183,7 +187,7 @@ public class WorkspaceSelectionDialog extends JPanel {
      *
      * @return True if the user validate workspace change
      */
-    public static boolean showWorkspaceFolderSelection(Component parent,
+    public static boolean showWorkspaceFolderSelection(Window parent,
                                                     CoreWorkspaceImpl coreWorkspace) {
         if(!SwingUtilities.isEventDispatchThread()) {
             throw new IllegalStateException("Not on swing dispatch thread");
@@ -203,10 +207,10 @@ public class WorkspaceSelectionDialog extends JPanel {
         // If the user clicked OK, then update the workspace.
         if (userChoice == JOptionPane.OK_OPTION) {
             String chosenWorkspacePath = panel.getComboBox().getValue();
-            if (!ViewWorkspaceImpl.isWorkspaceValid(new File(chosenWorkspacePath))) {
+            if (!ViewWorkspaceImpl.isWorkspaceValid(new File(chosenWorkspacePath), coreWorkspace.getVersionMajor())) {
                 LOGGER.error(I18N.tr("The workspace folder version is invalid " +
                         "(!=OrbisGIS {0}), or the folder is not empty",
-                        CoreWorkspaceImpl.MAJOR_VERSION));
+                        coreWorkspace.getVersionMajor()));
                 return false;
             }
             try {
@@ -244,7 +248,7 @@ public class WorkspaceSelectionDialog extends JPanel {
      */
     public void onWorkspaceFolderChange() {
         // Check if workspace folder is valid
-        if(ViewWorkspaceImpl.isWorkspaceValid(new File(comboBox.getValue()))) {
+        if(ViewWorkspaceImpl.isWorkspaceValid(new File(comboBox.getValue()), selectedWorkspace.getVersionMajor())) {
             selectedWorkspace.setWorkspaceFolder(comboBox.getValue());
             errorLabel.setText("");
         } else {
@@ -282,7 +286,9 @@ public class WorkspaceSelectionDialog extends JPanel {
        
         File[] files = wkFile.listFiles();
         if (!wkFile.exists() || (files != null && files.length == 0)) {
-            ViewWorkspaceImpl.initWorkspaceFolder(wkFile);
+            ViewWorkspaceImpl.initWorkspaceFolder(wkFile, coreWorkspace.getVersionMajor(),
+                    coreWorkspace.getVersionMinor(), coreWorkspace.getVersionRevision(),
+                    coreWorkspace.getVersionQualifier());
         }
         // Write chosen jdbc attributes
         wkDialog.selectedWorkspace.writeUriFile();

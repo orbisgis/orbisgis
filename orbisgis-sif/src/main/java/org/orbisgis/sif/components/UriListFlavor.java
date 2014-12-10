@@ -28,6 +28,9 @@
  */
 package org.orbisgis.sif.components;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -37,7 +40,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import org.apache.log4j.Logger;
 
 /**
  * Management of URI for data transfer (drag&drop).
@@ -45,7 +47,7 @@ import org.apache.log4j.Logger;
  */
 public class UriListFlavor {
         private DataFlavor uriListFlavor = null;
-        private static final Logger LOGGER = Logger.getLogger(UriListFlavor.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(UriListFlavor.class);
         //RFC 2483 says that lines are terminated with a CRLF pair
         private String lineSep = System.getProperty("line.separator");
         public UriListFlavor() {
@@ -90,8 +92,7 @@ public class UriListFlavor {
                                         URI dataUri = new URI(line.trim());
                                         uriList.add(dataUri);
                                 } catch (URISyntaxException ex) {
-                                        LOGGER.debug(ex);
-                                        continue;
+                                        LOGGER.debug(ex.getLocalizedMessage(), ex);
                                 }
                         }
                 }

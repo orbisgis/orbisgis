@@ -28,9 +28,10 @@
  */
 package org.orbisgis.sif.edition;
 
-import org.apache.log4j.Logger;
 import org.orbisgis.commons.events.EventException;
 import org.orbisgis.commons.events.ListenerContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.TransferHandler;
@@ -43,7 +44,7 @@ import java.io.IOException;
  */
 public abstract class EditorTransferHandler  extends TransferHandler {
     private static final long serialVersionUID = 1L;
-    static final private Logger GUILOGGER = Logger.getLogger("gui."+EditorTransferHandler.class);
+    static final private Logger GUILOGGER = LoggerFactory.getLogger("gui." + EditorTransferHandler.class);
     static final private I18n I18N = I18nFactory.getI18n(EditorTransferHandler.class);
     private ListenerContainer<EditableTransferEvent> transferEditableEvent = new ListenerContainer<>();
 

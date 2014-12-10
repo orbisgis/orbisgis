@@ -28,7 +28,8 @@
  */
 package org.orbisgis.sif;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -49,7 +50,7 @@ public class CommentUtil {
     public static final String BLOCK_COMMENT_START = "/*";
     public static final String BLOCK_COMMENT_END = "*/";
     private final static I18n I18N = I18nFactory.getI18n(CommentUtil.class);
-    private final static Logger LOGGER = Logger.getLogger(CommentUtil.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(CommentUtil.class);
 
     /**
      * Comment the selected text in the given script panel.

@@ -29,6 +29,8 @@ package org.orbisgis.wkgui.gui;
 
 import java.awt.Dialog;
 import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
@@ -42,6 +44,7 @@ import java.util.StringTokenizer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -85,7 +88,7 @@ public class DatabaseSettingsPanel extends JDialog {
         init();
     }
 
-    public DatabaseSettingsPanel(Dialog owner, CoreWorkspace defaultCoreWorkspace) {
+    public DatabaseSettingsPanel(Window owner, CoreWorkspace defaultCoreWorkspace) {
         super(owner);
         this.defaultCoreWorkspace = defaultCoreWorkspace;
         init();

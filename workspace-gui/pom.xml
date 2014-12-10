@@ -77,5 +77,10 @@
             <artifactId>orbisgis-sif</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wkgui-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

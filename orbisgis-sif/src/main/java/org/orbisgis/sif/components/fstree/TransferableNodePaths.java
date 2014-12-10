@@ -36,8 +36,9 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.log4j.Logger;
 import org.orbisgis.sif.components.UriListFlavor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Transferable that hold a list of TreeNodePath
@@ -48,7 +49,7 @@ public class TransferableNodePaths implements Transferable {
 			TransferableNodePaths.class, "File paths");
         private List<TreeNodePath> paths = new ArrayList<TreeNodePath>();
         private UriListFlavor uriListFlavor = new UriListFlavor();
-        private static final Logger LOGGER = Logger.getLogger(TransferableNodePaths.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(TransferableNodePaths.class);
         
         /**
          * Default constructor

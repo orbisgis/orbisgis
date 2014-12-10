@@ -34,7 +34,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import org.orbisgis.core.workspace.CoreWorkspaceImpl;
+
+import org.orbisgis.framework.CoreWorkspaceImpl;
+import org.orbisgis.wkguiapi.ViewWorkspace;
 
 /**
  * View workspace contains file and folder information
@@ -139,25 +141,28 @@ public class ViewWorkspaceImpl implements ViewWorkspace {
      * @param workspaceFolder
      * @throws IOException Error while writing files or the folder is not empty
      */
-    public static void initWorkspaceFolder(File workspaceFolder) throws IOException {
-        CoreWorkspaceImpl.initWorkspaceFolder(workspaceFolder);
+    public static void initWorkspaceFolder(File workspaceFolder, int version_major, int version_minor,
+                                           int version_revision, String version_qualifier) throws IOException {
+        CoreWorkspaceImpl.initWorkspaceFolder(workspaceFolder, version_major, version_minor, version_revision,
+                version_qualifier);
     }
     /**
      * Check if the provided folder can be loaded has the workspace
      * @param workspaceFolder
      * @return True if valid
      */
-    public static boolean isWorkspaceValid(File workspaceFolder) {
+    public static boolean isWorkspaceValid(File workspaceFolder, int majorVersion) {
         // not exist or empty
         // contain the version file with same major version
         if(!workspaceFolder.exists()) {
                 return true;
         }
         if(!workspaceFolder.isDirectory()) {
-                return false;
+            return false;
         }
-        if(workspaceFolder.listFiles().length==0) {
-                return true;
+        File[] files = workspaceFolder.listFiles();
+        if (files == null || files.length == 0) {
+            return true;
         }
         File versionFile = new File(workspaceFolder, CoreWorkspaceImpl.VERSION_FILE);
         if(!versionFile.exists()) {
@@ -170,7 +175,7 @@ public class ViewWorkspaceImpl implements ViewWorkspace {
                                versionFile));
                 String line = fileReader.readLine();
                 if(line!=null) {
-                        return Integer.valueOf(line).equals(CoreWorkspaceImpl.MAJOR_VERSION);
+                        return Integer.valueOf(line).equals(majorVersion);
                 }
         } catch (IOException e) {
                 throw new RuntimeException("Cannot read the workspace location", e);
@@ -180,7 +185,7 @@ public class ViewWorkspaceImpl implements ViewWorkspace {
                     fileReader.close();
                 }
             } catch (IOException e) {
-                throw new RuntimeException("Cannot read the workspace location", e);
+                // Ignore
             }
         }
         return false;            

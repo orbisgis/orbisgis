@@ -28,12 +28,13 @@
  */
 package org.orbisgis.sif.components.actions;
 
-import org.apache.log4j.Logger;
 import org.orbisgis.commons.events.BeanPropertyChangeSupport;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.sif.components.actions.intern.RemoveActionControls;
 import org.orbisgis.sif.components.button.DropDownButton;
 import org.orbisgis.viewapi.components.actions.ActionTools;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -72,7 +73,7 @@ import java.util.Map;
  * @author Nicolas Fortin
  */
 public class ActionCommands extends BeanPropertyChangeSupport implements ActionsHolder {
-        private static final Logger LOGGER = Logger.getLogger(ActionCommands.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(ActionCommands.class);
         // Actions
         private List<Action> actions = new ArrayList<Action>();
         // Menu containers
