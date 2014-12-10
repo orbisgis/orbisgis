@@ -4,6 +4,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,9 @@ public class Activator implements BundleActivator {
      */
     @Override
     public void start(BundleContext bc) throws Exception {
-        logBundleState(bc);
+        //logBundleState(bc);
+        Version bundleVersion = bc.getBundle().getVersion();
+
     }
 
     private void logBundleState(BundleContext context) {

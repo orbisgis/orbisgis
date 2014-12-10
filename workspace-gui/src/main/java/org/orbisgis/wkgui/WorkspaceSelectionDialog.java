@@ -26,18 +26,31 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.workspace;
+package org.orbisgis.wkgui;
 
 import net.miginfocom.swing.MigLayout;
-import org.apache.log4j.Logger;
-import org.orbisgis.core.workspace.CoreWorkspaceImpl;
+import org.orbisgis.framework.CoreWorkspaceImpl;
 import org.orbisgis.sif.multiInputPanel.DirectoryComboBoxChoice;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.wkgui.icons.WKIcon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
@@ -54,13 +67,13 @@ import org.orbisgis.sif.components.CustomButton;
 public class WorkspaceSelectionDialog extends JPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(WorkspaceSelectionDialog.class);
-    private static final Logger LOGGER = Logger.getLogger(WorkspaceSelectionDialog.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WorkspaceSelectionDialog.class);
     private DirectoryComboBoxChoice comboBox;
     private JCheckBox defaultCheckBox;
     private CoreWorkspaceImpl selectedWorkspace = new CoreWorkspaceImpl();
     private JLabel errorLabel = new JLabel();
 
-    private WorkspaceSelectionDialog() {
+    private WorkspaceSelectionDialog(int major) {
         super(new MigLayout("wrap 1"));
     }
 
@@ -96,7 +109,7 @@ public class WorkspaceSelectionDialog extends JPanel {
         JLabel subCheckBox = new JLabel("<html><body><p style='width: 200px;'>" +
                 I18N.tr("Setting this workspace as default will allow you to " +
                         "skip this dialog next time") + "</p></body></html>");
-        JButton deleteButton = new CustomButton(OrbisGISIcon.getIcon("remove"));
+        JButton deleteButton = new CustomButton(WKIcon.getIcon("remove"));
         deleteButton.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteWorkspaceEntry"));
         subCheckBox.setFont(smallFont);
         // Add components
@@ -109,7 +122,7 @@ public class WorkspaceSelectionDialog extends JPanel {
         add(Box.createGlue());
         add(defaultCheckBox);
         add(subCheckBox);
-        CustomButton customDataBase = new CustomButton(OrbisGISIcon.getIcon("database"));
+        CustomButton customDataBase = new CustomButton(WKIcon.getIcon("database"));
         customDataBase.setText(I18N.tr("Customize your database"));
         customDataBase.setToolTipText(I18N.tr("Click to customize your database."));
         customDataBase.addActionListener(
@@ -185,7 +198,7 @@ public class WorkspaceSelectionDialog extends JPanel {
                 I18N.tr("Workspace Manager"),
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
-                OrbisGISIcon.getIcon("sidebar"));
+                WKIcon.getIcon("sidebar"));
 
         // If the user clicked OK, then update the workspace.
         if (userChoice == JOptionPane.OK_OPTION) {

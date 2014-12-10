@@ -25,7 +25,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly: info_at_ orbisgis.org
  */
-package org.orbisgis.view.workspace;
+package org.orbisgis.wkgui;
 
 import java.awt.Dialog;
 import java.awt.Font;
@@ -52,11 +52,11 @@ import javax.swing.JTextField;
 import javax.xml.bind.DatatypeConverter;
 
 import net.miginfocom.swing.MigLayout;
-import org.apache.log4j.Logger;
-import org.orbisgis.core.workspace.CoreWorkspaceImpl;
-import org.orbisgis.sif.components.CustomButton;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.framework.CoreWorkspaceImpl;
 import org.orbisgis.sif.common.MenuCommonFunctions;
+import org.orbisgis.sif.components.CustomButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -64,11 +64,12 @@ import org.xnap.commons.i18n.I18nFactory;
  * This class is used to manage the database connections used by OrbisGIS.
  * 
  * @author Erwan Bocher
+ * @author Nicolas Fortin
  */
 public class DatabaseSettingsPanel extends JDialog {
 
     private static final String DB_PROPERTIES_FILE = "db_connexions.properties";
-    private static final Logger LOGGER = Logger.getLogger(DatabaseSettingsPanel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseSettingsPanel.class);
     protected static final I18n I18N = I18nFactory.getI18n(DatabaseSettingsPanel.class);
     private Properties dbProperties = new Properties();
     private JTextField connectionName;
@@ -115,10 +116,10 @@ public class DatabaseSettingsPanel extends JDialog {
         connectionName = new JTextField();
         mainPanel.add(labelName);
         mainPanel.add(connectionName, "width 200!");
-        CustomButton saveBt = new CustomButton(OrbisGISIcon.getIcon("save"));
+        CustomButton saveBt = new CustomButton(WKIcon.getIcon("save"));
         saveBt.setToolTipText(I18N.tr("Save the connection parameters"));
         saveBt.addActionListener(EventHandler.create(ActionListener.class, this, "onSave"));
-        CustomButton removeBt = new CustomButton(OrbisGISIcon.getIcon("remove"));
+        CustomButton removeBt = new CustomButton(WKIcon.getIcon("remove"));
         removeBt.setToolTipText(I18N.tr("Remove the connection parameters"));
         removeBt.addActionListener(EventHandler.create(ActionListener.class, this, "onRemove"));
         mainPanel.add(saveBt);

@@ -71,7 +71,6 @@
                 <netbeans.hint.license>OrbisGIS</netbeans.hint.license>
                 <default-main-class>org.orbisgis.framework.Main</default-main-class>
                 <!-- Common Dependencies version -->
-                <log4j-version>1.2.16</log4j-version>
                 <commons-io-version>2.4</commons-io-version>
                 <jts-version>1.13</jts-version>
                 <org.osgi.compendium-version>4.3.1</org.osgi.compendium-version>

@@ -209,9 +209,7 @@ final class Main {
             while (event.getType() == FrameworkEvent.STOPPED_UPDATE);
             // Otherwise, exit.
             System.exit(0);
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             System.err.println("Could not create framework: " + ex);
             ex.printStackTrace();
             System.exit(0);
