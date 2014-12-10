@@ -8,6 +8,8 @@ import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.SwingWorker;
+
 /**
  * Registers services provided by this plugin bundle.
  */
@@ -23,14 +25,13 @@ public class Activator implements BundleActivator {
      */
     @Override
     public void start(BundleContext bc) throws Exception {
-        //logBundleState(bc);
         Version bundleVersion = bc.getBundle().getVersion();
-
+        new LogState(bc).execute();
     }
 
-    private void logBundleState(BundleContext context) {
+    private static void logBundleState(BundleContext context) {
         LOGGER.info("Built-In bundle list :");
-        LOGGER.info("ID\t\tState\tBundle name");
+        LOGGER.info("ID\tState\t\tBundle name");
         for (Bundle bundle : context.getBundles()) {
             LOGGER.info("[" + String.format("%02d", bundle.getBundleId()) + "]\t" + getStateString(bundle.getState())
                     + "\t" + bundle.getSymbolicName());
@@ -47,7 +48,7 @@ public class Activator implements BundleActivator {
         }
     }
 
-    private String getStateString(int i) {
+    private static String getStateString(int i) {
         switch (i) {
             case Bundle.ACTIVE:
                 return "Active   ";
@@ -73,5 +74,19 @@ public class Activator implements BundleActivator {
     @Override
     public void stop(BundleContext bc) throws Exception {
 
+    }
+
+    private static class LogState extends SwingWorker {
+        private BundleContext bc;
+
+        private LogState(BundleContext bc) {
+            this.bc = bc;
+        }
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            logBundleState(bc);
+            return null;
+        }
     }
 }

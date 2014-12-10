@@ -81,7 +81,7 @@
                             <stripVersion>true</stripVersion>
                             <includeScope>provided</includeScope>
                             <!-- Jar that are not compatible with OSGi -->
-                            <excludeArtifactIds>miglayout-swing, miglayout-core</excludeArtifactIds>
+                            <excludeGroupIds>com.fifesoft, com.miglayout</excludeGroupIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -150,6 +150,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>miglayout-osgi</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>rsyntax-osgi</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

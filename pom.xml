@@ -61,6 +61,7 @@
                 </activation>
                 <modules>
                     <module>external/mig-layout</module>
+                    <module>external/rsyntax-osgi</module>
                     <module>orbisgis-dist</module>
                 </modules>
             </profile>
