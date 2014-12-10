@@ -25,12 +25,10 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly: info_at_ orbisgis.org
  */
-package org.orbisgis.wkgui;
+package org.orbisgis.wkgui.gui;
 
 import java.awt.Dialog;
 import java.awt.Font;
-import java.awt.Frame;
-import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
@@ -52,9 +50,10 @@ import javax.swing.JTextField;
 import javax.xml.bind.DatatypeConverter;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.framework.CoreWorkspaceImpl;
+import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.sif.components.CustomButton;
+import org.orbisgis.wkgui.icons.WKIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -78,24 +77,17 @@ public class DatabaseSettingsPanel extends JDialog {
     private JCheckBox requirePassword;
     private JComboBox<Object> comboBox;
     boolean canceled = false;
+    private CoreWorkspace defaultCoreWorkspace;
 
-    public DatabaseSettingsPanel() {
+    public DatabaseSettingsPanel(CoreWorkspace defaultCoreWorkspace) {
         super();
+        this.defaultCoreWorkspace = defaultCoreWorkspace;
         init();
     }
 
-    public DatabaseSettingsPanel(Dialog owner) {
+    public DatabaseSettingsPanel(Dialog owner, CoreWorkspace defaultCoreWorkspace) {
         super(owner);
-        init();
-    }
-
-    public DatabaseSettingsPanel(Frame owner) {
-        super(owner);
-        init();
-    }
-
-    public DatabaseSettingsPanel(Window owner) {
-        super(owner);
+        this.defaultCoreWorkspace = defaultCoreWorkspace;
         init();
     }
 
@@ -257,12 +249,12 @@ public class DatabaseSettingsPanel extends JDialog {
      */
     private void loadDBProperties() {
         try {
-            File propertiesFile = new File(new CoreWorkspaceImpl().getApplicationFolder() + File.separator + DB_PROPERTIES_FILE);
+            File propertiesFile = new File(defaultCoreWorkspace.getApplicationFolder() + File.separator + DB_PROPERTIES_FILE);
             if (propertiesFile.exists()) {
                 dbProperties.load(new FileInputStream(propertiesFile));
             }
         } catch (IOException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getLocalizedMessage(), e);
         }
     }
 
@@ -271,10 +263,10 @@ public class DatabaseSettingsPanel extends JDialog {
      */
     public void saveProperties() {
         try {
-            dbProperties.store(new FileOutputStream(new CoreWorkspaceImpl().getApplicationFolder() + File.separator + DB_PROPERTIES_FILE),
+            dbProperties.store(new FileOutputStream(defaultCoreWorkspace.getApplicationFolder() + File.separator + DB_PROPERTIES_FILE),
                     I18N.tr("Saved with the OrbisGIS database panel"));
         } catch (IOException ex) {
-            LOGGER.error(ex);
+            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
 
     }

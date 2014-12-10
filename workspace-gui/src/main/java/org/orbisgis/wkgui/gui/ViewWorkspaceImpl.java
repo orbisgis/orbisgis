@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.wkgui;
+package org.orbisgis.wkgui.gui;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -42,7 +42,7 @@ import org.orbisgis.core.workspace.CoreWorkspaceImpl;
  */
 
 
-public class ViewWorkspaceImpl implements org.orbisgis.viewapi.workspace.ViewWorkspace {
+public class ViewWorkspaceImpl implements ViewWorkspace {
     private static final long serialVersionUID = 1L;
 
     private PropertyChangeSupport propertySupport;

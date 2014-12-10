@@ -45,6 +45,7 @@
                 <module>api/orbisgis-view</module>
                 <module>orbisgis-view</module>
                 -->
+    <module>wkgui-api</module>
   </modules>
         <profiles>
             <profile>

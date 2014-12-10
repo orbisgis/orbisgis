@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.wkgui;
+package org.orbisgis.wkgui.gui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.framework.CoreWorkspaceImpl;
@@ -203,7 +203,7 @@ public class WorkspaceSelectionDialog extends JPanel {
         // If the user clicked OK, then update the workspace.
         if (userChoice == JOptionPane.OK_OPTION) {
             String chosenWorkspacePath = panel.getComboBox().getValue();
-            if (!ViewWorkspace.isWorkspaceValid(new File(chosenWorkspacePath))) {
+            if (!ViewWorkspaceImpl.isWorkspaceValid(new File(chosenWorkspacePath))) {
                 LOGGER.error(I18N.tr("The workspace folder version is invalid " +
                         "(!=OrbisGIS {0}), or the folder is not empty",
                         CoreWorkspaceImpl.MAJOR_VERSION));
@@ -244,7 +244,7 @@ public class WorkspaceSelectionDialog extends JPanel {
      */
     public void onWorkspaceFolderChange() {
         // Check if workspace folder is valid
-        if(ViewWorkspace.isWorkspaceValid(new File(comboBox.getValue()))) {
+        if(ViewWorkspaceImpl.isWorkspaceValid(new File(comboBox.getValue()))) {
             selectedWorkspace.setWorkspaceFolder(comboBox.getValue());
             errorLabel.setText("");
         } else {
@@ -282,7 +282,7 @@ public class WorkspaceSelectionDialog extends JPanel {
        
         File[] files = wkFile.listFiles();
         if (!wkFile.exists() || (files != null && files.length == 0)) {
-            ViewWorkspace.initWorkspaceFolder(wkFile);
+            ViewWorkspaceImpl.initWorkspaceFolder(wkFile);
         }
         // Write chosen jdbc attributes
         wkDialog.selectedWorkspace.writeUriFile();
