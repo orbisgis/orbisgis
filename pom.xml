@@ -19,6 +19,7 @@
         <modules>
                 <module>api/framework-api</module>
                 <module>framework</module>
+                <module>workspace-gui</module>
                 <!--
                 <module>orbisgis-commons</module>
                 <module>orbisgis-sif</module>
@@ -44,7 +45,7 @@
                 <module>api/orbisgis-view</module>
                 <module>orbisgis-view</module>
                 -->
-        </modules>
+  </modules>
         <profiles>
             <profile>
                 <id>osgi</id>
