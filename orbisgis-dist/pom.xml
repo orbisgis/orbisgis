@@ -80,7 +80,8 @@
                             <excludeTransitive>false</excludeTransitive>
                             <stripVersion>true</stripVersion>
                             <includeScope>provided</includeScope>
-                            <excludeArtifactIds>easymock</excludeArtifactIds>
+                            <!-- Jar that are not compatible with OSGi -->
+                            <excludeArtifactIds>miglayout-swing, miglayout-core</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -144,6 +145,12 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>workspace-gui</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>miglayout-osgi</artifactId>
+            <version>${miglayout-version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
