@@ -42,12 +42,12 @@ import org.orbisgis.core.workspace.CoreWorkspaceImpl;
  */
 
 
-public class ViewWorkspace implements org.orbisgis.viewapi.workspace.ViewWorkspace {
+public class ViewWorkspaceImpl implements org.orbisgis.viewapi.workspace.ViewWorkspace {
     private static final long serialVersionUID = 1L;
 
     private PropertyChangeSupport propertySupport;
     private CoreWorkspaceImpl coreWorkspace;
-    public ViewWorkspace(CoreWorkspaceImpl coreWorkspace) {
+    public ViewWorkspaceImpl(CoreWorkspaceImpl coreWorkspace) {
         propertySupport = new PropertyChangeSupport(this);
         this.coreWorkspace = coreWorkspace;
         SIFPath = coreWorkspace.getWorkspaceFolder() + File.separator + "sif" ;
