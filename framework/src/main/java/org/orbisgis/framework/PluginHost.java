@@ -131,8 +131,7 @@ public class PluginHost {
     /**
      * Create a valid bundleContext, but do not start bundles
      */
-    public void init() {
-        Map<String, String> frameworkConfig = new HashMap<String,String>();
+    public void init(Map<String, String> frameworkConfig) {
         // Define service interface exported by Framework orbisgis-core
         frameworkConfig.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,getExtraPackage());
         // Persistence's data
