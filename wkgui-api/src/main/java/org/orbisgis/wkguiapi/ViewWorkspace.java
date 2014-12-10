@@ -1,4 +1,4 @@
-package org.orbisgis.viewapi.workspace;
+package org.orbisgis.wkguiapi;
 
 import org.orbisgis.frameworkapi.CoreWorkspace;
 
