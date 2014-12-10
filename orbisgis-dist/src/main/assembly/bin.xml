@@ -38,6 +38,13 @@
                                 <include>*.bat</include>
                         </includes>
                 </fileSet>
+                <fileSet>
+                    <directory>${project.basedir}/conf/</directory>
+                    <outputDirectory>/conf/</outputDirectory>
+                    <includes>
+                        <include>config.properties</include>
+                    </includes>
+                </fileSet>
         </fileSets>
         <dependencySets>
             <dependencySet>
