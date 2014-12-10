@@ -9,7 +9,6 @@
     </parent>
     <artifactId>miglayout-osgi</artifactId>
     <name>miglayout-osgi</name>
-    <version>${miglayout-version}</version>
     <packaging>bundle</packaging>
     <build>
         <plugins>
@@ -24,6 +23,7 @@
                         <Embed-Dependency>miglayout-swing;scope=compile;inline=true,
                             miglayout-core;scope=compile;inline=true</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
+                        <Bundle-Version>${miglayout-version}</Bundle-Version>
                         <_exportcontents>net.miginfocom.swing.*,net.miginfocom.layout.*</_exportcontents>
                     </instructions>
                 </configuration>
@@ -37,7 +37,7 @@
             <dependency>
                 <groupId>com.miglayout</groupId>
                 <artifactId>miglayout-swing</artifactId>
-                <version>4.2</version>
+                <version>${miglayout-version}</version>
             </dependency>
     </dependencies>
 </project>
