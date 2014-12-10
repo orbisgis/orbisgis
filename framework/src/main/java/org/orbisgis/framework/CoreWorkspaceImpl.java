@@ -49,7 +49,7 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
     private static final Logger LOGGER = LoggerFactory.getLogger(CoreWorkspaceImpl.class);
     private static final long serialVersionUID = 6L; /*<! Update this integer while adding properties (1 for each new property)*/
     private PropertyChangeSupport propertySupport;
-    private String applicationFolder = getDefaultApplicationFolder();
+    private final String applicationFolder;
     private static final String DEFAULT_JDBC_USER = "sa";
     private static final boolean DEFAULT_JDBC_REQUIREPASSWORD = false;
     private String workspaceFolder;
@@ -75,6 +75,7 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
         this.version_minor = version_minor;
         this.version_revision = version_revision;
         this.version_qualifier = version_qualifier;
+        applicationFolder = getDefaultApplicationFolder();
         propertySupport = new PropertyChangeSupport(this);
 
         //Read default workspace
@@ -388,17 +389,6 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
     @Override
     public String getApplicationFolder() {
         return applicationFolder;
-    }
-
-    /**
-     * Set the value of applicationFolder
-     *
-     * @param applicationFolder new value of applicationFolder
-     */
-    public void setApplicationFolder(String applicationFolder) {
-        String oldApplicationFolder = this.applicationFolder;
-        this.applicationFolder = applicationFolder;
-        propertySupport.firePropertyChange(PROP_APPLICATIONFOLDER, oldApplicationFolder, applicationFolder);
     }
 
     @Override

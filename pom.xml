@@ -19,6 +19,7 @@
         <modules>
                 <module>api/framework-api</module>
                 <module>framework</module>
+                <!--
                 <module>orbisgis-commons</module>
                 <module>orbisgis-sif</module>
                 <module>bundles/postgis-jts-osgi</module>
@@ -42,6 +43,7 @@
                 <module>bundles/orbisgis-omanager-plugin</module>
                 <module>api/orbisgis-view</module>
                 <module>orbisgis-view</module>
+                -->
         </modules>
         <profiles>
             <profile>
@@ -66,7 +68,7 @@
         <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <netbeans.hint.license>OrbisGIS</netbeans.hint.license>
-                <default-main-class>org.orbisgis.view.main.Main</default-main-class>
+                <default-main-class>org.orbisgis.framework.Main</default-main-class>
                 <!-- Common Dependencies version -->
                 <log4j-version>1.2.16</log4j-version>
                 <commons-io-version>2.4</commons-io-version>
@@ -75,7 +77,7 @@
                 <h2-version>1.4.182</h2-version>
                 <h2-package>com.h2database</h2-package>
                 <h2-gis-version>1.1.1-SNAPSHOT</h2-gis-version>
-                <sl4j-version>1.6.0</sl4j-version>
+                <sl4j-version>1.7.7</sl4j-version>
                 <rsyntax-version>2.0.7</rsyntax-version>
                 <rsyntax-ls-version>r795</rsyntax-ls-version>
                 <rsyntax-autocomplete-version>2.0.7</rsyntax-autocomplete-version>

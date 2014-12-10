@@ -28,11 +28,22 @@
  */
 package org.orbisgis.framework;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Stack;
+import java.util.jar.Manifest;
 import javax.swing.JOptionPane;
+
+import org.apache.commons.io.IOUtils;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,45 +91,38 @@ final class Main
     {
         long deploymentTime = 0;
         parseCommandLine(args);
-            //Check if the java version is greater than 1.6+
-            if (!isVersion(MIN_JAVA_VERSION)) {
-                    JOptionPane.showMessageDialog(null, I18N.tr("OrbisGIS needs at least a java 1.7+"));
-            } else {
-                    // Fetch application version
-                    URL mainJar = ClassLoader.getSystemClassLoader().getResource(".");
-                    Version version = new Version(1,0,0);
-                    if(mainJar != null) {
-                        try {
-                            BundleReference bundleReference = BundleTools.parseJarManifest(new File(mainJar.getPath()), null);
-                            version = bundleReference.getVersion();
-                        } catch (IOException ex) {
-                            // Ignore
-                        }
-                    }
-                    // Create CoreWorkspace instance
-                    CoreWorkspaceImpl coreWorkspace = new CoreWorkspaceImpl(version.getMajor(), version.getMinor(),
-                            version.getMicro(), version.getQualifier());
-                    // Fetch cache folder
-                    File felixBundleCache = new File(coreWorkspace.getPluginFolder());
-                    // Delete snapshot fragments bundles
-                    long beginDeleteFragments = System.currentTimeMillis();
-                    BundleTools.deleteFragmentInCache(felixBundleCache);
-                    deploymentTime += System.currentTimeMillis() - beginDeleteFragments;
-                    PluginHost pluginHost = new PluginHost();
-                    pluginHost.init();
-                    // Install built-in bundles
-                    long beginInstallBundles = System.currentTimeMillis();
-                    // If needed TODO load preferences from external configuration file
-                    BundleTools.installBundles(pluginHost.getHostBundleContext(), new BundleReference[0]);
-                    deploymentTime += System.currentTimeMillis() - beginInstallBundles;
-                    // Start bundles
-                    pluginHost.start();
-                    LOGGER.info(I18N.tr("Waiting for bundle stability, deployment of built-in bundles done in {0} s", deploymentTime / 1000.0));
-                    if(!pluginHost.waitForBundlesStableState(BUNDLE_STABILITY_TIMEOUT)) {
-                        LOGGER.warn("Could not resolve bundle in the specified stability timeout");
-                    }
-                    pluginHost.
-            }
+        //Check if the java version is greater than 1.6+
+        if (!isVersion(MIN_JAVA_VERSION)) {
+                JOptionPane.showMessageDialog(null, I18N.tr("OrbisGIS needs at least a java 1.7+"));
+        } else {
+                // Fetch application version
+                Version version = new Version(1,0,0);
+                try(InputStream fs = Main.class.getResourceAsStream("version.txt")) {
+                    String versionTxt = IOUtils.readLines(fs).get(0);
+                    version = new Version(versionTxt.replace("-","."));
+                } catch (IOException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
+                // Create CoreWorkspace instance
+                CoreWorkspaceImpl coreWorkspace = new CoreWorkspaceImpl(version.getMajor(), version.getMinor(),
+                        version.getMicro(), version.getQualifier());
+                // Fetch cache folder
+                File felixBundleCache = new File(coreWorkspace.getPluginCache());
+                // Delete snapshot fragments bundles
+                long beginDeleteFragments = System.currentTimeMillis();
+                BundleTools.deleteFragmentInCache(felixBundleCache);
+                deploymentTime += System.currentTimeMillis() - beginDeleteFragments;
+                LOGGER.info(I18N.tr("Waiting for bundle stability, deployment of built-in bundles done in {0} s", deploymentTime / 1000.0));
+                // Start main of felix framework
+                try {
+                    String[] felixArgs = new String[]{"-b", BundleTools.BUNDLE_DIRECTORY,
+                            felixBundleCache.getAbsolutePath()};
+                    LOGGER.info("Start Apache Felix:\n"+ Arrays.toString(felixArgs));
+                    org.apache.felix.main.Main.main(felixArgs);
+                } catch (Exception ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
+        }
     }
 
         /**

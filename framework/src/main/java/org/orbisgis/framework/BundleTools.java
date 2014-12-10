@@ -72,9 +72,9 @@ import org.xnap.commons.i18n.I18nFactory;
 public class BundleTools {
     private final static Logger LOGGER = LoggerFactory.getLogger(BundleTools.class);
     private final static I18n I18N = I18nFactory.getI18n(BundleTools.class);
-    private final static String MANIFEST_FILENAME = "MANIFEST.MF";
+    public final static String MANIFEST_FILENAME = "MANIFEST.MF";
     private final static String PACKAGE_NAMESPACE = "osgi.wiring.package";
-    private final static String BUNDLE_DIRECTORY = "bundle";
+    public final static String BUNDLE_DIRECTORY = "bundle";
     private BundleTools() {        
     }
 
