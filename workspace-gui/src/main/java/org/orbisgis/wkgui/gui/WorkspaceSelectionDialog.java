@@ -42,6 +42,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -149,13 +150,15 @@ public class WorkspaceSelectionDialog extends JPanel {
      * The user click on add open button
      */
     public void onOpenDBPanel() {
-        DatabaseSettingsPanel databaseSettingsPanel = new DatabaseSettingsPanel(parent, selectedWorkspace);
+        Window window = SwingUtilities.getWindowAncestor(this);
+        DatabaseSettingsPanel databaseSettingsPanel = new DatabaseSettingsPanel(window, selectedWorkspace);
         databaseSettingsPanel.setConnectionName(new File(selectedWorkspace.getWorkspaceFolder()).getName());
         databaseSettingsPanel.setUser(selectedWorkspace.getDataBaseUser());
         databaseSettingsPanel.setURL(selectedWorkspace.getJDBCConnectionReference());
         databaseSettingsPanel.setHasPassword(selectedWorkspace.isRequirePassword());
         databaseSettingsPanel.setAlwaysOnTop(true);
         databaseSettingsPanel.setModal(true);
+        databaseSettingsPanel.setLocationRelativeTo(window);
         databaseSettingsPanel.setVisible(true);
         if(!databaseSettingsPanel.isCanceled()) {
             // Read selected attributes
