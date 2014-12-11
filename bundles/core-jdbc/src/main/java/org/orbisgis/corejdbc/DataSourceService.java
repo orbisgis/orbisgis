@@ -99,6 +99,10 @@ public class DataSourceService implements DataSource {
         if(!jdbcConnectionReference.isEmpty()) {
             Properties properties = JDBCUrlParser.parse(jdbcConnectionReference);
             String driverName = jdbcConnectionReference.split(":")[1];
+            properties.setProperty(DataSourceFactory.JDBC_USER,coreWorkspace.getDataBaseUser());
+            if(!coreWorkspace.isRequirePassword()) {
+                properties.setProperty(DataSourceFactory.JDBC_PASSWORD, coreWorkspace.getDataBasePassword());
+            }
             // Fetch requested Driver
             DataSourceFactory dataSourceFactory = dataSourceFactories.get(URI_DRIVER_TO_OSGI_DRIVER.get(driverName));
             if(dataSourceFactory != null) {

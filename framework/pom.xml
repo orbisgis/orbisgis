@@ -119,11 +119,6 @@
             <version>${sl4j-version}</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${sl4j-version}</version>
-        </dependency>
-        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons-io-version}</version>
@@ -142,6 +137,11 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.main</artifactId>
             <version>4.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.16</version>
         </dependency>
     </dependencies>
 </project>
