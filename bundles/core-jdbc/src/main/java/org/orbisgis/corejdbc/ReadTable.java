@@ -30,7 +30,6 @@ package org.orbisgis.corejdbc;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
@@ -38,6 +37,8 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.commons.progress.ProgressMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -64,7 +65,7 @@ public class ReadTable {
     /** SQL function to evaluate */
     public enum STATS { COUNT, SUM, AVG, STDDEV_SAMP, MIN, MAX}
     protected final static I18n I18N = I18nFactory.getI18n(ReadTable.class, Locale.getDefault(), I18nFactory.FALLBACK);
-    private static Logger LOGGER = Logger.getLogger(ReadTable.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(ReadTable.class);
     private static final int INSERT_BATCH_SIZE = 30;
 
     public static Collection<Integer> getSortedColumnRowIndex(Connection connection, String table, String columnName, boolean ascending, ProgressMonitor progressMonitor) throws SQLException {

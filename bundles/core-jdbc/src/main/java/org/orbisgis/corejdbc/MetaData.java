@@ -28,10 +28,11 @@
  */
 package org.orbisgis.corejdbc;
 
-import org.apache.log4j.Logger;
+
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -47,7 +48,7 @@ import java.util.Map;
  */
 public class MetaData {
     private static final I18n I18N = I18nFactory.getI18n(MetaData.class, Locale.getDefault(), I18nFactory.FALLBACK);
-    private static final Logger LOGGER = Logger.getLogger(MetaData.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MetaData.class);
     public static final String POSTGRE_ROW_IDENTIFIER = "ctid";
 
     /**

@@ -23,10 +23,10 @@
                 <module>orbisgis-commons</module>
                 <module>orbisgis-sif</module>
                 <module>workspace-gui</module>
+                <module>bundles/core-jdbc</module>
                 <!--
                 <module>bundles/postgis-jts-osgi</module>
                 <module>bundles/h2trigger</module>
-                <module>bundles/core-jdbc</module>
                 <module>bundles/editor-jdbc</module>
                 <module>bundles/h2trigger-osgi</module>
                 <module>bundles/core-map</module>
