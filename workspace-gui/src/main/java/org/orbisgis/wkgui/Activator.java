@@ -1,14 +1,19 @@
 package org.orbisgis.wkgui;
 
+import org.orbisgis.framework.CoreWorkspaceImpl;
+import org.orbisgis.frameworkapi.CoreWorkspace;
+import org.orbisgis.wkgui.gui.WorkspaceSelectionDialog;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.SwingWorker;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Registers services provided by this plugin bundle.
@@ -25,8 +30,7 @@ public class Activator implements BundleActivator {
      */
     @Override
     public void start(BundleContext bc) throws Exception {
-        Version bundleVersion = bc.getBundle().getVersion();
-        new LogState(bc).execute();
+        new ShowWorkspaceSelectionDialog(bc).execute();
     }
 
     private static void logBundleState(BundleContext context) {
@@ -76,17 +80,37 @@ public class Activator implements BundleActivator {
 
     }
 
-    private static class LogState extends SwingWorker {
+    private static class ShowWorkspaceSelectionDialog extends SwingWorker<CoreWorkspaceImpl, CoreWorkspaceImpl> {
         private BundleContext bc;
 
-        private LogState(BundleContext bc) {
+        public ShowWorkspaceSelectionDialog(BundleContext bc) {
             this.bc = bc;
         }
 
         @Override
-        protected Object doInBackground() throws Exception {
+        protected CoreWorkspaceImpl doInBackground() throws Exception {
+            Version bundleVersion = bc.getBundle().getVersion();
             logBundleState(bc);
-            return null;
+            return new CoreWorkspaceImpl(bundleVersion.getMajor(), bundleVersion.getMinor(),
+                    bundleVersion.getMicro(), bundleVersion.getQualifier());
+        }
+
+        @Override
+        protected void done() {
+            try {
+                if(WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, get())) {
+                    // User validate publish CoreWorkspace to OSGi
+
+                    //
+                } else {
+                    // User cancel, stop OrbisGIS
+                    bc.getBundle(0).stop();
+                }
+            } catch (InterruptedException | ExecutionException ex) {
+                LOGGER.error("Could not init workspace", ex);
+            } catch (BundleException ex) {
+                LOGGER.error("Could not stop OrbisGIS", ex);
+            }
         }
     }
 }
