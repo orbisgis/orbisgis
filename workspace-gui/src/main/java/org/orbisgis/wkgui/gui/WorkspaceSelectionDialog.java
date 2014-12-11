@@ -74,14 +74,12 @@ public class WorkspaceSelectionDialog extends JPanel {
     private JCheckBox defaultCheckBox;
     private CoreWorkspaceImpl selectedWorkspace;
     private JLabel errorLabel = new JLabel();
-    private Window parent;
 
     private WorkspaceSelectionDialog() {
         super(new MigLayout("wrap 1"));
     }
 
-    private void init(Window parent, CoreWorkspaceImpl coreWorkspace) {
-        this.parent = parent;
+    private void init(CoreWorkspaceImpl coreWorkspace) {
         selectedWorkspace = new CoreWorkspaceImpl(coreWorkspace.getVersionMajor(), coreWorkspace.getVersionMinor(),
                 coreWorkspace.getVersionRevision(), coreWorkspace.getVersionQualifier());
         // Get the list of known workspaces
@@ -198,7 +196,7 @@ public class WorkspaceSelectionDialog extends JPanel {
         String oldWorkspace = coreWorkspace.getWorkspaceFolder();
         // Initialize a panel to contain the dialog
         WorkspaceSelectionDialog panel = new WorkspaceSelectionDialog();
-        panel.init(parent, coreWorkspace);
+        panel.init(coreWorkspace);
         // Show the dialog and get the user's choice.
         int userChoice = JOptionPane.showConfirmDialog(parent,
                 panel,
@@ -233,8 +231,7 @@ public class WorkspaceSelectionDialog extends JPanel {
                         return false;
                     }
                 }
-                updateWorkspace(coreWorkspace, panel.getComboBox(), oldWorkspace,
-                        panel);
+                updateWorkspace(coreWorkspace, panel.getComboBox(), oldWorkspace, panel);
             } catch (IOException ex) {
                 LOGGER.error(I18N.tr("Problem updating the workspace. ")
                         + ex.getLocalizedMessage(), ex);

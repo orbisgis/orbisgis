@@ -2,7 +2,9 @@ package org.orbisgis.wkgui;
 
 import org.orbisgis.framework.CoreWorkspaceImpl;
 import org.orbisgis.frameworkapi.CoreWorkspace;
+import org.orbisgis.wkgui.gui.ViewWorkspaceImpl;
 import org.orbisgis.wkgui.gui.WorkspaceSelectionDialog;
+import org.orbisgis.wkguiapi.ViewWorkspace;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -98,10 +100,17 @@ public class Activator implements BundleActivator {
         @Override
         protected void done() {
             try {
-                if(WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, get())) {
+                CoreWorkspaceImpl coreWorkspace = get();
+                if(WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, coreWorkspace)) {
                     // User validate publish CoreWorkspace to OSGi
-
-                    //
+                    try {
+                        bc.registerService(CoreWorkspace.class, coreWorkspace, null);
+                        ViewWorkspace viewWorkspace = new ViewWorkspaceImpl(coreWorkspace);
+                        bc.registerService(ViewWorkspace.class, viewWorkspace, null);
+                    } catch (Exception ex) {
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
+                        bc.getBundle(0).stop();
+                    }
                 } else {
                     // User cancel, stop OrbisGIS
                     bc.getBundle(0).stop();
