@@ -80,6 +80,10 @@ public class DataSourceService implements DataSource {
         this.coreWorkspace = coreWorkspace;
     }
 
+    /**
+     * Create internal datasource using {@link #setCoreWorkspace(org.orbisgis.frameworkapi.CoreWorkspace)} and {@link
+     * #addDataSourceFactory(org.osgi.service.jdbc.DataSourceFactory, java.util.Map)}
+     */
     @Activate
     public void activate() {
         try {

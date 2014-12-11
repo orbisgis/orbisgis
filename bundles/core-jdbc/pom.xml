@@ -52,8 +52,8 @@
                 </executions>
                 <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
-                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/corejdbc/</poDirectory>
-                    <targetBundle>org.orbisgis.corejdbc</targetBundle>
+                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/corejdbc/translation/language/</poDirectory>
+                    <targetBundle>org.orbisgis.corejdbc.Messages</targetBundle>
                     <keywords>-ktr -kmarktr</keywords>
                     <outputFormat>properties</outputFormat>
                 </configuration>

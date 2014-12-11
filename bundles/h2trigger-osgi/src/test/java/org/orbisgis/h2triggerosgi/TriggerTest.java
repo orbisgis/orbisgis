@@ -1,8 +1,5 @@
 package org.orbisgis.h2triggerosgi;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.BeforeClass;
@@ -16,16 +13,12 @@ import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.h2triggersosgi.EventListenerService;
 
 import javax.sql.DataSource;
-import javax.swing.*;
-import javax.swing.event.UndoableEditListener;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -40,7 +33,6 @@ public class TriggerTest {
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        Logger.getRootLogger().addAppender(new ConsoleAppender(new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN)));
         // Keep a connection alive to not close the DataBase on each unit test
         dataSource = SpatialH2UT.createDataSource(TriggerTest.class.getSimpleName(), true);
     }
