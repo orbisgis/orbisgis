@@ -23,9 +23,9 @@
                 <module>orbisgis-commons</module>
                 <module>orbisgis-sif</module>
                 <module>workspace-gui</module>
+                <module>bundles/postgis-jts-osgi</module>
                 <module>bundles/core-jdbc</module>
                 <!--
-                <module>bundles/postgis-jts-osgi</module>
                 <module>bundles/h2trigger</module>
                 <module>bundles/editor-jdbc</module>
                 <module>bundles/h2trigger-osgi</module>
@@ -62,6 +62,7 @@
                 <modules>
                     <module>external/mig-layout</module>
                     <module>external/rsyntax-osgi</module>
+                    <module>external/jts-osgi</module>
                     <module>orbisgis-dist</module>
                 </modules>
             </profile>
