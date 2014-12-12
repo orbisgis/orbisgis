@@ -38,12 +38,21 @@ import java.sql.Driver;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DataSourceFactoryImpl implements DataSourceFactory {
+    // org.postgresql.ds.jdbc23.AbstractJdbc23PoolingDataSource hold a static container of DataSource instance.
+    // JDBC_DATASOURCE_NAME should be unique on each call of CreateDataSource with different parameters
+    private static AtomicInteger dataSourceCount = new AtomicInteger(0);
+
     @Override
     public DataSource createDataSource(Properties properties) throws SQLException {
         if (properties == null) {
             properties = new Properties();
+        }
+        if(properties.getProperty(JDBC_DATASOURCE_NAME) == null) {
+            properties.setProperty(JDBC_DATASOURCE_NAME, DataSourceFactoryImpl.class.getSimpleName() + "_" +
+                    dataSourceCount.getAndAdd(1));
         }
         PGPoolingDataSource dataSource = PGPoolingDataSource.getDataSource(properties.getProperty(JDBC_DATASOURCE_NAME));
         if(dataSource == null) {
