@@ -52,6 +52,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -62,6 +63,9 @@ import java.util.Properties;
 public class DataSourceService implements DataSource {
     private DataSource dataSource;
     private CoreWorkspace coreWorkspace;
+    // org.postgresql.ds.jdbc23.AbstractJdbc23PoolingDataSource hold a static container of DataSource instance.
+    // JDBC_DATASOURCE_NAME should be unique on each call of CreateDataSource with different parameters
+    private static AtomicInteger dataSourceCount = new AtomicInteger(0);
     private Map<String, DataSourceFactory> dataSourceFactories = new HashMap<>();
     private static final Map<String,String> URI_DRIVER_TO_OSGI_DRIVER = new HashMap<>();
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceService.class);
@@ -94,6 +98,8 @@ public class DataSourceService implements DataSource {
         String jdbcConnectionReference = coreWorkspace.getJDBCConnectionReference();
         if(!jdbcConnectionReference.isEmpty()) {
             Properties properties = JDBCUrlParser.parse(jdbcConnectionReference);
+            properties.put(DataSourceFactory.JDBC_DATASOURCE_NAME, DataSourceService.class.getSimpleName() +
+                    (dataSourceCount.getAndAdd(1)));
             String driverName = jdbcConnectionReference.split(":")[1];
             properties.setProperty(DataSourceFactory.JDBC_USER,coreWorkspace.getDataBaseUser());
             if(coreWorkspace.isRequirePassword()) {
