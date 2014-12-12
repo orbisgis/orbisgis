@@ -79,7 +79,7 @@ public class WorkspaceSelectionDialog extends JPanel {
         super(new MigLayout("wrap 1"));
     }
 
-    private void init(CoreWorkspaceImpl coreWorkspace) {
+    private void init(CoreWorkspaceImpl coreWorkspace, String errorMessage) {
         selectedWorkspace = new CoreWorkspaceImpl(coreWorkspace.getVersionMajor(), coreWorkspace.getVersionMinor(),
                 coreWorkspace.getVersionRevision(), coreWorkspace.getVersionQualifier());
         // Get the list of known workspaces
@@ -132,6 +132,7 @@ public class WorkspaceSelectionDialog extends JPanel {
                 EventHandler.create(ActionListener.class, this, "onOpenDBPanel"));
         add(customDataBase);
         onWorkspaceFolderChange();
+        errorLabel.setText(errorMessage);
     }
 
     /**
@@ -189,14 +190,14 @@ public class WorkspaceSelectionDialog extends JPanel {
      * @return True if the user validate workspace change
      */
     public static boolean showWorkspaceFolderSelection(Window parent,
-                                                    CoreWorkspaceImpl coreWorkspace) {
+                                                    CoreWorkspaceImpl coreWorkspace, String errorMessage) {
         if(!SwingUtilities.isEventDispatchThread()) {
             throw new IllegalStateException("Not on swing dispatch thread");
         }
         String oldWorkspace = coreWorkspace.getWorkspaceFolder();
         // Initialize a panel to contain the dialog
         WorkspaceSelectionDialog panel = new WorkspaceSelectionDialog();
-        panel.init(coreWorkspace);
+        panel.init(coreWorkspace, errorMessage);
         // Show the dialog and get the user's choice.
         int userChoice = JOptionPane.showConfirmDialog(parent,
                 panel,

@@ -81,7 +81,7 @@ public class DataManagerImpl implements DataManager {
     /**
      * @param dataSource Active DataSource
      */
-    public DataManagerImpl(DataSource dataSource) {
+    public DataManagerImpl(DataSource dataSource) throws SQLException {
         setDataSource(dataSource);
     }
 
@@ -172,15 +172,13 @@ public class DataManagerImpl implements DataManager {
     }
 
     @Reference
-    public void setDataSource(DataSource dataSource) {
+    public void setDataSource(DataSource dataSource) throws SQLException {
         this.dataSource = dataSource;
         try (Connection connection = dataSource.getConnection()) {
             DatabaseMetaData meta = connection.getMetaData();
             isH2 = JDBCUtilities.isH2DataBase(meta);
             isLocalH2Table = connection.getMetaData().getURL().startsWith("jdbc:h2:")
                     && !connection.getMetaData().getURL().startsWith("jdbc:h2:tcp:/");
-        } catch (SQLException ex) {
-            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
     }
 

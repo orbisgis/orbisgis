@@ -1,5 +1,6 @@
 package org.orbisgis.wkgui;
 
+import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.framework.CoreWorkspaceImpl;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wkgui.gui.ViewWorkspaceImpl;
@@ -11,10 +12,20 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
+import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -23,6 +34,7 @@ import java.util.concurrent.ExecutionException;
 public class Activator implements BundleActivator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
+    private static final I18n I18N = I18nFactory.getI18n(Activator.class);
 
     /**
      * Starting bundle, register services.
@@ -32,7 +44,7 @@ public class Activator implements BundleActivator {
      */
     @Override
     public void start(BundleContext bc) throws Exception {
-        new ShowWorkspaceSelectionDialog(bc).execute();
+        SwingUtilities.invokeLater(new ShowWorkspaceSelectionDialog(bc));
     }
 
     private static void logBundleState(BundleContext context) {
@@ -82,7 +94,7 @@ public class Activator implements BundleActivator {
 
     }
 
-    private static class ShowWorkspaceSelectionDialog extends SwingWorker<CoreWorkspaceImpl, CoreWorkspaceImpl> {
+    private static class ShowWorkspaceSelectionDialog implements Runnable {
         private BundleContext bc;
 
         public ShowWorkspaceSelectionDialog(BundleContext bc) {
@@ -90,33 +102,66 @@ public class Activator implements BundleActivator {
         }
 
         @Override
-        protected CoreWorkspaceImpl doInBackground() throws Exception {
+        public void run() {
             Version bundleVersion = bc.getBundle().getVersion();
-            logBundleState(bc);
-            return new CoreWorkspaceImpl(bundleVersion.getMajor(), bundleVersion.getMinor(),
-                    bundleVersion.getMicro(), bundleVersion.getQualifier());
-        }
-
-        @Override
-        protected void done() {
             try {
-                CoreWorkspaceImpl coreWorkspace = get();
-                if(WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, coreWorkspace)) {
-                    // User validate publish CoreWorkspace to OSGi
+                try {
+                    boolean connectionValid = false;
+                    // Create a local DataSourceService to check connection properties
+                    DataSourceService dataSourceService = new DataSourceService();
+                    // Get OSGi service
+                    Collection<ServiceReference<DataSourceFactory>> serviceReferences = bc.getServiceReferences
+                            (DataSourceFactory.class, null);
                     try {
-                        bc.registerService(CoreWorkspace.class, coreWorkspace, null);
-                        ViewWorkspace viewWorkspace = new ViewWorkspaceImpl(coreWorkspace);
-                        bc.registerService(ViewWorkspace.class, viewWorkspace, null);
-                    } catch (Exception ex) {
-                        LOGGER.error(ex.getLocalizedMessage(), ex);
-                        bc.getBundle(0).stop();
+                        for(ServiceReference<DataSourceFactory> sr : serviceReferences) {
+                            Map<String, String> properties = new HashMap<>();
+                            properties.put(DataSourceFactory.OSGI_JDBC_DRIVER_NAME, (String) sr.getProperty
+                                    (DataSourceFactory.OSGI_JDBC_DRIVER_NAME));
+                            dataSourceService.addDataSourceFactory(bc.getService(sr), properties);
+                        }
+                        String errorMessage = "";
+                        do {
+                            CoreWorkspaceImpl coreWorkspace = new CoreWorkspaceImpl(bundleVersion.getMajor(), bundleVersion.getMinor(),
+                                    bundleVersion.getMicro(), bundleVersion.getQualifier());
+                            if (WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, coreWorkspace, errorMessage)) {
+                                /////////////////////
+                                // Check connection
+                                dataSourceService.setCoreWorkspace(coreWorkspace);
+                                try {
+                                    dataSourceService.activate();
+                                    try(Connection connection = dataSourceService.getConnection()) {
+                                        DatabaseMetaData meta = connection.getMetaData();
+                                        LOGGER.info(I18N.tr("Data source available {0} version {1}", meta
+                                                .getDriverName(), meta.getDriverVersion()));
+                                        connectionValid = true;
+                                    }
+                                } catch (SQLException ex) {
+                                    errorMessage = ex.getLocalizedMessage();
+                                    connectionValid = false;
+                                }
+                            } else {
+                                // User cancel, stop OrbisGIS
+                                bc.getBundle(0).stop();
+                                break;
+                            }
+                            if(connectionValid) {
+                                // User validate with valid connection publish CoreWorkspace to OSGi
+                                bc.registerService(CoreWorkspace.class, coreWorkspace, null);
+                                ViewWorkspace viewWorkspace = new ViewWorkspaceImpl(coreWorkspace);
+                                bc.registerService(ViewWorkspace.class, viewWorkspace, null);
+                            }
+                        } while (!connectionValid);
+                    } finally {
+                        dataSourceService = null;
+                        // Unget services
+                        for(ServiceReference<DataSourceFactory> sr : serviceReferences) {
+                            bc.ungetService(sr);
+                        }
                     }
-                } else {
-                    // User cancel, stop OrbisGIS
+                } catch (Exception ex) {
+                    LOGGER.error("Could not init workspace", ex);
                     bc.getBundle(0).stop();
                 }
-            } catch (InterruptedException | ExecutionException ex) {
-                LOGGER.error("Could not init workspace", ex);
             } catch (BundleException ex) {
                 LOGGER.error("Could not stop OrbisGIS", ex);
             }

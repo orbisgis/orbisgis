@@ -85,13 +85,9 @@ public class DataSourceService implements DataSource {
      * #addDataSourceFactory(org.osgi.service.jdbc.DataSourceFactory, java.util.Map)}
      */
     @Activate
-    public void activate() {
-        try {
-            // Build DataSource
-            newDataSource();
-        } catch (SQLException ex) {
-            throw new IllegalStateException(ex.getLocalizedMessage(), ex);
-        }
+    public void activate() throws SQLException {
+        // Build DataSource
+        newDataSource();
     }
 
     private void newDataSource() throws SQLException {
@@ -110,8 +106,6 @@ public class DataSourceService implements DataSource {
             } else {
                 throw new SQLException(String.format("The database driver %s is not available",driverName));
             }
-            // Print DataSource infos
-            new PrintDriverVersion(dataSource).execute();
         } else {
             throw new SQLException("DataBase path not found");
         }
@@ -183,30 +177,5 @@ public class DataSourceService implements DataSource {
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return dataSource.isWrapperFor(iface);
-    }
-
-    private static class PrintDriverVersion extends SwingWorker<String, String> {
-        DataSource dataSource;
-
-        public PrintDriverVersion(DataSource dataSource) {
-            this.dataSource = dataSource;
-        }
-
-        @Override
-        protected String doInBackground() throws SQLException {
-            try(Connection connection = dataSource.getConnection()) {
-                DatabaseMetaData meta = connection.getMetaData();
-                return I18N.tr("Data source available {0} version {1}", meta.getDriverName(), meta.getDriverVersion());
-            }
-        }
-
-        @Override
-        protected void done() {
-            try {
-                LOGGER.info(get());
-            } catch (Exception ex) {
-                // Ignore
-            }
-        }
     }
 }

@@ -45,18 +45,21 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
         if (properties == null) {
             properties = new Properties();
         }
-        PGPoolingDataSource dataSource = new PGPoolingDataSource();
-        // Set dataSourceName, databaseName, user, and password
-        dataSource.setDataSourceName(properties.getProperty(JDBC_DATASOURCE_NAME));
-        String url = properties.getProperty(JDBC_URL);
-        if(url != null) {
-            dataSource.setUrl(url);
+        PGPoolingDataSource dataSource = PGPoolingDataSource.getDataSource(properties.getProperty(JDBC_DATASOURCE_NAME));
+        if(dataSource == null) {
+            dataSource = new PGPoolingDataSource();
+            // Set dataSourceName, databaseName, user, and password
+            dataSource.setDataSourceName(properties.getProperty(JDBC_DATASOURCE_NAME));
+            String url = properties.getProperty(JDBC_URL);
+            if(url != null) {
+                dataSource.setUrl(url);
+            }
+            dataSource.setPortNumber(Integer.valueOf(properties.getProperty(JDBC_PORT_NUMBER, Integer.toString(dataSource.getPortNumber()))));
+            dataSource.setServerName(properties.getProperty(JDBC_SERVER_NAME, dataSource.getServerName()));
+            dataSource.setUser(properties.getProperty(JDBC_USER, dataSource.getUser()));
+            dataSource.setPassword(properties.getProperty(JDBC_PASSWORD, dataSource.getPassword()));
+            dataSource.setDatabaseName(properties.getProperty(JDBC_DATABASE_NAME, dataSource.getDatabaseName()));
         }
-        dataSource.setPortNumber(Integer.valueOf(properties.getProperty(JDBC_PORT_NUMBER, Integer.toString(dataSource.getPortNumber()))));
-        dataSource.setServerName(properties.getProperty(JDBC_SERVER_NAME, dataSource.getServerName()));
-        dataSource.setUser(properties.getProperty(JDBC_USER, dataSource.getUser()));
-        dataSource.setPassword(properties.getProperty(JDBC_PASSWORD, dataSource.getPassword()));
-        dataSource.setDatabaseName(properties.getProperty(JDBC_DATABASE_NAME, dataSource.getDatabaseName()));
         return new DataSourceWrapper(dataSource);
     }
 
