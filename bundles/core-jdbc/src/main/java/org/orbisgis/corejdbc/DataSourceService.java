@@ -67,8 +67,8 @@ public class DataSourceService implements DataSource {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceService.class);
     private static final I18n I18N = I18nFactory.getI18n(DataSourceService.class);
     static {
-        URI_DRIVER_TO_OSGI_DRIVER.put("h2","H2 JDBC Driver");
-        URI_DRIVER_TO_OSGI_DRIVER.put("postgresql","Postgresql");
+        URI_DRIVER_TO_OSGI_DRIVER.put("h2","h2 jdbc driver");
+        URI_DRIVER_TO_OSGI_DRIVER.put("postgresql","postgresql");
     }
 
     /**
@@ -100,7 +100,7 @@ public class DataSourceService implements DataSource {
             Properties properties = JDBCUrlParser.parse(jdbcConnectionReference);
             String driverName = jdbcConnectionReference.split(":")[1];
             properties.setProperty(DataSourceFactory.JDBC_USER,coreWorkspace.getDataBaseUser());
-            if(!coreWorkspace.isRequirePassword()) {
+            if(coreWorkspace.isRequirePassword()) {
                 properties.setProperty(DataSourceFactory.JDBC_PASSWORD, coreWorkspace.getDataBasePassword());
             }
             // Fetch requested Driver
@@ -127,7 +127,8 @@ public class DataSourceService implements DataSource {
      */
     @Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC)
     public void addDataSourceFactory(DataSourceFactory dataSourceFactory, Map<String,String> serviceProperties) {
-        dataSourceFactories.put(serviceProperties.get(DataSourceFactory.OSGI_JDBC_DRIVER_NAME), dataSourceFactory);
+        LOGGER.info("DataSourceFactory "+serviceProperties.get(DataSourceFactory.OSGI_JDBC_DRIVER_NAME)+" is available");
+        dataSourceFactories.put(serviceProperties.get(DataSourceFactory.OSGI_JDBC_DRIVER_NAME).toLowerCase(), dataSourceFactory);
     }
 
     /**
@@ -135,7 +136,7 @@ public class DataSourceService implements DataSource {
      * @param serviceProperties Must contain DataSourceFactory.OSGI_JDBC_DRIVER_NAME entry.
      */
     public void removeDataSourceFactory(DataSourceFactory dataSourceFactory, Map<String,String> serviceProperties) {
-        dataSourceFactories.remove(serviceProperties.get(DataSourceFactory.OSGI_JDBC_DRIVER_NAME));
+        dataSourceFactories.remove(serviceProperties.get(DataSourceFactory.OSGI_JDBC_DRIVER_NAME).toLowerCase());
     }
 
 

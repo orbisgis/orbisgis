@@ -81,7 +81,8 @@
                             <stripVersion>true</stripVersion>
                             <includeScope>provided</includeScope>
                             <!-- Jar that are not compatible with OSGi -->
-                            <excludeGroupIds>com.fifesoft, com.miglayout, com.vividsolutions</excludeGroupIds>
+                            <excludeGroupIds>com.fifesoft, com.miglayout, com.vividsolutions, org.postgis,
+                                org.postgresql</excludeGroupIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -182,6 +183,12 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial-ext-osgi</artifactId>
             <version>${h2-gis-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>postgis-jts-osgi</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
