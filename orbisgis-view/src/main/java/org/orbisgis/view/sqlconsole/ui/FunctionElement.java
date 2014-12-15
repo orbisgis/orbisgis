@@ -39,10 +39,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * A class to manage function name and type in the JList function
@@ -145,10 +142,9 @@ public class FunctionElement {
             //Retrieve function ToolTip
             try (Connection connection = dataSource.getConnection()) {
                 final DatabaseMetaData metaData = connection.getMetaData();
-                ResultSet functionData = getFunctionData(metaData);
-                try {
+                try (ResultSet functionData = getFunctionData(metaData)) {
                     StringBuilder sb = new StringBuilder();
-                    Map<Integer, Signature> signatureMap;
+                    SortedMap<Integer, Signature> signatureMap;
                     if (JDBCUtilities.isH2DataBase(metaData)) {
                         signatureMap = getH2SignatureMap(functionData);
                     } else {
@@ -156,8 +152,6 @@ public class FunctionElement {
                     }
                     buildString(sb, signatureMap);
                     command = sb.toString();
-                } finally {
-                    functionData.close();
                 }
             } catch (SQLException ex) {
                 LOGGER.warn("Could not read function command");
@@ -175,7 +169,7 @@ public class FunctionElement {
                 null);
     }
 
-    private Map<Integer, Signature> getPostGRESignatureMap(ResultSet functionData) throws SQLException {
+    private SortedMap<Integer, Signature> getPostGRESignatureMap(ResultSet functionData) throws SQLException {
         Map<Integer, Signature> sigMap = new HashMap<>();
         int sigNumber = 0;
         while (functionData.next()) {
@@ -204,7 +198,7 @@ public class FunctionElement {
         return sortedMap;
     }
 
-    private Map<Integer, Signature> getH2SignatureMap(ResultSet functionData) throws SQLException {
+    private SortedMap<Integer, Signature> getH2SignatureMap(ResultSet functionData) throws SQLException {
         final int[] nAndM = getNumberOfSignaturesAndMaxParams();
         final int numberSignatures = nAndM[0];
         final int maxParams = nAndM[1];
@@ -236,8 +230,7 @@ public class FunctionElement {
 
     private int[] getNumberOfSignaturesAndMaxParams() throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            ResultSet functionData = getFunctionData(connection.getMetaData());
-            try {
+            try (ResultSet functionData = getFunctionData(connection.getMetaData())) {
                 int oldPosition = 1;
                 boolean foundNumberSignatures = false;
                 int numberSignatures = -1;
@@ -259,22 +252,23 @@ public class FunctionElement {
                     }
                 }
                 return new int[]{numberSignatures, maxParams};
-            } finally {
-                functionData.close();
             }
         }
     }
 
-    private void buildString(StringBuilder sb, Map<Integer, Signature> signatureMap) {
+    private void buildString(StringBuilder sb, SortedMap<Integer, Signature> signatureMap) {
         for (Signature s : signatureMap.values()) {
             if (!s.getInParams().isEmpty()) {
-                sb.append(functionName).append("(");
-                for (String type : s.getInParams().values()) {
-                    sb.append(type).append(", ");
+                if(s.getReturnType() != null) {
+                    sb.append(s.getReturnType().toUpperCase().replace("RESULTSET", "TABLE"));
+                    sb.append(" ");
                 }
-                // Delete extra ', '
-                sb.delete(sb.length() - 2, sb.length());
-                sb.append(")\n");
+                sb.append(functionName).append("(");
+                for (Map.Entry<Integer, String> entry : s.getInParams().entrySet()) {
+                    if(entry.getKey() > 0) { // H2 ORDINAL_POSITION=0 for return type
+                        sb.append(entry.getValue()).append(", ");
+                    }
+                }
             }
         }
         // Delete last newline character
@@ -283,7 +277,7 @@ public class FunctionElement {
 
     private class Signature {
 
-        private Map<Integer, String> inParams;
+        private SortedMap<Integer, String> inParams;
         private String returnType;
 
         private Signature() {
@@ -291,12 +285,19 @@ public class FunctionElement {
         }
 
         private Signature(String returnType) {
-            inParams = new HashMap<>();
+            inParams = new TreeMap<>();
             this.returnType = returnType;
         }
 
-        public Map<Integer, String> getInParams() {
+        public SortedMap<Integer, String> getInParams() {
             return inParams;
+        }
+
+        /**
+         * @return The return type or null if none.
+         */
+        public String getReturnType() {
+            return returnType;
         }
     }
 
