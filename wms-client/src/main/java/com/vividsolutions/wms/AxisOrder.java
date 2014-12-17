@@ -32,6 +32,9 @@
 
 package com.vividsolutions.wms;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +42,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
-import org.apache.log4j.Logger;
 
 /**
  * An enum class with two values to determine if coordinates are given in the 
@@ -51,7 +53,7 @@ public enum AxisOrder {
     
     LATLON, LONLAT;
     
-    private static Logger LOG = Logger.getLogger(AxisOrder.class);
+    private static Logger LOG = LoggerFactory.getLogger(AxisOrder.class);
     public static final List<String> LATLONCRS = new ArrayList<String>();
     public static boolean initialized = false;
     

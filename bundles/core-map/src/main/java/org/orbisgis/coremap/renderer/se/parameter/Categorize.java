@@ -32,7 +32,7 @@ import java.sql.ResultSet;
 import java.util.*;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.orbisgis.coremap.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.coremap.renderer.se.SymbolizerNode;
 import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
@@ -101,7 +101,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
     private static final String SD_FACTOR_KEY = "SdFactor";
     private static final String METHOD_KEY = "method";
-    private static final Logger LOGGER = Logger.getLogger(Categorize.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Categorize.class);
     private static final I18n I18N = I18nFactory.getI18n(Categorize.class);
 
     private CategorizeMethod method;

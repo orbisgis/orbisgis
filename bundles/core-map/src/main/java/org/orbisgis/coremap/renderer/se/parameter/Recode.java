@@ -36,7 +36,7 @@ import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.RecodeType;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.orbisgis.coremap.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.coremap.renderer.se.SymbolizerNode;
 import org.orbisgis.coremap.renderer.se.parameter.string.StringParameter;
@@ -55,7 +55,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public abstract class Recode<ToType extends SeParameter, FallbackType extends ToType> extends AbstractSymbolizerNode
                 implements SeParameter {
     private static final I18n I18N = I18nFactory.getI18n(Recode.class);
-    private static final Logger LOGGER = Logger.getLogger(Recode.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Recode.class);
     
     private FallbackType fallbackValue;
     private StringParameter lookupValue;

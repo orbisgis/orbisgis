@@ -33,6 +33,9 @@
 package com.vividsolutions.wms;
 
 import biz.source_code.base64Coder.Base64Coder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static java.net.URLEncoder.encode;
 
 import java.awt.Image;
@@ -49,7 +52,6 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.apache.log4j.Logger;
 
 /**
  * Represents all of the parameters of a getMap request from a WMS server.
@@ -57,7 +59,7 @@ import org.apache.log4j.Logger;
  */
 public class MapRequest {
     
-    private static Logger LOG = Logger.getLogger(MapRequest.class);
+    private static Logger LOG = LoggerFactory.getLogger(MapRequest.class);
 	
     private WMService service;
     private int imgWidth;
@@ -235,7 +237,7 @@ public class MapRequest {
     //[UT] 02.05.2005 made static and public
     public static String listToString( List<String> list ) {
         Iterator<String> it = list.iterator();
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         while( it.hasNext() ) {
             String layer = it.next();
             buf.append( layer );
@@ -280,12 +282,12 @@ public class MapRequest {
             }
         }
         if( bbox != null ) {
-            urlBuf.append( "&" + bbox.getBBox(version));
+            urlBuf.append("&").append(bbox.getBBox(version));
             if( bbox.getSRS() != null && !bbox.getSRS().equals( "LatLon" ) ) {
                 if (version.compareTo(WMService.WMS_1_3_0) < 0) {
-                    urlBuf.append( "&SRS=" + bbox.getSRS() );
+                    urlBuf.append("&SRS=").append(bbox.getSRS());
                 } else {
-                    urlBuf.append( "&CRS=" + bbox.getSRS() );
+                    urlBuf.append("&CRS=").append(bbox.getSRS());
                 }
             }
         }

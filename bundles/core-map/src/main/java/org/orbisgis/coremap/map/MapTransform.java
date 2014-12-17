@@ -43,13 +43,13 @@ import java.awt.image.renderable.RenderContext;
 import java.util.ArrayList;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.orbisgis.coremap.ui.editors.map.tool.Rectangle2DDouble;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public class MapTransform implements PointTransformation {
-        private static final Logger LOGGER = Logger.getLogger(MapTransform.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(MapTransform.class);
         private static final I18n I18N = I18nFactory.getI18n(MapTransform.class);
         private boolean adjustExtent;
         private BufferedImage image = null;

@@ -33,7 +33,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.RecodeType;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 
 
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
@@ -50,7 +50,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public final class Recode2String extends Recode<StringParameter, StringLiteral> implements StringParameter {
 
         private String[] restriction = new String[]{};
-        private static final Logger LOGGER = Logger.getLogger(Recode2String.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(Recode2String.class);
         private static final I18n I18N = I18nFactory.getI18n(Recode2String.class);
         
         /**

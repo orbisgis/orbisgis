@@ -47,7 +47,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.renderer.se.common.LocalizedText;
 import org.xnap.commons.i18n.I18n;
@@ -62,7 +62,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class Workspace  {
         private static final I18n I18N = I18nFactory.getI18n(Workspace.class);        
-        private static final Logger LOGGER = Logger.getLogger(Workspace.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(Workspace.class);
         private ConnectionProperties cParams;
         private String workspaceName;
         private static final DateFormat FORMAT = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss z");

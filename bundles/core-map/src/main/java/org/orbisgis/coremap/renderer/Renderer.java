@@ -39,7 +39,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.LayerException;
@@ -67,7 +67,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public abstract class Renderer {
 
         static final int BATCH_SIZE = 1000;
-        private static final Logger LOGGER = Logger.getLogger(Renderer.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(Renderer.class);
         private static final I18n I18N = I18nFactory.getI18n(Renderer.class);
         private ResultSetProviderFactory rsProvider = null;
 

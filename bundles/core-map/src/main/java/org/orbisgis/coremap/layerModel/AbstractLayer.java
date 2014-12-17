@@ -29,7 +29,7 @@
 package org.orbisgis.coremap.layerModel;
 
 import java.util.*;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.commons.utils.CollectionUtils;
 import org.xnap.commons.i18n.I18n;
@@ -39,7 +39,7 @@ public abstract class AbstractLayer implements ILayer {
         
         
         protected static final I18n I18N = I18nFactory.getI18n(AbstractLayer.class, Locale.getDefault(), I18nFactory.FALLBACK);
-        protected static final Logger LOGGER = Logger.getLogger(AbstractLayer.class);
+        protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractLayer.class);
 
 	public AbstractLayer() {
 		listeners = new ArrayList<LayerListener>();

@@ -46,10 +46,11 @@ import com.vividsolutions.jts.geom.Envelope;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import java.io.OutputStream;
-import org.apache.log4j.Logger;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.commons.progress.ProgressMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility to export a layer or a group of layer in a geospatial pdf format
@@ -61,7 +62,7 @@ public class GeoSpatialPDF {
     private final ILayer rootLayer;
     private final float width;
     private final float height;
-    protected static final Logger LOGGER = Logger.getLogger(GeoSpatialPDF.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(GeoSpatialPDF.class);
 
     public GeoSpatialPDF(ILayer rootLayer, float width, float height) {
         this.rootLayer = rootLayer;

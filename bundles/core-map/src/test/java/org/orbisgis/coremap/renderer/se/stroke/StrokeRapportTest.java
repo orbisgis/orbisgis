@@ -43,7 +43,7 @@ import javax.imageio.ImageIO;
 import javax.media.jai.RenderableGraphics;
 import javax.swing.JFrame;
 import javax.xml.bind.Marshaller;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -64,7 +64,7 @@ import org.orbisgis.coremap.renderer.se.parameter.string.StringLiteral;
  * @author Maxence Laurent
  */
 public class StrokeRapportTest {
-    private static final Logger LOGGER = Logger.getLogger(StrokeRapportTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StrokeRapportTest.class);
     private Style fts;
 
     @Before
@@ -151,7 +151,7 @@ public class StrokeRapportTest {
         try {
             Thread.sleep(5000);
         } catch (InterruptedException ex) {
-            LOGGER.error(ex);
+            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
         
     }

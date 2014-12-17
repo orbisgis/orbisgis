@@ -27,11 +27,11 @@
                 <module>bundles/core-jdbc</module>
                 <module>bundles/h2trigger</module>
                 <module>bundles/h2trigger-osgi</module>
-                <!--
                 <module>bundles/editor-jdbc</module>
+                <module>wms-client</module>
                 <module>bundles/core-map</module>
                 <module>bundles/core-export</module>
-                <module>wms-client</module>
+                <!--
                 <module>orbisgis-core</module>
                 <module>bundles/sql-parser-api</module>
                 <module>bundles/sqlconsole-parser</module>

@@ -37,7 +37,7 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.CompositeGraphicType;
 import net.opengis.se._2_0.core.GraphicType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.AbstractSymbolizerNode;
@@ -56,7 +56,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public final class GraphicCollection extends AbstractSymbolizerNode implements UomNode {
 
-    private static final Logger LOGGER = Logger.getLogger(GraphicCollection.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GraphicCollection.class);
     private static final I18n I18N = I18nFactory.getI18n(GraphicCollection.class);
     
     private ArrayList<Graphic> graphics;

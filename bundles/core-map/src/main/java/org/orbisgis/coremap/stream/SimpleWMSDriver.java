@@ -46,7 +46,7 @@ import com.vividsolutions.wms.MapRequest;
 import com.vividsolutions.wms.WMService;
 import java.util.ArrayList;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -63,7 +63,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public final class SimpleWMSDriver implements GeoStream {
 
     private static final I18n I18N = I18nFactory.getI18n(SimpleWMSDriver.class);
-    private static final Logger LOG = Logger.getLogger(SimpleWMSDriver.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleWMSDriver.class);
     private WMService wmsClient;
     private Capabilities cap;
     private MapLayer mapLayer;

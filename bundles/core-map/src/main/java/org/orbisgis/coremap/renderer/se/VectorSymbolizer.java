@@ -39,7 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.SymbolizerType;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.common.Uom;
@@ -59,7 +59,7 @@ import org.h2gis.utilities.SpatialResultSet;
  * @author Maxence Laurent, Alexis Guéganno
  */
 public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
-        private static final Logger LOGGER = Logger.getLogger(VectorSymbolizer.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(VectorSymbolizer.class);
         private Uom uom;
         private GeometryAttribute theGeom;
 

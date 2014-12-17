@@ -29,7 +29,7 @@
 package org.orbisgis.coremap.process;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.ReadTable;
@@ -44,7 +44,7 @@ import java.util.SortedSet;
  * @author Nicolas Fortin
  */
 public class ZoomToSelectedFeatures extends SwingWorkerPM {
-        private static final Logger LOGGER = Logger.getLogger(ZoomToSelectedFeatures.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(ZoomToSelectedFeatures.class);
         protected final static I18n I18N = I18nFactory.getI18n(ZoomToSelectedFeatures.class);
         private DataManager dataManager;
         private String tableName;

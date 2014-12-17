@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import net.opengis.se._2_0.core.HaloType;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.coremap.renderer.se.FillNode;
@@ -64,7 +64,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public final class Halo extends AbstractSymbolizerNode implements  UomNode, FillNode {
 
-    private static final Logger LOGGER = Logger.getLogger(Halo.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Halo.class);
     private static final I18n I18N = I18nFactory.getI18n(Halo.class);
         /**
          * The default radius for new {@code Halo} instances. Set to 1.0, and UOM dependant.

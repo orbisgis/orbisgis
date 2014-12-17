@@ -41,10 +41,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Arrays;
 
 
-import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -55,7 +57,7 @@ import org.xml.sax.SAXException;
  * @author Chris Hodgson chodgson@refractions.net
  */
 public class WMService {
-    private static final Logger LOGGER = Logger.getLogger(WMService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WMService.class);
     
     public static final String WMS_1_0_0 = "1.0.0";
 
@@ -127,8 +129,8 @@ public class WMService {
             URL requestUrl = new URL( requestUrlString );
             URLConnection con = requestUrl.openConnection();
             if(requestUrl.getUserInfo() != null) {
-                con.setRequestProperty("Authorization", "Basic " +
-                        Base64Coder.encode(requestUrl.getUserInfo().getBytes()));
+                con.setRequestProperty("Authorization", "Basic " + Arrays.toString(Base64Coder.encode(requestUrl
+                        .getUserInfo().getBytes())));
             }
             DOMParser domParser = new DOMParser();
             try {
