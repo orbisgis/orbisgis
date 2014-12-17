@@ -46,7 +46,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.*;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.renderer.se.common.LocalizedText;
@@ -219,20 +219,20 @@ public class Workspace  {
                                                 if(curLocale!=null) {
                                                         descLocale = curLocale;
                                                 }
-                                                curMapContext.getDescription().addTitle(descLocale,StringEscapeUtils.unescapeHtml(characters.toString().trim()));                                                
+                                                curMapContext.getDescription().addTitle(descLocale,StringEscapeUtils.unescapeHtml4(characters.toString().trim()));
                                         } else if(RemoteCommons.endsWith(hierarchy,"contexts","context","abstract")) {
                                                 Locale descLocale = Locale.getDefault();
                                                 if(curLocale!=null) {
                                                         descLocale = curLocale;
                                                 }
-                                                curMapContext.getDescription().addAbstract(descLocale, StringEscapeUtils.unescapeHtml(characters.toString().trim()));
+                                                curMapContext.getDescription().addAbstract(descLocale, StringEscapeUtils.unescapeHtml4(characters.toString().trim()));
                                         }
                                         characters = new StringBuilder();
                                         curLocale = null;
                                         hierarchy.remove(hierarchy.size()-1);
                                         break;
                                 case XMLStreamConstants.CHARACTERS:
-                                        characters.append(StringEscapeUtils.unescapeHtml(parser.getText()));
+                                        characters.append(StringEscapeUtils.unescapeHtml4(parser.getText()));
                                         break;
                         }                               
                 }                

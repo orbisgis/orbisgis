@@ -14,32 +14,32 @@
 	<name>WMS-Client</name>
 	<url>http://www.orbisgis.org</url>
 	<dependencies>
-                <dependency>
-                        <groupId>biz.source_code</groupId>
-                        <artifactId>base64coder</artifactId>
-                        <version>2010-12-19</version>
-                </dependency>
-                <dependency>
-                        <groupId>junit</groupId>
-                        <artifactId>junit</artifactId>
-                        <version>4.10</version>
-                        <scope>test</scope>
-                </dependency>
-                <dependency>
-                        <groupId>com.vividsolutions</groupId>
-                        <artifactId>jts</artifactId>
-                        <version>${jts-version}</version>
-                </dependency>
-                <dependency>
-                        <groupId>xerces</groupId>
-                        <artifactId>xercesImpl</artifactId>
-                        <version>2.11.0</version>
-                </dependency>
-				<dependency>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-					<version>${sl4j-version}</version>
-				</dependency>
+		<dependency>
+			<groupId>biz.source_code</groupId>
+			<artifactId>base64coder</artifactId>
+			<version>2010-12-19</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.vividsolutions</groupId>
+			<artifactId>jts</artifactId>
+			<version>${jts-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.servicemix.bundles</groupId>
+			<artifactId>org.apache.servicemix.bundles.xerces</artifactId>
+			<version>2.11.0_1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${sl4j-version}</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
