@@ -29,6 +29,7 @@
 package org.orbisgis.mainframe.impl;
 
 import java.awt.*;
+import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.beans.EventHandler;
@@ -41,20 +42,21 @@ import org.apache.log4j.varia.DenyAllFilter;
 import org.apache.log4j.varia.LevelMatchFilter;
 import org.apache.log4j.varia.LevelRangeFilter;
 import org.orbisgis.frameworkapi.CoreWorkspace;
-import org.orbisgis.view.components.actions.ActionCommands;
-import org.orbisgis.viewapi.components.actions.DefaultAction;
-import org.orbisgis.view.components.actions.MenuItemServiceTracker;
+import org.orbisgis.mainframe.api.MainFrameAction;
+import org.orbisgis.mainframe.api.MainWindow;
+import org.orbisgis.sif.components.actions.ActionCommands;
+import org.orbisgis.sif.components.actions.DefaultAction;
+import org.orbisgis.view.main.frames.MainFrameStatusBar;
 import org.orbisgis.viewapi.docking.DockingManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.viewapi.main.frames.ext.MainFrameAction;
-import org.orbisgis.viewapi.main.frames.ext.MainWindow;
-import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Main window that contain all docking panels.
  */
+@org.osgi.service.component.annotations.Component(service = MainFrameAction.class)
 public class MainFrame extends JFrame implements MainWindow {
         private static final I18n I18N = I18nFactory.getI18n(MainFrame.class);
         
@@ -62,7 +64,6 @@ public class MainFrame extends JFrame implements MainWindow {
         private DockingManager dockingManager=null;
         private ActionCommands actions = new ActionCommands();
         private JMenuBar menuBar = new JMenuBar();
-        private MenuItemServiceTracker<MainWindow,MainFrameAction> menuBarActionTracker;
         private MainFrameStatusBar mainFrameStatusBar = new MainFrameStatusBar(this);
         private JPanel mainPanel = new JPanel(new BorderLayout());
         private MessageOverlay messageOverlay = new MessageOverlay();
