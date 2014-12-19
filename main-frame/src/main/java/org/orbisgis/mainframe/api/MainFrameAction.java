@@ -1,6 +1,6 @@
-package org.orbisgis.viewapi.main.frames.ext;
+package org.orbisgis.mainframe.api;
 
-import org.orbisgis.viewapi.components.actions.ActionFactoryService;
+import org.orbisgis.sif.components.actions.ActionFactoryService;
 
 /**
  * Implement this interface to define additional menu items.

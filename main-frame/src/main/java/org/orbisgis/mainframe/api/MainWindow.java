@@ -1,4 +1,4 @@
-package org.orbisgis.viewapi.main.frames.ext;
+package org.orbisgis.mainframe.api;
 
 import javax.swing.JFrame;
 
