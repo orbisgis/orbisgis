@@ -128,10 +128,19 @@ public abstract class SwingWorkerPM<T, V> extends SwingWorker<T, V> implements P
         return defaultProgressMonitor.getEnd();
     }
 
+    /**
+     * @param cancelled New value
+     * If called a second time use {@link Thread#interrupt()}
+     */
     @Override
     public void setCancelled(boolean cancelled) {
         if(cancelled) {
-            cancel(false);
+            if(!defaultProgressMonitor.isCancelled()) {
+                defaultProgressMonitor.setCancelled(true);
+                cancel(false);
+            } else {
+                cancel(true);
+            }
         }
     }
 }

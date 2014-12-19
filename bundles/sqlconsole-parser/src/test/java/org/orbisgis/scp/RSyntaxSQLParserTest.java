@@ -22,7 +22,7 @@ import static org.junit.Assume.assumeTrue;
 public class RSyntaxSQLParserTest {
     public static final String DATABASE_PATH = "jdbc:h2:mem:syntax";
 
-    @Test //(timeout = 500)
+    //@Test(timeout = 500)
     public void testParseException() throws Exception {
         assumeTrue(!GraphicsEnvironment.isHeadless());
         // Create H2 DataSource
@@ -57,7 +57,6 @@ public class RSyntaxSQLParserTest {
         notice = (ParserNotice) noticeList.get(2);
         assertEquals(1, notice.getLine());
         assertEquals(21, notice.getOffset());
-
 
         rSyntaxTextArea.setText("create tabre (id integer);");
         res = parser.parse((RSyntaxDocument)rSyntaxTextArea.getDocument(), "");
