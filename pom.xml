@@ -33,6 +33,7 @@
                 <module>bundles/core-export</module>
                 <module>bundles/sql-parser-api</module>
                 <module>bundles/sqlconsole-parser</module>
+                <module>main-frame</module>
                 <!--
                 <module>orbisgis-core</module>
                 <module>bundles/map-editor-api</module>
