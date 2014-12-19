@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.main.frames;
+package org.orbisgis.mainframe.impl;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
