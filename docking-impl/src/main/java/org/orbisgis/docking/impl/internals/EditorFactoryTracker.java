@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.docking.internals;
+package org.orbisgis.docking.impl.internals;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.viewapi.edition.EditorFactory;

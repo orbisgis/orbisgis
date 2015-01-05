@@ -26,10 +26,10 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.docking.internals;
+package org.orbisgis.docking.impl.internals;
 
 import bibliothek.gui.dock.common.CWorkingArea;
-import org.orbisgis.viewapi.docking.DockingAreaParameters;
+import org.orbisgis.sif.docking.DockingAreaParameters;
 
 /**
  * Docking Area (DockingFrames feature named WorkingArea).

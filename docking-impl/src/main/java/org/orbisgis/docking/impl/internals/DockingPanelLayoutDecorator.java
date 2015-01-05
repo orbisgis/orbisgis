@@ -27,11 +27,11 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.docking.internals;
+package org.orbisgis.docking.impl.internals;
 
 import bibliothek.gui.dock.common.MultipleCDockableLayout;
 import bibliothek.util.xml.XElement;
-import org.orbisgis.viewapi.docking.DockingPanelLayout;
+import org.orbisgis.sif.docking.DockingPanelLayout;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;

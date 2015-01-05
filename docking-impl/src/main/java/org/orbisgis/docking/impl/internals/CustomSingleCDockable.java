@@ -26,14 +26,14 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.docking.internals;
+package org.orbisgis.docking.impl.internals;
 
 import bibliothek.gui.dock.common.DefaultSingleCDockable;
 import bibliothek.gui.dock.common.action.CAction;
 import java.awt.Component;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.orbisgis.viewapi.docking.DockingPanel;
+import org.orbisgis.sif.docking.DockingPanel;
 
 /**
  * A custom cdockable that contains a reference to the dockingPanel instance.

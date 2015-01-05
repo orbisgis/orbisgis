@@ -27,7 +27,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.docking.internals;
+package org.orbisgis.docking.impl.internals;
 
 import org.orbisgis.viewapi.util.XElement;
 

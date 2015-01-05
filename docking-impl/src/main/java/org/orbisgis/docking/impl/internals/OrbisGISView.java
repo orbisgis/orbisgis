@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.docking.internals;
+package org.orbisgis.docking.impl.internals;
 
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.CLocation;
@@ -36,15 +36,16 @@ import bibliothek.gui.dock.common.action.CAction;
 import bibliothek.gui.dock.common.action.CSeparator;
 import bibliothek.gui.dock.common.intern.AbstractCDockable;
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
+import org.orbisgis.docking.impl.internals.actions.ToolBarActions;
+import org.orbisgis.sif.docking.DockingLocation;
+import org.orbisgis.sif.docking.DockingPanel;
+import org.orbisgis.sif.docking.DockingPanelParameters;
+
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import javax.swing.*;
 
-import org.orbisgis.viewapi.docking.DockingLocation;
-import org.orbisgis.viewapi.docking.DockingPanel;
-import org.orbisgis.viewapi.docking.DockingPanelParameters;
-import org.orbisgis.view.docking.internals.actions.ToolBarActions;
 
 /**
  * This is the link between the DockingPanel and DockingFrames
@@ -86,7 +87,7 @@ public class OrbisGISView {
      */
     public static CustomMultipleCDockable createMultiple(DockingPanel dockingPanel,InternalCommonFactory factory, CControl ccontrol) {
         if(dockingPanel!=null) {
-                CustomMultipleCDockable dockItem = new CustomMultipleCDockable(dockingPanel,factory);
+                CustomMultipleCDockable dockItem = new CustomMultipleCDockable(dockingPanel, factory);
                 applyDefaultLocation(dockItem,dockingPanel,ccontrol);
                 return dockItem;
         } else {

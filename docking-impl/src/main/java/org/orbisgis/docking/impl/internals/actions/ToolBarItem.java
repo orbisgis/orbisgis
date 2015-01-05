@@ -27,7 +27,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.docking.internals.actions;
+package org.orbisgis.docking.impl.internals.actions;
 
 import bibliothek.gui.dock.common.action.CAction;
 import bibliothek.gui.dock.toolbar.CToolbarItem;

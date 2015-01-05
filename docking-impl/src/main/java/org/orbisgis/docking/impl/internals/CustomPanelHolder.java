@@ -26,9 +26,10 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.docking.internals;
+package org.orbisgis.docking.impl.internals;
 
-import org.orbisgis.viewapi.docking.DockingPanel;
+
+import org.orbisgis.sif.docking.DockingPanel;
 
 /**
  * Common functions of the two specialised class

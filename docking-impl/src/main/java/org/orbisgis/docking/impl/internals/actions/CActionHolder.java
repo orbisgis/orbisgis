@@ -1,4 +1,4 @@
-package org.orbisgis.view.docking.internals.actions;
+package org.orbisgis.docking.impl.internals.actions;
 
 import javax.swing.*;
 

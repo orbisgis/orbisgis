@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.docking.internals.actions;
+package org.orbisgis.docking.impl.internals.actions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +39,7 @@ import bibliothek.gui.dock.common.action.CMenu;
 import bibliothek.gui.dock.common.action.CRadioButton;
 import bibliothek.gui.dock.common.action.CRadioGroup;
 import bibliothek.gui.dock.common.action.CSeparator;
-import org.orbisgis.view.components.actions.ActionCommands;
+import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.viewapi.components.actions.ActionTools;
 import java.util.Map.Entry;
 
@@ -95,7 +95,7 @@ public class ToolBarActions {
         for(int i=0;i<actionList.size();i++) {
             Action compAction = getAction(actionList.get(i));
             if(compAction!=null) {
-                int position = ActionCommands.getInsertionPosition(i,newAction,compAction);
+                int position = ActionCommands.getInsertionPosition(i, newAction, compAction);
                 if(position!=-1) {
                     return position;
                 }

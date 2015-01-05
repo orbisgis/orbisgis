@@ -26,19 +26,20 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.docking.internals;
+package org.orbisgis.docking.impl.internals;
 
 import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.action.DockAction;
 import bibliothek.gui.dock.action.DropDownAction;
 import bibliothek.gui.dock.common.action.CRadioGroup;
 import bibliothek.gui.dock.event.DropDownActionListener;
+import org.orbisgis.docking.impl.internals.actions.CToggleButton;
+import org.orbisgis.sif.components.actions.DefaultAction;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
 
-import org.orbisgis.viewapi.components.actions.DefaultAction;
-import org.orbisgis.view.docking.internals.actions.CToggleButton;
 
 /**
  * CDropDownAction is not suitable for CRadioGroup, this listener 
