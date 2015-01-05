@@ -28,123 +28,96 @@
  */
 package org.orbisgis.mainframe.impl;
 
-import java.awt.*;
-import java.awt.Component;
+import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.beans.EventHandler;
 import java.util.Locale;
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLayer;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.MenuElement;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.varia.DenyAllFilter;
-import org.apache.log4j.varia.LevelMatchFilter;
-import org.apache.log4j.varia.LevelRangeFilter;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.mainframe.api.MainFrameAction;
 import org.orbisgis.mainframe.api.MainWindow;
 import org.orbisgis.mainframe.icons.MainFrameIcon;
-import org.orbisgis.sif.components.MessageOverlay;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
-import org.orbisgis.view.main.frames.MainFrameStatusBar;
-import org.orbisgis.viewapi.docking.DockingManager;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.wkguiapi.ViewWorkspace;
-import org.osgi.service.component.annotations.*;
+
+import org.orbisgis.sif.docking.DockingManager;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.log.LogReaderService;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Main window that contain all docking panels.
  */
-@org.osgi.service.component.annotations.Component(service = MainFrameAction.class)
+@Component(service = MainWindow.class)
 public class MainFrame extends JFrame implements MainWindow {
-        private static final I18n I18N = I18nFactory.getI18n(MainFrame.class);
-        
-        //The main frame addDockingPanel panels state,theme, and properties
-        private DockingManager dockingManager=null;
-        private ActionCommands actions = new ActionCommands();
-        private JMenuBar menuBar = new JMenuBar();
-        private MainFrameStatusBar mainFrameStatusBar = new MainFrameStatusBar(this);
-        private JPanel mainPanel = new JPanel(new BorderLayout());
-        private MessageOverlay messageOverlay = new MessageOverlay();
-        private ViewWorkspace viewWorkspace;
-        private OverlayLoggerTarget guiLoggerTarget = new OverlayLoggerTarget(messageOverlay);
-        private OverlayLoggerTarget popupLoggerTarget = new OverlayLoggerTarget(messageOverlay);
-        private OverlayLoggerTarget errorLoggerTarget = new OverlayLoggerTarget(messageOverlay);
+    private static final I18n I18N = I18nFactory.getI18n(MainFrame.class);
 
-        /**
-         * Creates a new frame. The content of the frame is not created by
-         * this constructor, clients must call {@link #init}.
-         */
-        public MainFrame(){
-            setIconImage(OrbisGISIcon.getIconImage("orbisgis"));
-            add(new JLayer<>(mainPanel, messageOverlay));
+    //The main frame addDockingPanel panels state,theme, and properties
+    private DockingManager dockingManager = null;
+    private ActionCommands actions = new ActionCommands();
+    private JMenuBar menuBar = new JMenuBar();
+    private MainFrameStatusBar mainFrameStatusBar = new MainFrameStatusBar();
+    private JPanel mainPanel = new JPanel(new BorderLayout());
+    private LogListenerOverlay messageOverlay = new LogListenerOverlay();
+
+    /**
+     * Creates a new frame. The content of the frame is not created by
+     * this constructor, clients must call {@link #init}.
+     */
+    public MainFrame() {
+        setIconImage(MainFrameIcon.getIconImage("orbisgis"));
+        add(new JLayer<>(mainPanel, messageOverlay));
+    }
+
+    @Reference
+    public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
+        setTitle(I18N.tr("OrbisGIS version {0} {1} {2}", getVersion(coreWorkspace), coreWorkspace.getVersionQualifier
+                (), Locale.getDefault().getCountry()));
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        mainFrameStatusBar.init(coreWorkspace);
+    }
+    public void unsetCoreWorkspace(CoreWorkspace coreWorkspace) {
+
+    }
+
+    @Override
+    protected void addImpl(java.awt.Component comp, Object constraints, int index) {
+        if (mainPanel == null || comp instanceof JLayer) {
+            super.addImpl(comp, constraints, index);
+        } else {
+            mainPanel.add(comp, constraints, index);
         }
+    }
 
-        @Reference
-        public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
-            setTitle(I18N.tr("OrbisGIS version {0} {1} {2}",
-                    getVersion(coreWorkspace), coreWorkspace.getVersionQualifier(), Locale.getDefault().getCountry()));
-            setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
-        }
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+    public void addMenuItem(MainFrameAction mainFrameAction) {
+        actions.addActionFactory(mainFrameAction, this);
+    }
 
-        @Override
-        public void dispose() {
-            try {
-                if(menuBarActionTracker!=null) {
-                    menuBarActionTracker.close();
-                }
-                guiLoggerTarget.disposeLogger();
-                popupLoggerTarget.disposeLogger();
-                errorLoggerTarget.disposeLogger();
-            } finally {
-                super.dispose();
-            }
-        }
+    public void removeMenuItem(MainFrameAction mainFrameAction) {
+        actions.removeActionFactory(mainFrameAction);
+    }
 
-        @Override
-        protected void addImpl(Component comp, Object constraints, int index) {
-            if(mainPanel==null || comp instanceof JLayer) {
-                super.addImpl(comp, constraints, index);
-            } else {
-                mainPanel.add(comp, constraints, index);
-            }
-        }
-
-        public void init(BundleContext context) {
-            initActions();
-            // Add actions in menu bar
-            actions.registerContainer(menuBar);
-            this.setJMenuBar(menuBar);
-            getContentPane().add(mainFrameStatusBar, BorderLayout.SOUTH);
-            // Track for new menu items
-            menuBarActionTracker = new MenuItemServiceTracker<MainWindow, MainFrameAction>(context, MainFrameAction.class, actions, this);
-            menuBarActionTracker.open();
-            mainFrameStatusBar.init();
-
-
-
-            // Init link between LOG4J and MessageOverlay system.
-            // Root logger, from fatal to warning
-            LevelRangeFilter filter = new LevelRangeFilter();
-            filter.setLevelMax(Level.FATAL);
-            filter.setLevelMin(Level.WARN);
-            filter.setAcceptOnMatch(true);
-            errorLoggerTarget.addFilter(filter);
-            LevelMatchFilter guiFilter = new LevelMatchFilter();
-            guiFilter.setLevelToMatch(Level.INFO.toString());
-            // gui
-            guiLoggerTarget.addFilter(guiFilter);
-            guiLoggerTarget.addFilter(new DenyAllFilter());
-            guiLoggerTarget.initLogger(Logger.getLogger("gui.popup"));
-            popupLoggerTarget.addFilter(guiFilter);
-            popupLoggerTarget.addFilter(new DenyAllFilter());
-            popupLoggerTarget.initLogger(Logger.getLogger("popup"));
-            errorLoggerTarget.initLogger(Logger.getRootLogger());
-        }
+    public void init() {
+        initActions();
+        // Add actions in menu bar
+        actions.registerContainer(menuBar);
+        this.setJMenuBar(menuBar);
+        getContentPane().add(mainFrameStatusBar, BorderLayout.SOUTH);
+    }
 
     public static String getVersion(CoreWorkspace coreWorkspace) {
         if (coreWorkspace.getVersionRevision() != 0) {
@@ -154,67 +127,85 @@ public class MainFrame extends JFrame implements MainWindow {
                     .getVersionRevision();
         }
     }
-        public void setDockingManager(DockingManager dockingManager) {
-            this.dockingManager = dockingManager;
 
-            // Add Window close menu
-            menuBar.add(dockingManager.getCloseableDockableMenu());
-            // Add l&f menu
-            MenuElement toolsMenu = actions.getActionMenu(MainFrameAction.MENU_TOOLS,menuBar.getSubElements());
-            if(toolsMenu !=null && toolsMenu instanceof JMenu) {
-                ((JMenu)toolsMenu).add(dockingManager.getLookAndFeelMenu());
-            }
-        }
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    public void setLogReaderService(LogReaderService logReaderService) {
+        logReaderService.addLogListener(messageOverlay);
+    }
 
-        /**
-         * Create the built-ins menu items
-         */
-        private void initActions() {
-            actions.addAction(new DefaultAction(MainFrameAction.MENU_FILE,I18N.tr("&File")).setMenuGroup(true));
-            actions.addAction(new DefaultAction(MainFrameAction.MENU_EXIT, I18N.tr("&Exit"), MainFrameIcon.getIcon("exit"),
-                    EventHandler.create(ActionListener.class, this, "onMenuExitApplication"))
-                    .setParent(MainFrameAction.MENU_FILE));
-            actions.addAction(new DefaultAction(MainFrameAction.MENU_TOOLS,I18N.tr("&Tools")).setMenuGroup(true));
-            actions.addAction(new DefaultAction(MainFrameAction.MENU_CONFIGURE, I18N.tr("&Configuration"),
-                    MainFrameIcon.getIcon("preferences-system"), EventHandler.create(ActionListener.class, this,
-                    "onMenuShowPreferences")).setParent(MainFrameAction.MENU_TOOLS));
-        }
+    public void unsetLogReaderService(LogReaderService logReaderService) {
+        logReaderService.removeLogListener(messageOverlay);
+    }
 
-        /**
-         * The user click on preferences menu item
-         */
-        public void onMenuShowPreferences() {
-            dockingManager.showPreferenceDialog();
-        }
+    @Reference
+    public void setDockingManager(DockingManager dockingManager) {
+        this.dockingManager = dockingManager;
 
-        /**
-         * The user click on exit application menu item
-         */
-        public void onMenuExitApplication() {
-            this.processWindowEvent(new WindowEvent(this,WindowEvent.WINDOW_CLOSING));
+        // Add Window close menu
+        menuBar.add(dockingManager.getCloseableDockableMenu());
+        // Add l&f menu
+        MenuElement toolsMenu = actions.getActionMenu(MainFrameAction.MENU_TOOLS, menuBar.getSubElements());
+        if (toolsMenu != null && toolsMenu instanceof JMenu) {
+            ((JMenu) toolsMenu).add(dockingManager.getLookAndFeelMenu());
         }
+    }
 
-        @Override
-        public JFrame getMainFrame() {
-            return this;
-        }
-        
-        /**
-         * Extend the mainframe with a new menu
-         * @param action 
-         */
-        public void addMenu(Action action){
-            actions.addAction(action);
-        }
-        
-        /**
-         * Extend the main status bar with a new component
-         * @param component
-         * @param orientation 
-         */
-        public void addToolBarComponent(JComponent component, String orientation){
-            mainFrameStatusBar.addComponent(component, orientation);
-        }
-        
-       
+    public void unsetDockingManager(DockingManager dockingManager) {
+        menuBar.removeAll();
+        this.dockingManager = null;
+    }
+
+    /**
+     * Create the built-ins menu items
+     */
+    private void initActions() {
+        actions.addAction(new DefaultAction(MainFrameAction.MENU_FILE, I18N.tr("&File")).setMenuGroup(true));
+        actions.addAction(new DefaultAction(MainFrameAction.MENU_EXIT, I18N.tr("&Exit"), MainFrameIcon.getIcon
+                ("exit"), EventHandler.create(ActionListener.class, this, "onMenuExitApplication")).setParent
+                (MainFrameAction.MENU_FILE));
+        actions.addAction(new DefaultAction(MainFrameAction.MENU_TOOLS, I18N.tr("&Tools")).setMenuGroup(true));
+        actions.addAction(new DefaultAction(MainFrameAction.MENU_CONFIGURE, I18N.tr("&Configuration"), MainFrameIcon
+                .getIcon("preferences-system"), EventHandler.create(ActionListener.class, this,
+                "onMenuShowPreferences")).setParent(MainFrameAction.MENU_TOOLS));
+    }
+
+    /**
+     * The user click on preferences menu item
+     */
+    public void onMenuShowPreferences() {
+        dockingManager.showPreferenceDialog();
+    }
+
+    /**
+     * The user click on exit application menu item
+     */
+    public void onMenuExitApplication() {
+        this.processWindowEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+    }
+
+    @Override
+    public JFrame getMainFrame() {
+        return this;
+    }
+
+    /**
+     * Extend the mainframe with a new menu
+     *
+     * @param action
+     */
+    public void addMenu(Action action) {
+        actions.addAction(action);
+    }
+
+    /**
+     * Extend the main status bar with a new component
+     *
+     * @param component
+     * @param orientation
+     */
+    public void addToolBarComponent(JComponent component, String orientation) {
+        mainFrameStatusBar.addComponent(component, orientation);
+    }
+
+
 }

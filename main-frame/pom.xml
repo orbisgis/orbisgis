@@ -57,9 +57,10 @@
                 </executions>
                 <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
-                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/mainframe/</poDirectory>
+                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/mainframe/translation/language/
+                    </poDirectory>
                     <targetBundle>org.orbisgis.mainframe.Messages</targetBundle>
-                    <keywords>-ktr -kmarktr</keywords>
+                    <keywords>-ktr</keywords>
                     <outputFormat>properties</outputFormat>
                 </configuration>
             </plugin>
@@ -88,6 +89,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>framework-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wkgui-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
