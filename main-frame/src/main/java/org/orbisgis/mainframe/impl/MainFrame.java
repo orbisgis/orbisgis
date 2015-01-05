@@ -37,10 +37,8 @@ import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayer;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
-import javax.swing.MenuElement;
 
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.mainframe.api.MainFrameAction;
@@ -48,8 +46,6 @@ import org.orbisgis.mainframe.api.MainWindow;
 import org.orbisgis.mainframe.icons.MainFrameIcon;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
-
-import org.orbisgis.sif.docking.DockingManager;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -64,9 +60,6 @@ import org.xnap.commons.i18n.I18nFactory;
 @Component(service = MainWindow.class)
 public class MainFrame extends JFrame implements MainWindow {
     private static final I18n I18N = I18nFactory.getI18n(MainFrame.class);
-
-    //The main frame addDockingPanel panels state,theme, and properties
-    private DockingManager dockingManager = null;
     private ActionCommands actions = new ActionCommands();
     private JMenuBar menuBar = new JMenuBar();
     private MainFrameStatusBar mainFrameStatusBar = new MainFrameStatusBar();
@@ -137,24 +130,6 @@ public class MainFrame extends JFrame implements MainWindow {
         logReaderService.removeLogListener(messageOverlay);
     }
 
-    @Reference
-    public void setDockingManager(DockingManager dockingManager) {
-        this.dockingManager = dockingManager;
-
-        // Add Window close menu
-        menuBar.add(dockingManager.getCloseableDockableMenu());
-        // Add l&f menu
-        MenuElement toolsMenu = actions.getActionMenu(MainFrameAction.MENU_TOOLS, menuBar.getSubElements());
-        if (toolsMenu != null && toolsMenu instanceof JMenu) {
-            ((JMenu) toolsMenu).add(dockingManager.getLookAndFeelMenu());
-        }
-    }
-
-    public void unsetDockingManager(DockingManager dockingManager) {
-        menuBar.removeAll();
-        this.dockingManager = null;
-    }
-
     /**
      * Create the built-ins menu items
      */
@@ -167,13 +142,6 @@ public class MainFrame extends JFrame implements MainWindow {
         actions.addAction(new DefaultAction(MainFrameAction.MENU_CONFIGURE, I18N.tr("&Configuration"), MainFrameIcon
                 .getIcon("preferences-system"), EventHandler.create(ActionListener.class, this,
                 "onMenuShowPreferences")).setParent(MainFrameAction.MENU_TOOLS));
-    }
-
-    /**
-     * The user click on preferences menu item
-     */
-    public void onMenuShowPreferences() {
-        dockingManager.showPreferenceDialog();
     }
 
     /**

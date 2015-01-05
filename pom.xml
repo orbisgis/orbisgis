@@ -34,6 +34,7 @@
                 <module>bundles/sql-parser-api</module>
                 <module>bundles/sqlconsole-parser</module>
                 <module>main-frame</module>
+                <module>docking-impl</module>
                 <module>progress-gui</module>
                 <!--
                 <module>orbisgis-core</module>
