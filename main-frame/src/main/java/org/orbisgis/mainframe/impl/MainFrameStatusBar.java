@@ -25,7 +25,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact
  * directly: info_at_ orbisgis.org
  */
-package org.orbisgis.view.main.frames;
+package org.orbisgis.mainframe.impl;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -41,7 +41,7 @@ import net.miginfocom.swing.MigLayout;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.workspace.CoreWorkspaceImpl;
 import org.orbisgis.sif.components.CustomButton;
-import org.orbisgis.view.components.statusbar.StatusBar;
+import org.orbisgis.sif.components.StatusBar;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.joblist.JobListCellRenderer;
 import org.orbisgis.view.joblist.JobListItem;

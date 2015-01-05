@@ -1,10 +1,19 @@
-package org.orbisgis.view.main.frames;
+package org.orbisgis.sif.components;
 
-import org.orbisgis.view.icons.OrbisGISIcon;
-
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JLayer;
 import javax.swing.plaf.LayerUI;
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Container;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ImageObserver;
 import java.beans.PropertyChangeEvent;

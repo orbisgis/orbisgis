@@ -44,11 +44,14 @@ import org.apache.log4j.varia.LevelRangeFilter;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.mainframe.api.MainFrameAction;
 import org.orbisgis.mainframe.api.MainWindow;
+import org.orbisgis.mainframe.icons.MainFrameIcon;
+import org.orbisgis.sif.components.MessageOverlay;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.view.main.frames.MainFrameStatusBar;
 import org.orbisgis.viewapi.docking.DockingManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.wkguiapi.ViewWorkspace;
 import org.osgi.service.component.annotations.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -67,6 +70,7 @@ public class MainFrame extends JFrame implements MainWindow {
         private MainFrameStatusBar mainFrameStatusBar = new MainFrameStatusBar(this);
         private JPanel mainPanel = new JPanel(new BorderLayout());
         private MessageOverlay messageOverlay = new MessageOverlay();
+        private ViewWorkspace viewWorkspace;
         private OverlayLoggerTarget guiLoggerTarget = new OverlayLoggerTarget(messageOverlay);
         private OverlayLoggerTarget popupLoggerTarget = new OverlayLoggerTarget(messageOverlay);
         private OverlayLoggerTarget errorLoggerTarget = new OverlayLoggerTarget(messageOverlay);
@@ -76,11 +80,15 @@ public class MainFrame extends JFrame implements MainWindow {
          * this constructor, clients must call {@link #init}.
          */
         public MainFrame(){
-            setTitle(I18N.tr("OrbisGIS version {0} {1} {2}",
-                    getVersion(), CoreWorkspace.CITY_VERSION, Locale.getDefault().getCountry()));
-                    setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
             setIconImage(OrbisGISIcon.getIconImage("orbisgis"));
             add(new JLayer<>(mainPanel, messageOverlay));
+        }
+
+        @Reference
+        public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
+            setTitle(I18N.tr("OrbisGIS version {0} {1} {2}",
+                    getVersion(coreWorkspace), coreWorkspace.getVersionQualifier(), Locale.getDefault().getCountry()));
+            setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
         }
 
         @Override
@@ -138,13 +146,14 @@ public class MainFrame extends JFrame implements MainWindow {
             errorLoggerTarget.initLogger(Logger.getRootLogger());
         }
 
-        public static String getVersion() {
-                if(CoreWorkspace.REVISION_VERSION!=0) {
-                        return CoreWorkspace.MAJOR_VERSION+"."+CoreWorkspace.MINOR_VERSION;
-                } else {
-                        return CoreWorkspace.MAJOR_VERSION+"."+CoreWorkspace.MINOR_VERSION+"."+CoreWorkspace.REVISION_VERSION;
-                }
+    public static String getVersion(CoreWorkspace coreWorkspace) {
+        if (coreWorkspace.getVersionRevision() != 0) {
+            return coreWorkspace.getVersionMajor() + "." + coreWorkspace.getVersionMinor();
+        } else {
+            return coreWorkspace.getVersionMajor() + "." + coreWorkspace.getVersionMinor() + "." + coreWorkspace
+                    .getVersionRevision();
         }
+    }
         public void setDockingManager(DockingManager dockingManager) {
             this.dockingManager = dockingManager;
 
@@ -162,14 +171,13 @@ public class MainFrame extends JFrame implements MainWindow {
          */
         private void initActions() {
             actions.addAction(new DefaultAction(MainFrameAction.MENU_FILE,I18N.tr("&File")).setMenuGroup(true));
-            actions.addAction(new DefaultAction(MainFrameAction.MENU_EXIT, I18N.tr("&Exit"), OrbisGISIcon.getIcon("exit"),
+            actions.addAction(new DefaultAction(MainFrameAction.MENU_EXIT, I18N.tr("&Exit"), MainFrameIcon.getIcon("exit"),
                     EventHandler.create(ActionListener.class, this, "onMenuExitApplication"))
                     .setParent(MainFrameAction.MENU_FILE));
             actions.addAction(new DefaultAction(MainFrameAction.MENU_TOOLS,I18N.tr("&Tools")).setMenuGroup(true));
-            actions.addAction(new DefaultAction(MainFrameAction.MENU_CONFIGURE,I18N.tr("&Configuration"),
-                    OrbisGISIcon.getIcon("preferences-system"),
-                    EventHandler.create(ActionListener.class,this,"onMenuShowPreferences"))
-                    .setParent(MainFrameAction.MENU_TOOLS));     
+            actions.addAction(new DefaultAction(MainFrameAction.MENU_CONFIGURE, I18N.tr("&Configuration"),
+                    MainFrameIcon.getIcon("preferences-system"), EventHandler.create(ActionListener.class, this,
+                    "onMenuShowPreferences")).setParent(MainFrameAction.MENU_TOOLS));
         }
 
         /**
