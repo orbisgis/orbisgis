@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.joblist;
+package org.orbisgis.progressgui;
 
 import java.awt.Component;
 import java.awt.Point;

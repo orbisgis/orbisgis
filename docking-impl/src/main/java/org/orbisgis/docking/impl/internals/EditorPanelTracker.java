@@ -28,12 +28,8 @@
  */
 package org.orbisgis.docking.impl.internals;
 
-import org.apache.log4j.Logger;
-import org.orbisgis.viewapi.edition.EditorDockable;
-import org.orbisgis.viewapi.edition.EditorManager;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTracker;
+
+import org.orbisgis.sif.edition.EditorManager;
 
 import javax.swing.*;
 

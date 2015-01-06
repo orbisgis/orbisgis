@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.joblist;
+package org.orbisgis.progressgui;
 
 import java.awt.BorderLayout;
 import java.beans.EventHandler;
@@ -34,10 +34,12 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListDataListener;
-import org.apache.log4j.Logger;
-import org.orbisgis.viewapi.docking.DockingPanel;
-import org.orbisgis.viewapi.docking.DockingPanelParameters;
-import org.orbisgis.view.icons.OrbisGISIcon;
+
+import org.orbisgis.progressgui.icons.JobsIcon;
+import org.orbisgis.sif.docking.DockingPanel;
+import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -47,7 +49,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class JobsPanel extends JPanel implements DockingPanel {
         public static final String PANEL_NAME = "jobslist";
         private static final I18n I18N = I18nFactory.getI18n(JobsPanel.class);
-        private static final Logger LOGGER = Logger.getLogger("gui."+JobsPanel.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger("gui." + JobsPanel.class);
         private DockingPanelParameters dockingParameters = new DockingPanelParameters();
         private JobListPanel jobList;
         private JobListCellRenderer jobListRender;
@@ -57,7 +59,7 @@ public class JobsPanel extends JPanel implements DockingPanel {
                 super(new BorderLayout());
                 dockingParameters.setName(PANEL_NAME);
                 dockingParameters.setTitle(I18N.tr("Running jobs"));
-                dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("completion_local"));
+                dockingParameters.setTitleIcon(JobsIcon.getIcon("completion_local"));
                 makeJobList();
                 add(new JScrollPane(jobList), BorderLayout.CENTER);             
         }

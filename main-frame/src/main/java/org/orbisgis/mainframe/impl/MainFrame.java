@@ -174,6 +174,4 @@ public class MainFrame extends JFrame implements MainWindow {
     public void addToolBarComponent(JComponent component, String orientation) {
         mainFrameStatusBar.addComponent(component, orientation);
     }
-
-
 }

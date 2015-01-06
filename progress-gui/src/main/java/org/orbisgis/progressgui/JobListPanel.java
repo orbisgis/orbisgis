@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.joblist;
+package org.orbisgis.progressgui;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -34,7 +34,9 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A panel that manage a list of subpanel.
@@ -49,7 +51,7 @@ public class JobListPanel extends JPanel {
         private ListCellRenderer listRenderer;
         private BoxLayout cellsStack;
         private ModelListener modelListener = new ModelListener();
-        private static final Logger LOGGER = Logger.getLogger(JobListPanel.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(JobListPanel.class);
         
         public JobListPanel() {
                 cellsStack = new BoxLayout(this, BoxLayout.Y_AXIS);
@@ -121,7 +123,7 @@ public class JobListPanel extends JPanel {
                                 remove(index);
                         }
                 } catch (ArrayIndexOutOfBoundsException ex) {
-                        LOGGER.error(ex);
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
         }
         

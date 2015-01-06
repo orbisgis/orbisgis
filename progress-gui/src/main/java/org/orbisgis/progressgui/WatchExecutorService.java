@@ -26,11 +26,20 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.joblist;
+package org.orbisgis.progressgui;
 
+import org.orbisgis.progressgui.api.SwingWorkerPool;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import sun.awt.AppContext;
+
+import javax.swing.SwingWorker;
 import javax.swing.event.EventListenerList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.EventHandler;
+import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -41,7 +50,8 @@ import java.util.concurrent.TimeUnit;
  * Override ThreadPool of SwingWorker in order to fill job list.
  * @author Nicolas Fortin
  */
-public class WatchExecutorService extends ThreadPoolExecutor {
+@Component
+public class WatchExecutorService extends ThreadPoolExecutor implements SwingWorkerPool {
 
     EventListenerList actionListenerList = new EventListenerList();
 
@@ -55,6 +65,19 @@ public class WatchExecutorService extends ThreadPoolExecutor {
                 10L, TimeUnit.MINUTES,
                 new LinkedBlockingQueue<Runnable>(),
                 new WatchThreadFactory());
+    }
+
+    @Activate
+    public void activate() {
+        final AppContext appContext = AppContext.getAppContext();
+        WatchExecutorService executorService = new WatchExecutorService();
+        appContext.put(SwingWorker.class, executorService);
+    }
+
+    @Deactivate
+    public void deactivate() {
+        final AppContext appContext = AppContext.getAppContext();
+        appContext.put(SwingWorker.class, null);
     }
 
     @Override
@@ -77,6 +100,11 @@ public class WatchExecutorService extends ThreadPoolExecutor {
         actionListenerList.add(ActionListener.class, actionListener);
     }
 
+    @Override
+    public void removeActionListener(ActionListener actionListener) {
+        actionListenerList.remove(ActionListener.class, actionListener);
+    }
+
     private static class WatchThreadFactory implements ThreadFactory {
         private final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
 
@@ -86,6 +114,15 @@ public class WatchExecutorService extends ThreadPoolExecutor {
             thread.setName("SwingWorker-" + thread.getName());
             thread.setDaemon(true);
             return thread;
+        }
+    }
+
+    @Override
+    public void cancelAll(boolean mayInterruptIfRunning) {
+        for(Runnable runnable : new ArrayList<>(getQueue())) {
+            if(runnable instanceof SwingWorker) {
+                ((SwingWorker) runnable).cancel(mayInterruptIfRunning);
+            }
         }
     }
 }

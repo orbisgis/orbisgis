@@ -26,8 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.joblist;
-
+package org.orbisgis.progressgui;
 
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
@@ -42,22 +41,24 @@ import javax.swing.AbstractListModel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
-import org.apache.log4j.Logger;
+import org.orbisgis.progressgui.api.SwingWorkerPool;
 import org.orbisgis.sif.common.ContainerItemProperties;
-import sun.awt.AppContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JList model of the Job list
  */
 public class JobListModel extends AbstractListModel {
         private static final int FETCH_JOB_TIME = 500;
-        private static final Logger LOGGER = Logger.getLogger(JobListModel.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(JobListModel.class);
         private List<JobListItem> shownJobs = new ArrayList<>();
         /*!< If true a swing runnable is pending to refresh the content of
           the JobListModel
          */
         private AtomicBoolean awaitingRefresh=new AtomicBoolean(false); 
-        private PropertyChangeListener labelUpdateListener;
+        private PropertyChangeListener labelUpdateListener = EventHandler.create(PropertyChangeListener.class, this, "onJobItemLabelChange","source");
+        private ActionListener swingJobListener = EventHandler.create(ActionListener.class, this, "onNewWorker", "source");
         
         //Store Job events
         private List<SwingWorker> jobAdded = Collections.synchronizedList(new LinkedList<SwingWorker>());
@@ -71,20 +72,22 @@ public class JobListModel extends AbstractListModel {
             while(!shownJobs.isEmpty()) {
                 shownJobs.remove(0).dispose();
             }
-            final AppContext appContext = AppContext.getAppContext();
-            appContext.put(SwingWorker.class, null);
         }
-        
+
+        public void setSwingWorkerPool(SwingWorkerPool swingWorkerPool) {
+            swingWorkerPool.addActionListener(swingJobListener);
+        }
+
+        public void unsetSwingWorkerPool(SwingWorkerPool swingWorkerPool) {
+            swingWorkerPool.removeActionListener(swingJobListener);
+        }
+
+
         /**
          * Attach listeners to the BackgroundManager
          * @return itself
          */
         public JobListModel listenToBackgroundManager() {
-            final AppContext appContext = AppContext.getAppContext();
-            WatchExecutorService executorService = new WatchExecutorService();
-            executorService.addActionListener(EventHandler.create(ActionListener.class, this, "onNewWorker","source"));
-            appContext.put(SwingWorker.class, executorService);
-            labelUpdateListener = EventHandler.create(PropertyChangeListener.class, this, "onJobItemLabelChange","source");
             return this;
         }
 

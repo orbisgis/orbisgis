@@ -26,14 +26,14 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.joblist;
+package org.orbisgis.progressgui;
+
+import org.orbisgis.commons.progress.SwingWorkerPM;
+import org.orbisgis.sif.common.ContainerItemProperties;
 
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import javax.swing.SwingWorker;
-
-import org.orbisgis.commons.progress.SwingWorkerPM;
-import org.orbisgis.sif.common.ContainerItemProperties;
 
 /**
  * This list item is linked with a Job

@@ -26,15 +26,18 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.joblist;
+package org.orbisgis.progressgui;
 
 import java.awt.FlowLayout;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.SwingWorker;
 
 import org.orbisgis.commons.progress.SwingWorkerPM;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.progressgui.icons.JobsIcon;
 
 /**
  * Panel of a JobList row
@@ -62,7 +65,7 @@ public class JobListItemPanel extends JPanel {
                 jobProgressBar.setStringPainted(false);
                 jobProgressBar.setIndeterminate(true);
                 //The cancel label
-                jobCancelLabel = new JLabel(OrbisGISIcon.getIcon("cancel"));
+                jobCancelLabel = new JLabel(JobsIcon.getIcon("cancel"));
                 //When the user click on the label, the job is canceled
                 jobCancelLabel.addMouseListener(
                         EventHandler.create(MouseListener.class,job,
