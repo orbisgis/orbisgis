@@ -133,14 +133,6 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
     private List<Action> addedToolBarActions = new LinkedList<Action>();
     private Map<ActionFactoryService, MenuTrackerAction> actionFromFactory = new HashMap<>();
 
-    /**
-     * Creates the new manager
-     *
-     * @param owner the window used as parent for all dialogs
-     */
-    public DockingManagerImpl(JFrame owner) {
-    }
-
     @Reference
     public void setMainWindow(MainWindow mainWindow) {
         this.owner = mainWindow.getMainFrame();
