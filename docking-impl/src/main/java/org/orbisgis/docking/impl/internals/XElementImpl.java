@@ -29,7 +29,7 @@
 
 package org.orbisgis.docking.impl.internals;
 
-import org.orbisgis.viewapi.util.XElement;
+import org.orbisgis.sif.docking.XElement;
 
 /**
  * Decorate DockingFrame XElement util.

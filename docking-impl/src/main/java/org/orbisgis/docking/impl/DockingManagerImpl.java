@@ -194,12 +194,15 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
         }
     }
 
-    @Override
+    /**
+     * Used by declarative services
+     * @param dockingPanel Panel instance to remove
+     */
     public void removeDockingPanel(DockingPanel dockingPanel) {
         if (SwingUtilities.isEventDispatchThread()) {
-            commonControl.removeSingleDockable(dockId);
+            commonControl.removeSingleDockable(dockingPanel.getDockingParameters().getName());
         } else {
-            RemovePanel removePanel = new RemovePanel(commonControl, dockId);
+            RemovePanel removePanel = new RemovePanel(commonControl, dockingPanel.getDockingParameters().getName());
             try {
                 SwingUtilities.invokeAndWait(removePanel);
             } catch (Exception ex) {
