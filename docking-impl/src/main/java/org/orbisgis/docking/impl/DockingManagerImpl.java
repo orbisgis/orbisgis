@@ -49,6 +49,8 @@ import bibliothek.util.PathCombiner;
 import bibliothek.util.xml.XElement;
 import bibliothek.util.xml.XIO;
 import java.awt.Graphics;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -169,7 +171,7 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
     }
 
     public void unsetMainWindow(MainWindow mainWindow) {
-
+        this.owner = null;
     }
 
     /**

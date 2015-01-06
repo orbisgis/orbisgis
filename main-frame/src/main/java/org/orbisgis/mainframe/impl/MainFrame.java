@@ -35,23 +35,33 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.beans.EventHandler;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import java.util.Locale;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayer;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
+import org.orbisgis.commons.events.OGVetoableChangeSupport;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.mainframe.api.MainFrameAction;
 import org.orbisgis.mainframe.api.MainWindow;
 import org.orbisgis.mainframe.icons.MainFrameIcon;
+import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
+import org.orbisgis.sif.docking.DockingManager;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
@@ -64,7 +74,7 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * Main window that contain all docking panels.
  */
-@Component(service = MainWindow.class)
+@Component(service = MainWindow.class, immediate = true)
 public class MainFrame extends JFrame implements MainWindow {
     private static final I18n I18N = I18nFactory.getI18n(MainFrame.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(MainFrame.class);
@@ -74,6 +84,11 @@ public class MainFrame extends JFrame implements MainWindow {
     private JPanel mainPanel = new JPanel(new BorderLayout());
     private LogListenerOverlay messageOverlay = new LogListenerOverlay();
     public static final Dimension MAIN_VIEW_SIZE = new Dimension(800, 600);/*!< Bounds of mainView, x,y and width height*/
+    private OGVetoableChangeSupport vetoableChangeSupport = new OGVetoableChangeSupport(this);
+    private DockingManager dockingManager = null;
+    private JMenu panelList;
+    // The main window can stop the framework bundle
+    private BundleContext bundleContext;
 
     /**
      * Creates a new frame. The content of the frame is not created by
@@ -85,7 +100,9 @@ public class MainFrame extends JFrame implements MainWindow {
     }
 
     @Activate
-    public void activate() {
+    public void activate(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+        init();
         try {
             GraphicsDevice device = GraphicsEnvironment.
                     getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -93,6 +110,44 @@ public class MainFrame extends JFrame implements MainWindow {
             setLocation(screenBounds.x + screenBounds.width / 2 - MAIN_VIEW_SIZE.width / 2, screenBounds.y +
                     screenBounds.height / 2 - MAIN_VIEW_SIZE.height / 2);
         } catch (Throwable ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
+        }
+        // Very ugly, heritage from monolithic architecture
+        UIFactory.setMainFrame(this);
+
+        //When the user ask to close OrbisGis it call
+        //the shutdown method here,
+        // Link the Swing Events with the MainFrame event
+        //Thanks to EventHandler we don't have to build a listener class
+        addWindowListener(EventHandler.create(WindowListener.class, //The listener class
+                this, //The event target object
+                "onMainWindowClosing",//The event target method to call
+                null, //the event parameter to pass(none)
+                "windowClosing")); //The listener method to use
+        setVisible(true);
+    }
+
+    @Deactivate
+    public void deactivate() {
+        // Very ugly, heritage from monolithic architecture
+        UIFactory.setMainFrame(null);
+        this.bundleContext = null;
+    }
+
+    /**
+     * User close the window
+     */
+    public void onMainWindowClosing() {
+        try {
+            vetoableChangeSupport.fireVetoableChange(WINDOW_VISIBLE, true, false);
+        } catch (PropertyVetoException ex) {
+            // Cancel exit
+            return;
+        }
+        // Stop application
+        try {
+            bundleContext.getBundle(0).stop();
+        } catch (BundleException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }
     }
@@ -115,6 +170,24 @@ public class MainFrame extends JFrame implements MainWindow {
         } else {
             mainPanel.add(comp, constraints, index);
         }
+    }
+
+    // Use optional to avoid deadlock of service activation. (MainFrame launch first then DockingManager)
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+    public void setDockingManager(DockingManager dockingManager) {
+        // Add configure menu
+        actions.addAction(new DefaultAction(MainFrameAction.MENU_CONFIGURE, I18N.tr("&Configuration"), MainFrameIcon
+                .getIcon("preferences-system"), EventHandler.create(ActionListener.class, this,
+                "onMenuShowPreferences")).setParent(MainFrameAction.MENU_TOOLS));
+        // Add window list menu
+        panelList = dockingManager.getCloseableDockableMenu();
+        menuBar.add(panelList);
+        this.dockingManager = dockingManager;
+    }
+
+    public void unsetDockingManager(DockingManager dockingManager) {
+        menuBar.remove(panelList);
+        this.dockingManager = null;
     }
 
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
@@ -158,12 +231,17 @@ public class MainFrame extends JFrame implements MainWindow {
     private void initActions() {
         actions.addAction(new DefaultAction(MainFrameAction.MENU_FILE, I18N.tr("&File")).setMenuGroup(true));
         actions.addAction(new DefaultAction(MainFrameAction.MENU_EXIT, I18N.tr("&Exit"), MainFrameIcon.getIcon
-                ("exit"), EventHandler.create(ActionListener.class, this, "onMenuExitApplication")).setParent
-                (MainFrameAction.MENU_FILE));
+                ("exit"), EventHandler.create(ActionListener.class, this, "onMenuExitApplication")).setParent(MainFrameAction.MENU_FILE));
         actions.addAction(new DefaultAction(MainFrameAction.MENU_TOOLS, I18N.tr("&Tools")).setMenuGroup(true));
-        actions.addAction(new DefaultAction(MainFrameAction.MENU_CONFIGURE, I18N.tr("&Configuration"), MainFrameIcon
-                .getIcon("preferences-system"), EventHandler.create(ActionListener.class, this,
-                "onMenuShowPreferences")).setParent(MainFrameAction.MENU_TOOLS));
+    }
+
+    /**
+     * The user click on preferences menu item
+     */
+    public void onMenuShowPreferences() {
+        if(dockingManager != null) {
+            dockingManager.showPreferenceDialog();
+        }
     }
 
     /**
@@ -195,5 +273,15 @@ public class MainFrame extends JFrame implements MainWindow {
      */
     public void addToolBarComponent(JComponent component, String orientation) {
         mainFrameStatusBar.addComponent(component, orientation);
+    }
+
+    @Override
+    public void addVetoableChangeListener(String propertyName, VetoableChangeListener listener) {
+        vetoableChangeSupport.addVetoableChangeListener(propertyName, listener);
+    }
+
+    @Override
+    public void removeVetoableChangeListener(VetoableChangeListener listener) {
+        vetoableChangeSupport.removeVetoableChangeListener(listener);
     }
 }

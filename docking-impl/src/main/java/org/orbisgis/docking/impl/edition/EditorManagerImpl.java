@@ -30,6 +30,8 @@ package org.orbisgis.docking.impl.edition;
 
 
 import org.orbisgis.docking.impl.edition.dialogs.SaveDocuments;
+import org.orbisgis.mainframe.api.MainWindow;
+import org.orbisgis.mainframe.impl.MainFrame;
 import org.orbisgis.sif.docking.DockingManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelLayout;
@@ -44,6 +46,11 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import java.awt.event.WindowListener;
+import java.beans.EventHandler;
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -58,6 +65,12 @@ import java.util.Set;
 public class EditorManagerImpl implements EditorManager {
     private List<EditorFactory> factories = new ArrayList<>();
     private DockingManager dockingManager;
+    private final WindowListener exitListener = EventHandler.create(WindowListener.class, //The listener class
+            this, //The event target object
+            "onMainWindowClosing",//The event target method to call
+            null, //the event parameter to pass(none)
+            "windowClosing");
+    private MainWindow mainWindow;
 
     @Reference
     public void setDockingManager(DockingManager dockingManager) {
@@ -66,6 +79,59 @@ public class EditorManagerImpl implements EditorManager {
 
     public void unsetDockingManager(DockingManager dockingManager) {
         this.dockingManager = null;
+    }
+
+    // Save documents on main frame closing
+    @Reference
+    public void setMainWindow(MainWindow mainWindow) {
+        this.mainWindow = mainWindow;
+        JFrame mainFrame = mainWindow.getMainFrame();
+        mainFrame.addWindowListener(exitListener);    //The listener method to use
+    }
+
+    public void unsetMainWindow(MainWindow mainWindow) {
+        JFrame mainFrame = mainWindow.getMainFrame();
+        mainFrame.removeWindowListener(exitListener);
+        this.mainWindow = null;
+    }
+
+    /**
+     * The user want to close the main window Then the application has to be
+     * closed
+     */
+    public void onMainWindowClosing() throws PropertyVetoException {
+        isShutdownVetoed();
+    }
+
+
+
+    /**
+     * Save or discard editable element modification. Show a dialog if there is
+     * at least one unsaved editable element.
+     *
+     * @return True if the application must cancel the close shutdown operation
+     */
+    private boolean isShutdownVetoed() {
+        List<EditableElement> modifiedElements = new ArrayList<>();
+        Collection<EditableElement> editableElement = getEditableElements();
+        for (EditableElement editable : editableElement) {
+            if (editable.isModified()) {
+                modifiedElements.add(editable);
+            }
+        }
+        if (!modifiedElements.isEmpty()) {
+            SaveDocuments.CHOICE userChoice = SaveDocuments.showModal(mainWindow.getMainFrame(), modifiedElements);
+            // If the user do not want to save the editable elements
+            // Then cancel the modifications
+            if (userChoice == SaveDocuments.CHOICE.SAVE_NONE) {
+                for (EditableElement element : modifiedElements) {
+                    element.setModified(false);
+                }
+            }
+            return userChoice == SaveDocuments.CHOICE.CANCEL;
+        } else {
+            return false;
+        }
     }
 
     @Override

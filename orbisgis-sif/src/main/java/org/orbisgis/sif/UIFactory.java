@@ -278,6 +278,11 @@ public class UIFactory {
                 mainFrame = wnd;
         }
 
+        /**
+         * @deprecated Use OSGi declarative services reference org.orbisgis.mainframe.api.MainWindow class or call
+         * {@link javax.swing.SwingUtilities#getWindowAncestor(java.awt.Component)}
+         * @return Main Frame instance
+         */
         public static Window getMainFrame() {
                 return mainFrame;
         }

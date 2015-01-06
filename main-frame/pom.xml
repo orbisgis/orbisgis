@@ -82,6 +82,11 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>${org.osgi.compendium-version}</version>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>orbisgis-sif</artifactId>
             <version>${project.version}</version>
