@@ -26,38 +26,47 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.edition;
+package org.orbisgis.docking.impl.edition;
+
+
+import org.orbisgis.docking.impl.edition.dialogs.SaveDocuments;
+import org.orbisgis.sif.docking.DockingManager;
+import org.orbisgis.sif.docking.DockingPanel;
+import org.orbisgis.sif.docking.DockingPanelLayout;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.EditorDockable;
+import org.orbisgis.sif.edition.EditorFactory;
+import org.orbisgis.sif.edition.EditorManager;
+import org.orbisgis.sif.edition.MultipleEditorFactory;
+import org.orbisgis.sif.edition.SingleEditorFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.orbisgis.viewapi.docking.DockingManager;
-import org.orbisgis.viewapi.docking.DockingPanel;
-import org.orbisgis.viewapi.docking.DockingPanelLayout;
-import org.orbisgis.view.edition.dialogs.SaveDocuments;
-import org.orbisgis.viewapi.edition.EditableElement;
-import org.orbisgis.viewapi.edition.EditorDockable;
-import org.orbisgis.viewapi.edition.EditorFactory;
-import org.orbisgis.viewapi.edition.MultipleEditorFactory;
-import org.orbisgis.viewapi.edition.SingleEditorFactory;
 
 /**
  * The editor Manager is responsible of all EditorFactories.
  * This service is used to register editors and open editable elements.
  */
-
-
-public class EditorManagerImpl implements org.orbisgis.viewapi.edition.EditorManager {
-    private List<EditorFactory> factories = new ArrayList<EditorFactory>();
+@Component
+public class EditorManagerImpl implements EditorManager {
+    private List<EditorFactory> factories = new ArrayList<>();
     private DockingManager dockingManager;
 
-        public EditorManagerImpl(DockingManager dockingManager) {
-                this.dockingManager = dockingManager;
-        }
+    @Reference
+    public void setDockingManager(DockingManager dockingManager) {
+        this.dockingManager = dockingManager;
+    }
 
-        @Override
+    public void unsetDockingManager(DockingManager dockingManager) {
+        this.dockingManager = null;
+    }
+
+    @Override
         public void addEditor(EditorDockable editor) {
             dockingManager.addDockingPanel(editor);
         }
@@ -105,7 +114,7 @@ public class EditorManagerImpl implements org.orbisgis.viewapi.edition.EditorMan
         
         @Override
         public Collection<EditorDockable> getEditors() {
-                List<EditorDockable> editors = new ArrayList<EditorDockable>();
+                List<EditorDockable> editors = new ArrayList<>();
                 for( DockingPanel panel : dockingManager.getPanels()) {
                         if(panel instanceof EditorDockable) {
                                 editors.add((EditorDockable)panel);
@@ -128,7 +137,7 @@ public class EditorManagerImpl implements org.orbisgis.viewapi.edition.EditorMan
                                                 //before loosing the old editable
                                                 List<EditableElement> modifiedDocs = new ArrayList<EditableElement>();
                                                 modifiedDocs.add(oldEditable);
-                                                SaveDocuments.CHOICE userChoice = SaveDocuments.showModal(dockingManager.getOwner(), modifiedDocs);                                                
+                                                SaveDocuments.CHOICE userChoice = SaveDocuments.showModal(dockingManager.getOwner(), modifiedDocs);
                                                 if(userChoice==SaveDocuments.CHOICE.CANCEL) {
                                                         //The user cancel the loading of elements
                                                         return;

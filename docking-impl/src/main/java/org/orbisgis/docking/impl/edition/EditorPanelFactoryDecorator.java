@@ -26,12 +26,12 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.edition;
+package org.orbisgis.docking.impl.edition;
 
-import org.orbisgis.viewapi.docking.DockingPanel;
-import org.orbisgis.viewapi.docking.DockingPanelFactory;
-import org.orbisgis.viewapi.docking.DockingPanelLayout;
-import org.orbisgis.viewapi.edition.MultipleEditorFactory;
+import org.orbisgis.sif.docking.DockingPanel;
+import org.orbisgis.sif.docking.DockingPanelFactory;
+import org.orbisgis.sif.docking.DockingPanelLayout;
+import org.orbisgis.sif.edition.MultipleEditorFactory;
 
 /**
  * MultipleEditorFactory must define EditorPanels instead of DockingPanel

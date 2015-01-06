@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.edition.dialogs;
+package org.orbisgis.docking.impl.edition.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -47,9 +47,9 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
-import org.orbisgis.viewapi.edition.EditableElement;
-import org.orbisgis.viewapi.edition.EditableElementException;
 import org.orbisgis.sif.common.MenuCommonFunctions;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.EditableElementException;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -72,8 +72,8 @@ public class SaveDocuments extends JDialog {
         private List<EditableElement> documents;
         private static final I18n I18N = I18nFactory.getI18n(SaveDocuments.class);
         private JLabel informationLabel = new JLabel();
-        private DefaultListModel listModel = new DefaultListModel();
-        private JList documentList = new JList(listModel);
+        private DefaultListModel<EditableElement> listModel = new DefaultListModel<>();
+        private JList<EditableElement> documentList = new JList<>(listModel);
         
         // Listeners
         private ActionListener saveListener = 
@@ -184,8 +184,8 @@ public class SaveDocuments extends JDialog {
          *  the application is closed
          */
         public void onSaveSelectedDocuments() {
-                List<EditableElement> documentsToSave = new ArrayList<EditableElement>();
-                for(Object docObj : documentList.getSelectedValues()) {
+                List<EditableElement> documentsToSave = new ArrayList<>();
+                for(Object docObj : documentList.getSelectedValuesList()) {
                         if(docObj instanceof EditableElement) {
                                documentsToSave.add((EditableElement)docObj);
                         }
@@ -270,6 +270,4 @@ public class SaveDocuments extends JDialog {
                         setVisible(false);                        
                 }
         }
-        
-        
 }
