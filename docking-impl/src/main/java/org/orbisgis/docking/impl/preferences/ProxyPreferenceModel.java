@@ -39,7 +39,8 @@ import bibliothek.gui.dock.util.property.ConstantPropertyFactory;
 import bibliothek.util.Path;
 import java.beans.EventHandler;
 import java.util.Properties;
-import org.orbisgis.view.docking.preferences.editors.UserInformationEditor;
+
+import org.orbisgis.docking.impl.preferences.editors.UserInformationEditor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 /**
@@ -87,7 +88,7 @@ public class ProxyPreferenceModel extends DefaultPreferenceModel {
     public ProxyPreferenceModel(DockController controller) {
         super(controller);
         //Message Label
-        proxyInfo = new UnsavedPreference<String>("",UserInformationEditor.TYPE_USER_INFO, new Path(PROXY_LABEL_KEY));
+        proxyInfo = new UnsavedPreference<String>("", UserInformationEditor.TYPE_USER_INFO, new Path(PROXY_LABEL_KEY));
         proxyInfo.setDefaultValue("");
         proxyInfo.setLabel("");
         this.add(proxyInfo);

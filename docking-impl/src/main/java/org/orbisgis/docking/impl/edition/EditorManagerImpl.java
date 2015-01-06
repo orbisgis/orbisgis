@@ -41,6 +41,8 @@ import org.orbisgis.sif.edition.MultipleEditorFactory;
 import org.orbisgis.sif.edition.SingleEditorFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -67,109 +69,112 @@ public class EditorManagerImpl implements EditorManager {
     }
 
     @Override
-        public void addEditor(EditorDockable editor) {
-            dockingManager.addDockingPanel(editor);
-        }
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+    public void addEditor(EditorDockable editor) {
+        dockingManager.addDockingPanel(editor);
+    }
 
-        @Override
-        public void removeEditor(EditorDockable editor) {
-            dockingManager.removeDockingPanel(editor.getDockingParameters().getName());
-        }
+    @Override
+    public void removeEditor(EditorDockable editor) {
+        dockingManager.removeDockingPanel(editor.getDockingParameters().getName());
+    }
 
-        @Override
-        public void addEditorFactory(EditorFactory editorFactory) {
-                factories.add(editorFactory);
-                if(editorFactory instanceof MultipleEditorFactory) {
-                        dockingManager.registerPanelFactory(editorFactory.getId(),
-                                new EditorPanelFactoryDecorator((MultipleEditorFactory)editorFactory));
-                } else {
-                        for(EditorDockable dockPanel : ((SingleEditorFactory)editorFactory).getSinglePanels()) {
-                                dockingManager.addDockingPanel(dockPanel);
+    @Override
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+    public void addEditorFactory(EditorFactory editorFactory) {
+        factories.add(editorFactory);
+        if (editorFactory instanceof MultipleEditorFactory) {
+            dockingManager.registerPanelFactory(editorFactory.getId(), new EditorPanelFactoryDecorator(
+                    (MultipleEditorFactory) editorFactory));
+        } else {
+            for (EditorDockable dockPanel : ((SingleEditorFactory) editorFactory).getSinglePanels()) {
+                dockingManager.addDockingPanel(dockPanel);
+            }
+        }
+    }
+
+    @Override
+    public void removeEditorFactory(EditorFactory editorFactory) {
+        factories.remove(editorFactory);
+        if (editorFactory instanceof MultipleEditorFactory) {
+            dockingManager.unregisterPanelFactory(editorFactory.getId());
+        } else {
+            for (EditorDockable dockPanel : ((SingleEditorFactory) editorFactory).getSinglePanels()) {
+                dockingManager.removeDockingPanel(dockPanel.getDockingParameters().getName());
+            }
+        }
+    }
+
+    @Override
+    public Collection<EditableElement> getEditableElements() {
+        Set<EditableElement> editables = new HashSet<EditableElement>();
+        for (EditorDockable editor : getEditors()) {
+            if (editor.getEditableElement() != null) {
+                editables.add(editor.getEditableElement());
+            }
+        }
+        return editables;
+    }
+
+    @Override
+    public Collection<EditorDockable> getEditors() {
+        List<EditorDockable> editors = new ArrayList<>();
+        for (DockingPanel panel : dockingManager.getPanels()) {
+            if (panel instanceof EditorDockable) {
+                editors.add((EditorDockable) panel);
+            }
+        }
+        return editors;
+    }
+
+    @Override
+    public void openEditable(EditableElement editableElement) {
+        Set<EditableElement> ignoreModifiedEditables = new HashSet<EditableElement>();
+        // Open the element in editors
+        for (EditorDockable editor : getEditors()) {
+            if (editor.match(editableElement)) {
+                // Get the current loaded document
+                EditableElement oldEditable = editor.getEditableElement();
+                if (oldEditable != null) {
+                    if (oldEditable.isModified() && !ignoreModifiedEditables.contains(oldEditable)) {
+                        //Ask the user to save changes
+                        //before loosing the old editable
+                        List<EditableElement> modifiedDocs = new ArrayList<EditableElement>();
+                        modifiedDocs.add(oldEditable);
+                        SaveDocuments.CHOICE userChoice = SaveDocuments.showModal(dockingManager.getOwner(),
+                                modifiedDocs);
+                        if (userChoice == SaveDocuments.CHOICE.CANCEL) {
+                            //The user cancel the loading of elements
+                            return;
                         }
+                        if (oldEditable.isModified()) {
+                            // The user do not want to save this editable, do not ask for it in for the next editor
+                            ignoreModifiedEditables.add(oldEditable);
+                        }
+                    }
                 }
-        }
-
-        @Override
-        public void removeEditorFactory(EditorFactory editorFactory) {
-            factories.remove(editorFactory);
-            if(editorFactory instanceof MultipleEditorFactory) {
-                dockingManager.unregisterPanelFactory(editorFactory.getId());
-            } else {
-                for(EditorDockable dockPanel : ((SingleEditorFactory)editorFactory).getSinglePanels()) {
-                    dockingManager.removeDockingPanel(dockPanel.getDockingParameters().getName());
-                }
+                editor.setEditableElement(editableElement);
             }
         }
 
-        @Override
-        public Collection<EditableElement> getEditableElements() {
-                Set<EditableElement> editables = new HashSet<EditableElement>();
-                for(EditorDockable editor : getEditors()) {
-                        if(editor.getEditableElement()!=null) {
-                                editables.add(editor.getEditableElement());
-                        }
+        //Open the element in MultipleEditorFactories
+        for (EditorFactory factory : factories) {
+            if (factory instanceof MultipleEditorFactory) {
+                MultipleEditorFactory mFactory = (MultipleEditorFactory) factory;
+                DockingPanelLayout data = mFactory.makeEditableLayout(editableElement);
+                if (data != null) {
+                    dockingManager.show(mFactory.getId(), data);
                 }
-                return editables;
+            }
         }
-        
-        @Override
-        public Collection<EditorDockable> getEditors() {
-                List<EditorDockable> editors = new ArrayList<>();
-                for( DockingPanel panel : dockingManager.getPanels()) {
-                        if(panel instanceof EditorDockable) {
-                                editors.add((EditorDockable)panel);
-                        }
-                }
-                return editors;
-        }
+    }
 
-        @Override
-        public void openEditable(EditableElement editableElement) {
-                Set<EditableElement> ignoreModifiedEditables = new HashSet<EditableElement>();
-                // Open the element in editors
-                for(EditorDockable editor : getEditors()) {
-                        if(editor.match(editableElement)) {
-                                // Get the current loaded document
-                                EditableElement oldEditable = editor.getEditableElement();
-                                if(oldEditable!=null) {
-                                        if(oldEditable.isModified() && !ignoreModifiedEditables.contains(oldEditable)) {
-                                                //Ask the user to save changes
-                                                //before loosing the old editable
-                                                List<EditableElement> modifiedDocs = new ArrayList<EditableElement>();
-                                                modifiedDocs.add(oldEditable);
-                                                SaveDocuments.CHOICE userChoice = SaveDocuments.showModal(dockingManager.getOwner(), modifiedDocs);
-                                                if(userChoice==SaveDocuments.CHOICE.CANCEL) {
-                                                        //The user cancel the loading of elements
-                                                        return;
-                                                }
-                                                if(oldEditable.isModified()) {
-                                                        // The user do not want to save this editable, do not ask for it in for the next editor
-                                                        ignoreModifiedEditables.add(oldEditable);
-                                                }
-                                        }
-                                }                                
-                                editor.setEditableElement(editableElement);
-                        }
-                }
-                
-                //Open the element in MultipleEditorFactories
-                for( EditorFactory factory : factories) {
-                        if(factory instanceof MultipleEditorFactory) {
-                                MultipleEditorFactory mFactory = (MultipleEditorFactory)factory;
-                                DockingPanelLayout data = mFactory.makeEditableLayout(editableElement);
-                                if(data!=null) {
-                                        dockingManager.show(mFactory.getId(), data);
-                                }
-                        }
-                }
+    /**
+     * Release all factories resources
+     */
+    public void dispose() {
+        for (EditorFactory factory : factories) {
+            factory.dispose();
         }
-
-        /**
-        * Release all factories resources
-        */
-        public void dispose() {
-                for(EditorFactory factory : factories) {
-                        factory.dispose();
-                }
-        }
+    }
 }

@@ -84,6 +84,7 @@ import org.orbisgis.docking.impl.internals.actions.ToolBarActions;
 import org.orbisgis.docking.impl.internals.actions.ToolBarItem;
 import org.orbisgis.docking.impl.preferences.OrbisGISPreferenceTreeModel;
 import org.orbisgis.docking.impl.preferences.editors.UserInformationEditor;
+import org.orbisgis.mainframe.api.MainWindow;
 import org.orbisgis.sif.components.actions.ActionFactoryService;
 import org.orbisgis.sif.components.actions.ActionsHolder;
 import org.orbisgis.sif.components.actions.MenuTrackerAction;
@@ -94,6 +95,10 @@ import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.viewapi.components.actions.ActionTools;
 import org.orbisgis.sif.common.MenuCommonFunctions;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -103,6 +108,7 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * This manager can save and load emplacement of views in XML.
  */
+@Component(service = DockingManager.class)
 public final class DockingManagerImpl extends BeanPropertyChangeSupport implements DockingManager, ActionsHolder {
 
     private JFrame owner;
@@ -131,14 +137,18 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
      * @param owner the window used as parent for all dialogs
      */
     public DockingManagerImpl(JFrame owner) {
-        this.owner = owner;
+    }
+
+    @Reference
+    public void setMainWindow(MainWindow mainWindow) {
+        this.owner = mainWindow.getMainFrame();
         // Method bibliothek.gui.dock.util.DockUtilities.checkLayoutLocked(DockUtilities.java:723)
         // Throw a RuntimeException: java.lang.Error: Trampoline must not be defined by the bootstrap classloader
         DockUtilities.disableCheckLayoutLocked();
         commonControl = new CControl(owner);
         commonControl.addControlListener(new DockingListener());
         dockableMenuTracker = new SingleCDockableListMenuPiece(commonControl);
-        //Retrieve the Docking Frames Preferencies
+        //Retrieve the Docking Frames Preferences
         preferences = new OrbisGISPreferenceTreeModel(commonControl, PathCombiner.APPEND);
         commonControl.setPreferenceModel(preferences);
 
@@ -158,6 +168,10 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
         owner.add(area);
     }
 
+    public void unsetMainWindow(MainWindow mainWindow) {
+
+    }
+
     /**
      * @return the managed frame
      */
@@ -168,6 +182,20 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
 
     @Override
     public void removeDockingPanel(String dockId) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            commonControl.removeSingleDockable(dockId);
+        } else {
+            RemovePanel removePanel = new RemovePanel(commonControl, dockId);
+            try {
+                SwingUtilities.invokeAndWait(removePanel);
+            } catch (Exception ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+            }
+        }
+    }
+
+    @Override
+    public void removeDockingPanel(DockingPanel dockingPanel) {
         if (SwingUtilities.isEventDispatchThread()) {
             commonControl.removeSingleDockable(dockId);
         } else {
@@ -457,6 +485,7 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
     }
 
     @Override
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     public String addDockingPanel(DockingPanel frame) {
         if (SwingUtilities.isEventDispatchThread()) {
             return show(frame);
