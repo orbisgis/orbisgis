@@ -82,7 +82,7 @@
                             <includeScope>provided</includeScope>
                             <!-- Jar that are not compatible with OSGi -->
                             <excludeGroupIds>com.fifesoft, com.miglayout, com.vividsolutions, org.postgis,
-                                org.postgresql</excludeGroupIds>
+                                org.postgresql, org.dockingframes</excludeGroupIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -139,6 +139,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>docking-impl</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>workspace-gui</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
@@ -183,6 +189,12 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>postgis-jts-osgi</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.shell.tui</artifactId>
+            <version>${felix-version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

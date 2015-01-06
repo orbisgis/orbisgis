@@ -40,6 +40,12 @@
                     <instructions>
                         <Private-Package>org.orbisgis.docking.*</Private-Package>
                         <Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
+                        <Embed-Dependency>docking-frames-ext-toolbar-common;scope=compile;inline=true,
+                            docking-frames-ext-toolbar;scope=compile;inline=true,
+                            docking-frames-common;scope=compile;inline=true,
+                            docking-frames-core;scope=compile;inline=true
+                        </Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>

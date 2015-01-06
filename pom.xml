@@ -81,6 +81,7 @@
                 <commons-io-version>2.4</commons-io-version>
                 <jts-version>1.13</jts-version>
                 <org.osgi.compendium-version>4.3.1</org.osgi.compendium-version>
+                <felix-version>1.4.1</felix-version>
                 <h2-version>1.3.176</h2-version>
                 <h2-package>com.h2database</h2-package>
                 <h2-gis-version>1.1.1-SNAPSHOT</h2-gis-version>

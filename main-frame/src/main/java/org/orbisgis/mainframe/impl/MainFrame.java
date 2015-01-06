@@ -29,6 +29,10 @@
 package org.orbisgis.mainframe.impl;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.beans.EventHandler;
@@ -46,11 +50,14 @@ import org.orbisgis.mainframe.api.MainWindow;
 import org.orbisgis.mainframe.icons.MainFrameIcon;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.log.LogReaderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -60,11 +67,13 @@ import org.xnap.commons.i18n.I18nFactory;
 @Component(service = MainWindow.class)
 public class MainFrame extends JFrame implements MainWindow {
     private static final I18n I18N = I18nFactory.getI18n(MainFrame.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MainFrame.class);
     private ActionCommands actions = new ActionCommands();
     private JMenuBar menuBar = new JMenuBar();
     private MainFrameStatusBar mainFrameStatusBar = new MainFrameStatusBar();
     private JPanel mainPanel = new JPanel(new BorderLayout());
     private LogListenerOverlay messageOverlay = new LogListenerOverlay();
+    public static final Dimension MAIN_VIEW_SIZE = new Dimension(800, 600);/*!< Bounds of mainView, x,y and width height*/
 
     /**
      * Creates a new frame. The content of the frame is not created by
@@ -73,6 +82,19 @@ public class MainFrame extends JFrame implements MainWindow {
     public MainFrame() {
         setIconImage(MainFrameIcon.getIconImage("orbisgis"));
         add(new JLayer<>(mainPanel, messageOverlay));
+    }
+
+    @Activate
+    public void activate() {
+        try {
+            GraphicsDevice device = GraphicsEnvironment.
+                    getLocalGraphicsEnvironment().getDefaultScreenDevice();
+            Rectangle screenBounds = device.getDefaultConfiguration().getBounds();
+            setLocation(screenBounds.x + screenBounds.width / 2 - MAIN_VIEW_SIZE.width / 2, screenBounds.y +
+                    screenBounds.height / 2 - MAIN_VIEW_SIZE.height / 2);
+        } catch (Throwable ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
+        }
     }
 
     @Reference
