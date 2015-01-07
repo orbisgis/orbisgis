@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog.sourceWizards.db;
+package org.orbisgis.geocatalog.impl.sourceWizards.db;
 
 import org.orbisgis.sif.multiInputPanel.*;
 import org.osgi.service.jdbc.DataSourceFactory;

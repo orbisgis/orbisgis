@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog;
+package org.orbisgis.geocatalog.impl;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -44,15 +44,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sql.DataSource;
 import javax.swing.*;
 
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DatabaseProgressionListener;
 import org.orbisgis.corejdbc.StateEvent;
+import org.orbisgis.geocatalog.impl.filters.IFilter;
+import org.orbisgis.geocatalog.impl.filters.TableSystemFilter;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.view.geocatalog.filters.IFilter;
-import org.orbisgis.view.geocatalog.filters.TableSystemFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -65,14 +66,14 @@ import static org.apache.commons.collections.ComparatorUtils.NATURAL_COMPARATOR;
  */
 public class SourceListModel extends AbstractListModel<ContainerItemProperties> implements DatabaseProgressionListener {
     private static final I18n I18N = I18nFactory.getI18n(SourceListModel.class);
-    private static final Logger LOGGER = Logger.getLogger(SourceListModel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SourceListModel.class);
     private static final long serialVersionUID = 1L;
     private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE", "SYSTEM TABLE","LINKED TABLE","VIEW", "EXTERNAL"};
     /** Non filtered tables */
     private List<Map<IFilter.ATTRIBUTES, String>> allTables = new ArrayList<>();
     /** Filtered tables */
     private ContainerItemProperties[] sourceList = new ContainerItemProperties[0];/*!< Sources */
-    private List<IFilter> filters = new ArrayList<IFilter>(); /*!< Active filters */
+    private List<IFilter> filters = new ArrayList<>(); /*!< Active filters */
     private DefaultFilter defaultFilter = new DefaultFilter();
     private AtomicBoolean awaitingRefresh=new AtomicBoolean(false); /*!< If true a swing runnable
          * is pending to refresh the content of SourceListModel*/

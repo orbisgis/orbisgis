@@ -26,17 +26,17 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog.filters.factories;
+package org.orbisgis.geocatalog.impl.filters.factories;
 
 import java.awt.Component;
 import java.util.Map;
 import javax.swing.JTextField;
 
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.geocatalog.impl.filters.IFilter;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactory;
 import org.orbisgis.sif.components.filter.TextFieldDocumentListener;
-import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

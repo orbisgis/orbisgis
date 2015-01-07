@@ -25,14 +25,15 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact
  * directly: info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog.jobs;
+package org.orbisgis.geocatalog.impl.jobs;
 
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.commons.progress.SwingWorkerPM;
-import org.orbisgis.viewapi.geocatalog.ext.GeoCatalogExt;
+import org.orbisgis.geocatalog.api.GeoCatalogExt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -50,7 +51,7 @@ import java.sql.Statement;
  * @author Nicolas Fortin
  */
 public class DropTable extends SwingWorkerPM {
-    private static final Logger LOGGER = Logger.getLogger("gui."+DropTable.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger("gui." + DropTable.class);
     private static final I18n I18N = I18nFactory.getI18n(DropTable.class);
     private DataSource dataSource;
     private String[] tableToDelete;

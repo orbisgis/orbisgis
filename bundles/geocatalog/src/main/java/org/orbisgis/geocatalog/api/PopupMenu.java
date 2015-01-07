@@ -26,9 +26,9 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.viewapi.geocatalog.ext;
+package org.orbisgis.geocatalog.api;
 
-import org.orbisgis.viewapi.components.actions.ActionFactoryService;
+import org.orbisgis.sif.components.actions.ActionFactoryService;
 
 /**
  * PopupMenu service of GeoCatalog

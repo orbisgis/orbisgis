@@ -1,4 +1,4 @@
-package org.orbisgis.view.geocatalog;
+package org.orbisgis.geocatalog.impl;
 
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.orbisgis.corejdbc.DriverFunctionContainer;

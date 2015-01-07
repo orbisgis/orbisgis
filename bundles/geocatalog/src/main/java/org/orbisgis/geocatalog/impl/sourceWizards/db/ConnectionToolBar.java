@@ -25,7 +25,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact
  * directly: info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog.sourceWizards.db;
+package org.orbisgis.geocatalog.impl.sourceWizards.db;
 
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
@@ -43,16 +43,15 @@ import java.util.Properties;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JToolBar;
-import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
 import org.orbisgis.commons.events.EventException;
 import org.orbisgis.commons.events.ListenerContainer;
 import org.orbisgis.commons.events.OGVetoableChangeSupport;
 import org.orbisgis.frameworkapi.CoreWorkspace;
+import org.orbisgis.geocatalog.icons.GeocatalogIcon;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
-import org.orbisgis.view.geocatalog.Catalog;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -66,7 +65,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class ConnectionToolBar extends JToolBar {
 
         private static final I18n I18N = I18nFactory.getI18n(ConnectionToolBar.class);
-        private static final Logger LOGGER = Logger.getLogger(Catalog.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionToolBar.class);
         private static final String DB_PROPERTIES_FILE = "db_connexions.properties";
         private Properties dbProperties = new Properties();
         private JComboBox cmbDataBaseUri;
@@ -79,12 +78,21 @@ public class ConnectionToolBar extends JToolBar {
         private boolean connected = false;
         public static final String PROP_CONNECTED = "connected";
         List<Driver> jdbcDrivers = new ArrayList<>();
+        private CoreWorkspace ws;
 
         /*
          * Create the toolbar with all components : combobox, buttons
          */
         public ConnectionToolBar() {
                 init();
+        }
+
+        /**
+         * User preferencies are saved in app folder.
+         * @param coreWorkspace Instance of coreWorkspace or null.
+         */
+        public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
+                this.ws = coreWorkspace;
         }
 
         /**
@@ -124,30 +132,30 @@ public class ConnectionToolBar extends JToolBar {
                 cmbDataBaseUri = new JComboBox(dbKeys);
                 cmbDataBaseUri.setEditable(false);
                 //Connection button
-                btnConnect = new JButton(OrbisGISIcon.getIcon("database_connect"));
+                btnConnect = new JButton(GeocatalogIcon.getIcon("database_connect"));
                 btnConnect.setToolTipText(I18N.tr("Connect to the database"));
                 btnConnect.setEnabled(btnStatus);
                 btnConnect.addActionListener(EventHandler.create(ActionListener.class, this, "onConnect"));
                 btnConnect.setBorderPainted(false);
                 //Button for disconnecting.
-                btnDisconnect = new JButton(OrbisGISIcon.getIcon("disconnect"));
+                btnDisconnect = new JButton(GeocatalogIcon.getIcon("disconnect"));
                 btnDisconnect.setToolTipText(I18N.tr("Disconnect"));
                 btnDisconnect.setEnabled(false);
                 btnDisconnect.addActionListener(EventHandler.create(ActionListener.class, this, "onDisconnect"));
                 btnDisconnect.setBorderPainted(false);
                 //Button to add a conection.
-                btnAddConnection = new JButton(OrbisGISIcon.getIcon("database_add"));
+                btnAddConnection = new JButton(GeocatalogIcon.getIcon("database_add"));
                 btnAddConnection.setToolTipText(I18N.tr("Add a new connection"));
                 btnAddConnection.addActionListener(EventHandler.create(ActionListener.class, this, "onAddConnection"));
                 btnAddConnection.setBorderPainted(false);
                 //button to edit a connection
-                btnEditConnection = new JButton(OrbisGISIcon.getIcon("database_edit"));
+                btnEditConnection = new JButton(GeocatalogIcon.getIcon("database_edit"));
                 btnEditConnection.setToolTipText(I18N.tr("Edit the connection"));
                 btnEditConnection.setEnabled(btnStatus);
                 btnEditConnection.addActionListener(EventHandler.create(ActionListener.class, this, "onEditConnection"));
                 btnEditConnection.setBorderPainted(false);
                 //button to remove a connection
-                btnRemoveConnection = new JButton(OrbisGISIcon.getIcon("database_delete"));
+                btnRemoveConnection = new JButton(GeocatalogIcon.getIcon("database_delete"));
                 btnRemoveConnection.setToolTipText(I18N.tr("Remove the connection"));
                 btnRemoveConnection.setEnabled(btnStatus);
                 btnRemoveConnection.addActionListener(EventHandler.create(ActionListener.class, this, "onRemoveConnection"));
@@ -165,15 +173,17 @@ public class ConnectionToolBar extends JToolBar {
          * Load the connection properties file.
          */
         private void loadDBProperties() {
-                CoreWorkspace ws = Services.getService(CoreWorkspace.class);
-                try {
-                        File propertiesFile = new File(ws.getWorkspaceFolder() + File.separator + DB_PROPERTIES_FILE);
+                if(ws != null) {
+                        try {
+                                File propertiesFile = new File(ws.getWorkspaceFolder() + File.separator + DB_PROPERTIES_FILE);
 
-                        if (propertiesFile.exists()) {
-                                dbProperties.load(new FileInputStream(propertiesFile));
+
+                                if (propertiesFile.exists()) {
+                                        dbProperties.load(new FileInputStream(propertiesFile));
+                                }
+                        } catch (IOException e) {
+                                LOGGER.error(e.getLocalizedMessage(), e);
                         }
-                } catch (IOException e) {
-                        LOGGER.error(e);
                 }
         }
 
@@ -181,14 +191,13 @@ public class ConnectionToolBar extends JToolBar {
          * Save the connection properties file
          */
         public void saveProperties() {
-                try {
-                        CoreWorkspace ws = Services.getService(CoreWorkspace.class);
-                        dbProperties.store(new FileOutputStream(ws.getWorkspaceFolder() + File.separator + DB_PROPERTIES_FILE),
-                                I18N.tr("Saved with the OrbisGIS database panel"));
-                } catch (IOException ex) {
-                        LOGGER.error(ex);
+                if(ws != null) {
+                        try {
+                                dbProperties.store(new FileOutputStream(ws.getWorkspaceFolder() + File.separator + DB_PROPERTIES_FILE), I18N.tr("Saved with the OrbisGIS database panel"));
+                        } catch (IOException ex) {
+                                LOGGER.error(ex.getLocalizedMessage(), ex);
+                        }
                 }
-
         }
 
         /**

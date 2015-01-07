@@ -26,11 +26,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog.actions;
+package org.orbisgis.geocatalog.impl.actions;
 
-import org.orbisgis.viewapi.components.actions.DefaultAction;
 
-import javax.swing.*;
+import org.orbisgis.sif.components.actions.DefaultAction;
+
+import javax.swing.Icon;
+import javax.swing.ListSelectionModel;
 import java.awt.event.ActionListener;
 
 /**

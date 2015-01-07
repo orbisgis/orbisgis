@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.sqlconsole.icons;
+package org.orbisgis.geocatalog.icons;
 
 import java.awt.Image;
 import javax.swing.ImageIcon;
@@ -51,7 +51,7 @@ public final class GeocatalogIcon {
      * @return The Image content requested, or an Image corresponding to a Missing Resource
      */
     public static Image getIconImage(String iconName) { 
-        return iconManager.getIconImage(SQLConsoleIcon.class, iconName);
+        return iconManager.getIconImage(GeocatalogIcon.class, iconName);
     }
     /**
      * Retrieve icon by its name
@@ -59,6 +59,6 @@ public final class GeocatalogIcon {
      * @return The ImageIcon requested, or an ImageIcon corresponding to a Missing Resource
      */
     public static ImageIcon getIcon(String iconName) {
-        return iconManager.getIcon(SQLConsoleIcon.class, iconName);
+        return iconManager.getIcon(GeocatalogIcon.class, iconName);
     }
 }

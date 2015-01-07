@@ -25,9 +25,8 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly: info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog;
+package org.orbisgis.geocatalog.impl;
 
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.MetaData;
@@ -35,9 +34,11 @@ import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.viewapi.edition.AbstractEditableElement;
-import org.orbisgis.viewapi.edition.EditableElementException;
-import org.orbisgis.viewapi.edition.EditableSource;
+import org.orbisgis.editorjdbc.EditableSource;
+import org.orbisgis.sif.edition.AbstractEditableElement;
+import org.orbisgis.sif.edition.EditableElementException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -55,7 +56,7 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
     private String tableReference;
     private ReversibleRowSet rowSet; // Instantiated when editable source is open
     private boolean editing = false;
-    private final Logger logger = Logger.getLogger(EditableSourceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(EditableSourceImpl.class);
     private final I18n i18n = I18nFactory.getI18n(EditableSourceImpl.class);
     private DataManager dataManager;
 

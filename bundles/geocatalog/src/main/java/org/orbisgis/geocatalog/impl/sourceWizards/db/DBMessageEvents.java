@@ -25,7 +25,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact
  * directly: info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog.sourceWizards.db;
+package org.orbisgis.geocatalog.impl.sourceWizards.db;
 
 import java.util.EventObject;
 

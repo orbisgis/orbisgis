@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog;
+package org.orbisgis.geocatalog.impl;
 
 import java.net.URI;
 import java.util.EventObject;

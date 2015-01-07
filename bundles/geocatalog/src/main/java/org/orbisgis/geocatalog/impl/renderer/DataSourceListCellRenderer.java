@@ -26,16 +26,16 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog.renderer;
+package org.orbisgis.geocatalog.impl.renderer;
 
 import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
+import org.orbisgis.geocatalog.icons.GeocatalogIcon;
+import org.orbisgis.geocatalog.impl.CatalogSourceItem;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.renderers.ListLaFRenderer;
-import org.orbisgis.view.geocatalog.CatalogSourceItem;
-import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  * Item renderer factory of GeoCatalog This is the cell renderer factory
@@ -72,7 +72,7 @@ public class DataSourceListCellRenderer extends ListLaFRenderer<ContainerItemPro
                         CatalogSourceItem listItem = (CatalogSourceItem) value;
                         JLabel dataSourceLabel = (JLabel) cellRenderer;
                         //Customise the component
-                        dataSourceLabel.setIcon(OrbisGISIcon.getIcon(listItem.getSourceIconName()));
+                        dataSourceLabel.setIcon(GeocatalogIcon.getIcon(listItem.getSourceIconName()));
                 }
                 return cellRenderer;
         }

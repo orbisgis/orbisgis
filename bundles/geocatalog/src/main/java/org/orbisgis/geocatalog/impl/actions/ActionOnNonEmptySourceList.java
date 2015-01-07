@@ -1,8 +1,10 @@
-package org.orbisgis.view.geocatalog.actions;
+package org.orbisgis.geocatalog.impl.actions;
 
-import org.apache.log4j.Logger;
 import org.orbisgis.sif.common.ContainerItemProperties;
-import org.orbisgis.viewapi.components.actions.DefaultAction;
+import org.orbisgis.sif.components.actions.DefaultAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.swing.*;
 import java.awt.event.ActionListener;
 
@@ -11,7 +13,7 @@ import java.awt.event.ActionListener;
  * @author Nicolas Fortin
  */
 public class ActionOnNonEmptySourceList extends DefaultAction {
-    private static Logger LOG = Logger.getLogger(ActionOnNonEmptySourceList.class);
+    private static Logger LOG = LoggerFactory.getLogger(ActionOnNonEmptySourceList.class);
     private ListModel<ContainerItemProperties> srcModel;
 
     /**

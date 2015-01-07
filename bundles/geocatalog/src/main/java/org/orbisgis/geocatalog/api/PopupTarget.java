@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.viewapi.geocatalog.ext;
+package org.orbisgis.geocatalog.api;
 
 /**
  * Popup menu have access to this interface

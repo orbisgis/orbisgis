@@ -25,10 +25,9 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact
  * directly: info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog.jobs;
+package org.orbisgis.geocatalog.impl.jobs;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -38,7 +37,9 @@ import org.orbisgis.corejdbc.DriverFunctionContainer;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.commons.utils.FileUtils;
 import org.orbisgis.corejdbc.H2GISProgressMonitor;
-import org.orbisgis.viewapi.geocatalog.ext.GeoCatalogExt;
+import org.orbisgis.geocatalog.api.GeoCatalogExt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 import java.io.File;
@@ -53,7 +54,7 @@ import java.util.List;
  */
 public class ImportFiles extends SwingWorkerPM {
     private static final I18n I18N = I18nFactory.getI18n(ImportFiles.class);
-    private static Logger LOGGER = Logger.getLogger(ImportFiles.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(ImportFiles.class);
 
     private GeoCatalogExt catalog;
     private List<File> files;

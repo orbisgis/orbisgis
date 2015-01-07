@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog.filters;
+package org.orbisgis.geocatalog.impl.filters;
 import org.h2gis.utilities.TableLocation;
 import java.util.Map;
 

@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog;
+package org.orbisgis.geocatalog.impl;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -39,12 +39,13 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.TransferHandler;
-import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.commons.events.EventException;
 import org.orbisgis.commons.events.Listener;
 import org.orbisgis.commons.events.ListenerContainer;
-import org.orbisgis.view.components.UriListFlavor;
+import org.orbisgis.sif.components.UriListFlavor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Swing Handler for dragging data source list items.
@@ -54,7 +55,7 @@ public class SourceListTransferHandler extends TransferHandler{
         public interface DropUriListener extends Listener<DropUriEventObject> {                
         }
         private ListenerContainer<DropUriEventObject> dropListenerHandler = new ListenerContainer<DropUriEventObject>();
-        private static final Logger LOGGER = Logger.getLogger("gui."+SourceListTransferHandler.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger("gui." + SourceListTransferHandler.class);
         private static final long serialVersionUID = 1L;
         private UriListFlavor uriListFlavor = new UriListFlavor();
         private DataManager dataManager;
@@ -88,7 +89,7 @@ public class SourceListTransferHandler extends TransferHandler{
                         dropListenerHandler.callListeners(new DropUriEventObject(dataList, this));
                         return true;
                 } catch (EventException ex) {
-                        LOGGER.error(ex);
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
                         return false;
                 }
         }
@@ -117,10 +118,10 @@ public class SourceListTransferHandler extends TransferHandler{
                                         return false;
                                 }
                         } catch (UnsupportedFlavorException ex) {
-                                LOGGER.error(ex);
+                                LOGGER.error(ex.getLocalizedMessage(), ex);
                                 return false;
                         } catch (IOException ex) {
-                                LOGGER.error(ex);
+                                LOGGER.error(ex.getLocalizedMessage(), ex);
                                 return false;
                         }
                 } else {

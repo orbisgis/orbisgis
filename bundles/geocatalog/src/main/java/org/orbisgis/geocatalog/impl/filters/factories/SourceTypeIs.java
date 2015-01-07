@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog.filters.factories;
+package org.orbisgis.geocatalog.impl.filters.factories;
 
 import java.awt.Component;
 import java.awt.event.ActionListener;
@@ -36,10 +36,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JComboBox;
+
+import org.orbisgis.geocatalog.impl.filters.*;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactory;
-import org.orbisgis.view.geocatalog.filters.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

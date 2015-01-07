@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog;
+package org.orbisgis.geocatalog.impl;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -34,8 +34,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.viewapi.edition.EditableElement;
-import org.orbisgis.view.edition.TransferableEditableElement;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.TransferableEditableElement;
 
 /**
  * Drag&Drop content of 1-n data source.

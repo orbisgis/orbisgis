@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog.io;
+package org.orbisgis.geocatalog.impl.io;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,11 +34,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
-import org.apache.log4j.Logger;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.orbisgis.commons.progress.SwingWorkerPM;
-import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.corejdbc.H2GISProgressMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -48,7 +48,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class ExportInFileOperation extends SwingWorkerPM {
 
         private static final I18n I18N = I18nFactory.getI18n(ExportInFileOperation.class);
-        private static final Logger LOGGER = Logger.getLogger(ExportInFileOperation.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(ExportInFileOperation.class);
         private File savedFile;
         private String sourceName;
         private DriverFunction driverFunction;
