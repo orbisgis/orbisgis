@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.commons.events.internals;
+package org.orbisgis.commons.events;
 
 import java.util.ArrayList;
 import org.orbisgis.commons.events.ListenerContainer;

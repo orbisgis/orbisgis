@@ -28,7 +28,6 @@
  */
 package org.orbisgis.commons.events;
 
-import org.orbisgis.commons.events.internals.ListenerContainers;
 /**
  * Release all listeners attached to a specific target in one call.
  */
