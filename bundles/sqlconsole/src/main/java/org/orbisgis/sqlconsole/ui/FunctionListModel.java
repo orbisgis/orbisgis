@@ -28,7 +28,8 @@
  */
 package org.orbisgis.sqlconsole.ui;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import javax.swing.*;
@@ -47,7 +48,7 @@ public class FunctionListModel extends AbstractListModel<FunctionElement> {
     private List<FunctionElement> functionsList;
     private List<Integer> filteredFunctionList;
     private List<FunctionFilter> filters = new ArrayList<>();
-    private static final Logger LOGGER = Logger.getLogger(FunctionListModel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FunctionListModel.class);
     private static final int AVERAGE_FUNCTION_COUNT = 300; //Hint for size of array
     private DataSource dataSource;
 

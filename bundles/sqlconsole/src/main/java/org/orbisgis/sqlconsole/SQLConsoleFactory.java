@@ -29,10 +29,10 @@
 package org.orbisgis.sqlconsole;
 
 import org.fife.rsta.ac.LanguageSupport;
+import org.orbisgis.sif.edition.EditorDockable;
+import org.orbisgis.sif.edition.EditorFactory;
+import org.orbisgis.sif.edition.SingleEditorFactory;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
-import org.orbisgis.viewapi.edition.EditorDockable;
-import org.orbisgis.viewapi.edition.EditorFactory;
-import org.orbisgis.viewapi.edition.SingleEditorFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;

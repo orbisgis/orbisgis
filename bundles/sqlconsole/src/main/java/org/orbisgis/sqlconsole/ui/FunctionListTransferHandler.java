@@ -31,11 +31,12 @@ package org.orbisgis.sqlconsole.ui;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.TransferHandler;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 
-import static org.orbisgis.view.util.CommentUtil.SQL_COMMENT_CHARACTER;
+import static org.orbisgis.sif.CommentUtil.SQL_COMMENT_CHARACTER;
 
 /**
  * Drag functions orders as a Transferable String

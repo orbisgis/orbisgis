@@ -42,7 +42,6 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.swing.JOptionPane;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.LayerCollectionEvent;
@@ -58,6 +57,8 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.sif.edition.AbstractEditableElement;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -67,7 +68,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public final class MapElement extends AbstractEditableElement {
         public static final String EDITABLE_TYPE = "MapContext";
-        private static final Logger LOGGER = Logger.getLogger("gui."+MapElement.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger("gui." + MapElement.class);
 	private static final I18n I18N = I18nFactory.getI18n(MapElement.class);
 
 	// The following events does not change the MapElement modification state.

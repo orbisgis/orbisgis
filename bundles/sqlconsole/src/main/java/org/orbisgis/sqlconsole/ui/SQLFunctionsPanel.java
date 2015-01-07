@@ -28,8 +28,8 @@
  */
 package org.orbisgis.sqlconsole.ui;
 
-import org.orbisgis.view.components.filter.DefaultActiveFilter;
-import org.orbisgis.view.components.filter.FilterFactoryManager;
+import org.orbisgis.sif.components.filter.DefaultActiveFilter;
+import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.sqlconsole.ui.functionFilters.NameFilterFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;

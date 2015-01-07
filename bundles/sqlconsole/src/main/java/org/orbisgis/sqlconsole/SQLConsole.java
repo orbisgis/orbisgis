@@ -33,15 +33,15 @@ import javax.swing.*;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.orbisgis.mapeditorapi.MapElement;
+import org.orbisgis.sif.components.actions.ActionCommands;
+import org.orbisgis.sif.components.actions.ActionDockingListener;
+import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.EditorDockable;
+import org.orbisgis.sqlconsole.api.SQLConsoleEditor;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
-import org.orbisgis.view.components.actions.ActionCommands;
-import org.orbisgis.view.components.actions.ActionDockingListener;
 import org.orbisgis.sqlconsole.icons.SQLConsoleIcon;
-import org.orbisgis.viewapi.docking.DockingPanelParameters;
-import org.orbisgis.viewapi.edition.EditableElement;
-import org.orbisgis.viewapi.edition.EditorDockable;
 import org.orbisgis.sqlconsole.ui.SQLConsolePanel;
-import org.orbisgis.viewapi.sqlconsole.ui.ext.SQLConsoleEditor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -49,7 +49,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Docking Panel implementation.
  * @author Nicolas Fortin
  */
-public class SQLConsole implements EditorDockable,SQLConsoleEditor {
+public class SQLConsole implements EditorDockable, SQLConsoleEditor {
         private DockingPanelParameters dockingPanelParameters = new DockingPanelParameters();
         private SQLConsolePanel sqlPanel;
         protected final static I18n I18N = I18nFactory.getI18n(SQLConsole.class);

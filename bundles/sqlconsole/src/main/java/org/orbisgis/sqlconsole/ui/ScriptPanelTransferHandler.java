@@ -28,12 +28,10 @@
  */
 package org.orbisgis.sqlconsole.ui;
 
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.Services;
-import org.orbisgis.corejdbc.MetaData;
-import org.orbisgis.view.geocatalog.TransferableSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import javax.swing.*;
@@ -51,7 +49,7 @@ import java.util.TreeSet;
  * @author Nicolas Fortin
  */
 public class ScriptPanelTransferHandler extends TransferHandler {
-    private static final Logger LOGGER = Logger.getLogger(ScriptPanelTransferHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScriptPanelTransferHandler.class);
     private JTextArea textArea;
     private DataSource dataSource;
 

@@ -26,41 +26,39 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.sqlconsole;
+package org.orbisgis.sqlconsole.icons;
 
-import org.fife.rsta.ac.LanguageSupport;
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTrackerCustomizer;
+import java.awt.Image;
+import javax.swing.ImageIcon;
+import org.orbisgis.sif.icons.BaseIcon;
+
 
 /**
- * When a new LanguageSupport is exposed as an OSGi service, this tracker register it to a RSyntaxArea.
- * @author Nicolas Fortin
+ * Use this class to retrieve the data of an icon
  */
-public class LanguageSupportTracker implements ServiceTrackerCustomizer<LanguageSupport, LanguageSupport> {
-    private BundleContext bc;
-    private RSyntaxTextArea textArea;
-
-    public LanguageSupportTracker(BundleContext bc, RSyntaxTextArea textArea) {
-        this.bc = bc;
-        this.textArea = textArea;
+public final class GeocatalogIcon {
+    private static BaseIcon iconManager = new BaseIcon();
+    
+    /**
+     * This is a static class
+     */
+    private GeocatalogIcon() {
     }
 
-    @Override
-    public LanguageSupport addingService(ServiceReference<LanguageSupport> reference) {
-        LanguageSupport ls = bc.getService(reference);
-        ls.install(textArea);
-        return ls;
+    /**
+     * Retrieve icon awt Image by its name
+     * @param iconName The icon name, without extension. All icons are stored in the png format.
+     * @return The Image content requested, or an Image corresponding to a Missing Resource
+     */
+    public static Image getIconImage(String iconName) { 
+        return iconManager.getIconImage(SQLConsoleIcon.class, iconName);
     }
-
-    @Override
-    public void modifiedService(ServiceReference<LanguageSupport> reference, LanguageSupport service) {
-        // Property change, does nothing
-    }
-
-    @Override
-    public void removedService(ServiceReference<LanguageSupport> reference, LanguageSupport service) {
-        service.uninstall(textArea);
+    /**
+     * Retrieve icon by its name
+     * @param iconName The icon name, without extension. All icons are stored in the png format.
+     * @return The ImageIcon requested, or an ImageIcon corresponding to a Missing Resource
+     */
+    public static ImageIcon getIcon(String iconName) {
+        return iconManager.getIcon(SQLConsoleIcon.class, iconName);
     }
 }

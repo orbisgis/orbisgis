@@ -132,6 +132,7 @@ public class MainFrame extends JFrame implements MainWindow {
         // Very ugly, heritage from monolithic architecture
         UIFactory.setMainFrame(null);
         this.bundleContext = null;
+        dispose();
     }
 
     /**
@@ -146,7 +147,9 @@ public class MainFrame extends JFrame implements MainWindow {
         }
         // Stop application
         try {
-            bundleContext.getBundle(0).stop();
+            if(bundleContext != null) {
+                bundleContext.getBundle(0).stop();
+            }
         } catch (BundleException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }

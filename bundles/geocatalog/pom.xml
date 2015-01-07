@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>sqlconsole</artifactId>
-    <name>SQL Console</name>
-    <description>SQL Console of OrbisGIS</description>
+    <artifactId>geocatalog</artifactId>
+    <name>geocatalog</name>
+    <description>GeoCatalog panel, list of database tables</description>
     <parent>
         <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>
@@ -38,9 +38,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Private-Package>org.orbisgis.sqlconsole.*</Private-Package>
+                        <Private-Package>org.orbisgis.geocatalog.impl.*</Private-Package>
+                        <Public-Package>org.orbisgis.geocatalog.*</Public-Package>
                         <Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
-                        <Embed-Dependency>markdown4j</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>
@@ -58,8 +58,8 @@
                 </executions>
                 <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
-                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/sqlconsole/</poDirectory>
-                    <targetBundle>org.orbisgis.sqlconsole.Messages</targetBundle>
+                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/geocatalog/</poDirectory>
+                    <targetBundle>org.orbisgis.geocatalog.Messages</targetBundle>
                     <keywords>-ktr -kmarktr</keywords>
                     <outputFormat>properties</outputFormat>
                 </configuration>

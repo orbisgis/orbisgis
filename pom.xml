@@ -36,11 +36,12 @@
                 <module>main-frame</module>
                 <module>docking-impl</module>
                 <module>progress-gui</module>
-                <!--
-                <module>orbisgis-core</module>
                 <module>bundles/map-editor-api</module>
-                <module>bundles/map-editor</module>
+                <module>bundles/geocatalog</module>
+                <!--
                 <module>bundles/sqlconsole</module>
+                <module>orbisgis-core</module>
+                <module>bundles/map-editor</module>
                 <module>bundles/orbisgis-oshell</module>
                 <module>legend</module>
                 <module>bundles/toc</module>

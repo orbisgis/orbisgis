@@ -28,10 +28,11 @@
  */
 package org.orbisgis.sqlconsole.ui;
 
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.markdown4j.Markdown4jProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -51,7 +52,7 @@ import java.util.TreeMap;
  * @author Adam Gouge
  */
 public class FunctionElement {
-    private static final Logger LOGGER = Logger.getLogger(FunctionElement.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FunctionElement.class);
     private final String functionName;
     /**
      * @see DatabaseMetaData#procedureResultUnknown DatabaseMetaData#procedureNoResult DatabaseMetaData#procedureReturnsResult

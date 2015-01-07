@@ -28,18 +28,19 @@
  */
 package org.orbisgis.sqlconsole.actions;
 
-import org.apache.log4j.Logger;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sqlparserapi.ScriptSplitter;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.sqlconsole.ui.SQLConsolePanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
@@ -52,7 +53,7 @@ import java.sql.Statement;
  */
 public class ExecuteScriptProcess extends SwingWorkerPM {
 
-        private static final Logger LOGGER = Logger.getLogger("gui." + ExecuteScriptProcess.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger("gui." + ExecuteScriptProcess.class);
         protected final static I18n I18N = I18nFactory.getI18n(ExecuteScriptProcess.class);
 
         private SQLConsolePanel panel;

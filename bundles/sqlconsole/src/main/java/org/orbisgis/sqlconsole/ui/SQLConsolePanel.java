@@ -41,7 +41,6 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.orbisgis.sif.CommentUtil;
@@ -62,6 +61,8 @@ import org.orbisgis.sqlconsole.actions.ExecuteScriptProcess;
 import org.orbisgis.sqlconsole.blockComment.QuoteSQL;
 import org.orbisgis.sqlconsole.codereformat.CodeReformator;
 import org.orbisgis.sqlconsole.codereformat.CommentSpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -71,7 +72,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class SQLConsolePanel extends JPanel {
         private static final long serialVersionUID = 1L;
         protected final static I18n I18N = I18nFactory.getI18n(SQLConsolePanel.class);
-        private final static Logger LOGGER = Logger.getLogger("gui." + SQLConsolePanel.class);
+        private final static Logger LOGGER = LoggerFactory.getLogger("gui." + SQLConsolePanel.class);
         private static final String DEFAULT_STATUS_MESSAGE = I18n.marktr("Drop source here to get all table columns");
         private ScriptSplitterFactory splitterFactory;
         

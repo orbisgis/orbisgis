@@ -49,8 +49,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.log4j.Logger;
 import org.orbisgis.commons.utils.TextUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -66,7 +67,7 @@ public class CodeReformator implements ICodeReformator {
 	/** Platform-specific line separator string */
 	private String _lineSep = TextUtils.getEolStr();
 
-	private static final Logger s_log = Logger.getLogger(CodeReformator.class);
+	private static final Logger s_log = LoggerFactory.getLogger(CodeReformator.class);
 
 	public CodeReformator(String statementSeparator, CommentSpec[] commentSpecs) {
 		_statementSeparator = statementSeparator;
