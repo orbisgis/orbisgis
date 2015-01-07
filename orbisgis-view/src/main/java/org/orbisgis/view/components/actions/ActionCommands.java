@@ -518,9 +518,20 @@ public class ActionCommands extends BeanPropertyChangeSupport implements Actions
         /**
          * Apply to the component the actions
          * Text key shortcuts, Accelerators
+         * @param component Component that hold actionMap
          */
         public void setAccelerators(JComponent component) {
-                InputMap im = component.getInputMap(JComponent.WHEN_FOCUSED);
+                setAccelerators(component, JComponent.WHEN_FOCUSED);
+        }
+        /**
+         * Apply to the component the actions
+         * Text key shortcuts, Accelerators
+         * @param component Component that hold actionMap
+         * @param condition one of WHEN_IN_FOCUSED_WINDOW, WHEN_FOCUSED,
+         *        WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
+         */
+        public void setAccelerators(JComponent component, int condition) {
+                InputMap im = component.getInputMap(condition);
                 ActionMap actionMap = component.getActionMap();
                 for(Action action : actions) {
                         KeyStroke actionStroke = ActionTools.getKeyStroke(action);
