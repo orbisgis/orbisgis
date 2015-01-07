@@ -38,8 +38,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Public-Package>org.orbisgis.geocatalog.*</Public-Package>
-                        <Private-Package>org.orbisgis.geocatalog</Private-Package>
+                        <Public-Package>org.orbisgis.geocatalog.api</Public-Package>
+                        <Private-Package>org.orbisgis.geocatalog.*</Private-Package>
                         <Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
                     </instructions>
                 </configuration>

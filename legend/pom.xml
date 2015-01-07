@@ -53,7 +53,6 @@
                             <instructions>
                                 <Public-Package>org.orbisgis.legend.*</Public-Package>
                                 <Private-Package>org.orbisgis.legend.translation</Private-Package>
-                                <Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
                                 <Import-Package>javax.swing.event, *</Import-Package>
                             </instructions>
                         </configuration>
