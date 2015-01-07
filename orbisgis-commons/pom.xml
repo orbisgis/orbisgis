@@ -74,6 +74,8 @@
                 <configuration>
                     <instructions>
                         <Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
+                        <Public-Package>org.orbisgis.commons.*</Public-Package>
+                        <Private-Package>org.orbisgis.commons</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -91,8 +93,7 @@
                 </executions>
                 <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
-                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/commons/translation/language/
-                    </poDirectory>
+                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/commons/translation/language/</poDirectory>
                     <targetBundle>org.orbisgis.commons.Messages</targetBundle>
                     <keywords>-ktr</keywords>
                     <outputFormat>properties</outputFormat>
