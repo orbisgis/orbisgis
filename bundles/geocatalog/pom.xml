@@ -38,8 +38,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Private-Package>org.orbisgis.geocatalog.impl.*</Private-Package>
-                        <Public-Package>org.orbisgis.geocatalog.*</Public-Package>
+                        <Private-Package>org.orbisgis.geocatalog.*</Private-Package>
+                        <Public-Package>org.orbisgis.geocatalog.api.*</Public-Package>
                         <Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
                     </instructions>
                 </configuration>
@@ -58,7 +58,7 @@
                 </executions>
                 <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
-                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/geocatalog/</poDirectory>
+                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/geocatalog/translation/language/</poDirectory>
                     <targetBundle>org.orbisgis.geocatalog.Messages</targetBundle>
                     <keywords>-ktr -kmarktr</keywords>
                     <outputFormat>properties</outputFormat>

@@ -47,7 +47,7 @@ public interface DockingManager {
 	 * @param frame the <code>DockingPanel</code> for which a view should be opened
          * @return Dockable unique ID
 	 */
-        public String addDockingPanel( DockingPanel frame);
+        public void addDockingPanel( DockingPanel frame);
         
         /**
          * Remove docking panel id

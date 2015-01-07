@@ -112,6 +112,7 @@ public class MainFrame extends JFrame implements MainWindow {
         } catch (Throwable ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }
+        setSize(MAIN_VIEW_SIZE);
         // Very ugly, heritage from monolithic architecture
         UIFactory.setMainFrame(this);
 

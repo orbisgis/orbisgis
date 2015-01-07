@@ -100,7 +100,7 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * This is connected with the DataSource model.
  */
-@Component(service = DockingPanel.class)
+@Component(service = DockingPanel.class, immediate = true)
 public class Catalog extends JPanel implements DockingPanel, TitleActionBar, PopupTarget, DriverFunctionContainer {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
         private EditorManager editorManager;
