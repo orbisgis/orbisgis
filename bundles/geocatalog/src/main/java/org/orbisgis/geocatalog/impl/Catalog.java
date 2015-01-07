@@ -28,6 +28,7 @@
 package org.orbisgis.geocatalog.impl;
 
 import java.awt.BorderLayout;
+import java.awt.LayoutManager;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -83,6 +84,11 @@ import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorManager;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -94,6 +100,7 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * This is connected with the DataSource model.
  */
+@Component(service = DockingPanel.class)
 public class Catalog extends JPanel implements DockingPanel, TitleActionBar, PopupTarget, DriverFunctionContainer {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
         private EditorManager editorManager;
@@ -129,6 +136,7 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
         }
 
         @Override
+        @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
         public void addDriverFunction(DriverFunction driverFunction) {
             fileDrivers.add(driverFunction);
         }
@@ -141,10 +149,33 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
         /**
          * Default constructor
          */
-        public Catalog(DataManager dataManager, EditorManager editorManager) {
-                super(new BorderLayout());
-                this.dataManager = dataManager;
-                this.editorManager = editorManager;
+        public Catalog() {
+            super(new BorderLayout());
+        }
+
+        @Reference
+        public void setDataManager(DataManager dataManager) {
+            this.dataManager = dataManager;
+        }
+
+        public void unsetDataManager(DataManager dataManager) {
+            this.dataManager = null;
+        }
+
+        @Reference
+        public void setEditorManager(EditorManager editorManager) {
+            this.editorManager = editorManager;
+        }
+
+        public void unsetEditorManager(EditorManager editorManager) {
+            this.editorManager = null;
+        }
+
+        /**
+         * Initialise panel
+         */
+        @Activate
+        public void init() {
                 dockingParameters.setName("geocatalog");
                 dockingParameters.setTitle(I18N.tr("GeoCatalog"));
                 dockingParameters.setTitleIcon(GeocatalogIcon.getIcon("geocatalog"));
@@ -180,6 +211,24 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                 // Register built-ins popup actions
                 createPopupActions();
                 popupActions.setAccelerators(sourceList);
+        }
+
+        @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+        public void addGeoCatalogMenu(GeoCatalogMenu geoCatalogMenu) {
+            dockingActions.addActionFactory(geoCatalogMenu, this);
+        }
+
+        public void removeGeoCatalogMenu(GeoCatalogMenu geoCatalogMenu) {
+            dockingActions.removeActionFactory(geoCatalogMenu);
+        }
+
+        @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+        public void addPopupMenu(PopupMenu popupMenu) {
+            popupActions.addActionFactory(popupMenu, this);
+        }
+
+        public void removePopupMenu(PopupMenu popupMenu) {
+            popupActions.removeActionFactory(popupMenu);
         }
 
         /**
