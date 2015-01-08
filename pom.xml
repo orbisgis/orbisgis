@@ -38,6 +38,7 @@
                 <module>progress-gui</module>
                 <module>bundles/map-editor-api</module>
                 <module>bundles/geocatalog</module>
+                <module>bundles/table-editor</module>
                 <!--
                 <module>bundles/sqlconsole</module>
                 <module>orbisgis-core</module>
