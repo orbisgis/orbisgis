@@ -26,19 +26,20 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
 import java.util.Collections;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.common.LongUnion;
-import org.orbisgis.view.geocatalog.EditableSourceImpl;
-import org.orbisgis.viewapi.edition.EditableElementException;
-import org.orbisgis.viewapi.table.TableEditableElement;
+import org.orbisgis.editorjdbc.EditableSourceImpl;
+import org.orbisgis.sif.edition.EditableElementException;
+import org.orbisgis.tablegui.api.TableEditableElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -49,7 +50,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class TableEditableElementImpl extends EditableSourceImpl implements TableEditableElement {
         public static final String TYPE_ID = "TableEditableElement";
-        private static final Logger LOGGER = Logger.getLogger(TableEditableElementImpl.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(TableEditableElementImpl.class);
         // Properties
         protected LongUnion selectedGeometries;
         private final I18n i18n = I18nFactory.getI18n(TableEditableElementImpl.class);
@@ -103,7 +104,7 @@ public class TableEditableElementImpl extends EditableSourceImpl implements Tabl
             return modelRows;
         }
 
-    @Override
+        @Override
         public void setSelection(Set<Long> selection) {
                 LOGGER.debug("Editable selection change");
                 Set<Long> oldSelection = this.selectedGeometries;

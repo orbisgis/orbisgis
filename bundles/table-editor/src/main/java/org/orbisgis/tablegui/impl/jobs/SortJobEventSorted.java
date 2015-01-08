@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table.jobs;
+package org.orbisgis.tablegui.impl.jobs;
 
 import java.util.Collection;
 import java.util.EventObject;

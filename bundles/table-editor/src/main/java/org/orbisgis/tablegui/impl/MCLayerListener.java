@@ -1,4 +1,4 @@
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.layerModel.ILayer;
@@ -6,7 +6,7 @@ import org.orbisgis.coremap.layerModel.LayerCollectionEvent;
 import org.orbisgis.coremap.layerModel.LayerListener;
 import org.orbisgis.coremap.layerModel.LayerListenerEvent;
 import org.orbisgis.coremap.layerModel.SelectionEvent;
-import org.orbisgis.viewapi.table.TableEditableElement;
+import org.orbisgis.tablegui.api.TableEditableElement;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

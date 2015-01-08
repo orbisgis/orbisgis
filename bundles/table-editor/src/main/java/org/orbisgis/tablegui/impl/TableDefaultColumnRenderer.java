@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
 import java.awt.Color;
 import java.awt.Component;

@@ -27,12 +27,12 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
 
+import org.orbisgis.tablegui.icons.TableEditorIcon;
+import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.orbisgis.viewapi.components.actions.ActionTools;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.table.ext.TableEditorActions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -69,10 +69,10 @@ public class ActionEdition extends AbstractAction {
     public final void updateLabelAndIcon() {
         if(editable.isEditing()) {
             putValue(NAME, i18N.tr("Stop editing"));
-            putValue(SMALL_ICON, OrbisGISIcon.getIcon("edition/unlock"));
+            putValue(SMALL_ICON, TableEditorIcon.getIcon("edition/unlock"));
         } else {
             putValue(NAME, i18N.tr("Start editing"));
-            putValue(SMALL_ICON, OrbisGISIcon.getIcon("edition/lock"));
+            putValue(SMALL_ICON, TableEditorIcon.getIcon("edition/lock"));
         }
     }
     @Override

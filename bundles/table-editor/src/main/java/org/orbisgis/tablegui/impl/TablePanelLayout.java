@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,13 +38,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Set;
-import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.common.LongUnion;
-import org.orbisgis.viewapi.docking.DockingPanelLayout;
-import org.orbisgis.viewapi.table.TableEditableElement;
-import org.orbisgis.viewapi.util.XElement;
+import org.orbisgis.sif.docking.DockingPanelLayout;
+import org.orbisgis.sif.docking.XElement;
+import org.orbisgis.tablegui.api.TableEditableElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -55,7 +56,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 public class TablePanelLayout implements DockingPanelLayout {
         private TableEditableElement tableEditableElement;
-        private static final Logger LOGGER = Logger.getLogger(TablePanelLayout.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(TablePanelLayout.class);
         private static final I18n I18N = I18nFactory.getI18n(TablePanelLayout.class);
         private static final int MAX_SELECTION_SERIALISATION_SIZE = 100;
         

@@ -26,9 +26,8 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table.filters;
+package org.orbisgis.tablegui.impl.filters;
 
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.corejdbc.ReadRowSet;
@@ -36,9 +35,11 @@ import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactory;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.viewapi.edition.EditableElementException;
-import org.orbisgis.viewapi.table.TableEditableElement;
+import org.orbisgis.sif.edition.EditableElementException;
+import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tablegui.icons.TableEditorIcon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -64,7 +65,7 @@ import java.util.Set;
 public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter,DefaultActiveFilter> {
     public static final String FACTORY_ID  ="WhereSQLFilterFactory";
     private final static I18n I18N = I18nFactory.getI18n(WhereSQLFilterFactory.class);
-    private static final Logger LOGGER = Logger.getLogger(WhereSQLFilterFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WhereSQLFilterFactory.class);
     /** Map Table primary key to the row id of regular select * from mytable */
 
     @Override
@@ -93,7 +94,7 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
         textAndButton.setLayout(new BoxLayout(textAndButton,BoxLayout.X_AXIS));
         JTextField whereText = new JTextField(filterValue.getCurrentFilterValue());
         whereText.setPreferredSize(new Dimension(Short.MAX_VALUE,Short.MIN_VALUE));
-        JButton runButton =  new CustomButton(OrbisGISIcon.getIcon("execute"));
+        JButton runButton =  new CustomButton(TableEditorIcon.getIcon("execute"));
         runButton.setToolTipText(I18N.tr("Search"));
         textAndButton.add(whereText);
         textAndButton.add(runButton);

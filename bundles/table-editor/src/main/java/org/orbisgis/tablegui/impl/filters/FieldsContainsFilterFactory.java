@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table.filters;
+package org.orbisgis.tablegui.impl.filters;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -52,7 +52,6 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.MetaData;
@@ -61,9 +60,11 @@ import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactory;
-import org.orbisgis.viewapi.edition.EditableElementException;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.viewapi.table.TableEditableElement;
+import org.orbisgis.sif.edition.EditableElementException;
+import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tablegui.icons.TableEditorIcon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -75,7 +76,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
         public static final String FACTORY_ID  ="FieldsContainsFilter";
         protected final static I18n I18N = I18nFactory.getI18n(FieldsContainsFilterFactory.class);
         private JTable table;
-        private static final Logger LOGGER = Logger.getLogger(FieldsContainsFilterFactory.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(FieldsContainsFilterFactory.class);
 
         public FieldsContainsFilterFactory(JTable table) {
                 this.table = table;
@@ -129,7 +130,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 JCheckBox wholeWords = new JCheckBox(I18N.tr("Whole words"),params.isWholeWord());
                 filterFields.add(wholeWords);
                 //Run filter, will update filterValue
-                JButton runButton = new CustomButton(OrbisGISIcon.getIcon("execute"));
+                JButton runButton = new CustomButton(TableEditorIcon.getIcon("execute"));
                 runButton.setToolTipText(I18N.tr("Search"));
                 FilterActionListener listener = new FilterActionListener(
                         params,

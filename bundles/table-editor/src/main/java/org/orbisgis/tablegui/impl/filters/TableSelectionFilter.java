@@ -26,10 +26,10 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table.filters;
+package org.orbisgis.tablegui.impl.filters;
 
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.viewapi.table.TableEditableElement;
+import org.orbisgis.tablegui.api.TableEditableElement;
 
 import java.sql.SQLException;
 

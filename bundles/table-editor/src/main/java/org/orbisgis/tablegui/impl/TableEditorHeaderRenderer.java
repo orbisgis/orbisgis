@@ -26,13 +26,18 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.tablegui.icons.TableEditorIcon;
 
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
@@ -87,13 +92,13 @@ public class TableEditorHeaderRenderer implements TableCellRenderer {
             JLabel renderLabel = (JLabel)rendering;
             Icon defaultIcon = renderLabel.getIcon();
             if(defaultIcon == null) {
-                ImageIcon keyIcon = OrbisGISIcon.getIcon("key");
+                ImageIcon keyIcon = TableEditorIcon.getIcon("key");
                 keyIcon.setDescription(DESCR_IMAGE);
                 renderLabel.setIcon(keyIcon);
                 failedToUseImage = false;
             } else if(defaultIcon instanceof ImageIcon && !DESCR_IMAGE.equals(((ImageIcon) defaultIcon).getDescription())) {
                 ImageIcon defaultImageIcon = (ImageIcon) defaultIcon;
-                ImageIcon resultIcon = concatenateImages(OrbisGISIcon.getIcon("key"), defaultImageIcon);
+                ImageIcon resultIcon = concatenateImages(TableEditorIcon.getIcon("key"), defaultImageIcon);
                 resultIcon.setDescription(DESCR_IMAGE);
                 renderLabel.setIcon(resultIcon);
                 failedToUseImage = false;

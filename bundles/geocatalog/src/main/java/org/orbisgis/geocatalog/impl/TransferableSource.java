@@ -34,6 +34,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.editorjdbc.EditableSourceImpl;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.TransferableEditableElement;
 

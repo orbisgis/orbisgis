@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table.jobs;
+package org.orbisgis.tablegui.impl.jobs;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -34,11 +34,12 @@ import javax.sql.DataSource;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.ReadTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -48,7 +49,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class ComputeFieldStatistics extends SwingWorkerPM {
     protected final static I18n I18N = I18nFactory.getI18n(ComputeFieldStatistics.class);
-    private static final Logger LOGGER = Logger.getLogger("gui." + ComputeFieldStatistics.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger("gui." + ComputeFieldStatistics.class);
     private Set<Integer> statisticsRowFilter;
     private DataSource ds;
     private int columnId;

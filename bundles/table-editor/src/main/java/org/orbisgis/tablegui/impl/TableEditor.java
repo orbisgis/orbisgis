@@ -26,9 +26,10 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -58,45 +59,44 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.SwingWorkerPM;
-import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.process.ZoomToSelectedFeatures;
+import org.orbisgis.editorjdbc.EditableSource;
 import org.orbisgis.mapeditorapi.MapElement;
-import org.orbisgis.commons.progress.NullProgressMonitor;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.view.components.actions.ActionCommands;
+import org.orbisgis.sif.components.actions.ActionCommands;
+import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactoryManager;
-import org.orbisgis.view.table.ext.TableEditorActions;
-import org.orbisgis.view.table.jobs.CreateSourceFromSelection;
-import org.orbisgis.viewapi.components.actions.DefaultAction;
-import org.orbisgis.viewapi.docking.DockingLocation;
-import org.orbisgis.viewapi.docking.DockingPanelParameters;
-import org.orbisgis.viewapi.edition.EditableElement;
-import org.orbisgis.viewapi.edition.EditableElementException;
-import org.orbisgis.viewapi.edition.EditableSource;
-import org.orbisgis.viewapi.edition.EditorDockable;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.table.ext.SourceTable;
-import org.orbisgis.view.table.filters.FieldsContainsFilterFactory;
-import org.orbisgis.view.table.filters.TableSelectionFilter;
-import org.orbisgis.view.table.filters.WhereSQLFilterFactory;
-import org.orbisgis.view.table.jobs.ComputeFieldStatistics;
-import org.orbisgis.view.table.jobs.OptimalWidthJob;
-import org.orbisgis.view.table.jobs.SearchJob;
-import org.orbisgis.viewapi.edition.EditorManager;
-import org.orbisgis.viewapi.table.TableEditableElement;
+import org.orbisgis.sif.docking.DockingLocation;
+import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.EditableElementException;
+import org.orbisgis.sif.edition.EditorDockable;
+import org.orbisgis.sif.edition.EditorManager;
+import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tablegui.icons.TableEditorIcon;
+import org.orbisgis.tablegui.impl.ext.SourceTable;
+import org.orbisgis.tablegui.impl.ext.TableEditorActions;
+import org.orbisgis.tablegui.impl.filters.FieldsContainsFilterFactory;
+import org.orbisgis.tablegui.impl.filters.TableSelectionFilter;
+import org.orbisgis.tablegui.impl.filters.WhereSQLFilterFactory;
+import org.orbisgis.tablegui.impl.jobs.ComputeFieldStatistics;
+import org.orbisgis.tablegui.impl.jobs.CreateSourceFromSelection;
+import org.orbisgis.tablegui.impl.jobs.OptimalWidthJob;
+import org.orbisgis.tablegui.impl.jobs.SearchJob;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -104,9 +104,9 @@ import org.xnap.commons.i18n.I18nFactory;
  * Edit a data source through a grid GUI.
  * @author Nicolas Fortin
  */
-public class TableEditor extends JPanel implements EditorDockable,SourceTable,TableEditListener {
+public class TableEditor extends JPanel implements EditorDockable, SourceTable,TableEditListener {
         protected final static I18n I18N = I18nFactory.getI18n(TableEditor.class);
-        private static final Logger LOGGER = Logger.getLogger("gui."+TableEditor.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger("gui." + TableEditor.class);
         
         private static final long serialVersionUID = 1L;
         private TableEditableElement tableEditableElement;
@@ -120,7 +120,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
         // is ignored if onUpdateEditableSelection is true
         private AtomicBoolean onUpdateEditableSelection = new AtomicBoolean(false);
         private AtomicBoolean filterRunning = new AtomicBoolean(false);
-        private FilterFactoryManager<TableSelectionFilter,DefaultActiveFilter> filterManager = 
+        private FilterFactoryManager<TableSelectionFilter,DefaultActiveFilter> filterManager =
                 new FilterFactoryManager<>();
         private TableRowHeader tableRowHeader;
         private Point popupCellAdress = new Point();    // Col(x) and row(y) that trigger a popup
@@ -135,13 +135,15 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
         private MapContext mapContext;
         /** Last fetched selected row in selection navigation */
         private int currentSelectionNavigation = 0;
+        private EditorManager editorManager;
 
         /**
          * Constructor
          * @param element Source to read and edit
          */
-        public TableEditor(TableEditableElement element, DataManager dataManager) {
+        public TableEditor(TableEditableElement element, DataManager dataManager, EditorManager editorManager) {
                 super(new BorderLayout());
+                this.editorManager = editorManager;
                 layerListener = new MCLayerListener(element);
                 this.dataManager = dataManager;
                 this.dataSource = dataManager.getDataSource();
@@ -149,14 +151,13 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 //the source is removed
                 this.tableEditableElement = element;
                 dockingPanelParameters = new DockingPanelParameters();
-                dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("table"));
+                dockingPanelParameters.setTitleIcon(TableEditorIcon.getIcon("table"));
                 dockingPanelParameters.setDefaultDockingLocation(
                         new DockingLocation(DockingLocation.Location.STACKED_ON, "map_editor"));
                 tableScrollPane = new JScrollPane(makeTable());
                 add(tableScrollPane,BorderLayout.CENTER);
                 updateTitle();
                 // Fetch MapContext
-                EditorManager editorManager = Services.getService(EditorManager.class);
                 if (editorManager != null) {
                     MapElement mapEditable = MapElement.fetchFirstMapElement(editorManager);
                     if(mapEditable != null) {
@@ -178,18 +179,18 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
         private List<Action> getDockActions() {
                 List<Action> actions = new LinkedList<>();
                 actions.add(new DefaultAction(TableEditorActions.A_REFRESH, I18N.tr("Refresh table content"),
-                        OrbisGISIcon.getIcon("table_refresh"),
+                        TableEditorIcon.getIcon("table_refresh"),
                         EventHandler.create(ActionListener.class, this, "onMenuRefresh"))
                         .setLogicalGroup(TableEditorActions.LGROUP_READ));
 
                 actions.add(new DefaultAction(TableEditorActions.A_PREVIOUS_SELECTION, I18N.tr("Previous selection"),
-                        I18N.tr("Go to previous selected row"),OrbisGISIcon.getIcon("selection-previous"),
+                        I18N.tr("Go to previous selected row"),TableEditorIcon.getIcon("selection-previous"),
                         EventHandler.create(ActionListener.class, this, "onPreviousSelection"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, InputEvent.CTRL_DOWN_MASK))
                         .setLogicalGroup(TableEditorActions.LGROUP_READ));
 
                 actions.add(new DefaultAction(TableEditorActions.A_NEXT_SELECTION, I18N.tr("Next selection"),
-                    I18N.tr("Go to next selected row"),OrbisGISIcon.getIcon("selection-next"),
+                    I18N.tr("Go to next selected row"),TableEditorIcon.getIcon("selection-next"),
                     EventHandler.create(ActionListener.class, this, "onNextSelection"),
                     KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.CTRL_DOWN_MASK))
                         .setLogicalGroup(TableEditorActions.LGROUP_READ));
@@ -404,7 +405,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 boolean hasSelectedRows = table.getSelectedRowCount()>0;
                 if(hasSelectedRows) {
                         JMenuItem addRowFilter = new JMenuItem(I18N.tr("Filter selected rows"),
-                        OrbisGISIcon.getIcon("row_filter"));
+                                TableEditorIcon.getIcon("row_filter"));
                         addRowFilter.setToolTipText(I18N.tr("Show only the selected rows"));
                         addRowFilter.addActionListener(
                                 EventHandler.create(ActionListener.class,
@@ -413,7 +414,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 }
                 if(tableSorter.isFiltered()) {
                         JMenuItem removeRowFilter = new JMenuItem(
-                                I18N.tr("Clear row filter"), OrbisGISIcon.getIcon("remove"));
+                                I18N.tr("Clear row filter"), TableEditorIcon.getIcon("remove"));
                         removeRowFilter.setToolTipText(I18N.tr("Show all rows"));
                         removeRowFilter.addActionListener(
                                 EventHandler.create(ActionListener.class,
@@ -427,7 +428,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                         
                     JMenuItem createDataSourceSelection = new JMenuItem(
                             I18N.tr("Create datasource from selection"),
-                            OrbisGISIcon.getIcon("table_go"));
+                            TableEditorIcon.getIcon("table_go"));
                     createDataSourceSelection.setToolTipText(
                             I18N.tr("Create a datasource from the current selection"));
                     createDataSourceSelection.addActionListener(
@@ -436,7 +437,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                     pop.add(createDataSourceSelection);
 
                     JMenuItem deselectAll = new JMenuItem(
-                            I18N.tr("Clear selection"), OrbisGISIcon.getIcon("edit-clear"));
+                            I18N.tr("Clear selection"), TableEditorIcon.getIcon("edit-clear"));
                     deselectAll.setToolTipText(I18N.tr("Deselect all lines"));
                     deselectAll.addActionListener(
                             EventHandler.create(ActionListener.class,
@@ -446,7 +447,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                     if (isDataOnShownMapContext()) {
                         JMenuItem zoomToSelection = new JMenuItem(
                                 I18N.tr("Zoom to selection"),
-                                OrbisGISIcon.getIcon("zoom_selected"));
+                                TableEditorIcon.getIcon("zoom_selected"));
                         zoomToSelection.setToolTipText(I18N.tr("In the map editor, zoom to the selected rows"));
                         zoomToSelection.addActionListener(
                                 EventHandler.create(ActionListener.class,
@@ -456,7 +457,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
 
                     JMenuItem inverseSelection = new JMenuItem(
                             I18N.tr("Reverse selection"),
-                            OrbisGISIcon.getIcon("reverse_selection"));
+                            TableEditorIcon.getIcon("reverse_selection"));
                     inverseSelection.setToolTipText(I18N.tr("Reverse the current selection"));
                     inverseSelection.addActionListener(
                             EventHandler.create(ActionListener.class,
@@ -465,7 +466,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                         
                 }
                 JMenuItem findSameCells = new JMenuItem(
-                        I18N.tr("Select same cell"),OrbisGISIcon.getIcon("selectsame_row"));
+                        I18N.tr("Select same cell"),TableEditorIcon.getIcon("selectsame_row"));
                 findSameCells.setToolTipText(I18N.tr("Select all rows that match this cell value"));
                 findSameCells.addActionListener(
                         EventHandler.create(ActionListener.class,
@@ -481,7 +482,6 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
          */
         private boolean isDataOnShownMapContext() {
             TableLocation editorTable = TableLocation.parse(tableEditableElement.getTableReference());
-            EditorManager editorManager = Services.getService(EditorManager.class);
             if (editorManager != null) {
                 MapElement mapEditable = MapElement.fetchFirstMapElement(editorManager);
                 if(mapEditable != null) {
@@ -506,7 +506,6 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 }
                 //Retrieve the MapContext
                 MapContext mapContext=null;
-                EditorManager editorManager = Services.getService(EditorManager.class);
                 for(EditableElement editable : editorManager.getEditableElements()) {
                         if(editable instanceof MapElement) {
                                 MapElement mapEditable = (MapElement)editable;
@@ -549,8 +548,8 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
             // If there is a nonempty selection, then ask the user to name it.
             if (!tableEditableElement.getSelection().isEmpty()) {
                 try {
-                    String newName = CreateSourceFromSelection.showNewNameDialog(
-                            this, dataSource, tableEditableElement.getTableReference());
+                    String newName = CreateSourceFromSelection.showNewNameDialog(this, dataSource,
+                            tableEditableElement.getTableReference());
                     // If newName is not null, then the user clicked OK and entered
                     // a valid name.
                     if (newName != null) {
@@ -611,7 +610,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 //Optimal width
                 JMenuItem optimalWidth = 
                         new JMenuItem(I18N.tr("Optimal width"),
-                        OrbisGISIcon.getIcon("text_letterspacing")
+                                TableEditorIcon.getIcon("text_letterspacing")
                         );
                 optimalWidth.addActionListener(
                         EventHandler.create(ActionListener.class,this,
@@ -654,7 +653,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                         //No sort
                         JMenuItem noSort =
                                 new JMenuItem(I18N.tr("No sort"),
-                                OrbisGISIcon.getIcon("table_refresh")
+                                TableEditorIcon.getIcon("table_refresh")
                                 );
                         noSort.addActionListener(
                         EventHandler.create(ActionListener.class,this,
@@ -665,7 +664,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                 //Get Field information
                 JMenuItem showFieldInformation =
                         new JMenuItem(I18N.tr("Show column information"),
-                        OrbisGISIcon.getIcon("information")
+                                TableEditorIcon.getIcon("information")
                         );
                 showFieldInformation.addActionListener(
                         EventHandler.create(ActionListener.class, this,
@@ -682,7 +681,7 @@ public class TableEditor extends JPanel implements EditorDockable,SourceTable,Ta
                         }
                         JMenuItem showStats =                         
                                 new JMenuItem(text,
-                                OrbisGISIcon.getIcon("statistics")
+                                        TableEditorIcon.getIcon("statistics")
                                 );
                         showStats.addActionListener(
                         EventHandler.create(ActionListener.class,this,

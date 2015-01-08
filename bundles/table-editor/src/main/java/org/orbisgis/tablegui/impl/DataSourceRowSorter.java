@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
 import java.beans.EventHandler;
 import java.sql.ResultSetMetaData;
@@ -35,11 +35,11 @@ import java.util.*;
 import javax.sql.DataSource;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
-import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.common.IntegerUnion;
-import org.orbisgis.view.table.jobs.SortJob;
-import org.orbisgis.view.table.jobs.SortJobEventSorted;
+import org.orbisgis.tablegui.impl.jobs.SortJob;
+import org.orbisgis.tablegui.impl.jobs.SortJobEventSorted;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class extends the swing RowSorter to launch SortJob
@@ -47,7 +47,7 @@ import org.orbisgis.view.table.jobs.SortJobEventSorted;
  * @author Nicolas Fortin
  */
 public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
-        private static final Logger LOGGER = Logger.getLogger(DataSourceRowSorter.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceRowSorter.class);
         private DataSourceTableModel model;        //If the Model rows do not reflect the DataSource row number
         //this array give the link between the TableModel Row Id
         //and the DataSource row ID

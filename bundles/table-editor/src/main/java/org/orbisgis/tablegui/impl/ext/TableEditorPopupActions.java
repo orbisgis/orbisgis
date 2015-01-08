@@ -27,9 +27,10 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.table.ext;
+package org.orbisgis.tablegui.impl.ext;
 
-import org.orbisgis.viewapi.components.actions.ActionFactoryService;
+
+import org.orbisgis.sif.components.actions.ActionFactoryService;
 
 /**
  * Actions on the Table Editor popup menu

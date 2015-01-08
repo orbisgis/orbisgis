@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -34,14 +34,11 @@ import java.sql.Statement;
 import java.sql.Types;
 import javax.sql.RowSet;
 import javax.swing.table.AbstractTableModel;
-import org.apache.log4j.Logger;
-import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.orbisgis.corejdbc.ReversibleRowSet;
-import org.orbisgis.corejdbc.TableEditEvent;
-import org.orbisgis.corejdbc.TableEditListener;
-import org.orbisgis.commons.progress.NullProgressMonitor;
-import org.orbisgis.viewapi.edition.EditableElementException;
-import org.orbisgis.viewapi.edition.EditableSource;
+import org.orbisgis.editorjdbc.EditableSource;
+import org.orbisgis.sif.edition.EditableElementException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -51,7 +48,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class DataSourceTableModel extends AbstractTableModel {
         protected final static I18n I18N = I18nFactory.getI18n(DataSourceTableModel.class);
-        private static final Logger LOGGER = Logger.getLogger(DataSourceTableModel.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceTableModel.class);
         private static final long serialVersionUID = 1L;
         private EditableSource element;
         private long lastFetchRowCount = 0;

@@ -26,16 +26,17 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table.jobs;
+package org.orbisgis.tablegui.impl.jobs;
 
-import org.apache.log4j.Logger;
 import org.orbisgis.commons.events.EventException;
 import org.orbisgis.commons.events.Listener;
 import org.orbisgis.commons.events.ListenerContainer;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.corejdbc.common.IntegerUnion;
-import org.orbisgis.view.table.DataSourceTableModel;
+import org.orbisgis.tablegui.impl.DataSourceTableModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -60,7 +61,7 @@ public class SortJob extends SwingWorkerPM<Collection<Integer>, Collection<Integ
                 
         }
         protected final static I18n I18N = I18nFactory.getI18n(SortJob.class);
-        private static final Logger LOGGER = Logger.getLogger(SortJob.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(SortJob.class);
         private DataSourceTableModel model;
         private SortKey sortRequest;
         private String columnSortName;

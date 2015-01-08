@@ -27,7 +27,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
 /**
  * @author Nicolas Fortin

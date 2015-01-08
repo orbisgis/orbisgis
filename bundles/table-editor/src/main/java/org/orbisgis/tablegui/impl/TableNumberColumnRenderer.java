@@ -26,9 +26,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.Component;
 import java.awt.Point;
@@ -43,7 +45,7 @@ import javax.swing.JTable;
  */
 public class TableNumberColumnRenderer extends TableDefaultColumnRenderer {
         private NumberFormat decimalFormat;
-        private static final Logger LOGGER = Logger.getLogger(TableNumberColumnRenderer.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(TableNumberColumnRenderer.class);
         
         public TableNumberColumnRenderer(JTable table,Point popupCellAdress) {
                 super(table, Number.class,popupCellAdress);

@@ -25,7 +25,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly: info_at_ orbisgis.org
  */
-package org.orbisgis.geocatalog.impl;
+package org.orbisgis.editorjdbc;
 
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -34,7 +34,6 @@ import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.editorjdbc.EditableSource;
 import org.orbisgis.sif.edition.AbstractEditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
 import org.slf4j.Logger;

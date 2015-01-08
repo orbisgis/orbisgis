@@ -27,7 +27,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.table.jobs;
+package org.orbisgis.tablegui.impl.jobs;
 
 import java.awt.*;
 import java.sql.Connection;
@@ -35,12 +35,13 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Set;
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.CreateTable;
 import org.orbisgis.corejdbc.MetaData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -57,7 +58,7 @@ public class CreateSourceFromSelection extends SwingWorkerPM {
 
         private static final I18n I18N = I18nFactory.getI18n(CreateSourceFromSelection.class);
         
-        private static final Logger GUILOGGER = Logger.getLogger("gui."+CreateSourceFromSelection.class);
+        private static final Logger GUILOGGER = LoggerFactory.getLogger("gui." + CreateSourceFromSelection.class);
       
         private final DataSource dataSource;
         private final String tableName;

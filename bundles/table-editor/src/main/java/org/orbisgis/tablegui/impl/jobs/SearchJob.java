@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table.jobs;
+package org.orbisgis.tablegui.impl.jobs;
 
 import java.awt.Rectangle;
 import java.sql.SQLException;
@@ -35,12 +35,13 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
-import org.apache.log4j.Logger;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.viewapi.table.TableEditableElement;
-import org.orbisgis.view.table.filters.TableSelectionFilter;
+import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tablegui.impl.filters.TableSelectionFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -53,7 +54,7 @@ public class SearchJob extends SwingWorkerPM {
     private JTable table;
     private TableEditableElement source;
     private AtomicBoolean filterRunning;
-    private static final Logger LOGGER = Logger.getLogger("gui." + SearchJob.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger("gui." + SearchJob.class);
 
     public SearchJob(TableSelectionFilter activeFilter, JTable table, TableEditableElement source,
                      AtomicBoolean filterRunning) {

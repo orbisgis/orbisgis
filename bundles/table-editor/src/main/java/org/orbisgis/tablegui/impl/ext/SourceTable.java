@@ -27,11 +27,13 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.table.ext;
+package org.orbisgis.tablegui.impl.ext;
 
-import org.orbisgis.viewapi.edition.EditableSource;
-import javax.swing.*;
-import java.awt.*;
+
+import org.orbisgis.editorjdbc.EditableSource;
+
+import javax.swing.JTable;
+import java.awt.Point;
 
 /**
  * @author Nicolas Fortin

@@ -1,12 +1,13 @@
-package org.orbisgis.viewapi.table;
+package org.orbisgis.tablegui.api;
 
-import org.orbisgis.viewapi.edition.EditableElementException;
-import org.orbisgis.viewapi.edition.EditableSource;
+import org.orbisgis.editorjdbc.EditableSource;
+import org.orbisgis.sif.edition.EditableElementException;
 
 import java.util.Set;
 import java.util.SortedSet;
 
 /**
+ * Transfer this class to {@link org.orbisgis.sif.edition.EditorManager} in order to open a new table editor
  * @author Nicolas Fortin
  */
 public interface TableEditableElement extends EditableSource {

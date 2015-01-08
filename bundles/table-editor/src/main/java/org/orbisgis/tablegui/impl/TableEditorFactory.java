@@ -26,30 +26,32 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
-import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.commons.progress.NullProgressMonitor;
-import org.orbisgis.viewapi.docking.DockingPanelLayout;
-import org.orbisgis.viewapi.edition.EditableElement;
-import org.orbisgis.viewapi.edition.EditableElementException;
-import org.orbisgis.viewapi.edition.EditorDockable;
-import org.orbisgis.viewapi.edition.EditorManager;
-import org.orbisgis.viewapi.edition.MultipleEditorFactory;
-import org.orbisgis.viewapi.table.TableEditableElement;
+import org.orbisgis.sif.docking.DockingPanelLayout;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.EditorDockable;
+import org.orbisgis.sif.edition.EditorManager;
+import org.orbisgis.sif.edition.MultipleEditorFactory;
+import org.orbisgis.tablegui.api.TableEditableElement;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
  *  This factory receive the {@link TableEditableElementImpl} and open a new editor.
  */
+@Component
 public class TableEditorFactory implements MultipleEditorFactory {
         public static final String FACTORY_ID = "TableEditorFactory";
-        private static final Logger LOGGER = Logger.getLogger("gui."+TableEditorFactory.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger("gui." + TableEditorFactory.class);
         protected final static I18n I18N = I18nFactory.getI18n(TableEditorFactory.class);
         private DataManager dataManager;
+        private EditorManager editorManager;
 
         @Override
         public DockingPanelLayout makeEditableLayout(EditableElement editable) {
@@ -66,16 +68,35 @@ public class TableEditorFactory implements MultipleEditorFactory {
         }
 
         /**
+         * Set editor manager instance in order to check if a table editor is already opened
+         * @param editorManager
+         */
+        @Reference
+        public void setEditorManager(EditorManager editorManager) {
+            this.editorManager = editorManager;
+        }
+
+        public void unsetEditorManager(EditorManager editorManager) {
+            this.editorManager = null;
+        }
+
+        /**
          * @param dataManager JDBC DataManager factory
          */
+        @Reference
         public void setDataManager(DataManager dataManager) {
+            this.dataManager = dataManager;
+        }
+        /**
+         * @param dataManager JDBC DataManager factory
+        */
+        public void unsetDataManager(DataManager dataManager) {
             this.dataManager = dataManager;
         }
 
         
         private boolean isEditableAlreadyOpened(EditableElement editable) {
-                EditorManager em = Services.getService(EditorManager.class);
-                for(EditorDockable editor : em.getEditors()) {
+                for(EditorDockable editor : editorManager.getEditors()) {
                         if(editor instanceof TableEditor && editable.equals(editor.getEditableElement())) {
                                 return true;
                         }
@@ -97,7 +118,7 @@ public class TableEditorFactory implements MultipleEditorFactory {
         public EditorDockable create(DockingPanelLayout layout) {
                 TableEditableElement editableTable = ((TablePanelLayout)layout).getTableEditableElement();
                 //Check the DataSource state
-                return new TableEditor(editableTable, dataManager);
+                return new TableEditor(editableTable, dataManager, editorManager);
         }
 
         @Override
