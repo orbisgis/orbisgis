@@ -31,13 +31,14 @@ package org.orbisgis.sqlconsole.icons;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import org.orbisgis.sif.icons.BaseIcon;
+import org.slf4j.LoggerFactory;
 
 
 /**
  * Use this class to retrieve the data of an icon
  */
 public final class SQLConsoleIcon {
-    private static BaseIcon iconManager = new BaseIcon();
+    private static BaseIcon iconManager = new BaseIcon(LoggerFactory.getLogger(SQLConsoleIcon.class));
     
     /**
      * This is a static class

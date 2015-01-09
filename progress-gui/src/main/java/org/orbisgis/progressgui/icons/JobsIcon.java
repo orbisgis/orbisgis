@@ -31,6 +31,7 @@ package org.orbisgis.progressgui.icons;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import org.orbisgis.sif.icons.BaseIcon;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -41,7 +42,7 @@ import org.orbisgis.sif.icons.BaseIcon;
  * Icon files are placed in the resource package org.orbisgis.view.icons
  */
 public final class JobsIcon {
-    private static BaseIcon iconManager = new BaseIcon();
+    private static BaseIcon iconManager = new BaseIcon(LoggerFactory.getLogger(JobsIcon.class));
     
     /**
      * This is a static class

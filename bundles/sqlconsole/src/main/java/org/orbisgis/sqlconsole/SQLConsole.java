@@ -113,9 +113,12 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
                 sqlPanel.setSplitterFactory(null);
         }
 
-        @Reference(cardinality = ReferenceCardinality.OPTIONAL, target = "(language=sql)")
+        @Reference(cardinality = ReferenceCardinality.OPTIONAL, target = "(language=sql)", policy = ReferencePolicy.DYNAMIC)
         public void setLanguageSupport(LanguageSupport languageSupport) {
                 this.sqlLanguageSupport = languageSupport;
+                if(sqlPanel != null) {
+                        languageSupport.install(getScriptPanel());
+                }
         }
 
         public void unsetLanguageSupport(LanguageSupport languageSupport) {

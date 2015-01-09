@@ -29,6 +29,7 @@
 package org.orbisgis.mainframe.icons;
 
 import org.orbisgis.sif.icons.BaseIcon;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.ImageIcon;
 import java.awt.Image;
@@ -37,7 +38,7 @@ import java.awt.Image;
  * @author Nicolas Fortin
  */
 public class MainFrameIcon {
-    private static BaseIcon iconManager = new BaseIcon();
+    private static BaseIcon iconManager = new BaseIcon(LoggerFactory.getLogger(MainFrameIcon.class));
 
     /**
      * This is a static class

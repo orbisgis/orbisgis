@@ -60,9 +60,12 @@ public class BaseIcon {
     
     private final ImageIcon ORBISGIS_MISSING_ICON = new ImageIcon(BaseIcon.class.getResource("remove.png")); /*!< Icon displayed when the requested icon is not found */
     
-    private final Logger LOG = LoggerFactory.getLogger(BaseIcon.class); /*!< Logger of SifIcon */
-   
-    
+    private final Logger LOG;
+
+    public BaseIcon(Logger LOG) {
+        this.LOG = LOG;
+    }
+
     /**
      * Retrieve icon awt Image by its name
      * @param iconName The icon name, without extension. All icons are stored in the png format.
