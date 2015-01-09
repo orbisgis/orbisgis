@@ -39,8 +39,8 @@
                 <module>bundles/map-editor-api</module>
                 <module>bundles/geocatalog</module>
                 <module>bundles/table-editor</module>
-                <!--
                 <module>bundles/sqlconsole</module>
+                <!--
                 <module>orbisgis-core</module>
                 <module>bundles/map-editor</module>
                 <module>bundles/orbisgis-oshell</module>
@@ -67,7 +67,9 @@
                 <modules>
                     <module>external/mig-layout</module>
                     <module>external/rsyntax-osgi</module>
+                    <module>external/rsyntax-language-support</module>
                     <module>external/jts-osgi</module>
+                    <module>external/svg-salamander</module>
                     <module>orbisgis-dist</module>
                 </modules>
             </profile>
@@ -97,6 +99,7 @@
                 <org.osgi.service.obr-version>1.0.2</org.osgi.service.obr-version>
                 <ogc-commons-version>1.2</ogc-commons-version>
                 <miglayout-version>4.2</miglayout-version>
+                <svg-salamander-version>1.0</svg-salamander-version>
         </properties>
         <scm>
                 <connection>scm:git:https://github.com/irstv/orbisgis.git</connection>

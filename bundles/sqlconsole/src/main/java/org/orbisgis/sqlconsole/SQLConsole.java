@@ -31,6 +31,7 @@ package org.orbisgis.sqlconsole;
 import javax.sql.DataSource;
 import javax.swing.*;
 
+import org.fife.rsta.ac.LanguageSupport;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sif.components.actions.ActionCommands;
@@ -42,20 +43,33 @@ import org.orbisgis.sqlconsole.api.SQLConsoleEditor;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.sqlconsole.icons.SQLConsoleIcon;
 import org.orbisgis.sqlconsole.ui.SQLConsolePanel;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import java.util.Map;
 
 /**
  * Docking Panel implementation.
  * @author Nicolas Fortin
  */
+@Component(service = EditorDockable.class, immediate = true)
 public class SQLConsole implements EditorDockable, SQLConsoleEditor {
         private DockingPanelParameters dockingPanelParameters = new DockingPanelParameters();
         private SQLConsolePanel sqlPanel;
         protected final static I18n I18N = I18nFactory.getI18n(SQLConsole.class);
-        
-        public SQLConsole(DataSource dataSource) {
+        private DataSource dataSource;
+        private ScriptSplitterFactory splitterFactory;
+        private LanguageSupport sqlLanguageSupport;
+
+        @Activate
+        public void init() {
                 sqlPanel = new SQLConsolePanel(dataSource);
+                sqlPanel.setSplitterFactory(splitterFactory);
                 dockingPanelParameters.setTitle(I18N.tr("SQL Console"));
                 dockingPanelParameters.setTitleIcon(SQLConsoleIcon.getIcon("sql_code"));
                 dockingPanelParameters.setDockActions(sqlPanel.getActions().getActions());
@@ -63,13 +77,49 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
                 // thanks to this listener
                 sqlPanel.getActions().addPropertyChangeListener(
                         new ActionDockingListener(dockingPanelParameters));
+                LanguageSupport languageSupport = sqlLanguageSupport;
+                if(languageSupport != null) {
+                        languageSupport.install(sqlPanel.getScriptPanel());
+                }
+        }
+
+        /**
+         * @param dataSource JDBC DataSource
+         */
+        @Reference
+        public void setDataSource(DataSource dataSource) {
+                this.dataSource = dataSource;
+        }
+
+        /**
+         * @param dataSource JDBC DataSource
+         */
+        public void unsetDataSource(DataSource dataSource) {
+                this.dataSource = dataSource;
         }
 
         /**
          * @param splitterFactory The component used to split sql script into single query
          */
+        @Reference
         public void setSplitterFactory(ScriptSplitterFactory splitterFactory) {
-            sqlPanel.setSplitterFactory(splitterFactory);
+                this.splitterFactory = splitterFactory;
+        }
+        /**
+         * @param splitterFactory The component used to split sql script into single query
+         */
+        public void unsetSplitterFactory(ScriptSplitterFactory splitterFactory) {
+                this.splitterFactory = null;
+                sqlPanel.setSplitterFactory(null);
+        }
+
+        @Reference(cardinality = ReferenceCardinality.OPTIONAL, target = "(language=sql)")
+        public void setLanguageSupport(LanguageSupport languageSupport) {
+                this.sqlLanguageSupport = languageSupport;
+        }
+
+        public void unsetLanguageSupport(LanguageSupport languageSupport) {
+                languageSupport.uninstall(getScriptPanel());
         }
 
         /**

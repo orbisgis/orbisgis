@@ -31,7 +31,6 @@ package org.orbisgis.docking.impl.edition;
 
 import org.orbisgis.docking.impl.edition.dialogs.SaveDocuments;
 import org.orbisgis.mainframe.api.MainWindow;
-import org.orbisgis.mainframe.impl.MainFrame;
 import org.orbisgis.sif.docking.DockingManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelLayout;
@@ -39,15 +38,12 @@ import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorFactory;
 import org.orbisgis.sif.edition.EditorManager;
-import org.orbisgis.sif.edition.MultipleEditorFactory;
-import org.orbisgis.sif.edition.SingleEditorFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
 import java.beans.PropertyVetoException;
@@ -149,26 +145,13 @@ public class EditorManagerImpl implements EditorManager {
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     public void addEditorFactory(EditorFactory editorFactory) {
         factories.add(editorFactory);
-        if (editorFactory instanceof MultipleEditorFactory) {
-            dockingManager.registerPanelFactory(editorFactory.getId(), new EditorPanelFactoryDecorator(
-                    (MultipleEditorFactory) editorFactory));
-        } else {
-            for (EditorDockable dockPanel : ((SingleEditorFactory) editorFactory).getSinglePanels()) {
-                dockingManager.addDockingPanel(dockPanel);
-            }
-        }
+        dockingManager.registerPanelFactory(editorFactory.getId(), new EditorPanelFactoryDecorator(editorFactory));
     }
 
     @Override
     public void removeEditorFactory(EditorFactory editorFactory) {
         factories.remove(editorFactory);
-        if (editorFactory instanceof MultipleEditorFactory) {
-            dockingManager.unregisterPanelFactory(editorFactory.getId());
-        } else {
-            for (EditorDockable dockPanel : ((SingleEditorFactory) editorFactory).getSinglePanels()) {
-                dockingManager.removeDockingPanel(dockPanel.getDockingParameters().getName());
-            }
-        }
+        dockingManager.unregisterPanelFactory(editorFactory.getId());
     }
 
     @Override
@@ -224,13 +207,10 @@ public class EditorManagerImpl implements EditorManager {
         }
 
         //Open the element in MultipleEditorFactories
-        for (EditorFactory factory : factories) {
-            if (factory instanceof MultipleEditorFactory) {
-                MultipleEditorFactory mFactory = (MultipleEditorFactory) factory;
-                DockingPanelLayout data = mFactory.makeEditableLayout(editableElement);
-                if (data != null) {
-                    dockingManager.show(mFactory.getId(), data);
-                }
+        for (EditorFactory mFactory : factories) {
+            DockingPanelLayout data = mFactory.makeEditableLayout(editableElement);
+            if (data != null) {
+                dockingManager.show(mFactory.getId(), data);
             }
         }
     }

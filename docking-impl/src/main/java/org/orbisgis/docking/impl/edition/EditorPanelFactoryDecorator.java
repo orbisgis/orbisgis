@@ -31,7 +31,7 @@ package org.orbisgis.docking.impl.edition;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelFactory;
 import org.orbisgis.sif.docking.DockingPanelLayout;
-import org.orbisgis.sif.edition.MultipleEditorFactory;
+import org.orbisgis.sif.edition.EditorFactory;
 
 /**
  * MultipleEditorFactory must define EditorPanels instead of DockingPanel
@@ -40,9 +40,9 @@ import org.orbisgis.sif.edition.MultipleEditorFactory;
  */
 
 public class EditorPanelFactoryDecorator implements DockingPanelFactory {
-        private MultipleEditorFactory multipleEditorFactory;
+        private EditorFactory multipleEditorFactory;
 
-        public EditorPanelFactoryDecorator(MultipleEditorFactory multipleEditorFactory) {
+        public EditorPanelFactoryDecorator(EditorFactory multipleEditorFactory) {
                 this.multipleEditorFactory = multipleEditorFactory;
         }
 

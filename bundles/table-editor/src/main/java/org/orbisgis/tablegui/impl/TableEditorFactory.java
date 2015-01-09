@@ -33,7 +33,7 @@ import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorManager;
-import org.orbisgis.sif.edition.MultipleEditorFactory;
+import org.orbisgis.sif.edition.EditorFactory;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -45,8 +45,8 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  *  This factory receive the {@link TableEditableElementImpl} and open a new editor.
  */
-@Component
-public class TableEditorFactory implements MultipleEditorFactory {
+@Component(immediate = true)
+public class TableEditorFactory implements EditorFactory {
         public static final String FACTORY_ID = "TableEditorFactory";
         private static final Logger LOGGER = LoggerFactory.getLogger("gui." + TableEditorFactory.class);
         protected final static I18n I18N = I18nFactory.getI18n(TableEditorFactory.class);

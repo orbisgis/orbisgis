@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.geocatalog.impl;
+package org.orbisgis.editorjdbc;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -34,7 +34,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.editorjdbc.EditableSourceImpl;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.TransferableEditableElement;
 

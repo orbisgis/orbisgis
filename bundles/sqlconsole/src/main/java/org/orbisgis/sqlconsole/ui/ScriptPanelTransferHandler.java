@@ -30,11 +30,14 @@ package org.orbisgis.sqlconsole.ui;
 
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.editorjdbc.TransferableSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JTextArea;
+import javax.swing.TransferHandler;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.sql.Connection;

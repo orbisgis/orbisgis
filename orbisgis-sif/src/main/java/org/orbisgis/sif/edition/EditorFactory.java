@@ -28,12 +28,15 @@
  */ 
 package org.orbisgis.sif.edition;
 
-/**
- * The editor factory provides an adapted Editor for an EditableElement.
- * 
- * Do not use directly this interface, use single or multiple editor factory
- */
+import org.orbisgis.sif.docking.DockingPanelLayout;
 
+/**
+ * This factory can create an unlimited number of editors.
+ * The panels opened by this editor should by retrieved at the next
+ * application startup thanks to lightweight custom panel layout
+ * Do not keep reference to the created panels, use the {@link EditorManager}
+ * getEditors function to retrieve the created panels.
+ */
 public interface EditorFactory {
  
     /**
@@ -44,4 +47,32 @@ public interface EditorFactory {
      * Release all resources related to this factory
      */
     void dispose();
+    /**
+     * Return a layout corresponding to this editable element
+     * @param editable editable element
+     * @return Instance of DockingPanelLayout or null if the editable
+     * is not compatible with this factory
+     */
+    public DockingPanelLayout makeEditableLayout(EditableElement editable);
+
+    /**
+     * Create an empty layout, will be used to apply XML file or a byte stream
+     * @return
+     */
+    public DockingPanelLayout makeEmptyLayout();
+
+    /**
+     *
+     * @param layout
+     * @return True if the layout corresponding to the layout of this factory
+     */
+    public boolean match(DockingPanelLayout layout);
+
+    /**
+     * Return a new DockingPanel for this serialised panel
+     * @param layout
+     * @return
+     */
+    public EditorDockable create(DockingPanelLayout layout);
+
 }

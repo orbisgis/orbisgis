@@ -43,6 +43,7 @@ import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.commons.events.EventException;
 import org.orbisgis.commons.events.Listener;
 import org.orbisgis.commons.events.ListenerContainer;
+import org.orbisgis.editorjdbc.TransferableSource;
 import org.orbisgis.sif.components.UriListFlavor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
