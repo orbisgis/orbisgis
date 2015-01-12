@@ -12,7 +12,7 @@
     <url>http://maven.apache.org</url>
     <packaging>jar</packaging>
     <build>
-        <finalName>orbisgis</finalName>
+        <finalName>orbisgis</f  inalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
