@@ -68,8 +68,10 @@ public class TableRowHeader extends JList<Integer> {
         @Override
         public void updateUI() {
                 super.updateUI();
-                setFixedCellHeight(table.getRowHeight());
-                computeCellWidth();
+                if(this.table != null) {
+                    setFixedCellHeight(table.getRowHeight());
+                    computeCellWidth();
+                }
         }
         
         private void computeCellWidth() {

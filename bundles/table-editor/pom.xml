@@ -88,6 +88,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>geocatalog</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>core-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
