@@ -108,6 +108,7 @@ public class GeoCatalogMenu implements PopupMenu {
             this.editorManager = editorManager;
             setLogicalGroup(PopupMenu.GROUP_OPEN);
             setKeyStroke(KeyStroke.getKeyStroke("ctrl " + "T"));
+            setAfter(PopupMenu.M_SAVE);
         }
 
         @Override

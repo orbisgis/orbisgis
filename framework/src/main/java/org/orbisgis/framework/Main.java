@@ -28,32 +28,22 @@
  */
 package org.orbisgis.framework;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-import java.util.jar.Manifest;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.felix.framework.Logger;
 import org.apache.felix.main.AutoProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.Version;
 import org.osgi.framework.launch.Framework;
-import org.osgi.framework.launch.FrameworkFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -64,7 +54,7 @@ final class Main {
     private static final I18n I18N = I18nFactory.getI18n(Main.class);
     private static boolean DEBUG_MODE = false;
     private static final int BUNDLE_STABILITY_TIMEOUT = 3000;
-    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOGGER = new Logger();
 
     //Minimum supported java version
     public static final char MIN_JAVA_VERSION = '7';
@@ -96,6 +86,7 @@ final class Main {
      */
     public static void main(String[] args) {
         long deploymentTime = 0;
+        BundleTools bundleTools = new BundleTools(LOGGER);
         parseCommandLine(args);
         //Check if the java version is greater than 1.6+
         if (!isVersion(MIN_JAVA_VERSION)) {
@@ -107,27 +98,27 @@ final class Main {
                 String versionTxt = IOUtils.readLines(fs).get(0);
                 version = new Version(versionTxt.replace("-", "."));
             } catch (IOException ex) {
-                LOGGER.error(ex.getLocalizedMessage(), ex);
+                LOGGER.log(Logger.LOG_ERROR, ex.getLocalizedMessage(), ex);
             }
             // Create CoreWorkspace instance
             CoreWorkspaceImpl coreWorkspace = new CoreWorkspaceImpl(version.getMajor(), version.getMinor(),
-                    version.getMicro(), version.getQualifier());
+                    version.getMicro(), version.getQualifier(), LOGGER);
             // Fetch cache folder
             File felixBundleCache = new File(coreWorkspace.getPluginCache());
             // Delete snapshot fragments bundles
             long beginDeleteFragments = System.currentTimeMillis();
-            BundleTools.deleteFragmentInCache(felixBundleCache);
+            bundleTools.deleteFragmentInCache(felixBundleCache);
             deploymentTime += System.currentTimeMillis() - beginDeleteFragments;
-            LOGGER.info(I18N.tr("Waiting for bundle stability, deployment of built-in bundles done in {0} s",
-                    deploymentTime / 1000.0));
+            LOGGER.log(Logger.LOG_INFO, I18N.tr("Waiting for bundle stability, deployment of built-in bundles done in" +
+                    " {0} s", deploymentTime / 1000.0));
             // Start main of felix framework
             try {
                 String[] felixArgs = new String[]{"-b", BundleTools.BUNDLE_DIRECTORY,
                         felixBundleCache.getAbsolutePath()};
-                LOGGER.info("Start Apache Felix:\n" + Arrays.toString(felixArgs));
+                LOGGER.log(Logger.LOG_INFO, "Start Apache Felix:\n" + Arrays.toString(felixArgs));
                 startFelix(BundleTools.BUNDLE_DIRECTORY, felixBundleCache.getAbsolutePath());
             } catch (Exception ex) {
-                LOGGER.error(ex.getLocalizedMessage(), ex);
+                LOGGER.log(Logger.LOG_ERROR, ex.getLocalizedMessage(), ex);
             }
         }
     }
@@ -191,7 +182,7 @@ final class Main {
         try
         {
             // Create an instance of the framework.
-            PluginHost pluginHost = new PluginHost(new File(configProps.get(Constants.FRAMEWORK_STORAGE)));
+            PluginHost pluginHost = new PluginHost(new File(configProps.get(Constants.FRAMEWORK_STORAGE)), LOGGER);
             pluginHost.init(configProps);
             m_fwk =  pluginHost.getFramework();
             // Use the system bundle context to process the auto-deploy
@@ -210,7 +201,7 @@ final class Main {
             // Otherwise, exit.
             System.exit(0);
         } catch (Exception ex) {
-            System.err.println("Could not create framework: " + ex);
+            LOGGER.log(Logger.LOG_ERROR, "Could not create framework: ", ex);
             ex.printStackTrace();
             System.exit(0);
         }

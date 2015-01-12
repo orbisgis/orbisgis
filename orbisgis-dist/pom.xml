@@ -83,6 +83,7 @@
                             <!-- Jar that are not compatible with OSGi -->
                             <excludeGroupIds>com.fifesoft, com.miglayout, com.vividsolutions, org.postgis,
                                 org.postgresql, org.dockingframes, xml-apis, com.kitfox.svg, javax.media, org.mozilla</excludeGroupIds>
+                            <excludeArtifactIds>logback-jackson, slf4j-api</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -192,6 +193,24 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>workspace-gui</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-logback</artifactId>
+            <version>1.8.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+            <version>1.8.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>progress-gui</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

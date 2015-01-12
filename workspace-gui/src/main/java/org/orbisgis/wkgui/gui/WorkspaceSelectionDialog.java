@@ -81,7 +81,8 @@ public class WorkspaceSelectionDialog extends JPanel {
 
     private void init(CoreWorkspaceImpl coreWorkspace, String errorMessage) {
         selectedWorkspace = new CoreWorkspaceImpl(coreWorkspace.getVersionMajor(), coreWorkspace.getVersionMinor(),
-                coreWorkspace.getVersionRevision(), coreWorkspace.getVersionQualifier());
+                coreWorkspace.getVersionRevision(), coreWorkspace.getVersionQualifier(), new org.apache.felix
+                .framework.Logger());
         // Get the list of known workspaces
         List<File> knownWorkspaces = coreWorkspace.readKnownWorkspacesPath();
 

@@ -33,21 +33,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
+
+import org.apache.felix.framework.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Core internal manager for OSGI Framework
@@ -57,16 +56,17 @@ public class PluginHost {
     private Framework framework;
     private final static int STOP_TIMEOUT = 15000;
     private final static int BUNDLE_STATE_CHECK_INTERVAL = 100;
-    private static final Logger LOGGER = LoggerFactory.getLogger(PluginHost.class);
     private File pluginCacheFolder;
     private List<PackageDeclaration> packageList = new ArrayList<PackageDeclaration>();
+    private Logger LOGGER;
     /**
      * 
      * @param pluginCacheFolder Cache folder
      */
-    public PluginHost(File pluginCacheFolder) {
+    public PluginHost(File pluginCacheFolder, Logger logger) {
         this.pluginCacheFolder = pluginCacheFolder;
         packageList.add(new PackageDeclaration("org.orbisgis.view", 4,0,0));
+        this.LOGGER = logger;
     }
     /**
      * The host will automatically export all packages, but without version information.
@@ -94,6 +94,7 @@ public class PluginHost {
      * @return 
      */
     private String getExtraPackage() {
+        BundleTools bundleTools = new BundleTools(LOGGER);
         //Build a set of packages to skip programmaticaly defined packages
         Set<String> packagesName = new HashSet<String>();
         List<String> sortedPackagesExport = new ArrayList<String>();
@@ -102,7 +103,7 @@ public class PluginHost {
             addPackage(packInfo,sortedPackagesExport);
         }
         // Fetch built-ins OSGi bundles package declarations
-        Collection<PackageDeclaration> packageDeclarations = BundleTools.fetchManifests();
+        Collection<PackageDeclaration> packageDeclarations = bundleTools.fetchManifests();
         for(PackageDeclaration packageDeclaration : packageDeclarations) {
             if(!packagesName.contains(packageDeclaration.getPackageName())) {
                 packagesName.add(packageDeclaration.getPackageName());
@@ -110,7 +111,7 @@ public class PluginHost {
             }
         }
         // Export Host provided packages, by classpaths
-        List<String> classPathExtensions = BundleTools.getAvailablePackages();
+        List<String> classPathExtensions = bundleTools.getAvailablePackages();
         for(String ext : classPathExtensions) {
             if(!packagesName.contains(ext) && !ext.startsWith("org.osgi.") && !ext.startsWith("java.")) {
                 sortedPackagesExport.add(ext);
@@ -140,7 +141,7 @@ public class PluginHost {
         try {
             framework.init();
         } catch(BundleException ex) {
-            LOGGER.error(ex.getLocalizedMessage(),ex);
+            LOGGER.log(Logger.LOG_ERROR, ex.getLocalizedMessage(), ex);
         }
     }
     /**
@@ -151,7 +152,7 @@ public class PluginHost {
             framework.start();  
             openTrackers();
         } catch(BundleException ex) {
-            LOGGER.error(ex.getLocalizedMessage(),ex);
+            LOGGER.log(Logger.LOG_ERROR, ex.getLocalizedMessage(), ex);
         }
     }
     private void openTrackers() {

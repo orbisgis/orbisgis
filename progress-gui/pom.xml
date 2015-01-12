@@ -40,6 +40,7 @@
                     <instructions>
                         <Private-Package>org.orbisgis.progressgui.*</Private-Package>
                         <Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
+                        <Import-Package>!sun.awt, *</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

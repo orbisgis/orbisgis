@@ -28,9 +28,8 @@
  */
 package org.orbisgis.framework;
 
+import org.apache.felix.framework.Logger;
 import org.orbisgis.frameworkapi.CoreWorkspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -46,7 +45,7 @@ import java.util.List;
  */
 
 public class CoreWorkspaceImpl implements CoreWorkspace {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CoreWorkspaceImpl.class);
+    private final Logger LOGGER;
     private static final long serialVersionUID = 6L; /*<! Update this integer while adding properties (1 for each new property)*/
     private PropertyChangeSupport propertySupport;
     private final String applicationFolder;
@@ -70,7 +69,8 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
     private final int version_revision;
     private final String version_qualifier;
 
-    public CoreWorkspaceImpl(int version_major, int version_minor, int version_revision, String version_qualifier) {
+    public CoreWorkspaceImpl(int version_major, int version_minor, int version_revision, String version_qualifier, Logger logger) {
+        this.LOGGER = logger;
         this.version_major = version_major;
         this.version_minor = version_minor;
         this.version_revision = version_revision;
@@ -143,7 +143,7 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
             throw new IOException("Workspace folder must be empty");
         }
         CoreWorkspaceImpl coreWorspace = new CoreWorkspaceImpl(version_major, version_minor, version_revision,
-                version_qualifier);
+                version_qualifier, new Logger());
         coreWorspace.setWorkspaceFolder(workspaceFolder.getAbsolutePath());
         coreWorspace.writeVersionFile();
         coreWorspace.writeUriFile();
@@ -210,7 +210,7 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
                         }
                     }
                 } catch (IOException ex) {
-                    LOGGER.error("Could not read the DataBase URI from workspace", ex);
+                    LOGGER.log(Logger.LOG_ERROR, "Could not read the DataBase URI from workspace", ex);
                 }
             }
         }
@@ -301,14 +301,14 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
                     }
                 }
             } catch (IOException e) {
-                LOGGER.warn("Cannot read the workspace location " + currentWK + " .", e);
+                    LOGGER.log(Logger.LOG_WARNING, "Cannot read the workspace location " + currentWK + " .", e);
             } finally {
                 try {
                     if (fileReader != null) {
                         fileReader.close();
                     }
                 } catch (IOException e) {
-                    LOGGER.warn("Cannot close the file at location" + currentWK + " .", e);
+                    LOGGER.log(Logger.LOG_WARNING, "Cannot close the file at location" + currentWK + " .", e);
                 }
             }
         }

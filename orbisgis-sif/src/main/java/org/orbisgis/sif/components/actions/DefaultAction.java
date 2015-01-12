@@ -173,10 +173,21 @@ public class DefaultAction extends AbstractAction {
                 return this;
         }
 
+        /**
+         * Place this action after other menu with the given identifier
+         * @param otherMenuID Menu identifier before this action
+         * @return
+         */
         public DefaultAction setAfter(String otherMenuID) {
             putValue(ActionTools.INSERT_AFTER_MENUID,otherMenuID);
             return this;
         }
+
+        /**
+         * Place this action before other menu with the given identifier
+         * @param otherMenuID Menu identifier after this action
+         * @return
+         */
         public DefaultAction setBefore(String otherMenuID) {
             putValue(ActionTools.INSERT_BEFORE_MENUID, otherMenuID);
             return this;

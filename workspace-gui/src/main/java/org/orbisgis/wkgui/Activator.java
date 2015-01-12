@@ -122,7 +122,8 @@ public class Activator implements BundleActivator {
                         String errorMessage = "";
                         do {
                             CoreWorkspaceImpl coreWorkspace = new CoreWorkspaceImpl(bundleVersion.getMajor(), bundleVersion.getMinor(),
-                                    bundleVersion.getMicro(), bundleVersion.getQualifier());
+                                    bundleVersion.getMicro(), bundleVersion.getQualifier(), new org.apache.felix
+                                    .framework.Logger());
                             if (WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, coreWorkspace, errorMessage)) {
                                 /////////////////////
                                 // Check connection

@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * JList model of the Job list
  */
 public class JobListModel extends AbstractListModel {
-        private static final int FETCH_JOB_TIME = 500;
+        private static final int FETCH_JOB_TIME = 50;
         private static final Logger LOGGER = LoggerFactory.getLogger(JobListModel.class);
         private List<JobListItem> shownJobs = new ArrayList<>();
         /*!< If true a swing runnable is pending to refresh the content of

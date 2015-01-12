@@ -32,13 +32,11 @@ import org.orbisgis.progressgui.api.SwingWorkerPool;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import sun.awt.AppContext;
-
 import javax.swing.SwingWorker;
 import javax.swing.event.EventListenerList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.EventHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -50,7 +48,7 @@ import java.util.concurrent.TimeUnit;
  * Override ThreadPool of SwingWorker in order to fill job list.
  * @author Nicolas Fortin
  */
-@Component
+@Component(service = ThreadPoolExecutor.class, immediate = true)
 public class WatchExecutorService extends ThreadPoolExecutor implements SwingWorkerPool {
 
     EventListenerList actionListenerList = new EventListenerList();
@@ -67,17 +65,27 @@ public class WatchExecutorService extends ThreadPoolExecutor implements SwingWor
                 new WatchThreadFactory());
     }
 
+    private static Class<?> getAppContext() throws ClassNotFoundException {
+        return WatchExecutorService.class.getClassLoader().loadClass("sun.awt.AppContext");
+    }
+
     @Activate
     public void activate() {
-        final AppContext appContext = AppContext.getAppContext();
-        WatchExecutorService executorService = new WatchExecutorService();
-        appContext.put(SwingWorker.class, executorService);
+        try {
+            // Register This as default ThreadPool for all SwingWorker
+            getAppContext().getDeclaredMethod("put").invoke(null, SwingWorker.class, this);
+        } catch (ClassNotFoundException|NoSuchMethodException|IllegalAccessException|InvocationTargetException ex) {
+            // Ignore
+        }
     }
 
     @Deactivate
     public void deactivate() {
-        final AppContext appContext = AppContext.getAppContext();
-        appContext.put(SwingWorker.class, null);
+        try {
+            getAppContext().getDeclaredMethod("put").invoke(null, SwingWorker.class, null);
+        } catch (ClassNotFoundException|NoSuchMethodException|IllegalAccessException|InvocationTargetException ex) {
+            // Ignore
+        }
     }
 
     @Override

@@ -52,6 +52,7 @@ import java.util.jar.Manifest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.felix.framework.Logger;
 import org.apache.felix.framework.util.manifestparser.ManifestParser;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -59,8 +60,6 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.wiring.BundleCapability;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -70,12 +69,14 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 public class BundleTools {
-    private final static Logger LOGGER = LoggerFactory.getLogger(BundleTools.class);
     private final static I18n I18N = I18nFactory.getI18n(BundleTools.class);
     public final static String MANIFEST_FILENAME = "MANIFEST.MF";
     private final static String PACKAGE_NAMESPACE = "osgi.wiring.package";
     public final static String BUNDLE_DIRECTORY = "bundle";
-    private BundleTools() {        
+    private final Logger LOGGER;
+
+    public BundleTools(Logger LOGGER) {
+        this.LOGGER = LOGGER;
     }
 
     /**
@@ -174,7 +175,7 @@ public class BundleTools {
      * Delete OSGi fragment bundles that are both in OSGi cache and in bundle sub-dir
      * @param bundleCache OSGi bundle cache  ex: ~/.Orbisgis/4.X/cache/
      */
-    public static void deleteFragmentInCache(File bundleCache) {
+    public void deleteFragmentInCache(File bundleCache) {
         if(bundleCache.exists()) {
             // List bundles in the /bundle subdirectory
             File bundleFolder = new File(BUNDLE_DIRECTORY);
@@ -198,7 +199,7 @@ public class BundleTools {
                                 }
                             }
                         } catch (IOException ex) {
-                            LOGGER.error("Error while reading Jar manifest:\n"+file.getPath());
+                            LOGGER.log(Logger.LOG_ERROR, "Error while reading Jar manifest:\n"+file.getPath());
                         }
                     }
                 }
@@ -219,17 +220,18 @@ public class BundleTools {
                                         // Delete the cache folder
                                         FileUtils.deleteDirectory(folder);
                                         if(folder.exists()) {
-                                            LOGGER.error("Cannot delete a bundle cache folder, library may not be up to" +
+                                            LOGGER.log(Logger.LOG_ERROR, "Cannot delete a bundle cache folder, library may not be up to" +
                                                     " date, please delete the following folder and restart OrbisGIS:" +
                                                     "\n"+folder.getPath());
                                         } else {
-                                            LOGGER.info(I18N.tr("Delete fragment bundle {0} in cache directory", artifact));
+                                            LOGGER.log(Logger.LOG_INFO, I18N.tr("Delete fragment bundle {0} in " +
+                                                    "cache directory", artifact));
                                         }
                                     }
                                 }
                             }
                         } catch (IOException ex) {
-                            LOGGER.error("Error while reading Jar manifest:\n"+folder.getPath());
+                            LOGGER.log(Logger.LOG_ERROR, "Error while reading Jar manifest:\n" + folder.getPath());
                         }
                     }
                 }
@@ -241,7 +243,7 @@ public class BundleTools {
      * @param hostBundle Host BundleContext
      * @param nonDefaultBundleDeploying Bundle Reference array to deploy bundles in a non default way (install&start)
      */
-    public static void installBundles(BundleContext hostBundle,BundleReference[] nonDefaultBundleDeploying) {
+    public void installBundles(BundleContext hostBundle,BundleReference[] nonDefaultBundleDeploying) {
         //Create a Map of nonDefaultBundleDeploying by their artifactId
         Map<String,BundleReference> customDeployBundles = new HashMap<String, BundleReference>(nonDefaultBundleDeploying.length);
         for(BundleReference ref : nonDefaultBundleDeploying) {
@@ -287,7 +289,7 @@ public class BundleTools {
                     jarRef = parseJarManifest(jarFile, packageDeclarations);
                     key = jarRef.getArtifactId();
                 } catch (IOException ex) {
-                    LOGGER.error(ex.getLocalizedMessage(),ex);
+                    LOGGER.log(Logger.LOG_ERROR, ex.getLocalizedMessage(), ex);
                     // Do not install this jar
                     continue;
                 }
@@ -308,7 +310,7 @@ public class BundleTools {
                     }
 
                 } catch (Exception ex) {
-                    LOGGER.error(I18N.tr("Could not read bundle manifest"),ex);
+                    LOGGER.log(Logger.LOG_ERROR, I18N.tr("Could not read bundle manifest"), ex);
                 }
 
                 try {
@@ -327,13 +329,14 @@ public class BundleTools {
                                 if (!fragmentHosts.contains(installedBundle.getSymbolicName()) && (!installedBundleLocation.equals(jarFile.toURI().toString()) ||
                                         (installedBundle.getVersion() != null && "SNAPSHOT".equals(installedBundle.getVersion().getQualifier())))) {
                                     //if the location is not the same reinstall it
-                                    LOGGER.info("Uninstall bundle " + installedBundle.getSymbolicName());
+                                    LOGGER.log(Logger.LOG_INFO, "Uninstall bundle " + installedBundle
+                                            .getSymbolicName());
                                     installedBundle.uninstall();
                                     installedBundle = null;
                                 }
                             } else if (verDiff < 0) {
                                 // Installed version is older than the bundle version
-                                LOGGER.info("Uninstall bundle " + installedBundle.getLocation());
+                                LOGGER.log(Logger.LOG_INFO, "Uninstall bundle " + installedBundle.getLocation());
                                 installedBundle.uninstall();
                                 installedBundle = null;
                             } else {
@@ -346,14 +349,14 @@ public class BundleTools {
                     // If the bundle is not in the framework cache install it
                     if ((installedBundle == null) && reference.isAutoInstall()) {
                         installedBundle = hostBundle.installBundle(jarFile.toURI().toString());
-                        LOGGER.info("Install bundle "+installedBundle.getSymbolicName());
+                        LOGGER.log(Logger.LOG_INFO, "Install bundle " + installedBundle.getSymbolicName());
                         if (!isFragment(installedBundle) && reference.isAutoStart()) {
                             installedBundleList.add(installedBundle);
                         }
                     }
                 }
                 catch (BundleException ex) {
-                    LOGGER.error("Error while installing bundle in bundle directory",ex);
+                    LOGGER.log(Logger.LOG_ERROR, "Error while installing bundle in bundle directory", ex);
                 }
             }
             // Start new bundles
@@ -361,7 +364,7 @@ public class BundleTools {
                 try {
                     bundle.start();
                 } catch (BundleException ex) {
-                    LOGGER.error("Error while starting bundle in bundle directory",ex);
+                    LOGGER.log(Logger.LOG_ERROR, "Error while starting bundle in bundle directory", ex);
                 }
             }
         }
@@ -372,12 +375,13 @@ public class BundleTools {
      * This kind of package list does not contain versions and are useful for non-OSGi packages only.
      * @return List of package name
      */
-    public static List<String> getAvailablePackages() {
+    public List<String> getAvailablePackages() {
         List<String> packages = new ArrayList<String>(getAllPackages());
         Collections.sort(packages);
         return packages;
     }
-    private static List<String> getClassPath() {
+
+    private List<String> getClassPath() {
         List<String> classPath = new LinkedList<String>();
         // Read declared class in the manifest
         try {
@@ -395,11 +399,11 @@ public class BundleTools {
                         classPath.addAll(Arrays.asList(pathElements));
                     }
                 } catch (IOException ex) {
-                    LOGGER.warn("Unable to retrieve Jar MANIFEST "+url,ex);
+                    LOGGER.log(Logger.LOG_WARNING, "Unable to retrieve Jar MANIFEST " + url, ex);
                 }
             }
         } catch (IOException ex) {
-            LOGGER.warn("Unable to retrieve Jar MANIFEST",ex);
+            LOGGER.log(Logger.LOG_WARNING, "Unable to retrieve Jar MANIFEST", ex);
         }
         // Read packages in the class path
         String javaClasspath = System.getProperty("java.class.path");
@@ -417,7 +421,7 @@ public class BundleTools {
      * version could not be Resolved.
      * @return
      */
-    public static Collection<PackageDeclaration> fetchManifests() {
+    public Collection<PackageDeclaration> fetchManifests() {
         List<PackageDeclaration> packages = new LinkedList<PackageDeclaration>();
         List<String> pathElements = getClassPath();
         // Fetch
@@ -427,13 +431,13 @@ public class BundleTools {
                 try {
                     parseJarManifest(filePath, packages);
                 } catch (IOException ex) {
-                    LOGGER.debug("Unable to fetch packages in "+filePath.getAbsolutePath(),ex);
+                    LOGGER.log(Logger.LOG_DEBUG, "Unable to fetch packages in " + filePath.getAbsolutePath(), ex);
                 }
             } else if (filePath.isDirectory()) {
                 try {
                     parseDirectoryManifest(filePath, filePath, packages);
                 } catch (SecurityException ex) {
-                    LOGGER.debug("Unable to fetch the folder "+filePath.getAbsolutePath(),ex);
+                    LOGGER.log(Logger.LOG_DEBUG, "Unable to fetch the folder " + filePath.getAbsolutePath(), ex);
                 }
             }
         }
@@ -484,7 +488,7 @@ public class BundleTools {
     }
 
 
-    private static void parseDirectoryManifest(File rootPath, File path, List<PackageDeclaration> packages) throws SecurityException {
+    private void parseDirectoryManifest(File rootPath, File path, List<PackageDeclaration> packages) throws SecurityException {
         File[] files = path.listFiles();
         for (File file : files) {
             // TODO Java7 check for non-symlink,
@@ -496,13 +500,13 @@ public class BundleTools {
                         Manifest manifest = new Manifest(new FileInputStream(file));
                         parseManifest(manifest, packages);
                     } catch (Exception ex) {
-                        LOGGER.warn("Unable to read manifest in "+file.getAbsolutePath(),ex);
+                        LOGGER.log(Logger.LOG_WARNING, "Unable to read manifest in " + file.getAbsolutePath(), ex);
                     }
                 } if (FilenameUtils.getExtension(file.getName()).equals("jar") && file.exists()) {
                     try {
                         parseJarManifest(file, packages);
                     } catch (IOException ex) {
-                        LOGGER.warn("Unable to fetch packages in "+file.getAbsolutePath(),ex);
+                        LOGGER.log(Logger.LOG_WARNING, "Unable to fetch packages in " + file.getAbsolutePath(), ex);
                     }
                 }
             } else {
@@ -522,7 +526,7 @@ public class BundleTools {
         return parseManifest(jar.getManifest(), packages);
     }
 
-    private static Set<String> getAllPackages() {
+    private Set<String> getAllPackages() {
         Set<String> packages = new HashSet<String>();
         List<String> pathElements = getClassPath();
         for (String element : pathElements) {
@@ -531,13 +535,13 @@ public class BundleTools {
                 try {
                     parseJar(filePath, packages);
                 } catch (IOException ex) {
-                    LOGGER.debug("Unable to fetch packages in "+filePath.getAbsolutePath());
+                    LOGGER.log(Logger.LOG_DEBUG, "Unable to fetch packages in " + filePath.getAbsolutePath());
                 }
             } else if (filePath.isDirectory()) {
                 try {
                     parseDirectory(filePath,filePath, packages);
                 } catch (SecurityException ex) {
-                    LOGGER.debug("Unable to fetch the folder "+filePath.getAbsolutePath());
+                    LOGGER.log(Logger.LOG_DEBUG, "Unable to fetch the folder " + filePath.getAbsolutePath());
                 }
             }
         }
