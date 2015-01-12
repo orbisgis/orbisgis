@@ -40,6 +40,7 @@
                 <module>bundles/geocatalog</module>
                 <module>bundles/table-editor</module>
                 <module>bundles/sqlconsole</module>
+                <module>bundles/log-panel</module>
                 <!--
                 <module>orbisgis-core</module>
                 <module>bundles/map-editor</module>
