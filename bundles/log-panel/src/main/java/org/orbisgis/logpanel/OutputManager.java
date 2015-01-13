@@ -26,29 +26,33 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.output;
+package org.orbisgis.logpanel;
 
 import java.beans.EventHandler;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.varia.DenyAllFilter;
-import org.apache.log4j.varia.LevelMatchFilter;
-import org.apache.log4j.varia.LevelRangeFilter;
-import org.orbisgis.view.components.actions.MenuItemServiceTracker;
-import org.orbisgis.viewapi.docking.DockingPanel;
-import org.orbisgis.viewapi.output.ext.MainLogFrame;
-import org.orbisgis.viewapi.output.ext.MainLogMenuService;
-import org.osgi.framework.BundleContext;
+
+import org.orbisgis.logpanel.api.MainLogMenuService;
+import org.orbisgis.sif.docking.DockingPanel;
+import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.log.LogReaderService;
+import org.osgi.service.log.LogService;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.swing.JComponent;
 
 /**
  * The output manager, create then link/unlink appender with LOG4J.
  */
-public class OutputManager {
+@Component(service = DockingPanel.class, immediate = true)
+public class OutputManager implements DockingPanel {
         private static final I18n I18N = I18nFactory.getI18n(OutputManager.class);
         public static final String LOG_INFO = "output_info";
         public static final String LOG_ALL = "output_all";
@@ -58,46 +62,42 @@ public class OutputManager {
         
         private Map<String, PanelAppender> outputPanels = new HashMap<String, PanelAppender>();
         private MainOutputPanel mainPanel;
-        private static final Logger ROOT_LOGGER = Logger.getRootLogger();
-        private static final Logger GUI_LOGGER = Logger.getLogger("gui");
-        private PatternLayout loggingLayout = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
-        private PatternLayout infoLayout = new PatternLayout("%m%n");
         //All panel additional objects
         private PanelAppender.ShowMessageListener outputAllListener;
         private OutputPanel allPanel;
-        private MenuItemServiceTracker<MainLogFrame,MainLogMenuService> menuPluginTracker;
-        
-        public OutputManager(boolean debugConsole) {
+        private LogReaderService logReaderService;
+
+        @Activate
+        public void init(Map<String, String> properties) {
                 mainPanel = new MainOutputPanel();
+                boolean debugConsole = "True".equals(properties.get("logpanel.debug"));
                 makeOutputAll(debugConsole);
-                if(debugConsole) {
-                    makeOutputDebug();
+                if (debugConsole) {
+                        makeOutputDebug();
                 }
                 makeOutputInfo();
                 makeOutputWarning();
                 makeOutputError();
         }
-        public void openMenuPluginTracker(BundleContext context) {
-            menuPluginTracker = new MenuItemServiceTracker<MainLogFrame, MainLogMenuService>(context,
-                    MainLogMenuService.class,mainPanel.getActions(),mainPanel);
-            menuPluginTracker.open();
+
+        @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+        public void addLogMenu(MainLogMenuService logMenuService) {
+                mainPanel.getActions().addActionFactory(logMenuService, mainPanel);
         }
-        /**
-         * Remove the link between LOG4J and Appender and plugin tracker.
-         */
-        public void dispose() {
-                try {
-                    for (PanelAppender appender : outputPanels.values()) {
-                            if(ROOT_LOGGER.isAttached(appender)) {
-                                ROOT_LOGGER.removeAppender(appender);
-                            } else if(GUI_LOGGER.isAttached(appender)) {
-                                GUI_LOGGER.removeAppender(appender);
-                            }
-                    }
-                } finally {
-                    if(menuPluginTracker!=null) {
-                        menuPluginTracker.close();
-                    }
+
+        public void removeLogMenu(MainLogMenuService logMenuService) {
+                mainPanel.getActions().removeActionFactory(logMenuService);
+        }
+
+        @Reference
+        public void setLogReaderService(LogReaderService logReaderService) {
+                this.logReaderService = logReaderService;
+        }
+
+        public void unsetLogReaderService(LogReaderService logReaderService) {
+                this.logReaderService = null;
+                for (PanelAppender appender : outputPanels.values()) {
+                        logReaderService.removeLogListener(appender);
                 }
         }
 
@@ -107,8 +107,7 @@ public class OutputManager {
          *                   root.gui <= Info      >
          */
         private void makeOutputAll(boolean showDebug) {
-                PanelAppender app = makePanel();
-                app.setLayout(loggingLayout);
+                PanelAppender app = makePanel(LogService.LOG_DEBUG, LogService.LOG_ERROR);
                 allPanel = app.getGuiPanel();
                 outputAllListener = EventHandler.create(PanelAppender.ShowMessageListener.class,this,"onNewLogMessage","");
                 outputPanels.put(LOG_ALL, app);
@@ -124,22 +123,15 @@ public class OutputManager {
          * This panel accept root == Error      >
          */
         private void makeOutputError() {
-                PanelAppender app = makePanel();
-                app.setLayout(loggingLayout);
+                PanelAppender app = makePanel(LogService.LOG_ERROR, LogService.LOG_ERROR);
                 app.getMessageEvent().addListener(this, outputAllListener);
-                LevelRangeFilter filter = new LevelRangeFilter();
-                filter.setLevelMax(Level.FATAL);
-                filter.setLevelMin(Level.ERROR);
-                filter.setAcceptOnMatch(true);
-                app.addFilter(filter);
-                app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_ERROR, app);
-                ROOT_LOGGER.addAppender(app);
+                logReaderService.addLogListener(app);
                 mainPanel.addSubPanel(I18N.tr("Errors"), app.getGuiPanel());
         }
 
-        private PanelAppender makePanel() {
-                PanelAppender app = new PanelAppender(new OutputPanel());
+        private PanelAppender makePanel(int levelMin, int levelMax) {
+                PanelAppender app = new PanelAppender(new OutputPanel(), levelMin, levelMax);
                 return app;
         }
 
@@ -148,15 +140,10 @@ public class OutputManager {
          * This panel accept root.gui == Info      >
          */
         private void makeOutputInfo() {
-                PanelAppender app = makePanel();
-                app.setLayout(infoLayout);
+                PanelAppender app = makePanel(LogService.LOG_INFO, LogService.LOG_INFO);
                 app.getMessageEvent().addListener(this, outputAllListener);
-                LevelMatchFilter filter = new LevelMatchFilter();
-                filter.setLevelToMatch(Level.INFO.toString());
-                app.addFilter(filter);
-                app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_INFO, app);
-                GUI_LOGGER.addAppender(app);
+                logReaderService.addLogListener(app);
                 mainPanel.addSubPanel(I18N.tr("Infos"), app.getGuiPanel());
         }
 
@@ -165,15 +152,10 @@ public class OutputManager {
          * This panel accept root.gui == Info      >
          */
         private void makeOutputWarning() {
-                PanelAppender app = makePanel();
-                app.setLayout(loggingLayout);
-                LevelMatchFilter filter = new LevelMatchFilter();
+                PanelAppender app = makePanel(LogService.LOG_WARNING, LogService.LOG_WARNING);
                 app.getMessageEvent().addListener(this, outputAllListener);
-                filter.setLevelToMatch(Level.WARN.toString());
-                app.addFilter(filter);
-                app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_WARNING, app);
-                ROOT_LOGGER.addAppender(app);
+                logReaderService.addLogListener(app);
                 mainPanel.addSubPanel(I18N.tr("Warnings"), app.getGuiPanel());
         }
         /**
@@ -181,24 +163,20 @@ public class OutputManager {
          * This panel accept root == Debug      >
          */
         private void makeOutputDebug() {
-                PanelAppender app = makePanel();
-                app.setLayout(loggingLayout);
-                LevelMatchFilter filter = new LevelMatchFilter();
+                PanelAppender app = makePanel(LogService.LOG_DEBUG, LogService.LOG_DEBUG);
                 app.getMessageEvent().addListener(this, outputAllListener);
-                filter.setLevelToMatch(Level.DEBUG.toString());
-                app.addFilter(filter);
-                app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_DEBUG, app);
-                ROOT_LOGGER.addAppender(app);
+                logReaderService.addLogListener(app);
                 mainPanel.addSubPanel(I18N.tr("Debug"), app.getGuiPanel());
         }
 
-        /**
-         * Return the panel by its panel Id
-         * @return 
-         */
-        public DockingPanel getPanel() {
+        @Override
+        public DockingPanelParameters getDockingParameters() {
+                return mainPanel.getDockingParameters();
+        }
+
+        @Override
+        public JComponent getComponent() {
                 return mainPanel;
         }
-        
 }

@@ -26,24 +26,24 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.output;
+package org.orbisgis.logpanel;
 
 import java.awt.Color;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.SwingUtilities;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 import org.orbisgis.commons.events.EventException;
 import org.orbisgis.commons.events.Listener;
 import org.orbisgis.commons.events.ListenerContainer;
+import org.osgi.service.log.LogEntry;
+import org.osgi.service.log.LogListener;
+import org.osgi.service.log.LogService;
 
 /**
  * A LOG4J Appender connected with the LogPanel.
  */
-public class PanelAppender extends AppenderSkeleton {
+public class PanelAppender implements LogListener {
     public interface ShowMessageListener extends Listener<ShowMessageEventData> {
             
     }
@@ -53,14 +53,16 @@ public class PanelAppender extends AppenderSkeleton {
     public static final Color COLOR_WARNING = Color.ORANGE.darker();
     public static final Color COLOR_DEBUG = Color.BLUE;
     public static final Color COLOR_INFO = Color.BLACK;
-    private Level lastLevel = Level.INFO;
+    private int lastLevel = LogService.LOG_INFO;
     private Color lastLevelColor = getLevelColor(lastLevel);
     private OutputPanel guiPanel;
     private int lastMessageHash = 0;
     private Long lastMessageTime = 0L;
+    private int levelMinFilter;
+    private int levelMaxFilter;
     
     //Messages are stored here before being pushed in the gui
-    private Queue<LoggingEvent> leQueue = new LinkedList<LoggingEvent>();
+    private Queue<LogEntry> leQueue = new LinkedList<>();
     private AtomicBoolean processingQueue=new AtomicBoolean(false); /*!< If true a swing runnable */
     
     private ListenerContainer<ShowMessageEventData> messageEvent = new ListenerContainer<ShowMessageEventData>();
@@ -82,52 +84,45 @@ public class PanelAppender extends AppenderSkeleton {
      * @param level
      * @return The color associated
      */
-    public static Color getLevelColor(Level level) {
-        switch(level.toInt()) {
-            case Level.INFO_INT:
+    public static Color getLevelColor(int level) {
+        switch(level) {
+            case LogService.LOG_INFO:
                 return COLOR_INFO;
-            case Level.WARN_INT:
+            case LogService.LOG_WARNING:
                 return COLOR_WARNING;
-            case Level.DEBUG_INT:
+            case LogService.LOG_DEBUG:
                 return COLOR_DEBUG;
-            case Level.ERROR_INT:
-                return COLOR_ERROR;
-            case Level.FATAL_INT:
+            case LogService.LOG_ERROR:
                 return COLOR_ERROR;
             default:
                 return COLOR_INFO;
         }
     }
-    public PanelAppender(OutputPanel guiPanel) {
-        this.guiPanel = guiPanel;
-    }
 
     /**
-     * The logging event has been filtered and formated
-     * @param le 
+     * Constructor
+     * @param guiPanel Gui panel to write log messages
+     * @param levelMinFilter Included Minimum log level
+     * @param levelMaxFilter Included Maxumum log level
      */
+    public PanelAppender(OutputPanel guiPanel,int levelMinFilter, int levelMaxFilter) {
+        this.guiPanel = guiPanel;
+        this.levelMinFilter = levelMinFilter;
+        this.levelMaxFilter = levelMaxFilter;
+    }
+
+
     @Override
-    protected void append(LoggingEvent le) {
-        leQueue.add(le);
-        // Show the application when Swing will be ready
-        if(!processingQueue.getAndSet(true)) {
-            SwingUtilities.invokeLater( new ShowMessage());
+    public void logged(LogEntry entry) {
+        if(entry.getLevel() >= levelMinFilter && entry.getLevel() <= levelMaxFilter) {
+            leQueue.add(entry);
+            // Show the application when Swing will be ready
+            if (!processingQueue.getAndSet(true)) {
+                SwingUtilities.invokeLater(new ShowMessage());
+            }
         }
     }
 
-    @Override
-    public void close() {
-        //Nothing to close
-    }
-    /**
-     * This appender need a layout
-     * @return 
-     */
-    @Override
-    public boolean requiresLayout() {
-        return true;
-    }
-    
     /**
      * Output the message on each listener
      * @param text Message text
@@ -140,6 +135,7 @@ public class PanelAppender extends AppenderSkeleton {
             //Do nothing on listener error
         }
     } 
+
    /**
     * Push awaiting messages to the gui
     */ 
@@ -151,34 +147,22 @@ public class PanelAppender extends AppenderSkeleton {
         public void run(){
             try {
                 while(!leQueue.isEmpty()) {
-                    LoggingEvent le = leQueue.poll();
-                    if(le.getMessage()!=null) {
+                    LogEntry le = leQueue.poll();
+                    if(le.getMessage() != null) {
                         int messageHash = le.getMessage().hashCode();
                         if(messageHash!=lastMessageHash ||
-                            le.getTimeStamp()-lastMessageTime>SAME_MESSAGE_IGNORE_INTERVAL) {
+                            le.getTime()-lastMessageTime > SAME_MESSAGE_IGNORE_INTERVAL) {
                             lastMessageHash = messageHash;
-                            lastMessageTime = le.getTimeStamp();
+                            lastMessageTime = le.getTime();
                             //Update the color if the level change
-                            if(!le.getLevel().equals(lastLevel)) {
+                            if(le.getLevel() != lastLevel) {
                                 lastLevel = le.getLevel();
                                 lastLevelColor = getLevelColor(lastLevel);
                                 guiPanel.setDefaultColor(lastLevelColor);
                             }
-                            StringBuilder outputString = new StringBuilder();
-                            outputString.append(layout.format(le));
-                            if(layout.ignoresThrowable()) {
-                                String[] s = le.getThrowableStrRep();
-                                if (s != null) {
-                                    int len = s.length;
-                                    for(int i = 0; i < len; i++) {
-                                        outputString.append(s[i]);
-                                        outputString.append("\n");
-                                    }
-                                }
-                            }
-                            String outputStr=outputString.toString();
-                            guiPanel.print(outputStr);
-                            firePrintMessage(outputStr,lastLevelColor);
+                            String message = "\n"+le.getMessage();
+                            guiPanel.print(message);
+                            firePrintMessage(message,lastLevelColor);
                         }
                     }
                 }

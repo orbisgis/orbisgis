@@ -26,30 +26,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.logpanel;
+package org.orbisgis.logpanel.api;
 
-import java.awt.Color;
-import java.util.EventObject;
+import org.orbisgis.sif.components.actions.ActionFactoryService;
 
 /**
- * Event fired when the PanelAppender print a message.
+ * @author Nicolas Fortin
  */
-public class ShowMessageEventData extends EventObject {
-    String message;
-    Color messageColor;
-
-    public ShowMessageEventData(String message, Color messageColor, Object o) {
-        super(o);
-        this.message = message;
-        this.messageColor = messageColor;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public Color getMessageColor() {
-        return messageColor;
-    }
-    
+public interface MainLogMenuService extends ActionFactoryService<MainLogFrame> {
+    public static final String A_CLEAR_ALL = "A_CLEAR_ALL";
 }

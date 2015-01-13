@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.output;
+package org.orbisgis.logpanel;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -34,14 +34,15 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import javax.swing.*;
 import javax.swing.text.*;
-import org.apache.log4j.Logger;
 import org.orbisgis.sif.common.MenuCommonFunctions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public class OutputPanel extends JPanel {
         //Root logger, for gui logger error
-        private static final Logger LOGGER = Logger.getLogger(OutputPanel.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(OutputPanel.class);
         private static final I18n I18N = I18nFactory.getI18n(OutputPanel.class);
         private static final long serialVersionUID = 1L;
         private static final int DEFAULT_MAX_CHARACTERS = 200000;

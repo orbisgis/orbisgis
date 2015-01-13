@@ -1,6 +1,6 @@
-package org.orbisgis.viewapi.output.ext;
+package org.orbisgis.logpanel.api;
 
-import javax.swing.*;
+import javax.swing.JTextPane;
 
 /**
  * Methods exposed to plugin-ins in order to expands functionality of Logging window

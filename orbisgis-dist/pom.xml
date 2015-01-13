@@ -12,7 +12,7 @@
     <url>http://maven.apache.org</url>
     <packaging>jar</packaging>
     <build>
-        <finalName>orbisgis</f  inalName>
+        <finalName>orbisgis</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -247,6 +247,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>h2trigger-osgi</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>logpanel</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

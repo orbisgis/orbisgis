@@ -26,22 +26,31 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.output;
+package org.orbisgis.logpanel;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextPane;
 
-import org.orbisgis.view.components.actions.ActionCommands;
-import org.orbisgis.viewapi.components.actions.DefaultAction;
-import org.orbisgis.viewapi.docking.DockingPanel;
-import org.orbisgis.viewapi.docking.DockingPanelParameters;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.viewapi.output.ext.MainLogFrame;
-import org.orbisgis.viewapi.output.ext.MainLogMenuService;
+import org.orbisgis.logpanel.api.MainLogFrame;
+import org.orbisgis.logpanel.api.MainLogMenuService;
+import org.orbisgis.logpanel.icons.LogPanelIcon;
+import org.orbisgis.sif.components.actions.ActionCommands;
+import org.orbisgis.sif.components.actions.DefaultAction;
+import org.orbisgis.sif.docking.DockingPanel;
+import org.orbisgis.sif.docking.DockingPanelParameters;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.log.LogReaderService;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -50,41 +59,41 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * This panel includes all Output Type panel.
  */
-public class MainOutputPanel extends JPanel implements DockingPanel,MainLogFrame {
+public class MainOutputPanel extends JPanel implements MainLogFrame {
     private static final long serialVersionUID = 1L;
     private static final I18n I18N = I18nFactory.getI18n(MainOutputPanel.class);
     private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< docked panel properties */
     private JTabbedPane tabbedPane;
     private AtomicBoolean initialised = new AtomicBoolean(false);
     private ActionCommands actions = new ActionCommands();
-    
+
+
     public MainOutputPanel() {
         dockingParameters.setName("mainLog");
         dockingParameters.setTitle(I18N.tr("Output"));
-        dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("output"));
+        dockingParameters.setTitleIcon(LogPanelIcon.getIcon("output"));
         dockingParameters.setCloseable(true);
-        
+
         //Create the action tools
         actions.addAction(new DefaultAction(MainLogMenuService.A_CLEAR_ALL,I18N.tr("Clear all"),
-                I18N.tr("Clear all log panels"),OrbisGISIcon.getIcon("erase"),
+                I18N.tr("Clear all log panels"),LogPanelIcon.getIcon("erase"),
                 EventHandler.create(ActionListener.class,this,"onClearAll"),null));
         dockingParameters.setDockActions(actions.getActions());
-        
+
         this.setLayout(new BorderLayout());
         tabbedPane = new JTabbedPane();
         //Add the tabbed pane to this panel.
         add(tabbedPane,BorderLayout.CENTER);
-         
     }
 
-        @Override
-        public void addNotify() {
-                super.addNotify();
-                if(!initialised.getAndSet(true)) {
-                        //The following line enables to use scrolling tabs.
-                        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-                }
-        }
+    @Override
+    public void addNotify() {
+            super.addNotify();
+            if(!initialised.getAndSet(true)) {
+                    //The following line enables to use scrolling tabs.
+                    tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+            }
+    }
 
     /**
      * Get the actions manager.
@@ -101,7 +110,7 @@ public class MainOutputPanel extends JPanel implements DockingPanel,MainLogFrame
      */
     private int getSubPanel(OutputPanel subPanel) {
         for(int tabId=0;tabId<tabbedPane.getTabCount();tabId++) {
-            Component tabComp = tabbedPane.getComponentAt(tabId);
+            java.awt.Component tabComp = tabbedPane.getComponentAt(tabId);
             if(tabComp!=null && tabComp.equals(subPanel)) {
                 return tabId;
             }
@@ -125,7 +134,7 @@ public class MainOutputPanel extends JPanel implements DockingPanel,MainLogFrame
      */
     public void onClearAll() {
         for(int tabId=0;tabId<tabbedPane.getTabCount();tabId++) {
-            Component tabComp = tabbedPane.getComponentAt(tabId);
+            java.awt.Component tabComp = tabbedPane.getComponentAt(tabId);
             if(tabComp instanceof OutputPanel) {
                 OutputPanel panel = (OutputPanel)tabComp;
                 panel.onMenuClear();
@@ -136,14 +145,9 @@ public class MainOutputPanel extends JPanel implements DockingPanel,MainLogFrame
     public void addSubPanel(String tabLabel,OutputPanel subPanel) {
         tabbedPane.addTab(tabLabel, subPanel);
     }
-        @Override
+
     public DockingPanelParameters getDockingParameters() {
         return dockingParameters;
-    }
-
-    @Override
-    public JComponent getComponent() {
-        return this;
     }
 
     @Override
