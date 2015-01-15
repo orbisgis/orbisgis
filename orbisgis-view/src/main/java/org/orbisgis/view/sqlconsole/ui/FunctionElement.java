@@ -265,10 +265,14 @@ public class FunctionElement {
                 }
                 sb.append(functionName).append("(");
                 for (Map.Entry<Integer, String> entry : s.getInParams().entrySet()) {
+                    if(entry.getKey() > 1) {
+                        sb.append(", ");
+                    }
                     if(entry.getKey() > 0) { // H2 ORDINAL_POSITION=0 for return type
-                        sb.append(entry.getValue()).append(", ");
+                        sb.append(entry.getValue());
                     }
                 }
+                    sb.append(")\n");
             }
         }
         // Delete last newline character
