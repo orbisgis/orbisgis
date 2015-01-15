@@ -14,24 +14,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.carrotgarden.maven</groupId>
-                <artifactId>carrot-maven-scr-plugin</artifactId>
-                <version>3.0.3</version>
-                <configuration>
-                    <enableDebugLogging>true</enableDebugLogging>
-                    <enableErrorLogging>true</enableErrorLogging>
-                    <enableInfoLogging>true</enableInfoLogging>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>clean</goal>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>2.3.7</version>
@@ -39,7 +21,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
-                        <Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
+                        <Fragment-Host>ch.qos.logback.core</Fragment-Host>
                     </instructions>
                 </configuration>
             </plugin>

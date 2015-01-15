@@ -4,7 +4,7 @@
         <groupId>org.orbisgis</groupId>
         <artifactId>orbisgis</artifactId>
         <packaging>pom</packaging>
-        <version>5.0.0-SNAPSHOT</version>
+        <version>5.1.0-SNAPSHOT</version>
         <name>platform</name>
         <organization>
                 <name>IRSTV CNRS-FR-2488</name>
@@ -18,6 +18,7 @@
         </parent>
         <modules>
                 <module>api/framework-api</module>
+                <module>bundles/log-file-writer</module>
                 <module>framework</module>
                 <module>workspace-gui-api</module>
                 <module>orbisgis-commons</module>
