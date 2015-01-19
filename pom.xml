@@ -72,6 +72,7 @@
                     <module>external/rsyntax-language-support</module>
                     <module>external/jts-osgi</module>
                     <module>external/svg-salamander</module>
+                    <module>external/itextpdf</module>
                     <module>orbisgis-dist</module>
                 </modules>
             </profile>
@@ -102,6 +103,7 @@
                 <ogc-commons-version>1.2</ogc-commons-version>
                 <miglayout-version>4.2</miglayout-version>
                 <svg-salamander-version>1.0</svg-salamander-version>
+                <itext-version>5.0.2</itext-version>
         </properties>
         <scm>
                 <connection>scm:git:https://github.com/irstv/orbisgis.git</connection>

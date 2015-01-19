@@ -82,8 +82,8 @@
                             <includeScope>provided</includeScope>
                             <!-- Jar that are not compatible with OSGi -->
                             <excludeGroupIds>com.fifesoft, com.miglayout, com.vividsolutions, org.postgis,
-                                org.postgresql, org.dockingframes, xml-apis, com.kitfox.svg, javax.media, org.mozilla</excludeGroupIds>
-                            <excludeArtifactIds>logback-jackson, slf4j-api</excludeArtifactIds>
+                                org.postgresql, org.dockingframes, xml-apis, com.kitfox.svg, javax.media, org.mozilla, com.lowagie, rhino</excludeGroupIds>
+                            <excludeArtifactIds>logback-jackson, slf4j-api, markdown4j</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -180,11 +180,6 @@
             <version>1.2_5</version>
         </dependency>
         <dependency>
-            <groupId>javax.media</groupId>
-            <artifactId>jai_core</artifactId>
-            <version>1.1.3</version>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>workspace-gui</artifactId>
             <version>${project.version}</version>
@@ -229,6 +224,18 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>rsyntax-osgi</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>itext-osgi</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jai-osgi</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
