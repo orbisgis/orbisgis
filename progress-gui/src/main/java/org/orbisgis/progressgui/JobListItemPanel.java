@@ -112,7 +112,7 @@ public class JobListItemPanel extends JPanel {
                         sb.append("<html>");
                 }
                 if(job instanceof SwingWorkerPM) {
-                    sb.append(((SwingWorkerPM)job).getCurrentTaskName());
+                    sb.append(((SwingWorkerPM)job).getProgressMonitor().getCurrentTaskName());
                 } else {
                     sb.append(job.toString());
                 }

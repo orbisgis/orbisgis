@@ -60,7 +60,7 @@ public class JobListItem extends ContainerItemProperties {
         }
 
         public JobListItem(SwingWorkerPM job) {
-            super(job.toString(), job.getCurrentTaskName());
+            super(job.toString(), job.getProgressMonitor().getCurrentTaskName());
             this.job = job;
         }
 
@@ -86,11 +86,7 @@ public class JobListItem extends ContainerItemProperties {
          * The user click on the cancel button
          */
         public void onCancel() {
-                if(job instanceof SwingWorkerPM) {
-                    ((SwingWorkerPM) job).setCancelled(true);
-                } else {
-                    job.cancel(false);
-                }
+            job.cancel(false);
         }
         
         /**

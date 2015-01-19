@@ -89,11 +89,11 @@ public class WatchExecutorCommand implements Command {
                         String taskName = "", progression = "";
                         if (runnable instanceof SwingWorkerPM) {
                             SwingWorkerPM swingWorkerPM = (SwingWorkerPM) runnable;
-                            progression = " " + String.valueOf((int) (swingWorkerPM.getOverallProgress() * 10000) / 100) + " %";
+                            progression = " " + String.valueOf((int) (swingWorkerPM.getProgressMonitor().getOverallProgress() * 10000) / 100) + " %";
                             if (swingWorkerPM.isDone()) {
                                 progression = " done";
                             }
-                            taskName = swingWorkerPM.getCurrentTaskName();
+                            taskName = swingWorkerPM.getProgressMonitor().getCurrentTaskName();
                         } else if (runnable instanceof SwingWorker) {
                             SwingWorker swingWorker = (SwingWorker) runnable;
                             taskName = runnable.toString();
