@@ -66,7 +66,7 @@ public class SearchJob extends SwingWorkerPM {
     }
 
     private void runFilter() {
-        final ProgressMonitor pm = this.startTask(3);
+        final ProgressMonitor pm = getProgressMonitor().startTask(3);
         //Launch filter initialisation
         try {
             activeFilter.initialize(pm, source);

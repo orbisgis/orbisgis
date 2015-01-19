@@ -101,6 +101,6 @@ public class ZoomToSelection extends SwingWorkerPM {
             } else {
                 sortedSet = new LongUnion(data);
             }
-            return ReadTable.getTableSelectionEnvelope(mapContext.getDataManager(), tableReference,sortedSet, this);
+            return ReadTable.getTableSelectionEnvelope(mapContext.getDataManager(), tableReference,sortedSet, this.getProgressMonitor());
         }
 }

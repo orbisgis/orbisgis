@@ -48,4 +48,7 @@ public interface MainWindow {
      */
     public void removeVetoableChangeListener(VetoableChangeListener listener);
 
+
+    public MainStatusBar getStatusBar();
+
 }

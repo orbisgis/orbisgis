@@ -71,7 +71,7 @@ public class ExportInFileOperation extends SwingWorkerPM {
     @Override
     protected Object doInBackground() throws Exception {
         try(Connection connection = dataSource.getConnection()) {
-            driverFunction.exportTable(connection, sourceName , savedFile, new H2GISProgressMonitor(this));
+            driverFunction.exportTable(connection, sourceName , savedFile, new H2GISProgressMonitor(this.getProgressMonitor()));
         } catch (SQLException | IOException ex) {
             LOGGER.error(I18N.tr("Cannot create the file"), ex);
         }

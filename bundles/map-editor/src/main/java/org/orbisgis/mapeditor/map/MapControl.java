@@ -358,7 +358,7 @@ public class MapControl extends JComponent implements ContainerListener {
                 long begin = System.currentTimeMillis();
                 Renderer renderer = new ImageRenderer();
                 renderer.setRsProvider(resultSetProviderFactory);
-                renderer.draw(mapControl.getMapTransform(), mapContext.getLayerModel(), this);
+                renderer.draw(mapControl.getMapTransform(), mapContext.getLayerModel(), this.getProgressMonitor());
                 LOGGER.info(I18N.tr("Rendering done in {0} seconds",(System.currentTimeMillis() - begin) / 1000.0 ));
             } finally {
                 awaitingDrawing.set(false);

@@ -69,7 +69,7 @@ public class ZoomToSelectedFeatures extends SwingWorkerPM {
         @Override
         protected Object doInBackground() throws SQLException {
             try {
-                Envelope selectionEnvelope = ReadTable.getTableSelectionEnvelope(dataManager, tableName, modelSelection, this);
+                Envelope selectionEnvelope = ReadTable.getTableSelectionEnvelope(dataManager, tableName, modelSelection, this.getProgressMonitor());
                 if(selectionEnvelope!=null) {
                     mapContext.setBoundingBox(selectionEnvelope);
                 }

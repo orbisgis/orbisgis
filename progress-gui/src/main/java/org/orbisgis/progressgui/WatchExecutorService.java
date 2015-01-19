@@ -38,6 +38,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -48,7 +49,7 @@ import java.util.concurrent.TimeUnit;
  * Override ThreadPool of SwingWorker in order to fill job list.
  * @author Nicolas Fortin
  */
-@Component(service = ThreadPoolExecutor.class, immediate = true)
+@Component(immediate = true)
 public class WatchExecutorService extends ThreadPoolExecutor implements SwingWorkerPool {
 
     EventListenerList actionListenerList = new EventListenerList();

@@ -75,7 +75,7 @@ public class ImportFiles extends SwingWorkerPM {
     protected Object doInBackground() throws Exception {
         long deb = System.currentTimeMillis();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
-            ProgressMonitor filePm = this.startTask(files.size());
+            ProgressMonitor filePm = this.getProgressMonitor().startTask(files.size());
             boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             for(File file : files) {
                 String ext = FilenameUtils.getExtension(file.getName());

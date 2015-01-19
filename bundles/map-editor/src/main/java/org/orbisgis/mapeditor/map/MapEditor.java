@@ -894,7 +894,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         protected Object doInBackground() throws Exception {
             try {
                 FileOutputStream fileOutputStream = new FileOutputStream(outFile);
-                mapImageWriter.write(fileOutputStream, this);
+                mapImageWriter.write(fileOutputStream, this.getProgressMonitor());
             } catch (IOException ex) {
                 GUILOGGER.error("Error while saving map editor image", ex);
             }
@@ -922,7 +922,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         @Override
         protected List<MapElement> doInBackground() throws Exception {
             List<MapElement> mapElementsToOpen = new ArrayList<>();
-            ProgressMonitor pm = startTask(editableList.length);
+            ProgressMonitor pm = getProgressMonitor().startTask(editableList.length);
             ILayer dropLayer = mapContext.getLayerModel();
             for(EditableElement eElement : editableList) {
                 if(eElement instanceof EditableSource) {

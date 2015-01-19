@@ -57,7 +57,7 @@ public class ReadMapContextJob extends SwingWorkerPM {
 
     @Override
     protected Object doInBackground() throws Exception {
-        editableMap.open(this);
+        editableMap.open(this.getProgressMonitor());
         editorManager.openEditable(editableMap);
         return null;
     }

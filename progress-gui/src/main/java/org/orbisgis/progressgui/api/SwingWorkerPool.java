@@ -30,12 +30,13 @@ package org.orbisgis.progressgui.api;
 
 import java.awt.event.ActionListener;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
 
 /**
  * This instance keep track of active SwingWorkers
  * @author Nicolas Fortin
  */
-public interface SwingWorkerPool {
+public interface SwingWorkerPool extends ExecutorService {
 
     /**
      * @param actionListener This listener will receiver actionEvent with new SwingWorker (source)

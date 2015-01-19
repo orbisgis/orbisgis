@@ -78,7 +78,7 @@ public class DropTable extends SwingWorkerPM {
             this.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,
                     EventHandler.create(PropertyChangeListener.class, st, "cancel"));
             connection.setAutoCommit(false);
-            ProgressMonitor dropPm = this.startTask(tableToDelete.length);
+            ProgressMonitor dropPm = this.getProgressMonitor().startTask(tableToDelete.length);
             for (String resource : tableToDelete) {
                 TableLocation tableLocation = TableLocation.parse(resource,
                         JDBCUtilities.isH2DataBase(connection.getMetaData()));
@@ -94,11 +94,8 @@ public class DropTable extends SwingWorkerPM {
                 dropPm.endTask();
             }
             connection.commit();
-            SwingUtilities.invokeAndWait(this);
         } catch (SQLException ex) {
             LOGGER.error(I18N.trc("Tables are database tables, drop means delete tables", "Cannot drop the tables"), ex);
-        } catch (InvocationTargetException | InterruptedException ex) {
-            LOGGER.trace(ex.getLocalizedMessage(), ex);
         }
         return null;
     }

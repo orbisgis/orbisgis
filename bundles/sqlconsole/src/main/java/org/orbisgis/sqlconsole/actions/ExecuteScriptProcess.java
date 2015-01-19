@@ -123,7 +123,7 @@ public class ExecuteScriptProcess extends SwingWorkerPM {
     @Override
     protected Object doInBackground() throws Exception {
         long t1 = System.currentTimeMillis();
-        ProgressMonitor pm = startTask(I18N.tr("Execute SQL Request"), panel.getScriptPanel().getLineCount());
+        ProgressMonitor pm = getProgressMonitor().startTask(I18N.tr("Execute SQL Request"), panel.getScriptPanel().getLineCount());
         try(Connection connection = ds.getConnection()) {
             try(Statement st = connection.createStatement()) {
                 st.setQueryTimeout(timeOut);

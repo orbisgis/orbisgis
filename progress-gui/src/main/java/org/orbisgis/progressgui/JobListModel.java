@@ -111,6 +111,7 @@ public class JobListModel extends AbstractListModel {
             switch ((SwingWorker.StateValue)evt.getNewValue()) {
                 case DONE:
                     jobRemoved.add((SwingWorker)evt.getSource());
+                    onJobListChange();
                     break;
                 default:
                     jobUpdated.add((SwingWorker)evt.getSource());

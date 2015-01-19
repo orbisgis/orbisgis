@@ -45,6 +45,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FilenameUtils;
@@ -125,6 +126,7 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
         //private ServiceTracker<DriverFunction, DriverFunction> driverFunctionTracker;
         private List<DriverFunction> fileDrivers = new LinkedList<>();
         private DataManager dataManager;
+        private ExecutorService executorService = null;
 
         /**
          * For the Unit test purpose
@@ -135,7 +137,17 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                 return sourceList;
         }
 
-        @Override
+        @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+        public void setExecutorService(ExecutorService executorService) {
+            this.executorService = executorService;
+        }
+
+        public void unsetExecutorService(ExecutorService executorService) {
+            this.executorService = null;
+        }
+
+
+    @Override
         @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
         public void addDriverFunction(DriverFunction driverFunction) {
             fileDrivers.add(driverFunction);
@@ -372,8 +384,7 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
             if (UIFactory.showDialog(linkSourcePanel, true, true)) {
                 // We can retrieve the files that have been selected by the user
                 List<File> files = Arrays.asList(linkSourcePanel.getSelectedFiles());
-                ImportFiles importFileJob = new ImportFiles(this, this, files, dataManager, type);
-                importFileJob.execute();
+                executeJob(new ImportFiles(this, this, files, dataManager, type));
             }
         }
 
@@ -458,10 +469,19 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                         I18N.tr("Delete GeoCatalog tables"),
                         JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (option == JOptionPane.YES_OPTION) {
-                    new DropTable(dataManager.getDataSource(), sources.toArray(new String[sources.size()]), this).execute();
+                    executeJob(new DropTable(dataManager.getDataSource(), sources.toArray(new String[sources.size()])
+                            , this));
                 }
             }
     }
+
+        private void executeJob(SwingWorker worker) {
+            if(executorService == null) {
+                worker.execute();
+            } else {
+                executorService.execute(worker);
+            }
+        }
 
         /**
          * The user can export a source in a file.
@@ -480,9 +500,9 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                         outfilePanel.loadState();
                         if (UIFactory.showDialog(outfilePanel, true, true)) {
                                 final File savedFile = outfilePanel.getSelectedFile().getAbsoluteFile();
-                                new ExportInFileOperation(source,
-                                savedFile, getExportDriverFromExt(FilenameUtils.getExtension(savedFile.getName()),
-                                        DriverFunction.IMPORT_DRIVER_TYPE.COPY),dataManager.getDataSource()).execute();
+                            executeJob(new ExportInFileOperation(source, savedFile, getExportDriverFromExt
+                                    (FilenameUtils.getExtension(savedFile.getName()), DriverFunction
+                                            .IMPORT_DRIVER_TYPE.COPY), dataManager.getDataSource()));
                         }
                 }
         }
@@ -545,7 +565,7 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                     // for each folder, we apply the method processFolder.
                     // We use the filter selected by the user in the panel
                     // to succeed in this operation.
-                    new ImportFiles(this, this, fileToLoad, dataManager, type).execute();
+                    executeJob(new ImportFiles(this, this, fileToLoad, dataManager, type));
                 }
         }
 

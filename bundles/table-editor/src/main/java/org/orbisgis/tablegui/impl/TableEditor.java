@@ -1130,9 +1130,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                     try {
                         try {
                             if (tableEditableElement.isOpen()) {
-                                tableEditableElement.close(this);
+                                tableEditableElement.close(this.getProgressMonitor());
                             }
-                            tableEditableElement.open(this);
+                            tableEditableElement.open(this.getProgressMonitor());
                         } catch (UnsupportedOperationException | EditableElementException ex) {
                             LOGGER.error(I18N.tr("Error while loading the table editor"), ex);
                         }
@@ -1228,8 +1228,8 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 } catch (SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
-                table.close(this);
-                table.open(this);
+                table.close(this.getProgressMonitor());
+                table.open(this.getProgressMonitor());
                 try {
                     ResultSetMetaData meta = table.getRowSet().getMetaData();
                     for(int col=1; col < meta.getColumnCount();col++) {

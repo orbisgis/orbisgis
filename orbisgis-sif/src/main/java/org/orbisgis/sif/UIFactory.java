@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
+
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -153,11 +155,15 @@ public class UIFactory {
          * @return
          */
         public static boolean showDialog(UIPanel[] panels, boolean okCancel, boolean onTop) {
-                if(mainFrame==null) {
+                if (mainFrame == null) {
                         //No way mainframe must be used,
                         //resources can not be freed otherwise
                         throw new RuntimeException("Main Frame is not set");
                 }
+                return showDialog(panels, okCancel, onTop, mainFrame);
+        }
+
+        public static boolean showDialog(UIPanel[] panels, boolean okCancel, boolean onTop, Window parent) {
                 AbstractOutsideFrame dlg;
                 if (panels.length == 0) {
                         throw new IllegalArgumentException(
@@ -166,14 +172,14 @@ public class UIFactory {
                         if (okCancel) {
                                 dlg = getSimpleDialog(panels[0]);
                         } else {
-                                dlg = getSimpleDialog(panels[0], mainFrame, false);
+                                dlg = getSimpleDialog(panels[0], parent, false);
                         }
                 } else {
                         dlg = getWizard(panels);
                 }
                 dlg.setModal(true);
                 dlg.pack();
-                dlg.setLocationRelativeTo(mainFrame);
+                dlg.setLocationRelativeTo(parent);
                 dlg.setAlwaysOnTop(onTop);
                 // Show the dialog, block until the user click on a button
                 dlg.setVisible(true);

@@ -71,7 +71,7 @@ public class ReadStoredMap extends SwingWorkerPM<ReadStoredMap.DoRename, ReadSto
     protected DoRename doInBackground() throws Exception {
         for (int elIndex = 0; elIndex < mapContextFiles.size(); elIndex++) {
             TreeLeafMapElement mapEl = mapContextFiles.get(elIndex);
-            MapContext el = mapEl.getMapElement(this, mapEl.getDataManager()).getMapContext();
+            MapContext el = mapEl.getMapElement(this.getProgressMonitor(), mapEl.getDataManager()).getMapContext();
             if (el instanceof OwsMapContext) {
                 OwsMapContext mapContext = (OwsMapContext) el;
                 if (mapContext.getJAXBObject().getGeneral() != null) {

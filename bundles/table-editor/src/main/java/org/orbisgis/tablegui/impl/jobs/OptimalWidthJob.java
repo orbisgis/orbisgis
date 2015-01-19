@@ -59,7 +59,7 @@ public class OptimalWidthJob extends SwingWorkerPM<Integer, Integer> {
         @Override
         protected Integer doInBackground() throws Exception {
             return getColumnOptimalWidth(table,table.getRowCount(), Integer.MAX_VALUE,
-                    selectedColumn, this);
+                    selectedColumn, this.getProgressMonitor());
         }
 
         @Override

@@ -110,4 +110,14 @@ public class StatusBar extends JPanel {
                 }
                 panel.add(component);                
         }
+
+        /**
+         * Remove component from status bar.
+         * @param component Component to remove.
+         */
+        public void removeComponent(JComponent component) {
+                leftToolbar.remove(component);
+                centerToolBar.remove(component);
+                rightToolbar.remove(component);
+        }
 }

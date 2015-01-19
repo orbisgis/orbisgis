@@ -97,7 +97,7 @@ public class SortJob extends SwingWorkerPM<Collection<Integer>, Collection<Integ
                 modelIndex = new IntegerUnion(0, model.getRowCount() - 1);
             }
             try(Connection connection = dataSource.getConnection()) {
-                return ReadTable.getSortedColumnRowIndex(connection, model.getTableName(), columnSortName, sortRequest.getSortOrder() == SortOrder.ASCENDING, this);
+                return ReadTable.getSortedColumnRowIndex(connection, model.getTableName(), columnSortName, sortRequest.getSortOrder() == SortOrder.ASCENDING, this.getProgressMonitor());
             }
         }
 

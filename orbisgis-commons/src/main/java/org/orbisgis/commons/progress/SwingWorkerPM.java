@@ -29,6 +29,7 @@
 package org.orbisgis.commons.progress;
 
 import javax.swing.*;
+import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 
 /**
@@ -36,111 +37,72 @@ import java.beans.PropertyChangeListener;
  * Extend this class and use it as SwingWorker is documented in the Java API.This class compute the progression of
  * the swing worker and give the ability to set a task name.
  */
-public abstract class SwingWorkerPM<T, V> extends SwingWorker<T, V> implements ProgressMonitor {
-    private final RootProgressMonitor defaultProgressMonitor;
+public abstract class SwingWorkerPM<T, V> extends SwingWorker<T, V> {
+    private final RootProgressMonitor progressMonitor;
 
     /**
      * Default constructor no default task name
      * @param taskName
      */
     protected SwingWorkerPM(String taskName, long subprocessCount) {
-        this.defaultProgressMonitor = new RootProgressMonitor(taskName, subprocessCount);
-        defaultProgressMonitor.setPropertyChangeSupport(this.getPropertyChangeSupport());
+        this.progressMonitor = new RootProgressMonitor(taskName, subprocessCount);
+        setListeners();
     }
 
     /**
      * Default constructor no default task name.
      */
     protected SwingWorkerPM() {
-        this.defaultProgressMonitor = new RootProgressMonitor(1);
-        defaultProgressMonitor.setPropertyChangeSupport(this.getPropertyChangeSupport());
+        this.progressMonitor = new RootProgressMonitor(1);
+        setListeners();
+    }
+
+    public void setTaskName(String taskName) {
+        progressMonitor.setTaskName(taskName);
     }
 
     /**
      * Default constructor no default task name.
      */
     protected SwingWorkerPM(long subprocessCount) {
-        this.defaultProgressMonitor = new RootProgressMonitor(subprocessCount);
-        defaultProgressMonitor.setPropertyChangeSupport(this.getPropertyChangeSupport());
+        this.progressMonitor = new RootProgressMonitor(subprocessCount);
+        setListeners();
     }
 
-    @Override
+    private void setListeners() {
+        progressMonitor.addPropertyChangeListener(ProgressMonitor.PROP_PROGRESSION, EventHandler.create
+                (PropertyChangeListener.class, this, "onProgressMonitorChange"));
+        progressMonitor.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, EventHandler.create
+                (PropertyChangeListener.class, this, "cancel"));
+    }
+
+    public void onProgressMonitorChange() {
+        setProgress((int)(progressMonitor.getOverallProgress() * 100));
+    }
+
+    public RootProgressMonitor getProgressMonitor() {
+        return progressMonitor;
+    }
+
     public void addPropertyChangeListener(String property, PropertyChangeListener listener) {
-        defaultProgressMonitor.addPropertyChangeListener(property, listener);
-    }
-
-    @Override
-    public void setTaskName(String taskName) {
-        String oldValue = defaultProgressMonitor.getCurrentTaskName();
-        defaultProgressMonitor.setTaskName(taskName);
-        firePropertyChange(ProgressMonitor.PROP_TASKNAME, oldValue, taskName);
-    }
-
-    @Override
-    public ProgressMonitor startTask(String taskName, long end) {
-        return defaultProgressMonitor.startTask(taskName, end);
-    }
-
-    @Override
-    public ProgressMonitor startTask(long end) {
-        return defaultProgressMonitor.startTask(end);
+        getPropertyChangeSupport().addPropertyChangeListener(property, listener);
     }
 
     private void updateProgression() {
-        setProgress((int)(defaultProgressMonitor.getOverallProgress() * 100));
-    }
-
-    @Override
-    public void endTask() {
-        defaultProgressMonitor.endTask();
-        updateProgression();
-    }
-
-    @Override
-    public String getCurrentTaskName() {
-        return defaultProgressMonitor.getCurrentTaskName();
+        setProgress((int) (progressMonitor.getOverallProgress() * 100));
     }
 
     @Override
     public void finalize() throws Throwable {
         super.finalize();
-        defaultProgressMonitor.finalize();
-    }
-
-    @Override
-    public void progressTo(long progress) {
-        defaultProgressMonitor.progressTo(progress);
-        updateProgression();
-    }
-
-    @Override
-    public double getOverallProgress() {
-        return defaultProgressMonitor.getOverallProgress();
-    }
-
-    @Override
-    public long getCurrentProgress() {
-        return defaultProgressMonitor.getCurrentProgress();
-    }
-
-    @Override
-    public long getEnd() {
-        return defaultProgressMonitor.getEnd();
+        progressMonitor.finalize();
     }
 
     /**
-     * @param cancelled New value
-     * If called a second time use {@link Thread#interrupt()}
+     * Cancel Job
      */
-    @Override
-    public void setCancelled(boolean cancelled) {
-        if(cancelled) {
-            if(!defaultProgressMonitor.isCancelled()) {
-                defaultProgressMonitor.setCancelled(true);
-                cancel(false);
-            } else {
-                cancel(true);
-            }
-        }
+    public void cancel() {
+        progressMonitor.setCancelled(true);
+        cancel(false);
     }
 }

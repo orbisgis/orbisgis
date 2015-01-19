@@ -89,11 +89,11 @@ public class ComputeFieldStatistics extends SwingWorkerPM {
                     sortedSet = new IntegerUnion(statisticsRowFilter);
                 }
                 try (Connection connection = ds.getConnection()) {
-                    stats = ReadTable.computeStatsLocal(connection, table, fieldName, sortedSet, this);
+                    stats = ReadTable.computeStatsLocal(connection, table, fieldName, sortedSet, this.getProgressMonitor());
                 }
             } else {
                 try (Connection connection = ds.getConnection()) {
-                    stats = ReadTable.computeStatsSQL(connection, table, fieldName, this);
+                    stats = ReadTable.computeStatsSQL(connection, table, fieldName, this.getProgressMonitor());
                 }
             }
             // Show table statistics

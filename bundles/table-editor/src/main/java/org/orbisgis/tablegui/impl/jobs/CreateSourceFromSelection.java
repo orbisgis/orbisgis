@@ -97,7 +97,7 @@ public class CreateSourceFromSelection extends SwingWorkerPM {
         @Override
         protected Object doInBackground() throws Exception {
             try {
-                CreateTable.createTableFromRowPkSelection(dataSource, tableName, selectedRows, newName, this);
+                CreateTable.createTableFromRowPkSelection(dataSource, tableName, selectedRows, newName, this.getProgressMonitor());
             } catch (SQLException e) {
                 GUILOGGER.error("The selection cannot be created.", e);
                 if(newName!=null && !newName.isEmpty()) {

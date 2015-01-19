@@ -48,10 +48,6 @@ public class RootProgressMonitor extends DefaultProgressMonitor {
         super(subprocess_size, null);
     }
 
-    public void setPropertyChangeSupport(PropertyChangeSupport listeners) {
-        this.propertyChangeSupport = listeners;
-    }
-
     /**
      *
      * @param taskName

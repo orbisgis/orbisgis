@@ -51,6 +51,7 @@ import javax.swing.JPanel;
 import org.orbisgis.commons.events.OGVetoableChangeSupport;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.mainframe.api.MainFrameAction;
+import org.orbisgis.mainframe.api.MainStatusBar;
 import org.orbisgis.mainframe.api.MainWindow;
 import org.orbisgis.mainframe.icons.MainFrameIcon;
 import org.orbisgis.sif.UIFactory;
@@ -287,5 +288,10 @@ public class MainFrame extends JFrame implements MainWindow {
     @Override
     public void removeVetoableChangeListener(VetoableChangeListener listener) {
         vetoableChangeSupport.removeVetoableChangeListener(listener);
+    }
+
+    @Override
+    public MainStatusBar getStatusBar() {
+        return mainFrameStatusBar;
     }
 }
