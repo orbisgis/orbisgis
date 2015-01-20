@@ -58,8 +58,8 @@
                 </executions>
                 <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
-                    <poDirectory>src/main/resources/org/orbisgis/view/toc/</poDirectory>
-                    <targetBundle>org.orbisgis.view.toc.translation.Messages</targetBundle>
+                    <poDirectory>src/main/resources/org/orbisgis/view/toc/translation/</poDirectory>
+                    <targetBundle>org.orbisgis.view.toc.Messages</targetBundle>
                     <keywords>-ktr</keywords>
                     <outputFormat>properties</outputFormat>
                 </configuration>

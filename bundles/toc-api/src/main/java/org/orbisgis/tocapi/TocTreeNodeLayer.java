@@ -31,6 +31,7 @@ package org.orbisgis.tocapi;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import org.orbisgis.coremap.layerModel.ILayer;
@@ -48,7 +49,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class TocTreeNodeLayer implements MutableTreeNode {
         private ILayer layer;
-        protected final static I18n I18N = I18nFactory.getI18n(TocTreeNodeLayer.class);
+        protected final static I18n I18N = I18nFactory.getI18n(TocTreeNodeLayer.class, Locale.getDefault(), I18nFactory.FALLBACK);
         private static final Logger LOGGER = LoggerFactory.getLogger(TocTreeNodeLayer.class);
 
         public TocTreeNodeLayer(ILayer layer) {
