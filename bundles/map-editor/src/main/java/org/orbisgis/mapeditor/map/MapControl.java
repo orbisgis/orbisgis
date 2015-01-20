@@ -55,6 +55,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.JComponent;
+import javax.swing.SwingWorker;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -69,6 +70,7 @@ import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.util.HashSet;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -85,7 +87,7 @@ public class MapControl extends JComponent implements ContainerListener {
 	private static int lastMapControlId = 0;
         private static final long serialVersionUID = 1L;
         private AtomicBoolean awaitingDrawing=new AtomicBoolean(false); /*!< A drawing process is currently requested, it is useless to request another */
-
+    private ExecutorService executorService;
 
     /** The map will draw the last generated image without querying the data. */
 	public static final int UPDATED = 0;
@@ -132,7 +134,17 @@ public class MapControl extends JComponent implements ContainerListener {
                 }
         }
 
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 
+    private void execute(SwingWorker swingWorker) {
+        if(executorService != null) {
+            executorService.execute(swingWorker);
+        } else {
+            swingWorker.execute();
+        }
+    }
 	final public void initMapControl(Automaton defaultTool) throws TransitionException {
 		synchronized (this) {
             int mapControlId = lastMapControlId++;
@@ -297,7 +309,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
                     // now we start the actual drawer
                     drawer = new Drawer(mapContext, awaitingDrawing, this, resultSetProviderFactory);
-                    drawer.execute();
+                    execute(drawer);
                 } else {
                     // Currently drawing with a mix of old and new map context !
                     // Stop the drawing
