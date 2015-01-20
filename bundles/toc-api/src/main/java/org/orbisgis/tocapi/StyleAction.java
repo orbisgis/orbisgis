@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions;
+package org.orbisgis.tocapi;
 
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -39,8 +39,6 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.sif.components.actions.DefaultAction;
-import org.orbisgis.tocapi.TocExt;
-import org.orbisgis.view.toc.TocTreeNodeStyle;
 import org.orbisgis.view.toc.TocTreeSelectionIterable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

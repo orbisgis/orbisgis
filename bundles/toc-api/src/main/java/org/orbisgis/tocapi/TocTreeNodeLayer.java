@@ -26,19 +26,20 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc;
+package org.orbisgis.tocapi;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
-import org.apache.log4j.Logger;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.LayerException;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.commons.utils.CollectionUtils;
-import org.orbisgis.view.components.resourceTree.EnumIterator;
+import org.orbisgis.sif.components.resourceTree.EnumIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -48,7 +49,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class TocTreeNodeLayer implements MutableTreeNode {
         private ILayer layer;
         protected final static I18n I18N = I18nFactory.getI18n(TocTreeNodeLayer.class);
-        private static final Logger LOGGER = Logger.getLogger(TocTreeNodeLayer.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(TocTreeNodeLayer.class);
 
         public TocTreeNodeLayer(ILayer layer) {
                 if(layer==null) {
@@ -140,7 +141,7 @@ public class TocTreeNodeLayer implements MutableTreeNode {
                 for(int i=0;i<getChildCount();i++) {
                         nodes.add(getChildAt(i));
                 }
-                return new EnumIterator<TreeNode>(nodes.iterator());
+                return new EnumIterator<>(nodes.iterator());
         }
 
         @Override

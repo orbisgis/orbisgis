@@ -34,8 +34,8 @@ import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.viewapi.edition.AbstractEditableElement;
-import org.orbisgis.viewapi.edition.EditableElementException;
+import org.orbisgis.sif.edition.AbstractEditableElement;
+import org.orbisgis.sif.edition.EditableElementException;
 
 /**
  * This editable correspond to a Layer on the {@link Toc}.

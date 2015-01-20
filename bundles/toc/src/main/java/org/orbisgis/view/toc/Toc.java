@@ -31,6 +31,7 @@ package org.orbisgis.view.toc;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.coremap.process.ZoomToSelection;
 import org.orbisgis.editorjdbc.EditableSource;
+import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
@@ -40,8 +41,12 @@ import org.orbisgis.sif.edition.EditableTransferEvent;
 import org.orbisgis.sif.edition.EditableTransferListener;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorManager;
+import org.orbisgis.tocapi.LayerAction;
+import org.orbisgis.tocapi.StyleAction;
 import org.orbisgis.tocapi.TocActionFactory;
 import org.orbisgis.tocapi.TocExt;
+import org.orbisgis.tocapi.TocTreeNodeLayer;
+import org.orbisgis.tocapi.TocTreeNodeStyle;
 import org.orbisgis.view.toc.icons.TocIcon;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.wms.Capabilities;
@@ -126,8 +131,6 @@ import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.view.toc.actions.EditLayerSourceAction;
-import org.orbisgis.view.toc.actions.LayerAction;
-import org.orbisgis.view.toc.actions.StyleAction;
 import org.orbisgis.view.toc.actions.cui.SimpleStyleEditor;
 import org.orbisgis.view.toc.actions.cui.legend.wizard.LegendWizard;
 import org.orbisgis.view.toc.wms.LayerConfigurationPanel;
@@ -172,6 +175,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
         private PropertyChangeListener mapContextPropertyChange = EventHandler.create(PropertyChangeListener.class,this,"onMapContextPropertyChange","");
         private EditorManager editorManager;
         private ExecutorService executorService;
+        private CoreWorkspace coreWorkspace;
         /**
          * Constructor
          */
@@ -197,8 +201,24 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
             this.executorService = null;
         }
 
+        @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+        public void addTocActionFactory(TocActionFactory tocActionFactory) {
+            popupActions.addActionFactory(tocActionFactory, this);
+        }
 
-        @Activate
+        public void removeTocActionFactory(TocActionFactory tocActionFactory) {
+            popupActions.removeActionFactory(tocActionFactory);
+        }
+
+        @Reference
+        public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
+            this.coreWorkspace = coreWorkspace;
+        }
+
+        public void unsetCoreWorkspace(CoreWorkspace coreWorkspace) {
+            this.coreWorkspace = null;
+        }
+    @Activate
         public void activate() {
                 //Set docking parameters
                 dockingPanelParameters = new DockingPanelParameters();
@@ -513,7 +533,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                 treeRenderer = new TocRenderer(tree);
                 tree.setCellRenderer(treeRenderer);
                 setEmptyLayerModel(tree);
-                tree.setCellEditor(new TocTreeEditor(tree));
+                tree.setCellEditor(new TocTreeEditor());
                 tree.addMouseListener(new PopupMouselistener());
                 //Add a tree selection listener
                 tree.getSelectionModel().addTreeSelectionListener(
@@ -1082,7 +1102,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
     public void onAddWMSLayer() {
         SRSPanel srsPanel = new SRSPanel();
         LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel(srsPanel);
-        WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);
+        WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration, executorService, coreWorkspace);
         SIFWizard wizard = UIFactory.getWizard(new UIPanel[]{wmsConnection,
             layerConfiguration, srsPanel});
         wizard.setTitle(wmsConnection.getTitle());

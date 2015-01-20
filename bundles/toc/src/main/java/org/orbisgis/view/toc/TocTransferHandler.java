@@ -40,6 +40,7 @@ import org.orbisgis.editorjdbc.EditableSource;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorTransferHandler;
 import org.orbisgis.sif.edition.TransferableEditableElement;
+import org.orbisgis.tocapi.TocTreeNodeLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;

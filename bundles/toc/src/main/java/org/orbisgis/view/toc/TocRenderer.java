@@ -51,6 +51,8 @@ import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.sif.components.renderers.IconCellRendererUtility;
 import org.orbisgis.sif.components.renderers.TreeLaFRenderer;
+import org.orbisgis.tocapi.TocTreeNodeLayer;
+import org.orbisgis.tocapi.TocTreeNodeStyle;
 import org.orbisgis.view.toc.icons.TocIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

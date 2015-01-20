@@ -36,7 +36,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.view.components.button.JButtonTextField;
+import org.orbisgis.sif.components.button.JButtonTextField;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

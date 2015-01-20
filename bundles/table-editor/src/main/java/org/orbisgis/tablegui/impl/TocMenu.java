@@ -36,6 +36,7 @@ import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
+import org.orbisgis.tocapi.LayerAction;
 import org.orbisgis.tocapi.TocActionFactory;
 import org.orbisgis.tocapi.TocExt;
 import org.osgi.service.component.annotations.Component;
@@ -105,7 +106,7 @@ public class TocMenu implements TocActionFactory {
         private EditorManager editorManager;
 
         public OpenAttributes(TocExt toc, DataManager dataManager, EditorManager editorManager) {
-            super(TocActionFactory.A_OPEN_ATTRIBUTES, I18N.tr("Open the attributes"), TableEditorIcon.getIcon("table"));
+            super(toc, TocActionFactory.A_OPEN_ATTRIBUTES, I18N.tr("Open the attributes"), TableEditorIcon.getIcon("table"));
             setToolTipText(I18N.tr("Open a spreadsheet view of the attributes."));
             this.toc = toc;
             this.dataManager = dataManager;

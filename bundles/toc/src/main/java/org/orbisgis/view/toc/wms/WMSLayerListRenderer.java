@@ -29,10 +29,11 @@
 package org.orbisgis.view.toc.wms;
 
 import com.vividsolutions.wms.MapLayer;
+import org.orbisgis.sif.components.renderers.ListLaFRenderer;
+
 import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import org.orbisgis.view.components.renderers.ListLaFRenderer;
 
 /**
  * Renderer dedicated to WMS Layers

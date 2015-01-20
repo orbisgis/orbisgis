@@ -26,12 +26,10 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions;
+package org.orbisgis.tocapi;
 
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.sif.components.actions.DefaultAction;
-import org.orbisgis.tocapi.TocExt;
-import org.orbisgis.view.toc.TocTreeNodeLayer;
 import org.orbisgis.view.toc.TocTreeSelectionIterable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,6 +118,18 @@ public class LayerAction extends DefaultAction {
      */
     public LayerAction(TocExt toc,String actionId, String actionLabel, String actionToolTip, Icon icon, ActionListener actionListener, KeyStroke keyStroke) {
         super(actionId, actionLabel, actionToolTip, icon, actionListener, keyStroke);
+        this.toc = toc;
+    }
+
+    /**
+     * Constructor
+     * @param actionId Action identifier, should be unique for ActionCommands
+     * @param actionLabel I18N label short label
+     * @param icon Icon
+     * @param toc Toc instance
+     */
+    public LayerAction(TocExt toc, String actionId, String actionLabel, Icon icon) {
+        super(actionId, actionLabel, icon);
         this.toc = toc;
     }
 
