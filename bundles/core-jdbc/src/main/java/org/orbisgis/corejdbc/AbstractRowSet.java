@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.corejdbc.internal;
+package org.orbisgis.corejdbc;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.utilities.SpatialResultSet;

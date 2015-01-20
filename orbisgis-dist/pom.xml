@@ -271,7 +271,13 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>postgis-jts-osgi</artifactId>
+            <artifactId>mapeditor</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>toc</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

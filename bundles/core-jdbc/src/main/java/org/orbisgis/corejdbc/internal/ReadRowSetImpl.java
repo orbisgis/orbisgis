@@ -36,6 +36,7 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.corejdbc.AbstractRowSet;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.common.IntegerUnion;
