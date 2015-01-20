@@ -30,7 +30,6 @@ package org.orbisgis.tocapi;
 
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.sif.components.actions.DefaultAction;
-import org.orbisgis.view.toc.TocTreeSelectionIterable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

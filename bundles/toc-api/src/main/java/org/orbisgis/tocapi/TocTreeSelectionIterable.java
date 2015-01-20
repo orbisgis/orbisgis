@@ -27,7 +27,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.toc;
+package org.orbisgis.tocapi;
 
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
