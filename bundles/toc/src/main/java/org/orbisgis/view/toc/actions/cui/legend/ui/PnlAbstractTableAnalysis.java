@@ -29,7 +29,7 @@
 package org.orbisgis.view.toc.actions.cui.legend.ui;
 
 import net.miginfocom.swing.MigLayout;
-import org.apache.log4j.Logger;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.coremap.renderer.se.Symbolizer;
 import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.LineParameters;
@@ -44,13 +44,15 @@ import org.orbisgis.view.toc.actions.cui.legend.components.ColorScheme;
 import org.orbisgis.view.toc.actions.cui.legend.panels.SettingsPanel;
 import org.orbisgis.view.toc.actions.cui.legend.panels.TablePanel;
 import org.orbisgis.view.toc.actions.cui.legend.panels.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 
 import javax.sql.DataSource;
-import javax.swing.*;
+import javax.swing.JPanel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -65,7 +67,7 @@ import java.util.SortedSet;
 public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
         extends AbstractFieldPanel implements IClassificationLegend {
 
-    public static final Logger LOGGER = Logger.getLogger(PnlAbstractTableAnalysis.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(PnlAbstractTableAnalysis.class);
 
     private MappedLegend<K,U> legend;
     private DataSource ds;
@@ -138,7 +140,7 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
      * @return A fresh unique value analysis.
      */
     public final MappedLegend<K,U> createColouredClassification(SortedSet<K> set,
-                                                                org.orbisgis.progress.ProgressMonitor pm,
+                                                                ProgressMonitor pm,
                                                                        ColorScheme scheme) {
 
         int expected = set.size();
@@ -164,12 +166,6 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
             }
             colors.add(known.get(known.size()-1));
         }
-        int size = set.size();
-        double m = size == 0 ? 0 : 50.0/(double)size;
-        int i=0;
-        int n = 0;
-        pm.progressTo(50);
-        pm.startTask(CREATE_CLASSIF , 100);
         U lp = (getLegend()).getFallbackParameters();
         MappedLegend<K,U> newRL = getEmptyAnalysis();
         newRL.setFallbackParameters(lp);
@@ -177,21 +173,15 @@ public abstract class PnlAbstractTableAnalysis<K, U extends LineParameters>
             throw new IllegalStateException("Wrong state");
         }
         Iterator<Color> it = colors.iterator();
+        ProgressMonitor colourParamProgress = pm.startTask(set.size());
         for(K s : set){
             U value = getColouredParameters(lp, it.next());
             newRL.put(s, value);
-            if(i*m>n){
-                n++;
-                pm.progressTo(50*i/size);
-            }
             if(pm.isCancelled()){
-                pm.endTask();
                 return null;
             }
-            i++;
+            colourParamProgress.endTask();
         }
-        pm.endTask();
-        pm.progressTo(100);
         postProcess(newRL);
         return newRL;
     }

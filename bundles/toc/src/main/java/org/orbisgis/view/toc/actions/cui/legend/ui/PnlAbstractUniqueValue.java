@@ -29,9 +29,10 @@
 package org.orbisgis.view.toc.actions.cui.legend.ui;
 
 import net.miginfocom.swing.MigLayout;
-import org.apache.log4j.Logger;
+import org.orbisgis.commons.progress.SwingWorkerPM;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.legend.thematic.LineParameters;
@@ -41,7 +42,6 @@ import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.view.background.*;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legend.components.ColorConfigurationPanel;
 import org.orbisgis.view.toc.actions.cui.legend.components.ColorScheme;
@@ -81,11 +81,10 @@ import java.util.TreeSet;
 public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends PnlAbstractTableAnalysis<String,U> {
 
     private static final I18n I18N = I18nFactory.getI18n(PnlAbstractUniqueValue.class);
-    public static final Logger LOGGER = Logger.getLogger(PnlAbstractUniqueValue.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(PnlAbstractUniqueValue.class);
 
     private ColorConfigurationPanel colorConfigPanel;
     private JPanel classifPanel;
-    private BackgroundListener background;
 
     private static final String COMPUTED = "Computed";
     protected final static String JOB_NAME = "recodeSelectDistinct";
@@ -237,9 +236,8 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
     public void onCreateClassification(ActionEvent e){
         if(e.getActionCommand().equals("click")){
             String fieldName = getFieldName();
-            SelectDistinctJob selectDistinct = new SelectDistinctJob(fieldName);
-            BackgroundManager bm = Services.getService(BackgroundManager.class);
-            bm.nonBlockingBackgroundOperation(selectDistinct);
+            SelectDistinctJob<U> selectDistinct = new SelectDistinctJob<>(this, fieldName);
+            selectDistinct.execute();
         }
     }
 
@@ -247,41 +245,47 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
      * This Job can be used as a background operation to retrieve a set containing the distinct data of a specific
      * field in a DataSource.
      */
-    public class SelectDistinctJob implements BackgroundJob {
+    public static class SelectDistinctJob<U extends LineParameters> extends SwingWorkerPM {
 
         private final String fieldName;
         private TreeSet<String> result = null;
+        private PnlAbstractUniqueValue<U> pnlAbstractUniqueValue;
 
         /**
          * Builds the BackgroundJob.
-         * @param f The name of the field we want the data from.
+         * @param fieldName The name of the field we want the data from.
          */
-        public SelectDistinctJob(String f){
-            fieldName = f;
+        public SelectDistinctJob(PnlAbstractUniqueValue<U> pnlAbstractUniqueValue, String fieldName) {
+            super(I18N.tr("Creating classification..."), 1);
+            this.pnlAbstractUniqueValue = pnlAbstractUniqueValue;
+            this.fieldName = fieldName;
         }
 
         @Override
-        public void run(ProgressMonitor pm) {
+        protected Object doInBackground() throws Exception {
+            ProgressMonitor pm = getProgressMonitor();
             result = getValues(pm);
             if(result != null){
                 AbstractRecodedLegend<U> rl;
-                if(colorConfigPanel.isEnabled() && result.size() > 0){
-                    ColorScheme sc = colorConfigPanel.getColorScheme();
-                    rl = (AbstractRecodedLegend<U>) createColouredClassification(result, pm, sc);
-                    rl.setComparator(getComparator());
+                if(pnlAbstractUniqueValue.colorConfigPanel.isEnabled() && result.size() > 0){
+                    ColorScheme sc = pnlAbstractUniqueValue.colorConfigPanel.getColorScheme();
+                    rl = (AbstractRecodedLegend<U>) pnlAbstractUniqueValue.createColouredClassification(result,
+                            getProgressMonitor(), sc);
+                    rl.setComparator(pnlAbstractUniqueValue.getComparator());
                 } else {
-                    rl = createConstantClassification(result, pm);
+                    rl = pnlAbstractUniqueValue.createConstantClassification(result, pm);
                 }
                 if(rl != null){
-                    MappedLegend<String,U> legend = getLegend();
+                    MappedLegend<String,U> legend = pnlAbstractUniqueValue.getLegend();
                     rl.setLookupFieldName(legend.getLookupFieldName());
                     rl.setName(legend.getName());
-                    setLegend(rl);
+                    pnlAbstractUniqueValue.setLegend(rl);
                 }
             } else {
                 pm.startTask(CREATE_CLASSIF, 100);
                 pm.endTask();
             }
+            return null;
         }
 
         /**
@@ -290,16 +294,16 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
          * @return The distinct values as String instances in a {@link HashSet} or null if the job has been cancelled.
          */
         public TreeSet<String> getValues(ProgressMonitor progress){
-            Comparator<String> comparator = getComparator();
+            Comparator<String> comparator = pnlAbstractUniqueValue.getComparator();
             TreeSet<String> ret = comparator != null ? new TreeSet<>(comparator) : new TreeSet<String>();
-            try(Connection connection = getDataSource().getConnection();
+            try(Connection connection = pnlAbstractUniqueValue.getDataSource().getConnection();
                 Statement st = connection.createStatement()) {
                 PropertyChangeListener cancelPm = EventHandler.create(PropertyChangeListener.class, st, "cancel");
                 progress.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelPm);
-                try(ResultSet rs = st.executeQuery("SELECT DISTINCT "+ TableLocation.quoteIdentifier(fieldName)+" FROM "+ getTable()
+                try(ResultSet rs = st.executeQuery("SELECT DISTINCT "+ TableLocation.quoteIdentifier(fieldName)+" FROM "+ pnlAbstractUniqueValue.getTable()
                 + " WHERE "+ TableLocation.quoteIdentifier(fieldName) + " IS NOT NULL")) {
                     final ProgressMonitor pm = progress.startTask(I18N.tr("Retrieving classes"),
-                            ReadTable.getRowCount(connection, getTable()));
+                            ReadTable.getRowCount(connection, pnlAbstractUniqueValue.getTable()));
                     final int warn = 100;
                     int size = 0;
                     while(rs.next()) {
@@ -340,11 +344,6 @@ public abstract class PnlAbstractUniqueValue<U extends LineParameters> extends P
          */
         public TreeSet<String> getResult() {
             return result;
-        }
-
-        @Override
-        public String getTaskName() {
-            return "Creating classification...";
         }
     }
 

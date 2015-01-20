@@ -28,7 +28,8 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.ui;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.coremap.renderer.se.CompositeSymbolizer;
 import org.orbisgis.coremap.renderer.se.Rule;
 import org.orbisgis.legend.Legend;
@@ -68,7 +69,7 @@ import java.beans.EventHandler;
  * @author Adam Gouge
  */
 public final class PnlRecodedArea extends PnlAbstractUniqueValue<AreaParameters>{
-    public static final Logger LOGGER = Logger.getLogger(PnlRecodedLine.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(PnlRecodedLine.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
     private String id;
 

@@ -28,6 +28,8 @@
  */
 package org.orbisgis.view.toc;
 
+import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.view.toc.icons.TocIcon;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.wms.Capabilities;
@@ -72,11 +74,11 @@ import javax.swing.tree.TreeSelectionModel;
 import javax.xml.bind.JAXBElement;
 
 import net.opengis.se._2_0.core.StyleType;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableEditListener;
@@ -98,20 +100,12 @@ import org.orbisgis.coremap.renderer.se.Rule;
 import org.orbisgis.coremap.renderer.se.SeExceptions;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.coremap.renderer.se.Symbolizer;
-import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.SIFWizard;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
-import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.background.ZoomToSelection;
-import org.orbisgis.view.components.actions.ActionCommands;
-import org.orbisgis.view.edition.EditableTransferEvent;
-import org.orbisgis.view.edition.EditableTransferListener;
-import org.orbisgis.view.table.TableEditableElementImpl;
 import org.orbisgis.view.toc.actions.EditLayerSourceAction;
 import org.orbisgis.view.toc.actions.LayerAction;
 import org.orbisgis.view.toc.actions.StyleAction;
@@ -120,15 +114,6 @@ import org.orbisgis.view.toc.actions.cui.legend.wizard.LegendWizard;
 import org.orbisgis.view.toc.wms.LayerConfigurationPanel;
 import org.orbisgis.view.toc.wms.SRSPanel;
 import org.orbisgis.view.toc.wms.WMSConnectionPanel;
-import org.orbisgis.viewapi.components.actions.DefaultAction;
-import org.orbisgis.viewapi.docking.DockingPanelParameters;
-import org.orbisgis.viewapi.edition.EditableElement;
-import org.orbisgis.viewapi.edition.EditableSource;
-import org.orbisgis.viewapi.edition.EditorDockable;
-import org.orbisgis.viewapi.edition.EditorManager;
-import org.orbisgis.viewapi.table.TableEditableElement;
-import org.orbisgis.viewapi.toc.ext.TocActionFactory;
-import org.orbisgis.viewapi.toc.ext.TocExt;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -141,8 +126,8 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
 
         private static final long serialVersionUID = 1L;
         private static final I18n I18N = I18nFactory.getI18n(Toc.class);
-        private static final Logger LOGGER_POPUP = Logger.getLogger("gui.popup" + Toc.class);
-        private static final Logger LOGGER = Logger.getLogger("gui." + Toc.class);
+        private static final Logger LOGGER_POPUP = LoggerFactory.getLogger("gui.popup" + Toc.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger("gui." + Toc.class);
         private DockingPanelParameters dockingPanelParameters;
         private transient MapContext mapContext = null;
         private JTree tree;

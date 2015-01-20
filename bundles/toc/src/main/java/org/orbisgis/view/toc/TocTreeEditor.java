@@ -34,14 +34,15 @@ import java.util.EventObject;
 import javax.swing.JTree;
 import javax.swing.event.CellEditorListener;
 import javax.swing.tree.TreeCellEditor;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.renderer.se.Style;
 
 public class TocTreeEditor implements TreeCellEditor {
 	private JTree tree;
         private TocTreeEditorPanel lastEditedCell;
-        private static final Logger LOGGER = Logger.getLogger("gui." + TocTreeEditor.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger("gui." + TocTreeEditor.class);
         
 	public TocTreeEditor(JTree toc) {
 		this.tree = toc;

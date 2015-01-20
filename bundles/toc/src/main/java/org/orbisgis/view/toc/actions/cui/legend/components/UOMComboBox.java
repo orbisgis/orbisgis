@@ -28,7 +28,8 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.coremap.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
@@ -44,7 +45,7 @@ import org.orbisgis.view.toc.actions.cui.legend.panels.Util;
  */
 public abstract class UOMComboBox<K, U extends LineParameters> extends PreviewComboBox<String> {
 
-    private static final Logger LOGGER = Logger.getLogger(UOMComboBox.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UOMComboBox.class);
 
     protected TablePanel<K, U> tablePanel;
 

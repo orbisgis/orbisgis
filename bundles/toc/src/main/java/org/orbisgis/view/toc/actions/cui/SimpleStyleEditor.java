@@ -42,7 +42,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.map.MapTransform;
@@ -129,7 +130,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      */
     private static final int INCREMENT = 16;
 
-    private static final Logger LOGGER = Logger.getLogger(SimpleStyleEditor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleStyleEditor.class);
 
     /**
      * Constructor

@@ -30,7 +30,8 @@ package org.orbisgis.view.toc.actions.cui.legend.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.coremap.renderer.se.parameter.Categorize;
@@ -69,7 +70,7 @@ import static org.orbisgis.coremap.renderer.se.parameter.Categorize.CategorizeMe
  * @author Alexis Guéganno
  */
 public abstract class PnlAbstractCategorized<U extends LineParameters> extends PnlAbstractTableAnalysis<Double,U> {
-    public static final Logger LOGGER = Logger.getLogger(PnlAbstractCategorized.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(PnlAbstractCategorized.class);
     private static final I18n I18N = I18nFactory.getI18n(PnlAbstractCategorized.class);
     private ColorConfigurationPanel colorConfig;
     private Thresholds thresholds;

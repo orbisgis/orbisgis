@@ -29,7 +29,7 @@
 package org.orbisgis.view.toc.actions.cui.legend.model;
 
 import org.orbisgis.legend.thematic.map.MappedLegend;
-import org.orbisgis.view.components.renderers.TableLaFCellRenderer;
+import org.orbisgis.sif.components.renderers.TableLaFCellRenderer;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
 import javax.swing.*;
