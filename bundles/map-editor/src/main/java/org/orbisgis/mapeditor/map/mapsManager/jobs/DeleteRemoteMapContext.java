@@ -32,7 +32,8 @@ import java.io.IOException;
 import javax.swing.SwingWorker;
 import javax.swing.tree.TreeNode;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeRemoteMap;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeWorkspace;
 import org.xnap.commons.i18n.I18n;
@@ -45,7 +46,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class DeleteRemoteMapContext extends SwingWorker {
     private static final I18n I18N = I18nFactory.getI18n(DeleteRemoteMapContext.class);
-    private static final Logger LOGGER = Logger.getLogger(DeleteRemoteMapContext.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeleteRemoteMapContext.class);
     private TreeNodeRemoteMap map;
 
     /**

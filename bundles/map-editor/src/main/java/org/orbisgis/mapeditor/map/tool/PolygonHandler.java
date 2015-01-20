@@ -57,7 +57,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.TopologyException;
-import org.orbisgis.core.geometryUtils.GeometryEdit;
+import org.orbisgis.mapeditor.map.geometryUtils.GeometryEdit;
 
 public class PolygonHandler extends AbstractHandler implements Handler {
 

@@ -39,7 +39,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
-import org.orbisgis.core.geometryUtils.filter.CoordinateSequenceDimensionFilter;
+import org.orbisgis.mapeditor.map.geometryUtils.filter.CoordinateSequenceDimensionFilter;
 
 
 /**

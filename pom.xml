@@ -42,12 +42,12 @@
                 <module>bundles/table-editor</module>
                 <module>bundles/sqlconsole</module>
                 <module>bundles/log-panel</module>
-                <!--
-                <module>orbisgis-core</module>
                 <module>bundles/map-editor</module>
-                <module>bundles/orbisgis-oshell</module>
                 <module>legend</module>
                 <module>bundles/toc</module>
+                <!--
+                <module>orbisgis-core</module>
+                <module>bundles/orbisgis-oshell</module>
                 <module>bundles/orbisgis-omanager</module>
                 <module>bundles/orbisgis-omanager-plugin</module>
                 <module>api/orbisgis-view</module>

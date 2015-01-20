@@ -31,13 +31,12 @@ package org.orbisgis.mapeditor.map.mapsManager.jobs;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeNode;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
-import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeBusy;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeMapCatalogServer;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeWorkspace;
@@ -52,7 +51,7 @@ public class DownloadRemoteMapContext extends SwingWorkerPM<List<RemoteMapContex
         private static final I18n I18N = I18nFactory.getI18n(ReadStoredMap.class);
         private TreeNodeWorkspace workspaceNode;
         private TreeNodeBusy treeNodeBusyHint;
-        private static final Logger LOGGER = Logger.getLogger(DownloadWorkspaces.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(DownloadWorkspaces.class);
         
         public DownloadRemoteMapContext(TreeNodeWorkspace workspace, TreeNodeBusy treeNodeBusyHint) {
                 this.workspaceNode = workspace;

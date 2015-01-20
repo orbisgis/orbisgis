@@ -62,7 +62,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
 import javax.swing.event.TreeExpansionListener;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.core_export.MapImageWriter;
 import org.orbisgis.corejdbc.DataManager;
@@ -73,6 +72,7 @@ import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.map.TransformListener;
 import org.orbisgis.coremap.process.ZoomToSelection;
 import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
+import org.orbisgis.editorjdbc.jobs.CreateSourceFromSelection;
 import org.orbisgis.mapeditor.map.ext.MapEditorAction;
 import org.orbisgis.mapeditor.map.ext.MapEditorExtension;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
@@ -90,26 +90,34 @@ import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.ColorPicker;
 import org.orbisgis.sif.components.SaveFilePanel;
+import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.multiInputPanel.*;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.edition.EditableTransferListener;
-import org.orbisgis.view.table.jobs.CreateSourceFromSelection;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.editorjdbc.EditableSource;
 import org.orbisgis.sif.edition.EditorManager;
-import org.orbisgis.viewapi.workspace.ViewWorkspace;
+import org.orbisgis.wkguiapi.ViewWorkspace;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * The Map Editor Panel
  */
+@Component(service = EditorDockable.class)
 public class MapEditor extends JPanel implements TransformListener, MapEditorExtension   {
     private static final I18n I18N = I18nFactory.getI18n(MapEditor.class);
-    private static final Logger GUILOGGER = Logger.getLogger("gui."+MapEditor.class);
+    private static final Logger GUILOGGER = LoggerFactory.getLogger("gui." + MapEditor.class);
     //The UID must be incremented when the serialization is not compatible with the new version of this class
     private static final long serialVersionUID = 1L;
     private MapControl mapControl = new MapControl();
@@ -142,8 +150,39 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     /**
      * Constructor
      */
-    public MapEditor(ViewWorkspace viewWorkspace, DataManager dataManager,EditorManager editorManager) {
+    public MapEditor() {
         super(new BorderLayout());
+    }
+
+    @Reference
+    public void setViewWorkspace(ViewWorkspace viewWorkspace) {
+        this.viewWorkspace = viewWorkspace;
+    }
+
+    @Reference
+    public void setEditorManager(EditorManager editorManager) {
+        this.editorManager = editorManager;
+    }
+
+    @Reference
+    public void setDataManager(DataManager dataManager) {
+        this.dataManager = dataManager;
+    }
+
+    public void unsetViewWorkspace(ViewWorkspace viewWorkspace) {
+        this.viewWorkspace = null;
+    }
+
+    public void unsetEditorManager(EditorManager editorManager) {
+        this.editorManager = null;
+    }
+
+    public void unsetDataManager(DataManager dataManager) {
+        this.dataManager = null;
+    }
+
+    @Activate
+    public void activate() {
         this.editorManager = editorManager;
         this.mapsManager = new MapsManager(viewWorkspace.getMapContextPath(),dataManager, editorManager);
         this.viewWorkspace = viewWorkspace;
@@ -177,6 +216,17 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         this.setTransferHandler(dragDropHandler);
     }
 
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    public void addMapEditorActionFactory(MapEditorAction mapEditorAction) {
+        actions.addActionFactory(mapEditorAction, this);
+    }
+
+
+    public void removeMapEditorActionFactory(MapEditorAction mapEditorAction) {
+        actions.removeActionFactory(mapEditorAction);
+    }
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
     public void addResultSetProviderFactory(ResultSetProviderFactory resultSetProviderFactory) {
         Action rsAction = new DefaultAction("RSF_"+resultSetProviderFactory.getName(),
                 resultSetProviderFactory.getName(),null,
@@ -339,10 +389,8 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 updateMapLabel();
                 mapElement.addPropertyChangeListener(MapElement.PROP_MODIFIED, modificationListener);
                 repaint();
-            } catch (IllegalStateException ex) {
-                GUILOGGER.error(ex);
-            } catch (TransitionException ex) {
-                GUILOGGER.error(ex);
+            } catch (IllegalStateException | TransitionException ex) {
+                GUILOGGER.error(ex.getLocalizedMessage(), ex);
             }
         } else {
             // Load null MapElement
@@ -774,8 +822,8 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 // If there is a nonempty selection, then ask the user to name it.
                 if (!selection.isEmpty()) {
                     try {
-                        String newName = CreateSourceFromSelection.showNewNameDialog(
-                                this,dataManager.getDataSource(), layer.getTableReference());
+                        String newName = CreateSourceFromSelection.showNewNameDialog(this, dataManager.getDataSource
+                                (), layer.getTableReference());
                         // If newName is not null, then the user clicked OK and
                         // entered a valid name.
                         if (newName != null) {

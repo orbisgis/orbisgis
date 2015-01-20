@@ -40,7 +40,8 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 import javax.swing.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.cts.crs.CoordinateReferenceSystem;
 import org.orbisgis.commons.events.OGVetoableChangeSupport;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
@@ -59,7 +60,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 public class MapStatusBar extends StatusBar {
         private static final I18n I18N = I18nFactory.getI18n(MapStatusBar.class);
-        private static final Logger LOGGER = Logger.getLogger(MapStatusBar.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(MapStatusBar.class);
         public static final String PROP_USER_DEFINED_SCALE_DENOMINATOR = "userDefinedScaleDenominator";
         private static final int STATUS_BAR_HEIGHT = 30;
         private ActionListener scaleInputActionListener = EventHandler.create(ActionListener.class,this,"validateInputScale");

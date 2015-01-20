@@ -41,7 +41,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
@@ -63,7 +64,7 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
 
         public static enum SERVER_STATUS { DISCONNECTED, CONNECTED, UNREACHABLE };
         URL serverUrl;
-        private static final Logger LOGGER = Logger.getLogger(TreeNodeMapCatalogServer.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(TreeNodeMapCatalogServer.class);
         AtomicBoolean downloaded = new AtomicBoolean(false);
         private SERVER_STATUS serverStatus = SERVER_STATUS.DISCONNECTED;
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeMapCatalogServer.class);

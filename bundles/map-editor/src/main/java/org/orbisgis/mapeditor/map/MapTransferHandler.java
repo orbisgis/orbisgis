@@ -28,7 +28,8 @@
  */
 package org.orbisgis.mapeditor.map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.editorjdbc.EditableSource;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sif.edition.EditorTransferHandler;
@@ -43,7 +44,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class MapTransferHandler  extends EditorTransferHandler {
     private static final long serialVersionUID = 1L;
 
-    static final private Logger GUILOGGER = Logger.getLogger("gui." + MapTransferHandler.class);
+    static final private Logger GUILOGGER = LoggerFactory.getLogger("gui." + MapTransferHandler.class);
     static final private I18n I18N = I18nFactory.getI18n(MapTransferHandler.class);
 
     /**

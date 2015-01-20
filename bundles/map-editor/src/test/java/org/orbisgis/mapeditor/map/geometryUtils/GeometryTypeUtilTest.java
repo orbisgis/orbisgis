@@ -31,7 +31,7 @@ package org.orbisgis.mapeditor.map.geometryUtils;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 import org.junit.Test;
-import org.orbisgis.core.geometryUtils.filter.CoordinateSequenceDimensionFilter;
+import org.orbisgis.mapeditor.map.geometryUtils.filter.CoordinateSequenceDimensionFilter;
 
 import static org.junit.Assert.*;
 

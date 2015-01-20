@@ -34,7 +34,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.layerModel.mapcatalog.ConnectionProperties;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapCatalog;
@@ -53,7 +54,7 @@ public class DownloadWorkspaces extends SwingWorker<List<Workspace>, List<Worksp
     private static final I18n I18N = I18nFactory.getI18n(ReadStoredMap.class);
     private TreeNodeMapCatalogServer server;
     private TreeNodeBusy treeNodeBusyHint;
-    private static final Logger LOGGER = Logger.getLogger(DownloadWorkspaces.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DownloadWorkspaces.class);
     private DataManager dataManager;
     private File mapsFolder;
 

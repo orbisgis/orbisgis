@@ -56,7 +56,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.Observable;
 import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
@@ -67,7 +68,7 @@ import org.orbisgis.mapeditor.map.tool.TransitionException;
  */
 public class PickCoordinatesPointTool extends AbstractPointTool {
 
-        protected static Logger GUI_LOGGER = Logger.getLogger("gui."+PickCoordinatesPointTool.class);
+        protected static Logger GUI_LOGGER = LoggerFactory.getLogger("gui."+PickCoordinatesPointTool.class);
         
         
 

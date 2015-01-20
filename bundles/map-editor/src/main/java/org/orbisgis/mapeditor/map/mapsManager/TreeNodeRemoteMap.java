@@ -37,7 +37,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler.TransferSupport;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.coremap.renderer.se.common.Description;
@@ -63,7 +64,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeCustomIcon,DragTreeNode, DropDestinationTreeNode, PopupTreeNode {
         private RemoteMapContext remoteMapConnection;
-        private static final Logger LOGGER = Logger.getLogger(TreeNodeRemoteMap.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(TreeNodeRemoteMap.class);
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeRemoteMap.class);
         
         public TreeNodeRemoteMap(RemoteMapContext remoteMapConnection) {

@@ -27,7 +27,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.tablegui.impl.jobs;
+package org.orbisgis.editorjdbc.jobs;
 
 import java.awt.*;
 import java.sql.Connection;

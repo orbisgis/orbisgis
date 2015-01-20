@@ -40,7 +40,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler.TransferSupport;
 import javax.swing.tree.MutableTreeNode;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
@@ -63,7 +64,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements DropDestinationTreeNode, PopupTreeNode, TreeNodeCustomIcon {
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeWorkspace.class);
-        private static final Logger LOGGER = Logger.getLogger(TreeNodeWorkspace.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(TreeNodeWorkspace.class);
         AtomicBoolean downloaded = new AtomicBoolean(false);
         Workspace workspace;
         /**

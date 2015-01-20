@@ -40,7 +40,8 @@ import javax.swing.SwingWorker;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.ReadTable;
@@ -57,8 +58,8 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class InfoTool extends AbstractRectangleTool {
 
-    private static Logger UILOGGER = Logger.getLogger("gui." + InfoTool.class);
-    private static Logger POPUPLOGGER = Logger.getLogger("popup." + InfoTool.class);
+    private static Logger UILOGGER = LoggerFactory.getLogger("gui." + InfoTool.class);
+    private static Logger POPUPLOGGER = LoggerFactory.getLogger("popup." + InfoTool.class);
     private static final int MAX_PRINTED_ROWS = 100;
     private static final int MAX_FIELD_LENGTH = 512;
     /** Info is shown on popup if the attributes length is not superior than this constant*/

@@ -37,14 +37,14 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.util.Arrays;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteCommons;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.sif.components.fstree.TransferableFileContent;
 import org.orbisgis.sif.edition.TransferableEditableElement;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.mapeditor.map.TransferableMap;
-import org.orbisgis.viewapi.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -53,7 +53,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 public class TransferableRemoteMap extends TransferableMap {
-        private static final Logger LOGGER = Logger.getLogger(TransferableRemoteMap.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(TransferableRemoteMap.class);
         private static final I18n I18N = I18nFactory.getI18n(TransferableRemoteMap.class);
         private final RemoteMapContext remoteMap;
         private final File mapContextFolder;

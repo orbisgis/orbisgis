@@ -1,4 +1,4 @@
-package org.orbisgis.view.geocatalog;
+package org.orbisgis.geocatalog;
 
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;

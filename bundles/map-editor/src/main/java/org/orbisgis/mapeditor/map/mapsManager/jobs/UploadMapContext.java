@@ -32,7 +32,8 @@ import java.io.IOException;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeWorkspace;
@@ -46,7 +47,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class UploadMapContext extends SwingWorker {
     private static final I18n I18N = I18nFactory.getI18n(UploadMapContext.class);
-    private static final Logger LOGGER = Logger.getLogger(UploadMapContext.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UploadMapContext.class);
     private MapContext mapContext;
     private TreeNodeWorkspace workspaceNode;
     private Integer mapContextid;

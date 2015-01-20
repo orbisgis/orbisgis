@@ -79,7 +79,6 @@ import javax.sql.RowSet;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import org.apache.log4j.Logger;
 import org.orbisgis.corejdbc.CreateTable;
 import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.corejdbc.common.IntegerUnion;
@@ -103,6 +102,8 @@ import org.orbisgis.mapeditor.map.tools.ToolUtilities;
 import org.orbisgis.mapeditor.map.tools.ZoomInTool;
 import org.orbisgis.mapeditor.map.tools.ZoomOutTool;
 import org.orbisgis.commons.progress.NullProgressMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -114,7 +115,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class ToolManager implements MouseListener,MouseWheelListener,MouseMotionListener {
         public static GeometryFactory toolsGeometryFactory = new GeometryFactory();
         private static final I18n I18N = I18nFactory.getI18n(ToolManager.class);
-        private static Logger UILOGGER = Logger.getLogger("gui."+ToolManager.class);
+        private static Logger UILOGGER = LoggerFactory.getLogger("gui." + ToolManager.class);
         private static final int TRY_LOCK_TIME = 5000;
         private Automaton currentTool;
         private ILayer activeLayer = null;
@@ -384,18 +385,16 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
          * handlers
          */
         private void setAdjustedHandler() {
-                adjustedPoint = null;
-                worldAdjustedPoint = null;
-
-                for (int i = 0; i < currentHandlers.size(); i++) {
-                        Point2D p = mapTransform.fromMapPoint(currentHandlers.get(i).getPoint());
-                        if (p.distance(lastMouseX, lastMouseY) < uiTolerance) {
-                                adjustedPoint = new Point((int) p.getX(), (int) p.getY());
-                                worldAdjustedPoint = currentHandlers.get(i).getPoint();
-                                UILOGGER.info(worldAdjustedPoint);
-                                break;
-                        }
+            adjustedPoint = null;
+            worldAdjustedPoint = null;
+            for (Handler currentHandler : currentHandlers) {
+                Point2D p = mapTransform.fromMapPoint(currentHandler.getPoint());
+                if (p.distance(lastMouseX, lastMouseY) < uiTolerance) {
+                    adjustedPoint = new Point((int) p.getX(), (int) p.getY());
+                    worldAdjustedPoint = currentHandler.getPoint();
+                    break;
                 }
+            }
         }
 
         public void paintEdition(Graphics g) {

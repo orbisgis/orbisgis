@@ -29,7 +29,6 @@
 package org.orbisgis.mapeditor.map;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.TableEditEvent;
@@ -50,6 +49,8 @@ import org.orbisgis.mapeditor.map.tool.Automaton;
 import org.orbisgis.mapeditor.map.tool.ToolListener;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -79,7 +80,7 @@ public class MapControl extends JComponent implements ContainerListener {
         //Minimal Time in ms between two intermediate paint of drawing process
         private ResultSetProviderFactory resultSetProviderFactory = new CachedResultSetContainer();
         private static final Point MAX_IMAGE_SIZE = new Point(20000, 20000);
-        private static final Logger LOGGER = Logger.getLogger(MapControl.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(MapControl.class);
         private static final I18n I18N = I18nFactory.getI18n(MapControl.class);
 	private static int lastMapControlId = 0;
         private static final long serialVersionUID = 1L;
