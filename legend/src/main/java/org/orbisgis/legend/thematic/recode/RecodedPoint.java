@@ -29,7 +29,6 @@
 package org.orbisgis.legend.thematic.recode;
 
 import net.opengis.se._2_0.core.ParameterValueType;
-import org.apache.log4j.Logger;
 import org.orbisgis.coremap.renderer.se.PointSymbolizer;
 import org.orbisgis.coremap.renderer.se.SeExceptions;
 import org.orbisgis.coremap.renderer.se.Symbolizer;
@@ -55,6 +54,8 @@ import org.orbisgis.legend.thematic.OnVertexOnInterior;
 import org.orbisgis.legend.thematic.PointParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.legend.thematic.uom.SymbolUom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -79,7 +80,7 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters>
     private RecodedReal height;
     private static final I18n I18N = I18nFactory.getI18n(RecodedPoint.class);
     public static final String NAME = I18N.tr("Value Classification - Point");
-    private static final Logger LOGGER = Logger.getLogger(RecodedPoint.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RecodedPoint.class);
 
     /**
      * Default constructor : builds an empty classification based on the default {@link org.orbisgis.coremap.renderer.se.PointSymbolizer}.

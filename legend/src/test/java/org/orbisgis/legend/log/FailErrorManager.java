@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.log;
+package org.orbisgis.legend.log;
 
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;

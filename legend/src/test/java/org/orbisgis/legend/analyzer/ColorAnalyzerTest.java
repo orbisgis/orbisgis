@@ -30,7 +30,6 @@ package org.orbisgis.legend.analyzer;
 
 import net.opengis.se._2_0.core.StyleType;
 import org.junit.Test;
-import org.orbisgis.core.Services;
 import org.orbisgis.coremap.renderer.se.LineSymbolizer;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.coremap.renderer.se.fill.SolidFill;
