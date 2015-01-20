@@ -43,16 +43,17 @@ import javax.sql.DataSource;
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
 
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.renderer.se.Style;
-import org.orbisgis.view.components.renderers.IconCellRendererUtility;
-import org.orbisgis.view.components.renderers.TreeLaFRenderer;
+import org.orbisgis.sif.components.renderers.IconCellRendererUtility;
+import org.orbisgis.sif.components.renderers.TreeLaFRenderer;
 import org.orbisgis.view.toc.icons.TocIcon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -60,7 +61,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Toc renderer, try to stick to the Look&Feel but with custom controls.
  */
 public class TocRenderer extends TreeLaFRenderer {
-        private static Logger UILOGGER = Logger.getLogger("gui."+ TocRenderer.class);
+        private static Logger UILOGGER = LoggerFactory.getLogger("gui." + TocRenderer.class);
         protected static final I18n I18N = I18nFactory.getI18n(TocRenderer.class);
         private static final int ROW_EMPTY_BORDER_SIZE = 2;
         private Rectangle checkBoxRect;
@@ -103,7 +104,7 @@ public class TocRenderer extends TreeLaFRenderer {
                                         ROW_EMPTY_BORDER_SIZE,
                                         ROW_EMPTY_BORDER_SIZE));
                                 JCheckBox checkBox = new JCheckBox();
-                                IconCellRendererUtility.copyComponentStyle(rendererComponent,checkBox);
+                                IconCellRendererUtility.copyComponentStyle(rendererComponent, checkBox);
                                 if (value instanceof TocTreeNodeLayer) {
                                         ILayer layerNode = ((TocTreeNodeLayer) value).getLayer();
                                         ImageIcon nodeIcon = getLayerIcon(layerNode);

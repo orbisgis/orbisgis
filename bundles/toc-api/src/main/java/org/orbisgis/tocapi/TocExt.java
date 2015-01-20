@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.viewapi.toc.ext;
+package org.orbisgis.tocapi;
 
 import javax.swing.*;
 

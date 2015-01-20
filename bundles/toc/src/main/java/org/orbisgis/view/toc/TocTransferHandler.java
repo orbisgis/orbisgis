@@ -35,12 +35,13 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.tree.TreePath;
-import org.apache.log4j.Logger;
 import org.orbisgis.coremap.layerModel.ILayer;
-import org.orbisgis.view.edition.EditorTransferHandler;
-import org.orbisgis.view.edition.TransferableEditableElement;
-import org.orbisgis.viewapi.edition.EditableElement;
-import org.orbisgis.viewapi.edition.EditableSource;
+import org.orbisgis.editorjdbc.EditableSource;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.EditorTransferHandler;
+import org.orbisgis.sif.edition.TransferableEditableElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -54,7 +55,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Export EditableLayer
  */
 public class TocTransferHandler extends EditorTransferHandler {
-    private static final Logger LOGGER = Logger.getLogger(TocTransferHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TocTransferHandler.class);
     private static final I18n I18N = I18nFactory.getI18n(TocTransferHandler.class);
     private Toc toc;
 

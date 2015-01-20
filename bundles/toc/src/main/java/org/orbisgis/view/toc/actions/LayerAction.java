@@ -28,20 +28,16 @@
  */
 package org.orbisgis.view.toc.actions;
 
-import org.apache.log4j.Logger;
-import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.sif.components.actions.DefaultAction;
+import org.orbisgis.tocapi.TocExt;
 import org.orbisgis.view.toc.TocTreeNodeLayer;
 import org.orbisgis.view.toc.TocTreeSelectionIterable;
-import org.orbisgis.viewapi.components.actions.DefaultAction;
-import org.orbisgis.viewapi.toc.ext.TocExt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
 
 /**
  * Layer related Actions.
@@ -49,7 +45,7 @@ import java.util.List;
  */
 public class LayerAction extends DefaultAction {
     private TocExt toc;
-    private static Logger LOGGER = Logger.getLogger(LayerAction.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(LayerAction.class);
     private boolean singleSelection = false;
     private boolean onRealLayerOnly = false;
     private boolean onLayerWithRowSelection = false;

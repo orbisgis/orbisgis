@@ -35,14 +35,15 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.sif.components.actions.DefaultAction;
+import org.orbisgis.tocapi.TocExt;
 import org.orbisgis.view.toc.TocTreeNodeStyle;
 import org.orbisgis.view.toc.TocTreeSelectionIterable;
-import org.orbisgis.viewapi.components.actions.DefaultAction;
-import org.orbisgis.viewapi.toc.ext.TocExt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Action shown on style items
@@ -52,7 +53,7 @@ public class StyleAction extends DefaultAction {
     protected TocExt toc;
     private boolean onSingleStyleSelection = false;
     private boolean onVectorSourceOnly = true;
-    private static final Logger LOGGER = Logger.getLogger(StyleAction.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StyleAction.class);
     /**
      * Show only on selected style
      * @param toc

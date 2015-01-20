@@ -44,6 +44,7 @@
                 <module>bundles/log-panel</module>
                 <module>bundles/map-editor</module>
                 <module>legend</module>
+                <module>bundles/toc-api</module>
                 <module>bundles/toc</module>
                 <!--
                 <module>orbisgis-core</module>
