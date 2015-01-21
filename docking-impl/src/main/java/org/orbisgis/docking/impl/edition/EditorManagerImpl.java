@@ -47,7 +47,10 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 import javax.swing.JFrame;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -62,11 +65,9 @@ import java.util.Set;
 public class EditorManagerImpl implements EditorManager {
     private List<EditorFactory> factories = new ArrayList<>();
     private DockingManager dockingManager;
-    private final WindowListener exitListener = EventHandler.create(WindowListener.class, //The listener class
+    private final VetoableChangeListener exitListener = EventHandler.create(VetoableChangeListener.class, //The listener class
             this, //The event target object
-            "onMainWindowClosing",//The event target method to call
-            null, //the event parameter to pass(none)
-            "windowClosing");
+            "onMainWindowClosing", "");
     private MainWindow mainWindow;
 
     @Reference
@@ -82,13 +83,11 @@ public class EditorManagerImpl implements EditorManager {
     @Reference
     public void setMainWindow(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
-        JFrame mainFrame = mainWindow.getMainFrame();
-        mainFrame.addWindowListener(exitListener);    //The listener method to use
+        mainWindow.addVetoableChangeListener(MainWindow.WINDOW_VISIBLE, exitListener);
     }
 
     public void unsetMainWindow(MainWindow mainWindow) {
-        JFrame mainFrame = mainWindow.getMainFrame();
-        mainFrame.removeWindowListener(exitListener);
+        mainWindow.removeVetoableChangeListener(exitListener);
         this.mainWindow = null;
     }
 
@@ -96,8 +95,10 @@ public class EditorManagerImpl implements EditorManager {
      * The user want to close the main window Then the application has to be
      * closed
      */
-    public void onMainWindowClosing() throws PropertyVetoException {
-        isShutdownVetoed();
+    public void onMainWindowClosing(PropertyChangeEvent evt) throws PropertyVetoException {
+        if(isShutdownVetoed()) {
+            throw new PropertyVetoException("", evt);
+        }
     }
 
 

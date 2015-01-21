@@ -32,11 +32,18 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.orbisgis.framework.CoreWorkspaceImpl;
 import org.orbisgis.wkguiapi.ViewWorkspace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * View workspace contains file and folder information
@@ -46,7 +53,12 @@ import org.orbisgis.wkguiapi.ViewWorkspace;
 
 public class ViewWorkspaceImpl implements ViewWorkspace {
     private static final long serialVersionUID = 1L;
-
+    private static final I18n I18N = I18nFactory.getI18n(ViewWorkspaceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ViewWorkspaceImpl.class);
+    /**
+     * Buffer to copy resource to file
+     */
+    private static final int BUFFER_LENGTH = 4096;
     private PropertyChangeSupport propertySupport;
     private CoreWorkspaceImpl coreWorkspace;
     public ViewWorkspaceImpl(CoreWorkspaceImpl coreWorkspace) {
@@ -55,7 +67,8 @@ public class ViewWorkspaceImpl implements ViewWorkspace {
         SIFPath = coreWorkspace.getWorkspaceFolder() + File.separator + "sif" ;
         mapContextPath = coreWorkspace.getWorkspaceFolder() + File.separator + "maps";
     }
-        private String dockingLayoutFile = "docking_layout.xml";
+        private static final String DEFAULT_DOCKING_LAYOUT_FILE = "docking_layout.xml";
+        private String dockingLayoutFile = DEFAULT_DOCKING_LAYOUT_FILE;
         private String SIFPath = "";
         private String mapContextPath;
         
@@ -143,8 +156,21 @@ public class ViewWorkspaceImpl implements ViewWorkspace {
      */
     public static void initWorkspaceFolder(File workspaceFolder, int version_major, int version_minor,
                                            int version_revision, String version_qualifier) throws IOException {
-        CoreWorkspaceImpl.initWorkspaceFolder(workspaceFolder, version_major, version_minor, version_revision,
-                version_qualifier);
+        CoreWorkspaceImpl.initWorkspaceFolder(workspaceFolder, version_major, version_minor, version_revision, version_qualifier);
+        // Copy default window docking style
+        try (InputStream xmlFileStream = ViewWorkspaceImpl.class.getResourceAsStream("default_docking_layout.xml")) {
+            if (xmlFileStream != null) {
+                try (FileOutputStream writer = new FileOutputStream(workspaceFolder + File.separator +
+                        DEFAULT_DOCKING_LAYOUT_FILE)) {
+                    byte[] buffer = new byte[BUFFER_LENGTH];
+                    for (int n; (n = xmlFileStream.read(buffer)) != -1; ) {
+                        writer.write(buffer, 0, n);
+                    }
+                }
+            }
+        } catch(IOException ex){
+            LOGGER.error(I18N.tr("Unable to save the docking layout."), ex);
+        }
     }
     /**
      * Check if the provided folder can be loaded has the workspace
