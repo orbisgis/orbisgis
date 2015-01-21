@@ -15,13 +15,25 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+                <version>1.15.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-scr-scrdescriptor</id>
+                        <goals>
+                            <goal>scr</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>2.3.7</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
-                        <Fragment-Host>ch.qos.logback.core</Fragment-Host>
                     </instructions>
                 </configuration>
             </plugin>
@@ -31,6 +43,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
+            <version>1.2.4</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>${parent.groupId}</groupId>
             <artifactId>framework-api</artifactId>
@@ -51,6 +69,11 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.shell</artifactId>
+            <version>${felix-version}</version>
         </dependency>
     </dependencies>
 </project>

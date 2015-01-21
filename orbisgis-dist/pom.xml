@@ -99,7 +99,7 @@
                             <!-- Jar that are not compatible with OSGi -->
                             <excludeGroupIds>ch.qos.logback, com.fifesoft, com.miglayout, com.vividsolutions, org.postgis,
                                 org.postgresql, org.dockingframes, xml-apis, com.kitfox.svg, javax.media, org.mozilla, com.lowagie, rhino</excludeGroupIds>
-                            <excludeArtifactIds>pax-logging-api, slf4j-api, markdown4j, log-file-writer</excludeArtifactIds>
+                            <excludeArtifactIds>pax-logging-api, slf4j-api, markdown4j, org.apache.felix.scr.ds-annotations,org.osgi.core</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -132,7 +132,7 @@
         <resources>
             <resource>
                 <directory>src/conf</directory>
-                <includes><include>config.properties</include></includes>
+                <includes><include>*</include></includes>
                 <targetPath>${project.build.directory}/conf</targetPath>
             </resource>
         </resources>

@@ -31,10 +31,17 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${project.build.directory}/sys-bundle</directory>
+            <outputDirectory>/sys-bundle</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${project.basedir}/src/conf</directory>
             <outputDirectory>/conf</outputDirectory>
             <includes>
-                <include>config.properties</include>
+                <include>*</include>
             </includes>
         </fileSet>
         <fileSet>
