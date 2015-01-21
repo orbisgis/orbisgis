@@ -98,6 +98,7 @@ import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.viewapi.components.actions.ActionTools;
 import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
@@ -344,6 +345,7 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
      * Save the docking layout
      */
     @Override
+    @Deactivate
     public void saveLayout() {
         if (dockingState != null) {
             try {
