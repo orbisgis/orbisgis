@@ -66,6 +66,7 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.log.LogReaderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -178,7 +179,8 @@ public class MainFrame extends JFrame implements MainWindow {
     }
 
     // Use optional to avoid deadlock of service activation. (MainFrame launch first then DockingManager)
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC, policyOption =
+            ReferencePolicyOption.GREEDY)
     public void setDockingManager(DockingManager dockingManager) {
         // Add configure menu
         actions.addAction(new DefaultAction(MainFrameAction.MENU_CONFIGURE, I18N.tr("&Configuration"), MainFrameIcon
