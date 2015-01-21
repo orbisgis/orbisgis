@@ -44,7 +44,14 @@ public class Activator implements BundleActivator {
      */
     @Override
     public void start(BundleContext bc) throws Exception {
-        SwingUtilities.invokeLater(new ShowWorkspaceSelectionDialog(bc));
+        ShowWorkspaceSelectionDialog showWorkspaceSelectionDialog = new ShowWorkspaceSelectionDialog(bc);
+        SwingUtilities.invokeAndWait(showWorkspaceSelectionDialog);
+        if(showWorkspaceSelectionDialog.getViewWorkspace() != null) {
+            // User validate with valid connection publish CoreWorkspace to OSGi
+            ViewWorkspace viewWorkspace = showWorkspaceSelectionDialog.getViewWorkspace();
+            bc.registerService(CoreWorkspace.class, viewWorkspace.getCoreWorkspace(), null);
+            bc.registerService(ViewWorkspace.class, viewWorkspace, null);
+        }
     }
 
     private static void logBundleState(BundleContext context) {
@@ -96,6 +103,7 @@ public class Activator implements BundleActivator {
 
     private static class ShowWorkspaceSelectionDialog implements Runnable {
         private BundleContext bc;
+        private ViewWorkspace registerViewWorkspace;
 
         public ShowWorkspaceSelectionDialog(BundleContext bc) {
             this.bc = bc;
@@ -146,10 +154,7 @@ public class Activator implements BundleActivator {
                                 break;
                             }
                             if(connectionValid) {
-                                // User validate with valid connection publish CoreWorkspace to OSGi
-                                bc.registerService(CoreWorkspace.class, coreWorkspace, null);
-                                ViewWorkspace viewWorkspace = new ViewWorkspaceImpl(coreWorkspace);
-                                bc.registerService(ViewWorkspace.class, viewWorkspace, null);
+                                registerViewWorkspace = new ViewWorkspaceImpl(coreWorkspace);
                             }
                         } while (!connectionValid);
                     } finally {
@@ -166,6 +171,10 @@ public class Activator implements BundleActivator {
             } catch (BundleException ex) {
                 LOGGER.error("Could not stop OrbisGIS", ex);
             }
+        }
+
+        public ViewWorkspace getViewWorkspace() {
+            return registerViewWorkspace;
         }
     }
 }

@@ -101,6 +101,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -482,7 +483,8 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
     }
 
     @Override
-    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
+            ReferencePolicyOption.GREEDY)
     public void addDockingPanel(DockingPanel frame) {
         if (SwingUtilities.isEventDispatchThread()) {
             show(frame);

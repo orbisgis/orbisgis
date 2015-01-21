@@ -68,6 +68,22 @@
                 <version>2.5.1</version>
                 <executions>
                     <execution>
+                        <!-- Copy priority level bundles (log) -->
+                        <id>copy-sys-dependencies</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/sys-bundle/</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <excludeTransitive>false</excludeTransitive>
+                            <stripVersion>true</stripVersion>
+                            <includeArtifactIds>pax-logging-api, logback-classic,logback-core,logback-jackson,logback-json-classic,logback-json-core</includeArtifactIds>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>copy-dependencies</id>
                         <goals>
                             <goal>copy-dependencies</goal>
@@ -81,9 +97,9 @@
                             <stripVersion>true</stripVersion>
                             <includeScope>provided</includeScope>
                             <!-- Jar that are not compatible with OSGi -->
-                            <excludeGroupIds>com.fifesoft, com.miglayout, com.vividsolutions, org.postgis,
+                            <excludeGroupIds>ch.qos.logback, com.fifesoft, com.miglayout, com.vividsolutions, org.postgis,
                                 org.postgresql, org.dockingframes, xml-apis, com.kitfox.svg, javax.media, org.mozilla, com.lowagie, rhino</excludeGroupIds>
-                            <excludeArtifactIds>logback-jackson, slf4j-api, markdown4j</excludeArtifactIds>
+                            <excludeArtifactIds>pax-logging-api, slf4j-api, markdown4j, log-file-writer</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -279,12 +295,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>toc</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>h2spatial-ext-osgi</artifactId>
-            <version>${h2-gis-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

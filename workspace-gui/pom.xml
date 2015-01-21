@@ -9,6 +9,7 @@
     </parent>
     <artifactId>workspace-gui</artifactId>
     <name>workspace-gui</name>
+    <description>Manage launch Workspace GUI chooser. Publish ViewWorkspace service.</description>
     <packaging>bundle</packaging>
     <build>
         <plugins>

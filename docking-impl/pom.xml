@@ -14,19 +14,14 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.carrotgarden.maven</groupId>
-                <artifactId>carrot-maven-scr-plugin</artifactId>
-                <version>3.0.3</version>
-                <configuration>
-                    <enableDebugLogging>false</enableDebugLogging>
-                    <enableErrorLogging>true</enableErrorLogging>
-                    <enableInfoLogging>true</enableInfoLogging>
-                </configuration>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+                <version>1.15.0</version>
                 <executions>
                     <execution>
+                        <id>generate-scr-scrdescriptor</id>
                         <goals>
-                            <goal>clean</goal>
-                            <goal>generate</goal>
+                            <goal>scr</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -39,7 +34,6 @@
                 <configuration>
                     <instructions>
                         <Private-Package>org.orbisgis.docking.*</Private-Package>
-                        <Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
                         <Embed-Dependency>docking-frames-ext-toolbar-common;scope=compile;inline=true,
                             docking-frames-ext-toolbar;scope=compile;inline=true,
                             docking-frames-common;scope=compile;inline=true,
@@ -80,6 +74,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${sl4j-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
+            <version>1.2.4</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>

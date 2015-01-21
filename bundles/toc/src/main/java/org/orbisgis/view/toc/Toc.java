@@ -143,7 +143,7 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * The Toc Panel component
  */
-@Component(service = EditorDockable.class)
+@Component(service = EditorDockable.class, immediate = true)
 public class Toc extends JPanel implements EditorDockable, TocExt, TableEditListener {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
 
