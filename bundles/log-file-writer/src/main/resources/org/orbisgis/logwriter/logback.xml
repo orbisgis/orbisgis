@@ -1,8 +1,17 @@
 <configuration>
-    <appender name="OSGI" class="org.ops4j.pax.logging.logback.appender.PaxAppenderDelegate">
-        <!-- encoders are assigned the type
-             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
-        <paxname>*</paxname>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>WORKSPACELOGFILE</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
     </appender>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <!-- encoders are assigned the type
@@ -13,6 +22,8 @@
     </appender>
     <root level="info">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="OSGI" />
+    </root>
+    <root level="DEBUG">
+        <appender-ref ref="FILE" />
     </root>
 </configuration>

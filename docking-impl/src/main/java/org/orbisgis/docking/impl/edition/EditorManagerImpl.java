@@ -144,7 +144,8 @@ public class EditorManagerImpl implements EditorManager {
     }
 
     @Override
-    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
+            ReferencePolicyOption.GREEDY)
     public void addEditorFactory(EditorFactory editorFactory) {
         factories.add(editorFactory);
         dockingManager.registerPanelFactory(editorFactory.getId(), new EditorPanelFactoryDecorator(editorFactory));

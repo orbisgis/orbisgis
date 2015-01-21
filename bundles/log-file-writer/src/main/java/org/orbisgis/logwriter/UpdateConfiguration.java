@@ -32,6 +32,7 @@ package org.orbisgis.logwriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Properties;
 
 import org.apache.felix.shell.Command;
@@ -67,7 +68,7 @@ public class UpdateConfiguration implements Command {
      */
     @Activate
     public void activate() {
-        execute("org.ops4j.pax.logging org.ops4j.pax.logging.logback.config.file=conf/logback.xml", System.out, System.err);
+        execute(COMMAND_NAME+" org.ops4j.pax.logging org.ops4j.pax.logging.logback.config.file=conf/logback.xml", System.out, System.err);
     }
 
     /**
@@ -89,7 +90,7 @@ public class UpdateConfiguration implements Command {
         try {
 
             Configuration conf = pm.getConfiguration(name, null);
-            Dictionary props = new Properties();
+            Dictionary<String, Object> props = new Hashtable<>();
 
             for(int i = 1; i < args.length; i++) {
                 String[] prop = args[i].split("=");

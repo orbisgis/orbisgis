@@ -28,23 +28,35 @@
  */
 package org.orbisgis.logwriter;
 
-import org.apache.felix.shell.Command;
 import org.orbisgis.frameworkapi.CoreWorkspace;
+import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.util.Dictionary;
+import java.util.Hashtable;
 
 /**
  * Generate LOGBACK configuration using CoreWorkspace data
  * @author Nicolas Fortin
  */
-@Component
+@Component(immediate = true)
 public class WorkspaceLogConfigGenerator implements ManagedService{
+    private static final Logger LOGGER = LoggerFactory.getLogger(WorkspaceLogConfigGenerator.class);
 
     /**
      * Configuration Admin service dependency.
@@ -72,7 +84,29 @@ public class WorkspaceLogConfigGenerator implements ManagedService{
 
     @Activate
     public void activate() {
+        try {
+            Configuration configuration = pm.getConfiguration("org.ops4j.pax.logging", null);
+            Dictionary<String, Object> props = configuration.getProperties();
+            if(props == null) {
+                props =  new Hashtable<>();
+            }
 
+            File logFile = new File(coreWorkspace.getApplicationFolder()+File.separator+coreWorkspace.getLogFile());
+            String configFile = coreWorkspace.getApplicationFolder()+ File.separator + "logback.xml";
+            try(InputStream stream = WorkspaceLogConfigGenerator.class.getResourceAsStream("logback.xml");
+                InputStreamReader inputStreamReader = new InputStreamReader(stream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                FileWriter fileWriter = new FileWriter(configFile)) {
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    fileWriter.write(line.replace("WORKSPACELOGFILE", logFile.getAbsolutePath()) + "\n");
+                }
+            }
+            props.put("org.ops4j.pax.logging.logback.config.file", configFile);
+            configuration.update(props);
+        } catch (IOException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
+        }
     }
 
     @Override

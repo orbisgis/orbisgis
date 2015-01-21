@@ -57,7 +57,7 @@ import java.util.Map;
  * Docking Panel implementation.
  * @author Nicolas Fortin
  */
-@Component(service = EditorDockable.class, immediate = true)
+@Component(service = EditorDockable.class)
 public class SQLConsole implements EditorDockable, SQLConsoleEditor {
         private DockingPanelParameters dockingPanelParameters = new DockingPanelParameters();
         private SQLConsolePanel sqlPanel;
