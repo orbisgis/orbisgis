@@ -28,7 +28,6 @@
  */
 package org.orbisgis.docking.impl;
 
-import org.orbisgis.docking.impl.edition.EditorPanelFactoryDecorator;
 import org.orbisgis.sif.docking.DockingManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.edition.EditorDockable;

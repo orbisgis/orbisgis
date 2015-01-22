@@ -46,15 +46,9 @@
                 <module>legend</module>
                 <module>bundles/toc-api</module>
                 <module>bundles/toc</module>
-                <!--
-                <module>orbisgis-core</module>
-                <module>bundles/orbisgis-oshell</module>
                 <module>bundles/orbisgis-omanager</module>
                 <module>bundles/orbisgis-omanager-plugin</module>
-                <module>api/orbisgis-view</module>
-                <module>orbisgis-view</module>
-                -->
-  </modules>
+        </modules>
         <profiles>
             <profile>
                 <id>osgi</id>
