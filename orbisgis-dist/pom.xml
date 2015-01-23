@@ -98,7 +98,8 @@
                             <includeScope>provided</includeScope>
                             <!-- Jar that are not compatible with OSGi -->
                             <excludeGroupIds>ch.qos.logback, com.fifesoft, com.miglayout, com.vividsolutions, org.postgis,
-                                org.postgresql, org.dockingframes, xml-apis, com.kitfox.svg, javax.media, org.mozilla, com.lowagie, rhino</excludeGroupIds>
+                                org.postgresql, org.dockingframes, xml-apis, com.kitfox.svg, javax.media, org.mozilla, com.lowagie, rhino,
+                                org.easymock</excludeGroupIds>
                             <excludeArtifactIds>pax-logging-api, slf4j-api, markdown4j, org.apache.felix.scr.ds-annotations,org.osgi.core</excludeArtifactIds>
                         </configuration>
                     </execution>
@@ -281,6 +282,18 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>orbisgis-omanager</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>orbisgis-omanager-plugin</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial-ext-osgi</artifactId>
             <version>${h2-gis-version}</version>
             <scope>provided</scope>
@@ -307,6 +320,12 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.shell.tui</artifactId>
             <version>${felix-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.bundlerepository</artifactId>
+            <version>2.0.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

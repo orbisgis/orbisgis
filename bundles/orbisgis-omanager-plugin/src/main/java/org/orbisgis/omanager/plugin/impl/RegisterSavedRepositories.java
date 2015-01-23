@@ -28,7 +28,8 @@
  */
 package org.orbisgis.omanager.plugin.impl;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.osgi.service.obr.Repository;
 import org.osgi.service.obr.RepositoryAdmin;
 
@@ -48,7 +49,7 @@ public class RegisterSavedRepositories extends SwingWorker<Boolean, Boolean>
 {
     private Set<URI> obrRepositories;
     private RepositoryAdmin repositoryAdmin;
-    private final Logger logger = Logger.getLogger(RegisterSavedRepositories.class);
+    private final Logger logger = LoggerFactory.getLogger(RegisterSavedRepositories.class);
     private AtomicBoolean addingRepositories;
 
     /**

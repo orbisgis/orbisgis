@@ -192,9 +192,6 @@ public class WorkspaceSelectionDialog extends JPanel {
      */
     public static boolean showWorkspaceFolderSelection(Window parent,
                                                     CoreWorkspaceImpl coreWorkspace, String errorMessage) {
-        if(!SwingUtilities.isEventDispatchThread()) {
-            throw new IllegalStateException("Not on swing dispatch thread");
-        }
         String oldWorkspace = coreWorkspace.getWorkspaceFolder();
         // Initialize a panel to contain the dialog
         WorkspaceSelectionDialog panel = new WorkspaceSelectionDialog();

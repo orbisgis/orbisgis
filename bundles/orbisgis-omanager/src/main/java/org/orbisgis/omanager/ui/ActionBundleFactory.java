@@ -38,7 +38,8 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.osgi.framework.BundleContext;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -49,7 +50,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class ActionBundleFactory {
     private static final I18n I18N = I18nFactory.getI18n(ActionBundleFactory.class);
-    private static final Logger LOGGER = Logger.getLogger("gui." + ActionBundleFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger("gui." + ActionBundleFactory.class);
     private Map<String,ImageIcon> buttonIcons = new HashMap<String, ImageIcon>();
     private final boolean warnUser;
     private ImageIcon getIcon(String iconName) {

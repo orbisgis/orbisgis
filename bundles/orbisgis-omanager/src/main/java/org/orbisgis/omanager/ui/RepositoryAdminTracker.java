@@ -38,7 +38,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.obr.Repository;
@@ -55,7 +56,7 @@ public class RepositoryAdminTracker implements ServiceTrackerCustomizer<Reposito
     public static final String PROP_REPOSITORIES = "repositories";
     public static final String PROP_RESOURCES = "resources";
     private static final I18n I18N = I18nFactory.getI18n(RepositoryAdminTracker.class);
-    private static final Logger LOGGER = Logger.getLogger(RepositoryAdminTracker.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryAdminTracker.class);
     private BundleContext bundleContext;
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private RepositoryAdmin repoAdmin;

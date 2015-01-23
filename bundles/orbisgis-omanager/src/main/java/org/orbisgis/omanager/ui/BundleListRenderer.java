@@ -44,14 +44,15 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.osgi.framework.Bundle;
 
 /**
  * @author Nicolas Fortin
  */
 public class BundleListRenderer implements ListCellRenderer<BundleItem> {
-    private static final Logger LOGGER = Logger.getLogger(BundleListRenderer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BundleListRenderer.class);
     private ListCellRenderer<? super BundleItem> lookAndFeelRenderer;
     private static Dimension bundleIconDimension = new Dimension(32,32);
     private static final ImageIcon defaultIcon = new ImageIcon(BundleListRenderer.class.getResource("defaultIcon.png"));

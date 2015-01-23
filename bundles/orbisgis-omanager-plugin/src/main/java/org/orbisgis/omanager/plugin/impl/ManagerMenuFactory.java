@@ -44,7 +44,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
+
+import org.orbisgis.mainframe.api.MainFrameAction;
+import org.orbisgis.mainframe.api.MainWindow;
 import org.orbisgis.omanager.plugin.api.CustomPlugin;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.osgi.framework.BundleContext;
@@ -56,6 +58,8 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.obr.Repository;
 import org.osgi.service.obr.RepositoryAdmin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -65,7 +69,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 @Component
 public class ManagerMenuFactory implements MainFrameAction {
-    private static final Logger LOGGER = Logger.getLogger("gui."+ManagerMenuFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger("gui." + ManagerMenuFactory.class);
     public static final String MENU_MANAGE_PLUGINS = "A_MANAGE_PLUGINS";
     private static final String OSGI_REPOSITORY_FILENAME = "repositories.properties";
     private final URI ORBISGIS_OSGI_REPOSITORY = URI.create("http://plugins.orbisgis.org/.meta/obr.xml");
