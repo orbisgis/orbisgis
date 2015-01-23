@@ -61,7 +61,7 @@ import java.util.Set;
  * The editor Manager is responsible of all EditorFactories.
  * This service is used to register editors and open editable elements.
  */
-@Component
+@Component(immediate = true)
 public class EditorManagerImpl implements EditorManager {
     private List<EditorFactory> factories = new ArrayList<>();
     private DockingManager dockingManager;

@@ -268,7 +268,7 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
         // Check that non closable frame are shown
         for (DockingPanel panel : getPanels()) {
             DockingPanelParameters params = panel.getDockingParameters();
-            if (!params.isCloseable() && !params.isVisible()) {
+            if (!params.isCloseable()) {
                 params.setVisible(true);
             }
         }

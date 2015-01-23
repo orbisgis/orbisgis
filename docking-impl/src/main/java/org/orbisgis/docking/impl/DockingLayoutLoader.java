@@ -40,6 +40,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
 
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -75,7 +76,7 @@ public class DockingLayoutLoader {
 
     @Activate
     public void refreshConfig() {
-        dockingManager.setDockingLayoutPersistanceFilePath(viewWorkspace.getDockingLayoutPath());
+        SwingUtilities.invokeLater(new ReloadLayout(dockingManager, viewWorkspace.getDockingLayoutPath()));
     }
 
     private void updateDockableState() {
@@ -144,6 +145,21 @@ public class DockingLayoutLoader {
         @Override
         protected void done() {
             dockingLayoutLoader.refreshConfig();
+        }
+    }
+
+    private static class ReloadLayout implements Runnable {
+        private DockingManager dockingManager;
+        private String dockingLayoutPath;
+
+        public ReloadLayout(DockingManager dockingManager, String dockingLayoutPath) {
+            this.dockingManager = dockingManager;
+            this.dockingLayoutPath = dockingLayoutPath;
+        }
+
+        @Override
+        public void run() {
+            dockingManager.setDockingLayoutPersistanceFilePath(dockingLayoutPath);
         }
     }
 }
