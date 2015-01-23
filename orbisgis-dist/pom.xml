@@ -100,7 +100,8 @@
                             <excludeGroupIds>ch.qos.logback, com.fifesoft, com.miglayout, com.vividsolutions, org.postgis,
                                 org.postgresql, org.dockingframes, xml-apis, com.kitfox.svg, javax.media, org.mozilla, com.lowagie, rhino,
                                 org.easymock</excludeGroupIds>
-                            <excludeArtifactIds>pax-logging-api, slf4j-api, markdown4j, org.apache.felix.scr.ds-annotations,org.osgi.core</excludeArtifactIds>
+                            <excludeArtifactIds>pax-logging-api, slf4j-api, markdown4j, org.apache.felix.scr.ds-annotations,org.osgi.core,
+                                animal-sniffer-annotations</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -147,7 +148,7 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.scr</artifactId>
-            <version>1.6.2</version>
+            <version>1.8.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -88,10 +88,11 @@ public class ViewWorkspaceImpl implements ViewWorkspace, CoreWorkspace {
                 bundleVersion.getMicro(), bundleVersion.getQualifier(), new org.apache.felix
                 .framework.Logger());
         propertySupport = new PropertyChangeSupport(this);
-        SIFPath = getWorkspaceFolder() + File.separator + "sif";
-        mapContextPath = getWorkspaceFolder() + File.separator + "maps";
         if(!showGUI()) {
             bc.getBundle(0).stop();
+        } else {
+            SIFPath = getWorkspaceFolder() + File.separator + "sif";
+            mapContextPath = getWorkspaceFolder() + File.separator + "maps";
         }
     }
 

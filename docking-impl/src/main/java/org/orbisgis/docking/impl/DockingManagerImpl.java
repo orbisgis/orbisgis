@@ -346,7 +346,6 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
      * Save the docking layout
      */
     @Override
-    @Deactivate
     public void saveLayout() {
         if (dockingState != null) {
             try {

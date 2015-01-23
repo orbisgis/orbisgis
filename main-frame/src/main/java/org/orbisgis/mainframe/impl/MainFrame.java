@@ -148,6 +148,10 @@ public class MainFrame extends JFrame implements MainWindow {
             // Cancel exit
             return;
         }
+        firePropertyChange(WINDOW_VISIBLE, true, false);
+        if(dockingManager != null) {
+            dockingManager.saveLayout();
+        }
         // Stop application
         try {
             if(bundleContext != null) {
