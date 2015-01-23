@@ -266,10 +266,11 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
         // Some components cannot be hidden or shown by the user, the following lines
         // restore the visibility these components.
         // Check that non closable frame are shown
-        for (DockingPanel panel : getPanels()) {
-            DockingPanelParameters params = panel.getDockingParameters();
-            if (!params.isCloseable()) {
-                params.setVisible(true);
+
+        for (CustomPanelHolder holder : getPanelDecorator()) {
+            DockingPanel panel = holder.getDockingPanel();
+            if (!panel.getDockingParameters().isCloseable() && holder instanceof SingleCDockable) {
+                ((SingleCDockable) holder).setVisible(true);
             }
         }
         // Check that all non empty toolbars are visible
