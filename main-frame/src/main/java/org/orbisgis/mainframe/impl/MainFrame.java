@@ -29,7 +29,6 @@
 package org.orbisgis.mainframe.impl;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
@@ -48,6 +47,14 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
+import org.apache.felix.scr.annotations.Activate;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Deactivate;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.ReferenceCardinality;
+import org.apache.felix.scr.annotations.ReferencePolicy;
+import org.apache.felix.scr.annotations.ReferencePolicyOption;
+import org.apache.felix.scr.annotations.Service;
 import org.orbisgis.commons.events.OGVetoableChangeSupport;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.mainframe.api.MainFrameAction;
@@ -60,13 +67,6 @@ import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.docking.DockingManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.log.LogReaderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,18 +76,34 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * Main window that contain all docking panels.
  */
-@Component(service = MainWindow.class, immediate = true)
+@Component(metatype = true)
+@Service(MainWindow.class)
 public class MainFrame extends JFrame implements MainWindow {
     private static final I18n I18N = I18nFactory.getI18n(MainFrame.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(MainFrame.class);
+
+    @Reference(referenceInterface = MainFrameAction.class, bind = "addMenuItem", unbind = "removeMenuItem",
+            cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
+            ReferencePolicyOption.GREEDY)
     private ActionCommands actions = new ActionCommands();
     private JMenuBar menuBar = new JMenuBar();
     private MainFrameStatusBar mainFrameStatusBar = new MainFrameStatusBar();
     private JPanel mainPanel = new JPanel(new BorderLayout());
     private LogListenerOverlay messageOverlay = new LogListenerOverlay();
-    public static final Dimension MAIN_VIEW_SIZE = new Dimension(800, 600);/*!< Bounds of mainView, x,y and width height*/
+    public static final int DEFAULT_WIDTH = 800;
+    public static final int DEFAULT_HEIGHT = 600;
     private OGVetoableChangeSupport vetoableChangeSupport = new OGVetoableChangeSupport(this);
+
+    @Reference(bind = "setCoreWorkspace", unbind = "unsetCoreWorkspace")
+    private CoreWorkspace coreWorkspace;
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL_UNARY,policy = ReferencePolicy.DYNAMIC, policyOption =
+            ReferencePolicyOption.GREEDY, bind = "setDockingManager", unbind = "unsetDockingManager")
     private DockingManager dockingManager = null;
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL_UNARY, policy = ReferencePolicy.DYNAMIC,
+            bind = "setLogReaderService", unbind = "unsetLogReaderService")
+    private LogReaderService logReaderService;
     private JMenu panelList;
     // The main window can stop the framework bundle
     private BundleContext bundleContext;
@@ -99,6 +115,7 @@ public class MainFrame extends JFrame implements MainWindow {
     public MainFrame() {
         setIconImage(MainFrameIcon.getIconImage("orbisgis"));
         add(new JLayer<>(mainPanel, messageOverlay));
+        setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
     @Activate
@@ -109,12 +126,11 @@ public class MainFrame extends JFrame implements MainWindow {
             GraphicsDevice device = GraphicsEnvironment.
                     getLocalGraphicsEnvironment().getDefaultScreenDevice();
             Rectangle screenBounds = device.getDefaultConfiguration().getBounds();
-            setLocation(screenBounds.x + screenBounds.width / 2 - MAIN_VIEW_SIZE.width / 2, screenBounds.y +
-                    screenBounds.height / 2 - MAIN_VIEW_SIZE.height / 2);
+            setLocation(screenBounds.x + screenBounds.width / 2 - getWidth() / 2, screenBounds.y +
+                    screenBounds.height / 2 - getHeight() / 2);
         } catch (Throwable ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }
-        setSize(MAIN_VIEW_SIZE);
         // Very ugly, heritage from monolithic architecture
         UIFactory.setMainFrame(this);
 
@@ -162,7 +178,6 @@ public class MainFrame extends JFrame implements MainWindow {
         }
     }
 
-    @Reference
     public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
         setTitle(I18N.tr("OrbisGIS version {0} {1} {2}", getVersion(coreWorkspace), coreWorkspace.getVersionQualifier
                 (), Locale.getDefault().getCountry()));
@@ -183,8 +198,6 @@ public class MainFrame extends JFrame implements MainWindow {
     }
 
     // Use optional to avoid deadlock of service activation. (MainFrame launch first then DockingManager)
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC, policyOption =
-            ReferencePolicyOption.GREEDY)
     public void setDockingManager(DockingManager dockingManager) {
         // Add configure menu
         actions.addAction(new DefaultAction(MainFrameAction.MENU_CONFIGURE, I18N.tr("&Configuration"), MainFrameIcon
@@ -201,7 +214,6 @@ public class MainFrame extends JFrame implements MainWindow {
         this.dockingManager = null;
     }
 
-    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     public void addMenuItem(MainFrameAction mainFrameAction) {
         actions.addActionFactory(mainFrameAction, this);
     }
@@ -227,7 +239,6 @@ public class MainFrame extends JFrame implements MainWindow {
         }
     }
 
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
     public void setLogReaderService(LogReaderService logReaderService) {
         logReaderService.addLogListener(messageOverlay);
     }
