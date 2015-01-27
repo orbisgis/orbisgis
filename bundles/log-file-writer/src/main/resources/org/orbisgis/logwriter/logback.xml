@@ -1,4 +1,5 @@
 <configuration>
+    <appender name="osgi" class="org.ops4j.pax.logging.logback.appender.PaxAppenderDelegate"/>
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>WORKSPACELOGFILE</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -15,5 +16,8 @@
     </appender>
     <root level="DEBUG">
         <appender-ref ref="FILE" />
+    </root>
+    <root level="INFO">
+        <appender-ref ref="osgi" />
     </root>
 </configuration>
