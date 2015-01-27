@@ -38,7 +38,11 @@ import java.awt.event.WindowListener;
 import java.beans.EventHandler;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
+import java.io.IOException;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Locale;
+import java.util.Map;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -50,6 +54,8 @@ import javax.swing.JPanel;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
+import org.apache.felix.scr.annotations.Modified;
+import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.ReferencePolicy;
@@ -67,6 +73,8 @@ import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.docking.DockingManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.log.LogReaderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +85,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Main window that contain all docking panels.
  */
 @Component(metatype = true)
-@Service(MainWindow.class)
+@Service({MainWindow.class})
 public class MainFrame extends JFrame implements MainWindow {
     private static final I18n I18N = I18nFactory.getI18n(MainFrame.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(MainFrame.class);
@@ -92,6 +100,10 @@ public class MainFrame extends JFrame implements MainWindow {
     private LogListenerOverlay messageOverlay = new LogListenerOverlay();
     public static final int DEFAULT_WIDTH = 800;
     public static final int DEFAULT_HEIGHT = 600;
+    @Property(intValue = DEFAULT_WIDTH, name = "width")
+    private Integer width = DEFAULT_WIDTH;
+    @Property(intValue = DEFAULT_HEIGHT, name = "height")
+    private Integer height = DEFAULT_HEIGHT;
     private OGVetoableChangeSupport vetoableChangeSupport = new OGVetoableChangeSupport(this);
 
     @Reference(bind = "setCoreWorkspace", unbind = "unsetCoreWorkspace")
@@ -107,6 +119,10 @@ public class MainFrame extends JFrame implements MainWindow {
     private JMenu panelList;
     // The main window can stop the framework bundle
     private BundleContext bundleContext;
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL_UNARY, policy = ReferencePolicy.DYNAMIC,
+            bind = "setConfigurationAdmin", unbind = "unsetConfigurationAdmin")
+    private ConfigurationAdmin configurationAdmin;
+
 
     /**
      * Creates a new frame. The content of the frame is not created by
@@ -119,7 +135,7 @@ public class MainFrame extends JFrame implements MainWindow {
     }
 
     @Activate
-    public void activate(BundleContext bundleContext) {
+    public void activate(BundleContext bundleContext, Map properties) {
         this.bundleContext = bundleContext;
         init();
         try {
@@ -146,12 +162,31 @@ public class MainFrame extends JFrame implements MainWindow {
         setVisible(true);
     }
 
+    public void setConfigurationAdmin(ConfigurationAdmin configurationAdmin) {
+        this.configurationAdmin = configurationAdmin;
+    }
+
+    public void unsetConfigurationAdmin(ConfigurationAdmin configurationAdmin) {
+        this.configurationAdmin = null;
+    }
+
     @Deactivate
     public void deactivate() {
         // Very ugly, heritage from monolithic architecture
         UIFactory.setMainFrame(null);
         this.bundleContext = null;
         dispose();
+    }
+
+    @Modified
+    public void modified(Map<String, ?> properties) {
+        if(properties != null) {
+            width = (Integer)properties.get("width");
+            height = (Integer)properties.get("height");
+            if(width!= null && height != null && (width!=getWidth() || height != getHeight())) {
+                setSize(width, height);
+            }
+        }
     }
 
     /**
@@ -167,6 +202,20 @@ public class MainFrame extends JFrame implements MainWindow {
         firePropertyChange(WINDOW_VISIBLE, true, false);
         if(dockingManager != null) {
             dockingManager.saveLayout();
+        }
+        if(configurationAdmin != null) {
+            try {
+                Configuration configuration = configurationAdmin.getConfiguration(MainFrame.class.getName());
+                Dictionary<String, Object> props = configuration.getProperties();
+                if(props == null) {
+                    props = new Hashtable<>();
+                }
+                props.put("width", getWidth());
+                props.put("height", getHeight());
+                configuration.update(props);
+            } catch (IOException ex) {
+                LOGGER.error(I18N.tr("Cannot save main window configuration"));
+            }
         }
         // Stop application
         try {
