@@ -610,7 +610,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                 }
 
                 if (!sourceToDrop.isEmpty()) {
-                    new DropDataSourceListProcess(dropNode, index, sourceToDrop);
+                    execute(new DropDataSourceListProcess(dropNode, index, sourceToDrop));
                 }
         }
 
