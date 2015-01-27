@@ -47,6 +47,7 @@ import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.framework.CoreWorkspaceImpl;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wkguiapi.ViewWorkspace;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Version;
@@ -79,6 +80,7 @@ public class ViewWorkspaceImpl implements ViewWorkspace, CoreWorkspace {
     private PropertyChangeSupport propertySupport;
     private CoreWorkspaceImpl coreWorkspace;
     private Map<String, DataSourceFactory> dataSourceFactories = new HashMap<>();
+    private static boolean alwaysStop = false;
 
 
     @Activate
@@ -88,8 +90,12 @@ public class ViewWorkspaceImpl implements ViewWorkspace, CoreWorkspace {
                 bundleVersion.getMicro(), bundleVersion.getQualifier(), new org.apache.felix
                 .framework.Logger());
         propertySupport = new PropertyChangeSupport(this);
-        if(!showGUI()) {
-            bc.getBundle(0).stop();
+        if(alwaysStop || !showGUI()) {
+            if(!alwaysStop) {
+                bc.getBundle(0).stop();
+            }
+            alwaysStop = true;
+            throw new BundleException("Canceled by user");
         } else {
             SIFPath = getWorkspaceFolder() + File.separator + "sif";
             mapContextPath = getWorkspaceFolder() + File.separator + "maps";
