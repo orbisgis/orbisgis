@@ -137,6 +137,7 @@ public class MainFrame extends JFrame implements MainWindow {
     @Activate
     public void activate(BundleContext bundleContext, Map properties) {
         this.bundleContext = bundleContext;
+        modified(properties);
         init();
         try {
             GraphicsDevice device = GraphicsEnvironment.
