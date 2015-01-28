@@ -41,7 +41,7 @@ public class LogListenerOverlay extends MessageOverlay implements LogListener {
 
     @Override
     public void logged(LogEntry entry) {
-        if(entry.getLevel() <= LogService.LOG_INFO &&
+        if(entry.getLevel() <= LogService.LOG_WARNING &&
                 entry.getMessage() != null) {
             MessageOverlay.MESSAGE_TYPE messageType;
             switch(entry.getLevel()) {
