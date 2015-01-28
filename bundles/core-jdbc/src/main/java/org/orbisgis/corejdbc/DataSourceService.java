@@ -75,16 +75,16 @@ public class DataSourceService implements DataSource {
 
     /**
      * @param coreWorkspace CoreWorkspace with valid connection
-     * @throws SQLException If the DataSource could not be created
      */
     @Reference
-    public void setCoreWorkspace(CoreWorkspace coreWorkspace) throws SQLException {
+    public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
         this.coreWorkspace = coreWorkspace;
     }
 
     /**
      * Create internal datasource using {@link #setCoreWorkspace(org.orbisgis.frameworkapi.CoreWorkspace)} and {@link
      * #addDataSourceFactory(org.osgi.service.jdbc.DataSourceFactory, java.util.Map)}
+     * @throws SQLException If the DataSource could not be created
      */
     @Activate
     public void activate() throws SQLException {

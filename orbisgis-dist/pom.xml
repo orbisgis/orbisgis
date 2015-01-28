@@ -325,8 +325,14 @@
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.shell.tui</artifactId>
-            <version>${felix-version}</version>
+            <artifactId>org.apache.felix.gogo.shell</artifactId>
+            <version>0.10.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.gogo.command</artifactId>
+            <version>0.14.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

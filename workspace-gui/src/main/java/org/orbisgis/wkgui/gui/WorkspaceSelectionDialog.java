@@ -29,9 +29,21 @@
 package org.orbisgis.wkgui.gui;
 
 import net.miginfocom.swing.MigLayout;
+import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.framework.CoreWorkspaceImpl;
+import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.sif.multiInputPanel.DirectoryComboBoxChoice;
 import org.orbisgis.wkgui.icons.WKIcon;
+import org.orbisgis.wkguiapi.ViewWorkspace;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.Version;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
+import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -41,13 +53,12 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -57,7 +68,12 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+
 import org.orbisgis.sif.components.CustomButton;
 
 /**
@@ -66,6 +82,7 @@ import org.orbisgis.sif.components.CustomButton;
  * @author Nicolas Fortin
  * @author Adam Gouge
  */
+@org.osgi.service.component.annotations.Component
 public class WorkspaceSelectionDialog extends JPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(WorkspaceSelectionDialog.class);
@@ -74,10 +91,131 @@ public class WorkspaceSelectionDialog extends JPanel {
     private JCheckBox defaultCheckBox;
     private CoreWorkspaceImpl selectedWorkspace;
     private JLabel errorLabel = new JLabel();
+    DataSourceService dataSourceService = new DataSourceService();
+    private Version bundleVersion;
 
-    private WorkspaceSelectionDialog() {
+    public WorkspaceSelectionDialog() {
         super(new MigLayout("wrap 1"));
     }
+
+    /**
+     * @param dataSourceFactory DataSourceFactory instance
+     * @param serviceProperties Must contain DataSourceFactory.OSGI_JDBC_DRIVER_NAME entry.
+     */
+    @Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC, policyOption =
+            ReferencePolicyOption.GREEDY)
+    public void addDataSourceFactory(DataSourceFactory dataSourceFactory, Map<String,String> serviceProperties) {
+        dataSourceService.addDataSourceFactory(dataSourceFactory, serviceProperties);
+    }
+
+    /**
+     * @param dataSourceFactory DataSourceFactory instance
+     * @param serviceProperties Must contain DataSourceFactory.OSGI_JDBC_DRIVER_NAME entry.
+     */
+    public void removeDataSourceFactory(DataSourceFactory dataSourceFactory, Map<String,String> serviceProperties) {
+        dataSourceService.removeDataSourceFactory(dataSourceFactory, serviceProperties);
+    }
+
+    @Activate
+    public void activate(BundleContext bc) throws BundleException {
+        bundleVersion = bc.getBundle().getVersion();
+        new RegisterViewWorkspaceJob(this, bc).execute();
+    }
+
+    public ViewWorkspaceImpl askWorkspaceFolder(Component parentComponent) {
+        CoreWorkspaceImpl coreWorkspace = new CoreWorkspaceImpl(bundleVersion.getMajor(), bundleVersion.getMinor(),
+                bundleVersion.getMicro(), bundleVersion.getQualifier(), new org.apache.felix.framework.Logger());
+
+        String errorMessage = "";
+        do {
+            if (WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, coreWorkspace, errorMessage)) {
+                /////////////////////
+                // Check connection
+                dataSourceService.setCoreWorkspace(coreWorkspace);
+                try {
+                    dataSourceService.activate();
+                    try (Connection connection = dataSourceService.getConnection()) {
+                        DatabaseMetaData meta = connection.getMetaData();
+                        LOGGER.info(I18N.tr("Data source available {0} version {1}", meta.getDriverName(), meta
+                                .getDriverVersion()));
+                        return new ViewWorkspaceImpl(coreWorkspace);
+                    }
+                } catch (SQLException ex) {
+                    errorMessage = ex.getLocalizedMessage();
+                }
+            } else {
+                // User cancel, stop OrbisGIS
+                return null;
+            }
+        } while (true);
+    }
+
+    /*
+    public void activate(BundleContext bc) throws BundleException {
+        bundleVersion = bc.getBundle().getVersion();
+        coreWorkspace = new CoreWorkspaceImpl(bundleVersion.getMajor(), bundleVersion.getMinor(),
+                bundleVersion.getMicro(), bundleVersion.getQualifier(), new org.apache.felix
+                .framework.Logger());
+        propertySupport = new PropertyChangeSupport(this);
+        if(alwaysStop || !showGUI()) {
+            if(!alwaysStop) {
+                bc.getBundle(0).stop();
+            }
+            alwaysStop = true;
+            throw new BundleException("Canceled by user");
+        } else {
+            SIFPath = getWorkspaceFolder() + File.separator + "sif";
+            mapContextPath = getWorkspaceFolder() + File.separator + "maps";
+        }
+    }
+
+    private boolean showGUI() {
+        {
+            try {
+                // Create a local DataSourceService to check connection properties
+                DataSourceService dataSourceService = new DataSourceService();
+                for(Map.Entry<String, DataSourceFactory> entry : dataSourceFactories.entrySet()) {
+                    Map<String, String> properties = new HashMap<>();
+                    properties.put(DataSourceFactory.OSGI_JDBC_DRIVER_NAME, entry.getKey());
+                    dataSourceService.addDataSourceFactory(entry.getValue(), properties);
+                }
+                String errorMessage = "";
+                boolean connectionValid = false;
+                do {
+                    if (WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, coreWorkspace, errorMessage)) {
+                        /////////////////////
+                        // Check connection
+                        dataSourceService.setCoreWorkspace(coreWorkspace);
+                        try {
+                            dataSourceService.activate();
+                            try(Connection connection = dataSourceService.getConnection()) {
+                                DatabaseMetaData meta = connection.getMetaData();
+                                LOGGER.info(I18N.tr("Data source available {0} version {1}", meta
+                                        .getDriverName(), meta.getDriverVersion()));
+                                connectionValid = true;
+                            }
+                        } catch (SQLException ex) {
+                            errorMessage = ex.getLocalizedMessage();
+                            connectionValid = false;
+                        }
+                    } else {
+                        // User cancel, stop OrbisGIS
+                        return false;
+                    }
+                    if(connectionValid) {
+                        return true;
+                    }
+                } while (!connectionValid);
+            } catch (Exception ex) {
+                LOGGER.error("Could not init workspace", ex);
+            }
+        }
+        return false;
+    }
+    */
+
+
+
 
     private void init(CoreWorkspaceImpl coreWorkspace, String errorMessage) {
         selectedWorkspace = new CoreWorkspaceImpl(coreWorkspace.getVersionMajor(), coreWorkspace.getVersionMinor(),
@@ -293,5 +431,28 @@ public class WorkspaceSelectionDialog extends JPanel {
         wkDialog.selectedWorkspace.writeUriFile();
         // Do this at the end because there is trigger on property change
         coreWorkspace.setWorkspaceFolder(wkDialog.getComboBox().getValue());
+    }
+
+    public static class RegisterViewWorkspaceJob extends SwingWorker {
+        private WorkspaceSelectionDialog workspaceSelectionDialog;
+        private BundleContext bundleContext;
+
+        public RegisterViewWorkspaceJob(WorkspaceSelectionDialog workspaceSelectionDialog, BundleContext
+                bundleContext) {
+            this.workspaceSelectionDialog = workspaceSelectionDialog;
+            this.bundleContext = bundleContext;
+        }
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            ViewWorkspaceImpl viewWorkspace = workspaceSelectionDialog.askWorkspaceFolder(null);
+            if(viewWorkspace != null) {
+                bundleContext.registerService(CoreWorkspace.class, viewWorkspace.getCoreWorkspace(), null);
+                bundleContext.registerService(ViewWorkspace.class, viewWorkspace, null);
+            } else {
+                bundleContext.getBundle(0).stop();
+            }
+            return null;
+        }
     }
 }

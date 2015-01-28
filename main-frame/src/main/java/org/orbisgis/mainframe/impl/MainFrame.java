@@ -311,11 +311,9 @@ public class MainFrame extends JFrame implements MainWindow {
      * The user click on preferences menu item
      */
     public void onMenuShowPreferences() {
-        /*
         if(dockingManager != null) {
             dockingManager.showPreferenceDialog();
         }
-        */
     }
 
     /**
