@@ -49,7 +49,7 @@ import java.util.concurrent.TimeUnit;
  * Override ThreadPool of SwingWorker in order to fill job list.
  * @author Nicolas Fortin
  */
-@Component(immediate = true)
+@Component(service = {SwingWorkerPool.class, ExecutorService.class})
 public class WatchExecutorService extends ThreadPoolExecutor implements SwingWorkerPool {
 
     EventListenerList actionListenerList = new EventListenerList();
@@ -64,29 +64,6 @@ public class WatchExecutorService extends ThreadPoolExecutor implements SwingWor
                 10L, TimeUnit.MINUTES,
                 new LinkedBlockingQueue<Runnable>(),
                 new WatchThreadFactory());
-    }
-
-    private static Class<?> getAppContext() throws ClassNotFoundException {
-        return WatchExecutorService.class.getClassLoader().loadClass("sun.awt.AppContext");
-    }
-
-    @Activate
-    public void activate() {
-        try {
-            // Register This as default ThreadPool for all SwingWorker
-            getAppContext().getDeclaredMethod("put").invoke(null, SwingWorker.class, this);
-        } catch (ClassNotFoundException|NoSuchMethodException|IllegalAccessException|InvocationTargetException ex) {
-            // Ignore
-        }
-    }
-
-    @Deactivate
-    public void deactivate() {
-        try {
-            getAppContext().getDeclaredMethod("put").invoke(null, SwingWorker.class, null);
-        } catch (ClassNotFoundException|NoSuchMethodException|IllegalAccessException|InvocationTargetException ex) {
-            // Ignore
-        }
     }
 
     @Override
