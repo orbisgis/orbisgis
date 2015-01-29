@@ -67,6 +67,12 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.gogo.runtime</artifactId>
+            <version>0.10.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
             <version>1.2.4</version>
             <scope>compile</scope>
@@ -86,11 +92,6 @@
             <artifactId>org.osgi.enterprise</artifactId>
             <version>5.0.0</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.shell</artifactId>
-            <version>${felix-version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

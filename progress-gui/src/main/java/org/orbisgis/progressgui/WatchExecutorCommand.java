@@ -28,25 +28,24 @@
  */
 package org.orbisgis.progressgui;
 
-import org.apache.felix.shell.Command;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.progressgui.api.SwingWorkerPool;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.apache.felix.service.command.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.SwingWorker;
-import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 /**
  * Command shell for watching running SwingWorker
  * @author Nicolas Fortin
  */
-@Component
-public class WatchExecutorCommand implements Command {
+@Component(immediate = true, property = {"osgi.command.scope=run", "osgi.command.function=list",
+        "osgi.command.function=stop", "osgi.command.function=help"}, service = WatchExecutorCommand.class)
+public class WatchExecutorCommand {
     private SwingWorkerPool watchExecutorService;
     private static final String COMMAND = "sw";
     private static final Logger LOGGER = LoggerFactory.getLogger(WatchExecutorService.class);
@@ -60,61 +59,41 @@ public class WatchExecutorCommand implements Command {
         this.watchExecutorService = null;
     }
 
-    @Override
-    public String getName() {
-        return COMMAND;
-    }
-
-    @Override
     public String getUsage() {
         return COMMAND +" (list|stop <jobId>)";
     }
 
-    @Override
-    public String getShortDescription() {
-        return "Command default Swing Worker Pool";
+    @Descriptor("List active SwingWorker(s)")
+    public void list() {
+        LOGGER.info("List of active SwingWorker :");
+        for (Runnable runnable : new ArrayList<>(watchExecutorService.getQueue())) {
+            String taskName = "", progression = "";
+            if (runnable instanceof SwingWorkerPM) {
+                SwingWorkerPM swingWorkerPM = (SwingWorkerPM) runnable;
+                progression = " " + String.valueOf((int) (swingWorkerPM.getProgressMonitor().getOverallProgress() * 10000) / 100) + " %";
+                if (swingWorkerPM.isDone()) {
+                    progression = " done";
+                }
+                taskName = swingWorkerPM.getProgressMonitor().getCurrentTaskName();
+            } else if (runnable instanceof SwingWorker) {
+                SwingWorker swingWorker = (SwingWorker) runnable;
+                taskName = runnable.toString();
+                progression = " " + swingWorker.getProgress() + " %";
+                if (swingWorker.isDone()) {
+                    progression = " done";
+                }
+            }
+            LOGGER.info(taskName + progression);
+        }
     }
 
-    @Override
-    public void execute(String line, PrintStream out, PrintStream err) {
-        StringTokenizer st = new StringTokenizer(line);
-        st.nextToken();
-        if(!st.hasMoreTokens()) {
-            LOGGER.info(getUsage());
-        } else {
-            switch (st.nextToken()) {
-                case "list":
-                    LOGGER.info("List of active SwingWorker :");
-                    for (Runnable runnable : new ArrayList<>(watchExecutorService.getQueue())) {
-                        String taskName = "", progression = "";
-                        if (runnable instanceof SwingWorkerPM) {
-                            SwingWorkerPM swingWorkerPM = (SwingWorkerPM) runnable;
-                            progression = " " + String.valueOf((int) (swingWorkerPM.getProgressMonitor().getOverallProgress() * 10000) / 100) + " %";
-                            if (swingWorkerPM.isDone()) {
-                                progression = " done";
-                            }
-                            taskName = swingWorkerPM.getProgressMonitor().getCurrentTaskName();
-                        } else if (runnable instanceof SwingWorker) {
-                            SwingWorker swingWorker = (SwingWorker) runnable;
-                            taskName = runnable.toString();
-                            progression = " " + swingWorker.getProgress() + " %";
-                            if (swingWorker.isDone()) {
-                                progression = " done";
-                            }
-                        }
-                        LOGGER.info(taskName + progression);
-                    }
-                    break;
-                case "stop":
-                    String jobIds = st.nextToken();
-                    if (jobIds != null) {
-                        int jobId = Integer.valueOf(jobIds);
-                        LOGGER.info(String.valueOf(jobId));
-                    }
-                    break;
-                default:
-                    LOGGER.info(getUsage());
-            }
-        }
+    @Descriptor("Stop a SwingWorker")
+    public void stop(@Descriptor("Job identifier") Integer jobId) {
+        LOGGER.info(String.valueOf(jobId));
+    }
+
+    @Descriptor("Print usage")
+    public void help() {
+        LOGGER.info(getUsage());
     }
 }
