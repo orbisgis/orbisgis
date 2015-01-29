@@ -122,13 +122,13 @@ public class WorkspaceSelectionDialog extends JPanel {
         new RegisterViewWorkspaceJob(this, bc).execute();
     }
 
-    public ViewWorkspaceImpl askWorkspaceFolder(Component parentComponent) {
+    public ViewWorkspaceImpl askWorkspaceFolder(Window parentComponent) {
         CoreWorkspaceImpl coreWorkspace = new CoreWorkspaceImpl(bundleVersion.getMajor(), bundleVersion.getMinor(),
                 bundleVersion.getMicro(), bundleVersion.getQualifier(), new org.apache.felix.framework.Logger());
 
         String errorMessage = "";
         do {
-            if (WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, coreWorkspace, errorMessage)) {
+            if (WorkspaceSelectionDialog.showWorkspaceFolderSelection(parentComponent, coreWorkspace, errorMessage)) {
                 /////////////////////
                 // Check connection
                 dataSourceService.setCoreWorkspace(coreWorkspace);
@@ -149,73 +149,6 @@ public class WorkspaceSelectionDialog extends JPanel {
             }
         } while (true);
     }
-
-    /*
-    public void activate(BundleContext bc) throws BundleException {
-        bundleVersion = bc.getBundle().getVersion();
-        coreWorkspace = new CoreWorkspaceImpl(bundleVersion.getMajor(), bundleVersion.getMinor(),
-                bundleVersion.getMicro(), bundleVersion.getQualifier(), new org.apache.felix
-                .framework.Logger());
-        propertySupport = new PropertyChangeSupport(this);
-        if(alwaysStop || !showGUI()) {
-            if(!alwaysStop) {
-                bc.getBundle(0).stop();
-            }
-            alwaysStop = true;
-            throw new BundleException("Canceled by user");
-        } else {
-            SIFPath = getWorkspaceFolder() + File.separator + "sif";
-            mapContextPath = getWorkspaceFolder() + File.separator + "maps";
-        }
-    }
-
-    private boolean showGUI() {
-        {
-            try {
-                // Create a local DataSourceService to check connection properties
-                DataSourceService dataSourceService = new DataSourceService();
-                for(Map.Entry<String, DataSourceFactory> entry : dataSourceFactories.entrySet()) {
-                    Map<String, String> properties = new HashMap<>();
-                    properties.put(DataSourceFactory.OSGI_JDBC_DRIVER_NAME, entry.getKey());
-                    dataSourceService.addDataSourceFactory(entry.getValue(), properties);
-                }
-                String errorMessage = "";
-                boolean connectionValid = false;
-                do {
-                    if (WorkspaceSelectionDialog.showWorkspaceFolderSelection(null, coreWorkspace, errorMessage)) {
-                        /////////////////////
-                        // Check connection
-                        dataSourceService.setCoreWorkspace(coreWorkspace);
-                        try {
-                            dataSourceService.activate();
-                            try(Connection connection = dataSourceService.getConnection()) {
-                                DatabaseMetaData meta = connection.getMetaData();
-                                LOGGER.info(I18N.tr("Data source available {0} version {1}", meta
-                                        .getDriverName(), meta.getDriverVersion()));
-                                connectionValid = true;
-                            }
-                        } catch (SQLException ex) {
-                            errorMessage = ex.getLocalizedMessage();
-                            connectionValid = false;
-                        }
-                    } else {
-                        // User cancel, stop OrbisGIS
-                        return false;
-                    }
-                    if(connectionValid) {
-                        return true;
-                    }
-                } while (!connectionValid);
-            } catch (Exception ex) {
-                LOGGER.error("Could not init workspace", ex);
-            }
-        }
-        return false;
-    }
-    */
-
-
-
 
     private void init(CoreWorkspaceImpl coreWorkspace, String errorMessage) {
         selectedWorkspace = new CoreWorkspaceImpl(coreWorkspace.getVersionMajor(), coreWorkspace.getVersionMinor(),
