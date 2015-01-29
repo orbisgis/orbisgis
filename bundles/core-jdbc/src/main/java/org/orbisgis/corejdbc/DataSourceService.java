@@ -29,10 +29,12 @@
 package org.orbisgis.corejdbc;
 
 import org.h2gis.utilities.JDBCUrlParser;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
@@ -50,6 +52,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -90,6 +93,18 @@ public class DataSourceService implements DataSource {
     public void activate() throws SQLException {
         // Build DataSource
         newDataSource();
+    }
+
+    @Deactivate
+    public void deactivate() throws SQLException {
+        // Wait for H2 close
+        try(Connection connection = getConnection();
+            Statement st = connection.createStatement()) {
+            DatabaseMetaData metaData = connection.getMetaData();
+            if(JDBCUtilities.isH2DataBase(metaData) && !metaData.getURL().contains("tcp")) {
+                st.execute("SHUTDOWN");
+            }
+        }
     }
 
     private void newDataSource() throws SQLException {

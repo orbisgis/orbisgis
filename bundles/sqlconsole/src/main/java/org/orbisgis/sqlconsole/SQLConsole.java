@@ -52,6 +52,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Docking Panel implementation.
@@ -65,11 +66,13 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
         private DataSource dataSource;
         private ScriptSplitterFactory splitterFactory;
         private LanguageSupport sqlLanguageSupport;
+        private ExecutorService executorService;
 
         @Activate
         public void init() {
                 sqlPanel = new SQLConsolePanel(dataSource);
                 sqlPanel.setSplitterFactory(splitterFactory);
+                sqlPanel.setExecutorService(executorService);
                 dockingPanelParameters.setTitle(I18N.tr("SQL Console"));
                 dockingPanelParameters.setTitleIcon(SQLConsoleIcon.getIcon("sql_code"));
                 dockingPanelParameters.setDockActions(sqlPanel.getActions().getActions());
@@ -89,6 +92,17 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
         @Reference
         public void setDataSource(DataSource dataSource) {
                 this.dataSource = dataSource;
+        }
+
+        public void setExecutorService(ExecutorService executorService) {
+                this.executorService = executorService;
+        }
+
+        public void unsetExecutorService(ExecutorService executorService) {
+                this.executorService = null;
+                if(sqlPanel != null) {
+                        sqlPanel.unsetExecutorService(executorService);
+                }
         }
 
         /**

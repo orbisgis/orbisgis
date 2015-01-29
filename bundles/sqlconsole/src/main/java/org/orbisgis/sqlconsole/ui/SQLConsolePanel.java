@@ -35,6 +35,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.EventHandler;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 import javax.sql.DataSource;
 import javax.swing.*;
 import javax.swing.event.CaretListener;
@@ -106,6 +107,7 @@ public class SQLConsolePanel extends JPanel {
         private DefaultAction saveAction;
         private DataSource dataSource;
         private int timeOut =0;
+        private ExecutorService executorService;
         
         /**
          * Creates a console for sql.
@@ -287,10 +289,27 @@ public class SQLConsolePanel extends JPanel {
          */
         public void onExecute() {      
                 if (scriptPanel.getDocument().getLength() > 0) {
-                    new ExecuteScriptProcess(this, dataSource, splitterFactory, timeOut).execute();
+                    execute(new ExecuteScriptProcess(this, dataSource, splitterFactory, timeOut));
                 }
         }
-               
+
+
+        public void setExecutorService(ExecutorService executorService) {
+                this.executorService = executorService;
+        }
+
+        public void unsetExecutorService(ExecutorService executorService) {
+                this.executorService = null;
+        }
+
+        private void execute(SwingWorker swingWorker) {
+                if(executorService != null) {
+                        executorService.execute(swingWorker);
+                } else {
+                        swingWorker.execute();
+                }
+        }
+
         /**
          * Open a dialog that let the user to select a file and save the content
          * of the sql editor into this file.
@@ -302,7 +321,7 @@ public class SQLConsolePanel extends JPanel {
                 outfilePanel.loadState();
                 if (UIFactory.showDialog(outfilePanel)) {
                         try {
-                        FileUtils.writeStringToFile(outfilePanel.getSelectedFile(), scriptPanel.getText());
+                                FileUtils.writeStringToFile(outfilePanel.getSelectedFile(), scriptPanel.getText());
                         } catch (IOException e1) {
                                 LOGGER.error(I18N.tr("IO error."), e1);
                                 return;
