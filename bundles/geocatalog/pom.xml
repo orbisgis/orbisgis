@@ -14,19 +14,14 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.carrotgarden.maven</groupId>
-                <artifactId>carrot-maven-scr-plugin</artifactId>
-                <version>3.0.3</version>
-                <configuration>
-                    <enableDebugLogging>false</enableDebugLogging>
-                    <enableErrorLogging>true</enableErrorLogging>
-                    <enableInfoLogging>true</enableInfoLogging>
-                </configuration>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+                <version>${maven-scr-plugin-version}</version>
                 <executions>
                     <execution>
+                        <id>generate-scr-scrdescriptor</id>
                         <goals>
-                            <goal>clean</goal>
-                            <goal>generate</goal>
+                            <goal>scr</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -40,7 +35,6 @@
                     <instructions>
                         <Public-Package>org.orbisgis.geocatalog.api</Public-Package>
                         <Private-Package>org.orbisgis.geocatalog.*</Private-Package>
-                        <Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
                     </instructions>
                 </configuration>
             </plugin>
@@ -70,6 +64,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
+            <version>1.2.4</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

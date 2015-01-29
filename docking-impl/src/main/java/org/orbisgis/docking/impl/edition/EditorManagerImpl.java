@@ -38,7 +38,10 @@ import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorFactory;
 import org.orbisgis.sif.edition.EditorManager;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
@@ -69,6 +72,26 @@ public class EditorManagerImpl implements EditorManager {
             this, //The event target object
             "onMainWindowClosing", "");
     private MainWindow mainWindow;
+    private EditorFactoryTracker editorFactoryTracker;
+    private EditorPanelTracker editorPanelTracker;
+
+
+
+    /*
+    @Activate
+    public void activate(BundleContext bundleContext) {
+        editorFactoryTracker = new EditorFactoryTracker(bundleContext, this);
+        editorPanelTracker = new EditorPanelTracker(bundleContext, this);
+        editorFactoryTracker.open();
+        editorPanelTracker.open();
+    }
+
+    @Deactivate
+    public void deactivate() {
+        editorFactoryTracker.close();
+        editorPanelTracker.close();
+    }
+    */
 
     @Reference
     public void setDockingManager(DockingManager dockingManager) {

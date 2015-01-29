@@ -68,6 +68,7 @@
                     <module>external/jts-osgi</module>
                     <module>external/svg-salamander</module>
                     <module>external/itextpdf</module>
+                    <module>external/jai</module>
                     <module>orbisgis-dist</module>
                 </modules>
             </profile>

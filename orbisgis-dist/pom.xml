@@ -144,11 +144,18 @@
         <maven.build.timestamp.format>YYYY-MM-dd</maven.build.timestamp.format>
         <buildNumber>${maven.build.timestamp}</buildNumber>
     </properties>
+    <repositories>
+        <repository>
+            <id>knopflerfish</id>
+            <name>knopflerfish</name>
+            <url>http://www.knopflerfish.org/maven2</url>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr</artifactId>
-            <version>1.8.2</version>
+            <groupId>org.knopflerfish.bundle</groupId>
+            <artifactId>component</artifactId>
+            <version>4.0.3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -209,12 +216,14 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        <!--
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>log-file-writer</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        -->
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-logback</artifactId>
