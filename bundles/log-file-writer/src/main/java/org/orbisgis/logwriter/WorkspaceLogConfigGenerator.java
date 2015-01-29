@@ -52,10 +52,10 @@ import java.util.Hashtable;
  * Generate LOGBACK configuration using CoreWorkspace data
  * @author Nicolas Fortin
  */
-@Component(immediate = true)
-public class WorkspaceLogConfigGenerator implements ManagedService{
+@Component
+public class WorkspaceLogConfigGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(WorkspaceLogConfigGenerator.class);
-
+    private static final String KEY_CONFIG_FILE = "org.ops4j.pax.logging.logback.config.file";
     /**
      * Configuration Admin service dependency.
      */
@@ -82,33 +82,32 @@ public class WorkspaceLogConfigGenerator implements ManagedService{
 
     @Activate
     public void activate() {
+        File logFile = new File(coreWorkspace.getApplicationFolder()+File.separator+coreWorkspace.getLogFile());
+        String configFile = coreWorkspace.getApplicationFolder()+ File.separator + "logback.xml";
         try {
             Configuration configuration = pm.getConfiguration("org.ops4j.pax.logging", null);
             Dictionary<String, Object> props = configuration.getProperties();
             if(props == null) {
                 props =  new Hashtable<>();
             }
-
-            File logFile = new File(coreWorkspace.getApplicationFolder()+File.separator+coreWorkspace.getLogFile());
-            String configFile = coreWorkspace.getApplicationFolder()+ File.separator + "logback.xml";
-            try(InputStream stream = WorkspaceLogConfigGenerator.class.getResourceAsStream("logback.xml");
-                InputStreamReader inputStreamReader = new InputStreamReader(stream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                FileWriter fileWriter = new FileWriter(configFile)) {
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    fileWriter.write(line.replace("WORKSPACELOGFILE", logFile.getAbsolutePath()) + "\n");
+            if(props.get(KEY_CONFIG_FILE) == null) {
+                if (!(new File(configFile).exists())) {
+                    try (InputStream stream = WorkspaceLogConfigGenerator.class.getResourceAsStream("logback.xml");
+                         InputStreamReader inputStreamReader = new InputStreamReader(stream);
+                         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                         FileWriter fileWriter = new FileWriter(configFile)) {
+                        String line;
+                        while ((line = bufferedReader.readLine()) != null) {
+                            fileWriter.write(line.replace("WORKSPACELOGFILE", logFile.getAbsolutePath()) + "\n");
+                        }
+                        fileWriter.flush();
+                    }
                 }
+                props.put(KEY_CONFIG_FILE, configFile);
+                configuration.update(props);
             }
-            props.put("org.ops4j.pax.logging.logback.config.file", configFile);
-            configuration.update(props);
         } catch (IOException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }
-    }
-
-    @Override
-    public void updated(Dictionary<String, ?> properties) throws ConfigurationException {
-
     }
 }
