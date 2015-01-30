@@ -29,6 +29,7 @@
 package org.orbisgis.wkgui.gui;
 
 import net.miginfocom.swing.MigLayout;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.framework.CoreWorkspaceImpl;
 import org.orbisgis.frameworkapi.CoreWorkspace;
@@ -122,32 +123,36 @@ public class WorkspaceSelectionDialog extends JPanel {
         new RegisterViewWorkspaceJob(this, bc).execute();
     }
 
-    public ViewWorkspaceImpl askWorkspaceFolder(Window parentComponent) {
+    public ViewWorkspaceImpl askWorkspaceFolder(Window parentComponent, ProgressMonitor pm) {
         CoreWorkspaceImpl coreWorkspace = new CoreWorkspaceImpl(bundleVersion.getMajor(), bundleVersion.getMinor(),
                 bundleVersion.getMicro(), bundleVersion.getQualifier(), new org.apache.felix.framework.Logger());
 
         String errorMessage = "";
-        do {
-            if (WorkspaceSelectionDialog.showWorkspaceFolderSelection(parentComponent, coreWorkspace, errorMessage)) {
-                /////////////////////
-                // Check connection
-                dataSourceService.setCoreWorkspace(coreWorkspace);
-                try {
-                    dataSourceService.activate();
-                    try (Connection connection = dataSourceService.getConnection()) {
-                        DatabaseMetaData meta = connection.getMetaData();
-                        LOGGER.info(I18N.tr("Data source available {0} version {1}", meta.getDriverName(), meta
-                                .getDriverVersion()));
-                        return new ViewWorkspaceImpl(coreWorkspace);
+        try {
+            do {
+                if (WorkspaceSelectionDialog.showWorkspaceFolderSelection(parentComponent, coreWorkspace, errorMessage)) {
+                    /////////////////////
+                    // Check connection
+                    dataSourceService.setCoreWorkspace(coreWorkspace);
+                    try {
+                        dataSourceService.activate();
+                        pm.setTaskName(I18N.tr("Connecting to the database.."));
+                        try (Connection connection = dataSourceService.getConnection()) {
+                            DatabaseMetaData meta = connection.getMetaData();
+                            LOGGER.info(I18N.tr("Data source available {0} version {1}", meta.getDriverName(), meta.getDriverVersion()));
+                            return new ViewWorkspaceImpl(coreWorkspace);
+                        }
+                    } catch (SQLException ex) {
+                        errorMessage = ex.getLocalizedMessage();
                     }
-                } catch (SQLException ex) {
-                    errorMessage = ex.getLocalizedMessage();
+                } else {
+                    // User cancel, stop OrbisGIS
+                    return null;
                 }
-            } else {
-                // User cancel, stop OrbisGIS
-                return null;
-            }
-        } while (true);
+            } while (true);
+        } finally {
+            pm.endTask();
+        }
     }
 
     private void init(CoreWorkspaceImpl coreWorkspace, String errorMessage) {
@@ -378,14 +383,24 @@ public class WorkspaceSelectionDialog extends JPanel {
 
         @Override
         protected Object doInBackground() throws Exception {
-            ViewWorkspaceImpl viewWorkspace = workspaceSelectionDialog.askWorkspaceFolder(null);
-            if(viewWorkspace != null) {
-                bundleContext.registerService(CoreWorkspace.class, viewWorkspace.getCoreWorkspace(), null);
-                bundleContext.registerService(ViewWorkspace.class, viewWorkspace, null);
-            } else {
-                bundleContext.getBundle(0).stop();
+            LoadingFrame loadingFrame = new LoadingFrame();
+            try {
+                loadingFrame.setVisible(true);
+                ProgressMonitor progressMonitor = loadingFrame.getProgressMonitor().startTask(2);
+                ViewWorkspaceImpl viewWorkspace = workspaceSelectionDialog.askWorkspaceFolder(loadingFrame, progressMonitor);
+                if (viewWorkspace != null) {
+                    progressMonitor.setTaskName(I18N.tr("Loading OrbisGIS.."));
+                    bundleContext.registerService(CoreWorkspace.class, viewWorkspace.getCoreWorkspace(), null);
+                    bundleContext.registerService(ViewWorkspace.class, viewWorkspace, null);
+                    progressMonitor.endTask();
+                } else {
+                    bundleContext.getBundle(0).stop();
+                }
+                return null;
+            } finally {
+                loadingFrame.setVisible(false);
+                loadingFrame.dispose();
             }
-            return null;
         }
     }
 }

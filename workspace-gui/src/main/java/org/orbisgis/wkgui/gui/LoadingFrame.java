@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.main.frames;
+package org.orbisgis.wkgui.gui;
 
 import java.awt.BorderLayout;
 import java.awt.GraphicsDevice;
@@ -34,16 +34,17 @@ import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
 import java.awt.Rectangle;
 import java.beans.EventHandler;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import org.apache.log4j.Logger;
+
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.commons.progress.RootProgressMonitor;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.wkgui.icons.WKIcon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Splash screen shown while loading OrbisGIS on startup
@@ -52,7 +53,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 public class LoadingFrame extends JFrame {
         private JLabel messageLabel = new JLabel();
         private JProgressBar progressBar = new JProgressBar();
-        private static final Logger LOGGER = Logger.getLogger(LoadingFrame.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(LoadingFrame.class);
         private ProgressMonitor pm = new RootProgressMonitor(1);
 
         /**
@@ -63,8 +64,8 @@ public class LoadingFrame extends JFrame {
                 setUndecorated(true);
                 JPanel mainPanel = new JPanel(new BorderLayout());
                 setContentPane(mainPanel);
-                setIconImage(OrbisGISIcon.getIconImage("orbisgis"));
-                mainPanel.add(new JLabel(OrbisGISIcon.getIcon("logo_orbisgis")),
+                setIconImage(WKIcon.getIconImage("orbisgis"));
+                mainPanel.add(new JLabel(WKIcon.getIcon("logo_orbisgis")),
                         BorderLayout.CENTER);
                 JPanel bottomPanel = new JPanel(new BorderLayout());
                 progressBar.setMaximum(100);
