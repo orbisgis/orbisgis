@@ -8,7 +8,7 @@
     <parent>
         <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>
-        <version>5.0.0</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <build>
         <plugins>
