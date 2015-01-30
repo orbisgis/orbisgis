@@ -84,7 +84,8 @@
         </properties>
         <scm>
                 <connection>scm:git:https://github.com/irstv/orbisgis.git</connection>
-                <url>https://github.com/irstv/orbisgis</url>
+                <developerConnection>scm:git:https://github.com/irstv/orbisgis.git</developerConnection>
+                <url>git@github.com:irstv/orbisgis.git</url>
         </scm>
         <build>
                 <plugins>
