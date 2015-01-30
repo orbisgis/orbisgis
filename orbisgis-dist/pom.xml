@@ -4,7 +4,7 @@
     <parent>
         <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.0.1</version>
     </parent>
     <artifactId>orbisgis-dist</artifactId>
     <name>orbisgis-dist</name>
