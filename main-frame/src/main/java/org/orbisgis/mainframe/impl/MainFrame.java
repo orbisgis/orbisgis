@@ -44,12 +44,14 @@ import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Map;
 import javax.swing.Action;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayer;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
@@ -68,9 +70,11 @@ import org.orbisgis.mainframe.api.MainStatusBar;
 import org.orbisgis.mainframe.api.MainWindow;
 import org.orbisgis.mainframe.icons.MainFrameIcon;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.docking.DockingManager;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.service.cm.Configuration;
@@ -89,6 +93,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class MainFrame extends JFrame implements MainWindow {
     private static final I18n I18N = I18nFactory.getI18n(MainFrame.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(MainFrame.class);
+    private static final String WKDIALOG_BUNDLE_NAME = "workspace-gui";
 
     @Reference(referenceInterface = MainFrameAction.class, bind = "addMenuItem", unbind = "removeMenuItem",
             cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
@@ -191,14 +196,14 @@ public class MainFrame extends JFrame implements MainWindow {
     }
 
     /**
-     * User close the window
+     * @return True if the window can be closed
      */
-    public void onMainWindowClosing() {
+    private boolean closeWindowSaveState() {
         try {
             vetoableChangeSupport.fireVetoableChange(WINDOW_VISIBLE, true, false);
         } catch (PropertyVetoException ex) {
             // Cancel exit
-            return;
+            return false;
         }
         firePropertyChange(WINDOW_VISIBLE, true, false);
         if(dockingManager != null) {
@@ -218,13 +223,22 @@ public class MainFrame extends JFrame implements MainWindow {
                 LOGGER.error(I18N.tr("Cannot save main window configuration"));
             }
         }
-        // Stop application
-        try {
-            if(bundleContext != null) {
-                bundleContext.getBundle(0).stop();
+        return true;
+    }
+
+    /**
+     * User close the window
+     */
+    public void onMainWindowClosing() {
+        if(closeWindowSaveState()) {
+            // Stop application
+            try {
+                if (bundleContext != null) {
+                    bundleContext.getBundle(0).stop();
+                }
+            } catch (BundleException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
             }
-        } catch (BundleException ex) {
-            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
     }
 
@@ -233,6 +247,10 @@ public class MainFrame extends JFrame implements MainWindow {
                 (), Locale.getDefault().getCountry()));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         mainFrameStatusBar.init(coreWorkspace);
+        JButton btnChangeWorkspace = new CustomButton(MainFrameIcon.getIcon("application_go"));
+        btnChangeWorkspace.setToolTipText(I18N.tr("Switch to another workspace"));
+        btnChangeWorkspace.addActionListener(EventHandler.create(ActionListener.class,this,"onChangeWorkspace"));
+        mainFrameStatusBar.addWorkspaceBarComponent(btnChangeWorkspace);
     }
     public void unsetCoreWorkspace(CoreWorkspace coreWorkspace) {
 
@@ -360,5 +378,50 @@ public class MainFrame extends JFrame implements MainWindow {
     @Override
     public MainStatusBar getStatusBar() {
         return mainFrameStatusBar;
+    }
+
+    /**
+     * The user click on change workspace button
+     */
+    public void onChangeWorkspace() {
+        if(bundleContext != null) {
+            if(closeWindowSaveState()) {
+                new RestartWorkspaceSelectionBundle(bundleContext).execute();
+            }
+        }
+    }
+
+    private static class RestartWorkspaceSelectionBundle extends SwingWorker {
+        private BundleContext bundleContext;
+        private static final Logger LOGGER = LoggerFactory.getLogger(RestartWorkspaceSelectionBundle.class);
+
+        public RestartWorkspaceSelectionBundle(BundleContext bundleContext) {
+            this.bundleContext = bundleContext;
+        }
+
+        Bundle findWorkspaceGUIBundle() {
+            for(Bundle bundle : bundleContext.getBundles()) {
+                String name = (String)bundle.getHeaders().get("Bundle-Name");
+                if(name != null && WKDIALOG_BUNDLE_NAME.equals(name)) {
+                    return bundle;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            // Retrieve workspace-gui
+            Bundle wkBundle = findWorkspaceGUIBundle();
+            if(wkBundle != null) {
+                wkBundle.stop();
+                // Wait 1s
+                Thread.sleep(1000);
+                wkBundle.start();
+            } else {
+                LOGGER.error("Cannot find workspace dialog");
+            }
+            return null;
+        }
     }
 }

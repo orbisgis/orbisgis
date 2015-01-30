@@ -27,6 +27,7 @@
  */
 package org.orbisgis.mainframe.impl;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
@@ -36,6 +37,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.frameworkapi.CoreWorkspace;
@@ -43,6 +45,10 @@ import org.orbisgis.mainframe.api.MainStatusBar;
 import org.orbisgis.mainframe.icons.MainFrameIcon;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.sif.components.StatusBar;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -76,18 +82,14 @@ public class MainFrameStatusBar extends StatusBar implements MainStatusBar {
                 workspaceBar = new JPanel(new MigLayout("insets 0 0 0 0"));
                 JLabel workspacePath = new JLabel(coreWorkspace.getWorkspaceFolder());
                 workspaceBar.add(workspacePath);
-                JButton btnChangeWorkspace = new CustomButton(MainFrameIcon.getIcon("application_go"));
-                btnChangeWorkspace.setToolTipText(I18N.tr("Switch to another workspace"));
-                btnChangeWorkspace.addActionListener(EventHandler.create(ActionListener.class,this,"onChangeWorkspace"));
-                workspaceBar.add(btnChangeWorkspace);
                 addComponent(workspaceBar, SwingConstants.LEFT);
         }
 
         /**
-         * The user click on change workspace button
+         * @return Workspace panel at left side of m
          */
-        public void onChangeWorkspace() {
-                // TODO restart wkgui bundle
+        public void addWorkspaceBarComponent(Component component) {
+                workspaceBar.add(component);
         }
 
         /**
@@ -98,4 +100,5 @@ public class MainFrameStatusBar extends StatusBar implements MainStatusBar {
         protected void addComponent(JComponent component, String orientation){
             workspaceBar.add(component, orientation);
         }
+
 }
