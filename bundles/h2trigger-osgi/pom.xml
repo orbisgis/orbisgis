@@ -53,12 +53,12 @@
         <dependency>
             <groupId>${parent.groupId}</groupId>
             <artifactId>h2trigger</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${parent.groupId}</groupId>
             <artifactId>core-jdbc</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

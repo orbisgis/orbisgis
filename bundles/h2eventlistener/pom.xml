@@ -58,7 +58,7 @@
         <dependency>
             <groupId>${parent.groupId}</groupId>
             <artifactId>core-jdbc</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${h2-package}</groupId>
