@@ -31,7 +31,7 @@ package org.orbisgis.coremap.renderer;
 import com.vividsolutions.jts.geom.Envelope;
 import org.h2gis.utilities.SpatialResultSet;
 import org.orbisgis.coremap.layerModel.ILayer;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import java.sql.SQLException;
 

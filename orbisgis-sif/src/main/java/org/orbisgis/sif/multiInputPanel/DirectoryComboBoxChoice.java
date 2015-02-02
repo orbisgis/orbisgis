@@ -30,6 +30,7 @@ package org.orbisgis.sif.multiInputPanel;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.sif.components.OpenFolderPanel;
@@ -79,7 +80,7 @@ public class DirectoryComboBoxChoice extends ComboBoxChoice {
                 }
                 // TODO ability to set a validation object
                 // used when user select a folder while browsing
-                if(UIFactory.showDialog(openDialog,true,true)) {
+                if(UIFactory.showDialog(new UIPanel[]{openDialog},true,true, SwingUtilities.getWindowAncestor(mainComponent))) {
                         File folder = openDialog.getSelectedFile();
                         setValue(folder.getAbsolutePath());
                 }

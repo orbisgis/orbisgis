@@ -38,7 +38,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import org.gdms.data.AbstractDataSource;
 import org.gdms.data.AbstractDataSourceDefinition;

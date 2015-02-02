@@ -36,8 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.mapeditorapi.MapElement;
-import org.orbisgis.view.edition.TransferableEditableElement;
-import org.orbisgis.viewapi.edition.EditableElement;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.TransferableEditableElement;
 
 /**
  * Transfer of a collection of ILayer.

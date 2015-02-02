@@ -47,11 +47,14 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.RuleType;
 import net.opengis.se._2_0.core.StyleType;
 import net.opengis.se._2_0.core.VersionType;
-import org.apache.log4j.Logger;
+//import org.slf4j.*;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.common.Description;
+import org.slf4j.*;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 /**
  * Usable representation of SE styles. This is the upper node of the symbology
@@ -64,7 +67,7 @@ public final class Style extends AbstractSymbolizerNode {
 
     public static final String PROP_VISIBLE = "visible";
     private static final String DEFAULT_NAME = "Unnamed Style";
-    private static final Logger LOGGER = Logger.getLogger(Style.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Style.class);
     private String name;
     private ArrayList<Rule> rules;
     private ILayer layer;

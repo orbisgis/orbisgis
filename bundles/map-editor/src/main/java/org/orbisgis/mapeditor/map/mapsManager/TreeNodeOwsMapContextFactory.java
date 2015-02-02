@@ -35,13 +35,14 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.components.fstree.TreeNodeFileFactory;
-import org.orbisgis.view.components.fstree.TreeNodeFolder;
-import org.orbisgis.viewapi.edition.EditorManager;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.common.MenuCommonFunctions;
+import org.orbisgis.sif.components.fstree.TreeNodeFileFactory;
+import org.orbisgis.sif.components.fstree.TreeNodeFolder;
+import org.orbisgis.sif.edition.EditorManager;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -52,7 +53,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class TreeNodeOwsMapContextFactory implements TreeNodeFileFactory {
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeOwsMapContextFactory.class);
         private static final String ACTION_ADD_OWS_MAP = "TreeNodeOwsMapContextFactory:NewEmptyMap";
-        private static final Logger LOGGER = Logger.getLogger(TreeNodeOwsMapContextFactory.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(TreeNodeOwsMapContextFactory.class);
         private DataManager dataManager;
         private EditorManager editorManager;
         /**

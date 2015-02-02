@@ -28,6 +28,8 @@
  */
 package org.orbisgis.sif.icons;
 
+import org.slf4j.LoggerFactory;
+
 import java.awt.Image;
 import javax.swing.ImageIcon;
 
@@ -47,7 +49,7 @@ import javax.swing.ImageIcon;
 
 
 public final class SifIcon {
-    private static BaseIcon iconManager = new BaseIcon();
+    private static BaseIcon iconManager = new BaseIcon(LoggerFactory.getLogger(SifIcon.class));
     /**
      * This is a static class
      */

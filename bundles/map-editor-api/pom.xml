@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>map-editor-api</artifactId>
     <name>map-editor-api</name>
@@ -6,7 +7,7 @@
     <parent>
         <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>
-        <version>5.0.2-SNAPSHOT</version>
+        <version>5.1.0-SNAPSHOT</version>
         <relativePath>../..</relativePath>
     </parent>
     <build>
@@ -24,7 +25,7 @@
             </plugin>
             <plugin>
                 <groupId>com.googlecode.gettext-commons</groupId>
-                <version>1.2.4</version>
+                <version>${gettext-maven-plugin-version}</version>
                 <executions>
                     <execution>
                         <id>convert-po-class</id>
@@ -49,11 +50,6 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>orbisgis-view-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.googlecode.gettext-commons</groupId>
             <artifactId>gettext-commons</artifactId>
             <version>${gettext-commons-version}</version>
@@ -61,11 +57,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>orbisgis-sif</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>orbisgis-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

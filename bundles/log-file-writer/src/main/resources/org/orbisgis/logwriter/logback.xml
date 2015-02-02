@@ -1,0 +1,23 @@
+<configuration>
+    <appender name="osgi" class="org.ops4j.pax.logging.logback.appender.PaxAppenderDelegate"/>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>WORKSPACELOGFILE</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n %ex{full}</pattern>
+        </encoder>
+    </appender>
+    <root level="DEBUG">
+        <appender-ref ref="FILE" />
+    </root>
+    <root level="INFO">
+        <appender-ref ref="osgi" />
+    </root>
+</configuration>

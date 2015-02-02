@@ -28,12 +28,12 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
-import org.apache.log4j.Logger;
 import org.orbisgis.coremap.renderer.classification.ClassificationUtils;
-import org.orbisgis.coremap.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.legend.IInterpolationLegend;
 import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -48,7 +48,7 @@ import java.util.Map;
 public abstract class ProportionalFieldsComboBox extends NumericalFieldsComboBox {
 
     private static final Logger LOGGER =
-            Logger.getLogger(ProportionalFieldsComboBox.class);
+            LoggerFactory.getLogger(ProportionalFieldsComboBox.class);
 
     protected CanvasSE preview;
 

@@ -46,7 +46,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.events.Listener;
+import org.orbisgis.commons.events.Listener;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MIPValidation;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;

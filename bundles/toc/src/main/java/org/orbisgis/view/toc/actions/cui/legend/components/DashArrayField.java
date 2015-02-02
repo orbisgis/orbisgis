@@ -28,7 +28,8 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.xnap.commons.i18n.I18n;
@@ -48,7 +49,7 @@ import java.beans.EventHandler;
 public class DashArrayField extends JTextField {
 
     private static final I18n I18N = I18nFactory.getI18n(DashArrayField.class);
-    private static final Logger LOGGER = Logger.getLogger(DashArrayField.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DashArrayField.class);
 
     /**
      * Constructor

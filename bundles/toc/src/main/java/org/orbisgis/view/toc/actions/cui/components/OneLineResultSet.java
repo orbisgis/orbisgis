@@ -1,7 +1,7 @@
 package org.orbisgis.view.toc.actions.cui.components;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.orbisgis.corejdbc.internal.AbstractRowSet;
+import org.orbisgis.corejdbc.AbstractRowSet;
 
 import java.io.InputStream;
 import java.io.Reader;

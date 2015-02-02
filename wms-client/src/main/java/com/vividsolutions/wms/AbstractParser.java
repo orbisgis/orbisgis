@@ -39,14 +39,13 @@ package com.vividsolutions.wms;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.*;
 
-import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -66,7 +65,7 @@ import com.vividsolutions.wms.util.XMLTools;
  */
 public abstract class AbstractParser implements IParser {
     
-    private static Logger LOG = Logger.getLogger(AbstractParser.class);
+    private static Logger LOG = LoggerFactory.getLogger(AbstractParser.class);
    
    /** 
     * Creates a Parser for dealing with WMS XML.
@@ -140,7 +139,7 @@ public abstract class AbstractParser implements IParser {
     // a different path
     protected LinkedList<String> getFormatList(Document doc) throws IOException {
         
-        LinkedList<String> formatList = new LinkedList<String>();
+        LinkedList<String> formatList = new LinkedList<>();
         final Node formatNode = XMLTools.simpleXPath(doc, getRootPath() + "/Capability/Request/GetMap");
         NodeList nl = formatNode.getChildNodes();
         for( int i=0; i < nl.getLength(); i++ ) {
@@ -167,10 +166,10 @@ public abstract class AbstractParser implements IParser {
     public MapLayer wmsLayerFromNode( Node layerNode ) {
         String name = null;
         String title = null;
-        LinkedList<String> srsList = new LinkedList<String>();
-        LinkedList<MapLayer> subLayers = new LinkedList<MapLayer>();
+        LinkedList<String> srsList = new LinkedList<>();
+        LinkedList<MapLayer> subLayers = new LinkedList<>();
         BoundingBox geographicBBox = null;
-        Map<String, BoundingBox> boundingBoxMap = new HashMap<String, BoundingBox>();
+        Map<String, BoundingBox> boundingBoxMap = new HashMap<>();
     
         NodeList nl = layerNode.getChildNodes();
 
@@ -226,8 +225,7 @@ public abstract class AbstractParser implements IParser {
     protected BoundingBox boundingBoxFromNode(Node n) throws Exception {
         try {
             NamedNodeMap nm = n.getAttributes();           
-            String srs = "";
-            srs = nm.getNamedItem(getSRSName()).getNodeValue();
+            String srs = nm.getNamedItem(getSRSName()).getNodeValue();
             double minx = getCoord("minx", nm);
 			double miny = getCoord("miny", nm);
 			double maxx = getCoord("maxx", nm);
@@ -273,7 +271,6 @@ public abstract class AbstractParser implements IParser {
                         miny = getCoord(childNode.getTextContent().trim());
                     } else if( childNode.getNodeName().equals( "northBoundLatitude" ) ) {
                         maxy = getCoord(childNode.getTextContent().trim());
-                    } else {
                     }
                 }
             }

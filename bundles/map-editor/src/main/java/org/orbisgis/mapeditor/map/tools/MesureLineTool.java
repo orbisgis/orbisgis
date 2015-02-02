@@ -34,7 +34,8 @@ import java.awt.Graphics;
 import java.text.DecimalFormat;
 import java.util.Observable;
 import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.tool.DrawingException;
@@ -45,7 +46,7 @@ import org.orbisgis.mapeditor.map.tool.TransitionException;
  * Get the distance of a drawn line.
  */
 public class MesureLineTool extends AbstractLineTool {
-    protected static Logger GUI_LOGGER = Logger.getLogger("gui."+MesureLineTool.class);
+    protected static Logger GUI_LOGGER = LoggerFactory.getLogger("gui."+MesureLineTool.class);
 
     @Override
 	public void update(Observable o, Object arg) {

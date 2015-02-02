@@ -32,7 +32,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.ui.util.GUIUtil;
 import org.xnap.commons.i18n.I18n;
@@ -42,7 +42,7 @@ public class SymbolUtil {
 
 	
 	
-        private static final Logger LOGGER = Logger.getLogger(SymbolUtil.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(SymbolUtil.class);
 	private static final I18n I18N = I18nFactory.getI18n(SymbolUtil.class);
         
         

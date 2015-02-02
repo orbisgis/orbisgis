@@ -31,7 +31,8 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
-import org.orbisgis.view.components.renderers.ListLaFRenderer;
+
+import org.orbisgis.sif.components.renderers.ListLaFRenderer;
 
 import javax.swing.*;
 import java.awt.*;

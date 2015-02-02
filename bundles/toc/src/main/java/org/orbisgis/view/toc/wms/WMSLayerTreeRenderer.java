@@ -32,7 +32,8 @@ import com.vividsolutions.wms.MapLayer;
 import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.JTree;
-import org.orbisgis.view.components.renderers.TreeLaFRenderer;
+
+import org.orbisgis.sif.components.renderers.TreeLaFRenderer;
 import org.orbisgis.view.toc.icons.TocIcon;
 
 /**

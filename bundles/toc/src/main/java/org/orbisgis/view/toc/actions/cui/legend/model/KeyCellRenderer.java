@@ -1,6 +1,8 @@
 package org.orbisgis.view.toc.actions.cui.legend.model;
 
-import org.orbisgis.view.components.renderers.TableLaFCellRenderer;
+
+
+import org.orbisgis.sif.components.renderers.TableLaFCellRenderer;
 
 import javax.swing.*;
 import java.awt.*;

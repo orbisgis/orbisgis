@@ -39,7 +39,7 @@ import java.io.RandomAccessFile;
 import java.util.Arrays;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;

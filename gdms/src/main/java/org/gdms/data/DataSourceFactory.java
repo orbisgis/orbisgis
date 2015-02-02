@@ -72,7 +72,7 @@ import org.gdms.sql.engine.ParseException;
 import org.gdms.sql.engine.SQLStatement;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 /**

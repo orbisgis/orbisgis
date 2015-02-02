@@ -71,7 +71,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.omanager.plugin.api.CustomPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -90,7 +91,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
     private static final Dimension MINIMUM_BUNDLE_DESCRIPTION_DIMENSION = new Dimension(250,50);
     private static final int MINIMUM_SEARCH_COLUMNS = 10;
     private static final I18n I18N = I18nFactory.getI18n(MainPanel.class);
-    private static final Logger LOGGER = Logger.getLogger("gui."+MainPanel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger("gui."+MainPanel.class);
     private static final int BORDER_PIXEL_GAP = 2;
     private static final int PROPERTY_TEXT_SIZE_INCREMENT = 3;
     private static final int PROPERTY_TITLE_SIZE_INCREMENT = 4;
@@ -285,7 +286,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
                 document.insertString(document.getLength(),"\n"+propertyValue+"\n\n",new SimpleAttributeSet());
             }
         } catch (BadLocationException ex) {
-            LOGGER.error(ex);
+            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
     }
     private void addHeaderItem(String property,Map<String,String> headers, Document document) {

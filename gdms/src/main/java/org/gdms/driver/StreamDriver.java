@@ -36,7 +36,7 @@ package org.gdms.driver;
 import java.awt.Image;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import org.gdms.data.stream.WMSStreamSource;
 

@@ -48,7 +48,7 @@ import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.TableDefinition;
 import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableFunctionSignature;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 public class GigaCustomQuery extends AbstractTableFunction {
 

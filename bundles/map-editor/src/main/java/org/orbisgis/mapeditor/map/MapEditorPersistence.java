@@ -34,10 +34,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import org.orbisgis.viewapi.docking.DockingPanelLayout;
+import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.mapeditor.map.mapsManager.MapsManagerPersistence;
-import org.orbisgis.viewapi.util.PropertyHost;
-import org.orbisgis.viewapi.util.XElement;
+import org.orbisgis.sif.docking.PropertyHost;
+import org.orbisgis.sif.docking.XElement;
 
 /**
  * The map editor stores the last open default map context
@@ -49,7 +49,7 @@ public class MapEditorPersistence implements DockingPanelLayout, Serializable, P
         private static final String MAP_EDITOR_NODE = "mapEditor";
         /**
          * Map Context file name to show on application start.
-         * {@link org.orbisgis.view.map.MapEditorPersistence#getDefaultMapContext()}
+         * {@link MapEditorPersistence#getDefaultMapContext()}
          */
         public static final String PROP_DEFAULTMAPCONTEXT = "defaultMapContext";
         private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);

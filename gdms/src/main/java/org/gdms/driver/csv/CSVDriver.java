@@ -51,7 +51,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 import com.vividsolutions.jts.geom.Geometry;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;

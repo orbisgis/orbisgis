@@ -34,7 +34,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 import org.orbisgis.mapeditorapi.MapElement;
-import org.orbisgis.view.edition.TransferableEditableElement;
+import org.orbisgis.sif.edition.TransferableEditableElement;
 
 /**
  * Transfer of a MapElement

@@ -29,12 +29,13 @@
 
 package org.orbisgis.mapeditor.map.tools.generated;
 
-import org.apache.log4j.Logger;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditor.map.tool.Automaton;
 import org.orbisgis.mapeditor.map.tool.FinishedAutomatonException;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -47,7 +48,7 @@ import java.awt.Point;
  */
 public abstract class AbstractAutomaton implements Automaton {
     protected final I18n i18n = I18nFactory.getI18n(AbstractAutomaton.class);
-    protected final Logger logger = Logger.getLogger(AbstractAutomaton.class);
+    protected final Logger logger = LoggerFactory.getLogger(AbstractAutomaton.class);
     private static final Point DEFAULT_CURSOR_OFFSET = new Point(8,8);
     protected Status status = Status.STANDBY;
     protected MapContext mc;

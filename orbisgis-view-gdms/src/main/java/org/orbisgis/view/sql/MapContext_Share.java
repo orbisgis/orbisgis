@@ -44,7 +44,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.coremap.layerModel.mapcatalog.ConnectionProperties;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapCatalog;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.map.MapElement;

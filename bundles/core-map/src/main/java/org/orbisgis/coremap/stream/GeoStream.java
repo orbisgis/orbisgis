@@ -32,7 +32,7 @@ import java.awt.Image;
 import java.io.IOException;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 /**
  * A stream object that can be queried in order to get a specific image.

@@ -48,7 +48,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.corejdbc.internal.DataManagerImpl;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.h2gis.drivers.DriverManager;
 
 /**

@@ -59,7 +59,7 @@ import java.util.Properties;
  * @author Antoine Gourlay
  * @author Nicolas Fortin
  */
-@Component(servicefactory = true)
+@Component(servicefactory = true, property = {"language=sql"})
 public class SQLLanguageSupport extends AbstractLanguageSupport {
         private Logger log = LoggerFactory.getLogger(SQLLanguageSupport.class);
         private RSyntaxSQLParser parser;

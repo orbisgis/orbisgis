@@ -41,16 +41,17 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFolderPanel;
-import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
-import org.orbisgis.view.components.fstree.PopupTreeNode;
-import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
-import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
-import org.orbisgis.view.components.fstree.TreeNodeFolder;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.components.fstree.AbstractTreeNodeContainer;
+import org.orbisgis.sif.components.fstree.PopupTreeNode;
+import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
+import org.orbisgis.sif.components.fstree.TreeNodeFileFactoryManager;
+import org.orbisgis.sif.components.fstree.TreeNodeFolder;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -60,7 +61,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class TreeNodeLocalRoot extends AbstractTreeNodeContainer implements PopupTreeNode,  TreeNodeCustomIcon {
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeLocalRoot.class);
-        private static final Logger LOGGER = Logger.getLogger(TreeNodeLocalRoot.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(TreeNodeLocalRoot.class);
         // This list must be updated to the current state of shown servers
         private MapsManagerPersistence mapsManagerPersistence;
         private TreeNodeFileFactoryManager factoryManager;

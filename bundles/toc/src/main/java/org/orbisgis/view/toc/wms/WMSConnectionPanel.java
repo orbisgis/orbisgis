@@ -29,26 +29,37 @@ package org.orbisgis.view.toc.wms;
 
 import com.vividsolutions.wms.MapLayer;
 import com.vividsolutions.wms.WMService;
-import java.awt.*;
+
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Vector;
-import javax.swing.*;
+import java.util.concurrent.ExecutorService;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+
 import net.miginfocom.swing.MigLayout;
-import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.workspace.CoreWorkspaceImpl;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.frameworkapi.CoreWorkspace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.sif.components.WideComboBox;
-import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.toc.icons.TocIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -60,16 +71,18 @@ import org.xnap.commons.i18n.I18nFactory;
 public class WMSConnectionPanel extends JPanel implements UIPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(LayerConfigurationPanel.class);
-    private static final Logger LOGGER = Logger.getLogger(Catalog.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WMSConnectionPanel.class);
     private static final String WMS_SERVER_FILE = "wmsServerList.txt";
-    private WideComboBox cmbURLServer;
+    private WideComboBox<String> cmbURLServer;
     private JLabel lblVersion;
     private JLabel lblTitle;
     private JTextArea txtDescription;
     private MapLayer client;
     private WMService service;
-    private ArrayList<String> serverswms;
+    private ArrayList<String> serversWms;
     private LayerConfigurationPanel configPanel;
+    private ExecutorService executorService;
+    private File wmsFileList;
 
     /**
      * The WMSConnectionPanel is the first panel used to specify the URL of the
@@ -77,12 +90,14 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
      *
      * @param configPanel
      */
-    public WMSConnectionPanel(LayerConfigurationPanel configPanel) {
+    public WMSConnectionPanel(LayerConfigurationPanel configPanel, ExecutorService executorService, CoreWorkspace coreWorkspace) {
         this.configPanel = configPanel;
+        this.executorService = executorService;
+        wmsFileList = new File(coreWorkspace.getApplicationFolder() + File.separator + WMS_SERVER_FILE);
         JPanel pnlURL = new JPanel(new MigLayout());
        
-        serverswms = loadWMSServers();
-        cmbURLServer = new WideComboBox(serverswms.toArray(new String[serverswms.size()]));
+        serversWms = loadWMSServers();
+        cmbURLServer = new WideComboBox<>(serversWms.toArray(new String[serversWms.size()]));
         cmbURLServer.setEditable(true);
         pnlURL.add(cmbURLServer, "span 2");
         
@@ -100,9 +115,9 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
         btnDelete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String item = cmbURLServer.getSelectedItem().toString();
-                if (serverswms.contains(item)) {
-                    serverswms.remove(item);
+                String item = cmbURLServer.getSelectedItem();
+                if (serversWms.contains(item)) {
+                    serversWms.remove(item);
                     saveWMSServerFile();
                 }
                 cmbURLServer.removeItem(item);
@@ -119,8 +134,8 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
                     ArrayList<String> updateServersList = readWMSServerFile(WMSConnectionPanel.class.getResourceAsStream(WMS_SERVER_FILE));
 
                     for (String updatewms : updateServersList) {
-                        if (!serverswms.contains(updatewms)) {
-                            serverswms.add(updatewms);
+                        if (!serversWms.contains(updatewms)) {
+                            serversWms.add(updatewms);
                             cmbURLServer.addItem(updatewms);
                         }
                     }
@@ -149,11 +164,6 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
         this.add(pnlURL);
     }
 
-    private File getWMSFileListPath() {
-        CoreWorkspaceImpl tempWorkspace = new CoreWorkspaceImpl();
-        return new File(tempWorkspace.getApplicationFolder() + File.separator + WMS_SERVER_FILE);
-    }
-
     /**
      * Load a list of servers stored in file in the current workspace if the
      * file doesn't exist a list of default URL is loaded.
@@ -162,10 +172,9 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
      */
     private ArrayList<String> loadWMSServers() {
         // Create a temporary workspace to compute future path
-        File file = getWMSFileListPath();
         try {
-            if (file.exists()) {
-                return readWMSServerFile(new FileInputStream(file));
+            if (wmsFileList.exists()) {
+                return readWMSServerFile(new FileInputStream(wmsFileList));
             } else {
                 return readWMSServerFile(WMSConnectionPanel.class.getResourceAsStream(WMS_SERVER_FILE));
             }
@@ -185,7 +194,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
      */
     private ArrayList<String> readWMSServerFile(InputStream layoutStream)
             throws IOException {
-        ArrayList<String> serversList = new ArrayList<String>();
+        ArrayList<String> serversList = new ArrayList<>();
         BufferedReader bufferedReader = new BufferedReader(
                 new InputStreamReader(layoutStream));
 
@@ -209,9 +218,8 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
      */
     public void saveWMSServerFile() {
         try {
-            File file = getWMSFileListPath();
-            PrintWriter pw = new PrintWriter(file);
-            for (String server : serverswms) {
+            PrintWriter pw = new PrintWriter(wmsFileList);
+            for (String server : serversWms) {
                 pw.println(server);
             }
             pw.close();
@@ -225,9 +233,12 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
      * display some informations about the WMS server.
      */
     private void connect() {
-        BackgroundManager bm = Services.getService(BackgroundManager.class);
-        bm.nonBlockingBackgroundOperation(new WmsConnectionJob());
-
+        WmsConnectionJob wmsConnectionJob = new WmsConnectionJob();
+        if(executorService != null) {
+            executorService.execute(wmsConnectionJob);
+        } else {
+            wmsConnectionJob.execute();
+        }
     }
 
     /**
@@ -332,11 +343,10 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
     /**
      * Fetch information about the Wms service from the Internet
      */
-    private class WmsConnectionJob implements BackgroundJob {
-
+    private class WmsConnectionJob extends SwingWorker {
         @Override
-        public void run(ProgressMonitor pm) {
-            String originalWmsURL = cmbURLServer.getSelectedItem().toString();
+        protected Object doInBackground() throws Exception {
+            String originalWmsURL = cmbURLServer.getSelectedItem();
             String wmsURL = originalWmsURL.trim();
             try {
                 if (service == null) {
@@ -365,8 +375,8 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
                     }
                 });
 
-                if (!serverswms.contains(originalWmsURL)) {
-                    serverswms.add(originalWmsURL);
+                if (!serversWms.contains(originalWmsURL)) {
+                    serversWms.add(originalWmsURL);
                     saveWMSServerFile();
                 }
 
@@ -376,11 +386,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
                 LOGGER.error(
                         I18N.tr("Cannot get capabilities of {0}", wmsURL), e);
             }
-        }
-
-        @Override
-        public String getTaskName() {
-            return I18N.tr("Connecting to the server...");
+            return null;
         }
     }
 }

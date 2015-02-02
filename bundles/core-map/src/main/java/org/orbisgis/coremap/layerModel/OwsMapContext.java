@@ -60,7 +60,7 @@ import net.opengis.ows_context.SLDType;
 import net.opengis.ows_context.StyleListType;
 import net.opengis.ows_context.StyleType;
 import net.opengis.ows_context.URLType;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.map.MapTransform;
@@ -70,11 +70,11 @@ import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.coremap.renderer.se.common.Description;
 import org.orbisgis.coremap.renderer.se.common.LocalizedText;
-import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.URIUtility;
-import org.orbisgis.utils.FileUtils;
+import org.orbisgis.commons.utils.FileUtils;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -87,7 +87,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public final class OwsMapContext extends BeanMapContext {
 
         private static final I18n I18N = I18nFactory.getI18n(OwsMapContext.class, Locale.getDefault(), I18nFactory.FALLBACK);
-        private static final Logger LOGGER = Logger.getLogger(OwsMapContext.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(OwsMapContext.class);
         private ArrayList<MapContextListener> listeners = new ArrayList<MapContextListener>();
         private OpenerListener openerListener;
         private boolean open = false;

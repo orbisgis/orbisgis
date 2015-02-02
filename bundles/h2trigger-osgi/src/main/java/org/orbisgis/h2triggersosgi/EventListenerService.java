@@ -28,7 +28,7 @@
  */
 package org.orbisgis.h2triggersosgi;
 
-import org.apache.log4j.Logger;
+
 import org.h2.api.DatabaseEventListener;
 import org.h2.api.Trigger;
 import org.h2.jdbcx.JdbcDataSource;
@@ -41,6 +41,8 @@ import org.orbisgis.h2triggers.TriggerFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import javax.swing.*;
@@ -59,7 +61,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component(immediate = true)
 public class EventListenerService implements DatabaseEventListener, TriggerFactory {
     private DataManager dataManager;
-    private Logger logger = Logger.getLogger(EventListenerService.class);
+    private Logger logger = LoggerFactory.getLogger(EventListenerService.class);
     private Queue<StateEvent> eventStack = new LinkedBlockingQueue<>();
     private AtomicBoolean eventProcessRunning = new AtomicBoolean(false);
 

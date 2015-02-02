@@ -33,7 +33,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -58,9 +60,12 @@ public class BaseIcon {
     
     private final ImageIcon ORBISGIS_MISSING_ICON = new ImageIcon(BaseIcon.class.getResource("remove.png")); /*!< Icon displayed when the requested icon is not found */
     
-    private final Logger LOG = Logger.getLogger(BaseIcon.class); /*!< Logger of SifIcon */
-   
-    
+    private final Logger LOG;
+
+    public BaseIcon(Logger LOG) {
+        this.LOG = LOG;
+    }
+
     /**
      * Retrieve icon awt Image by its name
      * @param iconName The icon name, without extension. All icons are stored in the png format.
