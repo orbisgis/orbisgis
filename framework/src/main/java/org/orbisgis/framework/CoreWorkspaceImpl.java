@@ -163,7 +163,7 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
 
     private static String getDefaultJDBCConnectionString(String workspaceFolder) {
         return "jdbc:h2:" + new File(workspaceFolder + File.separator +
-                "database;MV_STORE=FALSE;DB_CLOSE_DELAY=30;DEFRAG_ALWAYS=TRUE").toURI().getRawPath();
+                "database;DB_CLOSE_DELAY=30").toURI().getRawPath();
     }
 
     @Override
