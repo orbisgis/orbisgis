@@ -50,13 +50,14 @@ import java.util.Map;
 import java.util.Set;
 import javax.sql.DataSource;
 import javax.swing.JPanel;
-import org.apache.log4j.Logger;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.AreaSymbolizer;
 import org.orbisgis.coremap.renderer.se.LineSymbolizer;
 import org.orbisgis.coremap.renderer.se.PointSymbolizer;
 import org.orbisgis.coremap.renderer.se.Symbolizer;
 import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is responsible for drawing a preview of what will be rendered on
@@ -64,7 +65,7 @@ import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
  * @author Alexis Guéganno, others...
  */
 public class CanvasSE extends JPanel {
-        private static final Logger LOGGER = Logger.getLogger("gui."+CanvasSE.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger("gui." + CanvasSE.class);
         private Symbolizer s;
         private GeometryFactory gf;
         private Geometry geom;

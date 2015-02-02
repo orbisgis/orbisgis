@@ -31,6 +31,7 @@ package org.orbisgis.mapeditor.map.icons;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import org.orbisgis.sif.icons.BaseIcon;
+import org.slf4j.LoggerFactory;
 
 /**
  * @class TocIcon
@@ -43,7 +44,7 @@ import org.orbisgis.sif.icons.BaseIcon;
 public class MapEditorIcons {
     
     
-    private static BaseIcon iconManager = new BaseIcon();
+    private static BaseIcon iconManager = new BaseIcon(LoggerFactory.getLogger(MapEditorIcons.class));
     
     /**
      * This is a static class

@@ -14,7 +14,10 @@ public final class JaxbContainer {
     public static final JAXBContext JAXBCONTEXT;
     static {
         try {
-            JAXBCONTEXT = JAXBContext.newInstance("net.opengis.ows_context:net.opengis.se._2_0.core:net.opengis.wms:oasis.names.tc.ciq.xsdschema.xal._2");
+            JAXBCONTEXT = JAXBContext.newInstance(net.opengis.ows_context.ObjectFactory.class,
+                    net.opengis.se._2_0.core.ObjectFactory.class,
+                    net.opengis.wms.ObjectFactory.class,
+                    oasis.names.tc.ciq.xsdschema.xal._2.ObjectFactory.class);
         } catch (JAXBException ex) {
             throw new ExceptionInInitializerError(ex);
         }

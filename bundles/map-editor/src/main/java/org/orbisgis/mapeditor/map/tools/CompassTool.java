@@ -39,7 +39,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.tool.DrawingException;
@@ -53,7 +54,7 @@ import org.orbisgis.mapeditor.map.tools.generated.AbstractAutomaton;
  * A tool to show the drawn angle in degree.
  */
 public class CompassTool extends AbstractAutomaton {
-    private static Logger GUILOGGER = Logger.getLogger("gui." + CompassTool.class);
+    private static Logger GUILOGGER = LoggerFactory.getLogger("gui." + CompassTool.class);
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(
             "###.###");
     private static final double DRAW_RADIUS_PERCENT_SIZE = 0.3;     // circle radius P0 P1 distance

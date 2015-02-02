@@ -29,8 +29,17 @@
 package org.orbisgis.mapeditor.map;
 
 import com.vividsolutions.jts.geom.Envelope;
-import java.awt.*;
-import java.awt.event.*;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
@@ -45,14 +54,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
 import javax.swing.event.TreeExpansionListener;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.core_export.MapImageWriter;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.layerModel.ILayer;
@@ -60,7 +71,9 @@ import org.orbisgis.coremap.layerModel.LayerException;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.map.TransformListener;
+import org.orbisgis.coremap.process.ZoomToSelection;
 import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
+import org.orbisgis.editorjdbc.jobs.CreateSourceFromSelection;
 import org.orbisgis.mapeditor.map.ext.MapEditorAction;
 import org.orbisgis.mapeditor.map.ext.MapEditorExtension;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
@@ -73,34 +86,40 @@ import org.orbisgis.mapeditor.map.tool.TransitionException;
 import org.orbisgis.mapeditor.map.toolbar.ActionAutomaton;
 import org.orbisgis.mapeditor.map.tools.*;
 import org.orbisgis.mapeditorapi.MapElement;
-import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.ColorPicker;
 import org.orbisgis.sif.components.SaveFilePanel;
+import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.multiInputPanel.*;
-import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.background.ZoomToSelection;
-import org.orbisgis.view.components.actions.ActionCommands;
-import org.orbisgis.view.components.actions.ActionDockingListener;
-import org.orbisgis.view.edition.EditableTransferListener;
-import org.orbisgis.view.table.jobs.CreateSourceFromSelection;
-import org.orbisgis.viewapi.components.actions.DefaultAction;
-import org.orbisgis.viewapi.docking.DockingPanelParameters;
-import org.orbisgis.viewapi.edition.EditableElement;
-import org.orbisgis.viewapi.edition.EditableSource;
-import org.orbisgis.viewapi.edition.EditorManager;
-import org.orbisgis.viewapi.workspace.ViewWorkspace;
+import org.orbisgis.sif.components.actions.ActionCommands;
+import org.orbisgis.sif.components.actions.ActionDockingListener;
+import org.orbisgis.sif.edition.EditableTransferListener;
+import org.orbisgis.sif.components.actions.DefaultAction;
+import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.editorjdbc.EditableSource;
+import org.orbisgis.sif.edition.EditorManager;
+import org.orbisgis.wkguiapi.ViewWorkspace;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * The Map Editor Panel
  */
+@Component(service = EditorDockable.class)
 public class MapEditor extends JPanel implements TransformListener, MapEditorExtension   {
     private static final I18n I18N = I18nFactory.getI18n(MapEditor.class);
-    private static final Logger GUILOGGER = Logger.getLogger("gui."+MapEditor.class);
+    private static final Logger GUILOGGER = LoggerFactory.getLogger("gui." + MapEditor.class);
     //The UID must be incremented when the serialization is not compatible with the new version of this class
     private static final long serialVersionUID = 1L;
     private MapControl mapControl = new MapControl();
@@ -126,6 +145,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     private ViewWorkspace viewWorkspace;
     private EditorManager editorManager;
     private Map<ResultSetProviderFactory, Action> rsFactories = new HashMap<>();
+    private ExecutorService executorService;
 
     private boolean userChangedWidth = false;
     private boolean userChangedHeight = false;
@@ -133,12 +153,59 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     /**
      * Constructor
      */
-    public MapEditor(ViewWorkspace viewWorkspace, DataManager dataManager,EditorManager editorManager) {
+    public MapEditor() {
         super(new BorderLayout());
-        this.editorManager = editorManager;
-        this.mapsManager = new MapsManager(viewWorkspace.getMapContextPath(),dataManager, editorManager);
+    }
+
+    private void execute(SwingWorker swingWorker) {
+        if(executorService != null) {
+            executorService.execute(swingWorker);
+        } else {
+            swingWorker.execute();
+        }
+    }
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+        mapControl.setExecutorService(executorService);
+    }
+
+    public void unsetExecutorService(ExecutorService executorService) {
+        this.executorService = null;
+        mapControl.setExecutorService(null);
+    }
+
+    @Reference
+    public void setViewWorkspace(ViewWorkspace viewWorkspace) {
         this.viewWorkspace = viewWorkspace;
+    }
+
+    @Reference
+    public void setEditorManager(EditorManager editorManager) {
+        this.editorManager = editorManager;
+    }
+
+    @Reference
+    public void setDataManager(DataManager dataManager) {
         this.dataManager = dataManager;
+    }
+
+    public void unsetViewWorkspace(ViewWorkspace viewWorkspace) {
+        this.viewWorkspace = null;
+    }
+
+    public void unsetEditorManager(EditorManager editorManager) {
+        this.editorManager = null;
+    }
+
+    public void unsetDataManager(DataManager dataManager) {
+        this.dataManager = null;
+    }
+
+    @Activate
+    public void activate() {
+        this.mapsManager = new MapsManager(viewWorkspace.getMapContextPath(),dataManager, editorManager);
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName("map_editor");
         updateMapLabel();
@@ -168,6 +235,17 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         this.setTransferHandler(dragDropHandler);
     }
 
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    public void addMapEditorActionFactory(MapEditorAction mapEditorAction) {
+        actions.addActionFactory(mapEditorAction, this);
+    }
+
+
+    public void removeMapEditorActionFactory(MapEditorAction mapEditorAction) {
+        actions.removeActionFactory(mapEditorAction);
+    }
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
     public void addResultSetProviderFactory(ResultSetProviderFactory resultSetProviderFactory) {
         Action rsAction = new DefaultAction("RSF_"+resultSetProviderFactory.getName(),
                 resultSetProviderFactory.getName(),null,
@@ -237,9 +315,6 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         }
 
         private void initMapContext() {
-                BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
-
-
                 File serialisedMapContextPath = new File(viewWorkspace.getMapContextPath() + File.separator, mapEditorPersistence.getDefaultMapContext());
                 if(!serialisedMapContextPath.exists()) {
                         createDefaultMapContext(dataManager);
@@ -247,7 +322,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                         TreeLeafMapElement defaultMap = (TreeLeafMapElement)mapsManager.getFactoryManager().create(serialisedMapContextPath);
                         try {
                                 MapElement mapElementToLoad = defaultMap.getMapElement(new NullProgressMonitor(), dataManager);
-                                backgroundManager.backgroundOperation(new ReadMapContextJob(mapElementToLoad, editorManager));
+                                execute(new ReadMapContextJob(mapElementToLoad, editorManager));
                         } catch(IllegalArgumentException ex) {
                                 //Map XML is invalid
                                 GUILOGGER.warn(I18N.tr("Fail to load the map context, starting with an empty map context"),ex);
@@ -260,8 +335,6 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         * Create the default map context, create it if the map folder is empty
         */
         private void createDefaultMapContext(DataManager dataManager) {
-                BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
-
                 //Load the map context
                 File mapContextFolder = new File(viewWorkspace.getMapContextPath());
                 if (!mapContextFolder.exists()) {
@@ -274,7 +347,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                         TreeLeafMapContextFile.createEmptyMapContext(mapContextFile, dataManager);
                 }
                 MapElement editableMap = new MapElement(mapContextFile, dataManager);
-                backgroundManager.backgroundOperation(new ReadMapContextJob(editableMap, editorManager));
+                execute(new ReadMapContextJob(editableMap, editorManager));
         }
 
         /**
@@ -304,9 +377,8 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
      * @param editableList Load the editable elements in the current map context
      */
     public void onDropEditable(EditableElement[] editableList) {
-        BackgroundManager bm = Services.getService(BackgroundManager.class);
         //Load the layers in the background
-        bm.nonBlockingBackgroundOperation(new DropDataSourceProcess(editableList));
+        execute(new DropDataSourceProcess(editableList, mapContext, editorManager));
     }
 
     /**
@@ -336,10 +408,8 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 updateMapLabel();
                 mapElement.addPropertyChangeListener(MapElement.PROP_MODIFIED, modificationListener);
                 repaint();
-            } catch (IllegalStateException ex) {
-                GUILOGGER.error(ex);
-            } catch (TransitionException ex) {
-                GUILOGGER.error(ex);
+            } catch (IllegalStateException | TransitionException ex) {
+                GUILOGGER.error(ex.getLocalizedMessage(), ex);
             }
         } else {
             // Load null MapElement
@@ -362,8 +432,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             return;
         }
         MapElement mapElement = new MapElement(mapFilePath, dataManager);
-        BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
-        backgroundManager.backgroundOperation(new ReadMapContextJob(mapElement, editorManager));
+        execute(new ReadMapContextJob(mapElement, editorManager));
     }
     /**
      * MouseMove event on the MapControl
@@ -373,8 +442,8 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             lastCursorPosition.setLocation(mousePosition);
             if(mapElement!=null) {
                 if(!processingCursor.getAndSet(true)) {
-                    CursorCoordinateProcessing run = new CursorCoordinateProcessing(mapStatusBar,processingCursor,mapControl.getMapTransform(),lastCursorPosition);
-                    run.execute();
+                    (new CursorCoordinateProcessing(mapStatusBar,processingCursor,mapControl.getMapTransform(),
+                            lastCursorPosition)).execute();
                 }
             }
     }
@@ -677,9 +746,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 
                 mapImageWriter.setWidth(width);
                 mapImageWriter.setHeight(height);
-                ExportRenderingIntoFile renderingIntoFile = new ExportRenderingIntoFile(mapImageWriter, outFile);
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.nonBlockingBackgroundOperation(renderingIntoFile);
+                execute(new ExportRenderingIntoFile(mapImageWriter, outFile));
             }
         }
     }
@@ -738,8 +805,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             }
         }
         if (!selectedLayers.isEmpty()) {
-            BackgroundManager bm = Services.getService(BackgroundManager.class);
-            bm.backgroundOperation(new ZoomToSelection(mapContext, selectedLayers.toArray(new ILayer[selectedLayers.size()])));
+            execute(new ZoomToSelection(mapContext, selectedLayers.toArray(new ILayer[selectedLayers.size()])));
         } else {
             GUILOGGER.warn(I18N.tr("There is any selection available."));
         }
@@ -754,8 +820,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         if (selectedLayers == null || selectedLayers.length == 0) {
             GUILOGGER.warn(I18N.tr("Please select a layer or a style in the TOC"));
         } else {
-            BackgroundManager bm = Services.getService(BackgroundManager.class);
-            bm.backgroundOperation(new ZoomToSelection(mapContext, selectedLayers));
+            execute(new ZoomToSelection(mapContext, selectedLayers));
         }
     }
     
@@ -776,14 +841,12 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 // If there is a nonempty selection, then ask the user to name it.
                 if (!selection.isEmpty()) {
                     try {
-                        String newName = CreateSourceFromSelection.showNewNameDialog(
-                                this,dataManager.getDataSource(), layer.getTableReference());
+                        String newName = CreateSourceFromSelection.showNewNameDialog(this, dataManager.getDataSource
+                                (), layer.getTableReference());
                         // If newName is not null, then the user clicked OK and
                         // entered a valid name.
                         if (newName != null) {
-                            BackgroundManager bm = Services.getService(
-                                    BackgroundManager.class);
-                            bm.backgroundOperation(new CreateSourceFromSelection(dataManager.getDataSource(),selection,
+                            execute(new CreateSourceFromSelection(dataManager.getDataSource(),selection,
                                     layer.getTableReference(), newName));
                         }
                     } catch (SQLException ex) {
@@ -884,28 +947,25 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     /**
      * This task draw the image into an external file
      */
-    private static class ExportRenderingIntoFile  implements BackgroundJob {
+    private static class ExportRenderingIntoFile extends SwingWorkerPM {
         private MapImageWriter mapImageWriter;
         private File outFile;
 
         private ExportRenderingIntoFile(MapImageWriter mapImageWriter, File outFile) {
             this.mapImageWriter = mapImageWriter;
             this.outFile = outFile;
+            setTaskName(I18N.tr("Drawing into file"));
         }
 
         @Override
-        public String getTaskName() {
-            return I18N.tr("Drawing into file");
-        }
-
-        @Override
-        public void run(ProgressMonitor pm) {
+        protected Object doInBackground() throws Exception {
             try {
                 FileOutputStream fileOutputStream = new FileOutputStream(outFile);
-                mapImageWriter.write(fileOutputStream, pm);
+                mapImageWriter.write(fileOutputStream, this.getProgressMonitor());
             } catch (IOException ex) {
                 GUILOGGER.error("Error while saving map editor image", ex);
             }
+            return null;
         }
     }
 
@@ -913,18 +973,24 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
      * This task is created when the user Drag Source from GeoCatalog
      * to the map directly. The layer is created directly on the root.
      */
-    private class DropDataSourceProcess implements BackgroundJob {
+    private static class DropDataSourceProcess extends SwingWorkerPM<List<MapElement>, List<MapElement>> {
         private EditableElement[] editableList;
+        private MapContext mapContext;
+        private EditorManager editorManager;
 
-        public DropDataSourceProcess(EditableElement[] editableList) {
+        private DropDataSourceProcess(EditableElement[] editableList, MapContext mapContext,
+                                      EditorManager editorManager) {
             this.editableList = editableList.clone();
+            this.mapContext = mapContext;
+            this.editorManager = editorManager;
+            setTaskName(I18N.tr("Load the data source droped into the map editor."));
         }
 
         @Override
-        public void run(ProgressMonitor progress) {
-            ProgressMonitor pm = progress.startTask(editableList.length);
+        protected List<MapElement> doInBackground() throws Exception {
+            List<MapElement> mapElementsToOpen = new ArrayList<>();
+            ProgressMonitor pm = getProgressMonitor().startTask(editableList.length);
             ILayer dropLayer = mapContext.getLayerModel();
-            int i=0;
             for(EditableElement eElement : editableList) {
                 if(eElement instanceof EditableSource) {
                     try {
@@ -935,24 +1001,25 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                         GUILOGGER.warn(I18N.tr("Unable to create and drop the layer"),e);
                     }
                 } else if(eElement instanceof MapElement) {
-                        final MapElement mapElement = (MapElement)eElement;
-                        mapElement.open(pm);
-                        SwingUtilities.invokeLater(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                        editorManager.openEditable(mapElement);
-                                                }
-                                        });
-                        return;
+                    final MapElement mapElement = (MapElement)eElement;
+                    mapElement.open(pm);
+                    mapElementsToOpen.add(mapElement);
                 }
             }
+            return mapElementsToOpen;
         }
 
         @Override
-        public String getTaskName() {
-            return I18N.tr("Load the data source droped into the map editor.");
+        protected void done() {
+            try {
+                List<MapElement> mapElements = get();
+                for (MapElement mapElement : mapElements) {
+                    editorManager.openEditable(mapElement);
+                }
+            } catch (InterruptedException|ExecutionException ex) {
+                // Ignore
+            }
         }
-
     }
 
     /**

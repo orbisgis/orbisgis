@@ -39,7 +39,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import org.apache.log4j.Logger;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;

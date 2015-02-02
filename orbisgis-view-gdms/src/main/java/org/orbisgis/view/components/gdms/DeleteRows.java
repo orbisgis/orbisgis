@@ -32,7 +32,7 @@ package org.orbisgis.view.components.gdms;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;

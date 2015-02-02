@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
-import org.apache.log4j.Logger;
 import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 
 import javax.sql.DataSource;

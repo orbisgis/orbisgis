@@ -37,25 +37,24 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler.TransferSupport;
-import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.coremap.renderer.se.common.Description;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.components.fstree.AbstractTreeNodeLeaf;
-import org.orbisgis.view.components.fstree.DragTreeNode;
-import org.orbisgis.view.components.fstree.DropDestinationTreeNode;
-import org.orbisgis.view.components.fstree.PopupTreeNode;
-import org.orbisgis.view.components.fstree.TransferableList;
-import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
+import org.orbisgis.sif.components.fstree.AbstractTreeNodeLeaf;
+import org.orbisgis.sif.components.fstree.DragTreeNode;
+import org.orbisgis.sif.components.fstree.DropDestinationTreeNode;
+import org.orbisgis.sif.components.fstree.PopupTreeNode;
+import org.orbisgis.sif.components.fstree.TransferableList;
+import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
 import org.orbisgis.mapeditor.map.TransferableMap;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.DeleteRemoteMapContext;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.UploadMapContext;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -65,7 +64,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeCustomIcon,DragTreeNode, DropDestinationTreeNode, PopupTreeNode {
         private RemoteMapContext remoteMapConnection;
-        private static final Logger LOGGER = Logger.getLogger(TreeNodeRemoteMap.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(TreeNodeRemoteMap.class);
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeRemoteMap.class);
         
         public TreeNodeRemoteMap(RemoteMapContext remoteMapConnection) {
@@ -130,8 +129,7 @@ public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeC
                                         MapElement[] mapArray = (MapElement[])mapObj;
                                         if(mapArray.length!=0) {
                                                 MapContext mapToUpload = mapArray[0].getMapContext();
-                                                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                                                bm.nonBlockingBackgroundOperation(new UploadMapContext(mapToUpload, (TreeNodeWorkspace)getParent(),remoteMapConnection.getId()));
+                                                new UploadMapContext(mapToUpload, (TreeNodeWorkspace)getParent(),remoteMapConnection.getId()).execute();
                                         }
                                         return true;
                                 } else {
@@ -149,8 +147,7 @@ public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeC
                 }
         }
         public void onDeleteMap() {
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.nonBlockingBackgroundOperation(new DeleteRemoteMapContext(this));                
+                new DeleteRemoteMapContext(this).execute();
         }
         @Override
         public void feedPopupMenu(JPopupMenu menu) {

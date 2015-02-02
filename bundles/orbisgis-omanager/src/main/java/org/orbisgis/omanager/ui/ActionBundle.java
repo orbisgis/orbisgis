@@ -35,7 +35,8 @@ import java.awt.event.ActionListener;
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -45,7 +46,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class ActionBundle extends AbstractAction {
      private static final I18n I18N = I18nFactory.getI18n(ActionBundle.class);
-    protected static Logger LOGGER = Logger.getLogger(ActionBundle.class);
+    protected static Logger LOGGER = LoggerFactory.getLogger(ActionBundle.class);
     private ActionListener action;
     private final boolean isPlugin;
     private final Component frame;

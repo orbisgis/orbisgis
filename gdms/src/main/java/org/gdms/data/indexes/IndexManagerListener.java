@@ -33,7 +33,7 @@
  */
 package org.gdms.data.indexes;
 
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 public interface IndexManagerListener {
 

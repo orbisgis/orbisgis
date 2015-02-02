@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>mapeditor</artifactId>
     <name>Map Editor</name>
@@ -6,26 +7,21 @@
     <parent>
         <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>
-        <version>5.0.2-SNAPSHOT</version>
+        <version>5.1.0-SNAPSHOT</version>
         <relativePath>../..</relativePath>
     </parent>
     <packaging>bundle</packaging>
     <build>
         <plugins>
             <plugin>
-                <groupId>com.carrotgarden.maven</groupId>
-                <artifactId>carrot-maven-scr-plugin</artifactId>
-                <version>3.0.3</version>
-                <configuration>
-                    <enableDebugLogging>false</enableDebugLogging>
-                    <enableErrorLogging>true</enableErrorLogging>
-                    <enableInfoLogging>true</enableInfoLogging>
-                </configuration>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+                <version>${maven-scr-plugin-version}</version>
                 <executions>
                     <execution>
+                        <id>generate-scr-scrdescriptor</id>
                         <goals>
-                            <goal>clean</goal>
-                            <goal>generate</goal>
+                            <goal>scr</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -38,13 +34,12 @@
                 <configuration>
                     <instructions>
                         <Private-Package>org.orbisgis.mapeditor.*</Private-Package>
-                        <Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
                     </instructions>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>com.googlecode.gettext-commons</groupId>
-                <version>1.2.4</version>
+                <version>${gettext-maven-plugin-version}</version>
                 <executions>
                     <execution>
                         <id>convert-po-class</id>
@@ -69,6 +64,12 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
+            <version>1.2.4</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>${org.osgi.compendium-version}</version>
@@ -80,15 +81,15 @@
             <version>${sl4j-version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wkgui-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.enterprise</artifactId>
             <version>5.0.0</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>orbisgis-view-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -97,8 +98,29 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>orbisgis-view</artifactId>
+            <artifactId>map-editor-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>editor-jdbc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>orbisgis-sif</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>mainframe</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

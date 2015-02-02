@@ -30,7 +30,7 @@ package org.orbisgis.coremap.renderer.se.fill;
 
 import net.opengis.se._2_0.thematic.DotMapFillType;
 import net.opengis.se._2_0.thematic.ObjectFactory;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.GraphicNode;
@@ -67,7 +67,7 @@ import java.util.Random;
  */
 public final class DotMapFill extends Fill implements GraphicNode {
 
-    private static final Logger LOGGER = Logger.getLogger(DotMapFill.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DotMapFill.class);
     private static final I18n I18N = I18nFactory.getI18n(DotMapFill.class);
     
     static final int MAX_ATTEMPT = 100;

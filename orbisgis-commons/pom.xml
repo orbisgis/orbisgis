@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>commons</artifactId>
+    <name>commons</name>
+    <description>Some common utility classes used in several OrbisGIS library and applications.</description>
+    <packaging>bundle</packaging>
+    <parent>
+        <artifactId>orbisgis</artifactId>
+        <groupId>org.orbisgis</groupId>
+        <version>5.1.0-SNAPSHOT</version>
+        <relativePath>../</relativePath>
+    </parent>
+    <organization>
+        <name>IRSTV CNRS-FR-2488</name>
+        <url>http://www.irstv.fr/</url>
+    </organization>
+    <developers>
+        <developer>
+            <name>Nicolas Fortin</name>
+            <organization>IRSTV CNRS-FR-2488</organization>
+        </developer>
+        <developer>
+            <name>Erwan Bocher</name>
+            <organization>IRSTV CNRS-FR-2488</organization>
+        </developer>
+    </developers>
+    <url>http://www.orbisgis.org</url>
+    <licenses>
+        <license>
+            <name>GNU General Public License (GPLV3+)</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:https://github.com/irstv/orbisgis-commons.git</connection>
+        <developerConnection>scm:git:https://github.com/irstv/orbisgis-commons.git</developerConnection>
+        <url>git@github.com:irstv/orbisgis-commons.git</url>
+    </scm>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${sl4j-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.gettext-commons</groupId>
+            <artifactId>gettext-commons</artifactId>
+            <version>${gettext-commons-version}</version>
+        </dependency>
+    </dependencies>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <netbeans.hint.license>OrbisGIS</netbeans.hint.license>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Public-Package>org.orbisgis.commons.*</Public-Package>
+                        <Private-Package>org.orbisgis.commons</Private-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.googlecode.gettext-commons</groupId>
+                <version>${gettext-maven-plugin-version}</version>
+                <executions>
+                    <execution>
+                        <id>convert-po-class</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>dist</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <artifactId>gettext-maven-plugin</artifactId>
+                <configuration>
+                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/commons/translation/language/</poDirectory>
+                    <targetBundle>org.orbisgis.commons.Messages</targetBundle>
+                    <keywords>-ktr</keywords>
+                    <outputFormat>properties</outputFormat>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

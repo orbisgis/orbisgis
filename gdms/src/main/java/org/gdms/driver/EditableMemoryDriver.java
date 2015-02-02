@@ -33,7 +33,7 @@
  */
 package org.gdms.driver;
 
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 /**
  * Interface to be implement by the Object driver that as also RW capabilities

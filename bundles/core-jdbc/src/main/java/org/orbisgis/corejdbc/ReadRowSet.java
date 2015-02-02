@@ -1,7 +1,7 @@
 package org.orbisgis.corejdbc;
 
 import org.h2gis.utilities.SpatialResultSet;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import javax.sql.rowset.JdbcRowSet;
 import java.sql.SQLException;

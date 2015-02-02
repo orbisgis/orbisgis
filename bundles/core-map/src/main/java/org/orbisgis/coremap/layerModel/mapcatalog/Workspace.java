@@ -46,8 +46,8 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.slf4j.*;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.renderer.se.common.LocalizedText;
 import org.xnap.commons.i18n.I18n;
@@ -62,7 +62,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class Workspace  {
         private static final I18n I18N = I18nFactory.getI18n(Workspace.class);        
-        private static final Logger LOGGER = Logger.getLogger(Workspace.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(Workspace.class);
         private ConnectionProperties cParams;
         private String workspaceName;
         private static final DateFormat FORMAT = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss z");
@@ -219,20 +219,20 @@ public class Workspace  {
                                                 if(curLocale!=null) {
                                                         descLocale = curLocale;
                                                 }
-                                                curMapContext.getDescription().addTitle(descLocale,StringEscapeUtils.unescapeHtml(characters.toString().trim()));                                                
+                                                curMapContext.getDescription().addTitle(descLocale,StringEscapeUtils.unescapeHtml4(characters.toString().trim()));
                                         } else if(RemoteCommons.endsWith(hierarchy,"contexts","context","abstract")) {
                                                 Locale descLocale = Locale.getDefault();
                                                 if(curLocale!=null) {
                                                         descLocale = curLocale;
                                                 }
-                                                curMapContext.getDescription().addAbstract(descLocale, StringEscapeUtils.unescapeHtml(characters.toString().trim()));
+                                                curMapContext.getDescription().addAbstract(descLocale, StringEscapeUtils.unescapeHtml4(characters.toString().trim()));
                                         }
                                         characters = new StringBuilder();
                                         curLocale = null;
                                         hierarchy.remove(hierarchy.size()-1);
                                         break;
                                 case XMLStreamConstants.CHARACTERS:
-                                        characters.append(StringEscapeUtils.unescapeHtml(parser.getText()));
+                                        characters.append(StringEscapeUtils.unescapeHtml4(parser.getText()));
                                         break;
                         }                               
                 }                

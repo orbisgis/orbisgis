@@ -51,7 +51,7 @@ import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.geometryUtils.GeometryClean;
 import org.gdms.source.SourceManager;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 public final class ShapefileDriver extends AbstractDataSet implements FileReadWriteDriver {

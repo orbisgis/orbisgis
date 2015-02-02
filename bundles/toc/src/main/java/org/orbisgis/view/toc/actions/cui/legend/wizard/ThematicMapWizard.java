@@ -28,7 +28,8 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.wizard;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.layerModel.ILayer;
@@ -57,7 +58,7 @@ import java.sql.SQLException;
  */
 public class ThematicMapWizard implements UIPanel, LegendContext {
 
-    private static final Logger LOGGER = Logger.getLogger(ThematicMapWizard.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThematicMapWizard.class);
     private static final I18n I18N = I18nFactory.getI18n(ThematicMapWizard.class);
     private int geometryType = SimpleGeometryType.ALL;
     private ILegendPanel inner;

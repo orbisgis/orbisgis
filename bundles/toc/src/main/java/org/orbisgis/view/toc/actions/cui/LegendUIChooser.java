@@ -27,7 +27,8 @@
  */
 package org.orbisgis.view.toc.actions.cui;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -71,7 +72,7 @@ import java.util.ArrayList;
 public class LegendUIChooser implements UIPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(Toc.class);
-    private static final Logger LOGGER = Logger.getLogger(LegendUIChooser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LegendUIChooser.class);
 
     /**
      * SimpleStyleEditor.

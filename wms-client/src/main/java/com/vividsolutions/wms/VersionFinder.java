@@ -29,7 +29,6 @@
 package com.vividsolutions.wms;
 
 import com.vividsolutions.wms.util.XMLTools;
-import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -40,8 +39,6 @@ import org.w3c.dom.Node;
  */
 public class VersionFinder {
 
-    private static Logger LOGGER = Logger.getLogger(VersionFinder.class);
-
     public VersionFinder() {
     }
 
@@ -49,8 +46,7 @@ public class VersionFinder {
      * Parses the WMT_MS_Capabilities XML from the given InputStream into a
      * Capabilities object.
      *
-     * @param service the WMService from which this MapDescriptor is derived
-     * @param inStream the inputStream containing the WMT_MS_Capabilities XML to
+     * @param doc the document containing the WMT_MS_Capabilities XML to
      * parse
      * @return the MapDescriptor object created from the specified XML
      * InputStream

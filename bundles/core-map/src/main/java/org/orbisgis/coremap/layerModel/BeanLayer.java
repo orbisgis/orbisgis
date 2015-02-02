@@ -71,7 +71,7 @@ public abstract class BeanLayer extends AbstractLayer {
                 try {
                         description = new Description(layerType);
                 } catch (InvalidStyle ex) {
-                        LOGGER.error(ex);
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
 	}
 

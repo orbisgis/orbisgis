@@ -36,7 +36,7 @@ package org.gdms.data.indexes;
 import java.io.File;
 import java.io.IOException;
 
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSourceFactory;

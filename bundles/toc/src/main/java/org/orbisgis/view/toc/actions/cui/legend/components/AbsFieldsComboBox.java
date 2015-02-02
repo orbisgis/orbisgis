@@ -28,7 +28,8 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.LookupFieldName;
@@ -48,7 +49,7 @@ import java.sql.SQLException;
  */
 public abstract class AbsFieldsComboBox extends AbsComboBox {
 
-    private static final Logger LOGGER = Logger.getLogger(AbsFieldsComboBox.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbsFieldsComboBox.class);
 
     protected String tableIdentifier;
     protected DataSource dataSource;

@@ -45,7 +45,7 @@ import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.SystemDefinitionType;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 public class SystemSourceDefinition extends FileSourceDefinition {

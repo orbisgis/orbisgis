@@ -30,9 +30,9 @@
 package org.orbisgis.view.toc.actions;
 
 import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.tocapi.LayerAction;
+import org.orbisgis.tocapi.TocActionFactory;
 import org.orbisgis.view.toc.Toc;
-import org.orbisgis.viewapi.toc.ext.TocActionFactory;
-
 import javax.swing.*;
 import java.awt.event.ActionListener;
 

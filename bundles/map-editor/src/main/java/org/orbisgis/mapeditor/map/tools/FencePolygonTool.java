@@ -36,7 +36,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Observable;
 import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.layerModel.ILayer;
@@ -55,7 +56,7 @@ import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
 
 public class FencePolygonTool extends AbstractPolygonTool {
-        private static Logger UILOGGER = Logger.getLogger("gui."+FencePolygonTool.class);
+        private static Logger UILOGGER = LoggerFactory.getLogger("gui."+FencePolygonTool.class);
         private ILayer layer;
         private static final String FENCE_LAYER_NAME = "fence";
  

@@ -40,7 +40,7 @@ import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.StreamDefinitionType;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;

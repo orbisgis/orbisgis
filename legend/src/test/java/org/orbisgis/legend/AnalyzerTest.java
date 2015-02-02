@@ -35,9 +35,8 @@ import net.opengis.se._2_0.core.StyleType;
 import org.apache.log4j.*;
 import org.junit.After;
 import org.junit.Before;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.log.FailErrorManager;
 import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.legend.log.FailErrorManager;
 
 public abstract class AnalyzerTest {
         public final static Double EPS = 0.00001;

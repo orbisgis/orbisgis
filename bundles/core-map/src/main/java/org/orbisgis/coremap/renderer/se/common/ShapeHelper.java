@@ -35,7 +35,7 @@ import java.awt.Shape;
 import java.awt.geom.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -49,7 +49,7 @@ public final class ShapeHelper {
     public static final double ONE_DEG_IN_RAD = Math.PI / 180.0;
     private static final boolean ENABLE_QUAD = true;
     private static final double FLATNESS = 1e-5;
-    private static final Logger LOGGER = Logger.getLogger(ShapeHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShapeHelper.class);
     private static final I18n I18N = I18nFactory.getI18n(ShapeHelper.class);
     
     private ShapeHelper(){

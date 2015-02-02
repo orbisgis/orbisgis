@@ -46,14 +46,12 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.components.fstree.FileTree;
-import org.orbisgis.view.components.fstree.FileTreeModel;
-import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
+import org.orbisgis.sif.components.fstree.FileTree;
+import org.orbisgis.sif.components.fstree.FileTreeModel;
+import org.orbisgis.sif.components.fstree.TreeNodeFileFactoryManager;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.ReadStoredMap;
-import org.orbisgis.viewapi.edition.EditorManager;
+import org.orbisgis.sif.edition.EditorManager;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -66,7 +64,6 @@ public class MapsManager extends JPanel {
         private static final long serialVersionUID = 1L;
         private static final I18n I18N = I18nFactory.getI18n(MapsManager.class);
         private FileTree tree;
-        private DefaultTreeModel treeModel;
         private MutableTreeNode rootNode = new DefaultMutableTreeNode();
         private TreeNodeRemoteRoot rootRemote;
         private JScrollPane scrollPane;
@@ -85,7 +82,7 @@ public class MapsManager extends JPanel {
                 super(new BorderLayout());
                 this.editorManager = editorManager;
                 this.dataManager = dataManager;
-                treeModel = new FileTreeModel(rootNode, true);
+                DefaultTreeModel treeModel = new FileTreeModel(rootNode, true);
                 treeModel.setAsksAllowsChildren(true);
                 // Add the tree in the panel                
                 tree = new FileTree(treeModel);
@@ -169,8 +166,7 @@ public class MapsManager extends JPanel {
         
         private void updateMapsTitle() {
                 // Fetch all maps to find their titles
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.nonBlockingBackgroundOperation(new ReadStoredMap(getAllMapElements(rootFolder)));                
+                new ReadStoredMap(getAllMapElements(rootFolder)).execute();
         }
         
        /**

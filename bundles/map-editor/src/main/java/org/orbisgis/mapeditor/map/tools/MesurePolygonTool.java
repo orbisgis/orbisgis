@@ -34,7 +34,8 @@ import java.awt.Graphics;
 import java.text.DecimalFormat;
 import java.util.Observable;
 import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.tool.DrawingException;
@@ -42,7 +43,7 @@ import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
 
 public class MesurePolygonTool extends AbstractPolygonTool {
-        protected static Logger GUI_LOGGER = Logger.getLogger("gui."+MesurePolygonTool.class);
+        protected static Logger GUI_LOGGER = LoggerFactory.getLogger("gui."+MesurePolygonTool.class);
 	
 	@Override
 	public void update(Observable o, Object arg) {

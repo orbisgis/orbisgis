@@ -53,7 +53,7 @@ import org.grap.processing.operation.others.RasteringMode;
 import org.grap.processing.operation.others.Rasterization;
 import org.grap.utilities.JTSConverter;
 import org.grap.utilities.PixelsUtil;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;

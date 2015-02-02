@@ -1,6 +1,6 @@
 package org.orbisgis.corejdbc.internal;
 
-import org.apache.log4j.Logger;
+
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtility;
@@ -11,9 +11,11 @@ import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.corejdbc.StateEvent;
-import org.orbisgis.utils.FileUtils;
+import org.orbisgis.commons.utils.FileUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.rowset.*;
 import javax.sql.DataSource;
@@ -31,7 +33,7 @@ import java.util.Map;
  */
 @Component(service = {DataManager.class, RowSetFactory.class})
 public class DataManagerImpl implements DataManager {
-    private static Logger LOGGER = Logger.getLogger(DataManagerImpl.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(DataManagerImpl.class);
     private DataSource dataSource;
     private boolean isH2 = true;
     private boolean isLocalH2Table = true;
@@ -39,7 +41,6 @@ public class DataManagerImpl implements DataManager {
 
     /** ReversibleRowSet fire row updates to their DataManager  */
     private Map<String, List<TableEditListener>> tableEditionListener = new HashMap<>();
-    private static final Logger LOG = Logger.getLogger(DataManagerImpl.class);
     private Map<StateEvent.DB_STATES, ArrayList<DatabaseProgressionListener>> progressionListenerMap = new HashMap<>();
 
     @Override
@@ -80,7 +81,7 @@ public class DataManagerImpl implements DataManager {
     /**
      * @param dataSource Active DataSource
      */
-    public DataManagerImpl(DataSource dataSource) {
+    public DataManagerImpl(DataSource dataSource) throws SQLException {
         setDataSource(dataSource);
     }
 
@@ -171,15 +172,13 @@ public class DataManagerImpl implements DataManager {
     }
 
     @Reference
-    public void setDataSource(DataSource dataSource) {
+    public void setDataSource(DataSource dataSource) throws SQLException {
         this.dataSource = dataSource;
         try (Connection connection = dataSource.getConnection()) {
             DatabaseMetaData meta = connection.getMetaData();
             isH2 = JDBCUtilities.isH2DataBase(meta);
             isLocalH2Table = connection.getMetaData().getURL().startsWith("jdbc:h2:")
                     && !connection.getMetaData().getURL().startsWith("jdbc:h2:tcp:/");
-        } catch (SQLException ex) {
-            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
     }
 
@@ -284,7 +283,7 @@ public class DataManagerImpl implements DataManager {
                     try {
                         listener.tableChange(e);
                     } catch (Exception ex) {
-                        LOG.error(ex.getLocalizedMessage(), ex);
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
                     }
                 }
             }

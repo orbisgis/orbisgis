@@ -40,22 +40,21 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler.TransferSupport;
 import javax.swing.tree.MutableTreeNode;
-import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
-import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
-import org.orbisgis.view.components.fstree.DropDestinationTreeNode;
-import org.orbisgis.view.components.fstree.PopupTreeNode;
+import org.orbisgis.sif.components.fstree.AbstractTreeNodeContainer;
+import org.orbisgis.sif.components.fstree.DropDestinationTreeNode;
+import org.orbisgis.sif.components.fstree.PopupTreeNode;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.mapeditor.map.TransferableMap;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.DownloadRemoteMapContext;
 import org.orbisgis.mapeditor.map.mapsManager.jobs.UploadMapContext;
-import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -65,7 +64,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements DropDestinationTreeNode, PopupTreeNode, TreeNodeCustomIcon {
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeWorkspace.class);
-        private static final Logger LOGGER = Logger.getLogger(TreeNodeWorkspace.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(TreeNodeWorkspace.class);
         AtomicBoolean downloaded = new AtomicBoolean(false);
         Workspace workspace;
         /**
@@ -98,8 +97,7 @@ public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements Drop
                 TreeNodeBusy busyNode = new TreeNodeBusy();
                 model.insertNodeInto(busyNode, this, 0);
                 // Launch the download job
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.nonBlockingBackgroundOperation(new DownloadRemoteMapContext(this,busyNode));
+                new DownloadRemoteMapContext(this,busyNode).execute();
         }
         
 
@@ -138,8 +136,7 @@ public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements Drop
                         MapElement[] mapArray = (MapElement[])mapObj;
                         if(mapArray.length!=0) {
                                 MapContext mapToUpload = mapArray[0].getMapContext();
-                                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                                bm.nonBlockingBackgroundOperation(new UploadMapContext(mapToUpload, this));
+                                new UploadMapContext(mapToUpload, this).execute();
                         }
                         return true;
                 } catch (UnsupportedFlavorException ex) {

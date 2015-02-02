@@ -32,7 +32,7 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.ReversibleRowSet;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

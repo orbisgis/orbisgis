@@ -39,7 +39,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -88,7 +88,7 @@ public class RemoteMapCatalog {
                                         characters = new StringBuilder(); // Clear the string buffer
                                         break;
                                 case XMLStreamConstants.CHARACTERS:
-                                        characters.append(StringEscapeUtils.unescapeHtml(parser.getText()));
+                                        characters.append(StringEscapeUtils.unescapeHtml4(parser.getText()));
                                         break;
                         }                               
                 }                

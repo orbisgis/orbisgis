@@ -37,17 +37,18 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.editorjdbc.AskValidValue;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.components.sif.AskValidValue;
 import org.orbisgis.mapeditor.map.tool.Automaton;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 
@@ -55,7 +56,7 @@ import javax.sql.DataSource;
  * Common utility for automatons.
  */
 public class ToolUtilities {
-    private static final Logger LOGGER = Logger.getLogger(ToolUtilities.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ToolUtilities.class);
 
 
     public static double getActiveLayerInitialZ(Connection connection ,MapContext mapContext) {

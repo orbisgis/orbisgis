@@ -29,9 +29,9 @@
 
 package org.orbisgis.mapeditor.map.mapsManager;
 
-import org.orbisgis.viewapi.docking.DockingPanelLayout;
-import org.orbisgis.viewapi.util.PropertyHost;
-import org.orbisgis.viewapi.util.XElement;
+import org.orbisgis.sif.docking.DockingPanelLayout;
+import org.orbisgis.sif.docking.PropertyHost;
+import org.orbisgis.sif.docking.XElement;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

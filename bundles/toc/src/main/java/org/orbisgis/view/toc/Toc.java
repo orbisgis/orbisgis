@@ -28,6 +28,25 @@
  */
 package org.orbisgis.view.toc;
 
+import org.orbisgis.commons.progress.SwingWorkerPM;
+import org.orbisgis.coremap.process.ZoomToSelection;
+import org.orbisgis.editorjdbc.EditableSource;
+import org.orbisgis.frameworkapi.CoreWorkspace;
+import org.orbisgis.mapeditorapi.MapElement;
+import org.orbisgis.sif.components.actions.ActionCommands;
+import org.orbisgis.sif.components.actions.DefaultAction;
+import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.EditableTransferEvent;
+import org.orbisgis.sif.edition.EditableTransferListener;
+import org.orbisgis.sif.edition.EditorDockable;
+import org.orbisgis.sif.edition.EditorManager;
+import org.orbisgis.tocapi.LayerAction;
+import org.orbisgis.tocapi.StyleAction;
+import org.orbisgis.tocapi.TocActionFactory;
+import org.orbisgis.tocapi.TocExt;
+import org.orbisgis.tocapi.TocTreeNodeLayer;
+import org.orbisgis.tocapi.TocTreeNodeStyle;
 import org.orbisgis.view.toc.icons.TocIcon;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.wms.Capabilities;
@@ -55,6 +74,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -64,6 +84,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
+import javax.swing.SwingWorker;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -72,11 +93,16 @@ import javax.swing.tree.TreeSelectionModel;
 import javax.xml.bind.JAXBElement;
 
 import net.opengis.se._2_0.core.StyleType;
-import org.apache.log4j.Logger;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableEditListener;
@@ -98,37 +124,18 @@ import org.orbisgis.coremap.renderer.se.Rule;
 import org.orbisgis.coremap.renderer.se.SeExceptions;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.coremap.renderer.se.Symbolizer;
-import org.orbisgis.mapeditorapi.MapElement;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.SIFWizard;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
-import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.background.ZoomToSelection;
-import org.orbisgis.view.components.actions.ActionCommands;
-import org.orbisgis.view.edition.EditableTransferEvent;
-import org.orbisgis.view.edition.EditableTransferListener;
-import org.orbisgis.view.table.TableEditableElementImpl;
 import org.orbisgis.view.toc.actions.EditLayerSourceAction;
-import org.orbisgis.view.toc.actions.LayerAction;
-import org.orbisgis.view.toc.actions.StyleAction;
 import org.orbisgis.view.toc.actions.cui.SimpleStyleEditor;
 import org.orbisgis.view.toc.actions.cui.legend.wizard.LegendWizard;
 import org.orbisgis.view.toc.wms.LayerConfigurationPanel;
 import org.orbisgis.view.toc.wms.SRSPanel;
 import org.orbisgis.view.toc.wms.WMSConnectionPanel;
-import org.orbisgis.viewapi.components.actions.DefaultAction;
-import org.orbisgis.viewapi.docking.DockingPanelParameters;
-import org.orbisgis.viewapi.edition.EditableElement;
-import org.orbisgis.viewapi.edition.EditableSource;
-import org.orbisgis.viewapi.edition.EditorDockable;
-import org.orbisgis.viewapi.edition.EditorManager;
-import org.orbisgis.viewapi.table.TableEditableElement;
-import org.orbisgis.viewapi.toc.ext.TocActionFactory;
-import org.orbisgis.viewapi.toc.ext.TocExt;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -136,18 +143,19 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * The Toc Panel component
  */
+@Component(service = EditorDockable.class)
 public class Toc extends JPanel implements EditorDockable, TocExt, TableEditListener {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
 
         private static final long serialVersionUID = 1L;
         private static final I18n I18N = I18nFactory.getI18n(Toc.class);
-        private static final Logger LOGGER_POPUP = Logger.getLogger("gui.popup" + Toc.class);
-        private static final Logger LOGGER = Logger.getLogger("gui." + Toc.class);
+        private static final Logger LOGGER_POPUP = LoggerFactory.getLogger("gui.popup" + Toc.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger("gui." + Toc.class);
         private DockingPanelParameters dockingPanelParameters;
         private transient MapContext mapContext = null;
         private JTree tree;
         private transient DefaultTreeModel treeModel;
-        private transient org.orbisgis.view.toc.TocRenderer treeRenderer;
+        private transient TocRenderer treeRenderer;
         //When this boolean is false, the selection event is not fired
         private AtomicBoolean fireSelectionEvent = new AtomicBoolean(true);
         //When this boolean is false, the selection is not propagated to tables
@@ -166,12 +174,52 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
         private ActionCommands popupActions = new ActionCommands();
         private PropertyChangeListener mapContextPropertyChange = EventHandler.create(PropertyChangeListener.class,this,"onMapContextPropertyChange","");
         private EditorManager editorManager;
+        private ExecutorService executorService;
+        private CoreWorkspace coreWorkspace;
         /**
          * Constructor
          */
-        public Toc(EditorManager editorManager) {
-                super(new BorderLayout());
-                this.editorManager = editorManager;
+        public Toc() {
+            super(new BorderLayout());
+        }
+
+        @Reference
+        public void setEditorManager(EditorManager editorManager) {
+            this.editorManager = editorManager;
+        }
+
+        public void unsetEditorManager(EditorManager editorManager) {
+            this.editorManager = null;
+        }
+
+        @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+        public void setExecutorService(ExecutorService executorService) {
+            this.executorService = executorService;
+        }
+
+        public void unsetExecutorService(ExecutorService executorService) {
+            this.executorService = null;
+        }
+
+        @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+        public void addTocActionFactory(TocActionFactory tocActionFactory) {
+            popupActions.addActionFactory(tocActionFactory, this);
+        }
+
+        public void removeTocActionFactory(TocActionFactory tocActionFactory) {
+            popupActions.removeActionFactory(tocActionFactory);
+        }
+
+        @Reference
+        public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
+            this.coreWorkspace = coreWorkspace;
+        }
+
+        public void unsetCoreWorkspace(CoreWorkspace coreWorkspace) {
+            this.coreWorkspace = null;
+        }
+    @Activate
+        public void activate() {
                 //Set docking parameters
                 dockingPanelParameters = new DockingPanelParameters();
                 dockingPanelParameters.setName("toc");
@@ -246,13 +294,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                         .setOnRealLayerOnly(true)
                         .setOnVectorSourceOnly(true)
                         .setLogicalGroup(TocActionFactory.G_STYLE));
-            popupActions.addAction(new LayerAction(this, TocActionFactory.A_OPEN_ATTRIBUTES,
-                    I18N.tr("Open the attributes"), I18N.tr("Open a spreadsheet view of the attributes."),
-                    TocIcon.getIcon("table"),
-                    EventHandler.create(ActionListener.class,this, "onMenuShowTable"),KeyStroke.getKeyStroke("ctrl T"))
-                        .setOnRealLayerOnly(true)
-                        .setOnVectorSourceOnly(true)
-                        .setLogicalGroup(TocActionFactory.G_ATTRIBUTES));
             // DataSource Drawing Actions
             popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_EDIT_GEOMETRY,
                     I18N.tr("Start editing"), I18N.tr("The edit geometry toolbar will update this layer's data source."),
@@ -492,7 +533,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                 treeRenderer = new TocRenderer(tree);
                 tree.setCellRenderer(treeRenderer);
                 setEmptyLayerModel(tree);
-                tree.setCellEditor(new TocTreeEditor(tree));
+                tree.setCellEditor(new TocTreeEditor());
                 tree.addMouseListener(new PopupMouselistener());
                 //Add a tree selection listener
                 tree.getSelectionModel().addTreeSelectionListener(
@@ -569,11 +610,17 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                 }
 
                 if (!sourceToDrop.isEmpty()) {
-                    BackgroundManager bm = Services.getService(BackgroundManager.class);//Cancel the drawing process
-                    bm.nonBlockingBackgroundOperation(new DropDataSourceListProcess(dropNode, index, sourceToDrop));
+                    execute(new DropDataSourceListProcess(dropNode, index, sourceToDrop));
                 }
         }
 
+        private void execute(SwingWorker swingWorker) {
+            if(executorService != null) {
+                executorService.execute(swingWorker);
+            } else {
+                swingWorker.execute();
+            }
+        }
         /**
          * @return A list of selected layers, same as {@link org.orbisgis.coremap.layerModel.MapContext#getSelectedLayers()}
          */
@@ -869,9 +916,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
          */
         public void zoomToLayerSelection() {
                 ILayer[] selectedLayers = mapContext.getSelectedLayers();
-                ZoomToSelection zoomJob = new ZoomToSelection(mapContext, selectedLayers);
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.backgroundOperation(zoomJob);
+                execute(new ZoomToSelection(mapContext, selectedLayers));
         }
         /**
          * The user click on the clear layer selection menu
@@ -894,20 +939,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                         l.removeStyle(s);
                 }
         }
-        /**
-        *  The user want to see one or more source content of the selected layers
-        */
-        public void onMenuShowTable() {
-                ILayer[] layers = mapContext.getSelectedLayers();
-                for (ILayer layer : layers) {
-                        String table = layer.getTableReference();
-                        if(table!=null && !table.isEmpty()) {
-                                TableEditableElement tableDocument = new TableEditableElementImpl(layer.getTableReference(), layer.getDataManager());
-                                editorManager.openEditable(tableDocument);
-                        }
-                }
-        }
-        
         
         /**
          * The user choose to export a style through the dedicated menu.
@@ -1071,7 +1102,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
     public void onAddWMSLayer() {
         SRSPanel srsPanel = new SRSPanel();
         LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel(srsPanel);
-        WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);
+        WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration, executorService, coreWorkspace);
         SIFWizard wizard = UIFactory.getWizard(new UIPanel[]{wmsConnection,
             layerConfiguration, srsPanel});
         wizard.setTitle(wmsConnection.getTitle());
@@ -1086,8 +1117,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                 LOGGER.error(I18N.tr("Cannot find a valid image format for this WMS server"));
             } else {
                 Object[] layers = layerConfiguration.getSelectedLayers();
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.backgroundOperation(new AddWMSLayers(service.getServerUrl(), service.getVersion(), layers, validImageFormat,
+                execute(new AddWMSLayers(service.getServerUrl(), service.getVersion(), layers, validImageFormat,
                         srsPanel.getSRS()));
             }            
         }
@@ -1097,7 +1127,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
      * Add the selected WMS layers to the mapcontext.
      * 
      */
-    private class AddWMSLayers implements BackgroundJob{
+    private class AddWMSLayers extends SwingWorker {
         
         private final Object[] layers;
         private final String validImageFormat;
@@ -1121,11 +1151,11 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
             this.WMSVersion=WMSVersion;
             this.srsIdentifier=srsIdentifier;
         }
-        
+
         @Override
-        public void run(ProgressMonitor pm) {
+        protected Object doInBackground() throws Exception {
             for (Object layer : layers) {
-                if (pm.isCancelled()) {
+                if (isCancelled()) {
                     break;
                 } else {
                     String layerName = ((MapLayer) layer).getName();
@@ -1153,13 +1183,8 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                     }
                 }
             }
+            return null;
         }
-
-        @Override
-        public String getTaskName() {
-            return I18N.tr("Load the WMS layer(s) into the TOC.");
-        }
-        
     }
 
         @Override
@@ -1301,46 +1326,44 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
         /**
          * The user drop a list of EditableSource in the TOC tree
          */
-        private class DropDataSourceListProcess implements BackgroundJob {
+        private class DropDataSourceListProcess extends SwingWorkerPM {
 
                 private ILayer dropNode;
                 private int dropIndex;
                 private List<EditableSource> draggedResources;
 
                 public DropDataSourceListProcess(ILayer dropNode, int dropIndex, List<EditableSource> draggedResources) {
+                        super(I18N.tr("Load the data source droped into the toc."), 1);
                         this.dropNode = dropNode;
                         this.dropIndex = dropIndex;
                         this.draggedResources = draggedResources;
                 }
 
                 @Override
-                public void run(ProgressMonitor pm) {
-                        List<TreePath> dropPaths = new ArrayList<TreePath>(draggedResources.size());
-                        for (int i = 0; i < draggedResources.size(); i++) {
-                                String sourceName = draggedResources.get(i).getId();
-                                if (pm.isCancelled()) {
-                                        break;
-                                } else {
-                                        pm.progressTo(100 * i / draggedResources.size());
-                                        try {
-                                                    ILayer nl = mapContext.createLayer(sourceName);
-                                                    dropNode.insertLayer(nl, dropIndex);
-                                                    dropPaths.add(getPathFromNode(new TocTreeNodeLayer(nl)));
-                                        } catch (Exception e) {
-                                                throw new RuntimeException(I18N.tr("Cannot add the layer to the destination"), e);
-                                        }
-                                }
+                protected Object doInBackground() throws Exception {
+                    List<TreePath> dropPaths = new ArrayList<TreePath>(draggedResources.size());
+                    ProgressMonitor pmSources = getProgressMonitor().startTask(draggedResources.size());
+                    for (int i = 0; i < draggedResources.size(); i++) {
+                        String sourceName = draggedResources.get(i).getId();
+                        if (isCancelled()) {
+                            break;
+                        } else {
+                            try {
+                                ILayer nl = mapContext.createLayer(sourceName);
+                                dropNode.insertLayer(nl, dropIndex);
+                                dropPaths.add(getPathFromNode(new TocTreeNodeLayer(nl)));
+                            } catch (Exception e) {
+                                throw new RuntimeException(I18N.tr("Cannot add the layer to the destination"), e);
+                            }
                         }
-                        treeModel.nodeChanged(new TocTreeNodeLayer(dropNode));
-                        // Select the new layer(s) if there is no selection
-                        if(tree.getSelectionCount()==0) {
-                            tree.setSelectionPaths(dropPaths.toArray(new TreePath[dropPaths.size()]));
-                        }
-                }
-
-                @Override
-                public String getTaskName() {
-                        return I18N.tr("Load the data source droped into the toc.");
+                        pmSources.endTask();
+                    }
+                    treeModel.nodeChanged(new TocTreeNodeLayer(dropNode));
+                    // Select the new layer(s) if there is no selection
+                    if(tree.getSelectionCount()==0) {
+                        tree.setSelectionPaths(dropPaths.toArray(new TreePath[dropPaths.size()]));
+                    }
+                    return null;
                 }
         }
 
@@ -1378,7 +1401,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                                                 try {
                                                         layer.setVisible(!layer.isVisible());
                                                 } catch (LayerException e1) {
-                                                        LOGGER.error(e1);
+                                                        LOGGER.error(e1.getLocalizedMessage(), e1);
                                                 }
                                         } else if(path.getLastPathComponent() instanceof TocTreeNodeStyle) {
                                                 Style style = ((TocTreeNodeStyle) path.getLastPathComponent()).getStyle();

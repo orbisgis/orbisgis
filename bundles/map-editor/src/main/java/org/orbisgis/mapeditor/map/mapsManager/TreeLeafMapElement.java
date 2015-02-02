@@ -35,24 +35,22 @@ import java.io.File;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import org.orbisgis.core.Services;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.mapeditorapi.MapElement;
-import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.components.fstree.AbstractTreeNodeLeaf;
-import org.orbisgis.view.components.fstree.DragTreeNode;
-import org.orbisgis.view.components.fstree.PopupTreeNode;
-import org.orbisgis.view.components.fstree.TransferableList;
-import org.orbisgis.view.components.fstree.TransferableNodePaths;
-import org.orbisgis.view.components.fstree.TreeNodeCustomLabel;
-import org.orbisgis.view.components.fstree.TreeNodePath;
+import org.orbisgis.commons.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
+import org.orbisgis.sif.common.MenuCommonFunctions;
+import org.orbisgis.sif.components.fstree.AbstractTreeNodeLeaf;
+import org.orbisgis.sif.components.fstree.DragTreeNode;
+import org.orbisgis.sif.components.fstree.PopupTreeNode;
+import org.orbisgis.sif.components.fstree.TransferableList;
+import org.orbisgis.sif.components.fstree.TransferableNodePaths;
+import org.orbisgis.sif.components.fstree.TreeNodeCustomLabel;
+import org.orbisgis.sif.components.fstree.TreeNodePath;
 import org.orbisgis.mapeditor.map.TransferableMap;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.jobs.ReadMapContextJob;
-import org.orbisgis.viewapi.edition.EditorManager;
-import org.orbisgis.viewapi.util.MenuCommonFunctions;
+import org.orbisgis.sif.edition.EditorManager;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -113,8 +111,7 @@ public abstract class TreeLeafMapElement extends AbstractTreeNodeLeaf implements
          * Open the selected map file (only the first one selected)
          */
         public void onOpenMap() {
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.backgroundOperation(new ReadMapContextJob(getMapElement(new NullProgressMonitor(), dataManager), editorManager));
+                new ReadMapContextJob(getMapElement(new NullProgressMonitor(), dataManager), editorManager).execute();
         }
 
         @Override

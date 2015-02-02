@@ -37,7 +37,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTree;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.sif.CRFlowLayout;
 import org.xnap.commons.i18n.I18n;
@@ -49,7 +50,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class TocTreeEditorStylePanel extends JPanel implements TocTreeEditorPanel {
         private static final long serialVersionUID = 1L;
         private static final I18n I18N = I18nFactory.getI18n(Toc.class);
-        private static final Logger LOGGER = Logger.getLogger("gui." + TocTreeEditorStylePanel.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger("gui." + TocTreeEditorStylePanel.class);
         private JCheckBox check;
         private JTextField textField;
         private Style style;
