@@ -12,15 +12,6 @@
         <name>orbisgis-view</name>
         <url>http://maven.apache.org</url>
         <build>
-                <pluginManagement>
-                        <plugins>
-                                <plugin>
-                                        <groupId>org.xnap.commons</groupId>
-                                        <artifactId>maven-gettext-plugin</artifactId>
-                                        <version>1.2.3</version>
-                                </plugin>
-                        </plugins>
-                </pluginManagement>
                 <plugins>
                         <plugin>
                                 <groupId>org.xnap.commons</groupId>
@@ -33,7 +24,8 @@
                                                 </goals>
                                         </execution>
                                 </executions>
-                                <artifactId>maven-gettext-plugin</artifactId>
+                                <artifactId>gettext-maven-plugin</artifactId>
+                                <version>${gettext-maven-plugin-version}</version>
                                 <configuration>
                                         <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/view/translation/language/</poDirectory>
                                         <targetBundle>org.orbisgis.view.Messages</targetBundle>
