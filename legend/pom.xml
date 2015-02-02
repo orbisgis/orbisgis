@@ -60,7 +60,6 @@
                         </configuration>
                     </plugin>
                         <plugin>
-                                <groupId>org.xnap.commons</groupId>
                                 <executions>
                                         <execution>
                                                 <id>convert-po-class</id>
@@ -71,6 +70,7 @@
                                         </execution>
                                 </executions>
                                 <artifactId>gettext-maven-plugin</artifactId>
+                                <groupId>com.googlecode.gettext-commons</groupId>
                                 <version>${gettext-maven-plugin-version}</version>
                                 <configuration>
                                         <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/legend/translation/language/</poDirectory>
