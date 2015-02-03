@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGIS\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 16:18+0100\n"
+"POT-Creation-Date: 2015-02-03 17:26+0100\n"
 "PO-Revision-Date: 2014-02-09 08:59+0000\n"
 "Last-Translator: gwendall.petit <gwendall.petit@ec-nantes.fr>\n"
 "Language-Team: English (United States) (http://www.transifex.com/projects/p/"
@@ -18,6 +18,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: org/orbisgis/wkgui/gui/WorkspaceSelectionDialog.java:139
+msgid "Connecting to the database.."
+msgstr ""
 
 #: org/orbisgis/wkgui/gui/WorkspaceSelectionDialog.java:142
 #, java-format
@@ -43,6 +47,14 @@ msgid ""
 msgstr ""
 "Setting this workspace as default will allow you to skip this dialog next "
 "time"
+
+#: org/orbisgis/wkgui/gui/WorkspaceSelectionDialog.java:206
+msgid "Customize your database"
+msgstr ""
+
+#: org/orbisgis/wkgui/gui/WorkspaceSelectionDialog.java:207
+msgid "Click to customize your database."
+msgstr ""
 
 #: org/orbisgis/wkgui/gui/WorkspaceSelectionDialog.java:278
 msgid "Workspace Manager"
@@ -70,12 +82,40 @@ msgstr ""
 msgid "Problem updating the workspace. "
 msgstr "Problem updating the workspace. "
 
+#: org/orbisgis/wkgui/gui/WorkspaceSelectionDialog.java:330
+msgid "The selected folder is not a valid workspace"
+msgstr ""
+
+#: org/orbisgis/wkgui/gui/WorkspaceSelectionDialog.java:392
+msgid "Loading OrbisGIS.."
+msgstr ""
+
+#: org/orbisgis/wkgui/gui/DatabaseSettingsPanel.java:104
+msgid "Saved connections"
+msgstr ""
+
+#: org/orbisgis/wkgui/gui/DatabaseSettingsPanel.java:110
+msgid "Connection name"
+msgstr ""
+
+#: org/orbisgis/wkgui/gui/DatabaseSettingsPanel.java:115
+msgid "Save the connection parameters"
+msgstr ""
+
+#: org/orbisgis/wkgui/gui/DatabaseSettingsPanel.java:118
+msgid "Remove the connection parameters"
+msgstr ""
+
 #: org/orbisgis/wkgui/gui/DatabaseSettingsPanel.java:122
 msgid "JDBC URL"
 msgstr ""
 
 #: org/orbisgis/wkgui/gui/DatabaseSettingsPanel.java:126
 msgid "Example"
+msgstr ""
+
+#: org/orbisgis/wkgui/gui/DatabaseSettingsPanel.java:129
+msgid "User name"
 msgstr ""
 
 #: org/orbisgis/wkgui/gui/DatabaseSettingsPanel.java:133
@@ -89,6 +129,22 @@ msgstr ""
 #: org/orbisgis/wkgui/gui/DatabaseSettingsPanel.java:142
 msgid "&Cancel"
 msgstr "&Cancel"
+
+#: org/orbisgis/wkgui/gui/DatabaseSettingsPanel.java:148
+msgid "Database parameters"
+msgstr ""
+
+#: org/orbisgis/wkgui/gui/DatabaseSettingsPanel.java:185
+msgid "Please specify a connexion name."
+msgstr ""
+
+#: org/orbisgis/wkgui/gui/DatabaseSettingsPanel.java:188
+msgid "The URL of the database cannot be null."
+msgstr ""
+
+#: org/orbisgis/wkgui/gui/DatabaseSettingsPanel.java:191
+msgid "The user name cannot be null."
+msgstr ""
 
 #: org/orbisgis/wkgui/gui/DatabaseSettingsPanel.java:270
 msgid "Saved with the OrbisGIS database panel"

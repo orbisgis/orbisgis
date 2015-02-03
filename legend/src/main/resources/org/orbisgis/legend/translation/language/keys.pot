@@ -1,26 +1,21 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-# Translators:
-# Mehrazin OMRANI <mehrazin.omrani@eleves.ec-nantes.fr>, 2013-2014
-# Seyed Mohammad Hosseini <PersianPolaris@Gmail.com>, 2013
-# Seyed Mohammad Hosseini <PersianPolaris@Gmail.com>, 2013
-# Siamak <siamax@gmail.com>, 2013
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: OrbisGIS\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-03 17:36+0100\n"
-"PO-Revision-Date: 2014-03-28 16:01+0000\n"
-"Last-Translator: Mehrazin OMRANI <mehrazin.omrani@eleves.ec-nantes.fr>\n"
-"Language-Team: Persian (http://www.transifex.com/projects/p/orbisgis/"
-"language/fa/)\n"
-"Language: fa\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: org/orbisgis/legend/thematic/recode/RecodedArea.java:64
 msgid "Value Classification - Area"
@@ -40,6 +35,10 @@ msgstr ""
 
 #: org/orbisgis/legend/thematic/constant/UniqueSymbolPoint.java:64
 msgid "Unique Symbol - Point"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/constant/UniqueSymbolLine.java:59
+msgid "Unique Symbol - Line"
 msgstr ""
 
 #: org/orbisgis/legend/thematic/categorize/CategorizedPoint.java:58

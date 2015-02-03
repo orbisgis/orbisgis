@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0 Legend\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-16 09:13+0100\n"
+"POT-Creation-Date: 2015-02-03 17:36+0100\n"
 "PO-Revision-Date: 2012-04-16 11:49+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin _at_ ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
@@ -16,3 +16,46 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: java\n"
 
+#: org/orbisgis/legend/thematic/recode/RecodedArea.java:64
+msgid "Value Classification - Area"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/recode/RecodedLine.java:57
+msgid "Value Classification - Line"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/recode/RecodedPoint.java:82
+msgid "Value Classification - Point"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/constant/UniqueSymbolArea.java:62
+msgid "Unique Symbol - Area"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/constant/UniqueSymbolPoint.java:64
+msgid "Unique Symbol - Point"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/constant/UniqueSymbolLine.java:59
+msgid "Unique Symbol - Line"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/categorize/CategorizedPoint.java:58
+msgid "Interval Classification - Point"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/categorize/CategorizedLine.java:40
+msgid "Interval Classification - Line"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/categorize/CategorizedArea.java:46
+msgid "Interval Classification - Area"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/proportional/ProportionalLine.java:54
+msgid "Proportional Line"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/proportional/ProportionalPoint.java:57
+msgid "Proportional Point"
+msgstr ""

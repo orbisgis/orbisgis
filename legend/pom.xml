@@ -45,15 +45,6 @@
                 </dependency>
         </dependencies>
         <build>
-                <pluginManagement>
-                        <plugins>
-                                <plugin>
-                                        <groupId>org.xnap.commons</groupId>
-                                        <artifactId>maven-gettext-plugin</artifactId>
-                                        <version>1.2.3</version>
-                                </plugin>
-                        </plugins>
-                </pluginManagement>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.felix</groupId>
@@ -69,7 +60,9 @@
                         </configuration>
                     </plugin>
                         <plugin>
-                                <groupId>org.xnap.commons</groupId>
+                                <groupId>com.googlecode.gettext-commons</groupId>
+                                <artifactId>gettext-maven-plugin</artifactId>
+                                <version>${gettext-maven-plugin-version}</version>
                                 <executions>
                                         <execution>
                                                 <id>convert-po-class</id>
@@ -79,7 +72,6 @@
                                                 </goals>
                                         </execution>
                                 </executions>
-                                <artifactId>maven-gettext-plugin</artifactId>
                                 <configuration>
                                         <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/legend/translation/language/</poDirectory>
                                         <targetBundle>org.orbisgis.legend.translation.Messages</targetBundle>

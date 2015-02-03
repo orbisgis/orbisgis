@@ -39,6 +39,7 @@
             </plugin>
             <plugin>
                 <groupId>com.googlecode.gettext-commons</groupId>
+                <artifactId>gettext-maven-plugin</artifactId>
                 <version>${gettext-maven-plugin-version}</version>
                 <executions>
                     <execution>
@@ -49,7 +50,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
                     <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/mainframe/translation/language/
                     </poDirectory>

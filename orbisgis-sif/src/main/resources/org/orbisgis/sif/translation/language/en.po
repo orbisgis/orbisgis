@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0 SIF\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 16:22+0100\n"
+"POT-Creation-Date: 2015-02-03 17:29+0100\n"
 "PO-Revision-Date: 2012-04-16 14:53+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin _at_ ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
@@ -90,6 +90,10 @@ msgstr "The file already exists"
 #: org/orbisgis/sif/components/SaveFilePanel.java:114
 #, java-format
 msgid "The file {0} already exists. Overwrite?</p></body></html>"
+msgstr ""
+
+#: org/orbisgis/sif/components/SaveFilePanel.java:116
+msgid "Confirm overwrite"
 msgstr ""
 
 #: org/orbisgis/sif/components/SaveFilePanel.java:118
@@ -218,6 +222,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
+#: org/orbisgis/sif/ApplyDialog.java:77 org/orbisgis/sif/SIFWizard.java:187
+#: org/orbisgis/sif/SIFDialog.java:64
+msgid "Cancel"
+msgstr ""
+
 #: org/orbisgis/sif/ApplyDialog.java:80
 msgid "Apply"
 msgstr ""
@@ -226,8 +235,16 @@ msgstr ""
 msgid "Error while drop Editable"
 msgstr ""
 
+#: org/orbisgis/sif/SIFWizard.java:109
+msgid "Previous"
+msgstr ""
+
 #: org/orbisgis/sif/SIFWizard.java:132
 msgid "Next"
+msgstr ""
+
+#: org/orbisgis/sif/SIFWizard.java:168
+msgid "Finish"
 msgstr ""
 
 #: org/orbisgis/sif/CommentUtil.java:110

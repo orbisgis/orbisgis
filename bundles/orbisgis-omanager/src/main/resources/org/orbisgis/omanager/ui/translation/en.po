@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis Shell 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 16:21+0100\n"
+"POT-Creation-Date: 2015-02-03 17:26+0100\n"
 "PO-Revision-Date: 2012-11-28 15:43+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin _at_ ec-nantes.fr>\n"
 "Language-Team: IRSTV <info _at_ orbisgis.org>\n"
@@ -141,6 +141,11 @@ msgstr ""
 msgid "Dependencies downloading"
 msgstr ""
 
+#: org/orbisgis/omanager/ui/ActionDeploy.java:122
+#: org/orbisgis/omanager/ui/ActionDeploy.java:127
+msgid "OSGi repository service is not available"
+msgstr ""
+
 #: org/orbisgis/omanager/ui/ActionDeploy.java:165
 msgid "Could not resolve plugin dependencies for an unknown reason"
 msgstr ""
@@ -261,6 +266,10 @@ msgstr ""
 
 #: org/orbisgis/omanager/ui/MainPanel.java:566
 msgid "Search for a plugin."
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:603
+msgid "Plugins"
 msgstr ""
 
 #: org/orbisgis/omanager/ui/MainPanel.java:605

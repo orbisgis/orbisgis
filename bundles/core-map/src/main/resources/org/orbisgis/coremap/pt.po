@@ -20,11 +20,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: org/orbisgis/coremap/renderer/DefaultResultSetProviderFactory.java:105
-#, fuzzy, java-format
-msgid "Table {0} does not contains geometry fields"
-msgstr "Esta camada não contém nenhum filho"
-
 #: org/orbisgis/coremap/renderer/Renderer.java:359
 #, java-format
 msgid "Layer {0} not drawn"
@@ -339,12 +334,6 @@ msgstr ""
 #, java-format
 msgid "Cannot draw {0} the table does not exists"
 msgstr ""
-
-#: org/orbisgis/coremap/layerModel/Layer.java:157
-#: org/orbisgis/coremap/layerModel/Layer.java:161
-#, fuzzy
-msgid "Cannot compute layer envelope:\n"
-msgstr "Não foi possível abrir a camada : {0} "
 
 #: org/orbisgis/coremap/layerModel/Layer.java:188
 #, java-format
