@@ -13,3 +13,4 @@ nbactions.xml
 *.ucls
 .directory
 trace.db
+*~

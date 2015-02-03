@@ -1,0 +1,11 @@
+#: org/orbisgis/commons/events/ListenerContainer.java:87
+msgid "This listener is already registered."
+msgstr ""
+
+#: org/orbisgis/commons/events/ListenerContainer.java:154
+msgid "The listener stop the event process."
+msgstr ""
+
+#: org/orbisgis/commons/events/ListenerContainer.java:162
+msgid "The listener throw an unexpected error"
+msgstr ""

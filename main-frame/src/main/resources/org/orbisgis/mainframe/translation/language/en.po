@@ -1,0 +1,28 @@
+#: org/orbisgis/mainframe/impl/MainFrame.java:223
+msgid "Cannot save main window configuration"
+msgstr ""
+
+#: org/orbisgis/mainframe/impl/MainFrame.java:246
+#, java-format
+msgid "OrbisGIS version {0} {1} {2}"
+msgstr ""
+
+#: org/orbisgis/mainframe/impl/MainFrame.java:251
+msgid "Switch to another workspace"
+msgstr ""
+
+#: org/orbisgis/mainframe/impl/MainFrame.java:271
+msgid "&Configuration"
+msgstr ""
+
+#: org/orbisgis/mainframe/impl/MainFrame.java:322
+msgid "&File"
+msgstr ""
+
+#: org/orbisgis/mainframe/impl/MainFrame.java:323
+msgid "&Exit"
+msgstr ""
+
+#: org/orbisgis/mainframe/impl/MainFrame.java:325
+msgid "&Tools"
+msgstr ""

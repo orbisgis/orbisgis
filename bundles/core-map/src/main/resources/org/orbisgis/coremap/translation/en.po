@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGIS\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-28 11:14+0100\n"
+"POT-Creation-Date: 2015-02-03 16:21+0100\n"
 "PO-Revision-Date: 2013-11-20 12:27+0000\n"
 "Last-Translator: gwendall.petit <gwendall.petit@ec-nantes.fr>\n"
 "Language-Team: English (United States) (http://www.transifex.com/projects/p/"
@@ -19,29 +19,24 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: org/orbisgis/coremap/renderer/Renderer.java:183
-#, fuzzy, java-format
-msgid "Table {0} does not contains geometry fields"
-msgstr "This layer doesn't contain any child"
-
-#: org/orbisgis/coremap/renderer/Renderer.java:368
+#: org/orbisgis/coremap/renderer/Renderer.java:359
 #, java-format
 msgid "Layer {0} not drawn"
 msgstr "Layer {0} not drawn"
 
-#: org/orbisgis/coremap/renderer/Renderer.java:383
+#: org/orbisgis/coremap/renderer/Renderer.java:374
 msgid "Cannot get Stream image"
 msgstr "Cannot get Stream image"
 
-#: org/orbisgis/coremap/renderer/se/AreaSymbolizer.java:86
+#: org/orbisgis/coremap/renderer/se/AreaSymbolizer.java:87
 msgid "Area Symbolizer"
 msgstr "Area Symbolizer"
 
-#: org/orbisgis/coremap/renderer/se/stroke/PenStroke.java:449
+#: org/orbisgis/coremap/renderer/se/stroke/PenStroke.java:450
 msgid "Dash array must be made of positive numbers separated with spaces."
 msgstr "Dash array must be made of positive numbers separated with spaces."
 
-#: org/orbisgis/coremap/renderer/se/LineSymbolizer.java:86
+#: org/orbisgis/coremap/renderer/se/LineSymbolizer.java:87
 msgid "Line Symbolizer"
 msgstr "Line Symbolizer"
 
@@ -87,10 +82,18 @@ msgid "Unable to categorize the feature"
 msgstr "Unable to categorize the feature"
 
 #: org/orbisgis/coremap/renderer/se/parameter/Recode.java:231
-#: org/orbisgis/coremap/renderer/se/parameter/Recode.java:254
 #, java-format
 msgid "Fallback ({0})"
 msgstr "Fallback ({0})"
+
+#: org/orbisgis/coremap/renderer/se/parameter/Recode.java:255
+msgid "A fallback symbol is used for null or empty value"
+msgstr ""
+
+#: org/orbisgis/coremap/renderer/se/parameter/Recode.java:258
+#, java-format
+msgid "A fallback symbol is used for the value {0}"
+msgstr ""
 
 #: org/orbisgis/coremap/renderer/se/graphic/GraphicCollection.java:255
 msgid "Error during graphic composition"
@@ -170,31 +173,31 @@ msgstr "!DEFAULT!"
 msgid "Unable to compute perpendicular offset"
 msgstr "Unable to compute perpendicular offset"
 
-#: org/orbisgis/coremap/renderer/se/common/Uom.java:112
+#: org/orbisgis/coremap/renderer/se/common/Uom.java:114
 msgid "IN"
 msgstr "IN"
 
-#: org/orbisgis/coremap/renderer/se/common/Uom.java:114
+#: org/orbisgis/coremap/renderer/se/common/Uom.java:116
 msgid "MM"
 msgstr "MM"
 
-#: org/orbisgis/coremap/renderer/se/common/Uom.java:116
+#: org/orbisgis/coremap/renderer/se/common/Uom.java:118
 msgid "PT"
 msgstr "PT"
 
-#: org/orbisgis/coremap/renderer/se/common/Uom.java:118
+#: org/orbisgis/coremap/renderer/se/common/Uom.java:120
 msgid "PERCENT"
 msgstr "PERCENT"
 
-#: org/orbisgis/coremap/renderer/se/common/Uom.java:120
+#: org/orbisgis/coremap/renderer/se/common/Uom.java:122
 msgid "GM"
 msgstr "GM"
 
-#: org/orbisgis/coremap/renderer/se/common/Uom.java:122
+#: org/orbisgis/coremap/renderer/se/common/Uom.java:124
 msgid "GFT"
 msgstr "GFT"
 
-#: org/orbisgis/coremap/renderer/se/common/Uom.java:124
+#: org/orbisgis/coremap/renderer/se/common/Uom.java:126
 msgid "PX"
 msgstr "PX"
 
@@ -202,6 +205,18 @@ msgstr "PX"
 #: org/orbisgis/coremap/renderer/util/SymbolUtil.java:80
 msgid "Cannot draw the shape"
 msgstr "Cannot draw the shape"
+
+#: org/orbisgis/coremap/process/ZoomToSelectedFeatures.java:66
+msgid "Zoom to selection"
+msgstr ""
+
+#: org/orbisgis/coremap/process/ZoomToSelectedFeatures.java:77
+msgid "Unable to establish the selection bounding box"
+msgstr ""
+
+#: org/orbisgis/coremap/process/ZoomToSelection.java:59
+msgid "Zoom to the selected geometries"
+msgstr ""
 
 #: org/orbisgis/coremap/map/MapTransform.java:104
 msgid "Headless graphics environment, set current DPI to 96.0"
@@ -302,31 +317,30 @@ msgstr "HTTP Error {0} message : {1} while removing the map context from {2}"
 msgid "HTTP Error {0} message : {1} while downloading from {2}"
 msgstr "HTTP Error {0} message : {1} while downloading from {2}"
 
-#: org/orbisgis/coremap/layerModel/Layer.java:104
+#: org/orbisgis/coremap/layerModel/Layer.java:105
 msgid "REMARKS"
 msgstr ""
 
-#: org/orbisgis/coremap/layerModel/Layer.java:123
+#: org/orbisgis/coremap/layerModel/Layer.java:124
 #, java-format
 msgid "Unable to create URI from Layer.Please fix the layer named {0}"
 msgstr ""
 
-#: org/orbisgis/coremap/layerModel/Layer.java:152
-#: org/orbisgis/coremap/layerModel/Layer.java:156
-#, fuzzy
-msgid "Cannot compute layer envelope"
-msgstr "Cannot open the layer"
+#: org/orbisgis/coremap/layerModel/Layer.java:153
+#, java-format
+msgid "Cannot draw {0} the table does not exists"
+msgstr ""
 
-#: org/orbisgis/coremap/layerModel/Layer.java:183
+#: org/orbisgis/coremap/layerModel/Layer.java:188
 #, java-format
 msgid "Unable to load the data source uri {0}."
 msgstr "Unable to load the data source uri {0}."
 
-#: org/orbisgis/coremap/layerModel/Layer.java:190
+#: org/orbisgis/coremap/layerModel/Layer.java:195
 msgid "Specified table '{0}' does not exists, and no source URI is given"
 msgstr ""
 
-#: org/orbisgis/coremap/layerModel/Layer.java:224
+#: org/orbisgis/coremap/layerModel/Layer.java:231
 msgid "Error while fetching source MetaData"
 msgstr ""
 
@@ -355,65 +369,6 @@ msgstr "This layer doesn't contain any child"
 msgid "No row selection in a layer collection"
 msgstr "No row selection in a layer collection"
 
-#: org/orbisgis/coremap/stream/SimpleWMSDriver.java:109
+#: org/orbisgis/coremap/stream/SimpleWMSDriver.java:111
 msgid "WMS stream is not initialised"
 msgstr ""
-
-#~ msgid "The parameter of the logarithmic function must be greater than 0"
-#~ msgstr "The parameter of the logarithmic function must be greater than 0"
-
-#~ msgid "Cannot close the data source"
-#~ msgstr "Cannot close the data source"
-
-#~ msgid "Cannot check source contents"
-#~ msgstr "Cannot check source contents"
-
-#~ msgid "Unable to serialise the data source of layer {0}"
-#~ msgstr "Unable to serialise the data source of layer {0}"
-
-#~ msgid "Error while trying to find an absolute path for an external resource"
-#~ msgstr ""
-#~ "Error while trying to find an absolute path for an external resource"
-
-#~ msgid "Cannot associate layer {0}, this layer must be removed manually"
-#~ msgstr "Cannot associate layer {0}, this layer must be removed manually"
-
-#~ msgid "Cannot get the extent of the layer {0}"
-#~ msgstr "Cannot get the extent of the layer {0}"
-
-#~ msgid "The layer cannot listen to source modifications"
-#~ msgstr "The layer cannot listen to source modifications"
-
-#~ msgid "The field is not {0}"
-#~ msgstr "The field is not {0}"
-
-#~ msgid "The field {0} is not found"
-#~ msgstr "The field {0} is not found"
-
-#~ msgid "This layer is not a raster"
-#~ msgstr "This layer is not a raster"
-
-#~ msgid "Cannot do this operation on a layer collection"
-#~ msgstr "Cannot do this operation on a layer collection"
-
-#~ msgid "Could not read bundle manifest"
-#~ msgstr "Could not read bundle manifest"
-
-#~ msgid "This listener is already registered."
-#~ msgstr "This listener is already registered."
-
-#~ msgid "The listener stop the event process."
-#~ msgstr "The listener stop the event process."
-
-#~ msgid "The listener throw an unexpected error"
-#~ msgstr "The listener throw an unexpected error"
-
-#~ msgid ""
-#~ "Access to the sources, to its properties (indexes, etc.) and its "
-#~ "contents, either raster or vectorial"
-#~ msgstr ""
-#~ "Access to the sources, to its properties (indexes, etc.) and its "
-#~ "contents, either raster or vectorial"
-
-#~ msgid "Contains folders path"
-#~ msgstr "Contains folders path"

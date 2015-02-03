@@ -1,0 +1,28 @@
+#: org/orbisgis/editorjdbc/EditableSourceImpl.java:90
+#, java-format
+msgid "Source {0}"
+msgstr ""
+
+#: org/orbisgis/editorjdbc/AskValidRow.java:70
+msgid "TABLE_NAME"
+msgstr ""
+
+#: org/orbisgis/editorjdbc/jobs/CreateSourceFromSelection.java:80
+msgid "Create a datasource from the current selection"
+msgstr ""
+
+#: org/orbisgis/editorjdbc/jobs/CreateSourceFromSelection.java:128
+msgid "New name for the datasource:"
+msgstr ""
+
+#: org/orbisgis/editorjdbc/jobs/CreateSourceFromSelection.java:138
+msgid "selection"
+msgstr ""
+
+#: org/orbisgis/editorjdbc/jobs/CreateSourceFromSelection.java:147
+msgid "You must enter a non-empty name."
+msgstr ""
+
+#: org/orbisgis/editorjdbc/jobs/CreateSourceFromSelection.java:151
+msgid "A datasource with that name already exists."
+msgstr ""

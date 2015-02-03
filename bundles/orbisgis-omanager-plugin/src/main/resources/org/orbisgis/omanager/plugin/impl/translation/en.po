@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis Shell 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-28 15:34+0100\n"
+"POT-Creation-Date: 2015-02-03 16:21+0100\n"
 "PO-Revision-Date: 2012-11-28 15:43+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin _at_ ec-nantes.fr>\n"
 "Language-Team: IRSTV <info _at_ orbisgis.org>\n"
@@ -17,19 +17,6 @@ msgstr ""
 "X-Poedit-Country: VIRGIN ISLANDS, BRITISH\n"
 "X-Poedit-SearchPath-0: java\n"
 
-#: java/org/orbisgis/oshell/PluginShell.java:84
-msgid "Plugin Shell"
-msgstr "Plugin Shell"
-
-#: java/org/orbisgis/oshell/PluginShell.java:86
-msgid "Plugin shell, type \"help\" for command list.\n"
-msgstr "Plugin shell, type \"help\" for command list.\n"
-
-#: java/org/orbisgis/oshell/PluginShell.java:107
-msgid "No shell service is available."
-msgstr "No shell service is available."
-
-#: java/org/orbisgis/oshell/PluginShell.java:179
-msgid "Cannot show the log message"
-msgstr "Cannot show the log message"
-
+#: org/orbisgis/omanager/plugin/impl/ManagerMenuFactory.java:86
+msgid "&Manage plugins"
+msgstr ""

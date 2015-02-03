@@ -1,0 +1,18 @@
+#: org/orbisgis/framework/BundleTools.java:227
+#, java-format
+msgid "Delete fragment bundle {0} in cache directory"
+msgstr ""
+
+#: org/orbisgis/framework/BundleTools.java:313
+msgid "Could not read bundle manifest"
+msgstr ""
+
+#: org/orbisgis/framework/Main.java:93
+msgid "OrbisGIS needs at least a java 1.7+"
+msgstr ""
+
+#: org/orbisgis/framework/Main.java:112
+#, java-format
+msgid ""
+"Waiting for bundle stability, deployment of built-in bundles done in {0} s"
+msgstr ""

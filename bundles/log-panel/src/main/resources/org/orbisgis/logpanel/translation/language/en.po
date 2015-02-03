@@ -1,0 +1,43 @@
+#: org/orbisgis/logpanel/MainOutputPanel.java:73
+msgid "Output"
+msgstr ""
+
+#: org/orbisgis/logpanel/MainOutputPanel.java:78
+msgid "Clear all"
+msgstr ""
+
+#: org/orbisgis/logpanel/MainOutputPanel.java:79
+msgid "Clear all log panels"
+msgstr ""
+
+#: org/orbisgis/logpanel/OutputManager.java:114
+msgid "All"
+msgstr ""
+
+#: org/orbisgis/logpanel/OutputManager.java:130
+msgid "Errors"
+msgstr ""
+
+#: org/orbisgis/logpanel/OutputManager.java:147
+msgid "Infos"
+msgstr ""
+
+#: org/orbisgis/logpanel/OutputManager.java:159
+msgid "Warnings"
+msgstr ""
+
+#: org/orbisgis/logpanel/OutputManager.java:170
+msgid "Debug"
+msgstr ""
+
+#: org/orbisgis/logpanel/OutputPanel.java:102
+msgid "&Copy"
+msgstr ""
+
+#: org/orbisgis/logpanel/OutputPanel.java:107
+msgid "Clea&r"
+msgstr ""
+
+#: org/orbisgis/logpanel/OutputPanel.java:211
+msgid "Cannot show the log message"
+msgstr ""
