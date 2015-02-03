@@ -1,25 +1,27 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
+# Translators:
+# simone sandri <simone.povoscania@hotmail.it>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: OrbisGIS\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-03 17:00+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2014-02-07 09:09+0000\n"
+"Last-Translator: Nicolas Fortin <github@nettrader.fr>\n"
+"Language-Team: Italian (http://www.transifex.com/projects/p/orbisgis/"
+"language/it/)\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: org/orbisgis/mapeditor/map/MapControl.java:365
 msgid "Drawing"
-msgstr ""
+msgstr "Disegno"
 
 #: org/orbisgis/mapeditor/map/MapControl.java:375
 #, java-format
@@ -29,119 +31,80 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/MapControl.java:595
 #, java-format
 msgid "Tool error {0}"
-msgstr ""
+msgstr "Errore nello strumento {0}"
 
 #: org/orbisgis/mapeditor/map/MapTransferHandler.java:59
 msgid "The map editor accept only map and geometry data source."
-msgstr ""
+msgstr "L'editor delle mappe accetta solo mappe e geometrie."
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:269
 msgid "Map"
-msgstr ""
+msgstr "Mappa"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:272
 #, java-format
 msgid "Map Editor \"{0}\" [Modified]"
-msgstr ""
+msgstr "Editor delle mappe \"{0}\" [Modificato]"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:274
 #, java-format
 msgid "Map Editor \"{0}\""
-msgstr ""
+msgstr "Editor delle mappe \"{0}\""
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:287
 msgid "The value of the scale denominator must be equal or greater than 1"
-msgstr ""
+msgstr "Il valore del denominatore deve essere maggiore o uguale a 1"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:328
 msgid "Fail to load the map context, starting with an empty map context"
 msgstr ""
+"Impossibile caricare i contenuti della mappa salvata, apro una mappa vuota"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:343
 msgid "MyMap.ows"
-msgstr ""
+msgstr "MyMap.ows"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:472
 msgid "Full extent"
-msgstr ""
+msgstr "Estensione totale"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:474
 msgid "Zoom to show all geometries"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:487
-msgid "Clear selection tools"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:488
-msgid "Clear all selection"
-msgstr ""
+msgstr "Ridimensiona per mostrare tutte le geometrie"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:490
 msgid "Clear all selected geometries of all layers"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:491
-msgid "Clear selected layers"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:493
-msgid "Clear all selected geometries of the selected layers"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:497
-msgid "Zoom to tools"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:498
-msgid "Zoom to all selection"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:500
-msgid "Zoom to all selected geometries"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:501
-msgid "Zoom to layer selection"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:503
-msgid "Zoom to selected geometries of the selected layers"
-msgstr ""
+msgstr "Pulisci tutte le geometrie selezionate da tutti i layer"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:506
 msgid "Create datasource from selection"
-msgstr ""
+msgstr "Crea una sorgente dati dalla selezione"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:509
 msgid "Create a datasource from the current selection"
-msgstr ""
+msgstr "Crea una sorgente dati dalla selezione corrente"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:512
 msgid "Mesure tools"
-msgstr ""
+msgstr "Strumento di misura"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:521
 msgid "Graphic tools"
-msgstr ""
+msgstr "Strumenti grafici"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:528
 #: org/orbisgis/mapeditor/map/mapsManager/MapsManager.java:106
 msgid "Maps manager"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:531
-msgid "Show/Hide Maps Manager"
-msgstr ""
+msgstr "Gestore delle mappe"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:532
 #: org/orbisgis/mapeditor/map/MapEditor.java:702
 msgid "Export map as image"
-msgstr ""
+msgstr "Esporta mappa come un'immagine"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:535
 msgid "Export image as file"
-msgstr ""
+msgstr "Esporta immagine come un file"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:538
 msgid "Refresh"
@@ -149,28 +112,30 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:594
 msgid "Export parameters"
-msgstr ""
+msgstr "Esporta parametri"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:599
 msgid ""
 "Transparent\n"
 "background"
 msgstr ""
+"Sfondo\n"
+"trasparente"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:602
 #: org/orbisgis/mapeditor/map/MapEditor.java:688
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:608
 #: org/orbisgis/mapeditor/map/MapEditor.java:686
 msgid "Width (pixels)"
-msgstr ""
+msgstr "Larghezza (pixel)"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:613
 #: org/orbisgis/mapeditor/map/MapEditor.java:687
 msgid "Height (pixels)"
-msgstr ""
+msgstr "Altezza (pixel)"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:684
 msgid "Keep ratio"
@@ -188,27 +153,27 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/tools/CompassTool.java:284
 #: org/orbisgis/mapeditor/map/tools/generated/Polygon.java:41
 msgid "Cancel"
-msgstr ""
+msgstr "Cancella"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:724
 msgid "Save the map as image : "
-msgstr ""
+msgstr "Salva la mappa come un'immagine :"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:725
 msgid "Portable Network Graphics"
-msgstr ""
+msgstr "Portable Network Graphics (PNG)"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:726
 msgid "Tagged Image File Format"
-msgstr ""
+msgstr "Tagged Image File Format (TIFF)"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:727
 msgid "Joint Photographic Experts Group"
-msgstr ""
+msgstr "Joint Photographic Experts Group - JPEG"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:728
 msgid "Portable Document Format"
-msgstr ""
+msgstr "Portable Document Format - PDF"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:772
 msgid "Please select a layer or a style in the TOC."
@@ -224,123 +189,123 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:837
 msgid "No layers are selected."
-msgstr ""
+msgstr "Non è stato selezionato nessun layer"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:856
 #, java-format
 msgid "Layer {0} has no selected geometries."
-msgstr ""
+msgstr "Il layer {0} non ha geometrie selezionate"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:957
 msgid "Drawing into file"
-msgstr ""
+msgstr "Disegno su un file"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:986
 msgid "Load the data source droped into the map editor."
-msgstr ""
+msgstr "Carica i dati sorgente nell'editor delle mappe"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:1001
 msgid "Unable to create and drop the layer"
-msgstr ""
+msgstr "Impossibile creare il layer"
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:97
 msgid "Change coordinate reference system"
-msgstr ""
+msgstr "Cambia le coordinate del sistema di riferimento"
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:101
 msgid "Scale :"
-msgstr ""
+msgstr "Scala:"
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:146
 #, java-format
 msgid "Projection : {0}"
-msgstr ""
+msgstr "Proiezione : {0}"
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:165
 #, java-format
 msgid "X:{0} Y:{1}"
-msgstr ""
+msgstr "X:{0} Y:{1}"
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:176
 #, java-format
 msgid "1:{0}"
-msgstr ""
+msgstr "1:{0}"
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:195
 msgid "The format of a scale is 1:number"
-msgstr ""
+msgstr "Il formato della scala è 1:numero"
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:203
 msgid "The only accepted value on nominator is 1"
-msgstr ""
+msgstr "L'unico valore accettato dal denominatore è 1"
 
 #: org/orbisgis/mapeditor/map/tools/SelectionTool.java:98
 msgid "Select a geometry"
-msgstr ""
+msgstr "Seleziona una geometria"
 
 #: org/orbisgis/mapeditor/map/tools/MesureLineTool.java:69
 #, java-format
 msgid "Distance : {0}"
-msgstr ""
+msgstr "Distanza : {0}"
 
 #: org/orbisgis/mapeditor/map/tools/MesureLineTool.java:91
 msgid "This tool mesure the length on the map"
-msgstr ""
+msgstr "Questo strumento misura la lunghezza sulla mappa"
 
 #: org/orbisgis/mapeditor/map/tools/MesureLineTool.java:95
 msgid "Mesure length"
-msgstr ""
+msgstr "Misura lunghezza"
 
 #: org/orbisgis/mapeditor/map/tools/ZoomOutTool.java:137
 msgid "Zoom out"
-msgstr ""
+msgstr "Rimpicciolisci"
 
 #: org/orbisgis/mapeditor/map/tools/ZoomOutTool.java:142
 msgid "This tool zoom out on click"
-msgstr ""
+msgstr "Questo strumento ingrandisce l'immagine"
 
 #: org/orbisgis/mapeditor/map/tools/FencePolygonTool.java:91
 msgid "Cannot use fence tool"
-msgstr ""
+msgstr "Impossibile usare il strumento recinzione"
 
 #: org/orbisgis/mapeditor/map/tools/FencePolygonTool.java:128
 msgid "Cannot create fence layer"
-msgstr ""
+msgstr "Impossibile creare un layer di recinto"
 
 #: org/orbisgis/mapeditor/map/tools/FencePolygonTool.java:135
 #: org/orbisgis/mapeditor/map/tools/FencePolygonTool.java:140
 msgid "Draw a fence"
-msgstr ""
+msgstr "Disegna un recinto"
 
 #: org/orbisgis/mapeditor/map/tools/MesurePolygonTool.java:55
 #, java-format
 msgid "Area : {0} Perimeter : {1}"
-msgstr ""
+msgstr "Area : {0} Perimetro : {1}"
 
 #: org/orbisgis/mapeditor/map/tools/MesurePolygonTool.java:89
 msgid "Mesure area"
-msgstr ""
+msgstr "Misura area"
 
 #: org/orbisgis/mapeditor/map/tools/MesurePolygonTool.java:94
 msgid "This tool mesure the area"
-msgstr ""
+msgstr "Questo strumento misura l'area"
 
 #: org/orbisgis/mapeditor/map/tools/AbstractSelectionTool.java:165
 msgid "Cannot modify the theme"
-msgstr ""
+msgstr "Impossibile modificare il tema"
 
 #: org/orbisgis/mapeditor/map/tools/AbstractSelectionTool.java:262
 #, java-format
 msgid "Cannot move {0}"
-msgstr ""
+msgstr "Impossibile spostare {0}"
 
 #: org/orbisgis/mapeditor/map/tools/PanTool.java:128
 msgid "Pan"
-msgstr ""
+msgstr "Trascina"
 
 #: org/orbisgis/mapeditor/map/tools/PanTool.java:133
 msgid "The Pan Tool"
-msgstr ""
+msgstr "Strumento trascina"
 
 #: org/orbisgis/mapeditor/map/tools/ToolUtilities.java:102
 msgid "IS_NULLABLE"
@@ -356,135 +321,131 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/tools/ZoomInTool.java:126
 msgid "Zoom in"
-msgstr ""
+msgstr "Ingrandisci"
 
 #: org/orbisgis/mapeditor/map/tools/ZoomInTool.java:131
 msgid "Click on the map to zoom in"
-msgstr ""
+msgstr "Clicca sulla mappa per ingrandire"
 
 #: org/orbisgis/mapeditor/map/tools/CompassTool.java:68
 #, java-format
 msgid "Angle : {0}"
-msgstr ""
+msgstr "Angolo : {0}"
 
 #: org/orbisgis/mapeditor/map/tools/CompassTool.java:270
 msgid "Mesure angle"
-msgstr ""
+msgstr "Misura angolo"
 
 #: org/orbisgis/mapeditor/map/tools/CompassTool.java:275
 msgid "This tool mesure the angle"
-msgstr ""
+msgstr "Questo strumento misura gli angoli"
 
 #: org/orbisgis/mapeditor/map/tools/AbstractPolygonTool.java:76
 msgid "Polygons must have more than two points"
-msgstr ""
+msgstr "I poligoni devo avere più di 2 punti"
 
 #: org/orbisgis/mapeditor/map/tools/AbstractPolygonTool.java:87
 #: org/orbisgis/mapeditor/map/tools/AbstractPolygonTool.java:132
 msgid "Invalid polygon"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/tools/InfoTool.java:117
-msgid "Fetch area information"
-msgstr ""
+msgstr "Poligono non valido"
 
 #: org/orbisgis/mapeditor/map/tools/InfoTool.java:184
 #: org/orbisgis/mapeditor/map/tools/InfoTool.java:189
 msgid "Get feature attributes"
-msgstr ""
+msgstr "Visualizza attributi recinto"
 
 #: org/orbisgis/mapeditor/map/tools/AbstractLineTool.java:78
 msgid "Lines must have at least two points"
-msgstr ""
+msgstr "Le linee devono avere almeno 2 punti"
 
 #: org/orbisgis/mapeditor/map/tools/AbstractLineTool.java:83
 #: org/orbisgis/mapeditor/map/tools/AbstractLineTool.java:101
 msgid "Invalid line"
-msgstr ""
+msgstr "Linea non valida"
 
 #: org/orbisgis/mapeditor/map/tools/generated/ZoomIn.java:175
 msgid "Select the first point of the zooming rectangle"
-msgstr ""
+msgstr "Seleziona il primo punto del rettangolo di ingrandimento"
 
 #: org/orbisgis/mapeditor/map/tools/generated/ZoomIn.java:177
 #: org/orbisgis/mapeditor/map/tools/generated/Selection.java:340
 msgid "Select the second point"
-msgstr ""
+msgstr "Seleziona il secondo punto"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Point.java:149
 msgid "Select the point location"
-msgstr ""
+msgstr "Seleziona la locazione del punto"
 
 #: org/orbisgis/mapeditor/map/tools/generated/ZoomOut.java:146
 msgid "Select the center of the zoom"
-msgstr ""
+msgstr "Seleziona il centro dello zoom"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Polygon.java:41
 msgid "Terminate polygon"
-msgstr ""
+msgstr "Termina poligono"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Polygon.java:190
 #: org/orbisgis/mapeditor/map/tools/generated/Line.java:194
 msgid "Select the first point"
-msgstr ""
+msgstr "Seleziona il primo punto"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Polygon.java:192
 msgid "Select the next point or [T]erminate polygon"
-msgstr ""
+msgstr "Seleziona il prossimo punto oppure [T]ermina il poligono"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Line.java:45
 msgid "Cancel (transition)"
-msgstr ""
+msgstr "Canclella ( transizione)"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Line.java:46
 msgid "Terminate line"
-msgstr ""
+msgstr "Termina linea"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Line.java:196
 msgid "Select the next point or terminate line"
-msgstr ""
+msgstr "Seleziona il prossimo punto o termina la linea"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Drag.java:162
 msgid "Select start point"
-msgstr ""
+msgstr "Seleziona un punto di partenza"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Drag.java:164
 msgid "Drag to destination point"
-msgstr ""
+msgstr "Trascina fino al punto di destinazione"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Selection.java:338
 msgid "Select a geometry or draw a selection rectangle"
-msgstr ""
+msgstr "Seleziona una geometria o disegna un rettangolo di selezione"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Selection.java:342
 msgid "Click a handler to move it or select another geometry"
-msgstr ""
+msgstr "Clicca un oggetto per muoverlo oppure seleziona una nuova geometria"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Selection.java:344
 msgid "Place the handler in its new position"
-msgstr ""
+msgstr "Sposta l'oggetto nella nuova posizione"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Selection.java:351
 msgid "Can't find the status of this tool."
-msgstr ""
+msgstr "Impossibile rilevare lo stato di questo strumento."
 
 #: org/orbisgis/mapeditor/map/tools/generated/Selection.java:357
 msgid "Select a feature"
-msgstr ""
+msgstr "Seleziona una caratteristica"
 
 #: org/orbisgis/mapeditor/map/tools/PickCoordinatesPointTool.java:82
 #, java-format
 msgid "Coordinate : {0}"
-msgstr ""
+msgstr "Coordinate : {0}"
 
 #: org/orbisgis/mapeditor/map/tools/PickCoordinatesPointTool.java:88
 #: org/orbisgis/mapeditor/map/tools/PickCoordinatesPointTool.java:93
 msgid "Pick a point"
-msgstr ""
+msgstr "Seleziona un punto"
 
 #: org/orbisgis/mapeditor/map/tool/AbstractHandler.java:123
 msgid "Invalid geometry. Too few vertex"
-msgstr ""
+msgstr "Geometria non valida. Troppi pochi vertici"
 
 #: org/orbisgis/mapeditor/map/tool/PointHandler.java:104
 #: org/orbisgis/mapeditor/map/tool/PointHandler.java:129
@@ -493,16 +454,17 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/tool/PolygonHandler.java:143
 #: org/orbisgis/mapeditor/map/tool/PolygonHandler.java:159
 msgid "The geometry is not valid"
-msgstr ""
+msgstr "La geometria non è valida"
 
 #: org/orbisgis/mapeditor/map/tool/PointHandler.java:124
 msgid "Cannot remove a vertex from a point geometry"
 msgstr ""
+"Impossibile rimuovere un vertice da una geometria costituita da un solo punto"
 
 #: org/orbisgis/mapeditor/map/tool/MultipointHandler.java:98
 #: org/orbisgis/mapeditor/map/tool/MultipointHandler.java:112
 msgid "Invalid MultiPoint"
-msgstr ""
+msgstr "Multipunto non valido"
 
 #: org/orbisgis/mapeditor/map/tool/ToolManager.java:211
 msgid ""
@@ -512,43 +474,33 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/tool/ToolManager.java:457
 msgid "Error while drawing the feature, "
-msgstr ""
+msgstr "Errore durante il disegno,"
 
 #: org/orbisgis/mapeditor/map/tool/ToolManager.java:459
 msgid "Error while accessing data, "
-msgstr ""
+msgstr "Errore nell'accesso ai dati,"
 
 #: org/orbisgis/mapeditor/map/tool/ToolManager.java:552
 msgid "The current tool is not enabled"
-msgstr ""
+msgstr "Questo strumento non è attivo"
 
 #: org/orbisgis/mapeditor/map/tool/ToolManager.java:602
 msgid "Error in the tool."
-msgstr ""
+msgstr "Errore nello strumento."
 
 #: org/orbisgis/mapeditor/map/tool/ToolManager.java:717
 msgid "Cannot recalculate the handlers"
-msgstr ""
+msgstr "Impossibile contattare i gestori"
 
 #: org/orbisgis/mapeditor/map/tool/MultiPolygonHandler.java:91
 #: org/orbisgis/mapeditor/map/tool/MultiPolygonHandler.java:115
 msgid "Invalid multipolygon"
-msgstr ""
+msgstr "Multipoligono non valido"
 
 #: org/orbisgis/mapeditor/map/tool/MultilineHandler.java:88
 #: org/orbisgis/mapeditor/map/tool/MultilineHandler.java:111
 msgid "Invalid MultiLineString"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/geometryUtils/GeometryEdit.java:748
-#: org/orbisgis/mapeditor/map/geometryUtils/GeometryEdit.java:769
-msgid "Geometry is not valid"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/geometryUtils/GeometryEdit.java:867
-#, java-format
-msgid "Unknown geometry type: {0}"
-msgstr ""
+msgstr "Multilinea non valida"
 
 #: org/orbisgis/mapeditor/map/geometryUtils/GeometryEdit.java:974
 msgid "Too few vertices"
@@ -556,196 +508,196 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/jobs/ReadMapContextJob.java:55
 msgid "Open the map context"
-msgstr ""
+msgstr "Apri contenuto mappa"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeMapCatalogServer.java:184
 msgid "Edit the URL"
-msgstr ""
+msgstr "Modifica l'URL"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeMapCatalogServer.java:188
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeRemoteMap.java:154
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:126
 msgid "Delete"
-msgstr ""
+msgstr "Elimina"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeMapCatalogServer.java:190
 msgid "Remove this server"
-msgstr ""
+msgstr "Rimuovi questo server"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeMapCatalogServer.java:197
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeWorkspace.java:154
 msgid "Update"
-msgstr ""
+msgstr "Aggiorna"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeMapCatalogServer.java:199
 msgid "Download the server content"
-msgstr ""
+msgstr "Scarica i contenuti del server"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeWorkspace.java:156
 msgid "Download the workspace content"
-msgstr ""
+msgstr "Scarica i contenuti dell'area di lavoro"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeOwsMapContextFactory.java:80
 msgid "Enter the Map file name"
-msgstr ""
+msgstr "Inserisci il nome del file mappa"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeOwsMapContextFactory.java:80
 msgid "MyMap"
-msgstr ""
+msgstr "Le mie mappe"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeOwsMapContextFactory.java:88
 msgid "The specified file name already exist"
-msgstr ""
+msgstr "Il nome specificato è già esistente"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeOwsMapContextFactory.java:95
 msgid "The map creation has failed"
-msgstr ""
+msgstr "Impossibile creare la mappa"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeOwsMapContextFactory.java:104
 msgid "New empty map"
-msgstr ""
+msgstr "Nuova mappa vuota"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeOwsMapContextFactory.java:106
 msgid "Create a new OWS Map in this folder"
-msgstr ""
+msgstr "Crea una nuova mappa OWS in questa cartella"
 
 #: org/orbisgis/mapeditor/map/mapsManager/MapsManager.java:97
 msgid "default"
-msgstr ""
+msgstr "predefinito"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeBusy.java:57
 msgid "Downloading.."
-msgstr ""
+msgstr "Downloading.."
 
 #: org/orbisgis/mapeditor/map/mapsManager/TransferableRemoteMap.java:101
 msgid "Error while downloading the map content"
-msgstr ""
+msgstr "Errore durante il download del contenuto della mappa"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeLocalRoot.java:74
 msgid "Local"
-msgstr ""
+msgstr "Locale"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeLocalRoot.java:143
 msgid "Select a folder to link with map manager"
-msgstr ""
+msgstr "Seleziona una cartella da collegare alla mappa"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeLocalRoot.java:169
 msgid "Add Map Catalog folder"
-msgstr ""
+msgstr "Aggiungi una cartella Map Catalog"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeLocalRoot.java:171
 msgid "Add link to a local folder"
-msgstr ""
+msgstr "Aggiungi un collegamento alla cartella locale"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeUserFolder.java:54
 msgid "Unlink"
-msgstr ""
+msgstr "Scollega"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeUserFolder.java:56
 msgid "Unlink the folder, without deleting it"
-msgstr ""
+msgstr "Scollega la cartella senza eliminarla"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapElement.java:120
 msgid "Open the map"
-msgstr ""
+msgstr "Apri la mappa"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeRemoteMap.java:127
 msgid "Are you sure you want to replace the remote map context ?"
-msgstr ""
+msgstr "Sei sicuro di voler sostituire il contenuto della mappa ?"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeRemoteMap.java:127
 msgid "Overwrite map context confirmation"
-msgstr ""
+msgstr "Mappa sovrasctitta"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeRemoteMap.java:156
 msgid "Remove this map on the server"
-msgstr ""
+msgstr "Rimuovi questa mappa dal server"
 
 #: org/orbisgis/mapeditor/map/mapsManager/jobs/DeleteRemoteMapContext.java:66
 msgid "The map cannot be removed"
-msgstr ""
+msgstr "La mappa non può essere rimossa"
 
 #: org/orbisgis/mapeditor/map/mapsManager/jobs/DeleteRemoteMapContext.java:82
 msgid "Delete the remote map context"
-msgstr ""
+msgstr "Rimuovi i contenuti della mappa"
 
 #: org/orbisgis/mapeditor/map/mapsManager/jobs/DownloadWorkspaces.java:71
 #, java-format
 msgid "Download the workspaces of {0}"
-msgstr ""
+msgstr "Scarica l'area di lavoro di {0}"
 
 #: org/orbisgis/mapeditor/map/mapsManager/jobs/DownloadWorkspaces.java:98
 msgid "Cannot download the server's workspaces of {0}"
-msgstr ""
+msgstr "Impossibile scaricare le aree di lavoro del server {0}"
 
 #: org/orbisgis/mapeditor/map/mapsManager/jobs/ReadStoredMap.java:58
 msgid "Parse maps title and description"
-msgstr ""
+msgstr "Incolla titolo e descrizione delle mappe"
 
 #: org/orbisgis/mapeditor/map/mapsManager/jobs/UploadMapContext.java:100
 msgid "Uploading the map context.."
-msgstr ""
+msgstr "Carico i contenuti delle mappe..."
 
 #: org/orbisgis/mapeditor/map/mapsManager/jobs/DownloadRemoteMapContext.java:59
 #, java-format
 msgid "Download the context of {0}"
-msgstr ""
+msgstr "Scarica i contenuti di {0}"
 
 #: org/orbisgis/mapeditor/map/mapsManager/jobs/DownloadRemoteMapContext.java:81
 msgid "Cannot download the server's contexts of {0}"
-msgstr ""
+msgstr "Impossibile scaricare i contenuti del server {0}"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:93
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:96
 msgid "Map creation failed"
-msgstr ""
+msgstr "Impossibile creare la mappa"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:105
 msgid "Are you sure you want to delete permanently the selected files ?"
-msgstr ""
+msgstr "Sei sicuro di voler eliminare definitivamente i file selezionati?"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:106
 msgid "Remove the files"
-msgstr ""
+msgstr "Rimuovi i file"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:111
 msgid "Cannot remove the file"
-msgstr ""
+msgstr "Impossibile rimuovere il file"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:114
 #, java-format
 msgid "Cannot remove the file {0}"
-msgstr ""
+msgstr "Impossibile rimuovere il file {0}"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:128
 msgid "Remove permanently the map"
-msgstr ""
+msgstr "Rimuovi la mappa in modo definitivo"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeRemoteRoot.java:76
 msgid "Remote"
-msgstr ""
+msgstr "Remoto"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeRemoteRoot.java:130
 #, java-format
 msgid "Cannot load map catalog server {0}"
-msgstr ""
+msgstr "Impossibile caricare il server del catalogo mappe {0}"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeRemoteRoot.java:165
 msgid "Enter the server URL"
-msgstr ""
+msgstr "Inserisci l'URL del server"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeRemoteRoot.java:171
 #, java-format
 msgid "You type an incorrect URL {0}"
-msgstr ""
+msgstr "Hai digitato un URL non valido {0}"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeRemoteRoot.java:178
 msgid "Add Map Catalog server"
-msgstr ""
+msgstr "Aggiungi server Map Catalog"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeRemoteRoot.java:180
 msgid "Add a new remote map catalog"
-msgstr ""
+msgstr "Aggiungi un nuovo catalogo mappe remoto"
 
 #: org/orbisgis/mapeditor/map/CachedResultSetContainer.java:178
 #, java-format

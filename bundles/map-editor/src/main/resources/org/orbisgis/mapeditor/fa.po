@@ -1,25 +1,30 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
+# Translators:
+# Mehrazin OMRANI <mehrazin.omrani@eleves.ec-nantes.fr>, 2013-2014
+# Seyed Mohammad Hosseini <PersianPolaris@Gmail.com>, 2013
+# Seyed Mohammad Hosseini <PersianPolaris@Gmail.com>, 2013
+# Siamak <siamax@gmail.com>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: OrbisGIS\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-03 17:00+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2014-03-28 16:01+0000\n"
+"Last-Translator: Mehrazin OMRANI <mehrazin.omrani@eleves.ec-nantes.fr>\n"
+"Language-Team: Persian (http://www.transifex.com/projects/p/orbisgis/"
+"language/fa/)\n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: org/orbisgis/mapeditor/map/MapControl.java:365
 msgid "Drawing"
-msgstr ""
+msgstr "در حال ترسیم "
 
 #: org/orbisgis/mapeditor/map/MapControl.java:375
 #, java-format
@@ -29,7 +34,7 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/MapControl.java:595
 #, java-format
 msgid "Tool error {0}"
-msgstr ""
+msgstr "خطای ابزار {0}"
 
 #: org/orbisgis/mapeditor/map/MapTransferHandler.java:59
 msgid "The map editor accept only map and geometry data source."
@@ -37,7 +42,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:269
 msgid "Map"
-msgstr ""
+msgstr "نقشه"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:272
 #, java-format
@@ -59,55 +64,19 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:343
 msgid "MyMap.ows"
-msgstr ""
+msgstr "نقشه ی من.ows"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:472
 msgid "Full extent"
-msgstr ""
+msgstr "دامنه کامل"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:474
 msgid "Zoom to show all geometries"
 msgstr ""
 
-#: org/orbisgis/mapeditor/map/MapEditor.java:487
-msgid "Clear selection tools"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:488
-msgid "Clear all selection"
-msgstr ""
-
 #: org/orbisgis/mapeditor/map/MapEditor.java:490
 msgid "Clear all selected geometries of all layers"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:491
-msgid "Clear selected layers"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:493
-msgid "Clear all selected geometries of the selected layers"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:497
-msgid "Zoom to tools"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:498
-msgid "Zoom to all selection"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:500
-msgid "Zoom to all selected geometries"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:501
-msgid "Zoom to layer selection"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:503
-msgid "Zoom to selected geometries of the selected layers"
-msgstr ""
+msgstr "تمام هندسه های انتخاب شده را از تمام لایه ها پاک کن"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:506
 msgid "Create datasource from selection"
@@ -119,7 +88,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:512
 msgid "Mesure tools"
-msgstr ""
+msgstr "ابزارهای اندازه گیری"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:521
 msgid "Graphic tools"
@@ -160,7 +129,7 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/MapEditor.java:602
 #: org/orbisgis/mapeditor/map/MapEditor.java:688
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:608
 #: org/orbisgis/mapeditor/map/MapEditor.java:686
@@ -188,11 +157,11 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/tools/CompassTool.java:284
 #: org/orbisgis/mapeditor/map/tools/generated/Polygon.java:41
 msgid "Cancel"
-msgstr ""
+msgstr "لغو"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:724
 msgid "Save the map as image : "
-msgstr ""
+msgstr "ذخیره نقشه با فرمت عکس : "
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:725
 msgid "Portable Network Graphics"
@@ -208,7 +177,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:728
 msgid "Portable Document Format"
-msgstr ""
+msgstr "PDF"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:772
 msgid "Please select a layer or a style in the TOC."
@@ -224,7 +193,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:837
 msgid "No layers are selected."
-msgstr ""
+msgstr "هیچ لایه ای انتخاب نشده."
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:856
 #, java-format
@@ -233,7 +202,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:957
 msgid "Drawing into file"
-msgstr ""
+msgstr "در حال ترسیم بر روی فایل "
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:986
 msgid "Load the data source droped into the map editor."
@@ -249,12 +218,12 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:101
 msgid "Scale :"
-msgstr ""
+msgstr "مقیاس :"
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:146
 #, java-format
 msgid "Projection : {0}"
-msgstr ""
+msgstr "روش ترسیم : {0}"
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:165
 #, java-format
@@ -272,7 +241,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:203
 msgid "The only accepted value on nominator is 1"
-msgstr ""
+msgstr "تنها مقدار قابل قبول برای صورت کسر 1 است. "
 
 #: org/orbisgis/mapeditor/map/tools/SelectionTool.java:98
 msgid "Select a geometry"
@@ -293,7 +262,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/tools/ZoomOutTool.java:137
 msgid "Zoom out"
-msgstr ""
+msgstr "ریزنمایی"
 
 #: org/orbisgis/mapeditor/map/tools/ZoomOutTool.java:142
 msgid "This tool zoom out on click"
@@ -360,7 +329,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/tools/ZoomInTool.java:131
 msgid "Click on the map to zoom in"
-msgstr ""
+msgstr "برای درشت نمایی روی نقشه کلیک کن"
 
 #: org/orbisgis/mapeditor/map/tools/CompassTool.java:68
 #, java-format
@@ -382,10 +351,6 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/tools/AbstractPolygonTool.java:87
 #: org/orbisgis/mapeditor/map/tools/AbstractPolygonTool.java:132
 msgid "Invalid polygon"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/tools/InfoTool.java:117
-msgid "Fetch area information"
 msgstr ""
 
 #: org/orbisgis/mapeditor/map/tools/InfoTool.java:184
@@ -417,7 +382,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/tools/generated/ZoomOut.java:146
 msgid "Select the center of the zoom"
-msgstr ""
+msgstr "مرکز زوم را انتخاب کن"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Polygon.java:41
 msgid "Terminate polygon"
@@ -426,7 +391,7 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/tools/generated/Polygon.java:190
 #: org/orbisgis/mapeditor/map/tools/generated/Line.java:194
 msgid "Select the first point"
-msgstr ""
+msgstr "نقطه اول را انتخاب کن"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Polygon.java:192
 msgid "Select the next point or [T]erminate polygon"
@@ -442,11 +407,11 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/tools/generated/Line.java:196
 msgid "Select the next point or terminate line"
-msgstr ""
+msgstr "نقطه بعدی یا خط پایانی را انتخاب کن"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Drag.java:162
 msgid "Select start point"
-msgstr ""
+msgstr "نقطه شروع را انتخاب کن"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Drag.java:164
 msgid "Drag to destination point"
@@ -480,7 +445,7 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/tools/PickCoordinatesPointTool.java:88
 #: org/orbisgis/mapeditor/map/tools/PickCoordinatesPointTool.java:93
 msgid "Pick a point"
-msgstr ""
+msgstr "انتخاب یک نقطه "
 
 #: org/orbisgis/mapeditor/map/tool/AbstractHandler.java:123
 msgid "Invalid geometry. Too few vertex"
@@ -493,7 +458,7 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/tool/PolygonHandler.java:143
 #: org/orbisgis/mapeditor/map/tool/PolygonHandler.java:159
 msgid "The geometry is not valid"
-msgstr ""
+msgstr "هندسه قابل قبول نیست"
 
 #: org/orbisgis/mapeditor/map/tool/PointHandler.java:124
 msgid "Cannot remove a vertex from a point geometry"
@@ -540,11 +505,6 @@ msgstr ""
 msgid "Invalid MultiLineString"
 msgstr ""
 
-#: org/orbisgis/mapeditor/map/geometryUtils/GeometryEdit.java:748
-#: org/orbisgis/mapeditor/map/geometryUtils/GeometryEdit.java:769
-msgid "Geometry is not valid"
-msgstr ""
-
 #: org/orbisgis/mapeditor/map/geometryUtils/GeometryEdit.java:867
 #, java-format
 msgid "Unknown geometry type: {0}"
@@ -566,7 +526,7 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeRemoteMap.java:154
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:126
 msgid "Delete"
-msgstr ""
+msgstr "حذف"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeMapCatalogServer.java:190
 msgid "Remove this server"
@@ -575,7 +535,7 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeMapCatalogServer.java:197
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeWorkspace.java:154
 msgid "Update"
-msgstr ""
+msgstr "به روز رساني"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeMapCatalogServer.java:199
 msgid "Download the server content"
@@ -591,31 +551,31 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeOwsMapContextFactory.java:80
 msgid "MyMap"
-msgstr ""
+msgstr "نقشه من"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeOwsMapContextFactory.java:88
 msgid "The specified file name already exist"
-msgstr ""
+msgstr "نام فایل مورد نظر در حال حاضر وجود دارد"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeOwsMapContextFactory.java:95
 msgid "The map creation has failed"
-msgstr ""
+msgstr "ساخت نقشه ناموفق بود"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeOwsMapContextFactory.java:104
 msgid "New empty map"
-msgstr ""
+msgstr "نقشه جدید خالی"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeOwsMapContextFactory.java:106
 msgid "Create a new OWS Map in this folder"
-msgstr ""
+msgstr "ساختن یک نقشه جدید OWS در این پوشه"
 
 #: org/orbisgis/mapeditor/map/mapsManager/MapsManager.java:97
 msgid "default"
-msgstr ""
+msgstr "پيش فرض"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeBusy.java:57
 msgid "Downloading.."
-msgstr ""
+msgstr "در حال بارگذاری "
 
 #: org/orbisgis/mapeditor/map/mapsManager/TransferableRemoteMap.java:101
 msgid "Error while downloading the map content"
@@ -635,11 +595,11 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeLocalRoot.java:171
 msgid "Add link to a local folder"
-msgstr ""
+msgstr "اضافه کردن پيوند به پوشه ي محلي"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeUserFolder.java:54
 msgid "Unlink"
-msgstr ""
+msgstr "بدون پيوند"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeUserFolder.java:56
 msgid "Unlink the folder, without deleting it"
@@ -647,7 +607,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapElement.java:120
 msgid "Open the map"
-msgstr ""
+msgstr "باز کردن نقشه "
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeRemoteMap.java:127
 msgid "Are you sure you want to replace the remote map context ?"
@@ -698,24 +658,25 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:93
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:96
 msgid "Map creation failed"
-msgstr ""
+msgstr "ساخت نقشه ناموفق بود"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:105
 msgid "Are you sure you want to delete permanently the selected files ?"
 msgstr ""
+"آیا مطمئن هستید که می خواهید فایل های انتخاب شده را به صورت دائمی حذف کنید؟"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:106
 msgid "Remove the files"
-msgstr ""
+msgstr "حذف فایل ها"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:111
 msgid "Cannot remove the file"
-msgstr ""
+msgstr "عدم امکان حذف فایل"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:114
 #, java-format
 msgid "Cannot remove the file {0}"
-msgstr ""
+msgstr "عدم امکان حذف فایل {0}"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:128
 msgid "Remove permanently the map"

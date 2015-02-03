@@ -1,21 +1,24 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
+# Translators:
+# Assem <assem.abdykassymova@gmail.com>, 2013-2014
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: OrbisGIS\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-03 17:00+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2014-03-24 15:24+0000\n"
+"Last-Translator: Assem <assem.abdykassymova@gmail.com>\n"
+"Language-Team: Russian (Russia) (http://www.transifex.com/projects/p/"
+"orbisgis/language/ru_RU/)\n"
+"Language: ru_RU\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: org/orbisgis/mapeditor/map/MapControl.java:365
 msgid "Drawing"
@@ -33,11 +36,11 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapTransferHandler.java:59
 msgid "The map editor accept only map and geometry data source."
-msgstr ""
+msgstr "Карта принимает только источник данных типа карты или геометрии."
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:269
 msgid "Map"
-msgstr ""
+msgstr "Карта"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:272
 #, java-format
@@ -69,40 +72,12 @@ msgstr ""
 msgid "Zoom to show all geometries"
 msgstr ""
 
-#: org/orbisgis/mapeditor/map/MapEditor.java:487
-msgid "Clear selection tools"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:488
-msgid "Clear all selection"
-msgstr ""
-
 #: org/orbisgis/mapeditor/map/MapEditor.java:490
 msgid "Clear all selected geometries of all layers"
 msgstr ""
 
-#: org/orbisgis/mapeditor/map/MapEditor.java:491
-msgid "Clear selected layers"
-msgstr ""
-
 #: org/orbisgis/mapeditor/map/MapEditor.java:493
 msgid "Clear all selected geometries of the selected layers"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:497
-msgid "Zoom to tools"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:498
-msgid "Zoom to all selection"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:500
-msgid "Zoom to all selected geometries"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:501
-msgid "Zoom to layer selection"
 msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:503
@@ -123,7 +98,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:521
 msgid "Graphic tools"
-msgstr ""
+msgstr "Графические инструменты"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:528
 #: org/orbisgis/mapeditor/map/mapsManager/MapsManager.java:106
@@ -174,21 +149,21 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:684
 msgid "Keep ratio"
-msgstr ""
+msgstr "Сохранить соотношение"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:690
 msgid "Reset extent"
-msgstr ""
+msgstr "Сброс степени"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:706
 msgid "OK"
-msgstr ""
+msgstr "ОК"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:706
 #: org/orbisgis/mapeditor/map/tools/CompassTool.java:284
 #: org/orbisgis/mapeditor/map/tools/generated/Polygon.java:41
 msgid "Cancel"
-msgstr ""
+msgstr "Отменить"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:724
 msgid "Save the map as image : "
@@ -249,30 +224,30 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:101
 msgid "Scale :"
-msgstr ""
+msgstr "Масштаб:"
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:146
 #, java-format
 msgid "Projection : {0}"
-msgstr ""
+msgstr "Проекция: {0}"
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:165
 #, java-format
 msgid "X:{0} Y:{1}"
-msgstr ""
+msgstr "X:{0} Y:{1}"
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:176
 #, java-format
 msgid "1:{0}"
-msgstr ""
+msgstr "1:{0}"
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:195
 msgid "The format of a scale is 1:number"
-msgstr ""
+msgstr "Масштаб 1:число"
 
 #: org/orbisgis/mapeditor/map/MapStatusBar.java:203
 msgid "The only accepted value on nominator is 1"
-msgstr ""
+msgstr "Единственное допустимое значение знаменателя 1"
 
 #: org/orbisgis/mapeditor/map/tools/SelectionTool.java:98
 msgid "Select a geometry"
@@ -293,7 +268,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/tools/ZoomOutTool.java:137
 msgid "Zoom out"
-msgstr ""
+msgstr "Уменьшить"
 
 #: org/orbisgis/mapeditor/map/tools/ZoomOutTool.java:142
 msgid "This tool zoom out on click"
@@ -319,7 +294,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/tools/MesurePolygonTool.java:89
 msgid "Mesure area"
-msgstr ""
+msgstr "Измерить площадь"
 
 #: org/orbisgis/mapeditor/map/tools/MesurePolygonTool.java:94
 msgid "This tool mesure the area"
@@ -369,7 +344,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/tools/CompassTool.java:270
 msgid "Mesure angle"
-msgstr ""
+msgstr "Измерить угол"
 
 #: org/orbisgis/mapeditor/map/tools/CompassTool.java:275
 msgid "This tool mesure the angle"
@@ -377,15 +352,11 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/tools/AbstractPolygonTool.java:76
 msgid "Polygons must have more than two points"
-msgstr ""
+msgstr "Многоугольники должны иметь более двух точек"
 
 #: org/orbisgis/mapeditor/map/tools/AbstractPolygonTool.java:87
 #: org/orbisgis/mapeditor/map/tools/AbstractPolygonTool.java:132
 msgid "Invalid polygon"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/tools/InfoTool.java:117
-msgid "Fetch area information"
 msgstr ""
 
 #: org/orbisgis/mapeditor/map/tools/InfoTool.java:184
@@ -400,7 +371,7 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/tools/AbstractLineTool.java:83
 #: org/orbisgis/mapeditor/map/tools/AbstractLineTool.java:101
 msgid "Invalid line"
-msgstr ""
+msgstr "Неверная строка"
 
 #: org/orbisgis/mapeditor/map/tools/generated/ZoomIn.java:175
 msgid "Select the first point of the zooming rectangle"
@@ -426,7 +397,7 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/tools/generated/Polygon.java:190
 #: org/orbisgis/mapeditor/map/tools/generated/Line.java:194
 msgid "Select the first point"
-msgstr ""
+msgstr "Выбрать первую точку"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Polygon.java:192
 msgid "Select the next point or [T]erminate polygon"
@@ -446,7 +417,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/tools/generated/Drag.java:162
 msgid "Select start point"
-msgstr ""
+msgstr "Выбрать начальную точку"
 
 #: org/orbisgis/mapeditor/map/tools/generated/Drag.java:164
 msgid "Drag to destination point"
@@ -470,7 +441,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/tools/generated/Selection.java:357
 msgid "Select a feature"
-msgstr ""
+msgstr "Выберите функцию"
 
 #: org/orbisgis/mapeditor/map/tools/PickCoordinatesPointTool.java:82
 #, java-format
@@ -524,7 +495,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/tool/ToolManager.java:602
 msgid "Error in the tool."
-msgstr ""
+msgstr "Ошибка в инструменте."
 
 #: org/orbisgis/mapeditor/map/tool/ToolManager.java:717
 msgid "Cannot recalculate the handlers"
@@ -566,7 +537,7 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeRemoteMap.java:154
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:126
 msgid "Delete"
-msgstr ""
+msgstr "Удалить"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeMapCatalogServer.java:190
 msgid "Remove this server"
@@ -575,7 +546,7 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeMapCatalogServer.java:197
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeWorkspace.java:154
 msgid "Update"
-msgstr ""
+msgstr "Обновить"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeMapCatalogServer.java:199
 msgid "Download the server content"
@@ -591,19 +562,19 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeOwsMapContextFactory.java:80
 msgid "MyMap"
-msgstr ""
+msgstr "МояКарта"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeOwsMapContextFactory.java:88
 msgid "The specified file name already exist"
-msgstr ""
+msgstr "Указанное имя файла уже существует"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeOwsMapContextFactory.java:95
 msgid "The map creation has failed"
-msgstr ""
+msgstr "Создание карты не удалось"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeOwsMapContextFactory.java:104
 msgid "New empty map"
-msgstr ""
+msgstr "Новая пустая карта"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeOwsMapContextFactory.java:106
 msgid "Create a new OWS Map in this folder"
@@ -615,7 +586,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeBusy.java:57
 msgid "Downloading.."
-msgstr ""
+msgstr "Загрузка..."
 
 #: org/orbisgis/mapeditor/map/mapsManager/TransferableRemoteMap.java:101
 msgid "Error while downloading the map content"
@@ -647,7 +618,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapElement.java:120
 msgid "Open the map"
-msgstr ""
+msgstr "Открыть карту"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeRemoteMap.java:127
 msgid "Are you sure you want to replace the remote map context ?"
@@ -702,15 +673,15 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:105
 msgid "Are you sure you want to delete permanently the selected files ?"
-msgstr ""
+msgstr "Вы уверены, что хотите окончательно удалить выбранные файлы?"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:106
 msgid "Remove the files"
-msgstr ""
+msgstr "Удалить файлы"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:111
 msgid "Cannot remove the file"
-msgstr ""
+msgstr "Не удается удалить файл"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:114
 #, java-format

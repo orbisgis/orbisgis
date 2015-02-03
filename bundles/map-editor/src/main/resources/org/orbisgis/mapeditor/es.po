@@ -1,21 +1,25 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
+# Translators:
+# Bocher <erwan.bocher@ec-nantes.fr>, 2013
+# Emilio Plaza García <emilpg@gmail.com>, 2014
+# pierromond <pierromond@hotmail.com>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: OrbisGIS\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-03 17:00+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2014-08-02 23:27+0000\n"
+"Last-Translator: Emilio Plaza García <emilpg@gmail.com>\n"
+"Language-Team: Spanish (http://www.transifex.com/projects/p/orbisgis/"
+"language/es/)\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: org/orbisgis/mapeditor/map/MapControl.java:365
 msgid "Drawing"
@@ -73,10 +77,6 @@ msgstr ""
 msgid "Clear selection tools"
 msgstr ""
 
-#: org/orbisgis/mapeditor/map/MapEditor.java:488
-msgid "Clear all selection"
-msgstr ""
-
 #: org/orbisgis/mapeditor/map/MapEditor.java:490
 msgid "Clear all selected geometries of all layers"
 msgstr ""
@@ -99,10 +99,6 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:500
 msgid "Zoom to all selected geometries"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/MapEditor.java:501
-msgid "Zoom to layer selection"
 msgstr ""
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:503
@@ -188,7 +184,7 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/tools/CompassTool.java:284
 #: org/orbisgis/mapeditor/map/tools/generated/Polygon.java:41
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 #: org/orbisgis/mapeditor/map/MapEditor.java:724
 msgid "Save the map as image : "
@@ -384,10 +380,6 @@ msgstr ""
 msgid "Invalid polygon"
 msgstr ""
 
-#: org/orbisgis/mapeditor/map/tools/InfoTool.java:117
-msgid "Fetch area information"
-msgstr ""
-
 #: org/orbisgis/mapeditor/map/tools/InfoTool.java:184
 #: org/orbisgis/mapeditor/map/tools/InfoTool.java:189
 msgid "Get feature attributes"
@@ -484,7 +476,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/tool/AbstractHandler.java:123
 msgid "Invalid geometry. Too few vertex"
-msgstr ""
+msgstr "Geometría inválida. Demasiado pocos vértices."
 
 #: org/orbisgis/mapeditor/map/tool/PointHandler.java:104
 #: org/orbisgis/mapeditor/map/tool/PointHandler.java:129
@@ -493,11 +485,11 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/tool/PolygonHandler.java:143
 #: org/orbisgis/mapeditor/map/tool/PolygonHandler.java:159
 msgid "The geometry is not valid"
-msgstr ""
+msgstr "La geometría no es válida."
 
 #: org/orbisgis/mapeditor/map/tool/PointHandler.java:124
 msgid "Cannot remove a vertex from a point geometry"
-msgstr ""
+msgstr " No se puede quitar un vértice de un punto geométrico."
 
 #: org/orbisgis/mapeditor/map/tool/MultipointHandler.java:98
 #: org/orbisgis/mapeditor/map/tool/MultipointHandler.java:112
@@ -533,17 +525,12 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/tool/MultiPolygonHandler.java:91
 #: org/orbisgis/mapeditor/map/tool/MultiPolygonHandler.java:115
 msgid "Invalid multipolygon"
-msgstr ""
+msgstr "Multipolígono inválido."
 
 #: org/orbisgis/mapeditor/map/tool/MultilineHandler.java:88
 #: org/orbisgis/mapeditor/map/tool/MultilineHandler.java:111
 msgid "Invalid MultiLineString"
-msgstr ""
-
-#: org/orbisgis/mapeditor/map/geometryUtils/GeometryEdit.java:748
-#: org/orbisgis/mapeditor/map/geometryUtils/GeometryEdit.java:769
-msgid "Geometry is not valid"
-msgstr ""
+msgstr "Cadena multilínea inválida."
 
 #: org/orbisgis/mapeditor/map/geometryUtils/GeometryEdit.java:867
 #, java-format
@@ -566,7 +553,7 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeRemoteMap.java:154
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:126
 msgid "Delete"
-msgstr ""
+msgstr "Borrar"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeMapCatalogServer.java:190
 msgid "Remove this server"
@@ -575,7 +562,7 @@ msgstr ""
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeMapCatalogServer.java:197
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeWorkspace.java:154
 msgid "Update"
-msgstr ""
+msgstr "Actualiza"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeNodeMapCatalogServer.java:199
 msgid "Download the server content"
@@ -706,7 +693,7 @@ msgstr ""
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:106
 msgid "Remove the files"
-msgstr ""
+msgstr "Borrar los archivos"
 
 #: org/orbisgis/mapeditor/map/mapsManager/TreeLeafMapContextFile.java:111
 msgid "Cannot remove the file"
