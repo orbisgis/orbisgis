@@ -20,8 +20,8 @@ for root, dirs, files in os.walk(og_folder):
             print(root)
             os.chdir(root)
             # Read source file to create key file and merge into PO
-            call(["mvn" ,"gettext:gettext"])
-            call(["mvn" ,"gettext:merge", "-DmsgmergeCmd\"msgmerge --backup=off\""])
+            #call(["mvn" ,"gettext:gettext"])
+            #call(["mvn" ,"gettext:merge", "-DmsgmergeCmd\"msgmerge --backup=off\""])
             #remove obsolete and fuzzy entry in po
             for proot, pdirs, pfiles in os.walk(root):
                 for pfile in pfiles:
