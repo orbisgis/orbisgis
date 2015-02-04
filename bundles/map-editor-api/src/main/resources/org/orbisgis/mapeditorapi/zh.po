@@ -1,0 +1,48 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# 211 <tiangeng211@gmail.com>, 2015
+msgid ""
+msgstr ""
+"Project-Id-Version: OrbisGIS\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-03 16:21+0100\n"
+"PO-Revision-Date: 2015-02-03 17:04+0000\n"
+"Last-Translator: 211 <tiangeng211@gmail.com>\n"
+"Language-Team: Chinese (http://www.transifex.com/projects/p/orbisgis/language/zh/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: org/orbisgis/mapeditorapi/MapElement.java:105
+msgid ""
+"The saved map context cannot be read, starting with an empty map context."
+msgstr "所保存的映射背景无法读取，以一个空的映射背景启动."
+
+#: org/orbisgis/mapeditorapi/MapElement.java:156
+msgid "Error while checking temporary table"
+msgstr "当检查临时表出现错误"
+
+#: org/orbisgis/mapeditorapi/MapElement.java:167
+msgid ""
+"Some layers use temporary table, are you sure to save this map and loose "
+"layers with temporary tables ?"
+msgstr "部分图层使用临时表，你确定保存此地图并放弃使用临时表图层？"
+
+#: org/orbisgis/mapeditorapi/MapElement.java:168
+msgid "Temporary layers data source"
+msgstr "临时图层数据源"
+
+#: org/orbisgis/mapeditorapi/MapElement.java:201
+#: org/orbisgis/mapeditorapi/MapElement.java:203
+msgid "Unable to load the map context"
+msgstr "无法加载地图背景"
+
+#: org/orbisgis/mapeditorapi/MapElement.java:262
+#, java-format
+msgid "MapContext - {0}"
+msgstr "地图背景- {0}"

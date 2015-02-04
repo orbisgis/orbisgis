@@ -1,0 +1,112 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: OrbisGIS\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-03 16:22+0100\n"
+"PO-Revision-Date: 2015-02-03 15:49+0000\n"
+"Last-Translator: Nicolas Fortin <github@nettrader.fr>\n"
+"Language-Team: Russian (Russia) (http://www.transifex.com/projects/p/orbisgis/language/ru_RU/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru_RU\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: org/orbisgis/docking/impl/preferences/OrbisGISPreferenceTreeModel.java:74
+msgid "Windows"
+msgstr "Окно"
+
+#: org/orbisgis/docking/impl/preferences/OrbisGISPreferenceTreeModel.java:81
+msgid "Web configuration"
+msgstr "Веб-концигурация"
+
+#: org/orbisgis/docking/impl/preferences/OrbisGISPreferenceTreeModel.java:82
+msgid "Proxy"
+msgstr "прокси "
+
+#: org/orbisgis/docking/impl/preferences/ProxyPreferenceModel.java:97
+msgid "Use Proxy"
+msgstr "Использовать прокси"
+
+#: org/orbisgis/docking/impl/preferences/ProxyPreferenceModel.java:102
+msgid "Proxy url"
+msgstr "URL прокси"
+
+#: org/orbisgis/docking/impl/preferences/ProxyPreferenceModel.java:106
+msgid "Proxy port"
+msgstr "Порт прокси"
+
+#: org/orbisgis/docking/impl/preferences/ProxyPreferenceModel.java:165
+#: org/orbisgis/docking/impl/preferences/ProxyPreferenceModel.java:170
+msgid "The proxy port is invalid"
+msgstr "Порт прокси-сервера является недействительным"
+
+#: org/orbisgis/docking/impl/DockingManagerImpl.java:215
+msgid "&Look And Feel"
+msgstr "&Внешний вид и поведение"
+
+#: org/orbisgis/docking/impl/DockingManagerImpl.java:227
+msgid "&Windows"
+msgstr "&Окна"
+
+#: org/orbisgis/docking/impl/DockingManagerImpl.java:259
+#: org/orbisgis/docking/impl/DockingManagerImpl.java:262
+msgid "Unable to load the docking layout."
+msgstr "Не удалось загрузить интерфейс"
+
+#: org/orbisgis/docking/impl/DockingManagerImpl.java:356
+msgid "Unable to save the docking layout."
+msgstr "Не удалось сохранить интерфейс"
+
+#: org/orbisgis/docking/impl/DockingManagerImpl.java:583
+#, java-format
+msgid "ToolBar item {0} is not unique, it has been renamed to {1}"
+msgstr ""
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:112
+msgid "Save documents"
+msgstr "Сохранить документы"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:130
+msgid "&Save"
+msgstr "&Сохранить"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:132
+msgid ""
+"Save the selected documents, and close this dialog if there is no more "
+"modifed documents"
+msgstr "Сохранить выбранные документы и закрыть это окно, если больше нет изменяемых документов"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:138
+msgid "Save &All"
+msgstr "Сохранить &все"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:141
+msgid "Save all documents and close this dialog"
+msgstr "Сохранить все документы и закрыть это окно"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:145
+msgid "Save &None"
+msgstr "Ничего &не сохранять"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:148
+msgid "Discard all changes and close this dialog"
+msgstr "Отменить все изменения и закрыть это диалоговое окно"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:152
+msgid "&Cancel"
+msgstr "&Отменить"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:153
+msgid "Do nothing and lose nothing"
+msgstr "Ничего не делать и ничего не терять"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:253
+#, java-format
+msgid "The document {0} cannot be saved due to the following error {1}"
+msgstr "Документ {0} не может быть сохранен из-за следующей ошибки {1}"

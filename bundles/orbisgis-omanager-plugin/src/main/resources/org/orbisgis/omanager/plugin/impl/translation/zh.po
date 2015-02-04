@@ -1,0 +1,27 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# 211 <tiangeng211@gmail.com>, 2015
+msgid ""
+msgstr ""
+"Project-Id-Version: OrbisGIS\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-03 16:21+0100\n"
+"PO-Revision-Date: 2015-02-03 16:58+0000\n"
+"Last-Translator: 211 <tiangeng211@gmail.com>\n"
+"Language-Team: Chinese (http://www.transifex.com/projects/p/orbisgis/language/zh/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: org/orbisgis/omanager/plugin/impl/MainDialog.java:75
+msgid "Plugin Manager"
+msgstr "插件管理器"
+
+#: org/orbisgis/omanager/plugin/impl/ManagerMenuFactory.java:86
+msgid "&Manage plugins"
+msgstr "&管理插件"

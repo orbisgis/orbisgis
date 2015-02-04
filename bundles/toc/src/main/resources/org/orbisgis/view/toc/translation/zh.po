@@ -1,0 +1,581 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# 211 <tiangeng211@gmail.com>, 2014-2015
+# Qingxiao ZHOU <overcloud.814@gmail.com>, 2013
+# yinghao li <liyinghao@hotmail.com>, 2013
+# 苏琦 <sqi0081@hotmail.com>, 2013
+msgid ""
+msgstr ""
+"Project-Id-Version: OrbisGIS\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-03 16:21+0100\n"
+"PO-Revision-Date: 2015-02-03 17:09+0000\n"
+"Last-Translator: 211 <tiangeng211@gmail.com>\n"
+"Language-Team: Chinese (http://www.transifex.com/projects/p/orbisgis/language/zh/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: org/orbisgis/view/toc/TocTransferHandler.java:123
+msgid "Can't recognize this flavour"
+msgstr "无法识别此香味"
+
+#: org/orbisgis/view/toc/TocTransferHandler.java:126
+msgid "Problem during the transfer"
+msgstr "传送期间问题"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:105
+msgid "Connect to the server."
+msgstr "连接到服务器。"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:114
+msgid "Delete the server connection."
+msgstr "删除服务器连接。"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:128
+msgid "Reload the server connection."
+msgstr "刷新服务器连接。"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:144
+msgid "Cannot update and save the URL list"
+msgstr "无法更新和保存URL列表"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:155
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:368
+msgid "Version :"
+msgstr "版本："
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:156
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:370
+msgid "Name :"
+msgstr "名字 ："
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:182
+msgid "Cannot load the list of WMS url"
+msgstr "无法加载WMS链接列表"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:227
+msgid "Cannot save the list of WMS url"
+msgstr "无法保存WMS链接列表"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:265
+msgid "WMS server connection"
+msgstr "WMS服务器连接"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:271
+msgid "Please connect to the WMS server"
+msgstr "请连接到WMS服务器"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:384
+#, java-format
+msgid "Cannot connect to {0}"
+msgstr "无法连接到{0}"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:387
+#, java-format
+msgid "Cannot get capabilities of {0}"
+msgstr "无法获取{0}的能力"
+
+#: org/orbisgis/view/toc/wms/LayerConfigurationPanel.java:222
+msgid "Choose a list of layers"
+msgstr "选择一列图层"
+
+#: org/orbisgis/view/toc/wms/LayerConfigurationPanel.java:271
+msgid "At least a layer must be selected"
+msgstr "至少必须选择一层"
+
+#: org/orbisgis/view/toc/wms/SRSPanel.java:75
+msgid "Select a SRS"
+msgstr "选择一个SRS"
+
+#: org/orbisgis/view/toc/wms/SRSPanel.java:116
+msgid "Search a SRS :"
+msgstr "搜索SRS"
+
+#: org/orbisgis/view/toc/wms/SRSPanel.java:152
+msgid "Please select a SRS."
+msgstr "请选择一个SRS"
+
+#: org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:186
+msgid "Add or select a legend."
+msgstr "添加或选择一个图例。"
+
+#: org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:468
+#, java-format
+msgid "Simple Style Editor - {0}"
+msgstr "简易样式编辑器 - {0}"
+
+#: org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:474
+msgid "You must create at least one legend"
+msgstr "请创建至少一个图例"
+
+#: org/orbisgis/view/toc/actions/cui/LegendTree.java:322
+msgid "Up"
+msgstr "向上"
+
+#: org/orbisgis/view/toc/actions/cui/LegendTree.java:330
+msgid "Down"
+msgstr "向下"
+
+#: org/orbisgis/view/toc/actions/cui/LegendTree.java:338
+#: org/orbisgis/view/toc/actions/cui/legend/panels/TablePanel.java:168
+#: org/orbisgis/view/toc/Toc.java:251
+msgid "Add"
+msgstr "添加"
+
+#: org/orbisgis/view/toc/actions/cui/LegendTree.java:347
+msgid "Delete"
+msgstr "删除"
+
+#: org/orbisgis/view/toc/actions/cui/LegendTree.java:355
+msgid "Rename"
+msgstr "重命名"
+
+#: org/orbisgis/view/toc/actions/cui/LegendTree.java:449
+msgid "Choose a name for your rule"
+msgstr "选择适合你的规则的名称"
+
+#: org/orbisgis/view/toc/actions/cui/LegendTree.java:450
+msgid "Name of the Rule : "
+msgstr "该规则名称："
+
+#: org/orbisgis/view/toc/actions/cui/LegendTree.java:457
+msgid "Rule name cannot be null or empty."
+msgstr "规则名称不能为空"
+
+#: org/orbisgis/view/toc/actions/cui/legend/components/ColorConfigurationPanel.java:118
+msgid "Gradient "
+msgstr "梯度"
+
+#: org/orbisgis/view/toc/actions/cui/legend/components/ColorConfigurationPanel.java:121
+msgid " to "
+msgstr "对"
+
+#: org/orbisgis/view/toc/actions/cui/legend/components/DashArrayField.java:78
+msgid "Could not validate your input."
+msgstr "无法验证您的输入。"
+
+#: org/orbisgis/view/toc/actions/cui/legend/components/AbsFieldsComboBox.java:104
+msgid "TYPE_NAME"
+msgstr "类型_名称"
+
+#: org/orbisgis/view/toc/actions/cui/legend/components/AbsFieldsComboBox.java:105
+msgid "COLUMN_NAME"
+msgstr "列_名称"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/PreviewPanel.java:54
+#: org/orbisgis/view/toc/actions/cui/legend/model/TableModelUniqueValue.java:66
+#: org/orbisgis/view/toc/actions/cui/legend/model/TableModelInterval.java:99
+msgid "Preview"
+msgstr "预览"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalPointPanel.java:125
+msgid "Max. size"
+msgstr "最大.尺寸"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalPointPanel.java:128
+msgid "Min. size"
+msgstr "最小.尺寸"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/AbsOptionalPanel.java:76
+msgid "Enable"
+msgstr "允许"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/TablePanel.java:174
+msgid "Remove"
+msgstr "删除"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/SettingsPanel.java:109
+msgid "General settings"
+msgstr "常规设置"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/SettingsPanel.java:130
+msgid "Fallback symbol"
+msgstr "备用符号"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalLinePanel.java:118
+msgid "Color"
+msgstr "颜色"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalLinePanel.java:124
+msgid "Max width"
+msgstr "最大宽度"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalLinePanel.java:127
+msgid "Min width"
+msgstr "最小宽度"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:149
+msgid "Can't build the analysis with an accurate comparator."
+msgstr "无法构建分析用精确的比较。"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:180
+msgid "Use the fallback color"
+msgstr "使用后备颜色"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:184
+msgid "Use a color scheme:"
+msgstr "使用颜色方案："
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:200
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:140
+msgid "Create"
+msgstr "创建"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:229
+msgid "Unique value classification"
+msgstr "独特的价值分类"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:259
+msgid "Creating classification..."
+msgstr "创建分类。。。"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:305
+msgid "Retrieving classes"
+msgstr "检索类"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:324
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:126
+msgid "The application has ended unexpectedly"
+msgstr "应用程序意外终止"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:374
+msgid "Continue ?"
+msgstr "继续？"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:386
+msgid "<html><p>The analysis seems to generate more than "
+msgstr "<html><p>该分析似乎产生超过"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:387
+msgid ""
+" different values...</p><p>Are you sure you want to continue ?</p></html>"
+msgstr "不同的数值...</p><p>您确定要继续吗？</p></html>"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlCategorizedLine.java:167
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRecodedLine.java:171
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlCategorizedPoint.java:175
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlCategorizedArea.java:173
+msgid "You must use recognized RecodedLine instances in this panel."
+msgstr "您必须使用此面板中认可的RecodedLine实例。"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:94
+msgid "Rule settings"
+msgstr "规则设置"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:96
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlStyle.java:77
+#: org/orbisgis/view/toc/actions/cui/legend/wizard/ThematicMapWizard.java:132
+msgid "Name"
+msgstr "名称"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:117
+msgid "Min. scale"
+msgstr "最小.比例"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:123
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:140
+msgid "Current"
+msgstr "当前"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:136
+msgid "Max. scale"
+msgstr "最大.比例"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:229
+msgid "Min. scale is not a valid number"
+msgstr "最小.比例不是一个有效的数字"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:238
+msgid "Max. scale is not a valid number"
+msgstr "最大.比例不是一个有效的数字"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlStyle.java:75
+msgid "Style settings"
+msgstr "样式设置"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRecodedArea.java:192
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRecodedPoint.java:185
+msgid "You must use recognized RecodedArea instances in this panel."
+msgstr "您必须在此面板中使用认可的RecodedArea实例"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlProportionalPointSE.java:204
+msgid "Stroke and fill settings"
+msgstr "描边和填充的设置"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:114
+msgid "Interval classification"
+msgstr "区间分类"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:149
+msgid "Method"
+msgstr "方法"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:151
+msgid "Classes"
+msgstr "类"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:163
+msgid "Color scheme:"
+msgstr "颜色方案："
+
+#: org/orbisgis/view/toc/actions/cui/legend/wizard/ThematicMapWizard.java:96
+#: org/orbisgis/view/toc/Toc.java:290 org/orbisgis/view/toc/Toc.java:346
+msgid "Create a thematic map"
+msgstr "创建专题地图"
+
+#: org/orbisgis/view/toc/actions/cui/legend/wizard/ThematicMapWizard.java:103
+msgid "The name shall not be empty."
+msgstr "该名称不得为空。"
+
+#: org/orbisgis/view/toc/actions/cui/legend/model/TableModelUniqueValue.java:64
+msgid "Value"
+msgstr "数值"
+
+#: org/orbisgis/view/toc/actions/cui/legend/model/TableModelInterval.java:97
+msgid "Threshold"
+msgstr "门槛"
+
+#: org/orbisgis/view/toc/actions/cui/legend/model/TableModelInterval.java:101
+msgid "Label"
+msgstr "标记"
+
+#: org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:261
+msgid "Couldn't find file"
+msgstr "无法找到文件"
+
+#: org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:275
+msgid "Select Legend"
+msgstr "选择图例"
+
+#: org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:281
+msgid "You must select a legend."
+msgstr "您必须选择图例。"
+
+#: org/orbisgis/view/toc/TocRenderer.java:221
+#: org/orbisgis/view/toc/TocAbstractRenderer.java:83
+#, java-format
+msgid "Unable to find appropriate icon for typeCode {0}"
+msgstr "无法找到类型代码{0}的相应的图标"
+
+#: org/orbisgis/view/toc/TocRenderer.java:240
+#: org/orbisgis/view/toc/TocAbstractRenderer.java:102
+msgid "Error while drawing the Toc tree"
+msgstr "绘制TOC tree时出错"
+
+#: org/orbisgis/view/toc/Toc.java:226
+msgid "Toc"
+msgstr "目录"
+
+#: org/orbisgis/view/toc/Toc.java:240
+msgid "Save"
+msgstr "保存"
+
+#: org/orbisgis/view/toc/Toc.java:241
+msgid "Save the Map"
+msgstr "保存地图"
+
+#: org/orbisgis/view/toc/Toc.java:246
+msgid "Refresh"
+msgstr "更新"
+
+#: org/orbisgis/view/toc/Toc.java:247
+msgid "Refresh layer icons"
+msgstr "更新图层图标"
+
+#: org/orbisgis/view/toc/Toc.java:253 org/orbisgis/view/toc/Toc.java:323
+msgid "Add layer group"
+msgstr "添加图层分组"
+
+#: org/orbisgis/view/toc/Toc.java:253 org/orbisgis/view/toc/Toc.java:323
+msgid "Add layer group to the map context"
+msgstr "添加图层组在地图背景下"
+
+#: org/orbisgis/view/toc/Toc.java:257 org/orbisgis/view/toc/Toc.java:330
+msgid "Add WMS layer"
+msgstr "添加WMS 图层"
+
+#: org/orbisgis/view/toc/Toc.java:258 org/orbisgis/view/toc/Toc.java:331
+msgid "Add WMS layer to the map context"
+msgstr "添加WMS图层到地图背景下"
+
+#: org/orbisgis/view/toc/Toc.java:265
+msgid "Zoom to"
+msgstr "变焦到"
+
+#: org/orbisgis/view/toc/Toc.java:266
+msgid "Zoom to the layer bounding box"
+msgstr "变焦到图层边框"
+
+#: org/orbisgis/view/toc/Toc.java:270
+msgid "Zoom to selection"
+msgstr "放大到选择"
+
+#: org/orbisgis/view/toc/Toc.java:270
+msgid "Zoom to selected geometries"
+msgstr "变焦到所选几何结构"
+
+#: org/orbisgis/view/toc/Toc.java:276
+msgid "Clear selection"
+msgstr "清除选择"
+
+#: org/orbisgis/view/toc/Toc.java:276
+msgid "Clear the selected geometries"
+msgstr "清除选定的几何形状"
+
+#: org/orbisgis/view/toc/Toc.java:282
+msgid "Import style"
+msgstr "导入样式"
+
+#: org/orbisgis/view/toc/Toc.java:282
+msgid "Import a style from a file."
+msgstr "从文件中导入样式。"
+
+#: org/orbisgis/view/toc/Toc.java:290
+msgid "Add a new legend."
+msgstr "添加一个新的图例。"
+
+#: org/orbisgis/view/toc/Toc.java:299
+msgid "Start editing"
+msgstr "开始编辑"
+
+#: org/orbisgis/view/toc/Toc.java:299
+msgid "The edit geometry toolbar will update this layer's data source."
+msgstr "编辑几何体工具栏将更新此图层的数据源。"
+
+#: org/orbisgis/view/toc/Toc.java:305
+msgid "Stop editing"
+msgstr "停止编辑"
+
+#: org/orbisgis/view/toc/Toc.java:305
+msgid "Close the edit geometry toolbar."
+msgstr "关闭编辑几何体工具栏。"
+
+#: org/orbisgis/view/toc/Toc.java:311
+msgid "Save modifications"
+msgstr "保存修改"
+
+#: org/orbisgis/view/toc/Toc.java:311
+msgid "Apply the data source modifications"
+msgstr "应用数据源的修改"
+
+#: org/orbisgis/view/toc/Toc.java:316
+msgid "Cancel modifications"
+msgstr "取消修改"
+
+#: org/orbisgis/view/toc/Toc.java:316
+msgid "Undo all data source modifications"
+msgstr "撤消所有数据源的的修改"
+
+#: org/orbisgis/view/toc/Toc.java:339
+msgid "Remove layer"
+msgstr "删除图层"
+
+#: org/orbisgis/view/toc/Toc.java:340
+msgid "Remove the layer from the map context"
+msgstr "从地图背景删除图层"
+
+#: org/orbisgis/view/toc/Toc.java:346
+msgid "Add a legend in this style"
+msgstr "添加一个图例在此样式中"
+
+#: org/orbisgis/view/toc/Toc.java:350
+msgid "Style editor"
+msgstr "样式编辑器"
+
+#: org/orbisgis/view/toc/Toc.java:350
+msgid "Open the simple editor for SE styles"
+msgstr "打开SE风格的简洁编辑器"
+
+#: org/orbisgis/view/toc/Toc.java:354
+msgid "Remove style"
+msgstr "删除样式"
+
+#: org/orbisgis/view/toc/Toc.java:354
+msgid "Remove this style from the associated layer."
+msgstr "从相关的图层删除此样式。"
+
+#: org/orbisgis/view/toc/Toc.java:358
+msgid "Export style"
+msgstr "导出形式"
+
+#: org/orbisgis/view/toc/Toc.java:358
+msgid "Export this style from the associated layer."
+msgstr "从相关图层中导出此样式。"
+
+#: org/orbisgis/view/toc/Toc.java:576 org/orbisgis/view/toc/Toc.java:600
+#, java-format
+msgid "Cannot drop layer on {0}"
+msgstr "不能删除图层上的{0}"
+
+#: org/orbisgis/view/toc/Toc.java:603
+#, java-format
+msgid "Drop unknown editable of type : {0}"
+msgstr "丢弃未知编辑类型：{0}"
+
+#: org/orbisgis/view/toc/Toc.java:876
+#, java-format
+msgid "Can not add a LayerCollection : {0}"
+msgstr "不能添加图层集合：{0}"
+
+#: org/orbisgis/view/toc/Toc.java:890
+msgid "Cannot delete layer"
+msgstr "无法删除图层"
+
+#: org/orbisgis/view/toc/Toc.java:1004
+msgid "This functionality is not supported."
+msgstr "不支持此功能。"
+
+#: org/orbisgis/view/toc/Toc.java:1075
+msgid ""
+"You produced an invalid style while copying a valid one. Things are getting "
+"really wrong here."
+msgstr "在复制一个有效的风格时你产生一个无效的风格。事情真的会错在这里。"
+
+#: org/orbisgis/view/toc/Toc.java:1084
+msgid "Styles can be set only on vector layers."
+msgstr "样式只能在矢量图层设置。"
+
+#: org/orbisgis/view/toc/Toc.java:1089
+msgid "The style you're trying to edit is not valid !"
+msgstr "你试图编辑的样式是无效的！"
+
+#: org/orbisgis/view/toc/Toc.java:1091
+msgid "An error occurred while processing the DataSource"
+msgstr "在处理数据源时出错"
+
+#: org/orbisgis/view/toc/Toc.java:1093
+msgid ""
+"Cannot create the user interface for this style. \n"
+"Please uses the advanced style editor."
+msgstr "无法创建这种风格的用户界面.\n请使用高级的样式编辑器。"
+
+#: org/orbisgis/view/toc/Toc.java:1117
+msgid "Cannot find a valid image format for this WMS server"
+msgstr "无法找到一个有效的图像格式为此WMS服务器"
+
+#: org/orbisgis/view/toc/Toc.java:1180
+msgid "The given URI contains illegal character"
+msgstr "给定的URI包含非法字符"
+
+#: org/orbisgis/view/toc/Toc.java:1182
+msgid "Cannot add the WMS layer "
+msgstr "无法添加WMS图层"
+
+#: org/orbisgis/view/toc/Toc.java:1336
+msgid "Load the data source droped into the toc."
+msgstr "加载数据源进入TOC。"
+
+#: org/orbisgis/view/toc/Toc.java:1356
+msgid "Cannot add the layer to the destination"
+msgstr "无法将图层添加到目标"
+
+#: org/orbisgis/view/toc/wrapper/RuleWrapper.java:252
+#, java-format
+msgid "Min scale greater than max scale in rule {0}."
+msgstr "最小值尺度大于最大值尺度在细则{0}。"

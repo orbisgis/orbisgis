@@ -1,0 +1,236 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Ioannis Tsimpiris <ioannis@tsimpiris.com>, 2014
+msgid ""
+msgstr ""
+"Project-Id-Version: OrbisGIS\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-03 17:08+0100\n"
+"PO-Revision-Date: 2015-02-03 16:10+0000\n"
+"Last-Translator: Nicolas Fortin <github@nettrader.fr>\n"
+"Language-Team: Greek (http://www.transifex.com/projects/p/orbisgis/language/el/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: el\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: org/orbisgis/sqlconsole/codereformat/CodeReformator.java:129
+msgid "Reformat failed, normalised strings differ"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/actions/ExecuteScriptProcess.java:76
+msgid "Executing script"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/actions/ExecuteScriptProcess.java:107
+#, java-format
+msgid "Execute request {0}/{1}: {2}"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/actions/ExecuteScriptProcess.java:114
+#, java-format
+msgid "Done in {0} seconds\n"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/actions/ExecuteScriptProcess.java:126
+msgid "Execute SQL Request"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/actions/ExecuteScriptProcess.java:144
+#, java-format
+msgid "OVERALL EXECUTION TIME: {0} seconds"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/FunctionListModel.java:134
+msgid "PROCEDURE_NAME"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/FunctionListModel.java:139
+#: org/orbisgis/sqlconsole/ui/FunctionElement.java:112
+msgid "REMARKS"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLFunctionsPanel.java:63
+#, java-format
+msgid "Function count = {0}"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:77
+msgid "Drop source here to get all table columns"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:144
+msgid "Execute"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:145
+msgid "Run SQL statements"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:153
+msgid "Clear"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:154
+msgid "Erase the content of the editor"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:162
+msgid "Search.."
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:163
+msgid "Search text in the document"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:173
+msgid "Quote"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:174
+msgid "Quote selected text"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:182
+msgid "Un Quote"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:183
+msgid "Un Quote selected text"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:192
+msgid "(Un)comment"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:193
+msgid "(Un)comment the selected text"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:202
+msgid "Block (un)comment"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:203
+msgid "Block (un)comment the selected text."
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:212
+msgid "Format"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:213
+msgid "Format editor content"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:222
+msgid "Save"
+msgstr "Αποθήκευση"
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:223
+msgid "Save the editor content into a file"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:231
+msgid "Open"
+msgstr "Άνοιγμα"
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:232
+msgid "Load a file in this editor"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:239
+msgid "SQL list"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:240
+msgid "Show/Hide SQL function list"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:246
+msgid "Timeout"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:247
+msgid "Custom a time out to execute the SQL statement"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:319
+msgid "Save script"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:320
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:343
+msgid "SQL script (*.sql)"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:326
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:359
+msgid "IO error."
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:329
+msgid "The file has been saved."
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:342
+msgid "Open script"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:350
+msgid "Do you want to clear all before loading the file ?"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:351
+msgid "Open file"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:413
+msgid "Do you want to clear the contents of the console?"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:414
+msgid "Clear script"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:432
+msgid "Query Time out"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:448
+msgid "Number of seconds"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:452
+msgid "Unlimited time out"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/SQLConsolePanel.java:453
+msgid "Time out as seconds"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/ScriptPanelTransferHandler.java:87
+#: org/orbisgis/sqlconsole/ui/FunctionElement.java:178
+msgid "COLUMN_NAME"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/FunctionElement.java:179
+#: org/orbisgis/sqlconsole/ui/FunctionElement.java:212
+msgid "TYPE_NAME"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/FunctionListTransferHandler.java:48
+msgid "Signature(s):"
+msgstr ""
+
+#: org/orbisgis/sqlconsole/ui/functionFilters/NameFilterFactory.java:56
+msgid "Contains"
+msgstr "Περιέχει"
+
+#: org/orbisgis/sqlconsole/SQLConsole.java:76
+msgid "SQL Console"
+msgstr ""

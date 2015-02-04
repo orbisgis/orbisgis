@@ -1,0 +1,277 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: OrbisGIS\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-03 16:21+0100\n"
+"PO-Revision-Date: 2015-02-03 15:47+0000\n"
+"Last-Translator: Nicolas Fortin <github@nettrader.fr>\n"
+"Language-Team: English (United States) (http://www.transifex.com/projects/p/orbisgis/language/en_US/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: org/orbisgis/omanager/ui/ActionBundleFactory.java:84
+msgid "Start"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/ActionBundleFactory.java:84
+msgid "Activate the selected plugin"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/ActionBundleFactory.java:88
+msgid "Stop"
+msgstr "Stop"
+
+#: org/orbisgis/omanager/ui/ActionBundleFactory.java:88
+msgid "Deactivate the selected plugin"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/ActionBundleFactory.java:92
+msgid "Update"
+msgstr "Update"
+
+#: org/orbisgis/omanager/ui/ActionBundleFactory.java:92
+msgid "Update the selected plugin"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/ActionBundleFactory.java:97
+msgid "Uninstall"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/ActionBundleFactory.java:97
+msgid "Remove the selected plugin"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/ActionBundleFactory.java:101
+msgid "Download"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/ActionBundleFactory.java:101
+msgid "Download the selected plugin"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/ActionBundleFactory.java:105
+msgid "Download & Start"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/ActionBundleFactory.java:105
+msgid "Download the selected plugin and start it"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleDetailsTransformer.java:51
+msgid "Bundle-ContactAddress"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleDetailsTransformer.java:52
+msgid "Bundle-Copyright"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleDetailsTransformer.java:53
+msgid "Bundle-Description"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleDetailsTransformer.java:54
+msgid "Bundle-DocURL"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleDetailsTransformer.java:62
+msgid "Bundle-License"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleDetailsTransformer.java:63
+msgid "Bundle-Localization"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleDetailsTransformer.java:65
+msgid "Bundle-ManifestVersion"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleDetailsTransformer.java:67
+msgid "Bundle-NativeCode"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleDetailsTransformer.java:71
+msgid "Bundle-RequiredExecutionEnvironment"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleDetailsTransformer.java:72
+msgid "Service-Component"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleDetailsTransformer.java:73
+msgid "Bundle-SymbolicName"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleDetailsTransformer.java:74
+msgid "Bundle-UpdateLocation"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleDetailsTransformer.java:75
+msgid "Bundle-Vendor"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleDetailsTransformer.java:76
+msgid "Bundle-Version"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleDetailsTransformer.java:79
+msgid "gui"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/RepositoryAdminTracker.java:153
+msgid "RepositoryAdmin bundle is not available"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/ActionDeploy.java:100
+msgid "Yes"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/ActionDeploy.java:101
+msgid "Cancel"
+msgstr "Cancel"
+
+#: org/orbisgis/omanager/ui/ActionDeploy.java:102
+msgid "Dependencies downloading"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/ActionDeploy.java:122
+#: org/orbisgis/omanager/ui/ActionDeploy.java:127
+msgid "OSGi repository service is not available"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/ActionDeploy.java:165
+msgid "Could not resolve plugin dependencies for an unknown reason"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleItem.java:77
+msgid "%.2f TB"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleItem.java:79
+msgid "%.2f GB"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleItem.java:81
+msgid "%.2f MB"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleItem.java:83
+msgid "%.2f kB"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/BundleItem.java:85
+msgid "%d bytes"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/ActionBundle.java:79
+msgid ""
+"You will do an action on a plugin used by the system.\n"
+"After that, OrbisGIS could be unstable.\n"
+"Do you confirm ?"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/ActionBundle.java:82
+msgid "Security message"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:240
+msgid "Add a plugin from disk. Dependencies are not automatically resolved."
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:245
+msgid ""
+"Add a plugin from a URL (file:// or http(s)://). Dependencies are not "
+"automatically resolved."
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:251
+msgid "Add a remote bundle repository."
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:256
+msgid "Remove a remote bundle repository."
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:262
+msgid "Reload available plugins from all remote repositories."
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:420
+msgid "Enter the plugin URL (file:// or http(s)://):"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:428
+msgid "Add a plugin file"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:452
+msgid "OSGi Jar"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:459
+#, java-format
+msgid "Install bundle {0}"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:483
+msgid "This repository URL already exists"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:496
+msgid "Enter the repository URL:"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:504
+msgid "Add a plugin repository"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:518
+msgid "Select the server to remove"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:519
+msgid "Remove plugin repository"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:555
+msgid "All"
+msgstr "All"
+
+#: org/orbisgis/omanager/ui/MainPanel.java:555
+msgid "Show all bundles."
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:557
+msgid "Installed"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:557
+msgid "Show only installed bundles."
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:559
+msgid "Updatable"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:559
+msgid "Show only bundles that can be updated."
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:566
+msgid "Search for a plugin."
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:603
+msgid "Plugins"
+msgstr ""
+
+#: org/orbisgis/omanager/ui/MainPanel.java:605
+msgid "Systems"
+msgstr ""
