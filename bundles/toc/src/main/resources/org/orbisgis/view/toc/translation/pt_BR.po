@@ -1,0 +1,579 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Enrico Nicoletto <enrico.BR@gmx.co.uk>, 2013
+# Enrico Nicoletto <liverig@gmail.com>, 2013
+msgid ""
+msgstr ""
+"Project-Id-Version: OrbisGIS\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-03 16:21+0100\n"
+"PO-Revision-Date: 2015-02-03 15:48+0000\n"
+"Last-Translator: Nicolas Fortin <github@nettrader.fr>\n"
+"Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/orbisgis/language/pt_BR/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: pt_BR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: org/orbisgis/view/toc/TocTransferHandler.java:123
+msgid "Can't recognize this flavour"
+msgstr "Não foi possível reconhecer este item"
+
+#: org/orbisgis/view/toc/TocTransferHandler.java:126
+msgid "Problem during the transfer"
+msgstr "Ocorreu problema durante a transferência"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:105
+msgid "Connect to the server."
+msgstr "Conecta ao servidor."
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:114
+msgid "Delete the server connection."
+msgstr "Exclui a conexão com o servidor."
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:128
+msgid "Reload the server connection."
+msgstr "Recarrega a conexão com o servidor."
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:144
+msgid "Cannot update and save the URL list"
+msgstr "Não foi possível atualizar e salvar a lista de URL"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:155
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:368
+msgid "Version :"
+msgstr "Versão :"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:156
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:370
+msgid "Name :"
+msgstr "Nome :"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:182
+msgid "Cannot load the list of WMS url"
+msgstr "Não foi possível carregar a lista de url WMS"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:227
+msgid "Cannot save the list of WMS url"
+msgstr "Não foi possível salvar a lista de url WMS"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:265
+msgid "WMS server connection"
+msgstr "Conexão ao servidor WMS"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:271
+msgid "Please connect to the WMS server"
+msgstr "Por gentileza, efetue conexão ao servidor WMS"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:384
+#, java-format
+msgid "Cannot connect to {0}"
+msgstr "Não foi possível conectar-se com {0}"
+
+#: org/orbisgis/view/toc/wms/WMSConnectionPanel.java:387
+#, java-format
+msgid "Cannot get capabilities of {0}"
+msgstr "Não foi possível obter recursos de {0}"
+
+#: org/orbisgis/view/toc/wms/LayerConfigurationPanel.java:222
+msgid "Choose a list of layers"
+msgstr "Escolha uma lista de camadas"
+
+#: org/orbisgis/view/toc/wms/LayerConfigurationPanel.java:271
+msgid "At least a layer must be selected"
+msgstr "Ao menos uma camada deve ser selecionada"
+
+#: org/orbisgis/view/toc/wms/SRSPanel.java:75
+msgid "Select a SRS"
+msgstr "Selecione um SRS"
+
+#: org/orbisgis/view/toc/wms/SRSPanel.java:116
+msgid "Search a SRS :"
+msgstr "Selecione um SRS :"
+
+#: org/orbisgis/view/toc/wms/SRSPanel.java:152
+msgid "Please select a SRS."
+msgstr "Por gentileza, selecione um SRS."
+
+#: org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:186
+msgid "Add or select a legend."
+msgstr "Adicionar ou selecionar uma legenda."
+
+#: org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:468
+#, java-format
+msgid "Simple Style Editor - {0}"
+msgstr "Editor de estilos simples - {0}"
+
+#: org/orbisgis/view/toc/actions/cui/SimpleStyleEditor.java:474
+msgid "You must create at least one legend"
+msgstr "Você deve criar ao menos uma legenda"
+
+#: org/orbisgis/view/toc/actions/cui/LegendTree.java:322
+msgid "Up"
+msgstr "Acima"
+
+#: org/orbisgis/view/toc/actions/cui/LegendTree.java:330
+msgid "Down"
+msgstr "Abaixo"
+
+#: org/orbisgis/view/toc/actions/cui/LegendTree.java:338
+#: org/orbisgis/view/toc/actions/cui/legend/panels/TablePanel.java:168
+#: org/orbisgis/view/toc/Toc.java:251
+msgid "Add"
+msgstr "Adicionar"
+
+#: org/orbisgis/view/toc/actions/cui/LegendTree.java:347
+msgid "Delete"
+msgstr "Excluir"
+
+#: org/orbisgis/view/toc/actions/cui/LegendTree.java:355
+msgid "Rename"
+msgstr "Renomear"
+
+#: org/orbisgis/view/toc/actions/cui/LegendTree.java:449
+msgid "Choose a name for your rule"
+msgstr "Escolha um nome para a sua regra"
+
+#: org/orbisgis/view/toc/actions/cui/LegendTree.java:450
+msgid "Name of the Rule : "
+msgstr "Nome da regra : "
+
+#: org/orbisgis/view/toc/actions/cui/LegendTree.java:457
+msgid "Rule name cannot be null or empty."
+msgstr "Nome da regra não pode ser nulo ou vazio."
+
+#: org/orbisgis/view/toc/actions/cui/legend/components/ColorConfigurationPanel.java:118
+msgid "Gradient "
+msgstr "Gradiente"
+
+#: org/orbisgis/view/toc/actions/cui/legend/components/ColorConfigurationPanel.java:121
+msgid " to "
+msgstr " para "
+
+#: org/orbisgis/view/toc/actions/cui/legend/components/DashArrayField.java:78
+msgid "Could not validate your input."
+msgstr "Não foi possível validar sua entrada."
+
+#: org/orbisgis/view/toc/actions/cui/legend/components/AbsFieldsComboBox.java:104
+msgid "TYPE_NAME"
+msgstr ""
+
+#: org/orbisgis/view/toc/actions/cui/legend/components/AbsFieldsComboBox.java:105
+msgid "COLUMN_NAME"
+msgstr ""
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/PreviewPanel.java:54
+#: org/orbisgis/view/toc/actions/cui/legend/model/TableModelUniqueValue.java:66
+#: org/orbisgis/view/toc/actions/cui/legend/model/TableModelInterval.java:99
+msgid "Preview"
+msgstr "Visualização"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalPointPanel.java:125
+msgid "Max. size"
+msgstr "Tamanho máximo"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalPointPanel.java:128
+msgid "Min. size"
+msgstr "Tamanho mínimo"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/AbsOptionalPanel.java:76
+msgid "Enable"
+msgstr "Habilitar"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/TablePanel.java:174
+msgid "Remove"
+msgstr "Remover"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/SettingsPanel.java:109
+msgid "General settings"
+msgstr "Configurações gerais"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/SettingsPanel.java:130
+msgid "Fallback symbol"
+msgstr "Símbolo alternativo"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalLinePanel.java:118
+msgid "Color"
+msgstr "Cor"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalLinePanel.java:124
+msgid "Max width"
+msgstr "Largura máxima"
+
+#: org/orbisgis/view/toc/actions/cui/legend/panels/ProportionalLinePanel.java:127
+msgid "Min width"
+msgstr "Largura mínima"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:149
+msgid "Can't build the analysis with an accurate comparator."
+msgstr "Não se pode construir a análise com um comparador preciso."
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:180
+msgid "Use the fallback color"
+msgstr "Usar a cor alternativa"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:184
+msgid "Use a color scheme:"
+msgstr "Usar um esquema de cores:"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:200
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:140
+msgid "Create"
+msgstr "Criar"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:229
+msgid "Unique value classification"
+msgstr "Classificação de valores únicos"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:259
+msgid "Creating classification..."
+msgstr ""
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:305
+msgid "Retrieving classes"
+msgstr "Recuperando classes"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:324
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:126
+msgid "The application has ended unexpectedly"
+msgstr "O aplicativo foi encerrado de forma inesperada"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:374
+msgid "Continue ?"
+msgstr "Continuar ?"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:386
+msgid "<html><p>The analysis seems to generate more than "
+msgstr "<html><p>A análise parece criar mais que "
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractUniqueValue.java:387
+msgid ""
+" different values...</p><p>Are you sure you want to continue ?</p></html>"
+msgstr "valores diferentes...</p><p>Você tem certeza de que deseja continuar? </p></html>"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlCategorizedLine.java:167
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRecodedLine.java:171
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlCategorizedPoint.java:175
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlCategorizedArea.java:173
+msgid "You must use recognized RecodedLine instances in this panel."
+msgstr "Você deve usar instâncias RecodedLine reconhecidas neste painel."
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:94
+msgid "Rule settings"
+msgstr "Configurações de regras"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:96
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlStyle.java:77
+#: org/orbisgis/view/toc/actions/cui/legend/wizard/ThematicMapWizard.java:132
+msgid "Name"
+msgstr "Nome"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:117
+msgid "Min. scale"
+msgstr "Escala mín."
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:123
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:140
+msgid "Current"
+msgstr "Atual"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:136
+msgid "Max. scale"
+msgstr "Escala máx."
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:229
+msgid "Min. scale is not a valid number"
+msgstr "A escala mínima não possui um número válido"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRule.java:238
+msgid "Max. scale is not a valid number"
+msgstr "A escala máxima não possui um número válido"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlStyle.java:75
+msgid "Style settings"
+msgstr "Configurações de estilo"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRecodedArea.java:192
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlRecodedPoint.java:185
+msgid "You must use recognized RecodedArea instances in this panel."
+msgstr "Você deve usar instâncias RecodedArea reconhecidas neste painel."
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlProportionalPointSE.java:204
+msgid "Stroke and fill settings"
+msgstr "Configurações de traço e preenchimento"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:114
+msgid "Interval classification"
+msgstr "Classificação de intervalo"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:149
+msgid "Method"
+msgstr "Método"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:151
+msgid "Classes"
+msgstr "Classes"
+
+#: org/orbisgis/view/toc/actions/cui/legend/ui/PnlAbstractCategorized.java:163
+msgid "Color scheme:"
+msgstr "Esquema de cores:"
+
+#: org/orbisgis/view/toc/actions/cui/legend/wizard/ThematicMapWizard.java:96
+#: org/orbisgis/view/toc/Toc.java:290 org/orbisgis/view/toc/Toc.java:346
+msgid "Create a thematic map"
+msgstr "Criar um mapa teórico"
+
+#: org/orbisgis/view/toc/actions/cui/legend/wizard/ThematicMapWizard.java:103
+msgid "The name shall not be empty."
+msgstr "O nome não pode ser vazio."
+
+#: org/orbisgis/view/toc/actions/cui/legend/model/TableModelUniqueValue.java:64
+msgid "Value"
+msgstr "Valor"
+
+#: org/orbisgis/view/toc/actions/cui/legend/model/TableModelInterval.java:97
+msgid "Threshold"
+msgstr "Limiar"
+
+#: org/orbisgis/view/toc/actions/cui/legend/model/TableModelInterval.java:101
+msgid "Label"
+msgstr "Rótulo"
+
+#: org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:261
+msgid "Couldn't find file"
+msgstr "Não foi possível localizar o arquivo"
+
+#: org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:275
+msgid "Select Legend"
+msgstr "Selecione a legenda"
+
+#: org/orbisgis/view/toc/actions/cui/LegendUIChooser.java:281
+msgid "You must select a legend."
+msgstr "Você deve selecionar uma legenda."
+
+#: org/orbisgis/view/toc/TocRenderer.java:221
+#: org/orbisgis/view/toc/TocAbstractRenderer.java:83
+#, java-format
+msgid "Unable to find appropriate icon for typeCode {0}"
+msgstr "Não foi possível encontrar um ícone apropriado para código do tipo {0}"
+
+#: org/orbisgis/view/toc/TocRenderer.java:240
+#: org/orbisgis/view/toc/TocAbstractRenderer.java:102
+msgid "Error while drawing the Toc tree"
+msgstr "Ocorreu erro ao desenhar a árvore de sumário"
+
+#: org/orbisgis/view/toc/Toc.java:226
+msgid "Toc"
+msgstr "Sumário"
+
+#: org/orbisgis/view/toc/Toc.java:240
+msgid "Save"
+msgstr "Salvar"
+
+#: org/orbisgis/view/toc/Toc.java:241
+msgid "Save the Map"
+msgstr "Salvar o mapa"
+
+#: org/orbisgis/view/toc/Toc.java:246
+msgid "Refresh"
+msgstr ""
+
+#: org/orbisgis/view/toc/Toc.java:247
+msgid "Refresh layer icons"
+msgstr ""
+
+#: org/orbisgis/view/toc/Toc.java:253 org/orbisgis/view/toc/Toc.java:323
+msgid "Add layer group"
+msgstr "Adicionar grupo de camada"
+
+#: org/orbisgis/view/toc/Toc.java:253 org/orbisgis/view/toc/Toc.java:323
+msgid "Add layer group to the map context"
+msgstr "Adicionar grupo de camadas para o contexto do mapa"
+
+#: org/orbisgis/view/toc/Toc.java:257 org/orbisgis/view/toc/Toc.java:330
+msgid "Add WMS layer"
+msgstr ""
+
+#: org/orbisgis/view/toc/Toc.java:258 org/orbisgis/view/toc/Toc.java:331
+msgid "Add WMS layer to the map context"
+msgstr ""
+
+#: org/orbisgis/view/toc/Toc.java:265
+msgid "Zoom to"
+msgstr "Ampliação para"
+
+#: org/orbisgis/view/toc/Toc.java:266
+msgid "Zoom to the layer bounding box"
+msgstr "Amplie até a caixa delimitadora de camada"
+
+#: org/orbisgis/view/toc/Toc.java:270
+msgid "Zoom to selection"
+msgstr "Ampliação para seleção"
+
+#: org/orbisgis/view/toc/Toc.java:270
+msgid "Zoom to selected geometries"
+msgstr "Ampliação para geometrias selecionadas"
+
+#: org/orbisgis/view/toc/Toc.java:276
+msgid "Clear selection"
+msgstr "Limpar seleção"
+
+#: org/orbisgis/view/toc/Toc.java:276
+msgid "Clear the selected geometries"
+msgstr "Limpar as geometrias selecionadas"
+
+#: org/orbisgis/view/toc/Toc.java:282
+msgid "Import style"
+msgstr "Importar estilo"
+
+#: org/orbisgis/view/toc/Toc.java:282
+msgid "Import a style from a file."
+msgstr "Importa um estilo de um arquivo."
+
+#: org/orbisgis/view/toc/Toc.java:290
+msgid "Add a new legend."
+msgstr "Adicionar uma nova legenda."
+
+#: org/orbisgis/view/toc/Toc.java:299
+msgid "Start editing"
+msgstr "Iniciar edição"
+
+#: org/orbisgis/view/toc/Toc.java:299
+msgid "The edit geometry toolbar will update this layer's data source."
+msgstr "A barra de ferramentas de edição de geometria irá atualizar as fontes de dados dessa camada."
+
+#: org/orbisgis/view/toc/Toc.java:305
+msgid "Stop editing"
+msgstr "Parar edição"
+
+#: org/orbisgis/view/toc/Toc.java:305
+msgid "Close the edit geometry toolbar."
+msgstr "Fechar a barra de ferramentas de edição de geometria."
+
+#: org/orbisgis/view/toc/Toc.java:311
+msgid "Save modifications"
+msgstr "Salvar modificações"
+
+#: org/orbisgis/view/toc/Toc.java:311
+msgid "Apply the data source modifications"
+msgstr "Aplicar as modificações das fonte de dados"
+
+#: org/orbisgis/view/toc/Toc.java:316
+msgid "Cancel modifications"
+msgstr "Cancelar modificações"
+
+#: org/orbisgis/view/toc/Toc.java:316
+msgid "Undo all data source modifications"
+msgstr "Desfazer todas as modificações da fonte de dados"
+
+#: org/orbisgis/view/toc/Toc.java:339
+msgid "Remove layer"
+msgstr "Remover camada"
+
+#: org/orbisgis/view/toc/Toc.java:340
+msgid "Remove the layer from the map context"
+msgstr "Remove a camada do contexto do mapa"
+
+#: org/orbisgis/view/toc/Toc.java:346
+msgid "Add a legend in this style"
+msgstr "Adicionar uma legenda neste estilo."
+
+#: org/orbisgis/view/toc/Toc.java:350
+msgid "Style editor"
+msgstr ""
+
+#: org/orbisgis/view/toc/Toc.java:350
+msgid "Open the simple editor for SE styles"
+msgstr "Abrir o editor simples para estilos SE"
+
+#: org/orbisgis/view/toc/Toc.java:354
+msgid "Remove style"
+msgstr "Remover estilo"
+
+#: org/orbisgis/view/toc/Toc.java:354
+msgid "Remove this style from the associated layer."
+msgstr "Remover este estilo da camada associada."
+
+#: org/orbisgis/view/toc/Toc.java:358
+msgid "Export style"
+msgstr "Exportar estilo"
+
+#: org/orbisgis/view/toc/Toc.java:358
+msgid "Export this style from the associated layer."
+msgstr "Exportar este estilo da camada associada."
+
+#: org/orbisgis/view/toc/Toc.java:576 org/orbisgis/view/toc/Toc.java:600
+#, java-format
+msgid "Cannot drop layer on {0}"
+msgstr "Não foi possível descartar camada em {0}"
+
+#: org/orbisgis/view/toc/Toc.java:603
+#, java-format
+msgid "Drop unknown editable of type : {0}"
+msgstr "Objeto desconhecido editável do tipo: {0}"
+
+#: org/orbisgis/view/toc/Toc.java:876
+#, java-format
+msgid "Can not add a LayerCollection : {0}"
+msgstr "Não foi possível adicionar uma coleção de camadas: {0}"
+
+#: org/orbisgis/view/toc/Toc.java:890
+msgid "Cannot delete layer"
+msgstr "Não foi possível excluir a camada"
+
+#: org/orbisgis/view/toc/Toc.java:1004
+msgid "This functionality is not supported."
+msgstr "Não há suporte a esta funcionalidade."
+
+#: org/orbisgis/view/toc/Toc.java:1075
+msgid ""
+"You produced an invalid style while copying a valid one. Things are getting "
+"really wrong here."
+msgstr "Você produziu um estilo inválido ao copiar um válido. As coisas estão ficando muito erradas aqui."
+
+#: org/orbisgis/view/toc/Toc.java:1084
+msgid "Styles can be set only on vector layers."
+msgstr "Os estilos só podem ser definidos em camadas de vetores."
+
+#: org/orbisgis/view/toc/Toc.java:1089
+msgid "The style you're trying to edit is not valid !"
+msgstr "O estilo que você está tentando editar não é válido!"
+
+#: org/orbisgis/view/toc/Toc.java:1091
+msgid "An error occurred while processing the DataSource"
+msgstr "Ocorreu um erro ao processar a fonte de dados"
+
+#: org/orbisgis/view/toc/Toc.java:1093
+msgid ""
+"Cannot create the user interface for this style. \n"
+"Please uses the advanced style editor."
+msgstr "Não foi possível criar a interface gráfica para este estilo. \nPor gentileza, use o editor avançado de estilos."
+
+#: org/orbisgis/view/toc/Toc.java:1117
+msgid "Cannot find a valid image format for this WMS server"
+msgstr "Não foi possível encontrar um formato de imagem válido para este servidor WMS"
+
+#: org/orbisgis/view/toc/Toc.java:1180
+msgid "The given URI contains illegal character"
+msgstr "O URI fornecido possui caractere ilegal"
+
+#: org/orbisgis/view/toc/Toc.java:1182
+msgid "Cannot add the WMS layer "
+msgstr ""
+
+#: org/orbisgis/view/toc/Toc.java:1336
+msgid "Load the data source droped into the toc."
+msgstr "Carregar a fonte de dados posicionada no sumário."
+
+#: org/orbisgis/view/toc/Toc.java:1356
+msgid "Cannot add the layer to the destination"
+msgstr "Não foi possível adicionar a camada ao destino"
+
+#: org/orbisgis/view/toc/wrapper/RuleWrapper.java:252
+#, java-format
+msgid "Min scale greater than max scale in rule {0}."
+msgstr "A escala mínima é maior que a escala máxima na regra {0}."

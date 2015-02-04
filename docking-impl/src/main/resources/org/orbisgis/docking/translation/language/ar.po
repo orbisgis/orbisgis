@@ -1,0 +1,112 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: OrbisGIS\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-03 16:22+0100\n"
+"PO-Revision-Date: 2015-02-03 15:49+0000\n"
+"Last-Translator: Nicolas Fortin <github@nettrader.fr>\n"
+"Language-Team: Arabic (http://www.transifex.com/projects/p/orbisgis/language/ar/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ar\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+#: org/orbisgis/docking/impl/preferences/OrbisGISPreferenceTreeModel.java:74
+msgid "Windows"
+msgstr "نوافذ"
+
+#: org/orbisgis/docking/impl/preferences/OrbisGISPreferenceTreeModel.java:81
+msgid "Web configuration"
+msgstr "ترتيب شبكة الإنترنت"
+
+#: org/orbisgis/docking/impl/preferences/OrbisGISPreferenceTreeModel.java:82
+msgid "Proxy"
+msgstr "الوكيل "
+
+#: org/orbisgis/docking/impl/preferences/ProxyPreferenceModel.java:97
+msgid "Use Proxy"
+msgstr "إستخدام الوكيل "
+
+#: org/orbisgis/docking/impl/preferences/ProxyPreferenceModel.java:102
+msgid "Proxy url"
+msgstr "رابط الوكيل"
+
+#: org/orbisgis/docking/impl/preferences/ProxyPreferenceModel.java:106
+msgid "Proxy port"
+msgstr "منفذ الوكيل  "
+
+#: org/orbisgis/docking/impl/preferences/ProxyPreferenceModel.java:165
+#: org/orbisgis/docking/impl/preferences/ProxyPreferenceModel.java:170
+msgid "The proxy port is invalid"
+msgstr "منفذ الوكيل غير صالح"
+
+#: org/orbisgis/docking/impl/DockingManagerImpl.java:215
+msgid "&Look And Feel"
+msgstr "&مظهر و سلوك"
+
+#: org/orbisgis/docking/impl/DockingManagerImpl.java:227
+msgid "&Windows"
+msgstr "&نافذة"
+
+#: org/orbisgis/docking/impl/DockingManagerImpl.java:259
+#: org/orbisgis/docking/impl/DockingManagerImpl.java:262
+msgid "Unable to load the docking layout."
+msgstr "يستحيل تحميل الواجهة."
+
+#: org/orbisgis/docking/impl/DockingManagerImpl.java:356
+msgid "Unable to save the docking layout."
+msgstr "يستحيل حفظ الواجهة."
+
+#: org/orbisgis/docking/impl/DockingManagerImpl.java:583
+#, java-format
+msgid "ToolBar item {0} is not unique, it has been renamed to {1}"
+msgstr "بند شريط الأدوات {0} ليس فريد من نوعه، وقد تم تسميته {1}"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:112
+msgid "Save documents"
+msgstr "قم بحفظ المستندات"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:130
+msgid "&Save"
+msgstr "&إحفظ"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:132
+msgid ""
+"Save the selected documents, and close this dialog if there is no more "
+"modifed documents"
+msgstr "إحفظ الوثائق المختارة، وأغلق هذا الحوار إذا لم يكن يعد هناك وثائق معدلة"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:138
+msgid "Save &All"
+msgstr "إحفظ &الكل"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:141
+msgid "Save all documents and close this dialog"
+msgstr "إحفظ جميع الوثائق وإغلاق هذا الحوار"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:145
+msgid "Save &None"
+msgstr "لا تحفظ  &شيء"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:148
+msgid "Discard all changes and close this dialog"
+msgstr "قم بإلغاء كل التغييرات و قم بإغلاق نافذة الحوار "
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:152
+msgid "&Cancel"
+msgstr "&الغاء"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:153
+msgid "Do nothing and lose nothing"
+msgstr "لا تفعل شيئ و لا تخسر شيئ"
+
+#: org/orbisgis/docking/impl/edition/dialogs/SaveDocuments.java:253
+#, java-format
+msgid "The document {0} cannot be saved due to the following error {1}"
+msgstr "المستند {0} لا يمكن حفظه  بسبب الخطأ التالي {1}"
