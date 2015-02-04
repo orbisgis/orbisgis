@@ -116,7 +116,7 @@ source_lang = en
 type = PO
 
 [orbisgis.legend]
-file_filter = legend/resources/org/orbisgis/legend/translation/language/<lang>.po
-source_file = legend/resources/org/orbisgis/legend/translation/language/keys.pot
+file_filter = legend/src/main/resources/org/orbisgis/legend/translation/language/<lang>.po
+source_file = legend/src/main/resources/org/orbisgis/legend/translation/language/keys.pot
 source_lang = en
 type = PO
