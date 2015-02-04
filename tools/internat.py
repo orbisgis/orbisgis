@@ -13,6 +13,8 @@ def callext(tab):
     print(" ".join(tab))
     call(tab)
 
+merge_po = False
+
 ##
 # Copy and merge language file into each projects
 og_folder = os.path.abspath("../")
@@ -22,10 +24,11 @@ for root, dirs, files in os.walk(og_folder):
             os.chdir(root)
             # Read source file to create key file and merge into PO
             callext(["mvn" ,"gettext:gettext"])
-            callext(["mvn" ,"gettext:merge", "-DmsgmergeCmd\"msgmerge --backup=off\""])
-            #remove obsolete and fuzzy entry in po
-            for proot, pdirs, pfiles in os.walk(root):
-                for pfile in pfiles:
-                    if pfile.endswith(".po"):
-                        os.chdir(proot)
-                        callext(["msgattrib" ,pfile,"--no-obsolete","--no-fuzzy","-o",pfile])
+            if merge_po:
+                callext(["mvn" ,"gettext:merge", "-DmsgmergeCmd\"msgmerge --backup=off\""])
+                #remove obsolete and fuzzy entry in po
+                for proot, pdirs, pfiles in os.walk(root):
+                    for pfile in pfiles:
+                        if pfile.endswith(".po"):
+                            os.chdir(proot)
+                            callext(["msgattrib" ,pfile,"--no-obsolete","--no-fuzzy","-o",pfile])
