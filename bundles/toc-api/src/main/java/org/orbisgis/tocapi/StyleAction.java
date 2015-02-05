@@ -39,6 +39,7 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.sif.components.actions.DefaultAction;
+import org.orbisgis.sif.components.resourceTree.TreeSelectionIterable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,8 +87,8 @@ public class StyleAction extends DefaultAction {
 
     @Override
     public boolean isEnabled() {
-        TocTreeSelectionIterable<TocTreeNodeStyle> styleIterator =
-                new TocTreeSelectionIterable<>(toc.getTree().getSelectionPaths(),TocTreeNodeStyle.class);
+        TreeSelectionIterable<TocTreeNodeStyle> styleIterator =
+                new TreeSelectionIterable<>(toc.getTree().getSelectionPaths(),TocTreeNodeStyle.class);
         int styleSelectionCount = 0;
         boolean hasNonVectorSource = false;
         for(TocTreeNodeStyle styleNode : styleIterator) {

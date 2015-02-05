@@ -30,6 +30,7 @@ package org.orbisgis.tocapi;
 
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.sif.components.actions.DefaultAction;
+import org.orbisgis.sif.components.resourceTree.TreeSelectionIterable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,8 +136,8 @@ public class LayerAction extends DefaultAction {
     @Override
     public boolean isEnabled() {
         // Create the layer iterator
-        TocTreeSelectionIterable<TocTreeNodeLayer> layerIterator =
-                new TocTreeSelectionIterable<TocTreeNodeLayer>(toc.getTree().getSelectionPaths(),TocTreeNodeLayer.class);
+        TreeSelectionIterable<TocTreeNodeLayer> layerIterator =
+                new TreeSelectionIterable<>(toc.getTree().getSelectionPaths(),TocTreeNodeLayer.class);
         int selectedLayersCount = 0;
         boolean rowSelection = false;
         boolean hasRealLayer = false;

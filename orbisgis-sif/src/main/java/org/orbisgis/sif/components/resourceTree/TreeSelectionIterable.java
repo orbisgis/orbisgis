@@ -34,7 +34,7 @@ import javax.swing.tree.TreePath;
 import java.util.Iterator;
 
 /**
- * Easy way to iterate over selected TreeNode in the toc.
+ * Easy way to iterate over selected TreeNode.
  * @author Nicolas Fortin
  */
 public class TreeSelectionIterable<Node extends TreeNode> implements Iterable<Node> {
