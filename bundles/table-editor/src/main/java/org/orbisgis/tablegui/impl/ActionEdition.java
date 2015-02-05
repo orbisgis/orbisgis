@@ -32,7 +32,7 @@ package org.orbisgis.tablegui.impl;
 
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.viewapi.components.actions.ActionTools;
+import org.orbisgis.sif.components.actions.ActionTools;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
