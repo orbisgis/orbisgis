@@ -32,7 +32,7 @@ import org.orbisgis.commons.events.BeanPropertyChangeSupport;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.sif.components.actions.intern.RemoveActionControls;
 import org.orbisgis.sif.components.button.DropDownButton;
-import org.orbisgis.viewapi.components.actions.ActionTools;
+import org.orbisgis.sif.components.actions.ActionTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

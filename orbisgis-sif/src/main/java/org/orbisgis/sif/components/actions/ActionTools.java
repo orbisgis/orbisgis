@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.viewapi.components.actions;
+package org.orbisgis.sif.components.actions;
 
 import java.util.List;
 import javax.swing.Action;

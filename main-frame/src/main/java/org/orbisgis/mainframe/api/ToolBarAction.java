@@ -34,8 +34,8 @@ import org.orbisgis.sif.components.actions.ActionFactoryService;
 /**
  * Implement this interface to define additional ToolBar items.
  * ToolBar items can be put in the same group by using the property
- * @see org.orbisgis.viewapi.components.actions.ActionTools#LOGICAL_GROUP
- * Only built-ins toolbar items are listed here in order to use it on the {@link org.orbisgis.viewapi.components.actions.ActionTools#INSERT_AFTER_MENUID}
+ * @see org.orbisgis.sif.components.actions.ActionTools#LOGICAL_GROUP
+ * Only built-ins toolbar items are listed here in order to use it on the {@link org.orbisgis.sif.components.actions.ActionTools#INSERT_AFTER_MENUID}
  * @author Nicolas Fortin
  */
 public interface ToolBarAction  extends ActionFactoryService<MainWindow> {

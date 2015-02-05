@@ -29,7 +29,7 @@
 package org.orbisgis.sif.components.actions;
 
 import org.orbisgis.sif.common.MenuCommonFunctions;
-import org.orbisgis.viewapi.components.actions.ActionTools;
+import org.orbisgis.sif.components.actions.ActionTools;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

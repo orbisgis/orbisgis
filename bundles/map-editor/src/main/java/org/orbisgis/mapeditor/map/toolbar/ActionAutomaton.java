@@ -30,7 +30,7 @@
 package org.orbisgis.mapeditor.map.toolbar;
 
 import org.orbisgis.mainframe.api.ToolBarAction;
-import org.orbisgis.viewapi.components.actions.ActionTools;
+import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.mapeditor.map.ext.AutomatonHolder;
 import org.orbisgis.mapeditor.map.ext.MapEditorAction;
 import org.orbisgis.mapeditor.map.ext.MapEditorExtension;
