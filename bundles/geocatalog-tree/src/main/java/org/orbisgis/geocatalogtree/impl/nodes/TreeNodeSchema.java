@@ -31,10 +31,13 @@ package org.orbisgis.geocatalogtree.impl.nodes;
 import org.jooq.Catalog;
 import org.jooq.QueryPart;
 import org.jooq.Schema;
+import org.jooq.Table;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * @author Nicolas Fortin
@@ -42,7 +45,7 @@ import java.sql.Connection;
 public class TreeNodeSchema extends DefaultMutableTreeNode implements GeoCatalogTreeNode {
 
     public TreeNodeSchema(String schema) {
-        super(schema);
+        super(schema, true);
     }
 
     @Override
@@ -59,5 +62,22 @@ public class TreeNodeSchema extends DefaultMutableTreeNode implements GeoCatalog
     public Schema getValue(Connection connection) {
         Catalog catalog = ((TreeNodeCatalog) getParent()).getValue(connection);
         return catalog != null ? catalog.getSchema(getUserObject()) : null;
+    }
+
+    @Override
+    public void loadChildren(Connection connection, DefaultTreeModel model) throws SQLException {
+        Schema schema = getValue(connection);
+        if(schema != null) {
+            for(Table table : schema.getTables()) {
+                model.insertNodeInto(new TreeNodeTable(table.getName()), this, 0);
+            }
+        } else {
+            model.removeNodeFromParent(this);
+        }
+    }
+
+    @Override
+    public void check(QueryPart parentValue, DefaultTreeModel defaultTreeModel) throws SQLException {
+
     }
 }

@@ -30,6 +30,7 @@ package org.orbisgis.geocatalogtree.api;
 
 import org.jooq.QueryPart;
 
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,10 +42,8 @@ public interface GeoCatalogTreeNode extends TreeNode {
     String NODE_CATALOG = "CATALOG";
     String NODE_SCHEMA = "SCHEMA";
     String NODE_TABLE = "TABLE";
-    String NODE_VIEW = "VIEW";
     String NODE_COLUMN = "COLUMN";
     String NODE_INDEX = "INDEX";
-    String NODE_SPATIAL_INDEX = "SPATIAL_INDEX";
 
     /**
      * @return Node type
@@ -55,4 +54,20 @@ public interface GeoCatalogTreeNode extends TreeNode {
      * @return The Jooq component
      */
     QueryPart getValue(Connection connection) throws SQLException;
+
+    /**
+     * Load synchronously the children of this node using the provided model.
+     * @param connection Active connection, do not close it
+     * @param model Model to insert new nodes
+     * @throws SQLException
+     */
+    void loadChildren(Connection connection, DefaultTreeModel model) throws SQLException;
+
+    /**
+     * Check if the current node has been updated/deleted
+     * @param parentValue Parent JOOQ Meta
+     * @param defaultTreeModel Model to trigger update/delete event and children insert
+     * @throws SQLException
+     */
+    void check(QueryPart parentValue, DefaultTreeModel defaultTreeModel) throws SQLException;
 }

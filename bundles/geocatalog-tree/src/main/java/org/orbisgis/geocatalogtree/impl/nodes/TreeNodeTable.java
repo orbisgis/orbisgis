@@ -34,6 +34,7 @@ import org.jooq.Table;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -59,5 +60,21 @@ public class TreeNodeTable extends DefaultMutableTreeNode implements GeoCatalogT
     public Table getValue(Connection connection) throws SQLException {
         Schema schema = ((TreeNodeSchema)getParent()).getValue(connection);
         return schema != null ? schema.getTable(getUserObject()) : null;
+    }
+
+    @Override
+    public void loadChildren(Connection connection, DefaultTreeModel model) throws SQLException {
+
+    }
+
+    @Override
+    public void check(QueryPart parentValue, DefaultTreeModel defaultTreeModel) throws SQLException {
+        Table table = parentValue != null ? ((Schema)parentValue).getTable(getUserObject()) : null;
+        if(table == null) {
+            defaultTreeModel.removeNodeFromParent(this);
+        } else {
+            // TODO check children
+
+        }
     }
 }
