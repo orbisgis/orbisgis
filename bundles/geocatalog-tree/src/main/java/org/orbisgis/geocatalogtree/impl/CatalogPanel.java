@@ -29,9 +29,7 @@
 package org.orbisgis.geocatalogtree.impl;
 
 import org.jooq.Catalog;
-import org.jooq.DSLContext;
 import org.jooq.Meta;
-import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.geocatalogtree.icons.GeocatalogIcon;
@@ -53,6 +51,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.SwingWorker;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -108,6 +107,10 @@ public class CatalogPanel extends JPanel implements DockingPanel {
 
     @Activate
     public void activate() {
+        new InitTree(this).execute();
+    }
+
+    private void initTree() {
         // Load catalogs
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             Meta meta = DSL.using(connection).meta();
@@ -142,5 +145,19 @@ public class CatalogPanel extends JPanel implements DockingPanel {
     private void readDatabase() {
         // Detect change between shown components
 
+    }
+
+    private static class InitTree extends SwingWorker {
+        private CatalogPanel catalogPanel;
+
+        public InitTree(CatalogPanel catalogPanel) {
+            this.catalogPanel = catalogPanel;
+        }
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            catalogPanel.initTree();
+            return null;
+        }
     }
 }
