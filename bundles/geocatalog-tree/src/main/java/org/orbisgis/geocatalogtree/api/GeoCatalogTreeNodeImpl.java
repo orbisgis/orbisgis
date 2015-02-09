@@ -31,7 +31,9 @@ package org.orbisgis.geocatalogtree.api;
 import javax.swing.Icon;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -103,11 +105,12 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
     }
 
     @Override
-    public Set<String> getChildrenIdentifier() {
-        Set<String> childrenIdent = new HashSet<>();
+    public Map<String, GeoCatalogTreeNode> getChildrenIdentifier() {
+        Map<String, GeoCatalogTreeNode> childrenIdent = new HashMap<>();
         for(Object child : children) {
             if(child instanceof GeoCatalogTreeNode) {
-                childrenIdent.add(((GeoCatalogTreeNode) child).getNodeIdentifier());
+                GeoCatalogTreeNode geoCatalogTreeNode = ((GeoCatalogTreeNode) child);
+                childrenIdent.put(geoCatalogTreeNode.getNodeIdentifier(), geoCatalogTreeNode);
             }
         }
         return childrenIdent;

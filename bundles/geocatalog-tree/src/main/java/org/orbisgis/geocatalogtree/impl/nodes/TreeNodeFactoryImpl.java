@@ -30,18 +30,23 @@ package org.orbisgis.geocatalogtree.impl.nodes;
 
 import org.jooq.Catalog;
 import org.jooq.Meta;
+import org.jooq.QueryPart;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNodeImpl;
 import org.orbisgis.geocatalogtree.api.TreeNodeFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import java.sql.Connection;
-import java.util.HashSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import static org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode.*;
 
@@ -50,6 +55,7 @@ import static org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode.*;
  * @author Nicolas Fortin
  */
 public class TreeNodeFactoryImpl implements TreeNodeFactory {
+    private static Logger LOGGER = LoggerFactory.getLogger(TreeNodeFactoryImpl.class);
 
     @Override
     public String[] getParentNodeType() {
@@ -57,51 +63,105 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
     }
 
     @Override
-    public void updateChildren(GeoCatalogTreeNode parent, Connection connection, DefaultTreeModel treeModel) {
-        updateChildren(parent, DSL.using(connection).meta(),treeModel);
+    public void updateChildren(GeoCatalogTreeNode parent, Connection connection, JTree jTree) throws SQLException {
+        updateChildren(parent, getJooqQueryPart(connection,null, parent),connection, jTree);
     }
 
-    public void updateChildren(GeoCatalogTreeNode parent, Meta meta, DefaultTreeModel treeModel) {
-        if(parent.getNodeType().isEmpty()) {
-            loadDatabase(meta, treeModel);
-            return;
-        }
-        switch (parent.getNodeType()) {
-            case NODE_DATABASE:
-                loadCatalog(parent, meta, treeModel);
-                break;
-            case NODE_CATALOG:
-                loadSchema(parent, getCatalog(meta, parent), treeModel);
-                break;
-            case NODE_SCHEMA:
-                loadTable(parent, getSchema(meta, parent), treeModel);
-                break;
-        }
-    }
 
-    /**
-     * @param meta JOOQ meta
-     * @param treeNode TreeNode database
-     * @return Catalog or null
-     */
-    public Catalog getCatalog(Meta meta, GeoCatalogTreeNode treeNode) {
-        for(Catalog catalog : meta.getCatalogs()) {
-            if(treeNode.getNodeIdentifier().equals(catalog.getName())) {
-                return catalog;
+    public QueryPart getJooqQueryPart(Connection connection,QueryPart parentQueryPart, GeoCatalogTreeNode treeNode) {
+        if(treeNode == null) {
+            LOGGER.error("Cant find root catalog");
+            return null;
+        }
+        if(parentQueryPart == null && !treeNode.getNodeType().equals(NODE_CATALOG)) {
+            parentQueryPart = getJooqQueryPart(connection, null, treeNode.getParent());
+        }
+        if(parentQueryPart != null) {
+            switch (treeNode.getNodeType()) {
+                case NODE_CATALOG:
+                    return getCatalog(DSL.using(connection).meta(), treeNode.getNodeIdentifier());
+                case NODE_SCHEMA:
+                    return ((Catalog) parentQueryPart).getSchema(treeNode.getNodeIdentifier());
+                case NODE_TABLE:
+                    return ((Schema) parentQueryPart).getTable(treeNode.getNodeIdentifier());
             }
         }
         return null;
     }
 
     /**
-     * @param meta JOOQ meta
-     * @param treeNode Catalog
-     * @return Schema or null
+     * Load sub-nodes
+     * @param parent Parent node to fill or update
+     * @param parentQueryPart Parent node JOOQ instance
+     * @param connection Active connection
+     * @param jTree JTree that will receive items
+     * @throws SQLException
      */
-    public Schema getSchema(Meta meta, GeoCatalogTreeNode treeNode) {
-        Catalog catalog = getCatalog(meta, treeNode.getParent());
-        Schema schema = catalog.getSchema(treeNode.getNodeIdentifier());
-        return schema != null ? schema : null;
+    public void updateChildren(GeoCatalogTreeNode parent, QueryPart parentQueryPart,Connection connection, JTree jTree) throws SQLException {
+        DefaultTreeModel treeModel = (DefaultTreeModel)jTree.getModel();
+        if(parent.getNodeType().isEmpty()) {
+            loadDatabase(DSL.using(connection).meta(), treeModel);
+            return;
+        }
+        List<GeoCatalogTreeNodeImpl> allNodes = new ArrayList<>(parent.getChildCount());
+        List<QueryPart> allNodesQueryPart = new ArrayList<>(parent.getChildCount());
+        // Read Meta and create all nodes
+        switch (parent.getNodeType()) {
+            case NODE_DATABASE:
+                loadCatalog(parent, DSL.using(connection).meta(), treeModel,allNodes, allNodesQueryPart);
+                break;
+            case NODE_CATALOG:
+                loadSchema((Catalog)parentQueryPart,allNodes, allNodesQueryPart);
+                break;
+            case NODE_SCHEMA:
+                loadTable((Schema)parentQueryPart,allNodes, allNodesQueryPart);
+                break;
+        }
+        Map<String, GeoCatalogTreeNode> oldNodes = parent.getChildrenIdentifier();
+        // Check if the node already exist in the tree or if old nodes has been removed from db
+        for(int nodeId=0; nodeId < allNodes.size(); nodeId++) {
+            GeoCatalogTreeNodeImpl node=allNodes.get(nodeId);
+            QueryPart nodeQueryPart = allNodesQueryPart.get(nodeId);
+            GeoCatalogTreeNode existingNode = oldNodes.get(node.getNodeIdentifier());
+            if(existingNode != null) {
+                // Node already exists
+                oldNodes.remove(node.getNodeIdentifier());
+                // Update the node if it contains at least one child
+                if(existingNode.getChildCount() > 0) {
+                    TreeNodeFactory treeNodeFactory = existingNode.getFactory();
+                    if(treeNodeFactory instanceof TreeNodeFactoryImpl) {
+                        TreeNodeFactoryImpl childFactory = (TreeNodeFactoryImpl)treeNodeFactory;
+                        childFactory.updateChildren(node, nodeQueryPart, connection, jTree);
+                    } else if(treeNodeFactory != null) {
+                        treeNodeFactory.updateChildren(node, connection, jTree);
+                    }
+                }
+            } else {
+                // New node, add it in the tree
+                treeModel.insertNodeInto(node, parent, parent.getChildCount());
+            }
+        }
+        if(!oldNodes.isEmpty()) {
+            // Removed nodes
+            for(GeoCatalogTreeNode node : oldNodes.values()) {
+                treeModel.removeNodeFromParent(node);
+            }
+        }
+
+    }
+
+    /**
+     * @param meta JOOQ meta
+     * @param catalogName Catalog name
+     * @return Catalog or null
+     */
+    public Catalog getCatalog(Meta meta, String catalogName) {
+        for(Catalog catalog : meta.getCatalogs()) {
+            if(catalogName.equals(catalog.getName())) {
+                return catalog;
+            }
+        }
+        return null;
     }
 
     /**
@@ -111,58 +171,38 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
      */
     public void loadDatabase(Meta meta, DefaultTreeModel treeModel) {
         List<Catalog> catalogs = meta.getCatalogs();
-        if(catalogs.size() > 1) {
-            treeModel.setRoot(new GeoCatalogTreeNodeImpl(this, NODE_DATABASE, "root"));
+        if(catalogs.size() == 1) {
+            loadCatalog(null, meta, treeModel, new ArrayList<GeoCatalogTreeNodeImpl>(), new ArrayList<QueryPart>());
         } else {
-            loadCatalog(null, meta, treeModel);
+            treeModel.setRoot(new GeoCatalogTreeNodeImpl(this, NODE_DATABASE, "root"));
         }
     }
 
-    private void loadCatalog(GeoCatalogTreeNode parent, Meta meta, DefaultTreeModel treeModel) {
-        Set<String> oldNodes = new HashSet<>();
-        if(parent != null) {
-            oldNodes = parent.getChildrenIdentifier();
-        }
-        for(Catalog catalog : meta.getCatalogs()) {
-            if(!oldNodes.contains(catalog.getName())) {
-                GeoCatalogTreeNodeImpl catalogNode = new GeoCatalogTreeNodeImpl(this, NODE_CATALOG, catalog.getName());
-                if (parent == null) {
-                    treeModel.setRoot(catalogNode);
-                    return;
-                } else {
-                    treeModel.insertNodeInto(catalogNode, parent, parent.getChildCount());
-                }
-            } else {
-                oldNodes.remove(catalog.getName());
-            }
-        }
-        if(!oldNodes.isEmpty()) {
-            // Some catalog is not there anymore
-            for(String catalogName : oldNodes) {
-                treeModel.removeNodeFromParent(new GeoCatalogTreeNodeImpl(this, NODE_CATALOG, catalogName));
+    private void loadCatalog(GeoCatalogTreeNode parent, Meta meta, DefaultTreeModel treeModel, List<GeoCatalogTreeNodeImpl> nodes, List<QueryPart> nodesQueryPart) {
+        if(parent == null) {
+            treeModel.setRoot(new GeoCatalogTreeNodeImpl(this, NODE_CATALOG, meta.getCatalogs().get(0).getName()));
+        } else {
+            for(Catalog catalog : meta.getCatalogs()) {
+                nodes.add(new GeoCatalogTreeNodeImpl(this, NODE_CATALOG, catalog.getName()));
+                nodesQueryPart.add(catalog);
             }
         }
     }
 
-    private void loadSchema(GeoCatalogTreeNode parent, Catalog catalog, DefaultTreeModel treeModel) {
-        Set<String> oldNodes = parent.getChildrenIdentifier();
+    private void loadSchema(Catalog catalog, List<GeoCatalogTreeNodeImpl> nodes, List<QueryPart> nodesQueryPart) {
         if(catalog != null) {
             for (Schema schema : catalog.getSchemas()) {
-                if(!oldNodes.contains(schema.getName())) {
-                    treeModel.insertNodeInto(new GeoCatalogTreeNodeImpl(this, NODE_SCHEMA, schema.getName()), parent, parent.getChildCount());
-
-                } else {
-                    oldNodes.remove(schema.getName());
-                }
+                nodes.add(new GeoCatalogTreeNodeImpl(this, NODE_SCHEMA, schema.getName()));
+                nodesQueryPart.add(schema);
             }
         }
     }
 
-    private void loadTable(GeoCatalogTreeNode parent, Schema schema, DefaultTreeModel treeModel) {
+    private void loadTable(Schema schema, List<GeoCatalogTreeNodeImpl> nodes, List<QueryPart> nodesQueryPart) {
         if(schema != null) {
             for (Table table : schema.getTables()) {
-                treeModel.insertNodeInto(new GeoCatalogTreeNodeImpl(this, NODE_TABLE, table.getName()),
-                        parent, parent.getChildCount());
+                nodes.add(new GeoCatalogTreeNodeImpl(this, NODE_TABLE, table.getName()));
+                nodesQueryPart.add(table);
             }
         }
     }

@@ -31,6 +31,7 @@ package org.orbisgis.geocatalogtree.api;
 import javax.swing.Icon;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -80,5 +81,5 @@ public interface GeoCatalogTreeNode extends MutableTreeNode {
     /**
      * @return Identifier set of all child
      */
-    Set<String> getChildrenIdentifier();
+    Map<String, GeoCatalogTreeNode> getChildrenIdentifier();
 }

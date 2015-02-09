@@ -28,7 +28,7 @@
  */
 package org.orbisgis.geocatalogtree.api;
 
-import javax.swing.tree.DefaultTreeModel;
+import javax.swing.JTree;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -43,10 +43,10 @@ public interface TreeNodeFactory {
     String[] getParentNodeType();
 
     /**
-     * Load
-     * @param parent
-     * @param connection
-     * @param treeModel
+     * Add/Remove children of parent.
+     * @param parent Parent node.
+     * @param connection Active connection, do not close it.
+     * @param tree JTree instance
      */
-    void updateChildren(GeoCatalogTreeNode parent, Connection connection, DefaultTreeModel treeModel) throws SQLException;
+    void updateChildren(GeoCatalogTreeNode parent, Connection connection, JTree tree) throws SQLException;
 }

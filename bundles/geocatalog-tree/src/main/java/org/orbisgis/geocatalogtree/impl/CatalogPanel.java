@@ -186,7 +186,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         if(factorySet != null) {
             try(Connection connection = dataManager.getDataSource().getConnection()) {
                 for (TreeNodeFactory factory : factorySet) {
-                    factory.updateChildren(node, connection, defaultTreeModel);
+                    factory.updateChildren(node, connection, dbTree);
                 }
             } catch (SQLException ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
