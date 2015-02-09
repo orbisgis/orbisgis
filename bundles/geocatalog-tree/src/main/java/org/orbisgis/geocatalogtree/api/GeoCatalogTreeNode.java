@@ -31,6 +31,7 @@ package org.orbisgis.geocatalogtree.api;
 import javax.swing.Icon;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
+import java.util.Set;
 
 /**
  * @author Nicolas Fortin
@@ -51,28 +52,33 @@ public interface GeoCatalogTreeNode extends MutableTreeNode {
     /**
      * @return Expanded icon if it accept children
      */
-    public Icon getExpandedIcon();
+    Icon getExpandedIcon();
 
     /**
      * @return Collapsed icon if it accept children
      */
-    public Icon getCollapsedIcon();
+    Icon getCollapsedIcon();
 
     /**
      * @return Leaf icon if it accept children
      */
-    public Icon getLeafIcon();
+    Icon getLeafIcon();
 
     /**
      * @return The factory that create this node
      */
-    public TreeNodeFactory getFactory();
+    TreeNodeFactory getFactory();
 
     /**
      * @return Node identifier
      */
-    public String getNodeIdentifier();
+    String getNodeIdentifier();
 
     @Override
     GeoCatalogTreeNode getParent();
+
+    /**
+     * @return Identifier set of all child
+     */
+    Set<String> getChildrenIdentifier();
 }

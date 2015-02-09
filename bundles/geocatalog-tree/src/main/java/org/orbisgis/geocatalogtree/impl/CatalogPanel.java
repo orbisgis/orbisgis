@@ -28,7 +28,6 @@
  */
 package org.orbisgis.geocatalogtree.impl;
 
-import org.jooq.Catalog;
 import org.jooq.Meta;
 import org.jooq.impl.DSL;
 import org.orbisgis.corejdbc.DataManager;
@@ -36,12 +35,9 @@ import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNodeImpl;
 import org.orbisgis.geocatalogtree.api.TreeNodeFactory;
 import org.orbisgis.geocatalogtree.icons.GeocatalogIcon;
-import org.orbisgis.geocatalogtree.impl.nodes.TreeNodeCatalog;
-import org.orbisgis.geocatalogtree.impl.nodes.TreeNodeDataBase;
 import org.orbisgis.geocatalogtree.impl.nodes.TreeNodeFactoryImpl;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
-import org.orbisgis.sif.components.resourceTree.TreeSelectionIterable;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.osgi.service.component.annotations.Activate;
@@ -64,17 +60,13 @@ import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.BorderLayout;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -91,10 +83,12 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
     private ActionCommands dockingActions = new ActionCommands();
     private DataManager dataManager;
     private Map<String, Set<TreeNodeFactory>> treeNodeFactories = new HashMap<>();
+    private TreeNodeFactoryImpl defaultTreeNodeFactory;
 
     public CatalogPanel() {
         super(new BorderLayout());
-        addTreeNodeFactory(new TreeNodeFactoryImpl());
+        defaultTreeNodeFactory = new TreeNodeFactoryImpl();
+        addTreeNodeFactory(defaultTreeNodeFactory);
         dbTree = new JTree(new String[0]);
         //Items can be selected freely
         dbTree.getSelectionModel().setSelectionMode(
@@ -133,7 +127,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         while(current != null) {
             if(treeNodeFactory.equals(current.getFactory())) {
                 GeoCatalogTreeNode removed = current;
-                current = (GeoCatalogTreeNode)current.getParent();
+                current = current.getParent();
                 defaultTreeModel.removeNodeFromParent(removed);
             }
         }
@@ -162,21 +156,11 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
     private void initTree() {
         // Load catalogs
         try(Connection connection = dataManager.getDataSource().getConnection()) {
-            Meta meta = DSL.using(connection).meta();
-            updateNode(new GeoCatalogTreeNodeImpl(null, GeoCatalogTreeNode.NODE_DATABASE, "root"));
-            List<Catalog> catalogs = meta.getCatalogs();
-            if(catalogs.size() > 1) {
-                defaultTreeModel = new DefaultTreeModel(new TreeNodeDataBase(), true);
-                for (Catalog catalog : catalogs) {
-                    defaultTreeModel.insertNodeInto(new TreeNodeCatalog(catalog.getName()), (MutableTreeNode) defaultTreeModel.getRoot(), 0);
-                }
-            } else {
-                TreeNodeCatalog catalog = new TreeNodeCatalog(catalogs.get(0).getName());
-                defaultTreeModel = new DefaultTreeModel(catalog, true);
-                catalog.loadChildren(connection, defaultTreeModel);
-            }
+            defaultTreeModel = new DefaultTreeModel(new GeoCatalogTreeNodeImpl(null, "", ""), true);
+            defaultTreeNodeFactory.loadDatabase(DSL.using(connection).meta(), defaultTreeModel);
             dbTree.setModel(defaultTreeModel);
             dbTree.expandPath(new TreePath(defaultTreeModel.getRoot()));
+            updateNode((GeoCatalogTreeNode)defaultTreeModel.getRoot());
             dbTree.addTreeWillExpandListener(this);
         } catch (SQLException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);

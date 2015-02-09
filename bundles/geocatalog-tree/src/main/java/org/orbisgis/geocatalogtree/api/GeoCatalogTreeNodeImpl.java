@@ -31,6 +31,8 @@ package org.orbisgis.geocatalogtree.api;
 import javax.swing.Icon;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Default implementation for tree node
@@ -98,5 +100,31 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
     @Override
     public GeoCatalogTreeNode getParent() {
         return (GeoCatalogTreeNode)super.getParent();
+    }
+
+    @Override
+    public Set<String> getChildrenIdentifier() {
+        Set<String> childrenIdent = new HashSet<>();
+        for(Object child : children) {
+            if(child instanceof GeoCatalogTreeNode) {
+                childrenIdent.add(((GeoCatalogTreeNode) child).getNodeIdentifier());
+            }
+        }
+        return childrenIdent;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GeoCatalogTreeNodeImpl)) return false;
+
+        GeoCatalogTreeNodeImpl that = (GeoCatalogTreeNodeImpl) o;
+
+        return nodeType.equals(that.nodeType) && getNodeIdentifier().equals(that.getNodeIdentifier());
+    }
+
+    @Override
+    public int hashCode() {
+        return nodeType.hashCode();
     }
 }

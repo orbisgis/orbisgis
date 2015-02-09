@@ -39,7 +39,9 @@ import org.orbisgis.geocatalogtree.api.TreeNodeFactory;
 
 import javax.swing.tree.DefaultTreeModel;
 import java.sql.Connection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode.*;
 
@@ -51,7 +53,7 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
 
     @Override
     public String[] getParentNodeType() {
-        return new String[]{NODE_DATABASE, GeoCatalogTreeNode.NODE_CATALOG, GeoCatalogTreeNode.NODE_TABLE};
+        return new String[]{NODE_DATABASE, NODE_CATALOG, NODE_SCHEMA, NODE_TABLE};
     }
 
     @Override
@@ -60,7 +62,7 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
     }
 
     public void updateChildren(GeoCatalogTreeNode parent, Meta meta, DefaultTreeModel treeModel) {
-        if(parent == null) {
+        if(parent.getNodeType().isEmpty()) {
             loadDatabase(meta, treeModel);
             return;
         }
@@ -102,7 +104,12 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
         return schema != null ? schema : null;
     }
 
-    private void loadDatabase(Meta meta, DefaultTreeModel treeModel) {
+    /**
+     * Load root node or catalog as root if only one catalog in db
+     * @param meta JOOQ meta
+     * @param treeModel JTree model
+     */
+    public void loadDatabase(Meta meta, DefaultTreeModel treeModel) {
         List<Catalog> catalogs = meta.getCatalogs();
         if(catalogs.size() > 1) {
             treeModel.setRoot(new GeoCatalogTreeNodeImpl(this, NODE_DATABASE, "root"));
@@ -112,22 +119,41 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
     }
 
     private void loadCatalog(GeoCatalogTreeNode parent, Meta meta, DefaultTreeModel treeModel) {
+        Set<String> oldNodes = new HashSet<>();
+        if(parent != null) {
+            oldNodes = parent.getChildrenIdentifier();
+        }
         for(Catalog catalog : meta.getCatalogs()) {
-            GeoCatalogTreeNodeImpl catalogNode = new GeoCatalogTreeNodeImpl(this, NODE_CATALOG, catalog.getName());
-            if(parent == null) {
-                treeModel.setRoot(catalogNode);
-                break;
+            if(!oldNodes.contains(catalog.getName())) {
+                GeoCatalogTreeNodeImpl catalogNode = new GeoCatalogTreeNodeImpl(this, NODE_CATALOG, catalog.getName());
+                if (parent == null) {
+                    treeModel.setRoot(catalogNode);
+                    return;
+                } else {
+                    treeModel.insertNodeInto(catalogNode, parent, parent.getChildCount());
+                }
             } else {
-                treeModel.insertNodeInto(catalogNode, parent, parent.getChildCount());
+                oldNodes.remove(catalog.getName());
+            }
+        }
+        if(!oldNodes.isEmpty()) {
+            // Some catalog is not there anymore
+            for(String catalogName : oldNodes) {
+                treeModel.removeNodeFromParent(new GeoCatalogTreeNodeImpl(this, NODE_CATALOG, catalogName));
             }
         }
     }
 
     private void loadSchema(GeoCatalogTreeNode parent, Catalog catalog, DefaultTreeModel treeModel) {
+        Set<String> oldNodes = parent.getChildrenIdentifier();
         if(catalog != null) {
             for (Schema schema : catalog.getSchemas()) {
-                treeModel.insertNodeInto(new GeoCatalogTreeNodeImpl(this, NODE_SCHEMA, schema.getName()),
-                        parent, parent.getChildCount());
+                if(!oldNodes.contains(schema.getName())) {
+                    treeModel.insertNodeInto(new GeoCatalogTreeNodeImpl(this, NODE_SCHEMA, schema.getName()), parent, parent.getChildCount());
+
+                } else {
+                    oldNodes.remove(schema.getName());
+                }
             }
         }
     }
