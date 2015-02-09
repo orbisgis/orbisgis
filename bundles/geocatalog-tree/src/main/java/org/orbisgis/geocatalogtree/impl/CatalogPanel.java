@@ -38,6 +38,8 @@ import org.orbisgis.geocatalogtree.icons.GeocatalogIcon;
 import org.orbisgis.geocatalogtree.impl.nodes.TreeNodeFactoryImpl;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
+import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
+import org.orbisgis.sif.components.fstree.TreeNodeBusy;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.osgi.service.component.annotations.Activate;
@@ -159,6 +161,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
             defaultTreeModel = new DefaultTreeModel(new GeoCatalogTreeNodeImpl(null, "", ""), true);
             defaultTreeNodeFactory.loadDatabase(DSL.using(connection).meta(), defaultTreeModel);
             dbTree.setModel(defaultTreeModel);
+            dbTree.setCellRenderer(new CustomTreeCellRenderer(dbTree));
             dbTree.expandPath(new TreePath(defaultTreeModel.getRoot()));
             updateNode((GeoCatalogTreeNode)defaultTreeModel.getRoot());
             dbTree.addTreeWillExpandListener(this);
@@ -173,7 +176,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         Object lastPathComp = event.getPath().getLastPathComponent();
         if(lastPathComp instanceof GeoCatalogTreeNode) {
             GeoCatalogTreeNode node = (GeoCatalogTreeNode)lastPathComp;
-            updateNode(node);
+            new ReadDB(this, node).execute();
         }
     }
 
@@ -224,6 +227,41 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         @Override
         protected Object doInBackground() throws Exception {
             catalogPanel.initTree();
+            return null;
+        }
+    }
+
+    public JTree getDbTree() {
+        return dbTree;
+    }
+
+    private static class ReadDB extends  SwingWorker {
+        private CatalogPanel catalogPanel;
+        private GeoCatalogTreeNode node;
+
+        public ReadDB(CatalogPanel catalogPanel, GeoCatalogTreeNode node) {
+            this.catalogPanel = catalogPanel;
+            this.node = node;
+        }
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            TreeNodeBusy nodeBusy = null;
+            try {
+                if(node.getAllowsChildren() && node.getChildCount()==0) {
+                    nodeBusy = new TreeNodeBusy();
+                    DefaultTreeModel treeModel = (DefaultTreeModel)catalogPanel.getDbTree().getModel();
+                    nodeBusy.setModel(treeModel);
+                    treeModel.insertNodeInto(nodeBusy, node, 0);
+                    nodeBusy.setDoAnimation(true);
+                }
+                Thread.sleep(2000);
+                catalogPanel.updateNode(node);
+            } finally {
+                if(nodeBusy != null) {
+                    nodeBusy.setDoAnimation(false);
+                }
+            }
             return null;
         }
     }

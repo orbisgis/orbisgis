@@ -28,24 +28,24 @@
  */
 package org.orbisgis.geocatalogtree.api;
 
+import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
+
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Default implementation for tree node
  * @author Nicolas Fortin
  */
-public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements GeoCatalogTreeNode {
+public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements GeoCatalogTreeNode, TreeNodeCustomIcon {
     private TreeNodeFactory treeNodeFactory;
     private String nodeType;
-    private Icon expandedIcon;
-    private Icon collapsedIcon;
-    private Icon leafIcon;
+    private ImageIcon expandedIcon;
+    private ImageIcon collapsedIcon;
+    private ImageIcon leafIcon;
 
     public GeoCatalogTreeNodeImpl(TreeNodeFactory treeNodeFactory, String nodeType,String name) {
         super(name);
@@ -53,7 +53,7 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
         this.nodeType = nodeType;
     }
 
-    public GeoCatalogTreeNodeImpl(TreeNodeFactory treeNodeFactory, String nodeType,String name, Icon expandedIcon, Icon
+    public GeoCatalogTreeNodeImpl(TreeNodeFactory treeNodeFactory, String nodeType,String name, ImageIcon expandedIcon, ImageIcon
             collapsedIcon) {
         super(name);
         this.treeNodeFactory = treeNodeFactory;
@@ -62,7 +62,7 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
         this.collapsedIcon = collapsedIcon;
     }
 
-    public GeoCatalogTreeNodeImpl(TreeNodeFactory treeNodeFactory, String nodeType,String name, Icon leafIcon) {
+    public GeoCatalogTreeNodeImpl(TreeNodeFactory treeNodeFactory, String nodeType,String name, ImageIcon leafIcon) {
         super(name);
         this.treeNodeFactory = treeNodeFactory;
         this.nodeType = nodeType;
@@ -75,18 +75,18 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
     }
 
     @Override
-    public Icon getExpandedIcon() {
-        return expandedIcon;
+    public ImageIcon getLeafIcon() {
+        return leafIcon;
     }
 
     @Override
-    public Icon getCollapsedIcon() {
+    public ImageIcon getClosedIcon() {
         return collapsedIcon;
     }
 
     @Override
-    public Icon getLeafIcon() {
-        return leafIcon;
+    public ImageIcon getOpenIcon() {
+        return expandedIcon;
     }
 
     @Override

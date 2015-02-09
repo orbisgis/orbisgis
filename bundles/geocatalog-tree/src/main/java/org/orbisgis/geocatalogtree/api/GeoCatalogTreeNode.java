@@ -28,6 +28,8 @@
  */
 package org.orbisgis.geocatalogtree.api;
 
+import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
+
 import javax.swing.Icon;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
@@ -49,21 +51,6 @@ public interface GeoCatalogTreeNode extends MutableTreeNode {
      * @return Node type
      */
     String getNodeType();
-
-    /**
-     * @return Expanded icon if it accept children
-     */
-    Icon getExpandedIcon();
-
-    /**
-     * @return Collapsed icon if it accept children
-     */
-    Icon getCollapsedIcon();
-
-    /**
-     * @return Leaf icon if it accept children
-     */
-    Icon getLeafIcon();
 
     /**
      * @return The factory that create this node
