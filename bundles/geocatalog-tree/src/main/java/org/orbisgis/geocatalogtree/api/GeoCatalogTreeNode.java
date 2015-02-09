@@ -28,17 +28,15 @@
  */
 package org.orbisgis.geocatalogtree.api;
 
-import org.jooq.QueryPart;
-
-import javax.swing.tree.DefaultTreeModel;
+import javax.swing.Icon;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * @author Nicolas Fortin
  */
-public interface GeoCatalogTreeNode extends TreeNode {
+public interface GeoCatalogTreeNode extends MutableTreeNode {
+    String NODE_DATABASE = "DATABASE";
     String NODE_CATALOG = "CATALOG";
     String NODE_SCHEMA = "SCHEMA";
     String NODE_TABLE = "TABLE";
@@ -51,23 +49,30 @@ public interface GeoCatalogTreeNode extends TreeNode {
     String getNodeType();
 
     /**
-     * @return The Jooq component
+     * @return Expanded icon if it accept children
      */
-    QueryPart getValue(Connection connection) throws SQLException;
+    public Icon getExpandedIcon();
 
     /**
-     * Load synchronously the children of this node using the provided model.
-     * @param connection Active connection, do not close it
-     * @param model Model to insert new nodes
-     * @throws SQLException
+     * @return Collapsed icon if it accept children
      */
-    void loadChildren(Connection connection, DefaultTreeModel model) throws SQLException;
+    public Icon getCollapsedIcon();
 
     /**
-     * Check if the current node has been updated/deleted
-     * @param parentValue Parent JOOQ Meta
-     * @param defaultTreeModel Model to trigger update/delete event and children insert
-     * @throws SQLException
+     * @return Leaf icon if it accept children
      */
-    void check(QueryPart parentValue, DefaultTreeModel defaultTreeModel) throws SQLException;
+    public Icon getLeafIcon();
+
+    /**
+     * @return The factory that create this node
+     */
+    public TreeNodeFactory getFactory();
+
+    /**
+     * @return Node identifier
+     */
+    public String getNodeIdentifier();
+
+    @Override
+    GeoCatalogTreeNode getParent();
 }

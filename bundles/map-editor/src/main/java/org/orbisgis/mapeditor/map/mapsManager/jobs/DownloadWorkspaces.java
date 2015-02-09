@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 
-import org.orbisgis.sif.components.resourceTree.TreeNodeBusy;
+import org.orbisgis.sif.components.fstree.TreeNodeBusy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.orbisgis.corejdbc.DataManager;

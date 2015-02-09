@@ -42,7 +42,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 
-import org.orbisgis.sif.components.resourceTree.TreeNodeBusy;
+import org.orbisgis.sif.components.fstree.TreeNodeBusy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.orbisgis.corejdbc.DataManager;

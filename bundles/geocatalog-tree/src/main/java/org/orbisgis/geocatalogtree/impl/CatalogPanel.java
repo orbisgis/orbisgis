@@ -32,16 +32,24 @@ import org.jooq.Catalog;
 import org.jooq.Meta;
 import org.jooq.impl.DSL;
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode;
+import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNodeImpl;
+import org.orbisgis.geocatalogtree.api.TreeNodeFactory;
 import org.orbisgis.geocatalogtree.icons.GeocatalogIcon;
 import org.orbisgis.geocatalogtree.impl.nodes.TreeNodeCatalog;
 import org.orbisgis.geocatalogtree.impl.nodes.TreeNodeDataBase;
+import org.orbisgis.geocatalogtree.impl.nodes.TreeNodeFactoryImpl;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
+import org.orbisgis.sif.components.resourceTree.TreeSelectionIterable;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -52,20 +60,29 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingWorker;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.BorderLayout;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Nicolas Fortin
  */
 @Component(service = DockingPanel.class)
-public class CatalogPanel extends JPanel implements DockingPanel {
+public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpandListener {
     private JTree dbTree;
     private DefaultTreeModel defaultTreeModel;
     private DockingPanelParameters dockingParameters = new DockingPanelParameters();
@@ -73,9 +90,11 @@ public class CatalogPanel extends JPanel implements DockingPanel {
     private static final Logger LOGGER = LoggerFactory.getLogger(CatalogPanel.class);
     private ActionCommands dockingActions = new ActionCommands();
     private DataManager dataManager;
+    private Map<String, Set<TreeNodeFactory>> treeNodeFactories = new HashMap<>();
 
     public CatalogPanel() {
         super(new BorderLayout());
+        addTreeNodeFactory(new TreeNodeFactoryImpl());
         dbTree = new JTree(new String[0]);
         //Items can be selected freely
         dbTree.getSelectionModel().setSelectionMode(
@@ -96,6 +115,36 @@ public class CatalogPanel extends JPanel implements DockingPanel {
         dockingActions.addPropertyChangeListener(new ActionDockingListener(dockingParameters));
     }
 
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
+            ReferencePolicyOption.GREEDY)
+    public void addTreeNodeFactory(TreeNodeFactory treeNodeFactory) {
+        for(String nodeType : treeNodeFactory.getParentNodeType()) {
+            Set<TreeNodeFactory> factorySet = treeNodeFactories.get(nodeType);
+            if(factorySet == null) {
+                factorySet = new HashSet<>();
+                treeNodeFactories.put(nodeType, factorySet);
+            }
+            factorySet.add(treeNodeFactory);
+        }
+    }
+
+    public void removeTreeNodeFactory(TreeNodeFactory treeNodeFactory) {
+        GeoCatalogTreeNode current = (GeoCatalogTreeNode)defaultTreeModel.getRoot();
+        while(current != null) {
+            if(treeNodeFactory.equals(current.getFactory())) {
+                GeoCatalogTreeNode removed = current;
+                current = (GeoCatalogTreeNode)current.getParent();
+                defaultTreeModel.removeNodeFromParent(removed);
+            }
+        }
+        Set<Map.Entry<String, Set<TreeNodeFactory>>> factorySet = treeNodeFactories.entrySet();
+        for(Map.Entry<String, Set<TreeNodeFactory>> entry : factorySet) {
+            if(treeNodeFactory.equals(entry.getValue())) {
+                factorySet.remove(entry);
+            }
+        }
+    }
+
     @Reference
     public void setDataManager(DataManager dataManager) {
         this.dataManager = dataManager;
@@ -114,6 +163,7 @@ public class CatalogPanel extends JPanel implements DockingPanel {
         // Load catalogs
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             Meta meta = DSL.using(connection).meta();
+            updateNode(new GeoCatalogTreeNodeImpl(null, GeoCatalogTreeNode.NODE_DATABASE, "root"));
             List<Catalog> catalogs = meta.getCatalogs();
             if(catalogs.size() > 1) {
                 defaultTreeModel = new DefaultTreeModel(new TreeNodeDataBase(), true);
@@ -127,9 +177,42 @@ public class CatalogPanel extends JPanel implements DockingPanel {
             }
             dbTree.setModel(defaultTreeModel);
             dbTree.expandPath(new TreePath(defaultTreeModel.getRoot()));
+            dbTree.addTreeWillExpandListener(this);
         } catch (SQLException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }
+    }
+
+    @Override
+    public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
+        // Update expanding node
+        Object lastPathComp = event.getPath().getLastPathComponent();
+        if(lastPathComp instanceof GeoCatalogTreeNode) {
+            GeoCatalogTreeNode node = (GeoCatalogTreeNode)lastPathComp;
+            updateNode(node);
+        }
+    }
+
+    /**
+     * Load children of this node
+     * @param node Parent node
+     */
+    public void updateNode(GeoCatalogTreeNode node) {
+        Set<TreeNodeFactory> factorySet = treeNodeFactories.get(node.getNodeType());
+        if(factorySet != null) {
+            try(Connection connection = dataManager.getDataSource().getConnection()) {
+                for (TreeNodeFactory factory : factorySet) {
+                    factory.updateChildren(node, connection, defaultTreeModel);
+                }
+            } catch (SQLException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+            }
+        }
+    }
+
+    @Override
+    public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
+        // Nothing to do
     }
 
     @Override

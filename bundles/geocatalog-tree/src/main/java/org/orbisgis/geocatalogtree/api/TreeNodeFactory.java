@@ -26,16 +26,27 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.geocatalogtree.impl.nodes;
-import javax.swing.tree.DefaultMutableTreeNode;
+package org.orbisgis.geocatalogtree.api;
+
+import javax.swing.tree.DefaultTreeModel;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * @author Nicolas Fortin
  */
-public class TreeNodeDataBase extends DefaultMutableTreeNode {
+public interface TreeNodeFactory {
+    /**
+     * {@link GeoCatalogTreeNode#getNodeType()}
+     * @return Parent node type of generated nodes
+     */
+    String[] getParentNodeType();
 
-    @Override
-    public void setUserObject(Object object) {
-        throw new UnsupportedOperationException("Database node is not visible then should not be edited by user");
-    }
+    /**
+     * Load
+     * @param parent
+     * @param connection
+     * @param treeModel
+     */
+    void updateChildren(GeoCatalogTreeNode parent, Connection connection, DefaultTreeModel treeModel) throws SQLException;
 }
