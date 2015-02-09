@@ -107,6 +107,9 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
     @Override
     public Map<String, GeoCatalogTreeNode> getChildrenIdentifier() {
         Map<String, GeoCatalogTreeNode> childrenIdent = new HashMap<>();
+        if(children == null) {
+            return childrenIdent;
+        }
         for(Object child : children) {
             if(child instanceof GeoCatalogTreeNode) {
                 GeoCatalogTreeNode geoCatalogTreeNode = ((GeoCatalogTreeNode) child);

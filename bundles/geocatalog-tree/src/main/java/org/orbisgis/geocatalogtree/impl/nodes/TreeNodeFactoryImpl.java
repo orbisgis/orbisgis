@@ -73,13 +73,15 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
             LOGGER.error("Cant find root catalog");
             return null;
         }
-        if(parentQueryPart == null && !treeNode.getNodeType().equals(NODE_CATALOG)) {
-            parentQueryPart = getJooqQueryPart(connection, null, treeNode.getParent());
+        if(parentQueryPart == null) {
+            if(!treeNode.getNodeType().equals(NODE_CATALOG)) {
+                parentQueryPart = getJooqQueryPart(connection, null, treeNode.getParent());
+            } else {
+                return getCatalog(DSL.using(connection).meta(), treeNode.getNodeIdentifier());
+            }
         }
         if(parentQueryPart != null) {
             switch (treeNode.getNodeType()) {
-                case NODE_CATALOG:
-                    return getCatalog(DSL.using(connection).meta(), treeNode.getNodeIdentifier());
                 case NODE_SCHEMA:
                     return ((Catalog) parentQueryPart).getSchema(treeNode.getNodeIdentifier());
                 case NODE_TABLE:
