@@ -385,6 +385,8 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
             } catch (IOException e) {
                 LOGGER.error(
                         I18N.tr("Cannot get capabilities of {0}", wmsURL), e);
+            } catch (Throwable ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
             }
             return null;
         }
