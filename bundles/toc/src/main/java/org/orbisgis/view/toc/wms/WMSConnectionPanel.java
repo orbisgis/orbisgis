@@ -69,7 +69,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Erwan Bocher
  */
 public class WMSConnectionPanel extends JPanel implements UIPanel {
-
+    public static final int timeout = 5000;
     private static final I18n I18N = I18nFactory.getI18n(LayerConfigurationPanel.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(WMSConnectionPanel.class);
     private static final String WMS_SERVER_FILE = "wmsServerList.txt";
@@ -345,6 +345,11 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
      */
     private class WmsConnectionJob extends SwingWorker {
         @Override
+        public String toString() {
+            return I18N.tr("Download information about the Wms service");
+        }
+
+        @Override
         protected Object doInBackground() throws Exception {
             String originalWmsURL = cmbURLServer.getSelectedItem();
             String wmsURL = originalWmsURL.trim();
@@ -356,7 +361,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
                         service = new WMService(wmsURL, WMService.WMS_1_1_1);
                     }
                 }
-                service.initialize();
+                service.initialize(false, timeout);
                 client = service.getCapabilities().getTopLayer();
                 configPanel.setClient(client);
                 // client.getCapabilities(null, false, null);
