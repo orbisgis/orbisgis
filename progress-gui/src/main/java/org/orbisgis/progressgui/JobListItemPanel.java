@@ -94,7 +94,7 @@ public class JobListItemPanel extends JPanel {
         }
 
         public void cancel() {
-                if(tryCleanCancel.getAndSet(System.currentTimeMillis()) == 0) {
+                if(tryCleanCancel.compareAndSet(0, System.currentTimeMillis())) {
                         if(job instanceof SwingWorkerPM) {
                                 ((SwingWorkerPM) job).cancel();
                         } else {
