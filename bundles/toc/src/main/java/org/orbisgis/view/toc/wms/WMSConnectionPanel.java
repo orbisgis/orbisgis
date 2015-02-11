@@ -349,6 +349,10 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
             return I18N.tr("Download information about the Wms service");
         }
 
+        public void cancel() {
+            cancel(true);
+        }
+
         @Override
         protected Object doInBackground() throws Exception {
             String originalWmsURL = cmbURLServer.getSelectedItem();
