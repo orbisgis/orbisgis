@@ -217,6 +217,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.servicemix.specs</groupId>
+            <artifactId>org.apache.servicemix.specs.jaxp-api-1.4</artifactId>
+            <version>2.4.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>log-file-writer</artifactId>
             <version>${project.version}</version>
