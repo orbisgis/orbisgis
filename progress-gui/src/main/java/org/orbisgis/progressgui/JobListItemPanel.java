@@ -31,6 +31,7 @@ package org.orbisgis.progressgui;
 import java.awt.FlowLayout;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -51,6 +52,9 @@ public class JobListItemPanel extends JPanel {
         private JLabel jobLabel;
         private JProgressBar jobProgressBar;
         private boolean statusBarJob;
+        private AtomicLong tryCleanCancel = new AtomicLong(0);
+        // minimum Time in ms after using clean thread cancel before using thread killing
+        private static final long MULTIPLE_CANCEL_KILL_THREAD = 1000;
         
         public JobListItemPanel(SwingWorker job,boolean statusBarJob) {
                 this.job = job;
@@ -68,7 +72,7 @@ public class JobListItemPanel extends JPanel {
                 jobCancelLabel = new JLabel(JobsIcon.getIcon("cancel"));
                 //When the user click on the label, the job is canceled
                 jobCancelLabel.addMouseListener(
-                        EventHandler.create(MouseListener.class,job,
+                        EventHandler.create(MouseListener.class,this,
                                       "cancel",null,"mouseClicked"));
                 //The label show the text of the DataSource Item
                 jobLabel = new JLabel();
@@ -89,6 +93,18 @@ public class JobListItemPanel extends JPanel {
                 return jobCancelLabel;
         }
 
+        public void cancel() {
+                if(tryCleanCancel.compareAndSet(0, System.currentTimeMillis())) {
+                        if(job instanceof SwingWorkerPM) {
+                                ((SwingWorkerPM) job).cancel();
+                        } else {
+                                job.cancel(false);
+                        }
+                } else if(System.currentTimeMillis() -
+                        tryCleanCancel.get() > MULTIPLE_CANCEL_KILL_THREAD) {
+                        job.cancel(true);
+                }
+        }
         /***
          * Update the Panel content
          */
@@ -123,5 +139,5 @@ public class JobListItemPanel extends JPanel {
                         sb.append("</html>");
                 }
                 return sb.toString();
-        }        
+        }
 }
