@@ -39,6 +39,7 @@ import static javax.swing.JOptionPane.showConfirmDialog;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
@@ -122,12 +123,15 @@ public class WMService {
     /**
      * Gets the DOM Document hidden behind the given URL.
      * @param requestUrlString The URL as a String
+     * @param timeOut an <code>int</code> that specifies the connect
+     *               timeout value in milliseconds. 0 for unlimited
      * @return The DOM Document containing the parsed GetCapabilities answer.
      * @throws IOException
      */
-    private Document getDOMDocument(String requestUrlString) throws IOException{
+    private Document getDOMDocument(String requestUrlString, int timeOut) throws IOException{
             URL requestUrl = new URL( requestUrlString );
             URLConnection con = requestUrl.openConnection();
+            con.setConnectTimeout(timeOut);
             if(requestUrl.getUserInfo() != null) {
                 con.setRequestProperty("Authorization", "Basic " + Arrays.toString(Base64Coder.encode(requestUrl
                         .getUserInfo().getBytes())));
@@ -139,19 +143,32 @@ public class WMService {
                 domParser.parse(new InputSource(con.getInputStream()));
             } catch (SAXException ex) {
                 LOGGER.error("Error during sax initialization", ex);
+            } catch (SocketTimeoutException ex) {
+                LOGGER.error("Download timed out, exceed "+timeOut+" ms", ex);
             } catch (IOException ex) {
                 LOGGER.error("Error during while parsing the document", ex);
             }
             return domParser.getDocument();
     }
 
+    /**
+     * Connect to the service and get the capabilities.
+     * This must be called before anything else is done with this service.
+     * @param alertDifferingURL alert the user if a different GetMap URL is available
+     * @throws IOException
+     */
+    public void initialize(boolean alertDifferingURL) throws IOException {
+        initialize(alertDifferingURL, 0);
+    }
   /**
    * Connect to the service and get the capabilities.
    * This must be called before anything else is done with this service.
    * @param alertDifferingURL alert the user if a different GetMap URL is available
-   * @throws IOException 
+   * @param downloadTimeOut an <code>int</code> that specifies the connect
+   *               timeout value in milliseconds. 0 for unlimited
+   * @throws IOException
    */
-	public void initialize(boolean alertDifferingURL) throws IOException {
+	public void initialize(boolean alertDifferingURL, int downloadTimeOut) throws IOException {
 	    // [UT]
 	    String req = "SERVICE=WMS&REQUEST=GetCapabilities";
 	    if( WMS_1_0_0.equals( wmsVersion) ){
@@ -169,7 +186,7 @@ public class WMService {
             serverUrl = serverUrl + "&";
         }
         String requestUrlString = this.serverUrl + req;
-        Document doc = getDOMDocument(requestUrlString);
+        Document doc = getDOMDocument(requestUrlString, downloadTimeOut);
         wmsVersion = VersionFinder.findVersion(doc);
 	    IParser parser = getParser(wmsVersion);
         try {

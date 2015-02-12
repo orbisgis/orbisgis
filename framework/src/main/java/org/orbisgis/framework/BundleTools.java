@@ -33,6 +33,7 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -74,6 +75,8 @@ public class BundleTools {
     private final static String PACKAGE_NAMESPACE = "osgi.wiring.package";
     public final static String BUNDLE_DIRECTORY = "bundle";
     private final Logger LOGGER;
+    private static final int DELETE_TRY_COUNT = 3;
+    private static final long WAIT_RETRY_DELETE = 250;
 
     public BundleTools(Logger LOGGER) {
         this.LOGGER = LOGGER;
@@ -189,8 +192,7 @@ public class BundleTools {
                 for(File file : files) {
                     if(FilenameUtils.isExtension(file.getName(),"jar")) {
                         // Read Manifest
-                        try {
-                            JarFile jar = new JarFile(file);
+                        try(JarFile jar = new JarFile(file)) {
                             Manifest manifest = jar.getManifest();
                             if(manifest!=null && manifest.getMainAttributes()!=null) {
                                 String artifact = manifest.getMainAttributes().getValue(Constants.FRAGMENT_HOST);
@@ -218,7 +220,24 @@ public class BundleTools {
                                     String artifact = parseJarManifest(jarBundle, null).getArtifactId();
                                     if (fragmentBundlesArtifacts.contains(artifact)) {
                                         // Delete the cache folder
-                                        FileUtils.deleteDirectory(folder);
+                                        int tryCount = 0;
+                                        while (tryCount < DELETE_TRY_COUNT) {
+                                            try {
+                                                if(jarBundle.delete()) {
+                                                    FileUtils.deleteDirectory(folder);
+                                                } else {
+                                                    throw new IOException("Could not delete jar file");
+                                                }
+                                                break;
+                                            } catch (IOException ex) {
+                                                tryCount++;
+                                                try {
+                                                    Thread.sleep(WAIT_RETRY_DELETE);
+                                                } catch (InterruptedException iex) {
+                                                    break;
+                                                }
+                                            }
+                                        }
                                         if(folder.exists()) {
                                             LOGGER.log(Logger.LOG_ERROR, "Cannot delete a bundle cache folder, library may not be up to" +
                                                     " date, please delete the following folder and restart OrbisGIS:" +
@@ -231,7 +250,7 @@ public class BundleTools {
                                 }
                             }
                         } catch (IOException ex) {
-                            LOGGER.log(Logger.LOG_ERROR, "Error while reading Jar manifest:\n" + folder.getPath());
+                            LOGGER.log(Logger.LOG_ERROR, "Error while reading Jar manifest:\n" + folder.getPath(), ex);
                         }
                     }
                 }
@@ -298,8 +317,7 @@ public class BundleTools {
 
                 // Read Jar manifest without installing it
                 BundleReference reference = new BundleReference(""); // Default deploy
-                try {
-                    JarFile jar = new JarFile(jarFile);
+                try(JarFile jar = new JarFile(jarFile)) {
                     Manifest manifest = jar.getManifest();
                     if(manifest!=null && manifest.getMainAttributes()!=null) {
                         String artifact = manifest.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME);
@@ -522,8 +540,9 @@ public class BundleTools {
      * @throws IOException
      */
     public static BundleReference parseJarManifest(File jarFilePath, List<PackageDeclaration> packages) throws IOException {
-        JarFile jar = new JarFile(jarFilePath);
-        return parseManifest(jar.getManifest(), packages);
+        try(JarFile jar = new JarFile(jarFilePath)) {
+            return parseManifest(jar.getManifest(), packages);
+        }
     }
 
     private Set<String> getAllPackages() {
@@ -551,9 +570,6 @@ public class BundleTools {
     private static void parseDirectory(File rootPath, File path, Set<String> packages) throws SecurityException {
         File[] files = path.listFiles();
         for (File file : files) {
-            // TODO Java7 check for non-symlink,
-            // without this check it might generate an infinite loop 
-            // @link http://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html#isSymbolicLink(java.nio.file.Path)
             if (!file.isDirectory()) {
                 if (file.getName().endsWith(".class")
                         && file.getParent().length()>rootPath.getAbsolutePath().length()) {
@@ -561,23 +577,26 @@ public class BundleTools {
                     packages.add(parentPath.replace(File.separator, "."));
                 }
             } else {
-                parseDirectory(rootPath,file, packages);
+                if(!Files.isSymbolicLink(file.toPath())) {
+                    parseDirectory(rootPath, file, packages);
+                }
             }
         }
     }
 
     private static void parseJar(File jarFilePath, Set<String> packages) throws IOException {
-        JarFile jar = new JarFile(jarFilePath);
-        Enumeration<? extends JarEntry> entryEnum = jar.entries();
-        while (entryEnum.hasMoreElements()) {
-            JarEntry entry = entryEnum.nextElement();
-            if (!entry.isDirectory()) {
-                final String path = entry.getName();
-                if (path.endsWith(".class")) {
-                    // Extract folder
-                    String parentPath = (new File(path)).getParent();
-                    if(parentPath!=null) {
-                        packages.add(parentPath.replace(File.separator, "."));
+        try(JarFile jar = new JarFile(jarFilePath)) {
+            Enumeration<? extends JarEntry> entryEnum = jar.entries();
+            while (entryEnum.hasMoreElements()) {
+                JarEntry entry = entryEnum.nextElement();
+                if (!entry.isDirectory()) {
+                    final String path = entry.getName();
+                    if (path.endsWith(".class")) {
+                        // Extract folder
+                        String parentPath = (new File(path)).getParent();
+                        if (parentPath != null) {
+                            packages.add(parentPath.replace(File.separator, "."));
+                        }
                     }
                 }
             }

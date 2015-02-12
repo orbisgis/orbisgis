@@ -89,6 +89,7 @@ final class Main {
         // Deactivate JOOQ Ascii Art printing
         Properties properties = System.getProperties();
         properties.setProperty("org.jooq.no-logo","True");
+        // debug try { Thread.sleep(5000); } catch (Exception ex) {}
         long deploymentTime = 0;
         BundleTools bundleTools = new BundleTools(LOGGER);
         parseCommandLine(args);
