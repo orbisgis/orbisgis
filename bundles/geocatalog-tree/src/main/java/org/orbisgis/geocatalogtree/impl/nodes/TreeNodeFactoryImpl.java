@@ -29,6 +29,7 @@
 package org.orbisgis.geocatalogtree.impl.nodes;
 
 import org.jooq.Catalog;
+import org.jooq.Field;
 import org.jooq.Meta;
 import org.jooq.QueryPart;
 import org.jooq.Schema;
@@ -39,6 +40,8 @@ import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNodeImpl;
 import org.orbisgis.geocatalogtree.api.TreeNodeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
@@ -56,10 +59,11 @@ import static org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode.*;
  */
 public class TreeNodeFactoryImpl implements TreeNodeFactory {
     private static Logger LOGGER = LoggerFactory.getLogger(TreeNodeFactoryImpl.class);
+    private static I18n I18N = I18nFactory.getI18n(TreeNodeFactoryImpl.class);
 
     @Override
     public String[] getParentNodeType() {
-        return new String[]{NODE_DATABASE, NODE_CATALOG, NODE_SCHEMA, NODE_TABLE};
+        return new String[]{NODE_DATABASE, NODE_CATALOG, NODE_SCHEMA, NODE_TABLE, NODE_COLUMNS};
     }
 
     @Override
@@ -74,10 +78,10 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
             return null;
         }
         if(parentQueryPart == null) {
-            if(!treeNode.getNodeType().equals(NODE_CATALOG)) {
-                parentQueryPart = getJooqQueryPart(connection, null, treeNode.getParent());
-            } else {
+            if(treeNode.getNodeType().equals(NODE_CATALOG)) {
                 return getCatalog(DSL.using(connection).meta(), treeNode.getNodeIdentifier());
+            } else {
+                parentQueryPart = getJooqQueryPart(connection, null, treeNode.getParent());
             }
         }
         if(parentQueryPart != null) {
@@ -86,6 +90,8 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
                     return ((Catalog) parentQueryPart).getSchema(treeNode.getNodeIdentifier());
                 case NODE_TABLE:
                     return ((Schema) parentQueryPart).getTable(treeNode.getNodeIdentifier());
+                case NODE_COLUMNS:
+                    return parentQueryPart;
             }
         }
         return null;
@@ -117,6 +123,13 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
                 break;
             case NODE_SCHEMA:
                 loadTable((Schema)parentQueryPart,allNodes, allNodesQueryPart);
+                break;
+            case NODE_TABLE:
+                allNodes.add(new GeoCatalogTreeNodeImpl(this, NODE_COLUMNS, I18N.tr("Columns")));
+                allNodesQueryPart.add(parentQueryPart);
+                break;
+            case NODE_COLUMNS:
+                loadFields((Table)parentQueryPart, allNodes, allNodesQueryPart);
                 break;
         }
         Map<String, GeoCatalogTreeNode> oldNodes = parent.getChildrenIdentifier();
@@ -208,4 +221,15 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
             }
         }
     }
+    private void loadFields(Table table, List<GeoCatalogTreeNodeImpl> nodes, List<QueryPart> nodesQueryPart) {
+        if(table != null) {
+            for(Field field : table.fields()) {
+                GeoCatalogTreeNodeImpl fieldNode = new GeoCatalogTreeNodeImpl(this, NODE_COLUMN, field.getName());
+                fieldNode.setAllowsChildren(false);
+                nodes.add(fieldNode);
+                nodesQueryPart.add(field);
+            }
+        }
+    }
 }
+

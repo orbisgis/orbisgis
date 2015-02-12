@@ -28,7 +28,6 @@
  */
 package org.orbisgis.geocatalogtree.impl;
 
-import org.jooq.Meta;
 import org.jooq.impl.DSL;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode;
@@ -55,6 +54,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingWorker;
@@ -65,12 +65,16 @@ import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.BorderLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.beans.EventHandler;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Nicolas Fortin
@@ -83,15 +87,19 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
     private static final I18n I18N = I18nFactory.getI18n(CatalogPanel.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(CatalogPanel.class);
     private ActionCommands dockingActions = new ActionCommands();
+    private ActionCommands popupActions = new ActionCommands();
     private DataManager dataManager;
     private Map<String, Set<TreeNodeFactory>> treeNodeFactories = new HashMap<>();
     private TreeNodeFactoryImpl defaultTreeNodeFactory;
+    private AtomicBoolean loadingNodeChildren = new AtomicBoolean(false);
 
     public CatalogPanel() {
         super(new BorderLayout());
         defaultTreeNodeFactory = new TreeNodeFactoryImpl();
         addTreeNodeFactory(defaultTreeNodeFactory);
         dbTree = new JTree(new String[0]);
+        dbTree.addMouseListener(EventHandler.create(MouseListener.class, this,
+                "onMouseActionOnSourceList", "")); //This method ask the event data as argument
         //Items can be selected freely
         dbTree.getSelectionModel().setSelectionMode(
                 TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
@@ -102,7 +110,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         dbTree.setEditable(true);
         add(new JScrollPane(dbTree));
         dockingParameters.setName("geocatalog-tree");
-        dockingParameters.setTitle(I18N.tr("GeoCatalog"));
+        dockingParameters.setTitle(I18N.tr("DB Tree"));
         dockingParameters.setTitleIcon(GeocatalogIcon.getIcon("geocatalog"));
         dockingParameters.setCloseable(true);
         // Set the built-in actions to docking frame
@@ -121,6 +129,17 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
                 treeNodeFactories.put(nodeType, factorySet);
             }
             factorySet.add(treeNodeFactory);
+        }
+    }
+
+    public void onMouseActionOnSourceList(MouseEvent e) {
+        //Manage selection of items before popping up the menu
+        if (e.isPopupTrigger()) { //Right mouse button under linux and windows
+            JPopupMenu popup = new JPopupMenu();
+            popupActions.copyEnabledActions(popup);
+            if (popup.getComponentCount()>0) {
+                popup.show(e.getComponent(), e.getX(), e.getY());
+            }
         }
     }
 
@@ -174,9 +193,10 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
     public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
         // Update expanding node
         Object lastPathComp = event.getPath().getLastPathComponent();
-        if(lastPathComp instanceof GeoCatalogTreeNode) {
+        if(lastPathComp instanceof GeoCatalogTreeNode && ((GeoCatalogTreeNode) lastPathComp).getChildCount() == 0) {
             GeoCatalogTreeNode node = (GeoCatalogTreeNode)lastPathComp;
-            new ReadDB(this, node).execute();
+            loadingNodeChildren.set(true);
+            new ReadDB(this, node, loadingNodeChildren).execute();
         }
     }
 
@@ -212,11 +232,6 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         return this;
     }
 
-    private void readDatabase() {
-        // Detect change between shown components
-
-    }
-
     private static class InitTree extends SwingWorker {
         private CatalogPanel catalogPanel;
 
@@ -238,10 +253,12 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
     private static class ReadDB extends  SwingWorker {
         private CatalogPanel catalogPanel;
         private GeoCatalogTreeNode node;
+        private AtomicBoolean loadingNodeChildren;
 
-        public ReadDB(CatalogPanel catalogPanel, GeoCatalogTreeNode node) {
+        public ReadDB(CatalogPanel catalogPanel, GeoCatalogTreeNode node, AtomicBoolean loadingNodeChildren) {
             this.catalogPanel = catalogPanel;
             this.node = node;
+            this.loadingNodeChildren = loadingNodeChildren;
         }
 
         @Override
@@ -255,9 +272,9 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
                     treeModel.insertNodeInto(nodeBusy, node, 0);
                     nodeBusy.setDoAnimation(true);
                 }
-                Thread.sleep(2000);
                 catalogPanel.updateNode(node);
             } finally {
+                loadingNodeChildren.set(false);
                 if(nodeBusy != null) {
                     nodeBusy.setDoAnimation(false);
                 }

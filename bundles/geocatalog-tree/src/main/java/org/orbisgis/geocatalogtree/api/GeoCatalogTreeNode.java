@@ -28,13 +28,8 @@
  */
 package org.orbisgis.geocatalogtree.api;
 
-import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
-
-import javax.swing.Icon;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Nicolas Fortin
@@ -44,8 +39,12 @@ public interface GeoCatalogTreeNode extends MutableTreeNode {
     String NODE_CATALOG = "CATALOG";
     String NODE_SCHEMA = "SCHEMA";
     String NODE_TABLE = "TABLE";
+    String NODE_COLUMNS = "COLUMNS";
     String NODE_COLUMN = "COLUMN";
+    String NODE_INDEXES = "INDEXES";
     String NODE_INDEX = "INDEX";
+    String NODE_FOREIGN_KEYS = "FOREIGN_KEYS";
+    String NODE_FOREIGN_KEY = "FOREIGN_KEY";
 
     /**
      * @return Node type
