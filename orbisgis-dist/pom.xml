@@ -101,7 +101,7 @@
                                 org.postgresql, org.dockingframes, xml-apis, com.kitfox.svg, javax.media, org.mozilla, com.lowagie, rhino,
                                 org.easymock, net.sf.kxml, xmlpull</excludeGroupIds>
                             <excludeArtifactIds>pax-logging-api, slf4j-api, markdown4j, org.apache.felix.scr.ds-annotations,org.osgi.core,
-                                animal-sniffer-annotations, org.apache.felix.scr.annotations, org.osgi.compendium</excludeArtifactIds>
+                                animal-sniffer-annotations, org.apache.felix.scr.annotations, org.osgi.compendium, cm-API</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
