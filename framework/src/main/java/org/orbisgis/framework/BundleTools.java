@@ -33,6 +33,7 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -569,9 +570,6 @@ public class BundleTools {
     private static void parseDirectory(File rootPath, File path, Set<String> packages) throws SecurityException {
         File[] files = path.listFiles();
         for (File file : files) {
-            // TODO Java7 check for non-symlink,
-            // without this check it might generate an infinite loop 
-            // @link http://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html#isSymbolicLink(java.nio.file.Path)
             if (!file.isDirectory()) {
                 if (file.getName().endsWith(".class")
                         && file.getParent().length()>rootPath.getAbsolutePath().length()) {
@@ -579,7 +577,9 @@ public class BundleTools {
                     packages.add(parentPath.replace(File.separator, "."));
                 }
             } else {
-                parseDirectory(rootPath,file, packages);
+                if(!Files.isSymbolicLink(file.toPath())) {
+                    parseDirectory(rootPath, file, packages);
+                }
             }
         }
     }

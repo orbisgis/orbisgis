@@ -29,18 +29,10 @@
 package org.orbisgis.framework;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.felix.framework.Logger;
+import org.apache.felix.framework.util.Util;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -93,10 +85,10 @@ public class PluginHost {
      * Except for defined packages through exportCorePackage(), 
      * @return 
      */
-    private String getExtraPackage() {
+    private String getExtraPackage(Set<String> ignorePackages) {
         BundleTools bundleTools = new BundleTools(LOGGER);
         //Build a set of packages to skip programmaticaly defined packages
-        Set<String> packagesName = new HashSet<String>();
+        Set<String> packagesName = new HashSet<>(ignorePackages);
         List<String> sortedPackagesExport = new ArrayList<String>();
         for(PackageDeclaration packInfo : packageList) {
             packagesName.add(packInfo.getPackageName());
@@ -134,7 +126,39 @@ public class PluginHost {
      */
     public void init(Map<String, String> frameworkConfig) {
         // Define service interface exported by Framework orbisgis-core
-        frameworkConfig.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,getExtraPackage());
+        Set<String> ignorePackages = new HashSet<>();
+        String ignorePackageString = frameworkConfig.get("org.osgi.framework.system.packages.ignore");
+        if(ignorePackageString != null) {
+            StringTokenizer st = new StringTokenizer(ignorePackageString, ",");
+            while(st.hasMoreTokens()) {
+                String ignorePackage = st.nextToken();
+                ignorePackages.add(ignorePackage);
+            }
+        }
+        String fileExtraPackage = frameworkConfig.get(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA);
+        frameworkConfig.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,getExtraPackage(ignorePackages)+(fileExtraPackage != null ? ","+fileExtraPackage : ""));
+        // Apply ignore list on default export package
+        if(!ignorePackages.isEmpty()) {
+            StringBuilder newSysPackages = new StringBuilder();
+            String defaultSysPackage = frameworkConfig.get(Constants.FRAMEWORK_SYSTEMPACKAGES);
+            if (defaultSysPackage == null) {
+                defaultSysPackage = Util.getDefaultProperty(LOGGER, Constants.FRAMEWORK_SYSTEMPACKAGES);
+            }
+            StringTokenizer st = new StringTokenizer(defaultSysPackage, ",");
+            while(st.hasMoreTokens()) {
+                String packageDeclaration = st.nextToken();
+                // Remove version and uses
+                String packagePart = packageDeclaration.indexOf(';') > 0 ?
+                        packageDeclaration.substring(0, packageDeclaration.indexOf(';')) : packageDeclaration;
+                if(!ignorePackages.contains(packagePart.trim())) {
+                    if(newSysPackages.length() != 0) {
+                        newSysPackages.append(",");
+                    }
+                    newSysPackages.append(packageDeclaration);
+                }
+            }
+            frameworkConfig.put(Constants.FRAMEWORK_SYSTEMPACKAGES, newSysPackages.toString());
+        }
         // Persistence's data
         frameworkConfig.put(Constants.FRAMEWORK_STORAGE, pluginCacheFolder.getAbsolutePath());
         framework = createEmbeddedFramework(frameworkConfig);

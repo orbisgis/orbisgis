@@ -94,6 +94,7 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
                 this.dataSource = dataSource;
         }
 
+        @Reference
         public void setExecutorService(ExecutorService executorService) {
                 this.executorService = executorService;
         }
