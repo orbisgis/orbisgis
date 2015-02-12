@@ -85,6 +85,7 @@ final class Main {
      * Entry point of User Interface
      */
     public static void main(String[] args) {
+        // debug try { Thread.sleep(5000); }catch (InterruptedException ex) {}
         long deploymentTime = 0;
         BundleTools bundleTools = new BundleTools(LOGGER);
         parseCommandLine(args);
