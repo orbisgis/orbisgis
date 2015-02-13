@@ -30,6 +30,8 @@ package org.orbisgis.dbjobs.api;
 
 import org.h2gis.h2spatialapi.DriverFunction;
 
+import java.util.List;
+
 /**
  * A class that contains jdbc driver function.
  * @author Nicolas Fortin
@@ -44,6 +46,11 @@ public interface DriverFunctionContainer {
      * @param driverFunction Driver function to remove
      */
     void removeDriverFunction(DriverFunction driverFunction);
+
+    /**
+     * @return List of driver functions
+     */
+    List<DriverFunction> getDriverFunctionList();
 
     /**
      * Found DriverFunction using file extension and driver type that export table

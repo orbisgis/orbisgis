@@ -26,17 +26,23 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.geocatalog.impl.io;
+package org.orbisgis.dbjobs.jobs;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
+
+import org.apache.commons.io.FilenameUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.H2GISProgressMonitor;
+import org.orbisgis.dbjobs.api.DriverFunctionContainer;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.components.SaveFilePanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -74,6 +80,28 @@ public class ExportInFileOperation extends SwingWorkerPM {
             driverFunction.exportTable(connection, sourceName , savedFile, new H2GISProgressMonitor(this.getProgressMonitor()));
         } catch (SQLException | IOException ex) {
             LOGGER.error(I18N.tr("Cannot create the file"), ex);
+        }
+        return null;
+    }
+
+
+    public static ExportInFileOperation saveInfile(DataSource dataSource, List<String> tables, DriverFunctionContainer driverFunctionContainer) {
+        for (String source : tables) {
+            final SaveFilePanel outfilePanel = new SaveFilePanel(
+                    "Geocatalog.SaveInFile",
+                    I18N.tr("Save the source : {0}", source));
+            for(DriverFunction driverFunction : driverFunctionContainer.getDriverFunctionList()) {
+                for(String fileExt : driverFunction.getExportFormats()) {
+                    outfilePanel.addFilter(fileExt, driverFunction.getFormatDescription(fileExt));
+                }
+            }
+            outfilePanel.loadState();
+            if (UIFactory.showDialog(outfilePanel, true, true)) {
+                final File savedFile = outfilePanel.getSelectedFile().getAbsoluteFile();
+                return new ExportInFileOperation(source, savedFile,
+                        driverFunctionContainer.getExportDriverFromExt(FilenameUtils.getExtension(savedFile.getName()),
+                                DriverFunction.IMPORT_DRIVER_TYPE.COPY), dataSource);
+            }
         }
         return null;
     }

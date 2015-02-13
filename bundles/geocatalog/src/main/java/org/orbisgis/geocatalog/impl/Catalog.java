@@ -58,6 +58,7 @@ import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.dbjobs.api.DatabaseView;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.dbjobs.jobs.DropTable;
+import org.orbisgis.dbjobs.jobs.ExportInFileOperation;
 import org.orbisgis.geocatalog.api.GeoCatalogMenu;
 import org.orbisgis.geocatalog.api.PopupMenu;
 import org.orbisgis.geocatalog.api.PopupTarget;
@@ -68,7 +69,6 @@ import org.orbisgis.geocatalog.impl.filters.IFilter;
 import org.orbisgis.geocatalog.impl.filters.factories.NameContains;
 import org.orbisgis.geocatalog.impl.filters.factories.NameNotContains;
 import org.orbisgis.geocatalog.impl.filters.factories.SourceTypeIs;
-import org.orbisgis.geocatalog.impl.io.ExportInFileOperation;
 import org.orbisgis.geocatalog.impl.renderer.DataSourceListCellRenderer;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
@@ -118,10 +118,6 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
         private FilterFactoryManager<IFilter,DefaultActiveFilter> filterFactoryManager;
         private ActionCommands dockingActions = new ActionCommands();
         private ActionCommands popupActions = new ActionCommands();
-        // Action trackers
-        //private MenuItemServiceTracker<PopupTarget,PopupMenu> popupActionTracker;
-        //private MenuItemServiceTracker<TitleActionBar,GeoCatalogMenu> dockingActionTracker;
-        //private ServiceTracker<DriverFunction, DriverFunction> driverFunctionTracker;
         private DriverFunctionContainer driverFunctionContainer;
         private DataManager dataManager;
         private ExecutorService executorService = null;
@@ -387,24 +383,11 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
          * The user can export a source in a file.
          */
         public void onMenuSaveInfile() {
-                String[] res = getSelectedSources();
-                for (String source : res) {
-                        final SaveFilePanel outfilePanel = new SaveFilePanel(
-                                "Geocatalog.SaveInFile",
-                                I18N.tr("Save the source : {0}", source));
-                        for(DriverFunction driverFunction : fileDrivers) {
-                            for(String fileExt : driverFunction.getExportFormats()) {
-                                outfilePanel.addFilter(fileExt, driverFunction.getFormatDescription(fileExt));
-                            }
-                        }
-                        outfilePanel.loadState();
-                        if (UIFactory.showDialog(outfilePanel, true, true)) {
-                                final File savedFile = outfilePanel.getSelectedFile().getAbsoluteFile();
-                            executeJob(new ExportInFileOperation(source, savedFile, getExportDriverFromExt
-                                    (FilenameUtils.getExtension(savedFile.getName()), DriverFunction
-                                            .IMPORT_DRIVER_TYPE.COPY), dataManager.getDataSource()));
-                        }
-                }
+            List<String> sources = Arrays.asList(getSelectedSources());
+            ExportInFileOperation exportJob = ExportInFileOperation.saveInfile(dataManager.getDataSource(), sources, driverFunctionContainer);
+            if(exportJob != null) {
+                executeJob(exportJob);
+            }
         }
 
         /**
@@ -424,14 +407,14 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
          * The user can load several files from a folder
          */
         public void onMenuAddFilesFromFolder() {
-            addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE.LINK, I18N.tr("Select the folder to open"));
+            driverFunctionContainer.addFilesFromFolder(this, DriverFunction.IMPORT_DRIVER_TYPE.LINK);
         }
 
         /**
          * The user can copy several files from a folder
          */
         public void onMenuImportFilesFromFolder() {
-            addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE.COPY, I18N.tr("Select the folder to import"));
+            driverFunctionContainer.addFilesFromFolder(this, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
         }
 
         private void createPopupActions() {
@@ -580,24 +563,5 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
         @Override
         public ListSelectionModel getListSelectionModel() {
             return sourceList.getSelectionModel();
-        }
-
-
-        /**
-         * Open window in swing process
-         */
-        private static class OpenEditableInSwingThread implements Runnable {
-            EditableElement element;
-            EditorManager editorManager;
-
-            private OpenEditableInSwingThread(EditableElement element, EditorManager editorManager) {
-                this.element = element;
-                this.editorManager = editorManager;
-            }
-
-            @Override
-            public void run() {
-                editorManager.openEditable(element);
-            }
         }
 }
