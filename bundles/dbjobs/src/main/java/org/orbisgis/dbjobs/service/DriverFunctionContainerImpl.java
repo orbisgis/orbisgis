@@ -32,10 +32,11 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.corejdbc.DriverFunctionContainer;
 import org.orbisgis.dbjobs.api.DatabaseView;
+import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.dbjobs.jobs.ImportFiles;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -51,6 +52,7 @@ import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -175,6 +177,34 @@ public class DriverFunctionContainerImpl implements DriverFunctionContainer {
             worker.execute();
         } else {
             executorService.execute(worker);
+        }
+    }
+
+    public void importFile(DatabaseView dbView, DriverFunction.IMPORT_DRIVER_TYPE type) {
+        String panelMessage;
+        if(type == DriverFunction.IMPORT_DRIVER_TYPE.COPY) {
+            panelMessage = I18N.tr("Select the file to import");
+        } else {
+            panelMessage = I18N.tr("Select the file to open");
+        }
+        OpenFilePanel linkSourcePanel = new OpenFilePanel("Geocatalog.LinkFile" ,panelMessage);
+        for(DriverFunction driverFunction : fileDrivers) {
+            try {
+                if(driverFunction.getImportDriverType() == type) {
+                    for(String fileExt : driverFunction.getImportFormats()) {
+                        linkSourcePanel.addFilter(fileExt, driverFunction.getFormatDescription(fileExt));
+                    }
+                }
+            } catch (Exception ex) {
+                LOGGER.debug(ex.getLocalizedMessage(), ex);
+            }
+        }
+        linkSourcePanel.loadState();
+        //Ask SIF to open the dialog
+        if (UIFactory.showDialog(linkSourcePanel, true, true)) {
+            // We can retrieve the files that have been selected by the user
+            List<File> files = Arrays.asList(linkSourcePanel.getSelectedFiles());
+            executeJob(new ImportFiles(dbView, this, files, dataManager, type));
         }
     }
 

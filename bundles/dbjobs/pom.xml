@@ -54,7 +54,6 @@
                 <configuration>
                     <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/dbjobs/translation/language/</poDirectory>
                     <targetBundle>org.orbisgis.dbjobs.Messages</targetBundle>
-                    <keywords>-ktr -kmarktr</keywords>
                     <outputFormat>properties</outputFormat>
                 </configuration>
             </plugin>

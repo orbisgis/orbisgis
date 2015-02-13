@@ -31,6 +31,7 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.commons.progress.SwingWorkerPM;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.dbjobs.api.DatabaseView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,11 +39,15 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
+import javax.swing.JOptionPane;
+import java.awt.Component;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Drop provided table reference
@@ -101,5 +106,64 @@ public class DropTable extends SwingWorkerPM {
     @Override
     protected void done() {
         dbView.onDatabaseUpdate(DatabaseView.DB_ENTITY.TABLE.name(), tableToDelete);
+    }
+
+
+    /**
+     * The user can drop table using GUI
+     * @param dataSource JDBC DataSource
+     * @param tableIdentifier List of table to remove {@link org.h2gis.utilities.TableLocation}
+     * @param parentComponent Parent component for dialogs
+     * @param dbView GUI to update
+     * @return instance of DropTable Job to execute. Null if user cancel
+     */
+    public static DropTable onMenuRemoveSource(DataSource dataSource, List<String> tableIdentifier, Component parentComponent, DatabaseView dbView) {
+        int countExternalTable = 0;
+        int countSystemTable = 0;
+        int countOther = 0;
+        ArrayList<String> sources = new ArrayList<String>();
+        List<String> reservedTables = java.util.Arrays.asList("spatial_ref_sys", "geography_columns", "geometry_columns", "raster_columns", "raster_overviews");
+        try (Connection connection = dataSource.getConnection()) {
+            for (String tableName : tableIdentifier) {
+                MetaData.TableType tableType = MetaData.getTableType(connection, tableName);
+                if (tableType.equals(MetaData.TableType.EXTERNAL)) {
+                    countExternalTable++;
+                    sources.add(tableName);
+                } else if (tableType.equals(MetaData.TableType.SYSTEM_TABLE)) {
+                    countSystemTable++;
+                } else if (reservedTables.contains(tableName.toLowerCase())){
+                    countSystemTable++;
+                }else {
+                    sources.add(tableName);
+                    countOther++;
+                }
+            }
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
+        }
+        //We display a warning because some SYSTEM_TABLE have been selected.
+        if (countSystemTable > 0) {
+            JOptionPane.showMessageDialog(parentComponent, I18N.tr("Cannot remove permanently a table system."), I18N.tr
+                    ("Remove GeoCatalog tables"), JOptionPane.WARNING_MESSAGE);
+        } else {
+            //We display the table type
+            StringBuilder sb = new StringBuilder(I18N.tr("Do you want..."));
+            if (countOther > 0) {
+                sb.append(I18N.trn("\n...to remove permanently {0} table", "\n...to remove permanently {0} tables", countOther, countOther));
+            }
+            if (countExternalTable > 0) {
+                sb.append(I18N.trn("\n...to disconnect {0} external table", "\n...to disconnect {0} external tables", countExternalTable, countExternalTable));
+            }
+            sb.append("?");
+            int option = JOptionPane.showConfirmDialog(parentComponent,
+                    sb.toString(),
+                    I18N.tr("Delete GeoCatalog tables"),
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (option == JOptionPane.YES_OPTION) {
+                return new DropTable(dataSource, sources.toArray(new String[sources.size()])
+                        , dbView);
+            }
+        }
+        return null;
     }
 }

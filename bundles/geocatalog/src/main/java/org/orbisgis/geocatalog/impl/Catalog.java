@@ -54,8 +54,10 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.corejdbc.DriverFunctionContainer;
 import org.orbisgis.corejdbc.MetaData;
+import org.orbisgis.dbjobs.api.DatabaseView;
+import org.orbisgis.dbjobs.api.DriverFunctionContainer;
+import org.orbisgis.dbjobs.jobs.DropTable;
 import org.orbisgis.geocatalog.api.GeoCatalogMenu;
 import org.orbisgis.geocatalog.api.PopupMenu;
 import org.orbisgis.geocatalog.api.PopupTarget;
@@ -67,13 +69,9 @@ import org.orbisgis.geocatalog.impl.filters.factories.NameContains;
 import org.orbisgis.geocatalog.impl.filters.factories.NameNotContains;
 import org.orbisgis.geocatalog.impl.filters.factories.SourceTypeIs;
 import org.orbisgis.geocatalog.impl.io.ExportInFileOperation;
-import org.orbisgis.geocatalog.impl.jobs.DropTable;
-import org.orbisgis.geocatalog.impl.jobs.ImportFiles;
 import org.orbisgis.geocatalog.impl.renderer.DataSourceListCellRenderer;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
-import org.orbisgis.sif.components.OpenFilePanel;
-import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.commons.utils.CollectionUtils;
 import org.orbisgis.sif.components.actions.ActionCommands;
@@ -102,9 +100,9 @@ import org.xnap.commons.i18n.I18nFactory;
  * This is connected with the DataSource model.
  */
 @Component(service = DockingPanel.class, immediate = true)
-public class Catalog extends JPanel implements DockingPanel, TitleActionBar, PopupTarget, DriverFunctionContainer {
+public class Catalog extends JPanel implements DockingPanel, TitleActionBar, PopupTarget, DatabaseView {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
-        private EditorManager editorManager;
+
         private static final long serialVersionUID = 1L;
         private static final I18n I18N = I18nFactory.getI18n(Catalog.class);
         private static final Logger LOGGER = LoggerFactory.getLogger(Catalog.class);
@@ -124,7 +122,7 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
         //private MenuItemServiceTracker<PopupTarget,PopupMenu> popupActionTracker;
         //private MenuItemServiceTracker<TitleActionBar,GeoCatalogMenu> dockingActionTracker;
         //private ServiceTracker<DriverFunction, DriverFunction> driverFunctionTracker;
-        private List<DriverFunction> fileDrivers = new LinkedList<>();
+        private DriverFunctionContainer driverFunctionContainer;
         private DataManager dataManager;
         private ExecutorService executorService = null;
 
@@ -146,17 +144,14 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
             this.executorService = null;
         }
 
+    @Reference
+    public void setDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
+        this.driverFunctionContainer = driverFunctionContainer;
+    }
 
-    @Override
-        @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
-        public void addDriverFunction(DriverFunction driverFunction) {
-            fileDrivers.add(driverFunction);
-        }
-
-        @Override
-        public void removeDriverFunction(DriverFunction driverFunction) {
-            fileDrivers.remove(driverFunction);
-        }
+    public void unsetDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
+        this.driverFunctionContainer = null;
+    }
 
         /**
          * Default constructor
@@ -172,15 +167,6 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
 
         public void unsetDataManager(DataManager dataManager) {
             this.dataManager = null;
-        }
-
-        @Reference
-        public void setEditorManager(EditorManager editorManager) {
-            this.editorManager = editorManager;
-        }
-
-        public void unsetEditorManager(EditorManager editorManager) {
-            this.editorManager = null;
         }
 
         /**
@@ -338,56 +324,6 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                 }
         }
 
-        @Override
-        public DriverFunction getImportDriverFromExt(String ext,DriverFunction.IMPORT_DRIVER_TYPE type ) {
-            for(DriverFunction driverFunction : fileDrivers) {
-                if(driverFunction.getImportDriverType() == type) {
-                    for(String fileExt : driverFunction.getImportFormats()) {
-                        if(fileExt.equalsIgnoreCase(ext)) {
-                            return driverFunction;
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-
-        @Override
-        public DriverFunction getExportDriverFromExt(String ext,DriverFunction.IMPORT_DRIVER_TYPE type ) {
-            for(DriverFunction driverFunction : fileDrivers) {
-                if(driverFunction.getImportDriverType() == type) {
-                    for(String fileExt : driverFunction.getExportFormats()) {
-                        if(fileExt.equalsIgnoreCase(ext)) {
-                            return driverFunction;
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-
-        private void importFile(DriverFunction.IMPORT_DRIVER_TYPE type, String panelMessage) {
-            OpenFilePanel linkSourcePanel = new OpenFilePanel("Geocatalog.LinkFile" ,panelMessage);
-            for(DriverFunction driverFunction : fileDrivers) {
-                try {
-                    if(driverFunction.getImportDriverType() == type) {
-                        for(String fileExt : driverFunction.getImportFormats()) {
-                            linkSourcePanel.addFilter(fileExt, driverFunction.getFormatDescription(fileExt));
-                        }
-                    }
-                } catch (Exception ex) {
-                    LOGGER.debug(ex.getLocalizedMessage(), ex);
-                }
-            }
-            linkSourcePanel.loadState();
-            //Ask SIF to open the dialog
-            if (UIFactory.showDialog(linkSourcePanel, true, true)) {
-                // We can retrieve the files that have been selected by the user
-                List<File> files = Arrays.asList(linkSourcePanel.getSelectedFiles());
-                executeJob(new ImportFiles(this, this, files, dataManager, type));
-            }
-        }
-
         /**
          * The user click on the menu item called "Import/File" The user wants to
          * open a file using the geocatalog. It will open a panel dedicated to
@@ -395,7 +331,7 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
          * selected files.
          */
         public void onMenuImportFile() {
-            importFile(DriverFunction.IMPORT_DRIVER_TYPE.COPY, I18N.tr("Select the file to import"));
+            driverFunctionContainer.importFile(this, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
         }
 
         /**
@@ -405,7 +341,7 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
          * selected files.
          */
         public void onMenuAddLinkedFile() {
-            importFile(DriverFunction.IMPORT_DRIVER_TYPE.LINK, I18N.tr("Select the file to open"));
+            driverFunctionContainer.importFile(this, DriverFunction.IMPORT_DRIVER_TYPE.LINK);
         }
 
         /**
@@ -426,51 +362,15 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
             int countExternalTable = 0;
             int countSystemTable = 0;
             int countOther = 0;
-            ArrayList<String> sources = new ArrayList<String>();
-            List<String> reservedTables = java.util.Arrays.asList("spatial_ref_sys", "geography_columns", "geometry_columns", "raster_columns", "raster_overviews");
-            try (Connection connection = dataManager.getDataSource().getConnection()) {
-                List<ContainerItemProperties> selectedValues = getSourceList().getSelectedValuesList();
-                for (ContainerItemProperties source : selectedValues) {
-                    String tableName = source.getKey();
-                    MetaData.TableType tableType = MetaData.getTableType(connection, tableName);
-                    if (tableType.equals(MetaData.TableType.EXTERNAL)) {
-                        countExternalTable++;
-                        sources.add(tableName);
-                    } else if (tableType.equals(MetaData.TableType.SYSTEM_TABLE)) {
-                        countSystemTable++;
-                    } else if (reservedTables.contains(tableName.toLowerCase())){
-                        countSystemTable++;
-                    }else {
-                        sources.add(tableName);
-                        countOther++;
-                    }
-                }
-            } catch (SQLException ex) {
-                LOGGER.error(ex.getLocalizedMessage(), ex);
+            List<String> sources = new ArrayList<>();
+            List<ContainerItemProperties> selectedValues = getSourceList().getSelectedValuesList();
+            for (ContainerItemProperties source : selectedValues) {
+                sources.add(source.getKey());
             }
-            //We display a warning because some SYSTEM_TABLE have been selected.
-            if (countSystemTable > 0) {
-                JOptionPane.showMessageDialog(this,
-                        I18N.tr("Cannot remove permanently a table system."),
-                        I18N.tr("Remove GeoCatalog tables"),
-                        JOptionPane.WARNING_MESSAGE);
-            } else {
-                //We display the table type
-                StringBuilder sb = new StringBuilder(I18N.tr("Do you want..."));
-                if (countOther > 0) {
-                    sb.append(I18N.trn("\n...to remove permanently {0} table", "\n...to remove permanently {0} tables", countOther, countOther));
-                }
-                if (countExternalTable > 0) {
-                    sb.append(I18N.trn("\n...to disconnect {0} external table", "\n...to disconnect {0} external tables", countExternalTable, countExternalTable));
-                }
-                sb.append("?");
-                int option = JOptionPane.showConfirmDialog(this,
-                        sb.toString(),
-                        I18N.tr("Delete GeoCatalog tables"),
-                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                if (option == JOptionPane.YES_OPTION) {
-                    executeJob(new DropTable(dataManager.getDataSource(), sources.toArray(new String[sources.size()])
-                            , this));
+            if(!sources.isEmpty()) {
+                DropTable dropTable = DropTable.onMenuRemoveSource(dataManager.getDataSource(), sources, this, this);
+                if(dropTable != null) {
+                    executeJob(dropTable);
                 }
             }
     }
@@ -601,6 +501,11 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                     I18N.tr("Read the content of the database"),
                     GeocatalogIcon.getIcon("refresh"),EventHandler.create(ActionListener.class,
                     this,"refreshSourceList"),KeyStroke.getKeyStroke("ctrl R")).setLogicalGroup(PopupMenu.GROUP_OPEN));
+        }
+
+        @Override
+        public void onDatabaseUpdate(String entity, String... identifier) {
+            refreshSourceList();
         }
 
         public void refreshSourceList() {
