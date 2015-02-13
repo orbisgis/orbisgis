@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# 211 <tiangeng211@gmail.com>, 2014
+# 211 <tiangeng211@gmail.com>, 2014-2015
 # Qingxiao ZHOU <overcloud.814@gmail.com>, 2013
 # yinghao li <liyinghao@hotmail.com>, 2013
 # 苏琦 <sqi0081@hotmail.com>, 2013
@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: OrbisGIS\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-03 17:05+0100\n"
-"PO-Revision-Date: 2015-02-03 16:06+0000\n"
-"Last-Translator: Nicolas Fortin <github@nettrader.fr>\n"
+"PO-Revision-Date: 2015-02-09 12:08+0000\n"
+"Last-Translator: 211 <tiangeng211@gmail.com>\n"
 "Language-Team: Chinese (http://www.transifex.com/projects/p/orbisgis/language/zh/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,7 +24,7 @@ msgstr ""
 #: org/orbisgis/coremap/renderer/DefaultResultSetProviderFactory.java:105
 #, java-format
 msgid "Table {0} does not contains geometry fields"
-msgstr ""
+msgstr "表{0}不包含几何字段"
 
 #: org/orbisgis/coremap/renderer/Renderer.java:359
 #, java-format
@@ -37,7 +37,7 @@ msgstr "无法获取图象数据流"
 
 #: org/orbisgis/coremap/renderer/se/AreaSymbolizer.java:87
 msgid "Area Symbolizer"
-msgstr ""
+msgstr "Area要素地图上展示"
 
 #: org/orbisgis/coremap/renderer/se/stroke/PenStroke.java:450
 msgid "Dash array must be made of positive numbers separated with spaces."
@@ -45,11 +45,11 @@ msgstr "Dash数组必须由用空格分离的正数"
 
 #: org/orbisgis/coremap/renderer/se/LineSymbolizer.java:87
 msgid "Line Symbolizer"
-msgstr ""
+msgstr "线 要素地图上展示"
 
 #: org/orbisgis/coremap/renderer/se/PointSymbolizer.java:93
 msgid "Point Symbolizer"
-msgstr ""
+msgstr "Point 要素地图上展示"
 
 #: org/orbisgis/coremap/renderer/se/fill/DotMapFill.java:209
 msgid "Could not find position for mark within area"
@@ -95,12 +95,12 @@ msgstr "倒退({0})"
 
 #: org/orbisgis/coremap/renderer/se/parameter/Recode.java:255
 msgid "A fallback symbol is used for null or empty value"
-msgstr ""
+msgstr "一个备用符号被用于无效或空值"
 
 #: org/orbisgis/coremap/renderer/se/parameter/Recode.java:258
 #, java-format
 msgid "A fallback symbol is used for the value {0}"
-msgstr ""
+msgstr "一个备用符号被用于值{0}"
 
 #: org/orbisgis/coremap/renderer/se/graphic/GraphicCollection.java:255
 msgid "Error during graphic composition"
@@ -235,7 +235,7 @@ msgstr "源不包含空间信息"
 
 #: org/orbisgis/coremap/layerModel/OwsMapContext.java:158
 msgid "Layer"
-msgstr ""
+msgstr "层"
 
 #: org/orbisgis/coremap/layerModel/OwsMapContext.java:263
 #, java-format
@@ -326,22 +326,22 @@ msgstr "HTTP错误{0} 消息：{1} 下载从{2}"
 
 #: org/orbisgis/coremap/layerModel/Layer.java:105
 msgid "REMARKS"
-msgstr ""
+msgstr "备注"
 
 #: org/orbisgis/coremap/layerModel/Layer.java:124
 #, java-format
 msgid "Unable to create URI from Layer.Please fix the layer named {0}"
-msgstr ""
+msgstr "无法从图层创建URI。请更正命名{0}图层"
 
 #: org/orbisgis/coremap/layerModel/Layer.java:153
 #, java-format
 msgid "Cannot draw {0} the table does not exists"
-msgstr ""
+msgstr "不能绘制{0}该表不存在"
 
 #: org/orbisgis/coremap/layerModel/Layer.java:157
 #: org/orbisgis/coremap/layerModel/Layer.java:161
 msgid "Cannot compute layer envelope:\n"
-msgstr ""
+msgstr "无法计算层外壳:\n"
 
 #: org/orbisgis/coremap/layerModel/Layer.java:188
 #, java-format
@@ -350,11 +350,11 @@ msgstr "无法加载数据源通用资源标识符{0}"
 
 #: org/orbisgis/coremap/layerModel/Layer.java:195
 msgid "Specified table '{0}' does not exists, and no source URI is given"
-msgstr ""
+msgstr "指定表“{0}”不存在，并且没有URI源被赋予"
 
 #: org/orbisgis/coremap/layerModel/Layer.java:231
 msgid "Error while fetching source MetaData"
-msgstr ""
+msgstr "取元数据源中出错"
 
 #: org/orbisgis/coremap/layerModel/AbstractLayer.java:162
 msgid "Cannot move a layer to its child"
@@ -383,4 +383,4 @@ msgstr "在图层集合没有行选择"
 
 #: org/orbisgis/coremap/stream/SimpleWMSDriver.java:111
 msgid "WMS stream is not initialised"
-msgstr ""
+msgstr "WMS流没有初始化"
