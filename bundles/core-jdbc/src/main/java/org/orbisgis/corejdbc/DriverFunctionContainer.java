@@ -60,4 +60,11 @@ public interface DriverFunctionContainer {
      * @return Driver instance or null if not found.
      */
     DriverFunction getImportDriverFromExt(String ext,DriverFunction.IMPORT_DRIVER_TYPE type );
+
+
+    /**
+     * The user can load several files from a folder. Popup a GUI to select the folder and execute the link/copy
+     * @param type Driver type
+     */
+    void addFilesFromFolder(DatabaseView dbView, DriverFunction.IMPORT_DRIVER_TYPE type);
 }

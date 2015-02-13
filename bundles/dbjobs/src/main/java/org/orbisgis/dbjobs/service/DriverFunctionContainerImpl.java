@@ -28,23 +28,63 @@
  */
 package org.orbisgis.dbjobs.service;
 
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.IOFileFilter;
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DriverFunctionContainer;
+import org.orbisgis.dbjobs.api.DatabaseView;
+import org.orbisgis.dbjobs.jobs.ImportFiles;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.components.OpenFolderPanel;
+import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
+import javax.swing.SwingWorker;
+import javax.swing.filechooser.FileFilter;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Manage driver functions.
  * @author Nicolas Fortin
  */
+@Component
 public class DriverFunctionContainerImpl implements DriverFunctionContainer {
-
+    private static final I18n I18N = I18nFactory.getI18n(DriverFunctionContainerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DriverFunctionContainerImpl.class);
     private List<DriverFunction> fileDrivers = new LinkedList<>();
+    private ExecutorService executorService = null;
+    private DataManager dataManager;
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
+    @Reference
+    public void setDataManager(DataManager dataManager) {
+        this.dataManager = dataManager;
+    }
+
+    public void unsetDataManager(DataManager dataManager) {
+        this.dataManager = null;
+    }
+
+    public void unsetExecutorService(ExecutorService executorService) {
+        this.executorService = null;
+    }
 
     @Override
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
@@ -84,5 +124,75 @@ public class DriverFunctionContainerImpl implements DriverFunctionContainer {
             }
         }
         return null;
+    }
+
+    /**
+     * The user can load several files from a folder
+     * @param type Driver type
+     */
+    @Override
+    public void addFilesFromFolder(DatabaseView dbView, DriverFunction.IMPORT_DRIVER_TYPE type) {
+        String message;
+        if(type == DriverFunction.IMPORT_DRIVER_TYPE.COPY) {
+            message = I18N.tr("Select the folder to import");
+        } else {
+            message = I18N.tr("Select the folder to open");
+        }
+
+        OpenFolderPanel folderSourcePanel = new OpenFolderPanel("Geocatalog.LinkFolder" ,message);
+        for(DriverFunction driverFunction : fileDrivers) {
+            try {
+                if(driverFunction.getImportDriverType() == type) {
+                    for(String fileExt : driverFunction.getImportFormats()) {
+                        folderSourcePanel.addFilter(fileExt, driverFunction.getFormatDescription(fileExt));
+                    }
+                }
+            } catch (Exception ex) {
+                LOGGER.debug(ex.getLocalizedMessage(), ex);
+            }
+        }
+        folderSourcePanel.loadState();
+        if (UIFactory.showDialog(folderSourcePanel, true, true)) {
+            File directory = folderSourcePanel.getSelectedFile();
+            Collection files = org.apache.commons.io.FileUtils.listFiles(directory,
+                    new ImportFileFilter(folderSourcePanel.getSelectedFilter()), DirectoryFileFilter.DIRECTORY);
+            List<File> fileToLoad = new ArrayList<>(files.size());
+            for (Object file : files) {
+                if(file instanceof File) {
+                    fileToLoad.add((File)file);
+                }
+            }
+            // for each folder, we apply the method processFolder.
+            // We use the filter selected by the user in the panel
+            // to succeed in this operation.
+            executeJob(new ImportFiles(dbView, this, fileToLoad, dataManager, type));
+        }
+    }
+
+
+    private void executeJob(SwingWorker worker) {
+        if(executorService == null) {
+            worker.execute();
+        } else {
+            executorService.execute(worker);
+        }
+    }
+
+    private static class ImportFileFilter implements IOFileFilter {
+        private FileFilter fileFilter;
+
+        private ImportFileFilter(FileFilter fileFilter) {
+            this.fileFilter = fileFilter;
+        }
+
+        @Override
+        public boolean accept(File file) {
+            return fileFilter.accept(file);
+        }
+
+        @Override
+        public boolean accept(File dir, String name) {
+            return accept(new File(dir, name));
+        }
     }
 }

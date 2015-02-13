@@ -25,23 +25,21 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact
  * directly: info_at_ orbisgis.org
  */
-package org.orbisgis.geocatalog.impl.jobs;
+package org.orbisgis.dbjobs.jobs;
 
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.commons.progress.SwingWorkerPM;
-import org.orbisgis.geocatalog.api.GeoCatalogExt;
+import org.orbisgis.dbjobs.api.DatabaseView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
-import javax.swing.*;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -55,19 +53,19 @@ public class DropTable extends SwingWorkerPM {
     private static final I18n I18N = I18nFactory.getI18n(DropTable.class);
     private DataSource dataSource;
     private String[] tableToDelete;
-    private GeoCatalogExt geocatalog;
+    private DatabaseView dbView;
 
 
     /**
      * Constructor
      * @param dataSource SQL DataSource
      * @param tableToDelete Tables identifier
-     * @param geocatalog Geocatalog
+     * @param dbView GUI to update
      */
-    public DropTable(DataSource dataSource, String[] tableToDelete, GeoCatalogExt geocatalog) {
+    public DropTable(DataSource dataSource, String[] tableToDelete, DatabaseView dbView) {
         this.dataSource = dataSource;
         this.tableToDelete = tableToDelete;
-        this.geocatalog = geocatalog;
+        this.dbView = dbView;
         setTaskName(I18N.tr("Drop selected tables"));
     }
 
@@ -102,6 +100,6 @@ public class DropTable extends SwingWorkerPM {
 
     @Override
     protected void done() {
-        geocatalog.refreshSourceList();
+        dbView.onDatabaseUpdate(DatabaseView.DB_ENTITY.TABLE.name(), tableToDelete);
     }
 }

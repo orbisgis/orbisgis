@@ -534,59 +534,6 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
             addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE.COPY, I18N.tr("Select the folder to import"));
         }
 
-        /**
-         * The user can load several files from a folder
-         * @param type
-         */
-        public void addFilesFromFolder(DriverFunction.IMPORT_DRIVER_TYPE type, String message) {
-            OpenFolderPanel folderSourcePanel = new OpenFolderPanel("Geocatalog.LinkFolder" ,message);
-            for(DriverFunction driverFunction : fileDrivers) {
-                try {
-                    if(driverFunction.getImportDriverType() == type) {
-                        for(String fileExt : driverFunction.getImportFormats()) {
-                            folderSourcePanel.addFilter(fileExt, driverFunction.getFormatDescription(fileExt));
-                        }
-                    }
-                } catch (Exception ex) {
-                    LOGGER.debug(ex.getLocalizedMessage(), ex);
-                }
-            }
-            folderSourcePanel.loadState();
-                if (UIFactory.showDialog(folderSourcePanel, true, true)) {
-                    File directory = folderSourcePanel.getSelectedFile();
-                    Collection files = org.apache.commons.io.FileUtils.listFiles(directory,
-                            new ImportFileFilter(folderSourcePanel.getSelectedFilter()), DirectoryFileFilter.DIRECTORY);
-                    List<File> fileToLoad = new ArrayList<>(files.size());
-                    for (Object file : files) {
-                            if(file instanceof File) {
-                                fileToLoad.add((File)file);
-                            }
-                    }
-                    // for each folder, we apply the method processFolder.
-                    // We use the filter selected by the user in the panel
-                    // to succeed in this operation.
-                    executeJob(new ImportFiles(this, this, fileToLoad, dataManager, type));
-                }
-        }
-
-        private static class ImportFileFilter implements IOFileFilter {
-            private FileFilter fileFilter;
-
-            private ImportFileFilter(FileFilter fileFilter) {
-                this.fileFilter = fileFilter;
-            }
-
-            @Override
-            public boolean accept(File file) {
-                return fileFilter.accept(file);
-            }
-
-            @Override
-            public boolean accept(File dir, String name) {
-                return accept(new File(dir, name));
-            }
-        }        
-
         private void createPopupActions() {
             boolean isEmbeddedDataBase = true;
             try(Connection connection = dataManager.getDataSource().getConnection()) {

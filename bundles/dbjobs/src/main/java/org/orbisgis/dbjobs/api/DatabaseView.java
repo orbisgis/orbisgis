@@ -33,4 +33,12 @@ package org.orbisgis.dbjobs.api;
  * @author Nicolas Fortin
  */
 public interface DatabaseView {
+    enum DB_ENTITY {SCHEMA, TABLE, INDEX, COLUMN}
+
+    /**
+     * Triggered on database update
+     * @param entity Type of database entity may be one of {@link org.orbisgis.dbjobs.api.DatabaseView.DB_ENTITY}
+     * @param identifier Entity unique id(s)
+     */
+    void onDatabaseUpdate(String entity, String... identifier);
 }

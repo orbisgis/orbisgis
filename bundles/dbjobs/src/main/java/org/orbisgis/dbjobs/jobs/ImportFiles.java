@@ -25,7 +25,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact
  * directly: info_at_ orbisgis.org
  */
-package org.orbisgis.geocatalog.impl.jobs;
+package org.orbisgis.dbjobs.jobs;
 
 import org.apache.commons.io.FilenameUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
@@ -37,7 +37,7 @@ import org.orbisgis.corejdbc.DriverFunctionContainer;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.commons.utils.FileUtils;
 import org.orbisgis.corejdbc.H2GISProgressMonitor;
-import org.orbisgis.geocatalog.api.GeoCatalogExt;
+import org.orbisgis.dbjobs.api.DatabaseView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -56,14 +56,14 @@ public class ImportFiles extends SwingWorkerPM {
     private static final I18n I18N = I18nFactory.getI18n(ImportFiles.class);
     private static Logger LOGGER = LoggerFactory.getLogger(ImportFiles.class);
 
-    private GeoCatalogExt catalog;
+    private DatabaseView dbView;
     private List<File> files;
     private DriverFunctionContainer driverFunctionContainer;
     private DataManager dataManager;
     private DriverFunction.IMPORT_DRIVER_TYPE driverType;
 
-    public ImportFiles(GeoCatalogExt catalog, DriverFunctionContainer driverFunctionContainer, List<File> files, DataManager dataManager, DriverFunction.IMPORT_DRIVER_TYPE driverType) {
-        this.catalog = catalog;
+    public ImportFiles(DatabaseView dbView, DriverFunctionContainer driverFunctionContainer, List<File> files, DataManager dataManager, DriverFunction.IMPORT_DRIVER_TYPE driverType) {
+        this.dbView = dbView;
         this.driverFunctionContainer = driverFunctionContainer;
         this.files = files;
         this.dataManager = dataManager;
@@ -98,7 +98,7 @@ public class ImportFiles extends SwingWorkerPM {
             LOGGER.error(I18N.tr("Cannot import the file"), ex);
         }
         LOGGER.info(I18N.tr("Importation done in {0} sec", (System.currentTimeMillis() - deb) / 1000d));
-        catalog.refreshSourceList();
+        dbView.onDatabaseUpdate(DatabaseView.DB_ENTITY.SCHEMA.name(), "PUBLIC");
         return null;
     }
 }
