@@ -28,10 +28,16 @@
  */
 package org.orbisgis.geocatalogtree.impl;
 
+import org.apache.commons.collections4.IteratorUtils;
+import org.h2gis.utilities.JDBCUtilities;
 import org.jooq.impl.DSL;
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.dbjobs.api.DatabaseView;
+import org.orbisgis.dbjobs.jobs.DropTable;
+import org.orbisgis.geocatalogtree.api.GeoCatalogTreeAction;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNodeImpl;
+import org.orbisgis.geocatalogtree.api.PopupMenu;
 import org.orbisgis.geocatalogtree.api.TreeNodeFactory;
 import org.orbisgis.geocatalogtree.icons.GeocatalogIcon;
 import org.orbisgis.geocatalogtree.impl.nodes.TreeNodeFactoryImpl;
@@ -39,6 +45,7 @@ import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
 import org.orbisgis.sif.components.fstree.TreeNodeBusy;
+import org.orbisgis.sif.components.resourceTree.TreeSelectionIterable;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.osgi.service.component.annotations.Activate;
@@ -57,6 +64,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.SwingWorker;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
@@ -65,22 +73,31 @@ import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Nicolas Fortin
  */
 @Component(service = DockingPanel.class)
-public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpandListener {
+public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpandListener, DatabaseView {
     private JTree dbTree;
     private DefaultTreeModel defaultTreeModel;
     private DockingPanelParameters dockingParameters = new DockingPanelParameters();
@@ -92,9 +109,27 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
     private Map<String, Set<TreeNodeFactory>> treeNodeFactories = new HashMap<>();
     private TreeNodeFactoryImpl defaultTreeNodeFactory;
     private AtomicBoolean loadingNodeChildren = new AtomicBoolean(false);
+    private ExecutorService executorService;
 
     public CatalogPanel() {
         super(new BorderLayout());
+    }
+
+    @Reference
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
+    public void unsetExecutorService(ExecutorService executorService) {
+        this.executorService = null;
+    }
+
+
+
+
+
+    @Activate
+    public void init() {
         defaultTreeNodeFactory = new TreeNodeFactoryImpl();
         addTreeNodeFactory(defaultTreeNodeFactory);
         dbTree = new JTree(new String[0]);
@@ -117,6 +152,114 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         dockingParameters.setDockActions(dockingActions.getActions());
         // Add a listener to put additional actions to this docking
         dockingActions.addPropertyChangeListener(new ActionDockingListener(dockingParameters));
+        addActions();
+    }
+
+    @Override
+    public void onDatabaseUpdate(String entity, String... identifier) {
+        Set<String> identifiers = new HashSet<>(Arrays.asList(identifier));
+        try {
+            switch (DB_ENTITY.valueOf(entity)) {
+                case TABLE:
+                    Enumeration<TreePath> paths = dbTree.getExpandedDescendants(new TreePath(defaultTreeModel.getRoot()));
+                    List<GeoCatalogTreeNode> nodeToUpdate = new ArrayList<>(dbTree.getRowCount());
+                    while(paths != null && paths.hasMoreElements()) {
+                        GeoCatalogTreeNode node = (GeoCatalogTreeNode)paths.nextElement().getLastPathComponent();
+                        if(node != null) {
+                            if(identifiers.contains(node.getNodeIdentifier())) {
+                                nodeToUpdate.add(node);
+                            }
+                        }
+                    }
+                    if(!nodeToUpdate.isEmpty() && loadingNodeChildren.compareAndSet(false, true)) {
+                        execute(new ReadDB(this, nodeToUpdate, loadingNodeChildren));
+                    }
+                    break;
+            }
+        } catch (IllegalArgumentException ex) {
+            // Db entity not managed by CatalogPanel
+        }
+    }
+
+    private void addActions() {
+        boolean isEmbeddedDataBase = true;
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
+            DatabaseMetaData meta = connection.getMetaData();
+            isEmbeddedDataBase = JDBCUtilities.isH2DataBase(meta) && !meta.getURL().startsWith("jdbc:h2:tcp:");
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
+        }
+        //Popup:Add
+        if(isEmbeddedDataBase) {
+            GeoCatalogTreeAction addGroup = new GeoCatalogTreeAction(PopupMenu.M_ADD,I18N.tr("Add"), dbTree);
+            addGroup.addNodeTypeFilter(GeoCatalogTreeNode.NODE_SCHEMA);
+            popupActions.addAction(addGroup.setMenuGroup(true).setLogicalGroup(PopupMenu.GROUP_ADD));
+            //Popup:Add:File
+            GeoCatalogTreeAction addFile = new GeoCatalogTreeAction(PopupMenu.M_ADD_FILE, I18N.tr("File"), I18N.tr
+                    ("Add a file from hard drive."), GeocatalogIcon.getIcon("page_white_add"), EventHandler.create
+                    (ActionListener.class, this, "onMenuAddLinkedFile"), KeyStroke.getKeyStroke(KeyEvent.VK_O,
+                    InputEvent.CTRL_DOWN_MASK), dbTree);
+            addFile.addNodeTypeFilter(GeoCatalogTreeNode.NODE_SCHEMA);
+            popupActions.addAction(addFile.addStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK))
+                    .setParent(PopupMenu.M_ADD));
+            //Popup:Add:Folder
+            GeoCatalogTreeAction addFolder = new GeoCatalogTreeAction(PopupMenu.M_ADD_FOLDER,I18N.tr("Folder"),
+                    I18N.tr("Add a set of file from an hard drive folder."),
+                    GeocatalogIcon.getIcon("folder_add"),EventHandler.create(ActionListener.class,
+                    this,"onMenuAddFilesFromFolder"),KeyStroke.getKeyStroke("ctrl alt O"), dbTree);
+            addFolder.addNodeTypeFilter(GeoCatalogTreeNode.NODE_SCHEMA);
+            popupActions.addAction(addFolder.setParent(PopupMenu.M_ADD));
+
+            //Popup:Add:DataBase
+            //popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_DB,I18N.tr("DataBase"),
+            //        I18N.tr("Add one or more tables from a DataBase"),
+            //        OrbisGISIcon.getIcon("database_add"),EventHandler.create(ActionListener.class,
+            //        this,"onMenuAddFromDataBase"),null).setParent(PopupMenu.M_ADD));
+        }
+        //Popup:Import
+        GeoCatalogTreeAction importGroup = new GeoCatalogTreeAction(PopupMenu.M_IMPORT,I18N.tr("Import"),dbTree);
+        popupActions.addAction(importGroup.addNodeTypeFilter(GeoCatalogTreeNode.NODE_SCHEMA).setMenuGroup(true).setLogicalGroup(PopupMenu.GROUP_IMPORT));
+        //Popup:Import:File
+        GeoCatalogTreeAction importFile = new GeoCatalogTreeAction(PopupMenu.M_IMPORT_FILE,I18N.tr("File"),
+                I18N.tr("Copy the content of a file from hard drive."),
+                GeocatalogIcon.getIcon("page_white_add"),EventHandler.create(ActionListener.class,
+                this,"onMenuImportFile"),KeyStroke.getKeyStroke("ctrl I"), dbTree);
+        popupActions.addAction(importFile.addNodeTypeFilter(GeoCatalogTreeNode.NODE_SCHEMA).setParent(PopupMenu
+                .M_IMPORT));
+        GeoCatalogTreeAction importFolder = new GeoCatalogTreeAction(PopupMenu.M_IMPORT_FOLDER,I18N.tr("Folder"),
+                I18N.tr("Add a set of file from an hard drive folder."),
+                GeocatalogIcon.getIcon("folder_add"),EventHandler.create(ActionListener.class,
+                this,"onMenuImportFilesFromFolder"),KeyStroke.getKeyStroke("ctrl alt I"),dbTree);
+        popupActions.addAction(importFolder.addNodeTypeFilter(GeoCatalogTreeNode.NODE_SCHEMA).setParent(PopupMenu
+                .M_IMPORT));
+
+        //Popup:Save
+        GeoCatalogTreeAction saveGroup = new GeoCatalogTreeAction(PopupMenu.M_SAVE,I18N.tr("Save"), dbTree);
+        popupActions.addAction(saveGroup.addNodeTypeFilter(GeoCatalogTreeNode.NODE_TABLE).setMenuGroup(true)
+                .setLogicalGroup(PopupMenu.GROUP_ADD));
+        //Popup:Save:File
+        GeoCatalogTreeAction saveFile = new GeoCatalogTreeAction(PopupMenu.M_SAVE_FILE, I18N.tr("File"), I18N.tr
+                ("Save selected sources in files"), GeocatalogIcon.getIcon("page_white_save"), EventHandler.create
+                (ActionListener.class, this, "onMenuSaveInfile"), KeyStroke.getKeyStroke("ctrl S"), dbTree);
+        popupActions.addAction(saveFile.addNodeTypeFilter(GeoCatalogTreeNode.NODE_TABLE).setParent(PopupMenu.M_SAVE));
+        //Popup:Save:Db
+        //TODO Add linked table then transfer data
+        //popupActions.addAction(new ActionOnSelection(PopupMenu.M_SAVE_DB,I18N.tr("Database"),
+        //        I18N.tr("Save selected sources in a data base"),OrbisGISIcon.getIcon("database_save"),
+        //        EventHandler.create(ActionListener.class,this,"onMenuSaveInDB"),getListSelectionModel()).setParent(PopupMenu.M_SAVE));
+        //Popup:Remove sources
+        GeoCatalogTreeAction dropTable = new GeoCatalogTreeAction(PopupMenu.M_REMOVE, I18N.tr("Remove the source"),
+                I18N.tr("Remove from this list the selected sources."), GeocatalogIcon.getIcon("remove"),
+                EventHandler.create(ActionListener.class, this, "onMenuRemoveSource"), KeyStroke.getKeyStroke
+                (KeyEvent.VK_DELETE, 0), dbTree);
+        popupActions.addAction(dropTable.addNodeTypeFilter(GeoCatalogTreeNode.NODE_TABLE).setLogicalGroup(PopupMenu
+                .GROUP_CLOSE));
+        //Popup:Refresh
+        GeoCatalogTreeAction refresh = new GeoCatalogTreeAction(PopupMenu.M_REFRESH,I18N.tr("Refresh"),
+                I18N.tr("Read the content of the database"),
+                GeocatalogIcon.getIcon("refresh"),EventHandler.create(ActionListener.class,
+                        this,"refreshSourceList"),KeyStroke.getKeyStroke("ctrl R"), dbTree);
+        popupActions.addAction(refresh.setLogicalGroup(PopupMenu.GROUP_OPEN));
     }
 
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
@@ -129,6 +272,82 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
                 treeNodeFactories.put(nodeType, factorySet);
             }
             factorySet.add(treeNodeFactory);
+        }
+    }
+
+    /**
+     * Add linked file to selected schema
+     */
+    public void onMenuAddLinkedFile() {
+
+    }
+
+    /**
+     * Add all files from selected folder recursively
+     */
+    public void onMenuAddFilesFromFolder() {
+
+    }
+
+    /**
+     * Copy file content into a table
+     */
+    public void onMenuImportFile() {
+
+    }
+
+    /**
+     * Copy all files in a folder to tables
+     */
+    public void onMenuImportFilesFromFolder() {
+
+    }
+
+    /**
+     * Export a table into a file.
+     */
+    public void onMenuSaveInfile() {
+
+    }
+
+    /**
+     * Drop selected tables
+     */
+    public void onMenuRemoveSource() {
+        List<String> sources = new ArrayList<>(dbTree.getSelectionCount());
+        for(GeoCatalogTreeNode treeNode : new TreeSelectionIterable<>(dbTree.getSelectionPaths(), GeoCatalogTreeNode.class)) {
+            if(GeoCatalogTreeNode.NODE_TABLE.equals(treeNode.getNodeType())) {
+                sources.add(treeNode.getNodeIdentifier());
+            }
+        }
+        DropTable job = DropTable.onMenuRemoveSource(dataManager.getDataSource(), sources, this, this);
+        execute(job);
+    }
+
+    private void execute(SwingWorker swingWorker) {
+        if(executorService != null) {
+            executorService.execute(swingWorker);
+        } else {
+            swingWorker.execute();
+        }
+    }
+
+    public void refreshSourceList() {
+        if(loadingNodeChildren.compareAndSet(false, true)) {
+            if (!dbTree.isSelectionEmpty()) {
+                List<GeoCatalogTreeNode> nodeToRefresh = new ArrayList<>(dbTree.getSelectionCount());
+                for (GeoCatalogTreeNode treeNode : new TreeSelectionIterable<>(dbTree.getSelectionPaths(), GeoCatalogTreeNode.class)) {
+                    nodeToRefresh.add(treeNode);
+                }
+                if(nodeToRefresh.isEmpty()) {
+                    loadingNodeChildren.set(false);
+                } else {
+                    execute(new ReadDB(this, nodeToRefresh, loadingNodeChildren));
+                }
+            } else {
+                // Refresh root node
+                execute(new ReadDB(this, (GeoCatalogTreeNode)defaultTreeModel.getRoot(), loadingNodeChildren));
+            }
         }
     }
 
@@ -252,32 +471,43 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
 
     private static class ReadDB extends  SwingWorker {
         private CatalogPanel catalogPanel;
-        private GeoCatalogTreeNode node;
+        private List<GeoCatalogTreeNode> nodes;
         private AtomicBoolean loadingNodeChildren;
+
+        public ReadDB(CatalogPanel catalogPanel, List<GeoCatalogTreeNode> nodes, AtomicBoolean loadingNodeChildren) {
+            this.catalogPanel = catalogPanel;
+            this.nodes = nodes;
+            this.loadingNodeChildren = loadingNodeChildren;
+        }
 
         public ReadDB(CatalogPanel catalogPanel, GeoCatalogTreeNode node, AtomicBoolean loadingNodeChildren) {
             this.catalogPanel = catalogPanel;
-            this.node = node;
+            this.nodes = Arrays.asList(node);
             this.loadingNodeChildren = loadingNodeChildren;
         }
 
         @Override
         protected Object doInBackground() throws Exception {
-            TreeNodeBusy nodeBusy = null;
             try {
-                if(node.getAllowsChildren() && node.getChildCount()==0) {
-                    nodeBusy = new TreeNodeBusy();
-                    DefaultTreeModel treeModel = (DefaultTreeModel)catalogPanel.getDbTree().getModel();
-                    nodeBusy.setModel(treeModel);
-                    treeModel.insertNodeInto(nodeBusy, node, 0);
-                    nodeBusy.setDoAnimation(true);
+                for (GeoCatalogTreeNode node : nodes) {
+                    TreeNodeBusy nodeBusy = null;
+                    try {
+                        if (node.getAllowsChildren() && node.getChildCount() == 0) {
+                            nodeBusy = new TreeNodeBusy();
+                            DefaultTreeModel treeModel = (DefaultTreeModel) catalogPanel.getDbTree().getModel();
+                            nodeBusy.setModel(treeModel);
+                            treeModel.insertNodeInto(nodeBusy, node, 0);
+                            nodeBusy.setDoAnimation(true);
+                        }
+                        catalogPanel.updateNode(node);
+                    } finally {
+                        if (nodeBusy != null) {
+                            nodeBusy.setDoAnimation(false);
+                        }
+                    }
                 }
-                catalogPanel.updateNode(node);
             } finally {
                 loadingNodeChildren.set(false);
-                if(nodeBusy != null) {
-                    nodeBusy.setDoAnimation(false);
-                }
             }
             return null;
         }

@@ -44,7 +44,7 @@ import java.util.Set;
  * Popup menu on Geocatalog tree.
  * @author Nicolas Fortin
  */
-public abstract class GeoCatalogTreeAction extends DefaultAction {
+public class GeoCatalogTreeAction extends DefaultAction {
     private JTree tree;
     private Set<String> nodeFilter = new HashSet<>();
 

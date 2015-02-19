@@ -27,34 +27,10 @@
  */
 package org.orbisgis.geocatalog.impl;
 
-import java.awt.BorderLayout;
-import java.awt.LayoutManager;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.beans.EventHandler;
-import java.io.File;
-import java.net.URI;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.io.filefilter.IOFileFilter;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.utilities.JDBCUtilities;
+import org.orbisgis.commons.utils.CollectionUtils;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.dbjobs.api.DatabaseView;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.dbjobs.jobs.DropTable;
@@ -70,10 +46,7 @@ import org.orbisgis.geocatalog.impl.filters.factories.NameContains;
 import org.orbisgis.geocatalog.impl.filters.factories.NameNotContains;
 import org.orbisgis.geocatalog.impl.filters.factories.SourceTypeIs;
 import org.orbisgis.geocatalog.impl.renderer.DataSourceListCellRenderer;
-import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
-import org.orbisgis.sif.components.SaveFilePanel;
-import org.orbisgis.commons.utils.CollectionUtils;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.components.actions.DefaultAction;
@@ -81,8 +54,6 @@ import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
-import org.orbisgis.sif.edition.EditableElement;
-import org.orbisgis.sif.edition.EditorManager;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -92,6 +63,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.swing.JComponent;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingWorker;
+import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.beans.EventHandler;
+import java.net.URI;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * This is the GeoCatalog panel. That Panel show the list of available
@@ -355,9 +350,6 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
          * The user can remove added source from the geocatalog
          */
         public void onMenuRemoveSource() {
-            int countExternalTable = 0;
-            int countSystemTable = 0;
-            int countOther = 0;
             List<String> sources = new ArrayList<>();
             List<ContainerItemProperties> selectedValues = getSourceList().getSelectedValuesList();
             for (ContainerItemProperties source : selectedValues) {
