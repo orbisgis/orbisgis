@@ -45,6 +45,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -142,11 +143,13 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
                 // Node already exists
                 oldNodes.remove(node.getNodeIdentifier());
                 // Update the node if it contains at least one child
-                if(existingNode.getChildCount() > 0) {
+                TreePath existingNodePath = new TreePath (((DefaultTreeModel) jTree.getModel())
+                        .getPathToRoot(existingNode));
+                if(existingNode.getChildCount() > 0 || jTree.isExpanded(existingNodePath)) {
                     TreeNodeFactory treeNodeFactory = existingNode.getFactory();
                     if(treeNodeFactory instanceof TreeNodeFactoryImpl) {
                         TreeNodeFactoryImpl childFactory = (TreeNodeFactoryImpl)treeNodeFactory;
-                        childFactory.updateChildren(node, nodeQueryPart, connection, jTree);
+                        childFactory.updateChildren(existingNode, nodeQueryPart, connection, jTree);
                     } else if(treeNodeFactory != null) {
                         treeNodeFactory.updateChildren(node, connection, jTree);
                     }

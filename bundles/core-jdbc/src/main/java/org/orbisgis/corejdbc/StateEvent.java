@@ -14,6 +14,17 @@ public class StateEvent {
     private final String name;
     private final int i;
     private final int max;
+    // Update database view only if query starts with this command. (lowercase)
+    private static final String[] updateSourceListQuery = new String[] {"drop", "create","alter"};
+    private static final int MAX_LENGTH_QUERY;
+    static {
+        int maxLen = 0;
+        for(String query : updateSourceListQuery) {
+            maxLen = Math.max(maxLen, query.length());
+        }
+        MAX_LENGTH_QUERY = maxLen;
+    }
+
     /**
      * @param stateIdentifier State id
      * @param name Object name
@@ -25,6 +36,24 @@ public class StateEvent {
         this.name = name;
         this.i = i;
         this.max = max;
+    }
+
+    /**
+     * @return True if this DB event is related to a database structure update.
+     */
+    public boolean isUpdateDatabaseStructure() {
+        if(StateEvent.DB_STATES.STATE_STATEMENT_END.equals(stateIdentifier)) {
+            // DataBase update
+            if (name != null) {
+                String subName = name.substring(0, MAX_LENGTH_QUERY).trim().toLowerCase();
+                for (String query : updateSourceListQuery) {
+                    if (subName.startsWith(query)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**

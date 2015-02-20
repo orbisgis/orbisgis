@@ -33,6 +33,8 @@ import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.utilities.JDBCUtilities;
 import org.jooq.impl.DSL;
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.DatabaseProgressionListener;
+import org.orbisgis.corejdbc.StateEvent;
 import org.orbisgis.dbjobs.api.DatabaseView;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.dbjobs.jobs.DropTable;
@@ -102,7 +104,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Nicolas Fortin
  */
 @Component(service = DockingPanel.class)
-public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpandListener, DatabaseView {
+public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpandListener, DatabaseView, DatabaseProgressionListener {
     private JTree dbTree;
     private DefaultTreeModel defaultTreeModel;
     private DockingPanelParameters dockingParameters = new DockingPanelParameters();
@@ -353,6 +355,14 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         }
     }
 
+    @Override
+    public void progressionUpdate(StateEvent state) {
+        // Refresh root node
+        if(state.isUpdateDatabaseStructure() && loadingNodeChildren.compareAndSet(false, true)) {
+            execute(new ReadDB(this, (GeoCatalogTreeNode) defaultTreeModel.getRoot(), loadingNodeChildren));
+        }
+    }
+
     public void refreshSourceList() {
         if(loadingNodeChildren.compareAndSet(false, true)) {
             if (!dbTree.isSelectionEmpty()) {
@@ -420,6 +430,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
     }
 
     public void unsetDataManager(DataManager dataManager) {
+        dataManager.removeDatabaseProgressionListener(this);
         this.dataManager = null;
     }
 
@@ -439,6 +450,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
             dbTree.expandPath(new TreePath(defaultTreeModel.getRoot()));
             updateNode((GeoCatalogTreeNode)defaultTreeModel.getRoot());
             dbTree.addTreeWillExpandListener(this);
+            dataManager.addDatabaseProgressionListener(this, StateEvent.DB_STATES.STATE_STATEMENT_END);
         } catch (SQLException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }

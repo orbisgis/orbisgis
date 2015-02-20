@@ -82,16 +82,7 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
     private CatalogComparator catalogComparator = new CatalogComparator();
     private boolean isH2;
     private Map<String, Integer> columnMap = new HashMap<>();
-    // Update Geocatalog only if query starts with this command. (lowercase)
-    private static final String[] updateSourceListQuery = new String[] {"drop", "create","alter"};
-    private static final int MAX_LENGTH_QUERY;
-    static {
-        int maxLen = 0;
-        for(String query : updateSourceListQuery) {
-            maxLen = Math.max(maxLen, query.length());
-        }
-        MAX_LENGTH_QUERY = maxLen;
-    }
+
     /**
      * Read filters components and generate filter instances
      * @return A list of filters
@@ -120,16 +111,8 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
 
     @Override
     public void progressionUpdate(StateEvent state) {
-        // DataBase update
-        String name = state.getName();
-        if(name != null) {
-            name = name.substring(0,MAX_LENGTH_QUERY).trim().toLowerCase();
-            for(String query : updateSourceListQuery) {
-                if(name.startsWith(query)) {
-                    onDataManagerChange();
-                    break;
-                }
-            }
+        if (state.isUpdateDatabaseStructure()) {
+            onDataManagerChange();
         }
     }
 
