@@ -28,16 +28,22 @@
  */
 package org.orbisgis.geocatalogtree.impl.nodes;
 
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.jooq.Catalog;
 import org.jooq.Field;
 import org.jooq.Meta;
 import org.jooq.QueryPart;
+import org.jooq.Record;
 import org.jooq.Schema;
 import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNodeImpl;
 import org.orbisgis.geocatalogtree.api.TreeNodeFactory;
+import org.orbisgis.geocatalogtree.icons.GeocatalogIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -49,8 +55,10 @@ import javax.swing.tree.TreePath;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode.*;
 
@@ -99,6 +107,39 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
     }
 
     /**
+     * Load nodes. Can be extended by overriding this method.
+     * @param parent Parent node to fill or update
+     * @param parentQueryPart Parent node JOOQ instance
+     * @param connection Active connection
+     * @param jTree JTree that will receive items
+     * @param allNodes Nodes created
+     * @param allNodesQueryPart QueryPart of nodes created
+     */
+    protected void loadNodes(GeoCatalogTreeNode parent, QueryPart parentQueryPart, Connection connection, JTree
+            jTree, List<GeoCatalogTreeNodeImpl> allNodes, List<QueryPart> allNodesQueryPart) throws SQLException {
+        DefaultTreeModel treeModel = (DefaultTreeModel)jTree.getModel();
+        // Read Meta and create all nodes
+        switch (parent.getNodeType()) {
+            case NODE_DATABASE:
+                loadCatalog(parent, DSL.using(connection).meta(), treeModel,allNodes, allNodesQueryPart);
+                break;
+            case NODE_CATALOG:
+                loadSchema((Catalog)parentQueryPart,allNodes, allNodesQueryPart);
+                break;
+            case NODE_SCHEMA:
+                loadTable((Schema)parentQueryPart,allNodes, allNodesQueryPart, connection);
+                break;
+            case NODE_TABLE:
+                allNodes.add(new GeoCatalogTreeNodeImpl(this, NODE_COLUMNS, I18N.tr("Columns")));
+                allNodesQueryPart.add(parentQueryPart);
+                break;
+            case NODE_COLUMNS:
+                loadFields((Table)parentQueryPart, allNodes, allNodesQueryPart);
+                break;
+        }
+    }
+
+    /**
      * Load sub-nodes
      * @param parent Parent node to fill or update
      * @param parentQueryPart Parent node JOOQ instance
@@ -114,25 +155,7 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
         }
         List<GeoCatalogTreeNodeImpl> allNodes = new ArrayList<>(parent.getChildCount());
         List<QueryPart> allNodesQueryPart = new ArrayList<>(parent.getChildCount());
-        // Read Meta and create all nodes
-        switch (parent.getNodeType()) {
-            case NODE_DATABASE:
-                loadCatalog(parent, DSL.using(connection).meta(), treeModel,allNodes, allNodesQueryPart);
-                break;
-            case NODE_CATALOG:
-                loadSchema((Catalog)parentQueryPart,allNodes, allNodesQueryPart);
-                break;
-            case NODE_SCHEMA:
-                loadTable((Schema)parentQueryPart,allNodes, allNodesQueryPart);
-                break;
-            case NODE_TABLE:
-                allNodes.add(new GeoCatalogTreeNodeImpl(this, NODE_COLUMNS, I18N.tr("Columns")));
-                allNodesQueryPart.add(parentQueryPart);
-                break;
-            case NODE_COLUMNS:
-                loadFields((Table)parentQueryPart, allNodes, allNodesQueryPart);
-                break;
-        }
+        loadNodes(parent, parentQueryPart, connection, jTree, allNodes, allNodesQueryPart);
         Map<String, GeoCatalogTreeNode> oldNodes = parent.getChildrenIdentifier();
         // Check if the node already exist in the tree or if old nodes has been removed from db
         for(int nodeId=0; nodeId < allNodes.size(); nodeId++) {
@@ -216,18 +239,41 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
         }
     }
 
-    private void loadTable(Schema schema, List<GeoCatalogTreeNodeImpl> nodes, List<QueryPart> nodesQueryPart) {
+    private void loadTable(Schema schema, List<GeoCatalogTreeNodeImpl> nodes, List<QueryPart> nodesQueryPart, Connection connection) throws SQLException {
         if(schema != null) {
             for (Table table : schema.getTables()) {
-                nodes.add(new GeoCatalogTreeNodeImpl(this, NODE_TABLE, table.getName()));
+                // Check if the table is a geo table
+                boolean hasGeoField = !SFSUtilities.getGeometryFields(connection, new TableLocation(null, schema
+                        .getName(), table.getName())).isEmpty();
+                if (hasGeoField) {
+                    nodes.add(new GeoCatalogTreeNodeImpl(this, NODE_TABLE, table.getName(), GeocatalogIcon.getIcon
+                            ("geofile"), GeocatalogIcon.getIcon("geofile")));
+                } else {
+                    nodes.add(new GeoCatalogTreeNodeImpl(this, NODE_TABLE, table.getName(), GeocatalogIcon.getIcon
+                            ("flatfile"), GeocatalogIcon.getIcon("flatfile")));
+                }
                 nodesQueryPart.add(table);
             }
         }
     }
     private void loadFields(Table table, List<GeoCatalogTreeNodeImpl> nodes, List<QueryPart> nodesQueryPart) {
         if(table != null) {
+            // Fetch PK for icon
+            Set<String> pkFieldNames = new HashSet<>();
+            UniqueKey pk = table.getPrimaryKey();
+            if(pk != null) {
+                List<TableField> fields = pk.getFields();
+                for(TableField field : fields) {
+                    pkFieldNames.add(field.getName());
+                }
+            }
             for(Field field : table.fields()) {
-                GeoCatalogTreeNodeImpl fieldNode = new GeoCatalogTreeNodeImpl(this, NODE_COLUMN, field.getName());
+                GeoCatalogTreeNodeImpl fieldNode;
+                if(pkFieldNames.contains(field.getName())) {
+                    fieldNode = new GeoCatalogTreeNodeImpl(this, NODE_COLUMN, field.getName(), GeocatalogIcon.getIcon("key"));
+                } else {
+                    fieldNode = new GeoCatalogTreeNodeImpl(this, NODE_COLUMN, field.getName());
+                }
                 fieldNode.setAllowsChildren(false);
                 nodes.add(fieldNode);
                 nodesQueryPart.add(field);
