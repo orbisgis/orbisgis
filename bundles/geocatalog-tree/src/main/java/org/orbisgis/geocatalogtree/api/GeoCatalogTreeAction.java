@@ -92,6 +92,6 @@ public class GeoCatalogTreeAction extends DefaultAction {
                 }
             }
         }
-        return super.isEnabled() && (nodeFilter.isEmpty() || !foundIncompatible);
+        return super.isEnabled() && (nodeFilter.isEmpty() || (paths!= null && paths.length > 0 && !foundIncompatible));
     }
 }

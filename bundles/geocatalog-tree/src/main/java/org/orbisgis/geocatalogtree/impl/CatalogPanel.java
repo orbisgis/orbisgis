@@ -29,11 +29,14 @@
 package org.orbisgis.geocatalogtree.impl;
 
 import org.apache.commons.collections4.IteratorUtils;
+import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.utilities.JDBCUtilities;
 import org.jooq.impl.DSL;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DatabaseView;
+import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.dbjobs.jobs.DropTable;
+import org.orbisgis.dbjobs.jobs.ExportInFileOperation;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeAction;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNodeImpl;
@@ -45,6 +48,7 @@ import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
 import org.orbisgis.sif.components.fstree.TreeNodeBusy;
+import org.orbisgis.sif.components.resourceTree.AbstractTreeModel;
 import org.orbisgis.sif.components.resourceTree.TreeSelectionIterable;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
@@ -73,6 +77,7 @@ import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.BorderLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -110,6 +115,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
     private TreeNodeFactoryImpl defaultTreeNodeFactory;
     private AtomicBoolean loadingNodeChildren = new AtomicBoolean(false);
     private ExecutorService executorService;
+    private DriverFunctionContainer driverFunctionContainer;
 
     public CatalogPanel() {
         super(new BorderLayout());
@@ -124,11 +130,6 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         this.executorService = null;
     }
 
-
-
-
-
-    @Activate
     public void init() {
         defaultTreeNodeFactory = new TreeNodeFactoryImpl();
         addTreeNodeFactory(defaultTreeNodeFactory);
@@ -153,6 +154,15 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         // Add a listener to put additional actions to this docking
         dockingActions.addPropertyChangeListener(new ActionDockingListener(dockingParameters));
         addActions();
+    }
+
+    @Reference
+    public void setDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
+        this.driverFunctionContainer = driverFunctionContainer;
+    }
+
+    public void unsetDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
+        this.driverFunctionContainer = null;
     }
 
     @Override
@@ -279,35 +289,44 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
      * Add linked file to selected schema
      */
     public void onMenuAddLinkedFile() {
-
+        driverFunctionContainer.importFile(this, DriverFunction.IMPORT_DRIVER_TYPE.LINK);
     }
 
     /**
      * Add all files from selected folder recursively
      */
     public void onMenuAddFilesFromFolder() {
-
+        driverFunctionContainer.addFilesFromFolder(this, DriverFunction.IMPORT_DRIVER_TYPE.LINK);
     }
 
     /**
      * Copy file content into a table
      */
     public void onMenuImportFile() {
-
+        driverFunctionContainer.importFile(this, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
     }
 
     /**
      * Copy all files in a folder to tables
      */
     public void onMenuImportFilesFromFolder() {
-
+        driverFunctionContainer.addFilesFromFolder(this, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
     }
 
     /**
      * Export a table into a file.
      */
     public void onMenuSaveInfile() {
-
+        List<String> sources = new ArrayList<>(dbTree.getSelectionCount());
+        for(GeoCatalogTreeNode treeNode : new TreeSelectionIterable<>(dbTree.getSelectionPaths(), GeoCatalogTreeNode.class)) {
+            if(GeoCatalogTreeNode.NODE_TABLE.equals(treeNode.getNodeType())) {
+                sources.add(treeNode.getNodeIdentifier());
+            }
+        }
+        ExportInFileOperation exportJob = ExportInFileOperation.saveInfile(dataManager.getDataSource(), sources, driverFunctionContainer);
+        if(exportJob != null) {
+            execute(exportJob);
+        }
     }
 
     /**
@@ -321,7 +340,9 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
             }
         }
         DropTable job = DropTable.onMenuRemoveSource(dataManager.getDataSource(), sources, this, this);
-        execute(job);
+        if(job != null) {
+            execute(job);
+        }
     }
 
     private void execute(SwingWorker swingWorker) {
@@ -354,6 +375,20 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
     public void onMouseActionOnSourceList(MouseEvent e) {
         //Manage selection of items before popping up the menu
         if (e.isPopupTrigger()) { //Right mouse button under linux and windows
+            //Update selection
+            TreePath path = dbTree.getPathForLocation(e.getX(), e.getY());
+            TreePath[] selectionPaths = dbTree.getSelectionPaths();
+            if (selectionPaths != null && path != null){
+                if (!AbstractTreeModel.contains(selectionPaths, path)) {
+                    if (e.isControlDown()) {
+                        dbTree.addSelectionPath(path);
+                    } else {
+                        dbTree.setSelectionPath(path);
+                    }
+                }
+            } else {
+                dbTree.setSelectionPath(path);
+            }
             JPopupMenu popup = new JPopupMenu();
             popupActions.copyEnabledActions(popup);
             if (popup.getComponentCount()>0) {
@@ -390,6 +425,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
 
     @Activate
     public void activate() {
+        init();
         new InitTree(this).execute();
     }
 
