@@ -57,7 +57,8 @@ public class SQLFunctionsPanel extends JPanel {
         private final JLabel functionLabelCount;
         private final FilterFactoryManager.FilterChangeListener filterEvent = EventHandler.create(FilterFactoryManager.FilterChangeListener.class,this,"doFilter");
         private AtomicBoolean initialised = new AtomicBoolean(false);
-        private JTextPane functionDescription;
+        private JEditorPane functionDescription;
+        private JPanel funcList = new JPanel(new BorderLayout());
         protected final static I18n I18N = I18nFactory.getI18n(SQLFunctionsPanel.class);
 
         private static final String FUNCTION_COUNT = I18n.marktr("Function count = {0}");
@@ -76,18 +77,19 @@ public class SQLFunctionsPanel extends JPanel {
                 list.setCellRenderer(new FunctionListRenderer(list));
                 list.setTransferHandler(new FunctionListTransferHandler());
                 list.setDragEnabled(true);
-                        
                 functionFilters.setUserCanRemoveFilter(false);
-                expandedPanel.add(functionFilters.makeFilterPanel(false), BorderLayout.NORTH);                
-                functionDescription = new JTextPane();
+                funcList.add(functionFilters.makeFilterPanel(false), BorderLayout.NORTH);
+                funcList.add(new JScrollPane(list), BorderLayout.CENTER);
+                functionDescription = new JEditorPane();
                 functionDescription.setText(I18N.tr("Select a function to display its description."));  
                 functionDescription.setContentType("text/html");
                 functionDescription.setEditable(false);
                 DefaultCaret caret = (DefaultCaret)functionDescription.getCaret();
                 caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
-                JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(list), new JScrollPane(functionDescription));                
+                JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, funcList, new JScrollPane(functionDescription));
+                splitPane.setResizeWeight(0.5);
                 expandedPanel.add(splitPane, BorderLayout.CENTER);
-                expandedPanel.add(functionLabelCount, BorderLayout.SOUTH);
+                funcList.add(functionLabelCount, BorderLayout.SOUTH);
                 add(expandedPanel, BorderLayout.CENTER);
                 expandedPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
                 collapse();
@@ -170,7 +172,7 @@ public class SQLFunctionsPanel extends JPanel {
          */
         public final void expand() {
                 if (!expandedPanel.isVisible()) {
-                        setPreferredSize(null);
+                        setPreferredSize(funcList.getPreferredSize());
                         expandedPanel.setVisible(true);
                 }
         }
