@@ -33,6 +33,8 @@ import org.orbisgis.sqlconsole.icons.SQLConsoleIcon;
 
 import javax.swing.*;
 import java.awt.*;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Class to improve the function list rendering. Add icons corresponding to
@@ -43,26 +45,30 @@ import java.awt.*;
 public class FunctionListRenderer extends ListLaFRenderer<FunctionElement> {
         private static final long serialVersionUID = 1L;
 
-        public static final int TOOLTIP_WIDTH_PX = 300;
+        public static final int TOOLTIP_WIDTH_PX = 100;
+        protected final static I18n I18N = I18nFactory.getI18n(FunctionListRenderer.class);
 
         public FunctionListRenderer(JList list) {
                 super(list);
         }
 
-        
-        private static Icon getFunctionIcon(FunctionElement value) {
-                int type = value.getFunctionType();
+        /**
+         * Display an icon for the function
+         * @return 
+         */
+        private static Icon getFunctionIcon() {
                 return SQLConsoleIcon.getIcon("builtinfunctionmap");
         }
+        
         @Override
         public Component getListCellRendererComponent(JList<? extends FunctionElement> jlist, FunctionElement sqlFunction, int index, boolean isSelected, boolean cellHasFocus) {
                 Component nativeCell = lookAndFeelRenderer.getListCellRendererComponent(jlist, sqlFunction, index, isSelected, cellHasFocus);
                 if(nativeCell instanceof JLabel) {
                         JLabel renderingComp = (JLabel) nativeCell;
-                        renderingComp.setIcon(getFunctionIcon(sqlFunction));
+                        renderingComp.setIcon(getFunctionIcon());
                         renderingComp.setText(sqlFunction.getFunctionName());
                         renderingComp.setToolTipText("<html><body><p style='width: " + TOOLTIP_WIDTH_PX + "px;'>"
-                                + sqlFunction.getToolTip()
+                                + I18N.tr("Drag and drop the function to the SQL editor.")
                                 + "</p></body></html>");
                 }
                 return nativeCell;
