@@ -45,7 +45,7 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * A simple panel to list all SQL functions.
  * @author Erwan Bocher
- * TODO filter with FilterFactoryManager
+ * @author Nicolas Fortin
  */
 public class SQLFunctionsPanel extends JPanel {
         private static final long serialVersionUID = 1L;
@@ -60,7 +60,7 @@ public class SQLFunctionsPanel extends JPanel {
         private JEditorPane functionDescription;
         private JPanel funcList = new JPanel(new BorderLayout());
         protected final static I18n I18N = I18nFactory.getI18n(SQLFunctionsPanel.class);
-
+        private static final String NO_FUNCTION_MESSAGE = I18n.marktr("<html><body>Select a function to display its description.</body></html>");
         private static final String FUNCTION_COUNT = I18n.marktr("Function count = {0}");
         
         public SQLFunctionsPanel(DataSource dataSource) {
@@ -73,7 +73,7 @@ public class SQLFunctionsPanel extends JPanel {
                 list.setBorder(BorderFactory.createLoweredBevelBorder());
                 list.setModel(functionListModel);
                 list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-                list.addListSelectionListener(EventHandler.create(ListSelectionListener.class,this,"onListChange"));
+                list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListChange"));
                 list.setCellRenderer(new FunctionListRenderer(list));
                 list.setTransferHandler(new FunctionListTransferHandler());
                 list.setDragEnabled(true);
@@ -81,9 +81,9 @@ public class SQLFunctionsPanel extends JPanel {
                 funcList.add(functionFilters.makeFilterPanel(false), BorderLayout.NORTH);
                 funcList.add(new JScrollPane(list), BorderLayout.CENTER);
                 functionDescription = new JEditorPane();
-                functionDescription.setText(I18N.tr("Select a function to display its description."));  
                 functionDescription.setContentType("text/html");
                 functionDescription.setEditable(false);
+                functionDescription.setText(I18N.tr(NO_FUNCTION_MESSAGE));
                 DefaultCaret caret = (DefaultCaret)functionDescription.getCaret();
                 caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
                 JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, funcList, new JScrollPane(functionDescription));
@@ -130,14 +130,16 @@ public class SQLFunctionsPanel extends JPanel {
             if (functElem != null) {
                 String description = functElem.getSQLRemarks();
                 StringBuilder stringBuilder = new StringBuilder("<html><body><p><b>Description<b></p><br>");
-                if (description == null) {
+                if (description == null || description.isEmpty()) {
                     stringBuilder.append(I18N.tr("No description available."));
                 } else {
                     stringBuilder.append(description.replaceAll("\n", "<br>"));
                 }
                 stringBuilder.append("</body></html>");
                 functionDescription.setText(stringBuilder.toString());
-            }       
+            } else {
+                functionDescription.setText(I18N.tr(NO_FUNCTION_MESSAGE));
+            }
         }
         
         /**

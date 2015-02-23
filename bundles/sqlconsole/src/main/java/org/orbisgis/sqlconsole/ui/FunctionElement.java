@@ -277,7 +277,9 @@ public class FunctionElement {
             }
         }
         // Delete last newline character
-        sb.delete(sb.length() - 1, sb.length());
+        if(sb.length() > 1) {
+            sb.delete(sb.length() - 1, sb.length());
+        }
     }
 
     private class Signature {
