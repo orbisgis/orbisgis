@@ -29,6 +29,7 @@
 package org.orbisgis.geocatalogtree.api;
 
 import javax.swing.JTree;
+import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -49,4 +50,20 @@ public interface TreeNodeFactory {
      * @param tree JTree instance
      */
     void updateChildren(GeoCatalogTreeNode parent, Connection connection, JTree tree) throws SQLException;
+
+    /**
+     * Called before the value of a node is updated after a user edition.
+     * @param node Edited node
+     * @param newValue New label
+     * @throws PropertyVetoException Throw if the new value is not accepted.
+     */
+    void nodeValueVetoableChange(GeoCatalogTreeNode node, String newValue) throws PropertyVetoException;
+
+    /**
+     * Called after the value of a node is updated after a user edition.
+     * @param node Edited node
+     * @param oldValue Old value of the node
+     * @param newValue New value of the node
+     */
+    void nodeValueChange(GeoCatalogTreeNode node, String oldValue, String newValue);
 }

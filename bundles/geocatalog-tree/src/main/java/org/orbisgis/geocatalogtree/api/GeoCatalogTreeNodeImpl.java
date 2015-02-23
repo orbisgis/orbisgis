@@ -33,6 +33,7 @@ import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +47,7 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
     private ImageIcon expandedIcon;
     private ImageIcon collapsedIcon;
     private ImageIcon leafIcon;
+    private boolean editable = false;
 
     public GeoCatalogTreeNodeImpl(TreeNodeFactory treeNodeFactory, String nodeType,String name) {
         super(name);
@@ -132,5 +134,19 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
     @Override
     public int hashCode() {
         return nodeType.hashCode();
+    }
+
+    @Override
+    public boolean isEditable() {
+        return editable;
+    }
+
+    /**
+     * @param editable True to set this node editable
+     * @return this
+     */
+    public GeoCatalogTreeNodeImpl setEditable(boolean editable) {
+        this.editable = editable;
+        return this;
     }
 }

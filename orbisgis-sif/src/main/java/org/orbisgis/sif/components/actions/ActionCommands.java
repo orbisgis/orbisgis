@@ -42,6 +42,7 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.ButtonGroup;
 import javax.swing.ButtonModel;
+import javax.swing.ComponentInputMap;
 import javax.swing.DefaultButtonModel;
 import javax.swing.InputMap;
 import javax.swing.JButton;
@@ -549,6 +550,8 @@ public class ActionCommands extends BeanPropertyChangeSupport implements Actions
         public void setAccelerators(JComponent component) {
                 setAccelerators(component, JComponent.WHEN_FOCUSED);
         }
+
+
         /**
          * Apply to the component the actions
          * Text key shortcuts, Accelerators
@@ -557,7 +560,27 @@ public class ActionCommands extends BeanPropertyChangeSupport implements Actions
          *        WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
          */
         public void setAccelerators(JComponent component, int condition) {
-                InputMap im = component.getInputMap(condition);
+                setAccelerators(component, condition, true);
+        }
+        /**
+         * Apply to the component the actions
+         * Text key shortcuts, Accelerators
+         * @param component Component that hold actionMap
+         * @param condition one of WHEN_IN_FOCUSED_WINDOW, WHEN_FOCUSED,
+         *        WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
+         * @param overwrite Overwrite accelerators already in place.
+         */
+        public void setAccelerators(JComponent component, int condition, boolean overwrite) {
+                InputMap im;
+                if(!overwrite) {
+                        im = component.getInputMap(condition);
+                } else {
+                        if(condition == JComponent.WHEN_IN_FOCUSED_WINDOW) {
+                                im = new ComponentInputMap(component);
+                        } else {
+                                im = new InputMap();
+                        }
+                }
                 ActionMap actionMap = component.getActionMap();
                 for(Action action : actions) {
                         KeyStroke actionStroke = ActionTools.getKeyStroke(action);
@@ -572,6 +595,9 @@ public class ActionCommands extends BeanPropertyChangeSupport implements Actions
                                         }
                                 }
                         }
+                }
+                if(overwrite) {
+                        component.setInputMap(condition, im);
                 }
         }
         /**

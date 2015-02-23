@@ -68,4 +68,9 @@ public interface GeoCatalogTreeNode extends MutableTreeNode {
      * @return Identifier set of all child
      */
     Map<String, GeoCatalogTreeNode> getChildrenIdentifier();
+
+    /**
+     * @return True if this node value can be edited by the user
+     */
+    boolean isEditable();
 }

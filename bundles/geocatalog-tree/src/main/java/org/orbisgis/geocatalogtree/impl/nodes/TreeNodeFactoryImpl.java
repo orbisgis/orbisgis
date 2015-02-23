@@ -48,9 +48,11 @@ import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -73,7 +75,7 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
 
     @Override
     public String[] getParentNodeType() {
-        return new String[]{NODE_DATABASE, NODE_CATALOG, NODE_SCHEMA, NODE_TABLE, NODE_COLUMNS};
+        return new String[]{NODE_DATABASE, NODE_CATALOG, NODE_SCHEMA, NODE_TABLE, NODE_COLUMNS, NODE_INDEXES};
     }
 
     @Override
@@ -101,6 +103,8 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
                 case NODE_TABLE:
                     return ((Schema) parentQueryPart).getTable(treeNode.getNodeIdentifier());
                 case NODE_COLUMNS:
+                    return parentQueryPart;
+                case NODE_INDEXES:
                     return parentQueryPart;
             }
         }
@@ -301,12 +305,13 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
         if (table != null) {
             // Fetch all index
             TableLocation tableLocation = new TableLocation(table.getSchema().getName(), table.getName());
+            List<String> spatialFields = SFSUtilities.getGeometryFields(connection, tableLocation);
+            // Fetch
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             try(ResultSet rs = databaseMetaData.getIndexInfo(tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable(), false, true)) {
                 while(rs.next()) {
                     String indexName = rs.getString("INDEX_NAME");
                     String columnName = rs.getString("COLUMN_NAME");
-                    String indexQualifier = rs.getString("INDEX_QUALIFIER");
                     if(indexName != null) {
                         StringBuilder label = new StringBuilder(indexName);
                         if(columnName != null) {
@@ -314,13 +319,29 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
                             label.append(columnName);
                             label.append(")");
                         }
+                        ImageIcon leafIcon;
+                        if(spatialFields.contains(columnName)) {
+                            leafIcon = GeocatalogIcon.getIcon("index_geo");
+                        } else {
+                            leafIcon = GeocatalogIcon.getIcon("index_alpha");
+                        }
                         nodes.add(new GeoCatalogTreeNodeImpl(this, GeoCatalogTreeNode
-                                .NODE_INDEX, label.toString(), GeocatalogIcon.getIcon("index_alpha")));
+                                .NODE_INDEX, label.toString(), leafIcon));
                         nodesQueryPart.add(table);
                     }
                 }
             }
         }
+    }
+
+    @Override
+    public void nodeValueVetoableChange(GeoCatalogTreeNode node, String newValue) throws PropertyVetoException {
+
+    }
+
+    @Override
+    public void nodeValueChange(GeoCatalogTreeNode node, String oldValue, String newValue) {
+
     }
 }
 

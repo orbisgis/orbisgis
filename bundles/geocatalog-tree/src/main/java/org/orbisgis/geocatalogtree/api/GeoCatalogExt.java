@@ -29,6 +29,7 @@
 package org.orbisgis.geocatalogtree.api;
 
 import javax.swing.JTree;
+import java.util.List;
 
 /**
  * Available methods for GeoCatalog plugins, action bar title and popup menu.
@@ -40,7 +41,7 @@ public interface GeoCatalogExt {
          *
          * @return
          */
-        String[] getSelectedSources();
+        List<String> getSelectedSources();
 
         /**
          * Reload the list of source from the DataBase

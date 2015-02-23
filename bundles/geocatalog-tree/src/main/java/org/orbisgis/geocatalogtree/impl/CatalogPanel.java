@@ -28,9 +28,9 @@
  */
 package org.orbisgis.geocatalogtree.impl;
 
-import org.apache.commons.collections4.IteratorUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.jooq.impl.DSL;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DatabaseProgressionListener;
@@ -43,6 +43,7 @@ import org.orbisgis.geocatalogtree.api.GeoCatalogTreeAction;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNodeImpl;
 import org.orbisgis.geocatalogtree.api.PopupMenu;
+import org.orbisgis.geocatalogtree.api.PopupTarget;
 import org.orbisgis.geocatalogtree.api.TreeNodeFactory;
 import org.orbisgis.geocatalogtree.icons.GeocatalogIcon;
 import org.orbisgis.geocatalogtree.impl.nodes.TreeNodeFactoryImpl;
@@ -73,13 +74,14 @@ import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.SwingWorker;
 import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.BorderLayout;
-import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -104,7 +106,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Nicolas Fortin
  */
 @Component(service = DockingPanel.class)
-public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpandListener, DatabaseView, DatabaseProgressionListener {
+public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpandListener, DatabaseView, DatabaseProgressionListener, PopupTarget {
     private JTree dbTree;
     private DefaultTreeModel defaultTreeModel;
     private DockingPanelParameters dockingParameters = new DockingPanelParameters();
@@ -118,9 +120,52 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
     private AtomicBoolean loadingNodeChildren = new AtomicBoolean(false);
     private ExecutorService executorService;
     private DriverFunctionContainer driverFunctionContainer;
+    private Boolean isH2;
 
     public CatalogPanel() {
         super(new BorderLayout());
+    }
+
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC,
+            policyOption = ReferencePolicyOption.GREEDY)
+    public void addPopupMenu(PopupMenu popupMenu) {
+        popupActions.addActionFactory(popupMenu, this);
+        popupActions.setAccelerators(this);
+    }
+
+    public void removePopupMenu(PopupMenu popupMenu) {
+        popupActions.removeActionFactory(popupMenu);
+        popupActions.setAccelerators(this);
+    }
+
+    @Override
+    public List<String> getSelectedSources() {
+        List<String> sources = new ArrayList<>(dbTree.getSelectionCount());
+        for (GeoCatalogTreeNode treeNode : new TreeSelectionIterable<>(dbTree.getSelectionPaths(), GeoCatalogTreeNode
+                .class)) {
+            if (GeoCatalogTreeNode.NODE_TABLE.equals(treeNode.getNodeType())) {
+                sources.add(new TableLocation(treeNode.getParent().getNodeIdentifier(), treeNode.getNodeIdentifier())
+                        .toString(isH2()));
+            }
+        }
+        return sources;
+    }
+
+    private boolean isH2() {
+        if(isH2 == null) {
+            try(Connection connection = dataManager.getDataSource().getConnection()) {
+                isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            } catch (SQLException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+                return false;
+            }
+        }
+        return isH2;
+    }
+
+    @Override
+    public JTree getTree() {
+        return dbTree;
     }
 
     @Reference
@@ -146,6 +191,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         dbTree.setRootVisible(false);
         dbTree.setShowsRootHandles(true);
         dbTree.setEditable(true);
+        dbTree.addTreeSelectionListener(new IsEditableHandler(dbTree));
         add(new JScrollPane(dbTree));
         dockingParameters.setName("geocatalog-tree");
         dockingParameters.setTitle(I18N.tr("DB Tree"));
@@ -443,14 +489,15 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
     private void initTree() {
         // Load catalogs
         try(Connection connection = dataManager.getDataSource().getConnection()) {
-            defaultTreeModel = new DefaultTreeModel(new GeoCatalogTreeNodeImpl(null, "", ""), true);
+            defaultTreeModel = new GeoCatalogTreeModel(new GeoCatalogTreeNodeImpl(null, "", ""), true);
             defaultTreeNodeFactory.loadDatabase(DSL.using(connection).meta(), defaultTreeModel);
             dbTree.setModel(defaultTreeModel);
             dbTree.setCellRenderer(new CustomTreeCellRenderer(dbTree));
             dbTree.expandPath(new TreePath(defaultTreeModel.getRoot()));
-            updateNode((GeoCatalogTreeNode)defaultTreeModel.getRoot());
+            updateNode((GeoCatalogTreeNode) defaultTreeModel.getRoot());
             dbTree.addTreeWillExpandListener(this);
             dataManager.addDatabaseProgressionListener(this, StateEvent.DB_STATES.STATE_STATEMENT_END);
+            popupActions.setAccelerators(this);
         } catch (SQLException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }
@@ -558,6 +605,26 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
                 loadingNodeChildren.set(false);
             }
             return null;
+        }
+    }
+
+    /**
+     * Change tree editable state using selected component editable state.
+     */
+    private static class IsEditableHandler implements TreeSelectionListener {
+        private JTree tree;
+
+        public IsEditableHandler(JTree tree) {
+            this.tree = tree;
+        }
+
+        @Override
+        public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
+            TreePath path = treeSelectionEvent.getPath();
+            Object lastPathComponent = path.getLastPathComponent();
+            if(lastPathComponent instanceof GeoCatalogTreeNode) {
+                tree.setEditable(((GeoCatalogTreeNode) lastPathComponent).isEditable());
+            }
         }
     }
 }
