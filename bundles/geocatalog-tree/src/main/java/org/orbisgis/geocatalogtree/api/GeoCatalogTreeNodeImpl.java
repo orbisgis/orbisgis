@@ -63,7 +63,7 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
     }
 
     public GeoCatalogTreeNodeImpl(TreeNodeFactory treeNodeFactory, String nodeType,String name, ImageIcon leafIcon) {
-        super(name);
+        super(name, false);
         this.treeNodeFactory = treeNodeFactory;
         this.nodeType = nodeType;
         this.leafIcon = leafIcon;

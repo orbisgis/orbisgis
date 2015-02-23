@@ -34,7 +34,6 @@ import org.jooq.Catalog;
 import org.jooq.Field;
 import org.jooq.Meta;
 import org.jooq.QueryPart;
-import org.jooq.Record;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -53,6 +52,8 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -130,11 +131,18 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
                 loadTable((Schema)parentQueryPart,allNodes, allNodesQueryPart, connection);
                 break;
             case NODE_TABLE:
-                allNodes.add(new GeoCatalogTreeNodeImpl(this, NODE_COLUMNS, I18N.tr("Columns")));
+                allNodes.add(new GeoCatalogTreeNodeImpl(this, NODE_COLUMNS, I18N.tr("Columns"),
+                        GeocatalogIcon.getIcon("column"), GeocatalogIcon.getIcon("column")));
+                allNodesQueryPart.add(parentQueryPart);
+                allNodes.add(new GeoCatalogTreeNodeImpl(this, NODE_INDEXES, I18N.tr("Index"),
+                        GeocatalogIcon.getIcon("index_folder"),GeocatalogIcon.getIcon("index_folder")));
                 allNodesQueryPart.add(parentQueryPart);
                 break;
             case NODE_COLUMNS:
                 loadFields((Table)parentQueryPart, allNodes, allNodesQueryPart);
+                break;
+            case NODE_INDEXES:
+                loadIndexes((Table)parentQueryPart, allNodes, allNodesQueryPart, connection);
                 break;
         }
     }
@@ -185,10 +193,16 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
         if(!oldNodes.isEmpty()) {
             // Removed nodes
             for(GeoCatalogTreeNode node : oldNodes.values()) {
-                treeModel.removeNodeFromParent(node);
+                if(isNodeMadeByThis(node)) {
+                    treeModel.removeNodeFromParent(node);
+                }
             }
         }
 
+    }
+
+    protected boolean isNodeMadeByThis(GeoCatalogTreeNode node) {
+        return node.getFactory() == this;
     }
 
     /**
@@ -233,7 +247,8 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
     private void loadSchema(Catalog catalog, List<GeoCatalogTreeNodeImpl> nodes, List<QueryPart> nodesQueryPart) {
         if(catalog != null) {
             for (Schema schema : catalog.getSchemas()) {
-                nodes.add(new GeoCatalogTreeNodeImpl(this, NODE_SCHEMA, schema.getName()));
+                nodes.add(new GeoCatalogTreeNodeImpl(this, NODE_SCHEMA, schema.getName(),
+                        GeocatalogIcon.getIcon("schema"), GeocatalogIcon.getIcon("schema")));
                 nodesQueryPart.add(schema);
             }
         }
@@ -272,11 +287,38 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
                 if(pkFieldNames.contains(field.getName())) {
                     fieldNode = new GeoCatalogTreeNodeImpl(this, NODE_COLUMN, field.getName(), GeocatalogIcon.getIcon("key"));
                 } else {
-                    fieldNode = new GeoCatalogTreeNodeImpl(this, NODE_COLUMN, field.getName());
+                    fieldNode = new GeoCatalogTreeNodeImpl(this, NODE_COLUMN, field.getName(), GeocatalogIcon.getIcon("column"));
                 }
                 fieldNode.setAllowsChildren(false);
                 nodes.add(fieldNode);
                 nodesQueryPart.add(field);
+            }
+        }
+    }
+
+    private void loadIndexes(Table table, List<GeoCatalogTreeNodeImpl> nodes, List<QueryPart> nodesQueryPart,
+                             Connection connection) throws SQLException {
+        if (table != null) {
+            // Fetch all index
+            TableLocation tableLocation = new TableLocation(table.getSchema().getName(), table.getName());
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            try(ResultSet rs = databaseMetaData.getIndexInfo(tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable(), false, true)) {
+                while(rs.next()) {
+                    String indexName = rs.getString("INDEX_NAME");
+                    String columnName = rs.getString("COLUMN_NAME");
+                    String indexQualifier = rs.getString("INDEX_QUALIFIER");
+                    if(indexName != null) {
+                        StringBuilder label = new StringBuilder(indexName);
+                        if(columnName != null) {
+                            label.append(" (");
+                            label.append(columnName);
+                            label.append(")");
+                        }
+                        nodes.add(new GeoCatalogTreeNodeImpl(this, GeoCatalogTreeNode
+                                .NODE_INDEX, label.toString(), GeocatalogIcon.getIcon("index_alpha")));
+                        nodesQueryPart.add(table);
+                    }
+                }
             }
         }
     }

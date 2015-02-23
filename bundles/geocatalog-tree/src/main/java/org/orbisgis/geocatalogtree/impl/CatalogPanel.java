@@ -149,7 +149,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         add(new JScrollPane(dbTree));
         dockingParameters.setName("geocatalog-tree");
         dockingParameters.setTitle(I18N.tr("DB Tree"));
-        dockingParameters.setTitleIcon(GeocatalogIcon.getIcon("geocatalog"));
+        dockingParameters.setTitleIcon(GeocatalogIcon.getIcon("db_tree"));
         dockingParameters.setCloseable(true);
         // Set the built-in actions to docking frame
         dockingParameters.setDockActions(dockingActions.getActions());
