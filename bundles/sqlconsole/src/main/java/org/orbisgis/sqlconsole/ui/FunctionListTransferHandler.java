@@ -59,7 +59,6 @@ public class FunctionListTransferHandler extends TransferHandler {
                     StringBuilder stringBuilder = new StringBuilder();
                     for(FunctionElement functionElement : list.getSelectedValuesList()) {
                         formatFunctionComment(stringBuilder,
-                                functionElement.getSQLRemarks(),
                                 functionElement.getSQLCommand());
                     }
                     return new StringSelection(stringBuilder.toString());
@@ -72,17 +71,10 @@ public class FunctionListTransferHandler extends TransferHandler {
      * Format function comment.
      *
      * @param s          StringBuilder
-     * @param toolTip    Tooltip
      * @param sqlCommand SQL command
      */
     protected void formatFunctionComment(StringBuilder s,
-                                         String toolTip,
-                                         String sqlCommand) {
-        s.append(SQL_COMMENT_CHARACTER);
-        if (toolTip != null) {
-            s.append(toolTip.replaceAll("\n", "\n" + SQL_COMMENT_CHARACTER)).append("\n");
-        }
-        s.append(SQL_COMMENT_CHARACTER).append(SIGNATURES).append("\n");
+                                         String sqlCommand) {        
         s.append(sqlCommand).append("\n");
     }
 }

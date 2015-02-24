@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# 211 <tiangeng211@gmail.com>, 2014
+# 211 <tiangeng211@gmail.com>, 2014-2015
 # Qingxiao ZHOU <overcloud.814@gmail.com>, 2013
 # yinghao li <liyinghao@hotmail.com>, 2013
 # 苏琦 <sqi0081@hotmail.com>, 2013
@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: OrbisGIS\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-03 16:21+0100\n"
-"PO-Revision-Date: 2015-02-03 15:47+0000\n"
-"Last-Translator: Nicolas Fortin <github@nettrader.fr>\n"
+"PO-Revision-Date: 2015-02-09 12:27+0000\n"
+"Last-Translator: 211 <tiangeng211@gmail.com>\n"
 "Language-Team: Chinese (http://www.transifex.com/projects/p/orbisgis/language/zh/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,27 +23,27 @@ msgstr ""
 
 #: org/orbisgis/geocatalog/impl/SourceListModel.java:277
 msgid "F_TABLE_CATALOG"
-msgstr ""
+msgstr "F_表_目录"
 
 #: org/orbisgis/geocatalog/impl/SourceListModel.java:278
 msgid "F_TABLE_SCHEMA"
-msgstr ""
+msgstr "F_表_模式"
 
 #: org/orbisgis/geocatalog/impl/SourceListModel.java:278
 msgid "F_TABLE_NAME"
-msgstr ""
+msgstr "F_表_名称"
 
 #: org/orbisgis/geocatalog/impl/SourceListModel.java:278
 msgid "TYPE"
-msgstr ""
+msgstr "类型"
 
 #: org/orbisgis/geocatalog/impl/SourceListModel.java:281
 msgid "Geometry columns information of tables are not available"
-msgstr ""
+msgstr "表中几何图形的列的信息无法使用"
 
 #: org/orbisgis/geocatalog/impl/SourceListModel.java:329
 msgid "Cannot read the table list"
-msgstr ""
+msgstr "无法读取表格名单"
 
 #: org/orbisgis/geocatalog/impl/io/ExportInFileOperation.java:68
 msgid "Save the source in a file."
@@ -67,40 +67,40 @@ msgstr "增加新的数据源筛选"
 
 #: org/orbisgis/geocatalog/impl/Catalog.java:398
 msgid "Select the file to import"
-msgstr ""
+msgstr "选择要导入的文件"
 
 #: org/orbisgis/geocatalog/impl/Catalog.java:408
 msgid "Select the file to open"
-msgstr ""
+msgstr "选择要打开的文件"
 
 #: org/orbisgis/geocatalog/impl/Catalog.java:454
 msgid "Cannot remove permanently a table system."
-msgstr ""
+msgstr "不能永久删除表系统"
 
 #: org/orbisgis/geocatalog/impl/Catalog.java:455
 msgid "Remove GeoCatalog tables"
-msgstr ""
+msgstr "删除GeoCatalog表"
 
 #: org/orbisgis/geocatalog/impl/Catalog.java:459
 msgid "Do you want..."
-msgstr ""
+msgstr "你想要..."
 
 #: org/orbisgis/geocatalog/impl/Catalog.java:469
 msgid "Delete GeoCatalog tables"
-msgstr ""
+msgstr "清除地理目录表"
 
 #: org/orbisgis/geocatalog/impl/Catalog.java:494
 #, java-format
 msgid "Save the source : {0}"
-msgstr ""
+msgstr "保存源：{0}"
 
 #: org/orbisgis/geocatalog/impl/Catalog.java:527
 msgid "Select the folder to open"
-msgstr ""
+msgstr "选择打开文件夹"
 
 #: org/orbisgis/geocatalog/impl/Catalog.java:534
 msgid "Select the folder to import"
-msgstr ""
+msgstr "选择文件夹来导入"
 
 #: org/orbisgis/geocatalog/impl/Catalog.java:600
 msgid "Add"
@@ -128,11 +128,11 @@ msgstr "从一个硬盘文件夹中添加一组文件。"
 
 #: org/orbisgis/geocatalog/impl/Catalog.java:620
 msgid "Import"
-msgstr ""
+msgstr "导入"
 
 #: org/orbisgis/geocatalog/impl/Catalog.java:623
 msgid "Copy the content of a file from hard drive."
-msgstr ""
+msgstr "从硬盘驱动器复制文件的内容。"
 
 #: org/orbisgis/geocatalog/impl/Catalog.java:633
 msgid "Save"
@@ -152,15 +152,15 @@ msgstr "从这个列表中删除选定的源代码。"
 
 #: org/orbisgis/geocatalog/impl/Catalog.java:653
 msgid "Refresh"
-msgstr ""
+msgstr "更新"
 
 #: org/orbisgis/geocatalog/impl/Catalog.java:654
 msgid "Read the content of the database"
-msgstr ""
+msgstr "读取数据库的内容"
 
 #: org/orbisgis/geocatalog/impl/jobs/DropTable.java:71
 msgid "Drop selected tables"
-msgstr ""
+msgstr "丢弃选择的表"
 
 #: org/orbisgis/geocatalog/impl/jobs/DropTable.java:89
 #, java-format
@@ -169,22 +169,22 @@ msgstr "无法删除源代码{0}"
 
 #: org/orbisgis/geocatalog/impl/jobs/ImportFiles.java:71
 msgid "Import file"
-msgstr ""
+msgstr "导入文件"
 
 #: org/orbisgis/geocatalog/impl/jobs/ImportFiles.java:88
 #, java-format
 msgid "No driver found for {0} extension"
-msgstr ""
+msgstr "没有发现驱动程序用于{0}扩展"
 
 #: org/orbisgis/geocatalog/impl/jobs/ImportFiles.java:92
 #: org/orbisgis/geocatalog/impl/jobs/ImportFiles.java:98
 msgid "Cannot import the file"
-msgstr ""
+msgstr "无法导入文件"
 
 #: org/orbisgis/geocatalog/impl/jobs/ImportFiles.java:100
 #, java-format
 msgid "Importation done in {0} sec"
-msgstr ""
+msgstr "导入完成在{0}秒"
 
 #: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:61
 #: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:124

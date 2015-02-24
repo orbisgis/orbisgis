@@ -28,24 +28,24 @@
  */
 package org.orbisgis.sqlconsole.ui;
 
+import java.awt.*;
+import java.beans.EventHandler;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.sql.DataSource;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.text.DefaultCaret;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.sqlconsole.ui.functionFilters.NameFilterFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.sql.DataSource;
-import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.beans.EventHandler;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * A simple panel to list all SQL functions.
  * @author Erwan Bocher
- * TODO filter with FilterFactoryManager
+ * @author Nicolas Fortin
  */
 public class SQLFunctionsPanel extends JPanel {
         private static final long serialVersionUID = 1L;
@@ -57,9 +57,10 @@ public class SQLFunctionsPanel extends JPanel {
         private final JLabel functionLabelCount;
         private final FilterFactoryManager.FilterChangeListener filterEvent = EventHandler.create(FilterFactoryManager.FilterChangeListener.class,this,"doFilter");
         private AtomicBoolean initialised = new AtomicBoolean(false);
-        
+        private JEditorPane functionDescription;
+        private JPanel funcList = new JPanel(new BorderLayout());
         protected final static I18n I18N = I18nFactory.getI18n(SQLFunctionsPanel.class);
-
+        private static final String NO_FUNCTION_MESSAGE = I18n.marktr("<html><body>Select a function to display its description.</body></html>");
         private static final String FUNCTION_COUNT = I18n.marktr("Function count = {0}");
         
         public SQLFunctionsPanel(DataSource dataSource) {
@@ -72,16 +73,23 @@ public class SQLFunctionsPanel extends JPanel {
                 list.setBorder(BorderFactory.createLoweredBevelBorder());
                 list.setModel(functionListModel);
                 list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-                list.addListSelectionListener(EventHandler.create(ListSelectionListener.class,this,"onListChange"));
-
-                expandedPanel.add(new JScrollPane(list), BorderLayout.CENTER);
-                functionFilters.setUserCanRemoveFilter(false);
-                expandedPanel.add(functionFilters.makeFilterPanel(false), BorderLayout.NORTH);
-                                
+                list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListChange"));
                 list.setCellRenderer(new FunctionListRenderer(list));
                 list.setTransferHandler(new FunctionListTransferHandler());
                 list.setDragEnabled(true);
-                expandedPanel.add(functionLabelCount, BorderLayout.SOUTH);
+                functionFilters.setUserCanRemoveFilter(false);
+                funcList.add(functionFilters.makeFilterPanel(false), BorderLayout.NORTH);
+                funcList.add(new JScrollPane(list), BorderLayout.CENTER);
+                functionDescription = new JEditorPane();
+                functionDescription.setContentType("text/html");
+                functionDescription.setEditable(false);
+                functionDescription.setText(I18N.tr(NO_FUNCTION_MESSAGE));
+                DefaultCaret caret = (DefaultCaret)functionDescription.getCaret();
+                caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+                JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, funcList, new JScrollPane(functionDescription));
+                splitPane.setResizeWeight(0.5);
+                expandedPanel.add(splitPane, BorderLayout.CENTER);
+                funcList.add(functionLabelCount, BorderLayout.SOUTH);
                 add(expandedPanel, BorderLayout.CENTER);
                 expandedPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
                 collapse();
@@ -112,9 +120,28 @@ public class SQLFunctionsPanel extends JPanel {
                 return sources;
         }
 
+        /**
+         * When the user click on a function in the list the description is showing and
+         * the number of corresponding functions.
+         */
         public void onListChange() {
             functionLabelCount.setText(I18N.tr(FUNCTION_COUNT, functionListModel.getSize()));
+            FunctionElement functElem = list.getSelectedValue();
+            if (functElem != null) {
+                String description = functElem.getSQLRemarks();
+                StringBuilder stringBuilder = new StringBuilder("<html><body><p><b>Description<b></p><br>");
+                if (description == null || description.isEmpty()) {
+                    stringBuilder.append(I18N.tr("No description available."));
+                } else {
+                    stringBuilder.append(description.replaceAll("\n", "<br>"));
+                }
+                stringBuilder.append("</body></html>");
+                functionDescription.setText(stringBuilder.toString());
+            } else {
+                functionDescription.setText(I18N.tr(NO_FUNCTION_MESSAGE));
+            }
         }
+        
         /**
          * Called by the listener filterEvent
          */
@@ -147,7 +174,7 @@ public class SQLFunctionsPanel extends JPanel {
          */
         public final void expand() {
                 if (!expandedPanel.isVisible()) {
-                        setPreferredSize(null);
+                        setPreferredSize(funcList.getPreferredSize());
                         expandedPanel.setVisible(true);
                 }
         }
