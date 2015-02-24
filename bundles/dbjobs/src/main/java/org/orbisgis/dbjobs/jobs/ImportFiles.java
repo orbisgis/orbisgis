@@ -61,13 +61,42 @@ public class ImportFiles extends SwingWorkerPM {
     private DriverFunctionContainer driverFunctionContainer;
     private DataManager dataManager;
     private DriverFunction.IMPORT_DRIVER_TYPE driverType;
+    private String schema;
 
+    /**
+     * Import file into database into the default schema
+     * @param dbView GUI to refresh when the operation is done
+     * @param driverFunctionContainer Container of file drivers.
+     * @param files Files to import
+     * @param dataManager DataManager that hold datasource
+     * @param driverType Type of import
+     */
     public ImportFiles(DatabaseView dbView, DriverFunctionContainer driverFunctionContainer, List<File> files, DataManager dataManager, DriverFunction.IMPORT_DRIVER_TYPE driverType) {
         this.dbView = dbView;
         this.driverFunctionContainer = driverFunctionContainer;
         this.files = files;
         this.dataManager = dataManager;
         this.driverType = driverType;
+        setTaskName(I18N.tr("Import file"));
+        schema = "";
+    }
+
+    /**
+     * Import file into database into the specified schema
+     * @param dbView GUI to refresh when the operation is done
+     * @param driverFunctionContainer Container of file drivers.
+     * @param files Files to import
+     * @param dataManager DataManager that hold datasource
+     * @param driverType Type of import
+     * @param schema Schema name where to create tables
+     */
+    public ImportFiles(DatabaseView dbView, DriverFunctionContainer driverFunctionContainer, List<File> files, DataManager dataManager, DriverFunction.IMPORT_DRIVER_TYPE driverType, String schema) {
+        this.dbView = dbView;
+        this.driverFunctionContainer = driverFunctionContainer;
+        this.files = files;
+        this.dataManager = dataManager;
+        this.driverType = driverType;
+        this.schema = schema;
         setTaskName(I18N.tr("Import file"));
     }
 
@@ -81,9 +110,13 @@ public class ImportFiles extends SwingWorkerPM {
                 String ext = FilenameUtils.getExtension(file.getName());
                 DriverFunction driverFunction = driverFunctionContainer.getImportDriverFromExt(ext, driverType);
                 if(driverFunction != null) {
-                    TableLocation tableName = new TableLocation("","",dataManager.findUniqueTableName(
-                            TableLocation.capsIdentifier(FileUtils.getNameFromURI(file.toURI()), isH2)));
-                    driverFunction.importFile(connection, tableName.toString() ,file, new H2GISProgressMonitor(filePm));
+                    String tableNameTest = TableLocation.capsIdentifier(FileUtils.getNameFromURI(file.toURI()), isH2);
+                    if(tableNameTest == null) {
+                        tableNameTest = FileUtils.getNameFromURI(file.toURI());
+                    }
+                    String tableName = dataManager.findUniqueTableName(new TableLocation("", schema ,tableNameTest)
+                            .toString(isH2));
+                    driverFunction.importFile(connection, tableName ,file, new H2GISProgressMonitor(filePm));
                 } else {
                     LOGGER.error(I18N.tr("No driver found for {0} extension", ext));
                 }

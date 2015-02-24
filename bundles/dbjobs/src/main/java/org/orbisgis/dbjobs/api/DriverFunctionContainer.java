@@ -82,4 +82,20 @@ public interface DriverFunctionContainer {
      * @param type Driver type, copy or link
      */
     void importFile(DatabaseView dbView, DriverFunction.IMPORT_DRIVER_TYPE type);
+
+    /**
+     * The user can load recursively several files from a folder. Popup a GUI to select the folder and execute the link/copy
+     * @param dbView View to update
+     * @param type Driver type
+     * @param schema Schema name, null for default schema
+     */
+    void addFilesFromFolder(DatabaseView dbView, DriverFunction.IMPORT_DRIVER_TYPE type, String schema);
+
+    /**
+     * The user can load several files from a folder. Popup a GUI to select the folder and execute the link/copy
+     * @param dbView View to update
+     * @param type Driver type, copy or link
+     * @param schema Schema name, null for default schema
+     */
+    void importFile(DatabaseView dbView, DriverFunction.IMPORT_DRIVER_TYPE type, String schema);
 }

@@ -139,7 +139,7 @@ public class DriverFunctionContainerImpl implements DriverFunctionContainer {
      * @param type Driver type
      */
     @Override
-    public void addFilesFromFolder(DatabaseView dbView, DriverFunction.IMPORT_DRIVER_TYPE type) {
+    public void addFilesFromFolder(DatabaseView dbView, DriverFunction.IMPORT_DRIVER_TYPE type, String schema) {
         String message;
         if(type == DriverFunction.IMPORT_DRIVER_TYPE.COPY) {
             message = I18N.tr("Select the folder to import");
@@ -173,7 +173,7 @@ public class DriverFunctionContainerImpl implements DriverFunctionContainer {
             // for each folder, we apply the method processFolder.
             // We use the filter selected by the user in the panel
             // to succeed in this operation.
-            executeJob(new ImportFiles(dbView, this, fileToLoad, dataManager, type));
+            executeJob(new ImportFiles(dbView, this, fileToLoad, dataManager, type, schema));
         }
     }
 
@@ -186,7 +186,7 @@ public class DriverFunctionContainerImpl implements DriverFunctionContainer {
         }
     }
 
-    public void importFile(DatabaseView dbView, DriverFunction.IMPORT_DRIVER_TYPE type) {
+    public void importFile(DatabaseView dbView, DriverFunction.IMPORT_DRIVER_TYPE type, String schema) {
         String panelMessage;
         if(type == DriverFunction.IMPORT_DRIVER_TYPE.COPY) {
             panelMessage = I18N.tr("Select the file to import");
@@ -210,8 +210,18 @@ public class DriverFunctionContainerImpl implements DriverFunctionContainer {
         if (UIFactory.showDialog(linkSourcePanel, true, true)) {
             // We can retrieve the files that have been selected by the user
             List<File> files = Arrays.asList(linkSourcePanel.getSelectedFiles());
-            executeJob(new ImportFiles(dbView, this, files, dataManager, type));
+            executeJob(new ImportFiles(dbView, this, files, dataManager, type, schema));
         }
+    }
+
+    @Override
+    public void addFilesFromFolder(DatabaseView dbView, DriverFunction.IMPORT_DRIVER_TYPE type) {
+        addFilesFromFolder(dbView, type, null);
+    }
+
+    @Override
+    public void importFile(DatabaseView dbView, DriverFunction.IMPORT_DRIVER_TYPE type) {
+        importFile(dbView, type, null);
     }
 
     private static class ImportFileFilter implements IOFileFilter {

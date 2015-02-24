@@ -347,18 +347,28 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         driverFunctionContainer.addFilesFromFolder(this, DriverFunction.IMPORT_DRIVER_TYPE.LINK);
     }
 
+    private String getSelectedSchema() {
+        // Get selected schema
+        String schema = null;
+        Object nodeObj = dbTree.getLastSelectedPathComponent();
+        if(nodeObj instanceof GeoCatalogTreeNode
+                && GeoCatalogTreeNode.NODE_SCHEMA.equals(((GeoCatalogTreeNode) nodeObj).getNodeType())) {
+            schema = ((GeoCatalogTreeNode) nodeObj).getNodeIdentifier();
+        }
+        return schema;
+    }
     /**
      * Copy file content into a table
      */
     public void onMenuImportFile() {
-        driverFunctionContainer.importFile(this, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+        driverFunctionContainer.importFile(this, DriverFunction.IMPORT_DRIVER_TYPE.COPY, getSelectedSchema());
     }
 
     /**
      * Copy all files in a folder to tables
      */
     public void onMenuImportFilesFromFolder() {
-        driverFunctionContainer.addFilesFromFolder(this, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+        driverFunctionContainer.addFilesFromFolder(this, DriverFunction.IMPORT_DRIVER_TYPE.COPY, getSelectedSchema());
     }
 
     /**
