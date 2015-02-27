@@ -119,7 +119,8 @@ public class DataSourceService implements DataSource {
                 // Init spatial
                 try(Connection connection = dataSource.getConnection();
                     Statement st = connection.createStatement()) {
-                    if (JDBCUtilities.isH2DataBase(connection.getMetaData())) {
+                    if (JDBCUtilities.isH2DataBase(connection.getMetaData()) &&
+                            !JDBCUtilities.tableExists(connection, "PUBLIC.GEOMETRY_COLUMNS")) {
                         st.execute("CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR\n" +
                                 "    \"org.h2gis.h2spatial.CreateSpatialExtension.initSpatialExtension\";\n" +
                                 "CALL SPATIAL_INIT();");
