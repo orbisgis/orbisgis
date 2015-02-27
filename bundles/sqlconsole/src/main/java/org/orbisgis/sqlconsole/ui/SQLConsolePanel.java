@@ -56,6 +56,7 @@ import org.orbisgis.sif.multiInputPanel.MIPValidationInteger;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.orbisgis.sqlconsole.api.SQLAction;
+import org.orbisgis.sqlconsole.api.SQLConsoleEditor;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.sqlconsole.icons.SQLConsoleIcon;
 import org.orbisgis.sqlconsole.actions.ExecuteScriptProcess;
@@ -123,6 +124,16 @@ public class SQLConsolePanel extends JPanel {
                 split.add(getCenterPanel(), BorderLayout.CENTER);
                 add(split, BorderLayout.CENTER);
                 add(getStatusToolBar(), BorderLayout.SOUTH);
+        }
+
+        public void addActionFactory(SQLAction sqlAction, SQLConsoleEditor sqlConsoleEditor) {
+                actions.addActionFactory(sqlAction, sqlConsoleEditor);
+                actions.setAccelerators(scriptPanel, WHEN_FOCUSED,false, sqlAction);
+        }
+
+        public void removeActionFactory(SQLAction sqlAction) {
+                actions.unsetAccelerators(scriptPanel, WHEN_FOCUSED, sqlAction);
+                actions.removeActionFactory(sqlAction);
         }
 
         /**

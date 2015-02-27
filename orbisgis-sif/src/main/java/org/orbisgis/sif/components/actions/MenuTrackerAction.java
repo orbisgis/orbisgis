@@ -16,6 +16,7 @@ public class MenuTrackerAction<TargetComponent> {
         public MenuTrackerAction(ActionFactoryService<TargetComponent> actionFactory, List<Action> actions,TargetComponent targetComponent) {
                 this.actionFactory = actionFactory;
                 this.actions = actions;
+                this.targetComponent = targetComponent;
         }
 
         public ActionFactoryService<TargetComponent> getActionFactory() {
