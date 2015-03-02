@@ -28,6 +28,8 @@
  */
 package org.orbisgis.geocatalogtree.impl.nodes;
 
+import org.h2gis.utilities.JDBCUrlParser;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.jooq.Catalog;
@@ -39,10 +41,14 @@ import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.editorjdbc.TransferableSource;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNodeImpl;
 import org.orbisgis.geocatalogtree.api.TreeNodeFactory;
 import org.orbisgis.geocatalogtree.icons.GeocatalogIcon;
+import org.orbisgis.sif.components.resourceTree.TreeSelectionIterable;
+import org.orbisgis.sif.edition.TransferableEditableElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -52,6 +58,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -72,6 +80,25 @@ import static org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode.*;
 public class TreeNodeFactoryImpl implements TreeNodeFactory {
     private static Logger LOGGER = LoggerFactory.getLogger(TreeNodeFactoryImpl.class);
     private static I18n I18N = I18nFactory.getI18n(TreeNodeFactoryImpl.class);
+    private DataManager dataManager;
+    private boolean isH2 = false;
+    private String defaultSchema = "PUBLIC";
+
+    public TreeNodeFactoryImpl(DataManager dataManager) {
+        this.dataManager = dataManager;
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
+            isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            try {
+                if (connection.getSchema() != null) {
+                    defaultSchema = connection.getSchema();
+                }
+            } catch (AbstractMethodError | Exception ex) {
+                // Driver has been compiled with JAVA 6, or is not implemented
+            }
+        } catch (SQLException ex) {
+            // Ignore
+        }
+    }
 
     @Override
     public String[] getParentNodeType() {
@@ -101,7 +128,7 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
                 case NODE_SCHEMA:
                     return ((Catalog) parentQueryPart).getSchema(treeNode.getNodeIdentifier());
                 case NODE_TABLE:
-                    return ((Schema) parentQueryPart).getTable(treeNode.getNodeIdentifier());
+                    return ((Schema) parentQueryPart).getTable(TableLocation.parse(treeNode.getNodeIdentifier()).getTable());
                 case NODE_COLUMNS:
                     return parentQueryPart;
                 case NODE_INDEXES:
@@ -262,14 +289,15 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
         if(schema != null) {
             for (Table table : schema.getTables()) {
                 // Check if the table is a geo table
-                boolean hasGeoField = !SFSUtilities.getGeometryFields(connection, new TableLocation(null, schema
-                        .getName(), table.getName())).isEmpty();
+                TableLocation identifier = new TableLocation(null, schema
+                        .getName(), table.getName());
+                boolean hasGeoField = !SFSUtilities.getGeometryFields(connection, identifier).isEmpty();
                 if (hasGeoField) {
-                    nodes.add(new GeoCatalogTreeNodeImpl(this, NODE_TABLE, table.getName(), GeocatalogIcon.getIcon
-                            ("geofile"), GeocatalogIcon.getIcon("geofile")));
+                    nodes.add(new GeoCatalogTreeNodeImpl(this, NODE_TABLE, identifier.toString(isH2), GeocatalogIcon.getIcon
+                            ("geofile"), GeocatalogIcon.getIcon("geofile")).setLabel(table.getName()));
                 } else {
-                    nodes.add(new GeoCatalogTreeNodeImpl(this, NODE_TABLE, table.getName(), GeocatalogIcon.getIcon
-                            ("flatfile"), GeocatalogIcon.getIcon("flatfile")));
+                    nodes.add(new GeoCatalogTreeNodeImpl(this, NODE_TABLE, identifier.toString(isH2), GeocatalogIcon.getIcon
+                            ("flatfile"), GeocatalogIcon.getIcon("flatfile")).setLabel(table.getName()));
                 }
                 nodesQueryPart.add(table);
             }
@@ -342,6 +370,53 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
     @Override
     public void nodeValueChange(GeoCatalogTreeNode node, String oldValue, String newValue) {
 
+    }
+
+    private String getSimplifiedTableIdentifier(String tableIdentifier) {
+        TableLocation columnTableIdentifier = TableLocation.parse(tableIdentifier);
+        return new TableLocation(columnTableIdentifier.getCatalog(), columnTableIdentifier.getSchema()
+                .equalsIgnoreCase(defaultSchema) ? "" : columnTableIdentifier.getSchema(), columnTableIdentifier
+                .getTable()).toString(isH2);
+    }
+
+    @Override
+    public Transferable createTransferable(JTree dbTree) {
+        List<String> sources = new ArrayList<>(dbTree.getSelectionCount());
+        List<String> columns = new ArrayList<>(dbTree.getSelectionCount());
+        String columnTable = "";
+        Transferable transferable = null;
+        for(GeoCatalogTreeNode treeNode : new TreeSelectionIterable<>(dbTree.getSelectionPaths(), GeoCatalogTreeNode.class)) {
+            switch (treeNode.getNodeType()) {
+                case GeoCatalogTreeNode.NODE_TABLE:
+                    sources.add(getSimplifiedTableIdentifier(treeNode.getNodeIdentifier()));
+                    break;
+                case GeoCatalogTreeNode.NODE_COLUMN:
+                    if(columnTable.isEmpty()) {
+                        columnTable = treeNode.getParent().getParent().getNodeIdentifier();
+                    }
+                    if(columnTable.equals(treeNode.getParent().getParent().getNodeIdentifier())) {
+                        columns.add(treeNode.getNodeIdentifier());
+                    }
+                    break;
+            }
+        }
+        if(!sources.isEmpty()) {
+            transferable = new TransferableSource(sources.toArray(new String[sources.size()]), dataManager);
+        } else if(!columns.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("SELECT ");
+            for(int i=0; i<columns.size();i++) {
+                if(i > 0) {
+                    sb.append(", ");
+                }
+                sb.append(columns.get(i));
+            }
+            sb.append(" FROM ");
+            sb.append(getSimplifiedTableIdentifier(columnTable));
+            sb.append(";");
+            transferable = new StringSelection(sb.toString());
+        }
+        return transferable;
     }
 }
 

@@ -178,16 +178,13 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
     }
 
     public void init() {
-        defaultTreeNodeFactory = new TreeNodeFactoryImpl();
+        defaultTreeNodeFactory = new TreeNodeFactoryImpl(dataManager);
         addTreeNodeFactory(defaultTreeNodeFactory);
         dbTree = new JTree(new String[0]);
         dbTree.addMouseListener(EventHandler.create(MouseListener.class, this,
                 "onMouseActionOnSourceList", "")); //This method ask the event data as argument
         //Items can be selected freely
-        dbTree.getSelectionModel().setSelectionMode(
-                TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-        dbTree.setDragEnabled(true);
-        //TODO dbTree.setTransferHandler(handler);
+        dbTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
         dbTree.setRootVisible(false);
         dbTree.setShowsRootHandles(true);
         dbTree.setEditable(true);
@@ -508,6 +505,8 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
             dbTree.addTreeWillExpandListener(this);
             dataManager.addDatabaseProgressionListener(this, StateEvent.DB_STATES.STATE_STATEMENT_END);
             popupActions.setAccelerators(this);
+            dbTree.setDragEnabled(true);
+            dbTree.setTransferHandler(new DBTreeTranferHandler(dbTree));
         } catch (SQLException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }

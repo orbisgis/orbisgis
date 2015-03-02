@@ -39,7 +39,7 @@ public interface TreeNodeCustomLabel {
          * Change the parameters of the provided label.
          * Called by the JTree renderer.
          * @param label
-         * @return Return true is something has been done one the label 
+         * @return Return true is something has been done on the label
          */
         boolean applyCustomLabel(JLabel label);
 }

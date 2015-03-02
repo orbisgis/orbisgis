@@ -29,11 +29,11 @@
 package org.orbisgis.geocatalogtree.api;
 
 import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
+import org.orbisgis.sif.components.fstree.TreeNodeCustomLabel;
 
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,13 +41,14 @@ import java.util.Map;
  * Default implementation for tree node
  * @author Nicolas Fortin
  */
-public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements GeoCatalogTreeNode, TreeNodeCustomIcon {
+public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements GeoCatalogTreeNode, TreeNodeCustomIcon, TreeNodeCustomLabel {
     private TreeNodeFactory treeNodeFactory;
     private String nodeType;
     private ImageIcon expandedIcon;
     private ImageIcon collapsedIcon;
     private ImageIcon leafIcon;
     private boolean editable = false;
+    private String labelText = "";
 
     public GeoCatalogTreeNodeImpl(TreeNodeFactory treeNodeFactory, String nodeType,String name) {
         super(name);
@@ -69,6 +70,15 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
         this.treeNodeFactory = treeNodeFactory;
         this.nodeType = nodeType;
         this.leafIcon = leafIcon;
+    }
+
+    /**
+     * @param label Text rendered into the JTree
+     * @return This
+     */
+    public GeoCatalogTreeNodeImpl setLabel(String label) {
+        this.labelText = label;
+        return this;
     }
 
     @Override
@@ -148,5 +158,13 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
     public GeoCatalogTreeNodeImpl setEditable(boolean editable) {
         this.editable = editable;
         return this;
+    }
+
+    @Override
+    public boolean applyCustomLabel(JLabel label) {
+        if(!this.labelText.isEmpty()) {
+            label.setText(this.labelText);
+        }
+        return false;
     }
 }

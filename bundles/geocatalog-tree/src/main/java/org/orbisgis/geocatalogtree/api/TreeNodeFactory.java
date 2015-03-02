@@ -29,6 +29,7 @@
 package org.orbisgis.geocatalogtree.api;
 
 import javax.swing.JTree;
+import java.awt.datatransfer.Transferable;
 import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -66,4 +67,11 @@ public interface TreeNodeFactory {
      * @param newValue New value of the node
      */
     void nodeValueChange(GeoCatalogTreeNode node, String oldValue, String newValue);
+
+    /**
+     * Create transferable using tree selection
+     * @param tree Tree where selection belongs to this factory
+     * @return Transferable to send to external components.
+     */
+    Transferable createTransferable(JTree tree);
 }
