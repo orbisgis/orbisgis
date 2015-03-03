@@ -28,11 +28,11 @@
  */
 package org.orbisgis.geocatalogtree.impl.nodes;
 
-import org.h2gis.utilities.JDBCUrlParser;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.jooq.Catalog;
+import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.Meta;
 import org.jooq.QueryPart;
@@ -48,7 +48,6 @@ import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNodeImpl;
 import org.orbisgis.geocatalogtree.api.TreeNodeFactory;
 import org.orbisgis.geocatalogtree.icons.GeocatalogIcon;
 import org.orbisgis.sif.components.resourceTree.TreeSelectionIterable;
-import org.orbisgis.sif.edition.TransferableEditableElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -65,6 +64,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -170,7 +170,7 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
                 allNodesQueryPart.add(parentQueryPart);
                 break;
             case NODE_COLUMNS:
-                loadFields((Table)parentQueryPart, allNodes, allNodesQueryPart);
+                loadFields((Table)parentQueryPart, allNodes, allNodesQueryPart, connection);
                 break;
             case NODE_INDEXES:
                 loadIndexes((Table)parentQueryPart, allNodes, allNodesQueryPart, connection);
@@ -293,17 +293,19 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
                         .getName(), table.getName());
                 boolean hasGeoField = !SFSUtilities.getGeometryFields(connection, identifier).isEmpty();
                 if (hasGeoField) {
-                    nodes.add(new GeoCatalogTreeNodeImpl(this, NODE_TABLE, identifier.toString(isH2), GeocatalogIcon.getIcon
-                            ("geofile"), GeocatalogIcon.getIcon("geofile")).setLabel(table.getName()));
+                    nodes.add(new GeoCatalogTreeNodeImpl(this, NODE_TABLE, identifier.toString(isH2), GeocatalogIcon
+                            .getIcon("geofile"), GeocatalogIcon.getIcon("geofile")).setLabel(table.getName()).set
+                            (GeoCatalogTreeNode.PROP_SPATIAL_TABLE, true));
                 } else {
-                    nodes.add(new GeoCatalogTreeNodeImpl(this, NODE_TABLE, identifier.toString(isH2), GeocatalogIcon.getIcon
-                            ("flatfile"), GeocatalogIcon.getIcon("flatfile")).setLabel(table.getName()));
+                    nodes.add(new GeoCatalogTreeNodeImpl(this, NODE_TABLE, identifier.toString(isH2), GeocatalogIcon
+                            .getIcon("flatfile"), GeocatalogIcon.getIcon("flatfile")).setLabel(table.getName()).set
+                            (GeoCatalogTreeNode.PROP_SPATIAL_TABLE, false));
                 }
                 nodesQueryPart.add(table);
             }
         }
     }
-    private void loadFields(Table table, List<GeoCatalogTreeNodeImpl> nodes, List<QueryPart> nodesQueryPart) {
+    private void loadFields(Table table, List<GeoCatalogTreeNodeImpl> nodes, List<QueryPart> nodesQueryPart, Connection connection) throws SQLException {
         if(table != null) {
             // Fetch PK for icon
             Set<String> pkFieldNames = new HashSet<>();
@@ -314,13 +316,33 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
                     pkFieldNames.add(field.getName());
                 }
             }
+            // Fetch geometry fields
+            Set<String> spatialFields = new HashSet<>(SFSUtilities.getGeometryFields(connection, new TableLocation
+                    (table.getSchema().getName(), table.getName())));
             for(Field field : table.fields()) {
                 GeoCatalogTreeNodeImpl fieldNode;
                 if(pkFieldNames.contains(field.getName())) {
                     fieldNode = new GeoCatalogTreeNodeImpl(this, NODE_COLUMN, field.getName(), GeocatalogIcon.getIcon("key"));
                 } else {
-                    fieldNode = new GeoCatalogTreeNodeImpl(this, NODE_COLUMN, field.getName(), GeocatalogIcon.getIcon("column"));
+                    ImageIcon icon;
+                    DataType dataType = field.getDataType();
+                    if(dataType.isNumeric()) {
+                        icon = GeocatalogIcon.getIcon("field_num");
+                    } else if(dataType.getSQLType() == Types.BOOLEAN) {
+                        icon = GeocatalogIcon.getIcon("field_bool");
+                    } else if(dataType.isString()) {
+                        icon = GeocatalogIcon.getIcon("field_text");
+                    } else if(dataType.isDateTime()) {
+                        icon = GeocatalogIcon.getIcon("field_date");
+                    } else if(spatialFields.contains(field.getName())) {
+                        icon = GeocatalogIcon.getIcon("field_geom");
+                    } else{
+                        icon = GeocatalogIcon.getIcon("column");
+                    }
+                    fieldNode = new GeoCatalogTreeNodeImpl(this, NODE_COLUMN, field.getName(), icon);
                 }
+                fieldNode.set(GeoCatalogTreeNode.PROP_COLUMN_SPATIAL, spatialFields.contains(field.getName()));
+                fieldNode.set(GeoCatalogTreeNode.PROP_COLUMN_TYPE_NAME, field.getDataType().getTypeName());
                 fieldNode.setAllowsChildren(false);
                 nodes.add(fieldNode);
                 nodesQueryPart.add(field);

@@ -36,34 +36,68 @@ import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
- * Popup menu on Geocatalog tree.
+ * Popup menu on Geocatalog tree. The main goal is not to write a new class for each menu item.
  * @author Nicolas Fortin
  */
 public class GeoCatalogTreeAction extends DefaultAction {
     private JTree tree;
     private Set<String> nodeFilter = new HashSet<>();
+    private List<CheckAttribute> checkAttributeList = new ArrayList<>();
 
+    /**
+     * Constructor
+     * @param actionId Unique action identifier
+     * @param actionLabel Displayed menu item label
+     * @param tree DataBase tree
+     */
     public GeoCatalogTreeAction(String actionId, String actionLabel, JTree tree) {
         super(actionId, actionLabel);
         this.tree = tree;
     }
 
+    /**
+     * Constructor
+     * @param actionId Unique action identifier
+     * @param actionLabel Displayed menu item label
+     * @param icon Leaf icon
+     * @param tree DataBase tree
+     */
     public GeoCatalogTreeAction(String actionId, String actionLabel, Icon icon, JTree tree) {
         super(actionId, actionLabel, icon);
         this.tree = tree;
     }
 
+    /**
+     * Constructor
+     * @param actionId Unique action identifier
+     * @param actionLabel Displayed menu item label
+     * @param icon Leaf icon
+     * @param actionListener Call this action listener when the user click on this menu item
+     * @param tree DataBase tree
+     */
     public GeoCatalogTreeAction(String actionId, String actionLabel, Icon icon, ActionListener actionListener, JTree
             tree) {
         super(actionId, actionLabel, icon, actionListener);
         this.tree = tree;
     }
 
+    /**
+     * Constructor
+     * @param actionId Unique action identifier
+     * @param actionLabel Displayed menu item label
+     * @param actionToolTip Displayed menu item tooltip
+     * @param icon Leaf icon
+     * @param actionListener Call this action listener when the user click on this menu item
+     * @param keyStroke Keyboard shortcut
+     * @param tree DataBase tree
+     */
     public GeoCatalogTreeAction(String actionId, String actionLabel, String actionToolTip, Icon icon, ActionListener
             actionListener, KeyStroke keyStroke, JTree tree) {
         super(actionId, actionLabel, actionToolTip, icon, actionListener, keyStroke);
@@ -89,9 +123,52 @@ public class GeoCatalogTreeAction extends DefaultAction {
             for(GeoCatalogTreeNode node : selection) {
                 if(!nodeFilter.contains(node.getNodeType())) {
                     foundIncompatible = true;
+                    break;
+                }
+                // Check for custom nodes attributes
+                for(CheckAttribute checkAttribute : checkAttributeList) {
+                    if ((checkAttribute.checkEquals && !checkAttribute.attributeValue.equals(node.getAttributeValue
+                            (checkAttribute.getAttributeName()))) || (checkAttribute.checkEquals && checkAttribute
+                            .attributeValue.equals(node.getAttributeValue(checkAttribute.getAttributeName())))) {
+                        foundIncompatible = true;
+                        break;
+                    }
                 }
             }
         }
         return super.isEnabled() && (nodeFilter.isEmpty() || (paths!= null && paths.length > 0 && !foundIncompatible));
+    }
+
+    public GeoCatalogTreeAction check(String attributeName, Object attributeValue) {
+        checkAttributeList.add(new CheckAttribute(attributeName, attributeValue, true));
+        return this;
+    }
+    public GeoCatalogTreeAction checkNot(String attributeName, Object attributeValue) {
+        checkAttributeList.add(new CheckAttribute(attributeName, attributeValue, false));
+        return this;
+    }
+
+    private static class CheckAttribute {
+        private String attributeName;
+        private Object attributeValue;
+        private boolean checkEquals = true;
+
+        public CheckAttribute(String attributeName, Object attributeValue, boolean checkEquals) {
+            this.attributeName = attributeName;
+            this.attributeValue = attributeValue;
+            this.checkEquals = checkEquals;
+        }
+
+        public String getAttributeName() {
+            return attributeName;
+        }
+
+        public Object getAttributeValue() {
+            return attributeValue;
+        }
+
+        public boolean isCheckEquals() {
+            return checkEquals;
+        }
     }
 }

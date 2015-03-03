@@ -41,21 +41,26 @@ public interface PopupMenu extends ActionFactoryService<PopupTarget> {
     public static final String M_ADD_FOLDER = "M_ADD_FOLDER";
     public static final String M_ADD_DB = "M_ADD_DB";
     public static final String M_ADD_WMS = "M_ADD_WMS";
+
     // The import menu group
     public static final String M_IMPORT = "M_IMPORT";
     public static final String M_IMPORT_FILE = "M_IMPORT_FILE";
     public static final String M_IMPORT_FOLDER = "M_IMPORT_FOLDER";
 
-
     // Save menu group
     public static final String M_SAVE = "M_SAVE";
     public static final String M_SAVE_FILE = "M_SAVE_FILE";
     public static final String M_SAVE_DB = "M_SAVE_DB";
+
     // Open attributes
     public static final String M_OPEN_ATTRIBUTES = "M_OPEN_ATTRIBUTES";
-    // Remove source
+
+    // Remove item
     public static final String M_REMOVE = "M_REMOVE";
     public static final String M_REMOVE_INDEX = "M_REMOVE_INDEX";
+
+    // Create
+    public static final String M_CREATE_SPATIAL_INDEX = "CREATE_SPATIAL_INDEX";
 
     public static final String M_CLEAR_CATALOG = "M_CLEAR_CATALOG";
     // Refresh geocatalog

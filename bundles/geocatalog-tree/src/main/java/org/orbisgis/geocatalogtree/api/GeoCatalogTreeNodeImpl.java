@@ -35,7 +35,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Default implementation for tree node
@@ -47,8 +49,7 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
     private ImageIcon expandedIcon;
     private ImageIcon collapsedIcon;
     private ImageIcon leafIcon;
-    private boolean editable = false;
-    private String labelText = "";
+    private Map<String, Object> attributes = new HashMap<>();
 
     public GeoCatalogTreeNodeImpl(TreeNodeFactory treeNodeFactory, String nodeType,String name) {
         super(name);
@@ -77,7 +78,7 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
      * @return This
      */
     public GeoCatalogTreeNodeImpl setLabel(String label) {
-        this.labelText = label;
+        set(PROP_LABEL, label);
         return this;
     }
 
@@ -148,7 +149,7 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
 
     @Override
     public boolean isEditable() {
-        return editable;
+        return (Boolean)getAttributeValue(PROP_EDITABLE, false);
     }
 
     /**
@@ -156,15 +157,38 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
      * @return this
      */
     public GeoCatalogTreeNodeImpl setEditable(boolean editable) {
-        this.editable = editable;
+        set(PROP_EDITABLE, editable);
         return this;
     }
 
     @Override
     public boolean applyCustomLabel(JLabel label) {
-        if(!this.labelText.isEmpty()) {
-            label.setText(this.labelText);
+        String labelText = (String)getAttributeValue(PROP_LABEL, "");
+        if(!labelText.isEmpty()) {
+            label.setText(labelText);
         }
         return false;
+    }
+
+    @Override
+    public Object getAttributeValue(String attributeName) {
+        return getAttributeValue(attributeName, null);
+    }
+
+    @Override
+    public Object getAttributeValue(String attributeName, Object defaultValue) {
+        final Object value = attributes.get(attributeName);
+        return value == null ? defaultValue : value;
+    }
+
+    @Override
+    public Set<String> getAttributes() {
+        return attributes.keySet();
+    }
+
+    @Override
+    public GeoCatalogTreeNodeImpl set(String attributeName, Object attributeValue) {
+        attributes.put(attributeName, attributeValue);
+        return this;
     }
 }
