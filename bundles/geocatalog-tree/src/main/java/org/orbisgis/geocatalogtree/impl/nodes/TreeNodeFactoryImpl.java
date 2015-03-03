@@ -354,7 +354,7 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
                             leafIcon = GeocatalogIcon.getIcon("index_alpha");
                         }
                         nodes.add(new GeoCatalogTreeNodeImpl(this, GeoCatalogTreeNode
-                                .NODE_INDEX, label.toString(), leafIcon));
+                                .NODE_INDEX, new TableLocation(tableLocation.getSchema(), indexName).toString(isH2), leafIcon).setLabel(label.toString()));
                         nodesQueryPart.add(table);
                     }
                 }

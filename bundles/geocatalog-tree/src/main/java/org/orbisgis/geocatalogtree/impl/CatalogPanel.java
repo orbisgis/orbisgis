@@ -46,6 +46,7 @@ import org.orbisgis.geocatalogtree.api.PopupMenu;
 import org.orbisgis.geocatalogtree.api.PopupTarget;
 import org.orbisgis.geocatalogtree.api.TreeNodeFactory;
 import org.orbisgis.geocatalogtree.icons.GeocatalogIcon;
+import org.orbisgis.geocatalogtree.impl.jobs.DropIndex;
 import org.orbisgis.geocatalogtree.impl.nodes.TreeNodeFactoryImpl;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
@@ -309,6 +310,13 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
                 (KeyEvent.VK_DELETE, 0), dbTree);
         popupActions.addAction(dropTable.addNodeTypeFilter(GeoCatalogTreeNode.NODE_TABLE).setLogicalGroup(PopupMenu
                 .GROUP_CLOSE));
+        // Popup:Remove index
+        GeoCatalogTreeAction dropIndex = new GeoCatalogTreeAction(PopupMenu.M_REMOVE_INDEX, I18N.tr("Drop the index"),
+                I18N.tr("Remove this index"), GeocatalogIcon.getIcon("remove"),
+                EventHandler.create(ActionListener.class, this, "onMenuRemoveIndex"), KeyStroke.getKeyStroke
+                (KeyEvent.VK_DELETE, 0), dbTree);
+        popupActions.addAction(dropIndex.addNodeTypeFilter(GeoCatalogTreeNode.NODE_INDEX).setLogicalGroup(PopupMenu
+                .GROUP_CLOSE));
         //Popup:Refresh
         GeoCatalogTreeAction refresh = new GeoCatalogTreeAction(PopupMenu.M_REFRESH,I18N.tr("Refresh"),
                 I18N.tr("Read the content of the database"),
@@ -384,6 +392,23 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         }
     }
 
+    public void onMenuRemoveIndex() {
+        List<String> indexes = new ArrayList<>(dbTree.getSelectionCount());
+        for(GeoCatalogTreeNode treeNode : new TreeSelectionIterable<>(dbTree.getSelectionPaths(), GeoCatalogTreeNode.class)) {
+            if(GeoCatalogTreeNode.NODE_INDEX.equals(treeNode.getNodeType())) {
+                indexes.add(treeNode.getNodeIdentifier());
+            }
+        }
+        try {
+            DropIndex job = DropIndex.onMenuDropIndex(dataManager.getDataSource(), indexes, this, this);
+            if (job != null) {
+                execute(job);
+            }
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
+        }
+    }
+
     /**
      * Drop selected tables
      */
@@ -430,7 +455,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
                 }
             } else {
                 // Refresh root node
-                execute(new ReadDB(this, (GeoCatalogTreeNode)defaultTreeModel.getRoot(), loadingNodeChildren));
+                execute(new ReadDB(this, (GeoCatalogTreeNode) defaultTreeModel.getRoot(), loadingNodeChildren));
             }
         }
     }

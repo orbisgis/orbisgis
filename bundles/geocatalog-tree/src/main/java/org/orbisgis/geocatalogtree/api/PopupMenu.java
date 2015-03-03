@@ -55,6 +55,7 @@ public interface PopupMenu extends ActionFactoryService<PopupTarget> {
     public static final String M_OPEN_ATTRIBUTES = "M_OPEN_ATTRIBUTES";
     // Remove source
     public static final String M_REMOVE = "M_REMOVE";
+    public static final String M_REMOVE_INDEX = "M_REMOVE_INDEX";
 
     public static final String M_CLEAR_CATALOG = "M_CLEAR_CATALOG";
     // Refresh geocatalog
