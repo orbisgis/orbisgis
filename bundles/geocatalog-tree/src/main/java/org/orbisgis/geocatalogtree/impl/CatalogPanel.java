@@ -93,6 +93,7 @@ import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -357,12 +358,28 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
      * User click on create spatial index
      */
     public void onMenuCreateSpatialIndex() {
+        // Check if an index is already set with this column
         Object nodeObj = dbTree.getLastSelectedPathComponent();
         if(nodeObj instanceof GeoCatalogTreeNode
                 && GeoCatalogTreeNode.NODE_COLUMN.equals(((GeoCatalogTreeNode) nodeObj).getNodeType())) {
             GeoCatalogTreeNode fieldNode = (GeoCatalogTreeNode) nodeObj;
             TableLocation table = TableLocation.parse(fieldNode.getParent().getParent()
                     .getNodeIdentifier());
+            try (Connection connection = dataManager.getDataSource().getConnection()) {
+                DatabaseMetaData databaseMetaData = connection.getMetaData();
+                try (ResultSet rs = databaseMetaData.getIndexInfo(table.getCatalog(), table.getSchema(), table.getTable(), false, true)) {
+                    while (rs.next()) {
+                        String columnName = rs.getString("COLUMN_NAME");
+                        if(fieldNode.getNodeIdentifier().equals(columnName)) {
+                            // Index already exists
+                            LOGGER.error(I18N.tr("This field is already indexed"));
+                            return;
+                        }
+                    }
+                }
+            } catch (SQLException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+            }
             execute(new CreateSpatialIndex(table, new TableLocation(fieldNode.getNodeIdentifier()).toString(isH2()),
                     this, dataManager.getDataSource()));
         }
