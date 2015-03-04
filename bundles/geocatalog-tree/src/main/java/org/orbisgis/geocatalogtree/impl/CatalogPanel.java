@@ -31,6 +31,7 @@ package org.orbisgis.geocatalogtree.impl;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DatabaseProgressionListener;
@@ -46,6 +47,7 @@ import org.orbisgis.geocatalogtree.api.PopupMenu;
 import org.orbisgis.geocatalogtree.api.PopupTarget;
 import org.orbisgis.geocatalogtree.api.TreeNodeFactory;
 import org.orbisgis.geocatalogtree.icons.GeocatalogIcon;
+import org.orbisgis.geocatalogtree.impl.jobs.CreateSpatialIndex;
 import org.orbisgis.geocatalogtree.impl.jobs.DropIndex;
 import org.orbisgis.geocatalogtree.impl.nodes.TreeNodeFactoryImpl;
 import org.orbisgis.sif.components.actions.ActionCommands;
@@ -323,6 +325,12 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
                 GeocatalogIcon.getIcon("refresh"),EventHandler.create(ActionListener.class,
                         this,"refreshSourceList"),KeyStroke.getKeyStroke("ctrl R"), dbTree);
         popupActions.addAction(refresh.setLogicalGroup(PopupMenu.GROUP_OPEN));
+        GeoCatalogTreeAction createIndex = new GeoCatalogTreeAction(PopupMenu.M_CREATE_SPATIAL_INDEX,
+                I18N.tr("Create spatial index"), GeocatalogIcon.getIcon("index_geo"),
+                EventHandler.create(ActionListener.class, this, "onMenuCreateSpatialIndex"), dbTree);
+        createIndex.addNodeTypeFilter(GeoCatalogTreeNode.NODE_COLUMN);
+        createIndex.check(GeoCatalogTreeNode.PROP_COLUMN_SPATIAL, true);
+        popupActions.addAction(createIndex);
     }
 
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
@@ -343,6 +351,21 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
      */
     public void onMenuAddLinkedFile() {
         driverFunctionContainer.importFile(this, DriverFunction.IMPORT_DRIVER_TYPE.LINK);
+    }
+
+    /**
+     * User click on create spatial index
+     */
+    public void onMenuCreateSpatialIndex() {
+        Object nodeObj = dbTree.getLastSelectedPathComponent();
+        if(nodeObj instanceof GeoCatalogTreeNode
+                && GeoCatalogTreeNode.NODE_COLUMN.equals(((GeoCatalogTreeNode) nodeObj).getNodeType())) {
+            GeoCatalogTreeNode fieldNode = (GeoCatalogTreeNode) nodeObj;
+            TableLocation table = TableLocation.parse(fieldNode.getParent().getParent()
+                    .getNodeIdentifier());
+            execute(new CreateSpatialIndex(table, new TableLocation(fieldNode.getNodeIdentifier()).toString(isH2()),
+                    this, dataManager.getDataSource()));
+        }
     }
 
     /**

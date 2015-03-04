@@ -128,7 +128,7 @@ public class GeoCatalogTreeAction extends DefaultAction {
                 // Check for custom nodes attributes
                 for(CheckAttribute checkAttribute : checkAttributeList) {
                     if ((checkAttribute.checkEquals && !checkAttribute.attributeValue.equals(node.getAttributeValue
-                            (checkAttribute.getAttributeName()))) || (checkAttribute.checkEquals && checkAttribute
+                            (checkAttribute.getAttributeName()))) || (!checkAttribute.checkEquals && checkAttribute
                             .attributeValue.equals(node.getAttributeValue(checkAttribute.getAttributeName())))) {
                         foundIncompatible = true;
                         break;
