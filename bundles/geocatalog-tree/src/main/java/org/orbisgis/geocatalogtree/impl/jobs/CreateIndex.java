@@ -55,8 +55,8 @@ public class CreateIndex extends SwingWorkerPM {
     private String field;
     private DatabaseView databaseView;
     private DataSource dataSource;
-    private static final I18n I18N = I18nFactory.getI18n(CreateSpatialIndex.class);
-    private static final Logger LOGGER = LoggerFactory.getLogger(CreateSpatialIndex.class);
+    private static final I18n I18N = I18nFactory.getI18n(CreateIndex.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateIndex.class);
 
 
     public CreateIndex(TableLocation table, String field, DatabaseView databaseView, DataSource dataSource) {
