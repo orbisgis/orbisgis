@@ -28,62 +28,6 @@
  */
 package org.orbisgis.geocatalogtree.impl;
 
-import org.h2gis.h2spatialapi.DriverFunction;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.TableLocation;
-import org.jooq.Table;
-import org.jooq.impl.DSL;
-import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.corejdbc.DatabaseProgressionListener;
-import org.orbisgis.corejdbc.StateEvent;
-import org.orbisgis.dbjobs.api.DatabaseView;
-import org.orbisgis.dbjobs.api.DriverFunctionContainer;
-import org.orbisgis.dbjobs.jobs.DropTable;
-import org.orbisgis.dbjobs.jobs.ExportInFileOperation;
-import org.orbisgis.geocatalogtree.api.GeoCatalogTreeAction;
-import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode;
-import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNodeImpl;
-import org.orbisgis.geocatalogtree.api.PopupMenu;
-import org.orbisgis.geocatalogtree.api.PopupTarget;
-import org.orbisgis.geocatalogtree.api.TreeNodeFactory;
-import org.orbisgis.geocatalogtree.icons.GeocatalogIcon;
-import org.orbisgis.geocatalogtree.impl.jobs.CreateSpatialIndex;
-import org.orbisgis.geocatalogtree.impl.jobs.DropIndex;
-import org.orbisgis.geocatalogtree.impl.nodes.TreeNodeFactoryImpl;
-import org.orbisgis.sif.components.actions.ActionCommands;
-import org.orbisgis.sif.components.actions.ActionDockingListener;
-import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
-import org.orbisgis.sif.components.fstree.TreeNodeBusy;
-import org.orbisgis.sif.components.resourceTree.AbstractTreeModel;
-import org.orbisgis.sif.components.resourceTree.TreeSelectionIterable;
-import org.orbisgis.sif.docking.DockingPanel;
-import org.orbisgis.sif.docking.DockingPanelParameters;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
-
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.KeyStroke;
-import javax.swing.SwingWorker;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.TreeWillExpandListener;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.ExpandVetoException;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -105,6 +49,61 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.KeyStroke;
+import javax.swing.SwingWorker;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.ExpandVetoException;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
+import org.jooq.impl.DSL;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.DatabaseProgressionListener;
+import org.orbisgis.corejdbc.StateEvent;
+import org.orbisgis.dbjobs.api.DatabaseView;
+import org.orbisgis.dbjobs.api.DriverFunctionContainer;
+import org.orbisgis.dbjobs.jobs.DropTable;
+import org.orbisgis.dbjobs.jobs.ExportInFileOperation;
+import org.orbisgis.geocatalogtree.api.GeoCatalogTreeAction;
+import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode;
+import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNodeImpl;
+import org.orbisgis.geocatalogtree.api.PopupMenu;
+import org.orbisgis.geocatalogtree.api.PopupTarget;
+import org.orbisgis.geocatalogtree.api.TreeNodeFactory;
+import org.orbisgis.geocatalogtree.icons.GeocatalogIcon;
+import org.orbisgis.geocatalogtree.impl.jobs.CreateIndex;
+import org.orbisgis.geocatalogtree.impl.jobs.CreateSpatialIndex;
+import org.orbisgis.geocatalogtree.impl.jobs.DropIndex;
+import org.orbisgis.geocatalogtree.impl.nodes.TreeNodeFactoryImpl;
+import org.orbisgis.sif.components.actions.ActionCommands;
+import org.orbisgis.sif.components.actions.ActionDockingListener;
+import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
+import org.orbisgis.sif.components.fstree.TreeNodeBusy;
+import org.orbisgis.sif.components.resourceTree.AbstractTreeModel;
+import org.orbisgis.sif.components.resourceTree.TreeSelectionIterable;
+import org.orbisgis.sif.docking.DockingPanel;
+import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * @author Nicolas Fortin
@@ -155,6 +154,10 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         return sources;
     }
 
+    /**
+     * Check if the database is an H2 database engine.
+     * @return 
+     */
     private boolean isH2() {
         if(isH2 == null) {
             try(Connection connection = dataManager.getDataSource().getConnection()) {
@@ -326,12 +329,17 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
                 GeocatalogIcon.getIcon("refresh"),EventHandler.create(ActionListener.class,
                         this,"refreshSourceList"),KeyStroke.getKeyStroke("ctrl R"), dbTree);
         popupActions.addAction(refresh.setLogicalGroup(PopupMenu.GROUP_OPEN));
-        GeoCatalogTreeAction createIndex = new GeoCatalogTreeAction(PopupMenu.M_CREATE_SPATIAL_INDEX,
+        GeoCatalogTreeAction createIndex = new GeoCatalogTreeAction(PopupMenu.M_CREATE_INDEX,
+                I18N.tr("Create index"), GeocatalogIcon.getIcon("index_alpha"),
+                EventHandler.create(ActionListener.class, this, "onMenuCreateIndex"), dbTree);
+        createIndex.addNodeTypeFilter(GeoCatalogTreeNode.NODE_COLUMN);
+        popupActions.addAction(createIndex);
+        GeoCatalogTreeAction createSpatialIndex = new GeoCatalogTreeAction(PopupMenu.M_CREATE_SPATIAL_INDEX,
                 I18N.tr("Create spatial index"), GeocatalogIcon.getIcon("index_geo"),
                 EventHandler.create(ActionListener.class, this, "onMenuCreateSpatialIndex"), dbTree);
-        createIndex.addNodeTypeFilter(GeoCatalogTreeNode.NODE_COLUMN);
-        createIndex.check(GeoCatalogTreeNode.PROP_COLUMN_SPATIAL, true);
-        popupActions.addAction(createIndex);
+        createSpatialIndex.addNodeTypeFilter(GeoCatalogTreeNode.NODE_COLUMN);
+        createSpatialIndex.check(GeoCatalogTreeNode.PROP_COLUMN_SPATIAL, true);
+        popupActions.addAction(createSpatialIndex);
     }
 
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
@@ -353,35 +361,59 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
     public void onMenuAddLinkedFile() {
         driverFunctionContainer.importFile(this, DriverFunction.IMPORT_DRIVER_TYPE.LINK);
     }
-
+    
     /**
-     * User click on create spatial index
+     * User click on create index
      */
-    public void onMenuCreateSpatialIndex() {
-        // Check if an index is already set with this column
+    public void onMenuCreateIndex() {
         Object nodeObj = dbTree.getLastSelectedPathComponent();
         if(nodeObj instanceof GeoCatalogTreeNode
                 && GeoCatalogTreeNode.NODE_COLUMN.equals(((GeoCatalogTreeNode) nodeObj).getNodeType())) {
             GeoCatalogTreeNode fieldNode = (GeoCatalogTreeNode) nodeObj;
             TableLocation table = TableLocation.parse(fieldNode.getParent().getParent()
                     .getNodeIdentifier());
-            try (Connection connection = dataManager.getDataSource().getConnection()) {
-                DatabaseMetaData databaseMetaData = connection.getMetaData();
-                try (ResultSet rs = databaseMetaData.getIndexInfo(table.getCatalog(), table.getSchema(), table.getTable(), false, true)) {
-                    while (rs.next()) {
-                        String columnName = rs.getString("COLUMN_NAME");
-                        if(fieldNode.getNodeIdentifier().equals(columnName)) {
-                            // Index already exists
-                            LOGGER.error(I18N.tr("This field is already indexed"));
-                            return;
-                        }
-                    }
-                }
-            } catch (SQLException ex) {
-                LOGGER.error(ex.getLocalizedMessage(), ex);
-            }
+            checkIndexExists(fieldNode,table);
+            execute(new CreateIndex(table, new TableLocation(fieldNode.getNodeIdentifier()).toString(isH2()),
+                    this, dataManager.getDataSource()));
+        }
+    }
+
+    /**
+     * User click on create spatial index
+     */
+    public void onMenuCreateSpatialIndex() {
+        Object nodeObj = dbTree.getLastSelectedPathComponent();
+        if(nodeObj instanceof GeoCatalogTreeNode
+                && GeoCatalogTreeNode.NODE_COLUMN.equals(((GeoCatalogTreeNode) nodeObj).getNodeType())) {
+            GeoCatalogTreeNode fieldNode = (GeoCatalogTreeNode) nodeObj;
+            TableLocation table = TableLocation.parse(fieldNode.getParent().getParent()
+                    .getNodeIdentifier());
+            checkIndexExists(fieldNode,table);
             execute(new CreateSpatialIndex(table, new TableLocation(fieldNode.getNodeIdentifier()).toString(isH2()),
                     this, dataManager.getDataSource()));
+        }
+    }
+    
+    /**
+     * Check if the field is already indexed
+     * @param fieldNode
+     * @param table 
+     */
+    private void checkIndexExists(GeoCatalogTreeNode fieldNode, TableLocation table) {
+        try (Connection connection = dataManager.getDataSource().getConnection()) {
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            try (ResultSet rs = databaseMetaData.getIndexInfo(table.getCatalog(), table.getSchema(), table.getTable(), false, true)) {
+                while (rs.next()) {
+                    String columnName = rs.getString("COLUMN_NAME");
+                    if (fieldNode.getNodeIdentifier().equals(columnName)) {
+                        // Index already exists
+                        LOGGER.error(I18N.tr("This field is already indexed"));
+                        return;
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
     }
 
@@ -619,6 +651,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
     public JComponent getComponent() {
         return this;
     }
+
 
     private static class InitTree extends SwingWorker {
         private CatalogPanel catalogPanel;
