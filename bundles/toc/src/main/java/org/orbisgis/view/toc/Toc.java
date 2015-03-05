@@ -35,6 +35,7 @@ import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
+import org.orbisgis.sif.components.resourceTree.AbstractTreeModel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableTransferEvent;
@@ -1387,7 +1388,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                         TreePath path = tree.getPathForLocation(x, y);
                         Rectangle layerNodeLocation = tree.getPathBounds(path);
 
-                        if (path != null) {
+                        if (path != null && layerNodeLocation != null) {
                                 Rectangle checkBoxBounds = treeRenderer.getCheckBoxBounds();
                                 checkBoxBounds.translate(
                                         (int) layerNodeLocation.getX(),
@@ -1422,34 +1423,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                         maybeShowPopup(e);
                 }
 
-                /**
-                 * Determines whether {@code path} is one of the {@code
-                 * TreePath} contained in {@code selectionPaths}.
-                 * @param selectionPaths
-                 * @param path
-                 * @return
-                 */
-                private boolean contains(TreePath[] selectionPaths, TreePath path) {
-                        for (TreePath treePath : selectionPaths) {
-                                boolean equals = true;
-                                Object[] objectPath = treePath.getPath();
-                                Object[] testPath = path.getPath();
-                                if (objectPath.length != testPath.length) {
-                                        equals = false;
-                                } else {
-                                        for (int i = 0; i < testPath.length; i++) {
-                                                if (!(testPath[i].equals(objectPath[i]))) {
-                                                        equals = false;
-                                                }
-                                        }
-                                }
-                                if (equals) {
-                                        return true;
-                                }
-                        }
-
-                        return false;
-                }
 
                 private void maybeShowPopup(MouseEvent e) {
                         if (e.isPopupTrigger()) {
@@ -1457,7 +1430,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                                 TreePath path = tree.getPathForLocation(e.getX(), e.getY());
                                 TreePath[] selectionPaths = tree.getSelectionPaths();
                                 if (selectionPaths != null && path != null){
-                                        if (!contains(selectionPaths, path)) {
+                                        if (!AbstractTreeModel.contains(selectionPaths, path)) {
                                                 if (e.isControlDown()) {
                                                         tree.addSelectionPath(path);
                                                 } else {

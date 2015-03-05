@@ -39,6 +39,7 @@ import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorDockable;
+import org.orbisgis.sqlconsole.api.SQLAction;
 import org.orbisgis.sqlconsole.api.SQLConsoleEditor;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.sqlconsole.icons.SQLConsoleIcon;
@@ -48,9 +49,12 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
@@ -67,6 +71,7 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
         private ScriptSplitterFactory splitterFactory;
         private LanguageSupport sqlLanguageSupport;
         private ExecutorService executorService;
+        private List<SQLAction> sqlActionList = new ArrayList<>();
 
         @Activate
         public void init() {
@@ -80,6 +85,9 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
                 // thanks to this listener
                 sqlPanel.getActions().addPropertyChangeListener(
                         new ActionDockingListener(dockingPanelParameters));
+                for(SQLAction sqlAction : sqlActionList) {
+                        sqlPanel.addActionFactory(sqlAction, this);
+                }
                 LanguageSupport languageSupport = sqlLanguageSupport;
                 if(languageSupport != null) {
                         languageSupport.install(sqlPanel.getScriptPanel());
@@ -152,6 +160,22 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
          */
         public void dispose() {
                 sqlPanel.freeResources();
+        }
+
+        @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
+                ReferencePolicyOption.GREEDY)
+        public void addActionFactory(SQLAction sqlAction) {
+                sqlActionList.add(sqlAction);
+                if(sqlPanel != null) {
+                        sqlPanel.addActionFactory(sqlAction, this);
+                }
+        }
+
+        public void removeActionFactory(SQLAction sqlAction) {
+                sqlActionList.remove(sqlAction);
+                if(sqlPanel != null) {
+                        sqlPanel.removeActionFactory(sqlAction);
+                }
         }
         
         @Override

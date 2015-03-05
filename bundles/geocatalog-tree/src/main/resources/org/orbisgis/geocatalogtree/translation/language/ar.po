@@ -1,0 +1,318 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: OrbisGIS\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-03 16:21+0100\n"
+"PO-Revision-Date: 2015-02-03 15:47+0000\n"
+"Last-Translator: Nicolas Fortin <github@nettrader.fr>\n"
+"Language-Team: Arabic (http://www.transifex.com/projects/p/orbisgis/language/ar/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ar\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+#: org/orbisgis/geocatalog/impl/SourceListModel.java:277
+msgid "F_TABLE_CATALOG"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/SourceListModel.java:278
+msgid "F_TABLE_SCHEMA"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/SourceListModel.java:278
+msgid "F_TABLE_NAME"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/SourceListModel.java:278
+msgid "TYPE"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/SourceListModel.java:281
+msgid "Geometry columns information of tables are not available"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/SourceListModel.java:329
+msgid "Cannot read the table list"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/io/ExportInFileOperation.java:68
+msgid "Save the source in a file."
+msgstr "حفظ المصدر في الملف."
+
+#: org/orbisgis/geocatalog/impl/io/ExportInFileOperation.java:76
+msgid "Cannot create the file"
+msgstr "لا يمكن خلق الملف"
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:192
+msgid "GeoCatalog"
+msgstr "الجيوكاتالوج"
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:214
+msgid "Add filter"
+msgstr "إضافة مرشح"
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:214
+msgid "Add a new data source filter"
+msgstr "إضافة مرشح جديد"
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:398
+msgid "Select the file to import"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:408
+msgid "Select the file to open"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:454
+msgid "Cannot remove permanently a table system."
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:455
+msgid "Remove GeoCatalog tables"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:459
+msgid "Do you want..."
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:469
+msgid "Delete GeoCatalog tables"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:494
+#, java-format
+msgid "Save the source : {0}"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:527
+msgid "Select the folder to open"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:534
+msgid "Select the folder to import"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:600
+msgid "Add"
+msgstr "إضافة"
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:602
+#: org/orbisgis/geocatalog/impl/Catalog.java:622
+#: org/orbisgis/geocatalog/impl/Catalog.java:638
+msgid "File"
+msgstr "ملف"
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:603
+msgid "Add a file from hard drive."
+msgstr "أضيف ملف من القرص الصلب."
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:608
+#: org/orbisgis/geocatalog/impl/Catalog.java:626
+msgid "Folder"
+msgstr "مجلد"
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:609
+#: org/orbisgis/geocatalog/impl/Catalog.java:627
+msgid "Add a set of file from an hard drive folder."
+msgstr "إضافة مجموعة من الملفات من مجلد القرص الصلب."
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:620
+msgid "Import"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:623
+msgid "Copy the content of a file from hard drive."
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:633
+msgid "Save"
+msgstr "حفظ"
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:639
+msgid "Save selected sources in files"
+msgstr "إحفظ المصادر المختارة في ملفات"
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:648
+msgid "Remove the source"
+msgstr "نقل المصدر"
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:649
+msgid "Remove from this list the selected sources."
+msgstr "إحذف من هذه القائمة المصادر المحددة."
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:653
+msgid "Refresh"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/Catalog.java:654
+msgid "Read the content of the database"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/jobs/DropTable.java:71
+msgid "Drop selected tables"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/jobs/DropTable.java:89
+#, java-format
+msgid "Cannot remove the source {0}"
+msgstr "لا يمكن إزالة مصدر {0}"
+
+#: org/orbisgis/geocatalog/impl/jobs/ImportFiles.java:71
+msgid "Import file"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/jobs/ImportFiles.java:88
+#, java-format
+msgid "No driver found for {0} extension"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/jobs/ImportFiles.java:92
+#: org/orbisgis/geocatalog/impl/jobs/ImportFiles.java:98
+msgid "Cannot import the file"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/jobs/ImportFiles.java:100
+#, java-format
+msgid "Importation done in {0} sec"
+msgstr ""
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:61
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:124
+msgid "Connection parameters"
+msgstr "معلمات الاتصال"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:63
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:126
+msgid "Connexion name"
+msgstr "إسم الإتصال"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:63
+msgid "MyConnexion"
+msgstr "إتصالي"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:66
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:129
+msgid "Type of database"
+msgstr "نوع قاعدة البيانات"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:68
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:131
+msgid "Host"
+msgstr "مضيف"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:70
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:133
+msgid "Default port"
+msgstr "المنفذ الافتراضي"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:72
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:135
+msgid "Database name"
+msgstr "إسم قاعدة البيانات"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:75
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:139
+msgid "SSL"
+msgstr "SSL"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:83
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:147
+msgid "Please specify a connexion name"
+msgstr "من فضاك حدد إسم الإتصال"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:87
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:151
+msgid "The database name is mandatory"
+msgstr "اسم قاعدة البيانات إجباري"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:91
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:155
+msgid "The host cannot be null"
+msgstr "المضيف لا يمكن أن يكون فارغ"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:96
+msgid "The port field is mandatory"
+msgstr "عدد المنفذ إجباري"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:101
+msgid "The port number must lie between 0 and 32767."
+msgstr "رقم المنفذ يجب أن يكون محصور بين 0 و 32767."
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:104
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:167
+msgid "Cannot format the port code into an int"
+msgstr "لا يمكن تهيئة رمز المنفذ إلى الباحث"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/DBUIFactory.java:163
+msgid "The port number must be comprise between 0 and 32767"
+msgstr "رقم المنفذ يجب أن يكون محصور بين 0 و 32767"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/ConnectionToolBar.java:136
+msgid "Connect to the database"
+msgstr "إتصل بقاعدة البيانات"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/ConnectionToolBar.java:142
+msgid "Disconnect"
+msgstr "إقطع الاتصال"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/ConnectionToolBar.java:148
+msgid "Add a new connection"
+msgstr "إضافة اتصال جديد"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/ConnectionToolBar.java:153
+msgid "Edit the connection"
+msgstr "قم بتعديل الإتصال"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/ConnectionToolBar.java:159
+msgid "Remove the connection"
+msgstr "قم بإزالة الإتصال"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/ConnectionToolBar.java:196
+msgid "Saved with the OrbisGIS database panel"
+msgstr "إحفظ مع لوحة قاعدة بيانات OrbisGIS"
+
+#: org/orbisgis/geocatalog/impl/sourceWizards/db/ConnectionToolBar.java:321
+msgid "There is already a connection with this name."
+msgstr "هناك اتصال سابق مع هذا الاسم."
+
+#: org/orbisgis/geocatalog/impl/filters/factories/NameContains.java:67
+msgid "Contains"
+msgstr "يحتوي"
+
+#: org/orbisgis/geocatalog/impl/filters/factories/SourceTypeIs.java:76
+msgid "Alphanumeric"
+msgstr "الابجدية الرقمية "
+
+#: org/orbisgis/geocatalog/impl/filters/factories/SourceTypeIs.java:79
+msgid "DataBase"
+msgstr "قاعدة المعلومات"
+
+#: org/orbisgis/geocatalog/impl/filters/factories/SourceTypeIs.java:83
+msgid "Files"
+msgstr "ملفات  "
+
+#: org/orbisgis/geocatalog/impl/filters/factories/SourceTypeIs.java:87
+msgid "Geometry"
+msgstr "الهندسة"
+
+#: org/orbisgis/geocatalog/impl/filters/factories/SourceTypeIs.java:95
+msgid "Vectorial"
+msgstr "اتجاهي"
+
+#: org/orbisgis/geocatalog/impl/filters/factories/SourceTypeIs.java:103
+msgid "System Table"
+msgstr "جدول النظام"
+
+#: org/orbisgis/geocatalog/impl/filters/factories/SourceTypeIs.java:124
+msgid "Source type is"
+msgstr "نوع المصدر هو"
+
+#: org/orbisgis/geocatalog/impl/filters/factories/NameNotContains.java:67
+msgid "Not contains"
+msgstr "لا يحتوي"

@@ -25,7 +25,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact
  * directly: info_at_ orbisgis.org
  */
-package org.orbisgis.geocatalog.impl.jobs;
+package org.orbisgis.dbjobs.jobs;
 
 import org.apache.commons.io.FilenameUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
@@ -33,11 +33,11 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.corejdbc.DriverFunctionContainer;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.commons.utils.FileUtils;
 import org.orbisgis.corejdbc.H2GISProgressMonitor;
-import org.orbisgis.geocatalog.api.GeoCatalogExt;
+import org.orbisgis.dbjobs.api.DatabaseView;
+import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -56,18 +56,47 @@ public class ImportFiles extends SwingWorkerPM {
     private static final I18n I18N = I18nFactory.getI18n(ImportFiles.class);
     private static Logger LOGGER = LoggerFactory.getLogger(ImportFiles.class);
 
-    private GeoCatalogExt catalog;
+    private DatabaseView dbView;
     private List<File> files;
     private DriverFunctionContainer driverFunctionContainer;
     private DataManager dataManager;
     private DriverFunction.IMPORT_DRIVER_TYPE driverType;
+    private String schema;
 
-    public ImportFiles(GeoCatalogExt catalog, DriverFunctionContainer driverFunctionContainer, List<File> files, DataManager dataManager, DriverFunction.IMPORT_DRIVER_TYPE driverType) {
-        this.catalog = catalog;
+    /**
+     * Import file into database into the default schema
+     * @param dbView GUI to refresh when the operation is done
+     * @param driverFunctionContainer Container of file drivers.
+     * @param files Files to import
+     * @param dataManager DataManager that hold datasource
+     * @param driverType Type of import
+     */
+    public ImportFiles(DatabaseView dbView, DriverFunctionContainer driverFunctionContainer, List<File> files, DataManager dataManager, DriverFunction.IMPORT_DRIVER_TYPE driverType) {
+        this.dbView = dbView;
         this.driverFunctionContainer = driverFunctionContainer;
         this.files = files;
         this.dataManager = dataManager;
         this.driverType = driverType;
+        setTaskName(I18N.tr("Import file"));
+        schema = "";
+    }
+
+    /**
+     * Import file into database into the specified schema
+     * @param dbView GUI to refresh when the operation is done
+     * @param driverFunctionContainer Container of file drivers.
+     * @param files Files to import
+     * @param dataManager DataManager that hold datasource
+     * @param driverType Type of import
+     * @param schema Schema name where to create tables
+     */
+    public ImportFiles(DatabaseView dbView, DriverFunctionContainer driverFunctionContainer, List<File> files, DataManager dataManager, DriverFunction.IMPORT_DRIVER_TYPE driverType, String schema) {
+        this.dbView = dbView;
+        this.driverFunctionContainer = driverFunctionContainer;
+        this.files = files;
+        this.dataManager = dataManager;
+        this.driverType = driverType;
+        this.schema = schema;
         setTaskName(I18N.tr("Import file"));
     }
 
@@ -81,9 +110,13 @@ public class ImportFiles extends SwingWorkerPM {
                 String ext = FilenameUtils.getExtension(file.getName());
                 DriverFunction driverFunction = driverFunctionContainer.getImportDriverFromExt(ext, driverType);
                 if(driverFunction != null) {
-                    TableLocation tableName = new TableLocation("","",dataManager.findUniqueTableName(
-                            TableLocation.capsIdentifier(FileUtils.getNameFromURI(file.toURI()), isH2)));
-                    driverFunction.importFile(connection, tableName.toString() ,file, new H2GISProgressMonitor(filePm));
+                    String tableNameTest = TableLocation.capsIdentifier(FileUtils.getNameFromURI(file.toURI()), isH2);
+                    if(tableNameTest == null) {
+                        tableNameTest = FileUtils.getNameFromURI(file.toURI());
+                    }
+                    String tableName = dataManager.findUniqueTableName(new TableLocation("", schema ,tableNameTest)
+                            .toString(isH2));
+                    driverFunction.importFile(connection, tableName ,file, new H2GISProgressMonitor(filePm));
                 } else {
                     LOGGER.error(I18N.tr("No driver found for {0} extension", ext));
                 }
@@ -98,7 +131,7 @@ public class ImportFiles extends SwingWorkerPM {
             LOGGER.error(I18N.tr("Cannot import the file"), ex);
         }
         LOGGER.info(I18N.tr("Importation done in {0} sec", (System.currentTimeMillis() - deb) / 1000d));
-        catalog.refreshSourceList();
+        dbView.onDatabaseUpdate(DatabaseView.DB_ENTITY.SCHEMA.name(), "PUBLIC");
         return null;
     }
 }

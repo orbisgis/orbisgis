@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Stack;
 import javax.swing.JOptionPane;
 
@@ -85,6 +86,9 @@ final class Main {
      * Entry point of User Interface
      */
     public static void main(String[] args) {
+        // Deactivate JOOQ Ascii Art printing
+        Properties properties = System.getProperties();
+        properties.setProperty("org.jooq.no-logo","True");
         // debug try { Thread.sleep(5000); } catch (Exception ex) {}
         long deploymentTime = 0;
         BundleTools bundleTools = new BundleTools(LOGGER);

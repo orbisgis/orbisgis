@@ -42,6 +42,7 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.ButtonGroup;
 import javax.swing.ButtonModel;
+import javax.swing.ComponentInputMap;
 import javax.swing.DefaultButtonModel;
 import javax.swing.InputMap;
 import javax.swing.JButton;
@@ -542,6 +543,47 @@ public class ActionCommands extends BeanPropertyChangeSupport implements Actions
         }
 
         /**
+         * Remove accelerators previously applied to the component.
+         * Text key shortcuts, Accelerators
+         * @param component Component that hold actionMap
+         * @param condition one of WHEN_IN_FOCUSED_WINDOW, WHEN_FOCUSED,
+         *        WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
+         * @param actionFactoryService Action factory previously registered through {@link #addActionFactory(ActionFactoryService, Object)}
+         */
+        public void unsetAccelerators(JComponent component, int condition, ActionFactoryService actionFactoryService) {
+                MenuTrackerAction<?> trackerAction = actionFromFactory.get(actionFactoryService);
+                if(trackerAction != null) {
+                        unsetAccelerators(component, condition, trackerAction.getActions());
+                }
+        }
+
+        /**
+         * Remove accelerators previously applied to the component.
+         * Text key shortcuts, Accelerators
+         * @param component Component that hold actionMap
+         * @param condition one of WHEN_IN_FOCUSED_WINDOW, WHEN_FOCUSED,
+         *        WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
+         * @param actionList List of actions
+         */
+        public void unsetAccelerators(JComponent component, int condition, List<Action> actionList) {
+                InputMap im = component.getInputMap(condition);
+                ActionMap actionMap = component.getActionMap();
+                for(Action action : actionList) {
+                        KeyStroke actionStroke = ActionTools.getKeyStroke(action);
+                        if(actionStroke!=null) {
+                                im.remove(actionStroke);
+                                actionMap.remove(action);
+                                //Additionnal strokes
+                                List<KeyStroke> strokes = ActionTools.getAdditionalKeyStroke(action);
+                                if(strokes!=null) {
+                                        for(KeyStroke stroke : strokes) {
+                                                im.remove(stroke);
+                                        }
+                                }
+                        }
+                }
+        }
+        /**
          * Apply to the component the actions
          * Text key shortcuts, Accelerators
          * @param component Component that hold actionMap
@@ -549,6 +591,8 @@ public class ActionCommands extends BeanPropertyChangeSupport implements Actions
         public void setAccelerators(JComponent component) {
                 setAccelerators(component, JComponent.WHEN_FOCUSED);
         }
+
+
         /**
          * Apply to the component the actions
          * Text key shortcuts, Accelerators
@@ -557,9 +601,59 @@ public class ActionCommands extends BeanPropertyChangeSupport implements Actions
          *        WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
          */
         public void setAccelerators(JComponent component, int condition) {
-                InputMap im = component.getInputMap(condition);
+                setAccelerators(component, condition, false);
+        }
+
+        /**
+         * Apply to the component the actions
+         * Text key shortcuts, Accelerators
+         * @param component Component that hold actionMap
+         * @param condition one of WHEN_IN_FOCUSED_WINDOW, WHEN_FOCUSED,
+         *        WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
+         * @param overwrite Overwrite accelerators already in place.
+         */
+        public void setAccelerators(JComponent component, int condition, boolean overwrite) {
+                setAccelerators(component, condition, overwrite, actions);
+        }
+
+        /**
+         * Apply to the component the actions
+         * Text key shortcuts, Accelerators
+         * @param component Component that hold actionMap
+         * @param condition one of WHEN_IN_FOCUSED_WINDOW, WHEN_FOCUSED,
+         *        WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
+         * @param overwrite Overwrite accelerators already in place.
+         * @param actionFactoryService Action factory previously registered through {@link #addActionFactory(ActionFactoryService, Object)}
+         */
+        public void setAccelerators(JComponent component, int condition, boolean overwrite , ActionFactoryService actionFactoryService) {
+                MenuTrackerAction<?> trackerAction = actionFromFactory.get(actionFactoryService);
+                if(trackerAction != null) {
+                        setAccelerators(component, condition,overwrite, trackerAction.getActions());
+                }
+        }
+
+        /**
+         * Apply to the component the actions
+         * Text key shortcuts, Accelerators
+         * @param component Component that hold actionMap
+         * @param condition one of WHEN_IN_FOCUSED_WINDOW, WHEN_FOCUSED,
+         *        WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
+         * @param overwrite Overwrite accelerators already in place.
+         * @param actionList List of actions
+         */
+        public void setAccelerators(JComponent component, int condition, boolean overwrite, List<Action> actionList) {
+                InputMap im;
+                if(!overwrite) {
+                        im = component.getInputMap(condition);
+                } else {
+                        if(condition == JComponent.WHEN_IN_FOCUSED_WINDOW) {
+                                im = new ComponentInputMap(component);
+                        } else {
+                                im = new InputMap();
+                        }
+                }
                 ActionMap actionMap = component.getActionMap();
-                for(Action action : actions) {
+                for(Action action : actionList) {
                         KeyStroke actionStroke = ActionTools.getKeyStroke(action);
                         if(actionStroke!=null) {
                                 im.put(actionStroke, action);
@@ -572,6 +666,9 @@ public class ActionCommands extends BeanPropertyChangeSupport implements Actions
                                         }
                                 }
                         }
+                }
+                if(overwrite) {
+                        component.setInputMap(condition, im);
                 }
         }
         /**

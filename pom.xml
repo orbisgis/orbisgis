@@ -39,7 +39,9 @@
                 <module>docking-impl</module>
                 <module>progress-gui</module>
                 <module>bundles/map-editor-api</module>
+                <module>bundles/dbjobs</module>
                 <module>bundles/geocatalog</module>
+                <module>bundles/geocatalog-tree</module>
                 <module>bundles/table-editor</module>
                 <module>bundles/sqlconsole</module>
                 <module>bundles/log-panel</module>

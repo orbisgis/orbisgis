@@ -1,4 +1,4 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
@@ -26,38 +26,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.corejdbc;
-
-import org.h2gis.h2spatialapi.DriverFunction;
+package org.orbisgis.geocatalogtree.api;
 
 /**
- * A class that contains jdbc driver function.
+ * Actions on the frame title of Source Catalog
  * @author Nicolas Fortin
  */
-public interface DriverFunctionContainer {
-    /**
-     * @param driverFunction Driver function to add
-     */
-    void addDriverFunction(DriverFunction driverFunction);
-
-    /**
-     * @param driverFunction Driver function to remove
-     */
-    void removeDriverFunction(DriverFunction driverFunction);
-
-    /**
-     * Found DriverFunction using file extension and driver type that export table
-     * @param ext Driver extension ex:shp
-     * @param type Driver type, copy or link
-     * @return Driver instance or null if not found.
-     */
-    DriverFunction getExportDriverFromExt(String ext,DriverFunction.IMPORT_DRIVER_TYPE type );
-
-    /**
-     * Found DriverFunction using file extension and driver type that import file
-     * @param ext Driver extension ex:shp
-     * @param type Driver type, copy or link
-     * @return Driver instance or null if not found.
-     */
-    DriverFunction getImportDriverFromExt(String ext,DriverFunction.IMPORT_DRIVER_TYPE type );
+public interface TitleActionBar extends GeoCatalogExt{
 }

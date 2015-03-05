@@ -27,17 +27,17 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.tocapi;
+package org.orbisgis.sif.components.resourceTree;
 
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.util.Iterator;
 
 /**
- * Easy way to iterate over selected TreeNode in the toc.
+ * Easy way to iterate over selected TreeNode.
  * @author Nicolas Fortin
  */
-public class TocTreeSelectionIterable<Node extends TreeNode> implements Iterable<Node> {
+public class TreeSelectionIterable<Node extends TreeNode> implements Iterable<Node> {
     private TreePath[] selected;
     private Class<Node> nodeClass;
     /**
@@ -45,7 +45,7 @@ public class TocTreeSelectionIterable<Node extends TreeNode> implements Iterable
      * @param selected tree.getSelectedPaths()
      * @param nodeClass Node.class
      */
-    public TocTreeSelectionIterable(final TreePath[] selected, Class<Node> nodeClass) {
+    public TreeSelectionIterable(final TreePath[] selected, Class<Node> nodeClass) {
         if(selected==null) {
             this.selected = new TreePath[0];
         } else {

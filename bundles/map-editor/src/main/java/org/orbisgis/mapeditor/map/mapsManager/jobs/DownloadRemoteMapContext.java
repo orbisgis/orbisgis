@@ -32,12 +32,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.tree.TreeNode;
+
+import org.orbisgis.sif.components.fstree.TreeNodeBusy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
-import org.orbisgis.mapeditor.map.mapsManager.TreeNodeBusy;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeMapCatalogServer;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeWorkspace;
 import org.xnap.commons.i18n.I18n;

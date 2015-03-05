@@ -29,6 +29,7 @@
 package org.orbisgis.sif.components.fstree;
 
 import java.awt.Component;
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTree;
 import org.orbisgis.sif.components.renderers.TreeLaFRenderer;
@@ -68,14 +69,18 @@ public class CustomTreeCellRenderer extends TreeLaFRenderer {
                         }
                         if (value instanceof TreeNodeCustomIcon) {
                                 TreeNodeCustomIcon treeNode = (TreeNodeCustomIcon) value;
+                                Icon customIcon;
                                 if (leaf) {
-                                        rendererComponent.setIcon(treeNode.getLeafIcon());
+                                        customIcon = treeNode.getLeafIcon();
                                 } else {
                                         if (expanded) {
-                                                rendererComponent.setIcon(treeNode.getOpenIcon());
+                                                customIcon = treeNode.getOpenIcon();
                                         } else {
-                                                rendererComponent.setIcon(treeNode.getClosedIcon());
+                                                customIcon = treeNode.getClosedIcon();
                                         }
+                                }
+                                if(customIcon != null)  {
+                                        rendererComponent.setIcon(customIcon);
                                 }
                         }
                 }

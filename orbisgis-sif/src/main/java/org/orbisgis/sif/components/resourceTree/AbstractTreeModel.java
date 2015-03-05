@@ -38,6 +38,29 @@ import javax.swing.tree.TreePath;
 
 public abstract class AbstractTreeModel implements TreeModel {
 
+
+	public static boolean contains(TreePath[] selectionPaths, TreePath path) {
+		for (TreePath treePath : selectionPaths) {
+			boolean equals = true;
+			Object[] objectPath = treePath.getPath();
+			Object[] testPath = path.getPath();
+			if (objectPath.length != testPath.length) {
+				equals = false;
+			} else {
+				for (int i = 0; i < testPath.length; i++) {
+					if (!(testPath[i].equals(objectPath[i]))) {
+						equals = false;
+					}
+				}
+			}
+			if (equals) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	private ArrayList<TreeModelListener> treeModelListeners = new ArrayList<TreeModelListener>();
 
 	private JTree tree;

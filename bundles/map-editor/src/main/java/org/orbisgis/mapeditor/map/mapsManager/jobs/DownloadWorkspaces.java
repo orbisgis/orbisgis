@@ -34,13 +34,13 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 
+import org.orbisgis.sif.components.fstree.TreeNodeBusy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.layerModel.mapcatalog.ConnectionProperties;
 import org.orbisgis.coremap.layerModel.mapcatalog.RemoteMapCatalog;
 import org.orbisgis.coremap.layerModel.mapcatalog.Workspace;
-import org.orbisgis.mapeditor.map.mapsManager.TreeNodeBusy;
 import org.orbisgis.mapeditor.map.mapsManager.TreeNodeMapCatalogServer;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;

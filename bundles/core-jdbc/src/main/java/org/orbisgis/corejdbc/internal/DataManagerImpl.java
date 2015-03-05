@@ -98,10 +98,12 @@ public class DataManagerImpl implements DataManager {
 
     @Override
     public String findUniqueTableName(String originalTableName) throws SQLException {
+        TableLocation tableLocation = TableLocation.parse(originalTableName);
         String tableName = originalTableName;
         int offset = 0;
         while(isTableExists(tableName)) {
-            tableName = originalTableName + "_" + ++offset;
+            tableName = new TableLocation(tableLocation.getCatalog(), tableLocation.getSchema(),
+                    tableLocation.getTable() + "_" + ++offset).toString();
         }
         return tableName;
     }
