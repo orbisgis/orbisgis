@@ -372,9 +372,10 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
             GeoCatalogTreeNode fieldNode = (GeoCatalogTreeNode) nodeObj;
             TableLocation table = TableLocation.parse(fieldNode.getParent().getParent()
                     .getNodeIdentifier());
-            checkIndexExists(fieldNode,table);
-            execute(new CreateIndex(table, new TableLocation(fieldNode.getNodeIdentifier()).toString(isH2()),
-                    this, dataManager.getDataSource()));
+            if (!checkIndexExists(fieldNode, table)) {
+                execute(new CreateIndex(table, new TableLocation(fieldNode.getNodeIdentifier()).toString(isH2()),
+                        this, dataManager.getDataSource()));
+            }
         }
     }
 
@@ -388,9 +389,10 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
             GeoCatalogTreeNode fieldNode = (GeoCatalogTreeNode) nodeObj;
             TableLocation table = TableLocation.parse(fieldNode.getParent().getParent()
                     .getNodeIdentifier());
-            checkIndexExists(fieldNode,table);
-            execute(new CreateSpatialIndex(table, new TableLocation(fieldNode.getNodeIdentifier()).toString(isH2()),
-                    this, dataManager.getDataSource()));
+            if (!checkIndexExists(fieldNode, table)) {
+                execute(new CreateSpatialIndex(table, new TableLocation(fieldNode.getNodeIdentifier()).toString(isH2()),
+                        this, dataManager.getDataSource()));
+            }
         }
     }
     
@@ -399,7 +401,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
      * @param fieldNode
      * @param table 
      */
-    private void checkIndexExists(GeoCatalogTreeNode fieldNode, TableLocation table) {
+    private boolean checkIndexExists(GeoCatalogTreeNode fieldNode, TableLocation table) {
         try (Connection connection = dataManager.getDataSource().getConnection()) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             try (ResultSet rs = databaseMetaData.getIndexInfo(table.getCatalog(), table.getSchema(), table.getTable(), false, true)) {
@@ -408,13 +410,14 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
                     if (fieldNode.getNodeIdentifier().equals(columnName)) {
                         // Index already exists
                         LOGGER.error(I18N.tr("This field is already indexed"));
-                        return;
+                        return true;
                     }
                 }
             }
         } catch (SQLException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }
+        return false;
     }
 
     /**
