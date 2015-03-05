@@ -38,6 +38,7 @@ import java.util.Properties;
 import java.util.Stack;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.felix.framework.Logger;
 import org.apache.felix.main.AutoProcessor;
@@ -53,8 +54,11 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 final class Main {
     private static final I18n I18N = I18nFactory.getI18n(Main.class);
-    private static boolean DEBUG_MODE = false;
+    private static boolean debugMode = false;
+    /** if true Remove configurations file and cache */
+    private static boolean noFailMode = false;
     private static final int BUNDLE_STABILITY_TIMEOUT = 3000;
+    private static final int SAFE_MODE_COUNTDOWN_DELETE = 5000;
     private static final Logger LOGGER = new Logger();
 
     //Minimum supported java version
@@ -76,8 +80,10 @@ final class Main {
         }
         while (!sargs.empty()) {
             String argument = sargs.pop();
-            if (argument.contentEquals("-debug")) {
-                DEBUG_MODE = true;
+            if (argument.contentEquals("--debug")) {
+                debugMode = true;
+            } else if(argument.contentEquals("--nofailmode")) {
+                noFailMode = true;
             }
         }
     }
@@ -110,6 +116,18 @@ final class Main {
                     version.getMicro(), version.getQualifier(), LOGGER);
             // Fetch cache folder
             File felixBundleCache = new File(coreWorkspace.getPluginCache());
+            // If safe mode delete cache
+            if(noFailMode && felixBundleCache.isDirectory()) {
+                System.err.println("Safe mode engaged, clear the following folder in 5 seconds..\n" + felixBundleCache);
+                try {
+                    Thread.sleep(SAFE_MODE_COUNTDOWN_DELETE);
+                    FileUtils.deleteDirectory(felixBundleCache);
+                } catch (InterruptedException ex) {
+                    return;
+                } catch (IOException ex) {
+                    LOGGER.log(Logger.LOG_ERROR, ex.getLocalizedMessage(), ex);
+                }
+            }
             // Delete snapshot fragments bundles
             long beginDeleteFragments = System.currentTimeMillis();
             bundleTools.deleteFragmentInCache(felixBundleCache);
