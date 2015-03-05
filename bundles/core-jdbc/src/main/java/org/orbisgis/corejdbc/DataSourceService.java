@@ -48,11 +48,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.sql.DataSource;
 import javax.swing.SwingWorker;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -120,6 +116,16 @@ public class DataSourceService implements DataSource {
             DataSourceFactory dataSourceFactory = dataSourceFactories.get(URI_DRIVER_TO_OSGI_DRIVER.get(driverName));
             if(dataSourceFactory != null) {
                 dataSource = SFSUtilities.wrapSpatialDataSource(dataSourceFactory.createDataSource(properties));
+                // Init spatial
+                try(Connection connection = dataSource.getConnection();
+                    Statement st = connection.createStatement()) {
+                    if (JDBCUtilities.isH2DataBase(connection.getMetaData()) &&
+                            !JDBCUtilities.tableExists(connection, "PUBLIC.GEOMETRY_COLUMNS")) {
+                        st.execute("CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR\n" +
+                                "    \"org.h2gis.h2spatial.CreateSpatialExtension.initSpatialExtension\";\n" +
+                                "CALL SPATIAL_INIT();");
+                    }
+                }
             } else {
                 throw new SQLException(String.format("The database driver %s is not available",driverName));
             }
