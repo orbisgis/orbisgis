@@ -120,3 +120,15 @@ file_filter = legend/src/main/resources/org/orbisgis/legend/translation/language
 source_file = legend/src/main/resources/org/orbisgis/legend/translation/language/keys.pot
 source_lang = en
 type = PO
+
+[orbisgis.dbjobs]
+file_filter = bundles/dbjobs/src/main/resources/org/orbisgis/dbjobs/translation/language/<lang>.po
+source_file = bundles/dbjobs/src/main/resources/org/orbisgis/dbjobs/translation/language/keys.pot
+source_lang = en
+type = PO
+
+[orbisgis.dbtree-gui]
+file_filter = bundles/geocatalog-tree/src/main/resources/org/orbisgis/geocatalogtree/translation/language/<lang>.po
+source_file = bundles/geocatalog-tree/src/main/resources/org/orbisgis/geocatalogtree/translation/language/keys.pot
+source_lang = en
+type = PO
