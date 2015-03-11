@@ -196,9 +196,6 @@ public abstract class Renderer {
                                 if (rulesProgress.isCancelled()) {
                                     break;
                                 }
-                                if (layerCount % BATCH_SIZE == 0 && rulesProgress.isCancelled()) {
-                                    return layerCount;
-                                }
                                 Geometry theGeom = null;
                                 // If there is only one geometry, it is fetched now, otherwise, it up to symbolizers
                                 // to retrieve the correct geometry (through the Geometry attribute)
@@ -229,6 +226,7 @@ public abstract class Renderer {
                             printEx(ex, layer, g2);
                         }
                     }
+                    rulesProgress.endTask();
                 }
                 disposeLayer(g2);
             } catch (ParameterException ex) {
@@ -360,6 +358,7 @@ public abstract class Renderer {
                                         }
                                 }
                         }
+                        pm.endTask();
                 }
         }
 

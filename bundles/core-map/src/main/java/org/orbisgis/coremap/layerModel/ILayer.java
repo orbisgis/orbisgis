@@ -208,6 +208,11 @@ public interface ILayer {
          */
 	public Envelope getEnvelope();
 
+    /**
+     * Clear cached attributes in this layer
+     */
+    public void clearCache();
+
         /**
          * Return true if the layer accepts childs.
          * This means it's a group of layer

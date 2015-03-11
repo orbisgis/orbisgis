@@ -466,6 +466,10 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
      * MapEditor tools declaration
      */
     private void createActions() {
+
+        // Cache control
+        actions.addAction(new DefaultAction(MapEditorAction.A_MAP_CLEAR_CACHE, I18N.tr("Refresh"),
+                MapEditorIcons.getIcon("refresh"), EventHandler.create(ActionListener.class, this ,"onClearCache")));
         // Navigation tools
         actions.addAction(new ActionAutomaton(MapEditorAction.A_ZOOM_IN,new ZoomInTool(),this).setLogicalGroup("navigation"));
         actions.addAction(new ActionAutomaton(MapEditorAction.A_ZOOM_OUT,new ZoomOutTool(),this).setLogicalGroup("navigation"));
@@ -533,10 +537,6 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 MapEditorIcons.getIcon("export_image"),
                 EventHandler.create(ActionListener.class,this,"onExportMapRendering"))
                 .setToolTipText(I18N.tr("Export image as file")));
-
-        // Cache control
-        actions.addAction(new DefaultAction(MapEditorAction.A_MAP_CLEAR_CACHE, I18N.tr("Refresh"),
-                MapEditorIcons.getIcon("refresh"), EventHandler.create(ActionListener.class, this ,"onClearCache")));
 
         // Parameters
         //actions.addAction(new DefaultAction(MapEditorAction.A_PARAMETERS,I18N.tr("Configuration"),

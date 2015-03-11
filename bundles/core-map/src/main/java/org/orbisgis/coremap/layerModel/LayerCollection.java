@@ -216,7 +216,11 @@ public class LayerCollection extends BeanLayer {
 		return tmp.getGlobalEnvelope();
 	}
 
-        @Override
+    @Override
+    public void clearCache() {
+    }
+
+    @Override
 	public ILayer remove(ILayer layer) throws LayerException {
 		return remove(layer, false);
 	}
