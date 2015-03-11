@@ -453,8 +453,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             resultSetHolder.setCommand(getCommand());
             PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, resultSetHolder, "cancel");
             pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
-            try {
-                resultSetHolder.getResource(); // Long query
+            try(Resource resource = resultSetHolder.getResource()) {
             } finally {
                 pm.removePropertyChangeListener(listener);
             }
