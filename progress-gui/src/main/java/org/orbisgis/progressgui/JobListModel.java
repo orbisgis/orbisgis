@@ -113,8 +113,8 @@ public class JobListModel extends AbstractListModel {
                     jobRemoved.add((SwingWorker)evt.getSource());
                     onJobListChange();
                     break;
-                default:
-                    jobUpdated.add((SwingWorker)evt.getSource());
+                //default:
+                //    jobUpdated.add((SwingWorker)evt.getSource());
             }
         }
 
@@ -135,7 +135,7 @@ public class JobListModel extends AbstractListModel {
          */
         public void onJobListChange() {
                 if(!awaitingRefresh.getAndSet(true)) {
-                        SwingUtilities.invokeLater(new ReadJobListOnSwingThread());
+                        new ReadJobListOnSwingThread(this, awaitingRefresh).execute();
                 }
         }
         /**
@@ -146,11 +146,12 @@ public class JobListModel extends AbstractListModel {
                 while(!jobAdded.isEmpty()) {
                         SwingWorker job = jobAdded.remove(0);
                         //Added
-                        JobListItem addedJobItem = new JobListItem(job).listenToJob(false);
-                        addedJobItem.addPropertyChangeListener(ContainerItemProperties.PROP_LABEL,labelUpdateListener);
-                        shownJobs.add(addedJobItem);
-                        fireIntervalAdded(addedJobItem, shownJobs.size() - 1, shownJobs.size() - 1);
-                        LOGGER.debug("JobListModel:jobAdded");
+                        if(!job.isDone()) {
+                            JobListItem addedJobItem = new JobListItem(job).listenToJob(false);
+                            addedJobItem.addPropertyChangeListener(ContainerItemProperties.PROP_LABEL, labelUpdateListener);
+                            shownJobs.add(addedJobItem);
+                            fireIntervalAdded(addedJobItem, shownJobs.size() - 1, shownJobs.size() - 1);
+                        }
                 }
                 //Removed
                 while(!jobRemoved.isEmpty()) {
@@ -161,7 +162,6 @@ public class JobListModel extends AbstractListModel {
                                 shownJobs.get(jobIndex).dispose();
                                 shownJobs.remove(jobId);
                                 fireIntervalRemoved(jobId, jobIndex, jobIndex);
-                                LOGGER.debug("JobListModel:jobRemoved");
                         } else {
                                 LOGGER.debug("JobListModel:jobRemoved fail to found the job");
                         }
@@ -171,7 +171,6 @@ public class JobListModel extends AbstractListModel {
                         SwingWorker job = jobUpdated.remove(0);
                         JobListItem changedJobItem = new JobListItem(job).listenToJob(false);
                         fireContentsChanged(changedJobItem, 0, 0);
-                        LOGGER.debug("JobListModel:jobReplaced");
                 }                        
         }
         
@@ -181,20 +180,28 @@ public class JobListModel extends AbstractListModel {
                 return shownJobs.get(i);
         }
         
-        private class ReadJobListOnSwingThread  implements Runnable {
-                @Override
-                public void run() {
-                    try {
-                        do {
-                            updateJobList();
-                            Thread.sleep(FETCH_JOB_TIME);
-                        } while (!jobAdded.isEmpty());
-                    }catch (InterruptedException ex) {
-                        //Ignore
-                    } finally {
-                        awaitingRefresh.set(false);
-                    }
+        private static class ReadJobListOnSwingThread  extends SwingWorker {
+            private JobListModel jobListModel;
+            private AtomicBoolean awaitingRefresh;
+
+            public ReadJobListOnSwingThread(JobListModel jobListModel, AtomicBoolean awaitingRefresh) {
+                this.jobListModel = jobListModel;
+                this.awaitingRefresh = awaitingRefresh;
+            }
+
+            @Override
+            protected Object doInBackground() throws Exception {
+                try {
+                    do {
+                        Thread.sleep(FETCH_JOB_TIME);
+                        jobListModel.updateJobList();
+                    } while (!jobListModel.jobAdded.isEmpty());
+                }catch (InterruptedException ex) {
+                    //Ignore
+                } finally {
+                    awaitingRefresh.set(false);
                 }
-                
+                return null;
+            }
         }
 }

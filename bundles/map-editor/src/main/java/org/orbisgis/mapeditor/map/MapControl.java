@@ -69,6 +69,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -223,6 +224,9 @@ public class MapControl extends JComponent implements ContainerListener {
         if(resultSetProviderFactory instanceof  CachedResultSetContainer) {
             ((CachedResultSetContainer) resultSetProviderFactory).clearCache();
         }
+        for(ILayer layer : getMapContext().getLayers()) {
+            layer.clearCache();
+        }
     }
     /**
      * Remove cached result set
@@ -373,6 +377,8 @@ public class MapControl extends JComponent implements ContainerListener {
                 renderer.setRsProvider(resultSetProviderFactory);
                 renderer.draw(mapControl.getMapTransform(), mapContext.getLayerModel(), this.getProgressMonitor());
                 LOGGER.info(I18N.tr("Rendering done in {0} seconds",(System.currentTimeMillis() - begin) / 1000.0 ));
+            } catch (Exception ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
             } finally {
                 awaitingDrawing.set(false);
                 mapControl.repaint();
@@ -415,8 +421,10 @@ public class MapControl extends JComponent implements ContainerListener {
                 String layerTable = layer.getTableReference();
                 if(!layerTable.isEmpty() && TableLocation.parse(layerTable).equals(tableName)) {
                     layer.setSelection(new HashSet<Long>());
+                    layer.clearCache();
                     // The trigger may be lost
                     mapControl.addLayerListenerRecursively(layer, this);
+                    break;
                 }
             }
             mapControl.clearCache();

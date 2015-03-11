@@ -140,9 +140,14 @@ public class Layer extends BeanLayer {
 	}
 
     @Override
+    public void clearCache() {
+        envelope = new Envelope();
+    }
+
+    @Override
 	public Envelope getEnvelope() {
-        // TODO reset envelope when the Table is updated
-        if(envelope.isNull()) {
+        Envelope cachedEnvelope = envelope;
+        if(cachedEnvelope.isNull()) {
             try {
                 if(isStream()) {
                     return stream.getEnvelope();
@@ -152,7 +157,8 @@ public class Layer extends BeanLayer {
                         if(!JDBCUtilities.tableExists(connection, tableReference)) {
                             LOGGER.info(I18N.tr("Cannot draw {0} the table does not exists", tableReference));
                         }
-                        envelope = SFSUtilities.getTableEnvelope(connection, TableLocation.parse(tableReference),"");
+                        cachedEnvelope = SFSUtilities.getTableEnvelope(connection, TableLocation.parse(tableReference),"");
+                        envelope = cachedEnvelope;
                     } catch (SQLException ex) {
                         LOGGER.error(I18N.tr("Cannot compute layer envelope:\n")+ex.getLocalizedMessage());
                     }
@@ -162,7 +168,7 @@ public class Layer extends BeanLayer {
                 return new Envelope();
             }
         }
-		return envelope;
+		return cachedEnvelope;
 	}
 
     @Override
