@@ -61,6 +61,8 @@ public interface PopupMenu extends ActionFactoryService<PopupTarget> {
 
     // Create
     public static final String M_CREATE_SPATIAL_INDEX = "CREATE_SPATIAL_INDEX";
+    
+    public static final String M_CREATE_INDEX = "CREATE_INDEX";
 
     public static final String M_CLEAR_CATALOG = "M_CLEAR_CATALOG";
     // Refresh geocatalog
