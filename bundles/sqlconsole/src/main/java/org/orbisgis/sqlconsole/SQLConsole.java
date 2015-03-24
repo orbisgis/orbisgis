@@ -100,7 +100,7 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
                 if(languageSupport != null) {
                         languageSupport.install(sqlPanel.getScriptPanel());
                 }
-                setEditableElement(new SQLElement((String)attributes.get(SQLElement.PROP_DOCUMENT_PATH)));
+                setEditableElement((SQLElement)attributes.get("editableElement"));
         }
 
         @Deactivate

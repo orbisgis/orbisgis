@@ -31,8 +31,14 @@ package org.orbisgis.docking.impl.internals;
 
 import bibliothek.gui.dock.common.DefaultMultipleCDockable;
 import bibliothek.gui.dock.common.MultipleCDockableFactory;
+import org.orbisgis.docking.impl.edition.dialogs.SaveDocuments;
 import org.orbisgis.sif.docking.DockingPanel;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.EditorDockable;
 
+import javax.swing.SwingUtilities;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -63,6 +69,22 @@ public class CustomMultipleCDockable extends DefaultMultipleCDockable implements
     public void setVisible(boolean visible) {
         if(!changeParameter.getAndSet(true)) {
             try {
+                if(!visible && dockingPanel instanceof EditorDockable) {
+                    EditableElement editableElement = ((EditorDockable) dockingPanel).getEditableElement();
+                    if(editableElement != null && editableElement.isModified()) {
+                        List<EditableElement> modifiedElements = Arrays.asList(editableElement);
+                        SaveDocuments.CHOICE userChoice = SaveDocuments.showModal(SwingUtilities.getWindowAncestor(dockingPanel.getComponent()), modifiedElements);
+                        // If the user do not want to save the editable elements
+                        // Then cancel the modifications
+                        if (userChoice == SaveDocuments.CHOICE.SAVE_NONE) {
+                            for (EditableElement element : modifiedElements) {
+                                element.setModified(false);
+                            }
+                        } else if(userChoice == SaveDocuments.CHOICE.CANCEL) {
+                            return;
+                        }
+                    }
+                }
                 if(dockingPanel.getDockingParameters().setVisible(visible)) {
                     // If not vetoed, propagate visible change.
                     super.setVisible(visible);

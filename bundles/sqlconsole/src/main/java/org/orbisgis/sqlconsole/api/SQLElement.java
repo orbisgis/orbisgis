@@ -92,7 +92,7 @@ public class SQLElement extends AbstractEditableElement implements DocumentListe
     @Override
     public void save() throws UnsupportedOperationException, EditableElementException {
         if(document != null) {
-            if(documentPath == null) {
+            if(getDocumentPathString().isEmpty()) {
                 final SaveFilePanel outfilePanel = new SaveFilePanel(
                         "sqlConsoleOutFile", I18N.tr("Save script"));
                 outfilePanel.addFilter("sql", I18N.tr("SQL script (*.sql)"));
@@ -182,7 +182,10 @@ public class SQLElement extends AbstractEditableElement implements DocumentListe
 
     @Override
     public void readStream(DataInputStream in) throws IOException {
-        setDocumentPath(new File(in.readUTF()));
+        String path = in.readUTF();
+        if(!path.isEmpty()) {
+            setDocumentPath(new File(path));
+        }
     }
 
     @Override
@@ -192,6 +195,9 @@ public class SQLElement extends AbstractEditableElement implements DocumentListe
 
     @Override
     public void readXML(XElement element) {
-        setDocumentPath(new File(element.getString(SQLElement.PROP_DOCUMENT_PATH)));
+        String path = element.getString(SQLElement.PROP_DOCUMENT_PATH);
+        if(!path.isEmpty()) {
+            setDocumentPath(new File(path));
+        }
     }
 }

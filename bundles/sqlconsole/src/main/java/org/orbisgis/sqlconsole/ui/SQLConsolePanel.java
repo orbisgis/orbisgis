@@ -361,7 +361,7 @@ public class SQLConsolePanel extends JPanel {
                     inFilePanel.setCurrentDirectory(sqlElement.getDocumentPath().getParentFile());
                 }
                 if (UIFactory.showDialog(inFilePanel)) {
-                        int answer = JOptionPane.NO_OPTION;
+                        int answer = JOptionPane.YES_OPTION;
                         if (scriptPanel.getDocument().getLength() > 0) {
                                 answer = JOptionPane.showConfirmDialog(
                                         this,
@@ -380,6 +380,8 @@ public class SQLConsolePanel extends JPanel {
                         
                         if (answer == JOptionPane.YES_OPTION) {
                                 scriptPanel.setText(text);
+                                sqlElement.setDocumentPath(inFilePanel.getSelectedFile());
+                                sqlElement.setModified(false);
                         } else if (answer == JOptionPane.NO_OPTION) {
                                 scriptPanel.append(text);
                         }

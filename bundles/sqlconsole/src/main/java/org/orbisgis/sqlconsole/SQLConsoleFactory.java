@@ -112,7 +112,7 @@ public class SQLConsoleFactory implements EditorFactory {
     @Override
     public EditorDockable create(DockingPanelLayout layout) {
         Dictionary<String,Object> initValues = new Hashtable<>();
-        initValues.put(SQLElement.PROP_DOCUMENT_PATH, ((SQLElement)layout).getDocumentPathString());
+        initValues.put("editableElement", layout);
         ComponentInstance sqlPanelFactory = componentFactory.newInstance(initValues);
         instanceList.add(sqlPanelFactory);
         return (SQLConsole) sqlPanelFactory.getInstance();
