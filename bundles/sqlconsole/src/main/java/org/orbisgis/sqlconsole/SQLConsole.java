@@ -59,6 +59,8 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -221,6 +223,9 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
             if(editableElement instanceof SQLElement) {
                 this.sqlElement = (SQLElement) editableElement;
                 sqlElement.setDocument(sqlPanel.getScriptPanel());
+                sqlElement.addPropertyChangeListener(SQLElement.PROP_DOCUMENT_PATH,
+                        EventHandler.create(PropertyChangeListener.class, this , "onPathChanged"));
+                onPathChanged();
                 LoadScript loadScript = new LoadScript(sqlElement);
                 if(executorService != null) {
                     executorService.execute(loadScript);
@@ -230,6 +235,12 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
                 if( sqlPanel != null) {
                     sqlPanel.setSqlElement(sqlElement);
                 }
+            }
+        }
+
+        public void onPathChanged() {
+            if(!sqlElement.getDocumentPathString().isEmpty()) {
+                dockingPanelParameters.setTitle(sqlElement.getDocumentPath().getName());
             }
         }
 
