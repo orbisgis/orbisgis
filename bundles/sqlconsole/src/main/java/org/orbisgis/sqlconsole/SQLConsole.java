@@ -33,19 +33,24 @@ import javax.swing.*;
 
 import org.fife.rsta.ac.LanguageSupport;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.EditableElementException;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sqlconsole.api.SQLAction;
 import org.orbisgis.sqlconsole.api.SQLConsoleEditor;
+import org.orbisgis.sqlconsole.api.SQLElement;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.sqlconsole.icons.SQLConsoleIcon;
 import org.orbisgis.sqlconsole.ui.SQLConsolePanel;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
@@ -53,6 +58,7 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -62,8 +68,10 @@ import java.util.concurrent.ExecutorService;
  * Docking Panel implementation.
  * @author Nicolas Fortin
  */
-@Component(service = EditorDockable.class)
+@Component(service = SQLConsoleEditor.class, factory = SQLConsole.SERVICE_FACTORY_ID, properties = {SQLElement.PROP_DOCUMENT_PATH+"="},
+        configurationPolicy = ConfigurationPolicy.REQUIRE, servicefactory = true)
 public class SQLConsole implements EditorDockable, SQLConsoleEditor {
+        public static final String SERVICE_FACTORY_ID = "org.orbisgis.sqlconsole.SQLConsole";
         private DockingPanelParameters dockingPanelParameters = new DockingPanelParameters();
         private SQLConsolePanel sqlPanel;
         protected final static I18n I18N = I18nFactory.getI18n(SQLConsole.class);
@@ -72,9 +80,10 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
         private LanguageSupport sqlLanguageSupport;
         private ExecutorService executorService;
         private List<SQLAction> sqlActionList = new ArrayList<>();
+        private SQLElement sqlElement = new SQLElement();
 
         @Activate
-        public void init() {
+        public void init(Map<String, Object> attributes) {
                 sqlPanel = new SQLConsolePanel(dataSource);
                 sqlPanel.setSplitterFactory(splitterFactory);
                 sqlPanel.setExecutorService(executorService);
@@ -92,6 +101,16 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
                 if(languageSupport != null) {
                         languageSupport.install(sqlPanel.getScriptPanel());
                 }
+                setEditableElement(new SQLElement((String)attributes.get(SQLElement.PROP_DOCUMENT_PATH)));
+        }
+
+        @Deactivate
+        public void close() {
+            try {
+                sqlElement.close(new NullProgressMonitor());
+            } catch (EditableElementException ex) {
+                // Ignore
+            }
         }
 
         /**
@@ -195,11 +214,15 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
 
         @Override
         public EditableElement getEditableElement() {
-                return null;
+                return sqlElement;
         }
 
         @Override
         public void setEditableElement(EditableElement editableElement) {
+            if(editableElement instanceof SQLElement) {
+                this.sqlElement = (SQLElement) editableElement;
+                sqlElement.setDocument(sqlPanel.getScriptPanel());
+            }
         }
 
         @Override
