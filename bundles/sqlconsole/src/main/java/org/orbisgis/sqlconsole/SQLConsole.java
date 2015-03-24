@@ -41,6 +41,7 @@ import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
 import org.orbisgis.sif.edition.EditorDockable;
+import org.orbisgis.sqlconsole.actions.LoadScript;
 import org.orbisgis.sqlconsole.api.SQLAction;
 import org.orbisgis.sqlconsole.api.SQLConsoleEditor;
 import org.orbisgis.sqlconsole.api.SQLElement;
@@ -58,7 +59,6 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -68,8 +68,7 @@ import java.util.concurrent.ExecutorService;
  * Docking Panel implementation.
  * @author Nicolas Fortin
  */
-@Component(service = SQLConsoleEditor.class, factory = SQLConsole.SERVICE_FACTORY_ID, properties = {SQLElement.PROP_DOCUMENT_PATH+"="},
-        configurationPolicy = ConfigurationPolicy.REQUIRE, servicefactory = true)
+@Component(service = SQLConsoleEditor.class, factory = SQLConsole.SERVICE_FACTORY_ID, properties = {SQLElement.PROP_DOCUMENT_PATH+"="})
 public class SQLConsole implements EditorDockable, SQLConsoleEditor {
         public static final String SERVICE_FACTORY_ID = "org.orbisgis.sqlconsole.SQLConsole";
         private DockingPanelParameters dockingPanelParameters = new DockingPanelParameters();
@@ -84,7 +83,7 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
 
         @Activate
         public void init(Map<String, Object> attributes) {
-                sqlPanel = new SQLConsolePanel(dataSource);
+                sqlPanel = new SQLConsolePanel(dataSource, sqlElement);
                 sqlPanel.setSplitterFactory(splitterFactory);
                 sqlPanel.setExecutorService(executorService);
                 dockingPanelParameters.setTitle(I18N.tr("SQL Console"));
@@ -196,7 +195,7 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
                         sqlPanel.removeActionFactory(sqlAction);
                 }
         }
-        
+
         @Override
         public DockingPanelParameters getDockingParameters() {
                 return dockingPanelParameters;
@@ -222,6 +221,15 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
             if(editableElement instanceof SQLElement) {
                 this.sqlElement = (SQLElement) editableElement;
                 sqlElement.setDocument(sqlPanel.getScriptPanel());
+                LoadScript loadScript = new LoadScript(sqlElement);
+                if(executorService != null) {
+                    executorService.execute(loadScript);
+                } else {
+                    loadScript.execute();
+                }
+                if( sqlPanel != null) {
+                    sqlPanel.setSqlElement(sqlElement);
+                }
             }
         }
 

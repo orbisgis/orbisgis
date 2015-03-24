@@ -79,7 +79,9 @@ public class SQLElement extends AbstractEditableElement implements DocumentListe
     public void open(ProgressMonitor progressMonitor) throws UnsupportedOperationException, EditableElementException {
         if(document != null) {
             try {
-                document.setText(FileUtils.readFileToString(documentPath));
+                if(documentPath!= null && documentPath.isFile() && documentPath.exists()) {
+                    document.setText(FileUtils.readFileToString(documentPath));
+                }
                 document.getDocument().addDocumentListener(this);
             } catch (IOException ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
@@ -151,6 +153,15 @@ public class SQLElement extends AbstractEditableElement implements DocumentListe
     @Override
     public void insertUpdate(DocumentEvent documentEvent) {
         setModified(true);
+    }
+
+    @Override
+    public String toString() {
+        if(documentPath != null) {
+            return documentPath.getName();
+        } else {
+            return I18N.tr("Unsaved SQL script");
+        }
     }
 
     @Override

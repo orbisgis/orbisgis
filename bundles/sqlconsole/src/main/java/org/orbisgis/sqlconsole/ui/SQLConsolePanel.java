@@ -51,12 +51,15 @@ import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.components.findReplace.FindReplaceDialog;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.EditableElementException;
 import org.orbisgis.sif.multiInputPanel.CheckBoxChoice;
 import org.orbisgis.sif.multiInputPanel.MIPValidationInteger;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.orbisgis.sqlconsole.api.SQLAction;
 import org.orbisgis.sqlconsole.api.SQLConsoleEditor;
+import org.orbisgis.sqlconsole.api.SQLElement;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.sqlconsole.icons.SQLConsoleIcon;
 import org.orbisgis.sqlconsole.actions.ExecuteScriptProcess;
@@ -109,11 +112,12 @@ public class SQLConsolePanel extends JPanel {
         private DataSource dataSource;
         private int timeOut =0;
         private ExecutorService executorService;
+        private SQLElement sqlElement;
         
         /**
          * Creates a console for sql.
          */
-        public SQLConsolePanel(DataSource dataSource) {
+        public SQLConsolePanel(DataSource dataSource, SQLElement sqlElement) {
                 super(new BorderLayout());
                 this.dataSource = dataSource;
                 sqlFunctionsPanel = new SQLFunctionsPanel(dataSource);
@@ -124,9 +128,14 @@ public class SQLConsolePanel extends JPanel {
                 split.add(getCenterPanel(), BorderLayout.CENTER);
                 add(split, BorderLayout.CENTER);
                 add(getStatusToolBar(), BorderLayout.SOUTH);
+                this.sqlElement = sqlElement;
         }
 
-        public void addActionFactory(SQLAction sqlAction, SQLConsoleEditor sqlConsoleEditor) {
+    public void setSqlElement(SQLElement sqlElement) {
+        this.sqlElement = sqlElement;
+    }
+
+    public void addActionFactory(SQLAction sqlAction, SQLConsoleEditor sqlConsoleEditor) {
                 actions.addActionFactory(sqlAction, sqlConsoleEditor);
                 actions.setAccelerators(scriptPanel, WHEN_FOCUSED,false, sqlAction);
         }
@@ -326,19 +335,13 @@ public class SQLConsolePanel extends JPanel {
          * of the sql editor into this file.
          */
         public void onSaveFile() {
-                final SaveFilePanel outfilePanel = new SaveFilePanel(
-                        "sqlConsoleOutFile", I18N.tr("Save script"));
-                outfilePanel.addFilter("sql", I18N.tr("SQL script (*.sql)"));
-                outfilePanel.loadState();
-                if (UIFactory.showDialog(outfilePanel)) {
-                        try {
-                                FileUtils.writeStringToFile(outfilePanel.getSelectedFile(), scriptPanel.getText());
-                        } catch (IOException e1) {
-                                LOGGER.error(I18N.tr("IO error."), e1);
-                                return;
-                        }
+                try {
+                    sqlElement.save();
+                } catch (EditableElementException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
+                if (!sqlElement.isModified()) {
                         setStatusMessage(I18N.tr("The file has been saved."));
-
                 } else {
                         setStatusMessage("");
                 }
@@ -352,7 +355,11 @@ public class SQLConsolePanel extends JPanel {
                 final OpenFilePanel inFilePanel = new OpenFilePanel("sqlConsoleInFile",
                         I18N.tr("Open script"));
                 inFilePanel.addFilter("sql", I18N.tr("SQL script (*.sql)"));
-                inFilePanel.loadState();
+                if(sqlElement.getDocumentPathString().isEmpty()) {
+                    inFilePanel.loadState();
+                } else {
+                    inFilePanel.setCurrentDirectory(sqlElement.getDocumentPath().getParentFile());
+                }
                 if (UIFactory.showDialog(inFilePanel)) {
                         int answer = JOptionPane.NO_OPTION;
                         if (scriptPanel.getDocument().getLength() > 0) {

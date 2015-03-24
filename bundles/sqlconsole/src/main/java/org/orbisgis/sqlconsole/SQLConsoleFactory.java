@@ -36,12 +36,15 @@ import org.orbisgis.sqlconsole.api.SQLElement;
 import org.osgi.service.component.ComponentFactory;
 import org.osgi.service.component.ComponentInstance;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.List;
 
 
 /**
@@ -56,6 +59,7 @@ public class SQLConsoleFactory implements EditorFactory {
     public static final String factoryId = "SQLConsoleFactory";
     protected final static I18n I18N = I18nFactory.getI18n(SQLConsoleFactory.class);
     private ComponentFactory componentFactory;
+    private List<ComponentInstance> instanceList = new ArrayList<>();
 
     /**
      * Default constructor
@@ -80,7 +84,14 @@ public class SQLConsoleFactory implements EditorFactory {
 
     @Override
     public void dispose() {
+    }
 
+    @Deactivate
+    public void deactivate() {
+        for(ComponentInstance  componentInstance : instanceList) {
+            componentInstance.dispose();
+        }
+        instanceList.clear();
     }
 
     @Override
@@ -101,8 +112,9 @@ public class SQLConsoleFactory implements EditorFactory {
     @Override
     public EditorDockable create(DockingPanelLayout layout) {
         Dictionary<String,Object> initValues = new Hashtable<>();
-        initValues.put(SQLElement.PROP_DOCUMENT_PATH, ((SQLElement)layout).getDocumentPath());
-        ComponentInstance sqlPanel = componentFactory.newInstance(initValues);
-        return (SQLConsole) sqlPanel;
+        initValues.put(SQLElement.PROP_DOCUMENT_PATH, ((SQLElement)layout).getDocumentPathString());
+        ComponentInstance sqlPanelFactory = componentFactory.newInstance(initValues);
+        instanceList.add(sqlPanelFactory);
+        return (SQLConsole) sqlPanelFactory.getInstance();
     }
 }
