@@ -132,12 +132,12 @@ public class SQLFunctionsPanel extends JPanel {
             functionLabelCount.setText(I18N.tr(FUNCTION_COUNT, functionListModel.getSize()));
             FunctionElement functElem = list.getSelectedValue();
             if (functElem != null) {
-                String description = functElem.getSQLRemarks();
+                String description = functElem.getToolTip();
                 StringBuilder stringBuilder = new StringBuilder("<html><body><p><b>Description<b></p><br>");
                 if (description == null || description.isEmpty()) {
                     stringBuilder.append(I18N.tr("No description available."));
                 } else {
-                    stringBuilder.append(description.replaceAll("\n", "<br>"));
+                    stringBuilder.append(description);
                 }
                 stringBuilder.append("</body></html>");
                 functionDescription.setText(stringBuilder.toString());
