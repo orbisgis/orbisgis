@@ -62,6 +62,7 @@ public class SQLFunctionsPanel extends JPanel {
         protected final static I18n I18N = I18nFactory.getI18n(SQLFunctionsPanel.class);
         private static final String NO_FUNCTION_MESSAGE = I18n.marktr("<html><body>Select a function to display its description.</body></html>");
         private static final String FUNCTION_COUNT = I18n.marktr("Function count = {0}");
+        private JSplitPane splitPane;
         
         public SQLFunctionsPanel(DataSource dataSource) {
                 this.setLayout(new BorderLayout());
@@ -86,13 +87,12 @@ public class SQLFunctionsPanel extends JPanel {
                 functionDescription.setText(I18N.tr(NO_FUNCTION_MESSAGE));
                 DefaultCaret caret = (DefaultCaret)functionDescription.getCaret();
                 caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
-                JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, funcList, new JScrollPane(functionDescription));
+                splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, funcList, new JScrollPane(functionDescription));
                 splitPane.setResizeWeight(0.5);
                 expandedPanel.add(splitPane, BorderLayout.CENTER);
                 funcList.add(functionLabelCount, BorderLayout.SOUTH);
                 add(expandedPanel, BorderLayout.CENTER);
                 expandedPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-                collapse();
         }
         
         private void initialise() {
@@ -102,6 +102,10 @@ public class SQLFunctionsPanel extends JPanel {
                         functionFilters.registerFilterFactory(nameFilter);
                         functionFilters.addFilter(nameFilter.getDefaultFilterValue());                
                 }
+        }
+
+        public void repackPanel() {
+            splitPane.setDividerLocation(0.5);
         }
 
         @Override
@@ -148,36 +152,7 @@ public class SQLFunctionsPanel extends JPanel {
         public void doFilter() {
                 functionListModel.setFilters(functionFilters.getFilters());
         }
-        
-        /**
-         * Switch the visibility state of the panel
-         */
-        public void switchPanelVisibilityState() {
-                if (expandedPanel.isVisible()) {
-                        collapse();
-                } else {
-                        expand();
-                }
-        }
 
-        /**
-         * Hide the SQL list and show the expand button
-         */
-        public final void collapse() {
-                if (expandedPanel.isVisible()) {
-                        expandedPanel.setVisible(false);
-                }
-        }
-
-        /**
-         * Shown the available sql functions
-         */
-        public final void expand() {
-                if (!expandedPanel.isVisible()) {
-                        setPreferredSize(funcList.getPreferredSize());
-                        expandedPanel.setVisible(true);
-                }
-        }
         
         
 }

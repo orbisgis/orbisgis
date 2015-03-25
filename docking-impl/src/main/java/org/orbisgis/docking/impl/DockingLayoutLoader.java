@@ -76,9 +76,20 @@ public class DockingLayoutLoader {
     }
 
     @Activate
-    public void refreshConfig() {
+    public void init() {
         initialised = true;
-        SwingUtilities.invokeLater(new ReloadLayout(dockingManager, viewWorkspace.getDockingLayoutPath()));
+        refreshConfig();
+    }
+
+    public void deactivate() {
+        initialised = false;
+    }
+
+
+    public void refreshConfig() {
+        if(initialised) {
+            SwingUtilities.invokeLater(new ReloadLayout(dockingManager, viewWorkspace.getDockingLayoutPath()));
+        }
     }
 
     private void updateDockableState() {

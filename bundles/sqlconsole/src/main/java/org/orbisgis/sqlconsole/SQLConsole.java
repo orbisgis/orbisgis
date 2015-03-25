@@ -37,6 +37,7 @@ import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
+import org.orbisgis.sif.docking.DockingLocation;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
@@ -88,9 +89,11 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
                 sqlPanel = new SQLConsolePanel(dataSource, sqlElement);
                 sqlPanel.setSplitterFactory(splitterFactory);
                 sqlPanel.setExecutorService(executorService);
+                dockingPanelParameters.setName("sqlconsole");
                 dockingPanelParameters.setTitle(I18N.tr("SQL Console"));
                 dockingPanelParameters.setTitleIcon(SQLConsoleIcon.getIcon("sql_code"));
                 dockingPanelParameters.setDockActions(sqlPanel.getActions().getActions());
+                dockingPanelParameters.setDefaultDockingLocation(new DockingLocation(DockingLocation.Location.STACKED_ON,"sqlconsole"));
                 // Tools that will be created later will also be set in the docking panel
                 // thanks to this listener
                 sqlPanel.getActions().addPropertyChangeListener(
