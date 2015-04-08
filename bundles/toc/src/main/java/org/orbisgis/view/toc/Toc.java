@@ -1362,7 +1362,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                         }
                         pmSources.endTask();
                     }
-                    treeModel.nodeChanged(new TocTreeNodeLayer(dropNode));
+                    SwingUtilities.invokeAndWait(new NodeChangeEvent(treeModel, new TocTreeNodeLayer(dropNode)));
                     // Select the new layer(s) if there is no selection
                     if(tree.getSelectionCount()==0) {
                         tree.setSelectionPaths(dropPaths.toArray(new TreePath[dropPaths.size()]));
