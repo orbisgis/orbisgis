@@ -363,8 +363,13 @@ public class SQLConsolePanel extends JPanel {
          * of the sql editor into this file.
          */
         public void onSaveAsNewFile() {
+            File oldDocPath = sqlElement.getDocumentPath();
             sqlElement.setDocumentPath(null);
             onSaveFile();
+            if(sqlElement.getDocumentPath() == null && oldDocPath != null) {
+                // If canceled
+                sqlElement.setDocumentPath(oldDocPath);
+            }
         }
 
         /**

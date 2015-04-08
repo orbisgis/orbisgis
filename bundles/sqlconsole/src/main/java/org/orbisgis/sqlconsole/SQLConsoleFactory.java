@@ -96,7 +96,11 @@ public class SQLConsoleFactory implements EditorFactory {
 
     @Override
     public DockingPanelLayout makeEditableLayout(EditableElement editable) {
-        return (SQLElement)editable;
+        if(editable instanceof SQLElement) {
+            return (SQLElement) editable;
+        } else {
+            return null;
+        }
     }
 
     @Override
